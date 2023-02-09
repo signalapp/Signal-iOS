@@ -1221,6 +1221,7 @@
 		D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */; };
 		D9E335A12993143500825677 /* AppSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A02993143500825677 /* AppSetup.swift */; };
 		D9E335A42993269100825677 /* MockDBV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAE2982F4C4002E0CFE /* MockDBV2.swift */; };
+		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
@@ -3698,6 +3699,7 @@
 		D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManifest.swift; sourceTree = "<group>"; };
 		D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+SSK.swift"; sourceTree = "<group>"; };
 		D9E335A02993143500825677 /* AppSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSetup.swift; sourceTree = "<group>"; };
+		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
 		DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDBCB034D1DFAF85ADFD5E76 /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
@@ -7310,6 +7312,7 @@
 				D925F55E298C743E00158EE4 /* UsernameLookupManager.swift */,
 				D925F557298B39D800158EE4 /* UsernameLookupRecord.swift */,
 				D99840C5297A0F9500F7ED6D /* Usernames+API.swift */,
+				D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */,
 				D99840BC297A04DA00F7ED6D /* Usernames+NicknameValidator.swift */,
 				D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */,
 				D925F552298349EF00158EE4 /* Usernames+ShareableUsername.swift */,
@@ -11855,6 +11858,7 @@
 				D925F55F298C743E00158EE4 /* UsernameLookupManager.swift in Sources */,
 				D925F55D298C6A7D00158EE4 /* UsernameLookupRecord.swift in Sources */,
 				D925F562298D8F9400158EE4 /* Usernames+API.swift in Sources */,
+				D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */,
 				D925F564298D8F9400158EE4 /* Usernames+NicknameValidator.swift in Sources */,
 				D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */,
 				D925F560298D8F9400158EE4 /* Usernames+ShareableUsername.swift in Sources */,

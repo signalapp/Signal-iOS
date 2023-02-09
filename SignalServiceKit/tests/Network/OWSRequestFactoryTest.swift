@@ -227,25 +227,25 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
     // MARK: - Usernames
 
     func testReserveUsername() {
-        let request = OWSRequestFactory.reserveUsernameRequest(desiredNickname: "foobar")
+        let request = OWSRequestFactory.reserveUsernameRequest(usernameHashes: ["boba", "fett"])
 
-        XCTAssertEqual(request.url?.path, "v1/accounts/username/reserved")
+        XCTAssertEqual(request.url?.path, "v1/accounts/username_hash/reserve")
         XCTAssertEqual(request.httpMethod, "PUT")
-        XCTAssertEqual(request.parameters as! [String: String], ["nickname": "foobar"])
+        XCTAssertEqual(request.parameters as! [String: [String]], ["usernameHashes": ["boba", "fett"]])
         XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
 
     func testConfirmReservedUsername() {
         let request = OWSRequestFactory.confirmReservedUsernameRequest(
-            previouslyReservedUsername: "foobar",
-            reservationToken: "d4a0efe9-6ffc-488a-b33d-6aa340279175"
+            reservedUsernameHash: "jango",
+            reservedUsernameZKProof: "fett"
         )
 
-        XCTAssertEqual(request.url?.path, "v1/accounts/username/confirm")
+        XCTAssertEqual(request.url?.path, "v1/accounts/username_hash/confirm")
         XCTAssertEqual(request.httpMethod, "PUT")
         XCTAssertEqual(request.parameters as! [String: String], [
-            "usernameToConfirm": "foobar",
-            "reservationToken": "d4a0efe9-6ffc-488a-b33d-6aa340279175"
+            "usernameHash": "jango",
+            "zkProof": "fett"
         ])
         XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
@@ -253,9 +253,18 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
     func testDeleteExistingUsername() {
         let request = OWSRequestFactory.deleteExistingUsernameRequest()
 
-        XCTAssertEqual(request.url?.path, "v1/accounts/username")
+        XCTAssertEqual(request.url?.path, "v1/accounts/username_hash")
         XCTAssertEqual(request.httpMethod, "DELETE")
         XCTAssertEqual(request.parameters as! [String: String], [:])
         XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
+    }
+
+    func testLookupAciForUsername() {
+        let request = OWSRequestFactory.lookupAciUsernameRequest(usernameHashToLookup: "obi-wan")
+
+        XCTAssertEqual(request.url?.path, "v1/accounts/username_hash/obi-wan")
+        XCTAssertEqual(request.httpMethod, "GET")
+        XCTAssertEqual(request.parameters as! [String: String], [:])
+        XCTAssertTrue(!request.shouldHaveAuthorizationHeaders)
     }
 }

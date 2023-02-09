@@ -45,44 +45,12 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2MaxGroupSizeRecommended: UInt {
-        let defaultValue: UInt = 151
-        guard AppReadiness.isAppReady else {
-            owsFailDebug("Storage is not yet ready.")
-            return defaultValue
-        }
-        guard let rawValue: AnyObject = value(.groupsV2MaxGroupSizeRecommended) else {
-            return defaultValue
-        }
-        guard let stringValue = rawValue as? String else {
-            owsFailDebug("Unexpected value.")
-            return defaultValue
-        }
-        guard let uintValue = UInt(stringValue) else {
-            owsFailDebug("Invalid value.")
-            return defaultValue
-        }
-        return uintValue
+        getUIntValue(forFlag: .groupsV2MaxGroupSizeRecommended, defaultValue: 151)
     }
 
     @objc
     public static var groupsV2MaxGroupSizeHardLimit: UInt {
-        let defaultValue: UInt = 1001
-        guard AppReadiness.isAppReady else {
-            owsFailDebug("Storage is not yet ready.")
-            return defaultValue
-        }
-        guard let rawValue: AnyObject = value(.groupsV2MaxGroupSizeHardLimit) else {
-            return defaultValue
-        }
-        guard let stringValue = rawValue as? String else {
-            owsFailDebug("Unexpected value.")
-            return defaultValue
-        }
-        guard let uintValue = UInt(stringValue) else {
-            owsFailDebug("Invalid value.")
-            return defaultValue
-        }
-        return uintValue
+        getUIntValue(forFlag: .groupsV2MaxGroupSizeHardLimit, defaultValue: 1001)
     }
 
     public static var groupsV2MaxBannedMembers: UInt {
@@ -270,23 +238,7 @@ public class RemoteConfig: BaseFlags {
     }
 
     public static var maxGroupCallRingSize: UInt {
-        let defaultValue: UInt = 16
-        guard AppReadiness.isAppReady else {
-            owsFailDebug("Storage is not yet ready.")
-            return defaultValue
-        }
-        guard let rawValue: AnyObject = value(.maxGroupCallRingSize) else {
-            return defaultValue
-        }
-        guard let stringValue = rawValue as? String else {
-            owsFailDebug("Unexpected value.")
-            return defaultValue
-        }
-        guard let uintValue = UInt(stringValue) else {
-            owsFailDebug("Invalid value.")
-            return defaultValue
-        }
-        return uintValue
+        getUIntValue(forFlag: .maxGroupCallRingSize, defaultValue: 16)
     }
 
     public static var contactDiscoveryV2KillSwitch: Bool {
@@ -295,6 +247,64 @@ public class RemoteConfig: BaseFlags {
 
     public static var enableAutoAPNSRotation: Bool {
         return isEnabled(.enableAutoAPNSRotation, defaultValue: false)
+    }
+
+    /// The minimum length for a valid nickname, in Unicode codepoints.
+    public static var minNicknameLength: UInt32 {
+        getUInt32Value(forFlag: .minNicknameLength, defaultValue: 3)
+    }
+
+    /// The maximum length for a valid nickname, in Unicode codepoints.
+    public static var maxNicknameLength: UInt32 {
+        getUInt32Value(forFlag: .maxNicknameLength, defaultValue: 32)
+    }
+
+    // MARK: UInt values
+
+    private static func getUIntValue(
+        forFlag flag: Flags.SupportedValuesFlags,
+        defaultValue: UInt
+    ) -> UInt {
+        getStringConvertibleValue(
+            forFlag: flag,
+            defaultValue: defaultValue
+        )
+    }
+
+    private static func getUInt32Value(
+        forFlag flag: Flags.SupportedValuesFlags,
+        defaultValue: UInt32
+    ) -> UInt32 {
+        getStringConvertibleValue(
+            forFlag: flag,
+            defaultValue: defaultValue
+        )
+    }
+
+    private static func getStringConvertibleValue<V>(
+        forFlag flag: Flags.SupportedValuesFlags,
+        defaultValue: V
+    ) -> V where V: LosslessStringConvertible {
+       guard AppReadiness.isAppReady else {
+            owsFailDebug("Storage is not yet ready.")
+            return defaultValue
+        }
+
+        guard let rawValue: AnyObject = value(flag) else {
+            return defaultValue
+        }
+
+        guard let stringValue = rawValue as? String else {
+            owsFailDebug("Unexpected value.")
+            return defaultValue
+        }
+
+        guard let value = V(stringValue) else {
+            owsFailDebug("Invalid value.")
+            return defaultValue
+        }
+
+        return value
     }
 
     // MARK: - Country code buckets
@@ -555,6 +565,8 @@ private struct Flags {
         case creditAndDebitCardDisabledRegions
         case paypalDisabledRegions
         case maxGroupCallRingSize
+        case minNicknameLength
+        case maxNicknameLength
     }
 }
 
@@ -579,6 +591,8 @@ private extension FlagType {
         case "creditAndDebitCardDisabledRegions": return "global.donations.ccDisabledRegions"
         case "paypalDisabledRegions": return "global.donations.paypalDisabledRegions"
         case "maxGroupCallRingSize": return "global.calling.maxGroupCallRingSize"
+        case "minNicknameLength": return "global.nicknames.min"
+        case "maxNicknameLength": return "global.nicknames.max"
         default: return Flags.prefix + rawValue
         }
     }

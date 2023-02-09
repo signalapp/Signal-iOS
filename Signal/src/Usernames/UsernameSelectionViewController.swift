@@ -27,10 +27,10 @@ class UsernameSelectionViewController: OWSTableViewController2 {
 
     enum Constants {
         /// Minimum length for a nickname, in Unicode code points.
-        static let minNicknameCodepointLength: UInt = 3
+        static let minNicknameCodepointLength: UInt32 = RemoteConfig.minNicknameLength
 
         /// Maximum length for a nickname, in Unicode code points.
-        static let maxNicknameCodepointLength: UInt = 32
+        static let maxNicknameCodepointLength: UInt32 = RemoteConfig.maxNicknameLength
 
         /// Amount of time to wait after the username text field is edited
         /// before kicking off a reservation attempt.
@@ -522,7 +522,7 @@ private extension UsernameSelectionViewController {
         switch usernameState {
         case let .reservationSuccessful(reservation):
             self.confirmReservationBehindModalActivityIndicator(
-                reservation: reservation
+                reservedUsername: reservation.hashedUsername
             )
         case .shouldDelete:
             self.deleteCurrentUsernameBehindActivityIndicator()
@@ -541,7 +541,7 @@ private extension UsernameSelectionViewController {
     /// Confirm the given reservation, with an activity indicator blocking the
     /// UI.
     private func confirmReservationBehindModalActivityIndicator(
-        reservation: API.SuccessfulReservation
+        reservedUsername: Usernames.HashedUsername
     ) {
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
@@ -550,7 +550,7 @@ private extension UsernameSelectionViewController {
             UsernameLogger.shared.info("Confirming username.")
 
             firstly { () -> Promise<API.ConfirmationResult> in
-                self.apiManager.attemptToConfirm(reservation: reservation)
+                self.apiManager.attemptToConfirm(reservedUsername: reservedUsername)
             }.done(on: DispatchQueue.main) { result -> Void in
                 switch result {
                 case let .success(confirmedUsername):
@@ -757,6 +757,8 @@ private extension UsernameSelectionViewController {
 
             return self.apiManager.attemptToReserve(
                 desiredNickname: desiredNickname,
+                minNicknameLength: Constants.minNicknameCodepointLength,
+                maxNicknameLength: Constants.maxNicknameCodepointLength,
                 attemptId: thisAttemptId
             )
         }.done(on: DispatchQueue.main) { [weak self] reservationResult -> Void in

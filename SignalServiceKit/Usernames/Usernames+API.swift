@@ -34,15 +34,11 @@ public extension Usernames {
 
 public extension Usernames.API {
     struct SuccessfulReservation: Equatable {
-        /// The raw reserved username, including a numeric discriminator suffix.
-        fileprivate let rawUsername: String
-
-        /// A token representing the reservation, which is used to later
-        /// confirm the username.
-        fileprivate let reservationToken: String
-
         /// The reserved username.
         public let username: Usernames.ParsedUsername
+
+        /// The reserved username, hashed.
+        public let hashedUsername: Usernames.HashedUsername
     }
 
     struct ReservationResult {
@@ -70,43 +66,65 @@ public extension Usernames.API {
     /// potentially-overlapping attempts.
     func attemptToReserve(
         desiredNickname: String,
+        minNicknameLength: UInt32,
+        maxNicknameLength: UInt32,
         attemptId: UUID
     ) -> Promise<ReservationResult> {
-        let request = OWSRequestFactory.reserveUsernameRequest(
-            desiredNickname: desiredNickname
-        )
-
         func makeReservationError(from error: Error) -> ReservationError {
             .init(attemptId: attemptId, underlying: error)
         }
 
+        let usernameCandidates: [Usernames.HashedUsername]
+        do {
+            usernameCandidates = try Usernames.HashedUsername.generateCandidates(
+                forNickname: desiredNickname,
+                minNicknameLength: minNicknameLength,
+                maxNicknameLength: maxNicknameLength
+            )
+        } catch let error {
+            return .init(error: makeReservationError(from: error))
+        }
+
+        let request = OWSRequestFactory.reserveUsernameRequest(
+            usernameHashes: usernameCandidates.map { $0.hashString }
+        )
+
         func onRequestSuccess(response: HTTPResponse) throws -> ReservationResult {
             guard response.responseStatusCode == 200 else {
-                throw makeReservationError(
-                    from: OWSAssertionError("Unexpected status code from successful request: \(response.responseStatusCode)")
-                )
+                throw makeReservationError(from: OWSAssertionError(
+                    "Unexpected status code from successful request: \(response.responseStatusCode)"
+                ))
             }
 
             guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
-                throw makeReservationError(
-                    from: OWSAssertionError("Unexpectedly missing JSON response body!")
-                )
+                throw makeReservationError(from: OWSAssertionError(
+                    "Unexpectedly missing JSON response body!"
+                ))
             }
 
-            let usernameString: String = try parser.required(key: "username")
-            let reservationToken: String = try parser.required(key: "reservationToken")
+            let usernameHash: String = try parser.required(key: "usernameHash")
 
-            guard let parsedUsername = Usernames.ParsedUsername(rawUsername: usernameString) else {
-                throw OWSAssertionError("Username string was not parseable!")
+            guard let acceptedCandidate = usernameCandidates.first(where: { candidate in
+                candidate.hashString == usernameHash
+            }) else {
+                throw makeReservationError(from: OWSAssertionError(
+                    "Accepted username hash did not match any candidates!"
+                ))
             }
 
-            let successState: ReservationResult.State = .successful(reservation: SuccessfulReservation(
-                rawUsername: usernameString,
-                reservationToken: reservationToken,
-                username: parsedUsername
-            ))
+            guard let parsedUsername = Usernames.ParsedUsername(rawUsername: acceptedCandidate.usernameString) else {
+                throw makeReservationError(from: OWSAssertionError(
+                    "Accepted username was not parseable!"
+                ))
+            }
 
-            return .init(attemptId: attemptId, state: successState)
+            return ReservationResult(
+                attemptId: attemptId,
+                state: .successful(reservation: SuccessfulReservation(
+                    username: parsedUsername,
+                    hashedUsername: acceptedCandidate
+                ))
+            )
         }
 
         func onRequestFailure(error: Error) throws -> ReservationResult {
@@ -117,10 +135,9 @@ public extension Usernames.API {
             let resultState = try { () throws -> ReservationResult.State in
                 switch statusCode {
                 case 422, 409:
-                    // 422 indicates a nickname that failed to validate.
+                    // 422 indicates that the given hashes failed to validate.
                     //
-                    // 409 indicates that either the server failed to generate a
-                    // discriminator, or the desired username is forbidden.
+                    // 409 indicates that none of the given hashes are available.
                     //
                     // Either way, the reservation has been rejected.
                     return .rejected
@@ -159,11 +176,11 @@ public extension Usernames.API {
     }
 
     func attemptToConfirm(
-        reservation: SuccessfulReservation
+        reservedUsername: Usernames.HashedUsername
     ) -> Promise<ConfirmationResult> {
         let request = OWSRequestFactory.confirmReservedUsernameRequest(
-            previouslyReservedUsername: reservation.rawUsername,
-            reservationToken: reservation.reservationToken
+            reservedUsernameHash: reservedUsername.hashString,
+            reservedUsernameZKProof: reservedUsername.proofString
         )
 
         func onRequestSuccess(response: HTTPResponse) throws -> ConfirmationResult {
@@ -171,7 +188,7 @@ public extension Usernames.API {
                 throw OWSAssertionError("Unexpected status code from successful request: \(response.responseStatusCode)")
             }
 
-            return .success(confirmedUsername: reservation.rawUsername)
+            return .success(confirmedUsername: reservedUsername.usernameString)
         }
 
         func onRequestFailure(error: Error) throws -> ConfirmationResult {
@@ -235,7 +252,16 @@ public extension Usernames.API {
 
 public extension Usernames.API {
     func attemptAciLookup(forUsername username: String) -> Promise<UUID?> {
-        let request = OWSRequestFactory.lookupAciUsernameRequest(usernameToLookup: username)
+        let hashedUsername: Usernames.HashedUsername
+        do {
+            hashedUsername = try Usernames.HashedUsername(forUsername: username)
+        } catch let error {
+            return .init(error: error)
+        }
+
+        let request = OWSRequestFactory.lookupAciUsernameRequest(
+            usernameHashToLookup: hashedUsername.hashString
+        )
 
         func onRequestSuccess(response: HTTPResponse) throws -> UUID {
             guard response.responseStatusCode == 200 else {

@@ -21,12 +21,12 @@ public extension Usernames {
         private static let nicknameValidityRegex: NSRegularExpression = try! .init(pattern: "^[_a-zA-Z][_a-zA-Z0-9]*$")
 
         /// Minimum number of Unicode codepoints for a nickname.
-        private let minCodepoints: UInt
+        private let minCodepoints: UInt32
 
         /// Maximum number of Unicode codepoints for a nickname.
-        private let maxCodepoints: UInt
+        private let maxCodepoints: UInt32
 
-        public init(minCodepoints: UInt, maxCodepoints: UInt) {
+        public init(minCodepoints: UInt32, maxCodepoints: UInt32) {
             self.minCodepoints = minCodepoints
             self.maxCodepoints = maxCodepoints
         }

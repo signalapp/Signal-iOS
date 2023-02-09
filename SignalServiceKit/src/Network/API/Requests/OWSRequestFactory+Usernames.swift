@@ -7,25 +7,24 @@ import Foundation
 
 public extension OWSRequestFactory {
     private enum UsernameApiPaths {
-        static let reserve = "v1/accounts/username/reserved"
-        static let confirm = "v1/accounts/username/confirm"
-        static let delete = "v1/accounts/username"
-        static func aciLookup(forUsername username: String) -> String {
-            "v1/accounts/username/\(username)"
+        static let reserve = "v1/accounts/username_hash/reserve"
+        static let confirm = "v1/accounts/username_hash/confirm"
+        static let delete = "v1/accounts/username_hash"
+        static func aciLookup(forUsernameHash usernameHash: String) -> String {
+            "v1/accounts/username_hash/\(usernameHash)"
         }
     }
 
-    /// Attempt to reserve the given username. If successful, will return the
-    /// username plus a numeric discriminator, along with a reservation token
-    /// which can be subsequently used to confirm the reservation.
+    /// Attempt to reserve one of the given username hashes. If successful,
+    /// will return the reserved hash.
     ///
     /// A successful reservation is valid for 5 minutes.
     static func reserveUsernameRequest(
-        desiredNickname: String
+        usernameHashes: [String]
     ) -> TSRequest {
         let url = URL(string: UsernameApiPaths.reserve)!
         let params: [String: Any] = [
-            "nickname": desiredNickname
+            "usernameHashes": usernameHashes
         ]
 
         return TSRequest(
@@ -35,21 +34,22 @@ public extension OWSRequestFactory {
         )
     }
 
-    /// Confirm the given previously-reserved username.
+    /// Confirm a previously-reserved username hash.
     ///
-    /// - Parameter previouslyReservedUsername
-    /// A username returned by a prior call to reserve a desired username,
-    /// which should include a numeric discriminator.
-    /// - Parameter reservationToken
-    /// A token returned by a prior call to reserve a username.
+    /// - Parameter reservedUsernameHash
+    /// The hash string from a hashed username returned by a prior call to
+    /// reserve a desired nickname.
+    /// - Parameter reservedUsernameZKProof
+    /// The zkproof string from a hashed username returned by a prior call to
+    /// reserve a desired nickname.
     static func confirmReservedUsernameRequest(
-        previouslyReservedUsername reservedUsername: String,
-        reservationToken: String
+        reservedUsernameHash hashString: String,
+        reservedUsernameZKProof proofString: String
     ) -> TSRequest {
         let url = URL(string: UsernameApiPaths.confirm)!
         let params: [String: Any] = [
-            "usernameToConfirm": reservedUsername,
-            "reservationToken": reservationToken
+            "usernameHash": hashString,
+            "zkProof": proofString
         ]
 
         return TSRequest(
@@ -59,7 +59,7 @@ public extension OWSRequestFactory {
         )
     }
 
-    /// Delete the user's existing username.
+    /// Delete the user's server-stored username hash.
     static func deleteExistingUsernameRequest() -> TSRequest {
         let url = URL(string: UsernameApiPaths.delete)!
 
@@ -70,15 +70,22 @@ public extension OWSRequestFactory {
         )
     }
 
+    /// Look up the ACI for the given username hash.
     static func lookupAciUsernameRequest(
-        usernameToLookup username: String
+        usernameHashToLookup usernameHash: String
     ) -> TSRequest {
-        let url = URL(string: UsernameApiPaths.aciLookup(forUsername: username))!
+        let url = URL(string: UsernameApiPaths.aciLookup(
+            forUsernameHash: usernameHash
+        ))!
 
-        return TSRequest(
+        let request = TSRequest(
             url: url,
             method: HTTPMethod.get.methodName,
             parameters: nil
         )
+
+        request.shouldHaveAuthorizationHeaders = false
+
+        return request
     }
 }
