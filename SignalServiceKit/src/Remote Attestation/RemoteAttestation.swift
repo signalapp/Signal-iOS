@@ -429,8 +429,13 @@ fileprivate extension RemoteAttestation {
         owsAssertDebug(!signature.isEmpty)
         owsAssertDebug(!quoteData.isEmpty)
 
-        let certificate = try RemoteAttestationSigningCertificate.parseCertificate(fromPem: certificates)
-        guard certificate.verifySignature(ofBody: signatureBody, signature: signature) else {
+        guard let certificatesData = certificates.data(using: .utf8) else {
+            throw attestationError(reason: "certificates isn't utf8.")
+        }
+        guard let signatureBodyData = signatureBody.data(using: .utf8) else {
+            throw attestationError(reason: "signatureBody isn't utf8.")
+        }
+        guard Ias.verify(signature: signature, of: signatureBodyData, withCertificatesPem: certificatesData, at: Date()) else {
             throw attestationError(reason: "could not verify signature.")
         }
 

@@ -408,7 +408,6 @@
 		3490D57D25ADDC2A00F5F96C /* GroupLinkPromotionActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */; };
 		3490D57F25ADE49800F5F96C /* ActionSheetContentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3490D57E25ADE49800F5F96C /* ActionSheetContentBuilder.swift */; };
 		3491899B269CD68E008A18AF /* BlockingAnnouncementOnlyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3491899A269CD68D008A18AF /* BlockingAnnouncementOnlyView.swift */; };
-		3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */; };
 		349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D524360C30001045F7 /* AddGroupMembersViewController.swift */; };
 		349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */; };
 		3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3494BBDF26E66FC30079B11B /* DateUtilTest.swift */; };
@@ -1415,7 +1414,6 @@
 		F9AE695328F046E40012E9C9 /* OWSFingerprintTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */; };
 		F9B0DC4F28948656004E07B7 /* schema.sql in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC3C28948656004E07B7 /* schema.sql */; };
 		F9B0DC5028948656004E07B7 /* signal-mainnet.der in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC3E28948656004E07B7 /* signal-mainnet.der */; };
-		F9B0DC5128948656004E07B7 /* ias-root.cer in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC3F28948656004E07B7 /* ias-root.cer */; };
 		F9B0DC5328948656004E07B7 /* isrgrootx1.der in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4128948656004E07B7 /* isrgrootx1.der */; };
 		F9B0DC5428948656004E07B7 /* DigiCertGlobalRootG2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4228948656004E07B7 /* DigiCertGlobalRootG2.crt */; };
 		F9B0DC5528948656004E07B7 /* GSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4328948656004E07B7 /* GSR2.crt */; };
@@ -1700,9 +1698,7 @@
 		F9C5CCAF289453B300548EEE /* SSKEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C5289453B100548EEE /* SSKEnvironment.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCB2289453B300548EEE /* RemoteAttestationSigningCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C9289453B100548EEE /* RemoteAttestationSigningCertificate.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB3289453B300548EEE /* RemoteAttestationQuote.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CCB4289453B300548EEE /* RemoteAttestationSigningCertificate.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9CB289453B100548EEE /* RemoteAttestationSigningCertificate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCB5289453B300548EEE /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CD289453B100548EEE /* Contact.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB6289453B300548EEE /* SignalRecipient.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CE289453B100548EEE /* SignalRecipient.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB7289453B300548EEE /* SignalRecipient+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CF289453B100548EEE /* SignalRecipient+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2652,7 +2648,6 @@
 		3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupLinkPromotionActionSheet.swift; sourceTree = "<group>"; };
 		3490D57E25ADE49800F5F96C /* ActionSheetContentBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionSheetContentBuilder.swift; sourceTree = "<group>"; };
 		3491899A269CD68D008A18AF /* BlockingAnnouncementOnlyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingAnnouncementOnlyView.swift; sourceTree = "<group>"; };
-		3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationSigningCertificateTest.m; sourceTree = "<group>"; };
 		349439D524360C30001045F7 /* AddGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddGroupMembersViewController.swift; sourceTree = "<group>"; };
 		349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseGroupMemberViewController.swift; sourceTree = "<group>"; };
 		3494BBDF26E66FC30079B11B /* DateUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateUtilTest.swift; sourceTree = "<group>"; };
@@ -3904,7 +3899,6 @@
 		F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprintTest.swift; sourceTree = "<group>"; };
 		F9B0DC3C28948656004E07B7 /* schema.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = schema.sql; sourceTree = "<group>"; };
 		F9B0DC3E28948656004E07B7 /* signal-mainnet.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = "signal-mainnet.der"; sourceTree = "<group>"; };
-		F9B0DC3F28948656004E07B7 /* ias-root.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ias-root.cer"; sourceTree = "<group>"; };
 		F9B0DC4128948656004E07B7 /* isrgrootx1.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = isrgrootx1.der; sourceTree = "<group>"; };
 		F9B0DC4228948656004E07B7 /* DigiCertGlobalRootG2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = DigiCertGlobalRootG2.crt; sourceTree = "<group>"; };
 		F9B0DC4328948656004E07B7 /* GSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR2.crt; sourceTree = "<group>"; };
@@ -4189,9 +4183,7 @@
 		F9C5C9C5289453B100548EEE /* SSKEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SSKEnvironment.m; path = src/SSKEnvironment.m; sourceTree = "<group>"; };
 		F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteAttestation.swift; sourceTree = "<group>"; };
 		F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationQuote.m; sourceTree = "<group>"; };
-		F9C5C9C9289453B100548EEE /* RemoteAttestationSigningCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationSigningCertificate.m; sourceTree = "<group>"; };
 		F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoteAttestationQuote.h; sourceTree = "<group>"; };
-		F9C5C9CB289453B100548EEE /* RemoteAttestationSigningCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoteAttestationSigningCertificate.h; sourceTree = "<group>"; };
 		F9C5C9CD289453B100548EEE /* Contact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
 		F9C5C9CE289453B100548EEE /* SignalRecipient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalRecipient.m; sourceTree = "<group>"; };
 		F9C5C9CF289453B100548EEE /* SignalRecipient+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SignalRecipient+SDS.swift"; sourceTree = "<group>"; };
@@ -7165,7 +7157,6 @@
 				34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */,
 				F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */,
 				349D21E7268E044700D98870 /* QRCodeParserTest.swift */,
-				3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */,
 				F9844C482867936400B16DD4 /* SignalMeTest.swift */,
 				88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */,
 				452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */,
@@ -7765,7 +7756,6 @@
 				F9B0DC4B28948656004E07B7 /* GTSR2.crt */,
 				F9B0DC4A28948656004E07B7 /* GTSR3.crt */,
 				F9B0DC4D28948656004E07B7 /* GTSR4.crt */,
-				F9B0DC3F28948656004E07B7 /* ias-root.cer */,
 				F9B0DC4128948656004E07B7 /* isrgrootx1.der */,
 				F9B0DC3E28948656004E07B7 /* signal-mainnet.der */,
 				F9B0DC4728948656004E07B7 /* signal-messenger.cer */,
@@ -8237,8 +8227,6 @@
 				F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */,
 				F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */,
 				F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */,
-				F9C5C9CB289453B100548EEE /* RemoteAttestationSigningCertificate.h */,
-				F9C5C9C9289453B100548EEE /* RemoteAttestationSigningCertificate.m */,
 			);
 			name = "Remote Attestation";
 			path = "src/Remote Attestation";
@@ -9140,7 +9128,6 @@
 				F9C5CCE7289453B300548EEE /* ProfileManagerProtocol.h in Headers */,
 				F9C5CCEA289453B300548EEE /* ProtoUtils.h in Headers */,
 				F9C5CCB3289453B300548EEE /* RemoteAttestationQuote.h in Headers */,
-				F9C5CCB4289453B300548EEE /* RemoteAttestationSigningCertificate.h in Headers */,
 				F9C5CDAD289453B400548EEE /* RESTNetworkManager.h in Headers */,
 				F9C5CD24289453B300548EEE /* SDSCrossProcess.h in Headers */,
 				F9C5CD20289453B300548EEE /* SDSDatabaseStorage+Objc.h in Headers */,
@@ -9791,7 +9778,6 @@
 				F9B0DC5D28948656004E07B7 /* GTSR2.crt in Resources */,
 				F9B0DC5C28948656004E07B7 /* GTSR3.crt in Resources */,
 				F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */,
-				F9B0DC5128948656004E07B7 /* ias-root.cer in Resources */,
 				F9B0DC5328948656004E07B7 /* isrgrootx1.der in Resources */,
 				F9B0DC4F28948656004E07B7 /* schema.sql in Resources */,
 				F9B0DC5028948656004E07B7 /* signal-mainnet.der in Resources */,
@@ -11232,7 +11218,6 @@
 				346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */,
 				4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */,
 				349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */,
-				3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */,
 				3499998122EF1E2100654932 /* SearcherTest.swift in Sources */,
 				1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */,
 				4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift in Sources */,
@@ -11667,7 +11652,6 @@
 				6600F358298D646E00B1EDB7 /* RegistrationSessionManagerImpl.swift in Sources */,
 				F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */,
 				F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */,
-				F9C5CCB2289453B300548EEE /* RemoteAttestationSigningCertificate.m in Sources */,
 				F9C5CE17289453B400548EEE /* RemoteConfigManager.swift in Sources */,
 				D98DD85F28EE53B00089333E /* RemoteMegaphoneFetcher.swift in Sources */,
 				D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */,
