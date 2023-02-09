@@ -199,7 +199,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let contactDiscoveryV2CensorshipPrefix = "cdsi"
 
     public var contactDiscoveryMrEnclave = MrEnclave("74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081")
-    public let contactDiscoveryV2MrEnclave = MrEnclave("ef4787a56a154ac6d009138cac17155acd23cfe4329281252365dd7c252e7fbf")
+    public let contactDiscoveryV2MrEnclave = MrEnclave("0f6fd79cdfdaa5b2e6337f534d3baf999318b0c462a7ac1f41297a3e4b424a57")
 
     public let keyBackupEnclave = KeyBackupEnclave(
         name: "e18376436159cda3ad7a45d9320e382e4a497f26b0dca34d8eab0bd0139483b5",
@@ -256,7 +256,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
 
     // CDS uses the same EnclaveName and MrEnclave
     public var contactDiscoveryMrEnclave = MrEnclave("74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081")
-    public let contactDiscoveryV2MrEnclave = MrEnclave("ef4787a56a154ac6d009138cac17155acd23cfe4329281252365dd7c252e7fbf")
+    public let contactDiscoveryV2MrEnclave = MrEnclave("0f6fd79cdfdaa5b2e6337f534d3baf999318b0c462a7ac1f41297a3e4b424a57")
 
     public let keyBackupEnclave = KeyBackupEnclave(
         name: "39963b736823d5780be96ab174869a9499d56d66497aa8f9b2244f777ebc366b",
