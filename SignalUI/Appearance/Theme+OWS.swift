@@ -51,6 +51,7 @@ public enum ThemeIcon: UInt {
     case settingsBadges
     case settingsReceipts
     case settingsGift
+    case settingsShareUsername
 
     case cameraButton
     case micButton
@@ -292,6 +293,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "receipts-solid-24" : "receipts-outline-24"
         case .settingsGift:
             return isDarkThemeEnabled ? "gift-solid-24" : "gift-outline-24"
+        case .settingsShareUsername:
+            return "share-outline-20"
 
         // Input Toolbar
         case .cameraButton:

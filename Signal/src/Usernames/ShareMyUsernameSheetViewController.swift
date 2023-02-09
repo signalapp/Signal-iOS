@@ -106,7 +106,7 @@ class ShareMyUsernameSheetViewController: OWSTableSheetViewController {
             let section = OWSTableSection()
 
             section.add(.item(
-                icon: .messageActionShare20,
+                icon: .settingsShareUsername,
                 name: CommonStrings.shareButton,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share_button"),
                 actionBlock: { [weak self] in

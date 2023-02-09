@@ -119,80 +119,12 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         ))
 
         if FeatureFlags.usernames, let localAci {
-            let (
-                usernameTitle,
-                usernameSubtitle,
-                usernameShareView
-            ): (String, String?, UIView?) = {
-                guard let username else {
-                    return (
-                        OWSLocalizedString(
-                            "PROFILE_SETTINGS_USERNAME_PLACEHOLDER",
-                            comment: "A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username."
-                        ),
-                        nil,
-                        nil
-                    )
-                }
+            mainSection.add(.init(
+                customCellBlock: { [weak self] in
+                    guard let self else { return UITableViewCell() }
 
-                let shareableUsername = Usernames.ShareableUsername(username: username)
-
-                // Wraps a right-aligned share button.
-                let shareView: UIView = {
-                    let leadingPaddingView: UIView = .init()
-
-                    let shareButton: UIButton = {
-                        let button = CircleButton { [weak self] in
-                            guard let self else { return }
-
-                            let shareMyUsernameSheet = ShareMyUsernameSheetViewController(shareableUsername: shareableUsername)
-                            self.present(shareMyUsernameSheet, animated: true)
-                        }
-
-                        button.setImage(Theme.iconImage(.messageActionShare20), for: .normal)
-                        button.dimsWhenHighlighted = true
-                        button.imageEdgeInsets = .init(margin: 4)
-                        button.backgroundColor = .ows_gray10
-                        button.autoSetDimension(.width, toSize: 32)
-
-                        return button
-                    }()
-
-                    let shareViewStack: OWSStackView = {
-                        let stack = OWSStackView(
-                            name: "Share my username stack",
-                            arrangedSubviews: [
-                                leadingPaddingView,
-                                shareButton
-                            ]
-                        )
-
-                        stack.axis = .horizontal
-                        stack.alignment = .center
-                        stack.distribution = .fill
-                        stack.isLayoutMarginsRelativeArrangement = true
-                        stack.layoutMargins.trailing = 4
-
-                        return stack
-                    }()
-
-                    return shareViewStack
-                }()
-
-                return (
-                    shareableUsername.asString,
-                    shareableUsername.asShortUrlString,
-                    shareView
-                )
-            }()
-
-            mainSection.add(.item(
-                icon: .settingsMention,
-                name: usernameTitle,
-                subtitle: usernameSubtitle,
-                accessoryType: .disclosureIndicator,
-                accessoryView: usernameShareView,
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "username"),
+                    return self.buildUsernameCell()
+                },
                 actionBlock: { [weak self] in
                     guard let self else { return }
 
@@ -202,7 +134,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                         context: .init(
                             networkManager: self.networkManager,
                             databaseStorage: self.databaseStorage,
-                            usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
+                            usernameLookupManager: self.context.usernameLookupManager
                         )
                     )
 
@@ -267,6 +199,86 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             self?.setAvatarImage(newAvatarImage)
         }
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+    }
+
+    // MARK: - Username
+
+    private func buildUsernameCell() -> UITableViewCell {
+        let (
+            usernameTitle,
+            usernameSubtitle,
+            usernameShareView
+        ): (String, String?, UIView?) = {
+            guard let username else {
+                return (
+                    OWSLocalizedString(
+                        "PROFILE_SETTINGS_USERNAME_PLACEHOLDER",
+                        comment: "A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username."
+                    ),
+                    nil,
+                    nil
+                )
+            }
+
+            let shareableUsername = Usernames.ShareableUsername(username: username)
+
+            // Wraps a right-aligned share button.
+            let shareView: UIView = {
+                let leadingPaddingView: UIView = .init()
+
+                let shareButton: UIButton = {
+                    let button = CircleButton { [weak self] in
+                        guard let self else { return }
+
+                        let shareMyUsernameSheet = ShareMyUsernameSheetViewController(shareableUsername: shareableUsername)
+                        self.present(shareMyUsernameSheet, animated: true)
+                    }
+
+                    button.setImage(Theme.iconImage(.settingsShareUsername), for: .normal)
+                    button.dimsWhenHighlighted = true
+                    button.imageEdgeInsets = .init(margin: 4)
+                    button.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray10
+                    button.autoSetDimension(.width, toSize: 32)
+
+                    return button
+                }()
+
+                let shareViewStack: OWSStackView = {
+                    let stack = OWSStackView(
+                        name: "Share my username stack",
+                        arrangedSubviews: [
+                            leadingPaddingView,
+                            shareButton
+                        ]
+                    )
+
+                    stack.axis = .horizontal
+                    stack.alignment = .center
+                    stack.distribution = .fill
+                    stack.isLayoutMarginsRelativeArrangement = true
+                    stack.layoutMargins.trailing = 4
+
+                    return stack
+                }()
+
+                return shareViewStack
+            }()
+
+            return (
+                shareableUsername.asString,
+                shareableUsername.asShortUrlString,
+                shareView
+            )
+        }()
+
+        return OWSTableItem.buildCellWithAccessoryLabel(
+            icon: .settingsMention,
+            itemName: usernameTitle,
+            subtitle: usernameSubtitle,
+            accessoryType: .disclosureIndicator,
+            accessoryView: usernameShareView,
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "username")
+        )
     }
 
     // MARK: - Event Handling
