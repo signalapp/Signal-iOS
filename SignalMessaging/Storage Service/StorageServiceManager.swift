@@ -59,6 +59,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingDeletions(deletedAccountIds: [AccountId]) {
+        if deletedAccountIds.isEmpty {
+            return
+        }
+
         Logger.info("Recording pending deletions for account IDs: \(deletedAccountIds)")
 
         let operation = StorageServiceOperation.recordPendingDeletions(deletedAccountIds: deletedAccountIds)
@@ -69,6 +73,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) {
+        if deletedAddresses.isEmpty {
+            return
+        }
+
         Logger.info("Recording pending deletions for addresses: \(deletedAddresses)")
 
         let operation = StorageServiceOperation.recordPendingDeletions(deletedAddresses: deletedAddresses)
@@ -79,6 +87,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingDeletions(deletedGroupV1Ids: [Data]) {
+        if deletedGroupV1Ids.isEmpty {
+            return
+        }
+
         let operation = StorageServiceOperation.recordPendingDeletions(deletedGroupV1Ids: deletedGroupV1Ids)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -87,6 +99,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingDeletions(deletedGroupV2MasterKeys: [Data]) {
+        if deletedGroupV2MasterKeys.isEmpty {
+            return
+        }
+
         let operation = StorageServiceOperation.recordPendingDeletions(deletedGroupV2MasterKeys: deletedGroupV2MasterKeys)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -95,6 +111,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingDeletions(deletedStoryDistributionListIds: [Data]) {
+        if deletedStoryDistributionListIds.isEmpty {
+            return
+        }
+
         let operation = StorageServiceOperation.recordPendingDeletions(deletedStoryDistributionListIds: deletedStoryDistributionListIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -103,6 +123,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingUpdates(updatedAccountIds: [AccountId]) {
+        if updatedAccountIds.isEmpty {
+            return
+        }
+
         Logger.info("Recording pending update for account IDs: \(updatedAccountIds)")
 
         let operation = StorageServiceOperation.recordPendingUpdates(updatedAccountIds: updatedAccountIds)
@@ -113,7 +137,11 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {
-        Logger.info("Recording pending update for adresses: \(updatedAddresses)")
+        if updatedAddresses.isEmpty {
+            return
+        }
+
+        Logger.info("Recording pending update for addresses: \(updatedAddresses)")
 
         let operation = StorageServiceOperation.recordPendingUpdates(updatedAddresses: updatedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
@@ -123,6 +151,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingUpdates(updatedGroupV1Ids: [Data]) {
+        if updatedGroupV1Ids.isEmpty {
+            return
+        }
+
         let operation = StorageServiceOperation.recordPendingUpdates(updatedGroupV1Ids: updatedGroupV1Ids)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -131,6 +163,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {
+        if updatedGroupV2MasterKeys.isEmpty {
+            return
+        }
+
         let operation = StorageServiceOperation.recordPendingUpdates(updatedGroupV2MasterKeys: updatedGroupV2MasterKeys)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -139,6 +175,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {
+        if updatedStoryDistributionListIds.isEmpty {
+            return
+        }
+
         let operation = StorageServiceOperation.recordPendingUpdates(updatedStoryDistributionListIds: updatedStoryDistributionListIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 

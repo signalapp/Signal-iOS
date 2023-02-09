@@ -81,10 +81,7 @@ public extension TSPrivateStoryThread {
 
             UUID(uuidString: identifier).map { deletedIdentifiers.append($0.data) }
         }
-
-        if !deletedIdentifiers.isEmpty {
-            Self.storageServiceManager.recordPendingDeletions(deletedStoryDistributionListIds: deletedIdentifiers)
-        }
+        Self.storageServiceManager.recordPendingDeletions(deletedStoryDistributionListIds: deletedIdentifiers)
     }
 
     override func updateWithShouldThreadBeVisible(_ shouldThreadBeVisible: Bool, transaction: SDSAnyWriteTransaction) {
