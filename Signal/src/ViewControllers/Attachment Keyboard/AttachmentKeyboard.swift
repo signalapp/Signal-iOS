@@ -286,10 +286,20 @@ private class RecentPhotosErrorView: UIView {
 
         let button = OWSFlatButton()
         button.setBackgroundColors(upColor: .ows_accentBlue)
-        button.setTitle(title: CommonStrings.openSettingsButton, font: .ows_dynamicTypeBodyClamped, titleColor: .white)
+        button.setTitle(
+            title: OWSLocalizedString(
+                "ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS",
+                comment: "A message on a button prompting the user to go settings to grant Signal photos access."
+            ),
+            font: .ows_dynamicTypeBodyClamped,
+            titleColor: .white
+        )
         button.useDefaultCornerRadius()
         button.contentEdgeInsets = UIEdgeInsets(top: 3, leading: 8, bottom: 3, trailing: 8)
-        button.setPressedBlock { UIApplication.shared.openSystemSettings() }
+        button.setPressedBlock {
+            let openAppSettingsUrl = URL(string: UIApplication.openSettingsURLString)!
+            UIApplication.shared.open(openAppSettingsUrl)
+        }
 
         buttonWrapper.addSubview(button)
         button.autoPinHeightToSuperview()
@@ -312,12 +322,12 @@ private class RecentPhotosErrorView: UIView {
     func updateMessaging() {
         buttonWrapper.isHidden = hasMediaLibraryAccess
         if hasMediaLibraryAccess {
-            label.text = NSLocalizedString(
+            label.text = OWSLocalizedString(
                 "ATTACHMENT_KEYBOARD_NO_PHOTOS",
                 comment: "A string indicating to the user that once they take photos, they'll be able to send them from this view."
             )
         } else {
-            label.text = NSLocalizedString(
+            label.text = OWSLocalizedString(
                 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS",
                 comment: "A string indicating to the user that they'll be able to send photos from this view once they enable photo access."
             )
