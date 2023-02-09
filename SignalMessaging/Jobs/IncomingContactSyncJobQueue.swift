@@ -223,9 +223,13 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     private func process(contactDetails: ContactDetails, transaction: SDSAnyWriteTransaction) throws {
         Logger.debug("contactDetails: \(contactDetails)")
 
-        // Mark as registered, since we trust the contact information sent from our other devices.
         let recipient = SignalRecipient.fetchOrCreate(for: contactDetails.address, trustLevel: .high, transaction: transaction)
-        recipient.markAsRegistered(transaction: transaction)
+
+        // Mark as registered as long as we have a UUID. If we don't have a UUID,
+        // contacts can't be registered.
+        if recipient.recipientUUID != nil {
+            recipient.markAsRegistered(transaction: transaction)
+        }
 
         let contactThread: TSContactThread
         let isNewThread: Bool
