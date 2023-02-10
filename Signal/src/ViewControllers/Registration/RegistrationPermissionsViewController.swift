@@ -165,7 +165,7 @@ class RegistrationPermissionsViewController: OWSViewController {
             }
         }.done { [weak self] in
             Logger.info("Done requesting permissions")
-            self?.presenter?.completed()
+            self?.presenter?.goToNextStep()
         }
     }
 }
