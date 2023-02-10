@@ -58,6 +58,10 @@ public extension SDSRecord {
             recordCopy.id = grdbId
             try recordCopy.update(transaction.database)
         } catch {
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("Update failed: \(error.grdbErrorForLogging)")
         }
     }
@@ -66,6 +70,10 @@ public extension SDSRecord {
         do {
             try self.insert(transaction.database)
         } catch {
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("Insert failed: \(error.grdbErrorForLogging)")
         }
     }
