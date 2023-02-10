@@ -74,7 +74,7 @@ extension SignalApp {
 
     private func showRegistrationView(appDelegate: UIApplicationDelegate) {
         // This code is likely to change significantly.
-        let navController = OWSNavigationController()
+        let navController = RegistrationNavigationController()
         navController.setViewControllers([RegistrationSplashViewController()], animated: false)
 
         appDelegate.window??.rootViewController = navController

@@ -36,6 +36,17 @@ extension UILabel {
         result.textAlignment = .center
         return result
     }
+
+    static func explanationLabelForRegistration(text: String) -> UILabel {
+        let result = UILabel()
+        result.textColor = Theme.secondaryTextAndIconColor
+        result.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        result.text = text
+        result.numberOfLines = 0
+        result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        return result
+    }
 }
 
 // MARK: - Buttons

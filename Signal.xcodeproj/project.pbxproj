@@ -1361,6 +1361,7 @@
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
+		F95A64F3299589CA007FDBDF /* RegistrationNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */; };
 		F95D71A3299305C400ED3102 /* RegistrationViewUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */; };
 		F9613CDC2981F11400894B55 /* SqliteUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9613CDB2981F11400894B55 /* SqliteUtil.swift */; };
 		F9613CDE2981F15700894B55 /* SqliteUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */; };
@@ -2153,6 +2154,7 @@
 		F9D5BFCD2979A017001737E5 /* OWSRequestFactory+Spam.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D5BFCC2979A017001737E5 /* OWSRequestFactory+Spam.swift */; };
 		F9D5BFCF2979AFF4001737E5 /* URLPathComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D5BFCE2979AFF4001737E5 /* URLPathComponents.swift */; };
 		F9D5BFD12979B027001737E5 /* URLPathComponentsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D5BFD02979B027001737E5 /* URLPathComponentsTest.swift */; };
+		F9D5C39F2993F9FF004891FC /* RegistrationPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D5C39E2993F9FF004891FC /* RegistrationPermissionsViewController.swift */; };
 		F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */; };
 		F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */; };
 		F9E3720C2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E3720B2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift */; };
@@ -3848,6 +3850,7 @@
 		F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
 		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
+		F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationNavigationController.swift; sourceTree = "<group>"; };
 		F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewUtil.swift; sourceTree = "<group>"; };
 		F9613CDB2981F11400894B55 /* SqliteUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteUtil.swift; sourceTree = "<group>"; };
 		F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteUtilTest.swift; sourceTree = "<group>"; };
@@ -4641,6 +4644,7 @@
 		F9D5BFCC2979A017001737E5 /* OWSRequestFactory+Spam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+Spam.swift"; sourceTree = "<group>"; };
 		F9D5BFCE2979AFF4001737E5 /* URLPathComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLPathComponents.swift; sourceTree = "<group>"; };
 		F9D5BFD02979B027001737E5 /* URLPathComponentsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLPathComponentsTest.swift; sourceTree = "<group>"; };
+		F9D5C39E2993F9FF004891FC /* RegistrationPermissionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPermissionsViewController.swift; sourceTree = "<group>"; };
 		F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewController.swift; sourceTree = "<group>"; };
 		F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationViewsUtil.swift; sourceTree = "<group>"; };
 		F9E3720B2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BadgeGiftingConfirmationViewController+ApplePay.swift"; sourceTree = "<group>"; };
@@ -4910,6 +4914,8 @@
 				34ACA7ED2733161000E47AD4 /* Deprecated_RegistrationHelper.swift */,
 				34404274273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift */,
 				34ACA7EC2733161000E47AD4 /* Deprecated_RegistrationVerificationViewController.swift */,
+				F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */,
+				F9D5C39E2993F9FF004891FC /* RegistrationPermissionsViewController.swift */,
 				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
 				F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */,
 			);
@@ -11086,6 +11092,8 @@
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
+				F95A64F3299589CA007FDBDF /* RegistrationNavigationController.swift in Sources */,
+				F9D5C39F2993F9FF004891FC /* RegistrationPermissionsViewController.swift in Sources */,
 				F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */,
