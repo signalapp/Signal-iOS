@@ -251,14 +251,9 @@ public extension Usernames.API {
 // MARK: - Lookup
 
 public extension Usernames.API {
-    func attemptAciLookup(forUsername username: String) -> Promise<UUID?> {
-        let hashedUsername: Usernames.HashedUsername
-        do {
-            hashedUsername = try Usernames.HashedUsername(forUsername: username)
-        } catch let error {
-            return .init(error: error)
-        }
-
+    func attemptAciLookup(
+        forHashedUsername hashedUsername: Usernames.HashedUsername
+    ) -> Promise<UUID?> {
         let request = OWSRequestFactory.lookupAciUsernameRequest(
             usernameHashToLookup: hashedUsername.hashString
         )

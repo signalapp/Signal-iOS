@@ -14,7 +14,7 @@ extension Usernames {
 
         private let libSignalUsername: LibSignalUsername
 
-        convenience init(forUsername username: String) throws {
+        public convenience init(forUsername username: String) throws {
             self.init(libSignalUsername: try .init(username))
         }
 

@@ -785,10 +785,32 @@ extension RecipientPickerViewController {
             return
         }
 
+        if let hashedUsername = try? Usernames.HashedUsername(forUsername: username) {
+            performUsernameLookup(forHashedUsername: hashedUsername)
+        } else {
+            OWSActionSheets.showActionSheet(
+                title: OWSLocalizedString(
+                    "USERNAME_LOOKUP_INVALID_USERNAME_TITLE",
+                    comment: "Title for an action sheet indicating that a user-entered username value is not a valid username."
+                ),
+                message: String(
+                    format: OWSLocalizedString(
+                        "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT",
+                        comment: "A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}."
+                    ),
+                    username
+                )
+            )
+        }
+    }
+
+    private func performUsernameLookup(
+        forHashedUsername hashedUsername: Usernames.HashedUsername
+    ) {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
             firstly { () -> Promise<UUID?> in
                 Usernames.API(networkManager: self.networkManager)
-                    .attemptAciLookup(forUsername: username)
+                    .attemptAciLookup(forHashedUsername: hashedUsername)
             }.done(on: DispatchQueue.main) { [weak self] maybeAci in
                 modal.dismissIfNotCanceled {
                     if let aci = maybeAci {
@@ -796,7 +818,7 @@ extension RecipientPickerViewController {
 
                         self.databaseStorage.write { transaction in
                             DependenciesBridge.shared.usernameLookupManager.saveUsername(
-                                username,
+                                hashedUsername.usernameString,
                                 forAci: aci,
                                 transaction: transaction.asV2Write
                             )
@@ -804,19 +826,18 @@ extension RecipientPickerViewController {
 
                         self.tryToSelectRecipient(.for(address: .init(uuid: aci)))
                     } else {
-                        let errorTitle = OWSLocalizedString(
-                            "USERNAME_LOOKUP_NOT_FOUND_TITLE",
-                            comment: "Title for an action sheet indicating that the given username is not associated with a registered Signal account."
-                        )
-
-                        let errorMessageFormat = OWSLocalizedString(
-                            "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT",
-                            comment: "A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}."
-                        )
-
                         OWSActionSheets.showActionSheet(
-                            title: errorTitle,
-                            message: String(format: errorMessageFormat, username)
+                            title: OWSLocalizedString(
+                                "USERNAME_LOOKUP_NOT_FOUND_TITLE",
+                                comment: "Title for an action sheet indicating that the given username is not associated with a registered Signal account."
+                            ),
+                            message: String(
+                                format: OWSLocalizedString(
+                                    "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT",
+                                    comment: "A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}."
+                                ),
+                                hashedUsername.usernameString
+                            )
                         )
                     }
                 }
