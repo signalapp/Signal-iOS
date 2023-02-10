@@ -301,6 +301,12 @@ public class AtomicArray<T> {
         }
     }
 
+    public func append(contentsOf newElements: some Sequence<T>) {
+        lock.perform {
+            values.append(contentsOf: newElements)
+        }
+    }
+
     public var first: T? {
         lock.perform {
             values.first

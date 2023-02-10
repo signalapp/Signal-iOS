@@ -9,32 +9,27 @@ import SignalServiceKit
 
 public class AttachmentMultisend: Dependencies {
 
+    private struct PreparedMultisend {
+        let attachmentIdMap: [String: [String]]
+        let messages: [TSOutgoingMessage]
+        let unsavedMessages: [OutgoingStoryMessage]
+        let threads: [TSThread]
+    }
+
     public class func sendApprovedMedia(
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment]
     ) -> Promise<[TSThread]> {
-        return firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<PreparedMediaMultisend> in
-            return self.prepareForSending(
+        return firstly(on: ThreadUtil.enqueueSendQueue) { () -> Promise<PreparedMultisend> in
+            self.prepareForSending(
                 conversations: conversations,
                 approvalMessageBody: approvalMessageBody,
                 approvedAttachments: approvedAttachments,
-                on: DispatchQueue.sharedUserInitiated
+                on: ThreadUtil.enqueueSendQueue
             )
-        }.map(on: ThreadUtil.enqueueSendQueue) { (preparedSend: PreparedMediaMultisend) -> [TSThread] in
-            self.databaseStorage.write { transaction in
-                // This will upload the TSAttachments whose IDs are the keys of attachmentIdMap
-                // and propagate their upload state to each of the TSAttachment unique IDs in the values.
-                // Each outgoing destination gets its own TSAttachment per attached media, but we upload only one,
-                // and propagate its upload state to each of these independent clones.
-                self.smJobQueues.broadcastMediaMessageJobQueue.add(
-                    attachmentIdMap: preparedSend.attachmentIdMap,
-                    unsavedMessagesToSend: preparedSend.unsavedMessages,
-                    transaction: transaction
-                )
-            }
-
-            return preparedSend.threads
+        }.then(on: ThreadUtil.enqueueSendQueue) { (preparedSend: PreparedMultisend) -> Promise<[TSThread]> in
+            self.sendAttachment(preparedSend: preparedSend)
         }
     }
 
@@ -42,42 +37,18 @@ public class AttachmentMultisend: Dependencies {
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment],
-        messagesReadyToSend: (([TSOutgoingMessage]) -> Void)? = nil
+        messagesReadyToSend: @escaping ([TSOutgoingMessage]) -> Void
     ) -> Promise<[TSThread]> {
-        return firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<PreparedMediaMultisend> in
-            return self.prepareForSending(
+        return firstly(on: ThreadUtil.enqueueSendQueue) { () -> Promise<PreparedMultisend> in
+            self.prepareForSending(
                 conversations: conversations,
                 approvalMessageBody: approvalMessageBody,
                 approvedAttachments: approvedAttachments,
-                on: DispatchQueue.sharedUserInitiated
+                on: ThreadUtil.enqueueSendQueue
             )
+        }.then(on: ThreadUtil.enqueueSendQueue) { (preparedSend: PreparedMultisend) -> Promise<[TSThread]> in
+            try self.sendAttachmentFromShareExtension(preparedSend: preparedSend, messagesReadyToSend: messagesReadyToSend)
         }
-        .then(on: DispatchQueue.sharedUserInitiated) { (preparedSend: PreparedMediaMultisend) -> Promise<[TSThread]> in
-
-            messagesReadyToSend?(preparedSend.messages)
-
-            let outgoingMessages = try BroadcastMediaUploader.upload(attachmentIdMap: preparedSend.attachmentIdMap) + preparedSend.unsavedMessages
-
-            var messageSendPromises = [Promise<Void>]()
-            databaseStorage.write { transaction in
-                for message in outgoingMessages {
-                    messageSendPromises.append(ThreadUtil.enqueueMessagePromise(
-                        message: message,
-                        isHighPriority: true,
-                        transaction: transaction
-                    ))
-                }
-            }
-
-            return Promise.when(fulfilled: messageSendPromises).map { preparedSend.threads }
-        }
-    }
-
-    private struct PreparedMediaMultisend {
-        let attachmentIdMap: [String: [String]]
-        let messages: [TSOutgoingMessage]
-        let unsavedMessages: [TSOutgoingMessage]
-        let threads: [TSThread]
     }
 
     // Used to allow a raw Type as the key of a dictionary
@@ -98,7 +69,7 @@ public class AttachmentMultisend: Dependencies {
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment],
         on queue: DispatchQueue
-    ) -> Promise<PreparedMediaMultisend> {
+    ) -> Promise<PreparedMultisend> {
         if let segmentDuration = conversations.lazy.compactMap(\.videoAttachmentDurationLimit).min() {
             let attachmentPromises = approvedAttachments.map {
                 $0.preparedForOutput(qualityLevel: .standard)
@@ -130,7 +101,7 @@ public class AttachmentMultisend: Dependencies {
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment.SegmentAttachmentResult]
-    ) throws -> PreparedMediaMultisend {
+    ) throws -> PreparedMultisend {
         struct IdentifiedSegmentedResult {
             let original: Identified<SignalAttachment>
             let segmented: [Identified<SignalAttachment>]?
@@ -234,47 +205,40 @@ public class AttachmentMultisend: Dependencies {
             }
         }
 
-        return PreparedMediaMultisend(
+        return PreparedMultisend(
             attachmentIdMap: state.attachmentIdMap,
             messages: state.messages,
             unsavedMessages: state.unsavedMessages,
-            threads: state.threads)
+            threads: state.threads
+        )
     }
-}
 
-public extension AttachmentMultisend {
-
-    class func sendTextAttachment(
+    public class func sendTextAttachment(
         _ textAttachment: UnsentTextAttachment,
         to conversations: [ConversationItem]
     ) -> Promise<[TSThread]> {
         return firstly(on: ThreadUtil.enqueueSendQueue) {
             let preparedSend = try self.prepareForSending(conversations: conversations, textAttachment: textAttachment)
-            self.databaseStorage.write { transaction in
-                // This will upload the TSAttachment at the key of attachmentIdMap (just one, you can
-                // only send one text attachment at a time) and propagate its upload state to each of the
-                // TSAttachment unique IDs in the value (an array). Each outgoing destination gets its own
-                // TSAttachment, but we upload only one, and propagate its upload state to each of them.
-                self.smJobQueues.broadcastMediaMessageJobQueue.add(
-                    attachmentIdMap: preparedSend.attachmentIdMap,
-                    unsavedMessagesToSend: preparedSend.messages,
-                    transaction: transaction
-                )
-            }
-            return preparedSend.threads
+            return self.sendAttachment(preparedSend: preparedSend)
         }
     }
 
-    private struct PreparedTextMultisend {
-        let attachmentIdMap: [String: [String]]
-        let messages: [TSOutgoingMessage]
-        let threads: [TSThread]
+    public class func sendTextAttachmentFromShareExtension(
+        _ textAttachment: UnsentTextAttachment,
+        to conversations: [ConversationItem],
+        messagesReadyToSend: @escaping ([TSOutgoingMessage]) -> Void
+    ) -> Promise<[TSThread]> {
+        return firstly(on: ThreadUtil.enqueueSendQueue) {
+            try self.prepareForSending(conversations: conversations, textAttachment: textAttachment)
+        }.then(on: ThreadUtil.enqueueSendQueue) { (preparedSend: PreparedMultisend) -> Promise<[TSThread]> in
+            try self.sendAttachmentFromShareExtension(preparedSend: preparedSend, messagesReadyToSend: messagesReadyToSend)
+        }
     }
 
     private class func prepareForSending(
         conversations: [ConversationItem],
         textAttachment: UnsentTextAttachment
-    ) throws -> PreparedTextMultisend {
+    ) throws -> PreparedMultisend {
 
         let state = MultisendState(approvalMessageBody: nil)
         let conversationsByMessageType = Dictionary(grouping: conversations, by: { TypeWrapper(type: $0.outgoingMessageClass) })
@@ -317,10 +281,51 @@ public extension AttachmentMultisend {
             }
         }
 
-        return PreparedTextMultisend(
+        return PreparedMultisend(
             attachmentIdMap: state.attachmentIdMap,
-            messages: state.unsavedMessages,
-            threads: state.threads)
+            messages: state.messages,
+            unsavedMessages: state.unsavedMessages,
+            threads: state.threads
+        )
+    }
+
+    // MARK: - Helpers
+
+    private class func sendAttachment(preparedSend: PreparedMultisend) -> Promise<[TSThread]> {
+        databaseStorage.write { transaction in
+            // This will upload the TSAttachments whose IDs are the keys of attachmentIdMap
+            // and propagate their upload state to each of the TSAttachment unique IDs in the values.
+            // Each outgoing destination gets its own TSAttachment per attached media, but we upload only one,
+            // and propagate its upload state to each of these independent clones.
+            smJobQueues.broadcastMediaMessageJobQueue.add(
+                attachmentIdMap: preparedSend.attachmentIdMap,
+                unsavedMessagesToSend: preparedSend.unsavedMessages,
+                transaction: transaction
+            )
+        }
+        return .value(preparedSend.threads)
+    }
+
+    private class func sendAttachmentFromShareExtension(
+        preparedSend: PreparedMultisend,
+        messagesReadyToSend: @escaping ([TSOutgoingMessage]) -> Void
+    ) throws -> Promise<[TSThread]> {
+        messagesReadyToSend(preparedSend.messages)
+
+        let outgoingMessages = try BroadcastMediaUploader.upload(attachmentIdMap: preparedSend.attachmentIdMap) + preparedSend.unsavedMessages
+
+        var messageSendPromises = [Promise<Void>]()
+        databaseStorage.write { transaction in
+            for message in outgoingMessages {
+                messageSendPromises.append(ThreadUtil.enqueueMessagePromise(
+                    message: message,
+                    isHighPriority: true,
+                    transaction: transaction
+                ))
+            }
+        }
+
+        return Promise.when(fulfilled: messageSendPromises).map { preparedSend.threads }
     }
 }
 
@@ -360,7 +365,7 @@ class MultisendDestination: NSObject {
 class MultisendState: NSObject {
     let approvalMessageBody: MessageBody?
     var messages: [TSOutgoingMessage] = []
-    var unsavedMessages: [TSOutgoingMessage] = []
+    var unsavedMessages: [OutgoingStoryMessage] = []
     var threads: [TSThread] = []
     var correspondingAttachmentIds: [UUID: [String]] = [:]
     var attachmentIdMap: [String: [String]] = [:]

@@ -11,14 +11,42 @@ public enum StorySharing: Dependencies {
         linkPreviewDraft: OWSLinkPreviewDraft?,
         to conversations: [ConversationItem]
     ) -> Promise<Void> {
-        // Send the text message to any selected story recipients
-        // as a text story with default styling.
         let storyConversations = conversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
         owsAssertDebug(conversations.count == storyConversations.count)
 
         guard !storyConversations.isEmpty else { return Promise.value(()) }
 
-        let textAttachment = UnsentTextAttachment(
+        return AttachmentMultisend.sendTextAttachment(
+            buildTextAttachment(with: messageBody, linkPreviewDraft: linkPreviewDraft),
+            to: storyConversations
+        ).asVoid()
+    }
+
+    public static func sendTextStoryFromShareExtension(
+        with messageBody: MessageBody,
+        linkPreviewDraft: OWSLinkPreviewDraft?,
+        to conversations: [ConversationItem],
+        messagesReadyToSend: @escaping ([TSOutgoingMessage]) -> Void
+    ) -> Promise<Void> {
+        let storyConversations = conversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
+        owsAssertDebug(conversations.count == storyConversations.count)
+
+        guard !storyConversations.isEmpty else { return Promise.value(()) }
+
+        return AttachmentMultisend.sendTextAttachmentFromShareExtension(
+            buildTextAttachment(with: messageBody, linkPreviewDraft: linkPreviewDraft),
+            to: storyConversations,
+            messagesReadyToSend: messagesReadyToSend
+        ).asVoid()
+    }
+
+    private static func buildTextAttachment(
+        with messageBody: MessageBody,
+        linkPreviewDraft: OWSLinkPreviewDraft?
+    ) -> UnsentTextAttachment {
+        // Send the text message to any selected story recipients
+        // as a text story with default styling.
+        return UnsentTextAttachment(
             text: text(for: messageBody, with: linkPreviewDraft),
             textStyle: .regular,
             textForegroundColor: .white,
@@ -26,8 +54,6 @@ public enum StorySharing: Dependencies {
             background: .color(.init(rgbHex: 0x688BD4)),
             linkPreviewDraft: linkPreviewDraft
         )
-
-        return AttachmentMultisend.sendTextAttachment(textAttachment, to: storyConversations).asVoid()
     }
 
     internal static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreviewDraft?) -> String? {
