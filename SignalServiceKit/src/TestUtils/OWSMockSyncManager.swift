@@ -20,7 +20,7 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
     }
 
     @objc
-    public func sendAllSyncRequestMessages() -> AnyPromise {
+    public func sendAllSyncRequestMessagesIfNecessary() -> AnyPromise {
         Logger.info("")
 
         return AnyPromise(Promise.value(()))

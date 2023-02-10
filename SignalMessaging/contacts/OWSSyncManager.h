@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSSyncManagerConfigurationSyncDidCompleteNotification;
 extern NSString *const OWSSyncManagerKeysSyncDidCompleteNotification;
+extern NSString *const OWSSyncManagerSyncRequestedAppVersionKey;
 
 @class AnyPromise;
 @class MessageSender;

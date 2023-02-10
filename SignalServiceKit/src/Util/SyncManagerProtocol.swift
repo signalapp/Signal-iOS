@@ -37,7 +37,7 @@ public protocol SyncManagerProtocolObjc {
 
 @objc
 public protocol SyncManagerProtocolSwift {
-    func sendAllSyncRequestMessages() -> AnyPromise
+    func sendAllSyncRequestMessagesIfNecessary() -> AnyPromise
     func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise
 
     func sendKeysSyncMessage()

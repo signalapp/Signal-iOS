@@ -33,8 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const OWSSyncManagerConfigurationSyncDidCompleteNotification = @"OWSSyncManagerConfigurationSyncDidCompleteNotification";
 NSString *const OWSSyncManagerKeysSyncDidCompleteNotification = @"OWSSyncManagerKeysSyncDidCompleteNotification";
 
+// Keys for +[OWSSyncManager keyValueStore].
 static NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManagerLastMessageKey";
 static NSString *const kSyncManagerFullSyncRequestIdKey = @"FullSyncRequestId";
+NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVersion";
 
 @interface OWSSyncManager ()
 
@@ -80,9 +82,8 @@ static NSString *const kSyncManagerFullSyncRequestIdKey = @"FullSyncRequestId";
                 // so this won't yield redundant traffic.
                 [self sendSyncContactsMessageIfNecessary];
             } else {
-                [self sendAllSyncRequestMessages].catch(^(NSError *error) {
-                    OWSLogError(@"Error: %@.", error);
-                });
+                [self sendAllSyncRequestMessagesIfNecessary].catch(
+                    ^(NSError *error) { OWSLogError(@"Error: %@.", error); });
             }
         }
     });

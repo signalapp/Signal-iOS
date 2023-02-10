@@ -10,38 +10,56 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
     // MARK: - Sync Requests
 
     @objc
-    public func sendAllSyncRequestMessages() -> AnyPromise {
-        return AnyPromise(_sendAllSyncRequestMessages())
+    public func sendAllSyncRequestMessagesIfNecessary() -> AnyPromise {
+        return AnyPromise(_sendAllSyncRequestMessages(onlyIfNecessary: true))
     }
 
     @objc
     public func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise {
-        return AnyPromise(_sendAllSyncRequestMessages()
+        return AnyPromise(_sendAllSyncRequestMessages(onlyIfNecessary: false)
             .timeout(seconds: timeout, substituteValue: ()))
     }
 
-    private func _sendAllSyncRequestMessages() -> Promise<Void> {
-        Logger.info("")
-
+    private func _sendAllSyncRequestMessages(onlyIfNecessary: Bool) -> Promise<Void> {
         guard tsAccountManager.isRegisteredAndReady else {
             return Promise(error: OWSAssertionError("Unexpectedly tried to send sync request before registration."))
         }
 
-        databaseStorage.asyncWrite { transaction in
+        return databaseStorage.write(.promise) { (transaction) -> Promise<Void> in
+            let currentAppVersion = self.appVersion.currentAppVersion4
+            let syncRequestedAppVersion = {
+                Self.keyValueStore().getString(
+                    OWSSyncManagerSyncRequestedAppVersionKey,
+                    transaction: transaction
+                )
+            }
+
+            // If we don't need to send sync messages, don't send them.
+            if onlyIfNecessary, currentAppVersion == syncRequestedAppVersion() {
+                return .value(())
+            }
+
+            // Otherwise, send them & mark that we sent them for this app version.
             self.sendSyncRequestMessage(.blocked, transaction: transaction)
             self.sendSyncRequestMessage(.configuration, transaction: transaction)
             self.sendSyncRequestMessage(.groups, transaction: transaction)
             self.sendSyncRequestMessage(.contacts, transaction: transaction)
             self.sendSyncRequestMessage(.keys, transaction: transaction)
-        }
 
-        return Promise.when(fulfilled: [
-            NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
-            NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).asVoid(),
-            NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
-            NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid(),
-            NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
-        ])
+            Self.keyValueStore().setString(
+                currentAppVersion,
+                key: OWSSyncManagerSyncRequestedAppVersionKey,
+                transaction: transaction
+            )
+
+            return Promise.when(fulfilled: [
+                NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
+                NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).asVoid(),
+                NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
+                NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid(),
+                NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
+            ])
+        }.then(on: DependenciesBridge.shared.schedulers.sync) { $0 }
     }
 
     @objc
