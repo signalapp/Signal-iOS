@@ -113,12 +113,19 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
         let replaceFullWithAnExtraGroup = dut.isDirty
         dut._testingOnly_resetDirtyBit()
 
+        replacementAddresses.insert(CommonGenerator.address())
+        dut.replace(blockedAddresses: replacementAddresses, blockedGroups: replacementGroups)
+        dut.replace(blockedAddresses: replacementAddresses, blockedGroups: replacementGroups)
+        let replaceFullWithTheSameAddressesTwice = dut.isDirty
+        dut._testingOnly_resetDirtyBit()
+
         // Verify
         XCTAssertFalse(replaceEmptyWithEmpty)
         XCTAssertTrue(replaceEmptyWithFull)
         XCTAssertFalse(replaceFullWithFull)
         XCTAssertTrue(replaceFullWithAnExtraAddress)
         XCTAssertTrue(replaceFullWithAnExtraGroup)
+        XCTAssertTrue(replaceFullWithTheSameAddressesTwice)
     }
 
     func testDirtyBitUpdates() {

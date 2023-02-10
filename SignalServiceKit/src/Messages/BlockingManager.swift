@@ -514,7 +514,6 @@ extension BlockingManager {
                 }
             }
 
-            isDirty = false
             isDirty = isDirty || (oldBlockedNumbers != blockedPhoneNumbers)
             isDirty = isDirty || (oldBlockedUUIDStrings != blockedUUIDStrings)
             isDirty = isDirty || (oldBlockedGroupMap != blockedGroupMap)
