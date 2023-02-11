@@ -186,7 +186,14 @@ public extension GroupsV2Impl {
                 let markAsComplete = {
                     databaseStorage.write { transaction in
                         // Now that the thread exists, re-apply the pending group record from storage service.
-                        _ = groupRecord?.mergeWithLocalGroup(transaction: transaction)
+                        if let groupRecord {
+                            let recordUpdater = StorageServiceGroupV2RecordUpdater(
+                                blockingManager: blockingManager,
+                                groupsV2: groupsV2Swift,
+                                profileManager: profileManager
+                            )
+                            _ = recordUpdater.mergeRecord(groupRecord, transaction: transaction)
+                        }
 
                         self.groupsFromStorageService_EnqueuedRecordForRestore.removeValue(forKey: key, transaction: transaction)
                         self.groupsFromStorageService_LegacyEnqueuedForRestore.removeValue(forKey: key, transaction: transaction)

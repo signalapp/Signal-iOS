@@ -42,8 +42,6 @@ public struct StorageService: Dependencies {
         case manifestDecryptionFailed(version: UInt64)
         case itemDecryptionFailed(identifier: StorageIdentifier)
         case networkError(statusCode: Int, underlyingError: Error)
-        case accountMissing
-        case storyMissing
 
         // MARK: 
 
@@ -60,10 +58,6 @@ public struct StorageService: Dependencies {
             case .networkError(let statusCode, _):
                 // If this is a server error, retry
                 return statusCode >= 500
-            case .accountMissing:
-                return false
-            case .storyMissing:
-                return false
             }
         }
 
@@ -163,34 +157,34 @@ public struct StorageService: Dependencies {
             return record
         }
 
-        public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) throws {
+        public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) {
             var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.contact(contact))
-            self.init(identifier: identifier, record: try storageRecord.build())
+            self.init(identifier: identifier, record: storageRecord.buildInfallibly())
         }
 
-        public init(identifier: StorageIdentifier, groupV1: StorageServiceProtoGroupV1Record) throws {
+        public init(identifier: StorageIdentifier, groupV1: StorageServiceProtoGroupV1Record) {
             var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.groupV1(groupV1))
-            self.init(identifier: identifier, record: try storageRecord.build())
+            self.init(identifier: identifier, record: storageRecord.buildInfallibly())
         }
 
-        public init(identifier: StorageIdentifier, groupV2: StorageServiceProtoGroupV2Record) throws {
+        public init(identifier: StorageIdentifier, groupV2: StorageServiceProtoGroupV2Record) {
             var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.groupV2(groupV2))
-            self.init(identifier: identifier, record: try storageRecord.build())
+            self.init(identifier: identifier, record: storageRecord.buildInfallibly())
         }
 
-        public init(identifier: StorageIdentifier, account: StorageServiceProtoAccountRecord) throws {
+        public init(identifier: StorageIdentifier, account: StorageServiceProtoAccountRecord) {
             var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.account(account))
-            self.init(identifier: identifier, record: try storageRecord.build())
+            self.init(identifier: identifier, record: storageRecord.buildInfallibly())
         }
 
-        public init(identifier: StorageIdentifier, storyDistributionList: StorageServiceProtoStoryDistributionListRecord) throws {
+        public init(identifier: StorageIdentifier, storyDistributionList: StorageServiceProtoStoryDistributionListRecord) {
             var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.storyDistributionList(storyDistributionList))
-            self.init(identifier: identifier, record: try storageRecord.build())
+            self.init(identifier: identifier, record: storageRecord.buildInfallibly())
         }
 
         public init(identifier: StorageIdentifier, record: StorageServiceProtoStorageRecord) {

@@ -7,20 +7,107 @@ import Foundation
 import SwiftProtobuf
 import SignalServiceKit
 
+// MARK: - Record Updater Protocol
+
+protocol StorageServiceRecordUpdater {
+    associatedtype IdType
+    associatedtype RecordType
+
+    func unknownFields(for record: RecordType) -> UnknownStorage?
+
+    /// Creates a Record that can be put in Storage Service.
+    ///
+    /// - Parameter localId: The unique identifier of the item being built.
+    ///
+    /// - Parameter unknownFields: Any unknown fields already present for the
+    /// item with this identifier. If there's a value, that value should be
+    /// transferred to the result.
+    ///
+    /// - Parameter transaction: A database transaction.
+    ///
+    /// - Returns: A record with the values for the item identified by
+    /// `localId`. If `localId` doesn't exist, or if `localId` isn't valid,
+    /// `nil` is returned. Callers should exclude items which return `nil`.
+    func buildRecord(for localId: IdType, unknownFields: UnknownStorage?, transaction: SDSAnyReadTransaction) -> RecordType?
+
+    func buildStorageItem(for record: RecordType) -> StorageService.StorageItem
+
+    /// Updates local device state to match a Record from Storage Service.
+    ///
+    /// Our general merge philosophy is that the latest value on the service is
+    /// always right. There are some edge cases where this could cause user
+    /// changes to get blown away, such as if you're changing values
+    /// simultaneously on two devices or if you force quit the application
+    /// before it has had a chance to sync. To mitigate these issues, we push
+    /// changes quickly when they're made (because changes are infrequent).
+    ///
+    /// If this is unreliable, we could maintain timestamps representing the
+    /// remote and local update time for every value we sync. For now, we'd like
+    /// to avoid that as it adds its own set of problems.
+    ///
+    /// - Parameter record: The record that should be merged.
+    ///
+    /// - Parameter transaction: A database transaction.
+    ///
+    /// - Returns: A type indicating the result of the merge.
+    func mergeRecord(_ record: RecordType, transaction: SDSAnyWriteTransaction) -> StorageServiceMergeResult<IdType>
+}
+
+enum StorageServiceMergeResult<IdType> {
+    /// The merge couldn't be completed because the record is malformed. This
+    /// happens most often when the record doesn't have an identifier. For
+    /// example, if there's a group record that doesn't specify the group to
+    /// which it pertains, it's invalid and should be deleted.
+    case invalid
+
+    /// The merge completed successfully. The first associated value indicates
+    /// whether or not there are changes on the local device that should be
+    /// synced. The second associated value indicates the identifier for the
+    /// item that was merged.
+    case merged(needsUpdate: Bool, IdType)
+}
+
 // MARK: - Contact Record
 
-extension StorageServiceProtoContactRecord: Dependencies {
+class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
+    typealias IdType = AccountId
+    typealias RecordType = StorageServiceProtoContactRecord
 
-    static func build(
+    private let blockingManager: BlockingManager
+    private let bulkProfileFetch: BulkProfileFetch
+    private let contactsManager: OWSContactsManager
+    private let identityManager: OWSIdentityManager
+    private let profileManager: OWSProfileManager
+    private let tsAccountManager: TSAccountManager
+
+    init(
+        blockingManager: BlockingManager,
+        bulkProfileFetch: BulkProfileFetch,
+        contactsManager: OWSContactsManager,
+        identityManager: OWSIdentityManager,
+        profileManager: OWSProfileManager,
+        tsAccountManager: TSAccountManager
+    ) {
+        self.blockingManager = blockingManager
+        self.bulkProfileFetch = bulkProfileFetch
+        self.contactsManager = contactsManager
+        self.identityManager = identityManager
+        self.profileManager = profileManager
+        self.tsAccountManager = tsAccountManager
+    }
+
+    func unknownFields(for record: StorageServiceProtoContactRecord) -> UnknownStorage? { record.unknownFields }
+
+    func buildRecord(
         for accountId: AccountId,
-        unknownFields: SwiftProtobuf.UnknownStorage? = nil,
+        unknownFields: UnknownStorage?,
         transaction: SDSAnyReadTransaction
-    ) throws -> StorageServiceProtoContactRecord {
+    ) -> StorageServiceProtoContactRecord? {
         guard
             let address = OWSAccountIdFinder.address(forAccountId: accountId, transaction: transaction),
             let recipient = AnySignalRecipientFinder().signalRecipient(for: address, transaction: transaction)
         else {
-            throw StorageService.StorageError.accountMissing
+            return nil
         }
 
         var builder = StorageServiceProtoContactRecord.builder()
@@ -47,8 +134,8 @@ extension StorageServiceProtoContactRecord: Dependencies {
 
         let isInWhitelist = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
         let profileKey = profileManager.profileKeyData(for: address, transaction: transaction)
-        let profileGivenName = profileManagerImpl.unfilteredGivenName(for: address, transaction: transaction)
-        let profileFamilyName = profileManagerImpl.unfilteredFamilyName(for: address, transaction: transaction)
+        let profileGivenName = profileManager.unfilteredGivenName(for: address, transaction: transaction)
+        let profileFamilyName = profileManager.unfilteredFamilyName(for: address, transaction: transaction)
 
         builder.setBlocked(blockingManager.isAddressBlocked(address, transaction: transaction))
         builder.setWhitelisted(isInWhitelist)
@@ -79,7 +166,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
         }
 
         if
-            let account = contactsManagerImpl.fetchSignalAccount(for: address, transaction: transaction),
+            let account = contactsManager.fetchSignalAccount(for: address, transaction: transaction),
             let contact = account.contact
         {
             // We have a contact for this address, whose name we may want to
@@ -130,54 +217,46 @@ extension StorageServiceProtoContactRecord: Dependencies {
             builder.setUnknownFields(unknownFields)
         }
 
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
-    enum MergeState {
-        case resolved(AccountId)
-        case needsUpdate(AccountId)
-        case invalid
+    func buildStorageItem(for record: StorageServiceProtoContactRecord) -> StorageService.StorageItem {
+        return StorageService.StorageItem(identifier: .generate(type: .contact), contact: record)
     }
 
-    func mergeWithLocalContact(transaction: SDSAnyWriteTransaction) -> MergeState {
-        guard let address = serviceAddress else {
+    func mergeRecord(
+        _ record: StorageServiceProtoContactRecord,
+        transaction: SDSAnyWriteTransaction
+    ) -> StorageServiceMergeResult<AccountId> {
+        guard let address = record.serviceAddress else {
             owsFailDebug("address unexpectedly missing for contact")
             return .invalid
         }
-        // Our general merge philosophy is that the latest value on the service
-        // is always right. There are some edge cases where this could cause
-        // user changes to get blown away, such as if you're changing values
-        // simultaneously on two devices or if you force quit the application,
-        // your battery dies, etc. before it has had a chance to sync.
-        //
-        // In general, to try and mitigate these issues, we try and very proactively
-        // push any changes up to the storage service as contact information
-        // should not be changing very frequently.
-        //
-        // Should this prove unreliable, we may need to start maintaining time stamps
-        // representing the remote and local last update time for every value we sync.
-        // For now, we'd like to avoid that as it adds its own set of problems.
+        guard !address.isLocalAddress else {
+            owsFailDebug("Unexpectedly merging contact record for local user.")
+            return .invalid
+        }
 
         let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
-        if unregisteredAtTimestamp > 0 {
-            recipient.markAsUnregistered(at: unregisteredAtTimestamp, source: .storageService, transaction: transaction)
+        if record.unregisteredAtTimestamp > 0 {
+            recipient.markAsUnregistered(at: record.unregisteredAtTimestamp, source: .storageService, transaction: transaction)
         } else {
             recipient.markAsRegistered(source: .storageService, transaction: transaction)
         }
 
-        var mergeState: MergeState = .resolved(recipient.accountId)
+        var needsUpdate = false
 
         // Gather some local contact state to do comparisons against.
         let localProfileKey = profileManager.profileKey(for: address, transaction: transaction)
-        let localGivenName = profileManagerImpl.unfilteredGivenName(for: address, transaction: transaction)
-        let localFamilyName = profileManagerImpl.unfilteredFamilyName(for: address, transaction: transaction)
+        let localGivenName = profileManager.unfilteredGivenName(for: address, transaction: transaction)
+        let localFamilyName = profileManager.unfilteredFamilyName(for: address, transaction: transaction)
         let localIdentityKey = identityManager.identityKey(for: address, transaction: transaction)
         let localIdentityState = identityManager.verificationState(for: address, transaction: transaction)
         let localIsBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
         let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
 
         // If our local profile key record differs from what's on the service, use the service's value.
-        if let profileKey = profileKey, localProfileKey?.keyData != profileKey {
+        if let profileKey = record.profileKey, localProfileKey?.keyData != profileKey {
             profileManager.setProfileKeyData(
                 profileKey,
                 for: address,
@@ -186,40 +265,40 @@ extension StorageServiceProtoContactRecord: Dependencies {
             )
 
         // If we have a local profile key for this user but the service doesn't mark it as needing update.
-        } else if localProfileKey != nil && !hasProfileKey {
-            mergeState = .needsUpdate(recipient.accountId)
+        } else if localProfileKey != nil && !record.hasProfileKey {
+            needsUpdate = true
         }
 
         // TODO: [Usernames] If we no other identifiers are present for a contact, we should persist the username from the ContactRecord. See the client spec for details.
 
         // Given name can never be cleared, so ignore all info
         // about the profile if there's no given name.
-        if hasGivenName && (localGivenName != givenName || localFamilyName != familyName) {
+        if record.hasGivenName && (localGivenName != record.givenName || localFamilyName != record.familyName) {
             // If we already have a profile for this user, ignore
             // any content received via storage service. Instead,
             // we'll just kick off a fetch of that user's profile
             // to make sure everything is up-to-date.
             if localGivenName != nil {
-                Self.bulkProfileFetch.fetchProfile(address: address)
+                bulkProfileFetch.fetchProfile(address: address)
             } else {
                 profileManager.setProfileGivenName(
-                    givenName,
-                    familyName: familyName,
+                    record.givenName,
+                    familyName: record.familyName,
                     for: address,
                     userProfileWriter: .storageService,
                     transaction: transaction
                 )
             }
-        } else if localGivenName != nil && !hasGivenName || localFamilyName != nil && !hasFamilyName {
-            mergeState = .needsUpdate(recipient.accountId)
+        } else if localGivenName != nil && !record.hasGivenName || localFamilyName != nil && !record.hasFamilyName {
+            needsUpdate = true
         }
 
-        if mergeSystemNamesWithLocalContact(address: address, transaction: transaction) {
-            mergeState = .needsUpdate(recipient.accountId)
+        if mergeSystemContactNames(in: record, address: address, transaction: transaction) {
+            needsUpdate = true
         }
 
         // If our local identity differs from the service, use the service's value.
-        if let identityKeyWithType = identityKey, let identityState = identityState?.verificationState,
+        if let identityKeyWithType = record.identityKey, let identityState = record.identityState?.verificationState,
             let identityKey = try? identityKeyWithType.removeKeyType(),
             localIdentityKey != identityKey || localIdentityState != identityState {
 
@@ -232,13 +311,13 @@ extension StorageServiceProtoContactRecord: Dependencies {
             )
 
         // If we have a local identity for this user but the service doesn't mark it as needing update.
-        } else if localIdentityKey != nil && !hasIdentityKey {
-            mergeState = .needsUpdate(recipient.accountId)
+        } else if localIdentityKey != nil && !record.hasIdentityKey {
+            needsUpdate = true
         }
 
         // If our local blocked state differs from the service state, use the service's value.
-        if blocked != localIsBlocked {
-            if blocked {
+        if record.blocked != localIsBlocked {
+            if record.blocked {
                 blockingManager.addBlockedAddress(address, blockMode: .remote, transaction: transaction)
             } else {
                 blockingManager.removeBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
@@ -246,8 +325,8 @@ extension StorageServiceProtoContactRecord: Dependencies {
         }
 
         // If our local whitelisted state differs from the service state, use the service's value.
-        if whitelisted != localIsWhitelisted {
-            if whitelisted {
+        if record.whitelisted != localIsWhitelisted {
+            if record.whitelisted {
                 profileManager.addUser(toProfileWhitelist: address,
                                        userProfileWriter: .storageService,
                                        transaction: transaction)
@@ -261,16 +340,16 @@ extension StorageServiceProtoContactRecord: Dependencies {
         let localThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
         let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThread, transaction: transaction)
 
-        if archived != localThreadAssociatedData.isArchived {
-            localThreadAssociatedData.updateWith(isArchived: archived, updateStorageService: false, transaction: transaction)
+        if record.archived != localThreadAssociatedData.isArchived {
+            localThreadAssociatedData.updateWith(isArchived: record.archived, updateStorageService: false, transaction: transaction)
         }
 
-        if markedUnread != localThreadAssociatedData.isMarkedUnread {
-            localThreadAssociatedData.updateWith(isMarkedUnread: markedUnread, updateStorageService: false, transaction: transaction)
+        if record.markedUnread != localThreadAssociatedData.isMarkedUnread {
+            localThreadAssociatedData.updateWith(isMarkedUnread: record.markedUnread, updateStorageService: false, transaction: transaction)
         }
 
-        if mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
-            localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
+        if record.mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
+            localThreadAssociatedData.updateWith(mutedUntilTimestamp: record.mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
         if let uuid = address.uuid {
@@ -278,12 +357,12 @@ extension StorageServiceProtoContactRecord: Dependencies {
                 sourceContext: .contact(contactUuid: uuid),
                 transaction: transaction
             )
-            if hideStory != localStoryContextAssociatedData.isHidden {
-                localStoryContextAssociatedData.update(updateStorageService: false, isHidden: hideStory, transaction: transaction)
+            if record.hideStory != localStoryContextAssociatedData.isHidden {
+                localStoryContextAssociatedData.update(updateStorageService: false, isHidden: record.hideStory, transaction: transaction)
             }
         }
 
-        return mergeState
+        return .merged(needsUpdate: needsUpdate, recipient.accountId)
     }
 
     /// Merge system contact names from this ContactRecord with local state.
@@ -295,12 +374,13 @@ extension StorageServiceProtoContactRecord: Dependencies {
     /// - Returns: True if the record in StorageService should be updated. This
     /// can happen on primary devices if StorageService has the wrong system
     /// contact names.
-    private func mergeSystemNamesWithLocalContact(
+    private func mergeSystemContactNames(
+        in record: StorageServiceProtoContactRecord,
         address: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
     ) -> Bool {
 
-        let localAccount = contactsManagerImpl.fetchSignalAccount(for: address, transaction: transaction)
+        let localAccount = contactsManager.fetchSignalAccount(for: address, transaction: transaction)
 
         if tsAccountManager.isPrimaryDevice {
             let localContact = localAccount?.contact?.isFromLocalAddressBook == true ? localAccount?.contact : nil
@@ -309,9 +389,9 @@ extension StorageServiceProtoContactRecord: Dependencies {
             let localSystemNickname = localContact?.nickname?.nilIfEmpty
             // On the primary device, we should mark it as `needsUpdate` if it doesn't match the local state.
             return (
-                localSystemGivenName != systemGivenName
-                || localSystemFamilyName != systemFamilyName
-                || localSystemNickname != systemNickname
+                localSystemGivenName != record.systemGivenName
+                || localSystemFamilyName != record.systemFamilyName
+                || localSystemNickname != record.systemNickname
             )
         }
 
@@ -320,17 +400,17 @@ extension StorageServiceProtoContactRecord: Dependencies {
         let newAccount: SignalAccount?
 
         let systemFullName = Contact.fullName(
-            fromGivenName: systemGivenName,
-            familyName: systemFamilyName,
-            nickname: systemNickname
+            fromGivenName: record.systemGivenName,
+            familyName: record.systemFamilyName,
+            nickname: record.systemNickname
         )
         if let systemFullName {
             let newContact = Contact(
                 address: address,
                 phoneNumberLabel: CommonStrings.mainPhoneNumberLabel,
-                givenName: systemGivenName,
-                familyName: systemFamilyName,
-                nickname: systemNickname,
+                givenName: record.systemGivenName,
+                familyName: record.systemFamilyName,
+                nickname: record.systemNickname,
                 fullName: systemFullName
             )
 
@@ -380,7 +460,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
                 didModifySignalAccount = true
             }
             if didModifySignalAccount {
-                contactsManagerImpl.didUpdateSignalAccounts(transaction: transaction)
+                contactsManager.didUpdateSignalAccounts(transaction: transaction)
             }
         }
 
@@ -422,14 +502,32 @@ extension StorageServiceProtoContactRecordIdentityState {
 
 // MARK: - Group V1 Record
 
-extension StorageServiceProtoGroupV1Record: Dependencies {
+class StorageServiceGroupV1RecordUpdater: StorageServiceRecordUpdater {
+    typealias IdType = Data
+    typealias RecordType = StorageServiceProtoGroupV1Record
 
-    static func build(
+    private let blockingManager: BlockingManager
+    private let profileManager: ProfileManagerProtocol
+
+    init(
+        blockingManager: BlockingManager,
+        profileManager: ProfileManagerProtocol
+    ) {
+        self.blockingManager = blockingManager
+        self.profileManager = profileManager
+    }
+
+    func unknownFields(for record: StorageServiceProtoGroupV1Record) -> UnknownStorage? { record.unknownFields }
+
+    func buildStorageItem(for record: StorageServiceProtoGroupV1Record) -> StorageService.StorageItem {
+        return StorageService.StorageItem(identifier: .generate(type: .groupv1), groupV1: record)
+    }
+
+    func buildRecord(
         for groupId: Data,
-        unknownFields: SwiftProtobuf.UnknownStorage? = nil,
+        unknownFields: UnknownStorage?,
         transaction: SDSAnyReadTransaction
-    ) throws -> StorageServiceProtoGroupV1Record {
-
+    ) -> StorageServiceProtoGroupV1Record? {
         var builder = StorageServiceProtoGroupV1Record.builder(id: groupId)
 
         builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
@@ -448,42 +546,26 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
             builder.setUnknownFields(unknownFields)
         }
 
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
-    // Embeds the group id.
-    enum MergeState {
-        case resolved(Data)
-        case needsUpdate(Data)
-        case invalid
-    }
+    func mergeRecord(
+        _ record: StorageServiceProtoGroupV1Record,
+        transaction: SDSAnyWriteTransaction
+    ) -> StorageServiceMergeResult<Data> {
+        let id = record.id
 
-    func mergeWithLocalGroup(transaction: SDSAnyWriteTransaction) -> MergeState {
         // We might be learning of a v1 group id for the first time that
         // corresponds to a v2 group without a v1-to-v2 group id mapping.
         TSGroupThread.ensureGroupIdMapping(forGroupId: id, transaction: transaction)
-
-        // Our general merge philosophy is that the latest value on the service
-        // is always right. There are some edge cases where this could cause
-        // user changes to get blown away, such as if you're changing values
-        // simultaneously on two devices or if you force quit the application,
-        // your battery dies, etc. before it has had a chance to sync.
-        //
-        // In general, to try and mitigate these issues, we try and very proactively
-        // push any changes up to the storage service as contact information
-        // should not be changing very frequently.
-        //
-        // Should this prove unreliable, we may need to start maintaining time stamps
-        // representing the remote and local last update time for every value we sync.
-        // For now, we'd like to avoid that as it adds its own set of problems.
 
         // Gather some local contact state to do comparisons against.
         let localIsBlocked = blockingManager.isGroupIdBlocked(id, transaction: transaction)
         let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: id, transaction: transaction)
 
         // If our local blocked state differs from the service state, use the service's value.
-        if blocked != localIsBlocked {
-            if blocked {
+        if record.blocked != localIsBlocked {
+            if record.blocked {
                 blockingManager.addBlockedGroup(groupId: id, blockMode: .remote, transaction: transaction)
             } else {
                 blockingManager.removeBlockedGroup(groupId: id, wasLocallyInitiated: false, transaction: transaction)
@@ -491,8 +573,8 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
         }
 
         // If our local whitelisted state differs from the service state, use the service's value.
-        if whitelisted != localIsWhitelisted {
-            if whitelisted {
+        if record.whitelisted != localIsWhitelisted {
+            if record.whitelisted {
                 profileManager.addGroupId(toProfileWhitelist: id,
                                           userProfileWriter: .storageService,
                                           transaction: transaction)
@@ -507,37 +589,66 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
         ThreadAssociatedData.createIfMissing(for: localThreadId, transaction: transaction)
         let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId, transaction: transaction)
 
-        if archived != localThreadAssociatedData.isArchived {
-            localThreadAssociatedData.updateWith(isArchived: archived, updateStorageService: false, transaction: transaction)
+        if record.archived != localThreadAssociatedData.isArchived {
+            localThreadAssociatedData.updateWith(isArchived: record.archived, updateStorageService: false, transaction: transaction)
         }
 
-        if markedUnread != localThreadAssociatedData.isMarkedUnread {
-            localThreadAssociatedData.updateWith(isMarkedUnread: markedUnread, updateStorageService: false, transaction: transaction)
+        if record.markedUnread != localThreadAssociatedData.isMarkedUnread {
+            localThreadAssociatedData.updateWith(isMarkedUnread: record.markedUnread, updateStorageService: false, transaction: transaction)
         }
 
-        if mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
-            localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
+        if record.mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
+            localThreadAssociatedData.updateWith(mutedUntilTimestamp: record.mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
-        return .resolved(id)
+        return .merged(needsUpdate: false, id)
     }
 }
 
 // MARK: - Group V2 Record
 
-extension StorageServiceProtoGroupV2Record: Dependencies {
+class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
+    typealias IdType = Data
+    typealias RecordType = StorageServiceProtoGroupV2Record
 
-    static func build(
+    private let blockingManager: BlockingManager
+    private let groupsV2: GroupsV2Swift
+    private let profileManager: ProfileManagerProtocol
+
+    init(
+        blockingManager: BlockingManager,
+        groupsV2: GroupsV2Swift,
+        profileManager: ProfileManagerProtocol
+    ) {
+        self.blockingManager = blockingManager
+        self.groupsV2 = groupsV2
+        self.profileManager = profileManager
+    }
+
+    func unknownFields(for record: StorageServiceProtoGroupV2Record) -> UnknownStorage? { record.unknownFields }
+
+    func buildStorageItem(for record: StorageServiceProtoGroupV2Record) -> StorageService.StorageItem {
+        return StorageService.StorageItem(identifier: .generate(type: .groupv2), groupV2: record)
+    }
+
+    func buildRecord(
         for masterKeyData: Data,
-        unknownFields: SwiftProtobuf.UnknownStorage? = nil,
+        unknownFields: UnknownStorage?,
         transaction: SDSAnyReadTransaction
-    ) throws -> StorageServiceProtoGroupV2Record {
-
+    ) -> StorageServiceProtoGroupV2Record? {
         guard groupsV2.isValidGroupV2MasterKey(masterKeyData) else {
-            throw OWSAssertionError("Invalid master key.")
+            owsFailDebug("Invalid master key.")
+            return nil
         }
 
-        let groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
+        let groupContextInfo: GroupV2ContextInfo
+        do {
+            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
+        } catch {
+            owsFailDebug("Invalid master key \(error).")
+            return nil
+        }
+
         let groupId = groupContextInfo.groupId
 
         var builder = StorageServiceProtoGroupV2Record.builder(masterKey: masterKeyData)
@@ -560,7 +671,7 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
 
         if let thread = TSGroupThread.anyFetchGroupThread(uniqueId: threadId, transaction: transaction) {
             builder.setStorySendMode(thread.storyViewMode.storageServiceMode)
-        } else if let enqueuedRecord = groupsV2Swift.groupRecordPendingStorageServiceRestore(
+        } else if let enqueuedRecord = groupsV2.groupRecordPendingStorageServiceRestore(
             masterKeyData: masterKeyData,
             transaction: transaction
         ) {
@@ -574,46 +685,14 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
             builder.setUnknownFields(unknownFields)
         }
 
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
-    // Embeds the master key.
-    enum MergeState: CustomStringConvertible {
-        case resolved(Data)
-        case needsUpdate(Data)
-        case needsRefreshFromService(Data)
-        case invalid
-
-        // MARK: - CustomStringConvertible
-
-        public var description: String {
-            switch self {
-            case .resolved:
-                return "resolved"
-            case .needsUpdate:
-                return "needsUpdate"
-            case .needsRefreshFromService:
-                return "needsRefreshFromService"
-            case .invalid:
-                return "invalid"
-            }
-        }
-    }
-
-    func mergeWithLocalGroup(transaction: SDSAnyWriteTransaction) -> MergeState {
-        // Our general merge philosophy is that the latest value on the service
-        // is always right. There are some edge cases where this could cause
-        // user changes to get blown away, such as if you're changing values
-        // simultaneously on two devices or if you force quit the application,
-        // your battery dies, etc. before it has had a chance to sync.
-        //
-        // In general, to try and mitigate these issues, we try and very proactively
-        // push any changes up to the storage service as contact information
-        // should not be changing very frequently.
-        //
-        // Should this prove unreliable, we may need to start maintaining time stamps
-        // representing the remote and local last update time for every value we sync.
-        // For now, we'd like to avoid that as it adds its own set of problems.
+    func mergeRecord(
+        _ record: StorageServiceProtoGroupV2Record,
+        transaction: SDSAnyWriteTransaction
+    ) -> StorageServiceMergeResult<Data> {
+        let masterKey = record.masterKey
 
         guard groupsV2.isValidGroupV2MasterKey(masterKey) else {
             owsFailDebug("Invalid master key.")
@@ -633,19 +712,19 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         // corresponds to a v2 group without a v1-to-v2 group id mapping.
         TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
 
-        var mergeState: MergeState = .resolved(masterKey)
+        var needsUpdate = false
 
         if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             let localStorySendMode = localThread.storyViewMode.storageServiceMode
-            if let storySendMode = storySendMode {
+            if let storySendMode = record.storySendMode {
                 if localStorySendMode != storySendMode {
                     localThread.updateWithStoryViewMode(.init(storageServiceMode: storySendMode), transaction: transaction)
                 }
             } else {
-                mergeState = .needsUpdate(masterKey)
+                needsUpdate = true
             }
         } else {
-            mergeState = .needsRefreshFromService(masterKey)
+            groupsV2.restoreGroupFromStorageServiceIfNecessary(groupRecord: record, transaction: transaction)
         }
 
         // Gather some local contact state to do comparisons against.
@@ -653,8 +732,8 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction)
 
         // If our local blocked state differs from the service state, use the service's value.
-        if blocked != localIsBlocked {
-            if blocked {
+        if record.blocked != localIsBlocked {
+            if record.blocked {
                 blockingManager.addBlockedGroup(groupId: groupId, blockMode: .remote, transaction: transaction)
             } else {
                 blockingManager.removeBlockedGroup(groupId: groupId, wasLocallyInitiated: false, transaction: transaction)
@@ -662,8 +741,8 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         }
 
         // If our local whitelisted state differs from the service state, use the service's value.
-        if whitelisted != localIsWhitelisted {
-            if whitelisted {
+        if record.whitelisted != localIsWhitelisted {
+            if record.whitelisted {
                 profileManager.addGroupId(toProfileWhitelist: groupId,
                                           userProfileWriter: .storageService,
                                           transaction: transaction)
@@ -679,42 +758,85 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId,
                                                                             transaction: transaction)
 
-        if archived != localThreadAssociatedData.isArchived {
-            localThreadAssociatedData.updateWith(isArchived: archived, updateStorageService: false, transaction: transaction)
+        if record.archived != localThreadAssociatedData.isArchived {
+            localThreadAssociatedData.updateWith(isArchived: record.archived, updateStorageService: false, transaction: transaction)
         }
 
-        if markedUnread != localThreadAssociatedData.isMarkedUnread {
-            localThreadAssociatedData.updateWith(isMarkedUnread: markedUnread, updateStorageService: false, transaction: transaction)
+        if record.markedUnread != localThreadAssociatedData.isMarkedUnread {
+            localThreadAssociatedData.updateWith(isMarkedUnread: record.markedUnread, updateStorageService: false, transaction: transaction)
         }
 
-        if mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
-            localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
+        if record.mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
+            localThreadAssociatedData.updateWith(mutedUntilTimestamp: record.mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
         let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
             sourceContext: .group(groupId: groupId),
             transaction: transaction
         )
-        if hideStory != localStoryContextAssociatedData.isHidden {
-            localStoryContextAssociatedData.update(updateStorageService: false, isHidden: hideStory, transaction: transaction)
+        if record.hideStory != localStoryContextAssociatedData.isHidden {
+            localStoryContextAssociatedData.update(updateStorageService: false, isHidden: record.hideStory, transaction: transaction)
         }
 
-        return mergeState
+        return .merged(needsUpdate: needsUpdate, masterKey)
     }
 }
 
 // MARK: - Account Record
 
-extension StorageServiceProtoAccountRecord: Dependencies {
+class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
+    typealias IdType = Void
+    typealias RecordType = StorageServiceProtoAccountRecord
 
-    static func build(
-        unknownFields: SwiftProtobuf.UnknownStorage? = nil,
+    private let localAddress: SignalServiceAddress
+    private let paymentsHelper: PaymentsHelperSwift
+    private let preferences: OWSPreferences
+    private let profileManager: OWSProfileManager
+    private let receiptManager: OWSReceiptManager
+    private let storageServiceManager: StorageServiceManagerProtocol
+    private let subscriptionManager: SubscriptionManagerProtocol
+    private let systemStoryManager: SystemStoryManagerProtocol
+    private let tsAccountManager: TSAccountManager
+    private let typingIndicators: TypingIndicators
+    private let udManager: OWSUDManager
+
+    init(
+        localAddress: SignalServiceAddress,
+        paymentsHelper: PaymentsHelperSwift,
+        preferences: OWSPreferences,
+        profileManager: OWSProfileManager,
+        receiptManager: OWSReceiptManager,
+        storageServiceManager: StorageServiceManagerProtocol,
+        subscriptionManager: SubscriptionManagerProtocol,
+        systemStoryManager: SystemStoryManagerProtocol,
+        tsAccountManager: TSAccountManager,
+        typingIndicators: TypingIndicators,
+        udManager: OWSUDManager
+    ) {
+        self.localAddress = localAddress
+        self.paymentsHelper = paymentsHelper
+        self.preferences = preferences
+        self.profileManager = profileManager
+        self.receiptManager = receiptManager
+        self.storageServiceManager = storageServiceManager
+        self.subscriptionManager = subscriptionManager
+        self.systemStoryManager = systemStoryManager
+        self.tsAccountManager = tsAccountManager
+        self.typingIndicators = typingIndicators
+        self.udManager = udManager
+    }
+
+    func unknownFields(for record: StorageServiceProtoAccountRecord) -> UnknownStorage? { record.unknownFields }
+
+    func buildStorageItem(for record: StorageServiceProtoAccountRecord) -> StorageService.StorageItem {
+        return StorageService.StorageItem(identifier: .generate(type: .account), account: record)
+    }
+
+    func buildRecord(
+        for ignoredId: Void,
+        unknownFields: UnknownStorage?,
         transaction: SDSAnyReadTransaction
-    ) throws -> StorageServiceProtoAccountRecord {
-        guard let localAddress = TSAccountManager.localAddress else {
-            throw OWSAssertionError("Missing local address")
-        }
-
+    ) -> StorageServiceProtoAccountRecord? {
         var builder = StorageServiceProtoAccountRecord.builder()
 
         if let profileKey = profileManager.profileKeyData(for: localAddress, transaction: transaction) {
@@ -723,10 +845,10 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         // TODO: [Usernames] We should persist the local username in the account record, but at the time of writing the proto field does not yet exist.
 
-        if let profileGivenName = profileManagerImpl.unfilteredGivenName(for: localAddress, transaction: transaction) {
+        if let profileGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction) {
             builder.setGivenName(profileGivenName)
         }
-        if let profileFamilyName = profileManagerImpl.unfilteredFamilyName(for: localAddress, transaction: transaction) {
+        if let profileFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction) {
             builder.setFamilyName(profileFamilyName)
         }
 
@@ -753,7 +875,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
         builder.setSealedSenderIndicators(sealedSenderIndicatorsEnabled)
 
-        let typingIndicatorsEnabled = typingIndicatorsImpl.areTypingIndicatorsEnabled()
+        let typingIndicatorsEnabled = typingIndicators.areTypingIndicatorsEnabled()
         builder.setTypingIndicators(typingIndicatorsEnabled)
 
         let proxiedLinkPreviewsEnabled = SSKPreferences.areLegacyLinkPreviewsEnabled(transaction: transaction)
@@ -768,19 +890,19 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let notDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber(with: transaction)
         builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
 
-        let pinnedConversationProtos = try PinnedThreadManager.pinnedConversationProtos(transaction: transaction)
+        let pinnedConversationProtos = PinnedThreadManager.pinnedConversationProtos(transaction: transaction)
         builder.setPinnedConversations(pinnedConversationProtos)
 
         let preferContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
         builder.setPreferContactAvatars(preferContactAvatars)
 
-        let paymentsState = paymentsHelperSwift.paymentsState
+        let paymentsState = paymentsHelper.paymentsState
         var paymentsBuilder = StorageServiceProtoAccountRecordPayments.builder()
         paymentsBuilder.setEnabled(paymentsState.isEnabled)
         if let paymentsEntropy = paymentsState.paymentsEntropy {
             paymentsBuilder.setPaymentsEntropy(paymentsEntropy)
         }
-        builder.setPayments(try paymentsBuilder.build())
+        builder.setPayments(paymentsBuilder.buildInfallibly())
 
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
@@ -807,8 +929,8 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         builder.setMyStoryPrivacyHasBeenSet(StoryManager.hasSetMyStoriesPrivacy(transaction: transaction))
 
-        builder.setReadOnboardingStory(Self.systemStoryManager.isOnboardingStoryRead(transaction: transaction))
-        builder.setViewedOnboardingStory(Self.systemStoryManager.isOnboardingStoryViewed(transaction: transaction))
+        builder.setReadOnboardingStory(systemStoryManager.isOnboardingStoryRead(transaction: transaction))
+        builder.setViewedOnboardingStory(systemStoryManager.isOnboardingStoryViewed(transaction: transaction))
 
         builder.setDisplayBadgesOnProfile(subscriptionManager.displayBadgesOnProfile(transaction: transaction))
         builder.setSubscriptionManuallyCancelled(subscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
@@ -817,26 +939,19 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         builder.setStoriesDisabled(!StoryManager.areStoriesEnabled(transaction: transaction))
 
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
-    enum MergeState: String {
-        case resolved
-        case needsUpdate
-    }
-
-    func mergeWithLocalAccount(transaction: SDSAnyWriteTransaction) -> MergeState {
-        var mergeState: MergeState = .resolved
-
-        guard let localAddress = TSAccountManager.localAddress else {
-            owsFailDebug("missing local address")
-            return .needsUpdate
-        }
+    func mergeRecord(
+        _ record: StorageServiceProtoAccountRecord,
+        transaction: SDSAnyWriteTransaction
+    ) -> StorageServiceMergeResult<Void> {
+        var needsUpdate = false
 
         // Gather some local contact state to do comparisons against.
         let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)
-        let localGivenName = profileManagerImpl.unfilteredGivenName(for: localAddress, transaction: transaction)
-        let localFamilyName = profileManagerImpl.unfilteredFamilyName(for: localAddress, transaction: transaction)
+        let localGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction)
+        let localFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction)
         let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, downloadIfMissing: true, transaction: transaction)
 
         // On the primary device, we only ever want to
@@ -846,154 +961,150 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         // but ensures no other device can ever change the profile
         // key other than the primary device.
         let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile() || !tsAccountManager.isPrimaryDevice
-
-        if allowsRemoteProfileKeyChanges,
-           let profileKey = profileKey,
-           localProfileKey?.keyData != profileKey {
+        if allowsRemoteProfileKeyChanges, let profileKey = record.profileKey, localProfileKey?.keyData != profileKey {
             profileManager.setProfileKeyData(
                 profileKey,
                 for: localAddress,
                 userProfileWriter: .storageService,
                 transaction: transaction
             )
-        } else if localProfileKey != nil && !hasProfileKey {
-            // If we have a local profile key for this user but the service doesn't mark it as needing update.
-            mergeState = .needsUpdate
+        } else if localProfileKey != nil && !record.hasProfileKey {
+            // If we have a local profile key for this user but the service doesn't, mark it as needing update.
+            needsUpdate = true
         }
 
         // Given name can never be cleared, so ignore all info
         // about the profile if there's no given name.
-        if hasGivenName && (localGivenName != givenName || localFamilyName != familyName || localAvatarUrl != avatarURL) {
+        if record.hasGivenName && (localGivenName != record.givenName || localFamilyName != record.familyName || localAvatarUrl != record.avatarURL) {
             profileManager.setProfileGivenName(
-                givenName,
-                familyName: familyName,
-                avatarUrlPath: avatarURL,
+                record.givenName,
+                familyName: record.familyName,
+                avatarUrlPath: record.avatarURL,
                 for: localAddress,
                 userProfileWriter: .storageService,
                 transaction: transaction
             )
-        } else if localGivenName != nil && !hasGivenName || localFamilyName != nil && !hasFamilyName || localAvatarUrl != nil && !hasAvatarURL {
-            mergeState = .needsUpdate
+        } else if localGivenName != nil && !record.hasGivenName || localFamilyName != nil && !record.hasFamilyName || localAvatarUrl != nil && !record.hasAvatarURL {
+            needsUpdate = true
         }
 
         let localThread = TSContactThread.getOrCreateThread(withContactAddress: localAddress, transaction: transaction)
         let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThread, transaction: transaction)
 
-        if noteToSelfArchived != localThreadAssociatedData.isArchived {
-            localThreadAssociatedData.updateWith(isArchived: noteToSelfArchived, updateStorageService: false, transaction: transaction)
+        if record.noteToSelfArchived != localThreadAssociatedData.isArchived {
+            localThreadAssociatedData.updateWith(isArchived: record.noteToSelfArchived, updateStorageService: false, transaction: transaction)
         }
 
-        if noteToSelfMarkedUnread != localThreadAssociatedData.isMarkedUnread {
-            localThreadAssociatedData.updateWith(isMarkedUnread: noteToSelfMarkedUnread, updateStorageService: false, transaction: transaction)
+        if record.noteToSelfMarkedUnread != localThreadAssociatedData.isMarkedUnread {
+            localThreadAssociatedData.updateWith(isMarkedUnread: record.noteToSelfMarkedUnread, updateStorageService: false, transaction: transaction)
         }
 
         let localReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
-        if readReceipts != localReadReceiptsEnabled {
-            receiptManager.setAreReadReceiptsEnabled(readReceipts, transaction: transaction)
+        if record.readReceipts != localReadReceiptsEnabled {
+            receiptManager.setAreReadReceiptsEnabled(record.readReceipts, transaction: transaction)
         }
 
         let localViewReceiptsEnabled = StoryManager.areViewReceiptsEnabled(transaction: transaction)
-        if let storyViewReceiptsEnabled = storyViewReceiptsEnabled?.boolValue {
+        if let storyViewReceiptsEnabled = record.storyViewReceiptsEnabled?.boolValue {
             if storyViewReceiptsEnabled != localViewReceiptsEnabled {
                 StoryManager.setAreViewReceiptsEnabled(storyViewReceiptsEnabled, shouldUpdateStorageService: false, transaction: transaction)
             }
         } else {
-            mergeState = .needsUpdate
+            needsUpdate = true
         }
 
         let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
-        if sealedSenderIndicators != sealedSenderIndicatorsEnabled {
-            preferences.setShouldShowUnidentifiedDeliveryIndicators(sealedSenderIndicators, transaction: transaction)
+        if record.sealedSenderIndicators != sealedSenderIndicatorsEnabled {
+            preferences.setShouldShowUnidentifiedDeliveryIndicators(record.sealedSenderIndicators, transaction: transaction)
         }
 
-        let typingIndicatorsEnabled = typingIndicatorsImpl.areTypingIndicatorsEnabled()
-        if typingIndicators != typingIndicatorsEnabled {
-            typingIndicatorsImpl.setTypingIndicatorsEnabled(value: typingIndicators, transaction: transaction)
+        let typingIndicatorsEnabled = typingIndicators.areTypingIndicatorsEnabled()
+        if record.typingIndicators != typingIndicatorsEnabled {
+            typingIndicators.setTypingIndicatorsEnabled(value: record.typingIndicators, transaction: transaction)
         }
 
         let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
-        if linkPreviews != linkPreviewsEnabled {
-            SSKPreferences.setAreLinkPreviewsEnabled(linkPreviews, transaction: transaction)
+        if record.linkPreviews != linkPreviewsEnabled {
+            SSKPreferences.setAreLinkPreviewsEnabled(record.linkPreviews, transaction: transaction)
         }
 
         let proxiedLinkPreviewsEnabled = SSKPreferences.areLegacyLinkPreviewsEnabled(transaction: transaction)
-        if proxiedLinkPreviews != proxiedLinkPreviewsEnabled {
-            SSKPreferences.setAreLegacyLinkPreviewsEnabled(proxiedLinkPreviews, transaction: transaction)
+        if record.proxiedLinkPreviews != proxiedLinkPreviewsEnabled {
+            SSKPreferences.setAreLegacyLinkPreviewsEnabled(record.proxiedLinkPreviews, transaction: transaction)
         }
 
         let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode
-        if phoneNumberSharingMode != localPhoneNumberSharingMode.asProtoMode {
-            if let localMode = phoneNumberSharingMode?.asLocalMode {
+        if record.phoneNumberSharingMode != localPhoneNumberSharingMode.asProtoMode {
+            if let localMode = record.phoneNumberSharingMode?.asLocalMode {
                 udManager.setPhoneNumberSharingMode(
                     localMode,
                     updateStorageService: false,
                     transaction: transaction.unwrapGrdbWrite
                 )
             } else {
-                Logger.error("Unknown phone number sharing mode \(String(describing: phoneNumberSharingMode))")
+                Logger.error("Unknown phone number sharing mode \(String(describing: record.phoneNumberSharingMode))")
             }
         }
 
         let localNotDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber()
-        if notDiscoverableByPhoneNumber != localNotDiscoverableByPhoneNumber
-            || !tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber() {
+        if record.notDiscoverableByPhoneNumber != localNotDiscoverableByPhoneNumber || !tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber() {
             tsAccountManager.setIsDiscoverableByPhoneNumber(
-                !notDiscoverableByPhoneNumber,
+                !record.notDiscoverableByPhoneNumber,
                 updateStorageService: false,
                 transaction: transaction
             )
         }
 
         do {
-            try PinnedThreadManager.processPinnedConversationsProto(pinnedConversations, transaction: transaction)
+            try PinnedThreadManager.processPinnedConversationsProto(record.pinnedConversations, transaction: transaction)
         } catch {
             owsFailDebug("Failed to process pinned conversations \(error)")
-            mergeState = .needsUpdate
+            needsUpdate = true
         }
 
         let localPrefersContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
-        if preferContactAvatars != localPrefersContactAvatars {
+        if record.preferContactAvatars != localPrefersContactAvatars {
             SSKPreferences.setPreferContactAvatars(
-                preferContactAvatars,
+                record.preferContactAvatars,
                 updateStorageService: false,
                 transaction: transaction)
         }
 
-        let localPaymentsState = Self.paymentsHelperSwift.paymentsState
-        let servicePaymentsState = PaymentsState.build(arePaymentsEnabled: self.payments?.enabled ?? false,
-                                                       paymentsEntropy: self.payments?.paymentsEntropy)
+        let localPaymentsState = paymentsHelper.paymentsState
+        let servicePaymentsState = PaymentsState.build(
+            arePaymentsEnabled: record.payments?.enabled ?? false,
+            paymentsEntropy: record.payments?.paymentsEntropy
+        )
         if localPaymentsState != servicePaymentsState {
-            // Merge with payments states.
-            //
-            // 1. Honor "arePaymentsEnabled" from the service.
-            let arePaymentsEnabled = servicePaymentsState.isEnabled
-            // 2. Prefer paymentsEntropy from service, but try to retain local
-            //    paymentsEntropy otherwise.
-            let paymentsEntropy = servicePaymentsState.paymentsEntropy ?? localPaymentsState.paymentsEntropy
-            let mergedPaymentsState = PaymentsState.build(arePaymentsEnabled: arePaymentsEnabled,
-                                                          paymentsEntropy: paymentsEntropy)
-
-            Self.paymentsHelperSwift.setPaymentsState(mergedPaymentsState,
-                                                      originatedLocally: false,
-                                                      transaction: transaction)
+            let mergedPaymentsState = PaymentsState.build(
+                // Honor "arePaymentsEnabled" from the service.
+                arePaymentsEnabled: servicePaymentsState.isEnabled,
+                // Prefer paymentsEntropy from service, but try to retain local paymentsEntropy otherwise.
+                paymentsEntropy: servicePaymentsState.paymentsEntropy ?? localPaymentsState.paymentsEntropy
+            )
+            paymentsHelper.setPaymentsState(
+                mergedPaymentsState,
+                originatedLocally: false,
+                transaction: transaction
+            )
         }
 
         let localConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
         let localExpireToken = localConfiguration.asToken
-        let remoteExpireToken = DisappearingMessageToken.token(forProtoExpireTimer: universalExpireTimer)
+        let remoteExpireToken = DisappearingMessageToken.token(forProtoExpireTimer: record.universalExpireTimer)
         if localExpireToken != remoteExpireToken {
             localConfiguration.applyToken(remoteExpireToken, transaction: transaction)
         }
 
-        if !preferredReactionEmoji.isEmpty {
-            // Treat new preferred emoji as a full source of truth (if not empty).
-            // Note that we aren't doing any validation up front, which may be important if another platform supports
-            // an emoji we don't (say, because a new version of Unicode has come out). We deal with this when the custom
-            // set is read out.
-            ReactionManager.setCustomEmojiSet(preferredReactionEmoji, transaction: transaction)
+        if !record.preferredReactionEmoji.isEmpty {
+            // Treat new preferred emoji as a full source of truth (if not empty). Note
+            // that we aren't doing any validation up front, which may be important if
+            // another platform supports an emoji we don't (say, because a new version
+            // of Unicode has come out). We deal with this when the custom set is read.
+            ReactionManager.setCustomEmojiSet(record.preferredReactionEmoji, transaction: transaction)
         }
 
-        if let subscriberIDData = subscriberID, let subscriberCurrencyCode = subscriberCurrencyCode {
+        if let subscriberIDData = record.subscriberID, let subscriberCurrencyCode = record.subscriberCurrencyCode {
             if subscriberIDData != SubscriptionManager.getSubscriberID(transaction: transaction) {
                 SubscriptionManager.setSubscriberID(subscriberIDData, transaction: transaction)
             }
@@ -1004,45 +1115,44 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         }
 
         let localDisplayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile(transaction: transaction)
-        if localDisplayBadgesOnProfile != displayBadgesOnProfile {
+        if localDisplayBadgesOnProfile != record.displayBadgesOnProfile {
             subscriptionManager.setDisplayBadgesOnProfile(
-                displayBadgesOnProfile,
+                record.displayBadgesOnProfile,
                 updateStorageService: false,
                 transaction: transaction
             )
         }
 
         let localSubscriptionManuallyCancelled = subscriptionManager.userManuallyCancelledSubscription(transaction: transaction)
-        if localSubscriptionManuallyCancelled != subscriptionManuallyCancelled {
+        if localSubscriptionManuallyCancelled != record.subscriptionManuallyCancelled {
             subscriptionManager.setUserManuallyCancelledSubscription(
-                subscriptionManuallyCancelled,
+                record.subscriptionManuallyCancelled,
                 updateStorageService: false,
                 transaction: transaction
             )
         }
 
         let localKeepMutedChatsArchived = SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction)
-        if localKeepMutedChatsArchived != keepMutedChatsArchived {
-            SSKPreferences.setShouldKeepMutedChatsArchived(keepMutedChatsArchived, transaction: transaction)
+        if localKeepMutedChatsArchived != record.keepMutedChatsArchived {
+            SSKPreferences.setShouldKeepMutedChatsArchived(record.keepMutedChatsArchived, transaction: transaction)
         }
 
         let localHasSetMyStoriesPrivacy = StoryManager.hasSetMyStoriesPrivacy(transaction: transaction)
-        if !localHasSetMyStoriesPrivacy && myStoryPrivacyHasBeenSet {
+        if !localHasSetMyStoriesPrivacy && record.myStoryPrivacyHasBeenSet {
             StoryManager.setHasSetMyStoriesPrivacy(transaction: transaction, shouldUpdateStorageService: false)
         }
 
         let localHasReadOnboardingStory = systemStoryManager.isOnboardingStoryRead(transaction: transaction)
-        if !localHasReadOnboardingStory && readOnboardingStory {
+        if !localHasReadOnboardingStory && record.readOnboardingStory {
             systemStoryManager.setHasReadOnboardingStory(transaction: transaction, updateStorageService: false)
         }
 
         let localHasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(transaction: transaction)
-        if !localHasViewedOnboardingStory && viewedOnboardingStory {
+        if !localHasViewedOnboardingStory && record.viewedOnboardingStory {
             systemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice(transaction: transaction)
         }
 
-        if let serviceLocalE164 = self.e164?.strippedOrNil,
-           PhoneNumber.resemblesE164(serviceLocalE164) {
+        if let serviceLocalE164 = record.e164?.strippedOrNil, PhoneNumber.resemblesE164(serviceLocalE164) {
             // If the local phone number doesn't match the "local phone number" in the storage service...
             if localAddress.phoneNumber != serviceLocalE164 {
                 Logger.warn("localAddress.phoneNumber: \(String(describing: localAddress.phoneNumber)) != serviceLocalE164: \(serviceLocalE164)")
@@ -1056,7 +1166,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                         // The primary should always reflect the latest value.
                         // If local db state doesn't agree with the storage service state,
                         // the primary needs to update the storage service.
-                        Self.storageServiceManager.recordPendingLocalAccountUpdates()
+                        self.storageServiceManager.recordPendingLocalAccountUpdates()
                     }
                 } else {
                     // Linked devices should always take changes from the storage service.
@@ -1073,15 +1183,15 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             }
         } else {
             // If no "local phone number" has been written to the storage service yet, do so now.
-            mergeState = .needsUpdate
+            needsUpdate = true
         }
 
         let localStoriesDisabled = !StoryManager.areStoriesEnabled(transaction: transaction)
-        if localStoriesDisabled != storiesDisabled {
-            StoryManager.setAreStoriesEnabled(!storiesDisabled, shouldUpdateStorageService: false, transaction: transaction)
+        if localStoriesDisabled != record.storiesDisabled {
+            StoryManager.setAreStoriesEnabled(!record.storiesDisabled, shouldUpdateStorageService: false, transaction: transaction)
         }
 
-        return mergeState
+        return .merged(needsUpdate: needsUpdate, ())
     }
 }
 
@@ -1151,7 +1261,7 @@ extension PinnedThreadManager {
 
     public class func pinnedConversationProtos(
         transaction: SDSAnyReadTransaction
-    ) throws -> [StorageServiceProtoAccountRecordPinnedConversation] {
+    ) -> [StorageServiceProtoAccountRecordPinnedConversation] {
         let pinnedThreads = PinnedThreadManager.pinnedThreads(transaction: transaction)
 
         var pinnedConversationProtos = [StorageServiceProtoAccountRecordPinnedConversation]()
@@ -1186,10 +1296,10 @@ extension PinnedThreadManager {
                 } else {
                     owsFailDebug("Missing uuid and phone number for thread")
                 }
-                pinnedConversationBuilder.setIdentifier(.contact(try contactBuilder.build()))
+                pinnedConversationBuilder.setIdentifier(.contact(contactBuilder.buildInfallibly()))
             }
 
-            pinnedConversationProtos.append(try pinnedConversationBuilder.build())
+            pinnedConversationProtos.append(pinnedConversationBuilder.buildInfallibly())
         }
 
         return pinnedConversationProtos
@@ -1198,15 +1308,26 @@ extension PinnedThreadManager {
 
 // MARK: - Story Distribution List Record
 
-extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
+class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpdater {
+    typealias IdType = Data
+    typealias RecordType = StorageServiceProtoStoryDistributionListRecord
 
-    static func build(
+    init() {}
+
+    func unknownFields(for record: StorageServiceProtoStoryDistributionListRecord) -> UnknownStorage? { record.unknownFields }
+
+    func buildStorageItem(for record: StorageServiceProtoStoryDistributionListRecord) -> StorageService.StorageItem {
+        return StorageService.StorageItem(identifier: .generate(type: .storyDistributionList), storyDistributionList: record)
+    }
+
+    func buildRecord(
         for distributionListIdentifier: Data,
-        unknownFields: SwiftProtobuf.UnknownStorage? = nil,
+        unknownFields: UnknownStorage?,
         transaction: SDSAnyReadTransaction
-    ) throws -> StorageServiceProtoStoryDistributionListRecord {
+    ) -> StorageServiceProtoStoryDistributionListRecord? {
         guard let uniqueId = UUID(data: distributionListIdentifier)?.uuidString else {
-            throw StorageService.StorageError.assertion
+            owsFailDebug("Invalid distributionListIdentifier.")
+            return nil
         }
 
         var builder = StorageServiceProtoStoryDistributionListRecord.builder()
@@ -1226,7 +1347,7 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
             builder.setAllowsReplies(story.allowsReplies)
             builder.setIsBlockList(story.storyViewMode == .blockList)
         } else {
-            throw StorageService.StorageError.storyMissing
+            return nil
         }
 
         // Unknown
@@ -1235,98 +1356,80 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
             builder.setUnknownFields(unknownFields)
         }
 
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
-    enum MergeState {
-        case resolved(Data)
-        case needsUpdate(Data)
-        case invalid
-    }
-
-    func mergeWithLocalDistributionList(transaction: SDSAnyWriteTransaction) -> MergeState {
-        guard let identifier = identifier, let uniqueId = UUID(data: identifier)?.uuidString else {
+    func mergeRecord(
+        _ record: StorageServiceProtoStoryDistributionListRecord,
+        transaction: SDSAnyWriteTransaction
+    ) -> StorageServiceMergeResult<Data> {
+        guard let identifier = record.identifier, let uniqueId = UUID(data: identifier)?.uuidString else {
             owsFailDebug("identifier unexpectedly missing for distribution list")
             return .invalid
         }
-
-        // Our general merge philosophy is that the latest value on the service
-        // is always right. There are some edge cases where this could cause
-        // user changes to get blown away, such as if you're changing values
-        // simultaneously on two devices or if you force quit the application,
-        // your battery dies, etc. before it has had a chance to sync.
-        //
-        // In general, to try and mitigate these issues, we try and very proactively
-        // push any changes up to the storage service as contact information
-        // should not be changing very frequently.
-        //
-        // Should this prove unreliable, we may need to start maintaining time stamps
-        // representing the remote and local last update time for every value we sync.
-        // For now, we'd like to avoid that as it adds its own set of problems.
 
         let existingStory = TSPrivateStoryThread.anyFetchPrivateStoryThread(
             uniqueId: uniqueId,
             transaction: transaction
         )
 
-        var mergeState: MergeState = .resolved(identifier)
-
         // The story has been deleted on another device, record that
         // and ensure we don't try and put it back.
-        guard deletedAtTimestamp == 0 else {
+        guard record.deletedAtTimestamp == 0 else {
             existingStory?.anyRemove(transaction: transaction)
             TSPrivateStoryThread.recordDeletedAtTimestamp(
-                deletedAtTimestamp,
+                record.deletedAtTimestamp,
                 forDistributionListIdentifer: identifier,
                 transaction: transaction
             )
-            return mergeState
+
+            return .merged(needsUpdate: false, identifier)
         }
+
+        var needsUpdate = false
 
         if let story = existingStory {
             // My Story has a hardcoded, localized name that we don't sync
             if !story.isMyStory {
                 let localName = story.name
-                if let name = name, localName != name {
+                if let name = record.name, localName != name {
                     story.updateWithName(name, updateStorageService: false, transaction: transaction)
-                } else if !hasName {
-                    mergeState = .needsUpdate(identifier)
+                } else if !record.hasName {
+                    needsUpdate = true
                 }
             }
 
             let localAllowsReplies = story.allowsReplies
-            if allowsReplies != localAllowsReplies {
-                story.updateWithAllowsReplies(allowsReplies, updateStorageService: false, transaction: transaction)
+            if record.allowsReplies != localAllowsReplies {
+                story.updateWithAllowsReplies(record.allowsReplies, updateStorageService: false, transaction: transaction)
             }
 
             let localStoryIsBlocklist = story.storyViewMode == .blockList
             let localStoryAddressUuidStrings = story.addresses.compactMap { $0.uuidString }
-
-            if localStoryIsBlocklist != isBlockList || Set(recipientUuids) != Set(localStoryAddressUuidStrings) {
+            if localStoryIsBlocklist != record.isBlockList || Set(localStoryAddressUuidStrings) != Set(record.recipientUuids) {
                 story.updateWithStoryViewMode(
-                    isBlockList ? .blockList : .explicit,
-                    addresses: recipientUuids.map { SignalServiceAddress(uuidString: $0) },
+                    record.isBlockList ? .blockList : .explicit,
+                    addresses: record.recipientUuids.map { SignalServiceAddress(uuidString: $0) },
                     updateStorageService: false,
                     transaction: transaction
                 )
             }
         } else {
-            guard let name = name else {
+            guard let name = record.name else {
                 owsFailDebug("new private story missing required name")
                 return .invalid
             }
-
             let newStory = TSPrivateStoryThread(
                 uniqueId: uniqueId,
                 name: name,
-                allowsReplies: allowsReplies,
-                addresses: recipientUuids.map { SignalServiceAddress(uuidString: $0) },
-                viewMode: isBlockList ? .blockList : .explicit
+                allowsReplies: record.allowsReplies,
+                addresses: record.recipientUuids.map { SignalServiceAddress(uuidString: $0) },
+                viewMode: record.isBlockList ? .blockList : .explicit
             )
             newStory.anyInsert(transaction: transaction)
         }
 
-        return mergeState
+        return .merged(needsUpdate: needsUpdate, identifier)
     }
 }
 
