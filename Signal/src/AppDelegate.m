@@ -619,7 +619,7 @@ static void uncaughtExceptionHandler(NSException *exception)
         return;
     }
 
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+    AppReadinessRunNowOrWhenUIDidBecomeReadySync(^{
         if (![self.tsAccountManager isRegisteredAndReady]) {
             ActionSheetController *controller = [[ActionSheetController alloc]
                 initWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
