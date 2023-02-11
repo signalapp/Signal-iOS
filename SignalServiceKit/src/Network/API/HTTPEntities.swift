@@ -94,19 +94,15 @@ public enum OWSHTTPError: Error, IsRetryableProvider, UserErrorDescriptionProvid
     // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         var result = [String: Any]()
-        if let responseError = self.responseError {
-            result[NSUnderlyingErrorKey] = responseError
-        }
+        result[NSUnderlyingErrorKey] = responseError
         result[NSLocalizedDescriptionKey] = localizedDescription
-        if let customLocalizedRecoverySuggestion = self.customLocalizedRecoverySuggestion {
-            result[NSLocalizedRecoverySuggestionErrorKey] = customLocalizedRecoverySuggestion
-        }
+        result[NSLocalizedRecoverySuggestionErrorKey] = customLocalizedRecoverySuggestion
         return result
     }
 
     public var localizedDescription: String {
-        if let customLocalizedRecoverySuggestion = self.customLocalizedRecoverySuggestion {
-            return customLocalizedRecoverySuggestion
+        if let customLocalizedDescription {
+            return customLocalizedDescription
         }
         switch self {
         case .missingRequest, .invalidAppState, .invalidRequest, .networkFailure:
@@ -216,7 +212,7 @@ extension OWSHTTPError: HTTPError {
         }
     }
 
-    public var customLocalizedDescription: String? {
+    fileprivate var customLocalizedDescription: String? {
         switch self {
         case .missingRequest, .invalidAppState, .invalidRequest, .invalidResponse, .networkFailure:
             return nil
@@ -225,7 +221,7 @@ extension OWSHTTPError: HTTPError {
         }
     }
 
-    public var customLocalizedRecoverySuggestion: String? {
+    fileprivate var customLocalizedRecoverySuggestion: String? {
         switch self {
         case .missingRequest, .invalidAppState, .invalidRequest, .invalidResponse, .networkFailure:
             return nil
