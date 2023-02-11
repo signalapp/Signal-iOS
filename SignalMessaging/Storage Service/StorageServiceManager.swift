@@ -664,6 +664,12 @@ class StorageServiceOperation: OWSOperation {
             return reportSuccess()
         }
 
+        // If we have invalid identifiers, we intentionally exclude them from the
+        // prior check. We've already ignored them, so we can clean them up as part
+        // of the next unrelated change.
+        let invalidIdentifiers = state.invalidIdentifiers
+        state.invalidIdentifiers = []
+
         // Bump the manifest version
         state.manifestVersion += 1
 
@@ -675,12 +681,12 @@ class StorageServiceOperation: OWSOperation {
             return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
 
-        Logger.info("Backing up pending changes with manifest version: \(state.manifestVersion). \(updatedItems.count) new items. \(deletedIdentifiers.count) deleted items. Total keys: \(state.allIdentifiers.count)")
+        Logger.info("Backing up pending changes with manifest version: \(state.manifestVersion) (New: \(updatedItems.count), Deleted: \(deletedIdentifiers.count), Invalid: \(invalidIdentifiers.count), Total: \(state.allIdentifiers.count))")
 
         StorageService.updateManifest(
             manifest,
             newItems: updatedItems,
-            deletedIdentifiers: deletedIdentifiers
+            deletedIdentifiers: deletedIdentifiers + invalidIdentifiers
         ).done(on: DispatchQueue.global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
                 Logger.info("Successfully updated to manifest version: \(state.manifestVersion)")
@@ -984,6 +990,25 @@ class StorageServiceOperation: OWSOperation {
                 // We just did a successful manifest fetch and restore, so we no longer need to refetch it
                 mutableState.refetchLatestManifest = false
 
+                // Save invalid identifiers to remove during the write operation.
+                //
+                // We don't remove them immediately because we've already ignored them, and
+                // we want to avoid fighting against another device that may put them back
+                // when we remove them. Instead, we simply keep track of them so that we
+                // can delete them during our next mutation.
+                //
+                // We may have invalid identifiers for two reasons:
+                //
+                // (1) We got back an .invalid merge result, meaning we didn't process a
+                // storage item. As a result, our local state won't reference it.
+                //
+                // (2) There are two storage items (with different storage identifiers)
+                // whose contents refer to the same thing (eg, group, story). In this case,
+                // the latter will replace the former, and the former will be orphaned.
+
+                mutableState.invalidIdentifiers = allManifestItems.subtracting(mutableState.allIdentifiers)
+                let invalidIdentifierCount = mutableState.invalidIdentifiers.count
+
                 // Mark any orphaned records as pending update so we re-add them to the manifest.
 
                 var orphanedGroupV1Count = 0
@@ -1020,7 +1045,7 @@ class StorageServiceOperation: OWSOperation {
 
                 let pendingChangesCount = mutableState.accountIdChangeMap.count + mutableState.groupV1ChangeMap.count + mutableState.groupV2ChangeMap.count + mutableState.storyDistributionListChangeMap.count
 
-                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingChangesCount) pending updates remaining including \(orphanedAccountCount) orphaned accounts and \(orphanedGroupV1Count) orphaned v1 groups and \(orphanedGroupV2Count) orphaned v2 groups and \(orphanedStoryDistributionListCount) orphaned story distribution lists.")
+                Logger.info("Successfully merged remote manifest \(manifest.version) (Pending Updates: \(pendingChangesCount); Invalid IDs: \(invalidIdentifierCount); Orphaned Accounts: \(orphanedAccountCount); Orphaned GV1: \(orphanedGroupV1Count); Orphaned GV2: \(orphanedGroupV2Count); Orphaned DLists: \(orphanedStoryDistributionListCount))")
 
                 mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
 
@@ -1420,6 +1445,14 @@ class StorageServiceOperation: OWSOperation {
 
         fileprivate var unknownIdentifiersTypeMap: [StorageServiceProtoManifestRecordKeyType: [StorageService.StorageIdentifier]] = [:]
         fileprivate var unknownIdentifiers: [StorageService.StorageIdentifier] { unknownIdentifiersTypeMap.values.flatMap { $0 } }
+
+        /// Invalid identifiers from the most recent merge that should be removed
+        /// during the next mutation.
+        fileprivate var invalidIdentifiers: Set<StorageService.StorageIdentifier> {
+            get { _invalidIdentifiers ?? Set() }
+            set { _invalidIdentifiers = newValue.isEmpty ? nil : newValue }
+        }
+        fileprivate var _invalidIdentifiers: Set<StorageService.StorageIdentifier>?
 
         enum ChangeState: Int, Codable {
             case unchanged = 0
