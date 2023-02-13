@@ -4,8 +4,7 @@
 //
 
 import Foundation
-import CommonCrypto
-import OpenSSL
+import LibSignalClient
 
 struct SelfSignedIdentity {
     private static let temporaryIdentityKeychainIdentifier = "org.signal.temporaryIdentityKeychainIdentifier"
@@ -78,169 +77,28 @@ struct SelfSignedIdentity {
     }
 
     private static func createSelfSignedCertificate(name: String, validForDays days: Int = 365) throws -> (SecCertificate, SecKey) {
-        guard let x509 = X509_new() else {
-            throw OWSAssertionError("failed to allocate a new X509")
-        }
-        defer { X509_free(x509) }
-
-        // Keys
-
-        guard let pkey = EVP_PKEY_new() else {
-            throw OWSAssertionError("failed to allocate a new EVP_PKEY")
-        }
-        defer { EVP_PKEY_free(pkey) }
-
-        guard let exponent = BN_new() else {
-            throw OWSAssertionError("failed to allocate a new exponent")
-        }
-        defer { BN_free(exponent) }
-
-        guard BN_set_word(exponent, UInt(RSA_F4)) > 0 else {
-            throw OWSAssertionError("failed to set exponent")
-        }
-
-        // rsa does not need to be freed later, as responsibility for rsa's memory is taken over by EVP_PKEY_assign
-        guard let rsa = RSA_new() else {
-            throw OWSAssertionError("failed to allocate a new RSA")
-        }
-
-        guard RSA_generate_key_ex(rsa, 4096, exponent, nil) > 0 else {
-            RSA_free(rsa)
-            throw OWSAssertionError("failed to generate RSA keypair")
-        }
-
-        guard EVP_PKEY_assign(pkey, EVP_PKEY_RSA, UnsafeMutableRawPointer(rsa)) > 0 else {
-            throw OWSAssertionError("failed to assign RSA keypair into EVP_PKEY")
-        }
-
-        guard X509_set_pubkey(x509, pkey) > 0 else {
-            throw OWSAssertionError("failed to set X509 pubkey")
-        }
-
-        // Version
-
-        guard X509_set_version(x509, 2) > 0 else {
-            throw OWSAssertionError("failed to set X509 version")
-        }
-
-        // Serial Number
-
-        guard let serialNumber = ASN1_INTEGER_new() else {
-            throw OWSAssertionError("failed to allocate a new ASN1_INTEGER")
-        }
-        defer { ASN1_INTEGER_free(serialNumber) }
-
-        guard generateRandomSerial(serialNumber) > 0 else {
-            throw OWSAssertionError("failed to create random serial")
-        }
-
-        guard X509_set_serialNumber(x509, serialNumber) > 0 else {
-            throw OWSAssertionError("failed to set X509 serialNumber")
-        }
-
-        // Expiration
-
-        guard X509_gmtime_adj(X509_getm_notBefore(x509), 0) != nil else {
-            throw OWSAssertionError("failed to set X509 not before")
-        }
-        guard X509_gmtime_adj(X509_getm_notAfter(x509), Int(kDayInterval) * days) != nil else {
-            throw OWSAssertionError("failed to set X509 not after")
-        }
-
-        // Subject & Issuer
-
-        guard let issuerName = X509_get_subject_name(x509) else {
-            throw OWSAssertionError("failed to get X509 subject")
-        }
-
-        guard X509_NAME_add_entry_by_txt(issuerName, "C", MBSTRING_ASC, "US", -1, -1, 0) > 0 else {
-            throw OWSAssertionError("failed to set X509 country")
-        }
-
-        guard X509_NAME_add_entry_by_txt(issuerName, "ST", MBSTRING_ASC, "California", -1, -1, 0) > 0 else {
-            throw OWSAssertionError("failed to set X509 state")
-        }
-
-        guard X509_NAME_add_entry_by_txt(issuerName, "L", MBSTRING_ASC, "San Francisco", -1, -1, 0) > 0 else {
-            throw OWSAssertionError("failed to set X509 location")
-        }
-
-        guard X509_NAME_add_entry_by_txt(issuerName, "O", MBSTRING_ASC, "Signal Foundation", -1, -1, 0) > 0 else {
-            throw OWSAssertionError("failed to set X509 organizattion")
-        }
-
-        guard X509_NAME_add_entry_by_txt(issuerName, "CN", MBSTRING_ASC, name, -1, -1, 0) > 0 else {
-            throw OWSAssertionError("failed to set X509 common name")
-        }
-
-        // It's self signed so set the issuer name to be the same as the subject.
-        guard X509_set_issuer_name(x509, issuerName) > 0 else {
-            throw OWSAssertionError("failed to set X509 issuer")
-        }
-
-        // Sign
-
-        guard X509_sign(x509, pkey, EVP_sha256()) > 0 else {
-            throw OWSAssertionError("Failed to sign certificate")
-        }
+        let deviceTransferKey = DeviceTransferKey.generate(formattedAs: .keySpecific)
+        let certificateData = deviceTransferKey.generateCertificate(name, days)
 
         // Convert to Security refs
 
-        let certificate: SecCertificate = try {
-            var optionalBytes: UnsafeMutablePointer<UInt8>?
-            let byteCount = i2d_X509(x509, &optionalBytes)
-            guard byteCount > 0, let bytes = optionalBytes else {
-                throw OWSAssertionError("Failed to get certificate DER data")
-            }
-            defer { CRYPTO_free(bytes, #file, #line) }
+        guard let certificate = SecCertificateCreateWithData(nil, Data(certificateData) as CFData) else {
+            throw OWSAssertionError("Failed to initialize SecCertificate")
+        }
 
-            let data = Data(bytes: bytes, count: Int(byteCount))
-
-            guard let certificate = SecCertificateCreateWithData(nil, data as CFData) else {
-                throw OWSAssertionError("Failed to initialize SecCertificate")
-            }
-
-            return certificate
-        }()
-
-        let privateKey: SecKey = try {
-            var optionalBytes: UnsafeMutablePointer<UInt8>?
-            let byteCount = i2d_PrivateKey(pkey, &optionalBytes)
-            guard byteCount > 0, let bytes = optionalBytes else {
-                throw OWSAssertionError("Failed to get private key DER data")
-            }
-            defer { CRYPTO_free(bytes, #file, #line) }
-
-            let data = Data(bytes: bytes, count: Int(byteCount))
-
-            guard let privateKey = SecKeyCreateWithData(
-                data as CFData,
-                [
-                    kSecAttrKeyType: kSecAttrKeyTypeRSA,
-                    kSecAttrKeyClass: kSecAttrKeyClassPrivate,
-                    kSecAttrKeySizeInBits: 4096
-                ] as CFDictionary,
-                nil
-            ) else {
-                throw OWSAssertionError("Failed to initialize SecKey")
-            }
-
-            return privateKey
-        }()
+        guard let privateKey = SecKeyCreateWithData(
+            Data(deviceTransferKey.privateKey) as CFData,
+            [
+                kSecAttrKeyType: kSecAttrKeyTypeRSA,
+                kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+                kSecAttrKeySizeInBits: 4096
+            ] as CFDictionary,
+            nil
+        ) else {
+            throw OWSAssertionError("Failed to initialize SecKey")
+        }
 
         return (certificate, privateKey)
-    }
-
-    private static func generateRandomSerial(_ ai: UnsafeMutablePointer<ASN1_INTEGER>) -> Int {
-        guard let bn = BN_new() else { return -1 }
-
-        defer { BN_free(bn) }
-
-        guard BN_pseudo_rand(bn, 64, 0, 0) > 0 else { return -1 }
-
-        guard BN_to_ASN1_INTEGER(bn, ai) != nil else { return -1 }
-
-        return 1
     }
 }
 
