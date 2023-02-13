@@ -99,8 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (isDirectory) {
         NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:(NSString *)path];
-        for (NSString *path in directoryEnumerator) {
-            OWSLogDebug(@"path: %@ has attributes: %@", path, directoryEnumerator.fileAttributes);
+        for (NSString *dirPath in directoryEnumerator) {
+            OWSLogDebug(@"path: %@ has attributes: %@", dirPath, directoryEnumerator.fileAttributes);
         }
     } else {
         NSError *error;
@@ -384,7 +384,6 @@ void ClearOldTemporaryDirectoriesSync(void)
         // a) "ows_temp" name prefix.
         // b) modified time before app launch time.
         if (![fileName hasPrefix:@"ows_temp"]) {
-            NSError *error;
             NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
             if (!attributes || error) {
                 // This is fine; the file may have been deleted since we found it.
