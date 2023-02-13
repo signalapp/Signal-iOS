@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Curve25519Kit
+import Foundation
+import LibSignalClient
 
 public enum DeviceNameError: Error {
     case assertionFailure
@@ -48,22 +49,15 @@ public class DeviceNames: NSObject {
         let cipherKey = try computeCipherKey(masterSecret: masterSecret, syntheticIV: syntheticIV)
 
         // cipher_text = AES-CTR(key=cipher_key, input=plaintext, counter=0)
-        //
+        var ciphertext = plaintextData
         // An all-zeros IV corresponds to an AES CTR counter of zero.
-        let ciphertextIV = Data(count: Int(kAES256CTR_IVLength))
-        guard let ciphertextKey = OWSAES256Key(data: cipherKey) else {
-            owsFailDebug("Invalid cipher key.")
-            throw DeviceNameError.assertionFailure
-        }
-        guard let ciphertext: AES256CTREncryptionResult = Cryptography.encryptAESCTR(plaintextData: plaintextData, initializationVector: ciphertextIV, key: ciphertextKey) else {
-            owsFailDebug("Could not encrypt cipher text.")
-            throw DeviceNameError.assertionFailure
-        }
+        try Aes256Ctr32.process(&ciphertext, key: cipherKey, nonce: Data(count: Aes256Ctr32.nonceLength))
 
-        let keyData = (ephemeralKeyPair.publicKey as NSData).prependKeyType()
-        let protoBuilder = SignalIOSProtoDeviceName.builder(ephemeralPublic: keyData as Data,
-                                                            syntheticIv: syntheticIV,
-                                                            ciphertext: ciphertext.ciphertext)
+        let protoBuilder = SignalIOSProtoDeviceName.builder(
+            ephemeralPublic: ephemeralKeyPair.publicKey.prependKeyType(),
+            syntheticIv: syntheticIV,
+            ciphertext: ciphertext
+        )
         return try protoBuilder.buildSerializedData()
     }
 
@@ -135,16 +129,12 @@ public class DeviceNames: NSObject {
 
         let ephemeralPublic: Data
         do {
-            ephemeralPublic = try (ephemeralPublicData as NSData).removeKeyType() as Data
+            ephemeralPublic = try ephemeralPublicData.removeKeyType()
         } catch {
             owsFailDebug("failed to remove key type")
             throw DeviceNameError.invalidInput
         }
 
-        guard ephemeralPublic.count > 0 else {
-            owsFailDebug("Invalid ephemeral public.")
-            throw DeviceNameError.assertionFailure
-        }
         guard receivedSyntheticIV.count == syntheticIVLength else {
             owsFailDebug("Invalid synthetic IV.")
             throw DeviceNameError.assertionFailure
@@ -168,15 +158,9 @@ public class DeviceNames: NSObject {
         let cipherKey = try computeCipherKey(masterSecret: masterSecret, syntheticIV: receivedSyntheticIV)
 
         // plaintext = AES-CTR(key=cipher_key, input=ciphertext, counter=0)
-        //
+        var plaintextData = ciphertext
         // An all-zeros IV corresponds to an AES CTR counter of zero.
-        let ciphertextIV = Data(count: Int(kAES256CTR_IVLength))
-        guard let ciphertextKey = OWSAES256Key(data: cipherKey) else {
-            throw DeviceNameError.cryptError("Invalid cipher key.")
-        }
-        guard let plaintextData = Cryptography.decryptAESCTR(cipherText: ciphertext, initializationVector: ciphertextIV, key: ciphertextKey) else {
-            throw DeviceNameError.cryptError("Could not decrypt cipher text.")
-        }
+        try Aes256Ctr32.process(&plaintextData, key: cipherKey, nonce: Data(count: Aes256Ctr32.nonceLength))
 
         // Verify the synthetic IV was correct.
         // constant_time_compare(HmacSHA256(key=HmacSHA256(key=master_secret, input=”auth”), input=plaintext)[0:16], synthetic_iv) == true

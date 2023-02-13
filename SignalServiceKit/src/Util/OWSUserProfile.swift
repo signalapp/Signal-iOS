@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import Mantle
 
 @objc
@@ -143,13 +144,11 @@ public extension OWSUserProfile {
     // MARK: - Encryption
 
     class func encrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
-        assert(profileKey.keyData.count == kAES256_KeyByteLength)
-        return Cryptography.encryptAESGCMProfileData(plainTextData: profileData, key: profileKey)
+        return try? Aes256GcmEncryptedData.encrypt(profileData, key: profileKey.keyData).concatenate()
     }
 
     class func decrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
-        assert(profileKey.keyData.count == kAES256_KeyByteLength)
-        return Cryptography.decryptAESGCMProfileData(encryptedData: profileData, key: profileKey)
+        return try? Aes256GcmEncryptedData(concatenated: profileData).decrypt(key: profileKey.keyData)
     }
 
     class func decrypt(profileNameData: Data, profileKey: OWSAES256Key, address: SignalServiceAddress) -> PersonNameComponents? {

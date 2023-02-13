@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 struct CDSRegisteredContact: Hashable {
     let signalUuid: UUID
@@ -70,14 +71,12 @@ class SGXContactDiscoveryOperation: ContactDiscoveryOperation {
             guard let responseAttestion = respondingEnclaveAttestation?.value else {
                 throw ContactDiscoveryError.assertionError(description: "Invalid responding enclave for requestId: \(response.requestId)")
             }
-            guard let plaintext = Cryptography.decryptAESGCM(
-                withInitializationVector: response.iv,
+
+            let plaintext = try Aes256GcmEncryptedData(
+                nonce: response.iv,
                 ciphertext: response.data,
-                additionalAuthenticatedData: nil,
-                authTag: response.mac,
-                key: responseAttestion.keys.serverKey) else {
-                throw ContactDiscoveryError.assertionError(description: "decryption failed")
-            }
+                authenticationTag: response.mac
+            ).decrypt(key: responseAttestion.keys.serverKey.keyData)
 
             // 16 bytes per UUID
             let contactCount = UInt(e164sToLookup.count)
@@ -123,38 +122,36 @@ class SGXContactDiscoveryOperation: ContactDiscoveryOperation {
         let queryData = Data.join([noncePlainTextData, addressPlainTextData])
 
         let key = OWSAES256Key.generateRandom()
-        guard let encryptionResult = Cryptography.encryptAESGCM(plainTextData: queryData,
-                                                                initializationVectorLength: kAESGCM256_DefaultIVLength,
-                                                                additionalAuthenticatedData: nil,
-                                                                key: key) else {
-                                                                    throw ContactDiscoveryError.assertionError(description: "Encryption failure")
-        }
+        let encryptionResult = try Aes256GcmEncryptedData.encrypt(queryData, key: key.keyData)
         assert(encryptionResult.ciphertext.count == e164sToLookup.count * 8 + 32)
 
         let queryEnvelopes: [RemoteAttestation.CDSAttestation.Id: ContactDiscoveryService.IntersectionQuery.EnclaveEnvelope] = try remoteAttestations.mapValues { remoteAttestation in
-            guard let perEnclaveKey = Cryptography.encryptAESGCM(plainTextData: key.keyData,
-                                                                 initializationVectorLength: kAESGCM256_DefaultIVLength,
-                                                                 additionalAuthenticatedData: remoteAttestation.requestId,
-                                                                 key: remoteAttestation.keys.clientKey) else {
-                                                                    throw ContactDiscoveryError.assertionError(description: "failed to encrypt perEnclaveKey")
-            }
+            let perEnclaveKey = try Aes256GcmEncryptedData.encrypt(
+                key.keyData,
+                key: remoteAttestation.keys.clientKey.keyData,
+                associatedData: remoteAttestation.requestId
+            )
 
-            return ContactDiscoveryService.IntersectionQuery.EnclaveEnvelope(requestId: remoteAttestation.requestId,
-                                                                             data: perEnclaveKey.ciphertext,
-                                                                             iv: perEnclaveKey.initializationVector,
-                                                                             mac: perEnclaveKey.authTag)
+            return ContactDiscoveryService.IntersectionQuery.EnclaveEnvelope(
+                requestId: remoteAttestation.requestId,
+                data: perEnclaveKey.ciphertext,
+                iv: perEnclaveKey.nonce,
+                mac: perEnclaveKey.authenticationTag
+            )
         }
 
         guard let commitment = Cryptography.computeSHA256Digest(queryData) else {
             throw ContactDiscoveryError.assertionError(description: "commitment was unexpectedly nil")
         }
 
-        return ContactDiscoveryService.IntersectionQuery(addressCount: UInt(e164sToLookup.count),
-                                                         commitment: commitment,
-                                                         data: encryptionResult.ciphertext,
-                                                         iv: encryptionResult.initializationVector,
-                                                         mac: encryptionResult.authTag,
-                                                         envelopes: queryEnvelopes)
+        return ContactDiscoveryService.IntersectionQuery(
+            addressCount: UInt(e164sToLookup.count),
+            commitment: commitment,
+            data: encryptionResult.ciphertext,
+            iv: encryptionResult.nonce,
+            mac: encryptionResult.authenticationTag,
+            envelopes: queryEnvelopes
+        )
     }
 
     class func uuidArray(from data: Data) -> [UUID] {

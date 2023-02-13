@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalArgon2
 import SignalCoreKit
 
@@ -495,39 +496,19 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     }
 
     public func encrypt(keyType: KBS.DerivedKey, data: Data) throws -> Data {
-        guard let keyData = self.data(for: keyType), let key = OWSAES256Key(data: keyData) else {
+        guard let keyData = self.data(for: keyType) else {
             owsFailDebug("missing derived key \(keyType)")
             throw KBS.KBSError.assertion
         }
-
-        guard let encryptedData = Cryptography.encryptAESGCMWithDataAndConcatenateResults(
-            plainTextData: data,
-            initializationVectorLength: kAESGCM256_DefaultIVLength,
-            key: key
-        ) else {
-            owsFailDebug("Failed to encrypt data")
-            throw KBS.KBSError.assertion
-        }
-
-        return encryptedData
+        return try Aes256GcmEncryptedData.encrypt(data, key: keyData).concatenate()
     }
 
     public func decrypt(keyType: KBS.DerivedKey, encryptedData: Data) throws -> Data {
-        guard let keyData = self.data(for: keyType), let key = OWSAES256Key(data: keyData) else {
+        guard let keyData = self.data(for: keyType) else {
             owsFailDebug("missing derived key \(keyType)")
             throw KBS.KBSError.assertion
         }
-
-        guard let data = Cryptography.decryptAESGCMConcatenatedData(
-            encryptedData: encryptedData,
-            initializationVectorLength: kAESGCM256_DefaultIVLength,
-            key: key
-        ) else {
-            Logger.error("failed to decrypt data")
-            throw KBS.KBSError.assertion
-        }
-
-        return data
+        return try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData)
     }
 
     public func deriveRegistrationLockToken() -> String? {
@@ -942,21 +923,17 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 requestOption.set(on: requestBuilder)
                 let kbRequestData = try requestBuilder.buildSerializedData()
 
-                guard let encryptionResult = Cryptography.encryptAESGCM(
-                    plainTextData: kbRequestData,
-                    initializationVectorLength: kAESGCM256_DefaultIVLength,
-                    additionalAuthenticatedData: remoteAttestation.requestId,
-                    key: remoteAttestation.keys.clientKey
-                ) else {
-                    owsFailDebug("Failed to encrypt request data")
-                    throw KBS.KBSError.assertion
-                }
+                let encryptionResult = try Aes256GcmEncryptedData.encrypt(
+                    kbRequestData,
+                    key: remoteAttestation.keys.clientKey.keyData,
+                    associatedData: remoteAttestation.requestId
+                )
 
                 let request = OWSRequestFactory.kbsEnclaveRequest(
                     withRequestId: remoteAttestation.requestId,
                     data: encryptionResult.ciphertext,
-                    cryptIv: encryptionResult.initializationVector,
-                    cryptMac: encryptionResult.authTag,
+                    cryptIv: encryptionResult.nonce,
+                    cryptMac: encryptionResult.authenticationTag,
                     enclaveName: remoteAttestation.enclaveName,
                     authUsername: remoteAttestation.auth.username,
                     authPassword: remoteAttestation.auth.password,
@@ -996,25 +973,14 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 }
 
                 let iv = try parser.requiredBase64EncodedData(key: "iv")
-                guard iv.count == 12 else {
-                    owsFailDebug("iv is invalid")
-                    throw KBS.KBSError.assertion
-                }
-
                 let mac = try parser.requiredBase64EncodedData(key: "mac")
-                guard mac.count == 16 else {
-                    owsFailDebug("mac is invalid")
-                    throw KBS.KBSError.assertion
-                }
 
-                guard let encryptionResult = Cryptography.decryptAESGCM(
-                    withInitializationVector: iv,
-                    ciphertext: data,
-                    additionalAuthenticatedData: nil,
-                    authTag: mac,
-                    key: remoteAttestation.keys.serverKey
-                ) else {
-                    owsFailDebug("failed to decrypt KBS response")
+                let encryptionResult: Data
+                do {
+                    let encryptedData = Aes256GcmEncryptedData(nonce: iv, ciphertext: data, authenticationTag: mac)
+                    encryptionResult = try encryptedData.decrypt(key: remoteAttestation.keys.serverKey.keyData)
+                } catch {
+                    owsFailDebug("failed to decrypt KBS response \(error)")
                     throw KBS.KBSError.assertion
                 }
 

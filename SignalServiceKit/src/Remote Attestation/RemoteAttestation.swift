@@ -398,13 +398,11 @@ fileprivate extension RemoteAttestation {
 
         let quote = try RemoteAttestationQuote.parseQuote(from: quoteData)
 
-        guard let requestId = Cryptography.decryptAESGCM(withInitializationVector: encryptedRequestIv,
-                                                   ciphertext: encryptedRequestId,
-                                                   additionalAuthenticatedData: nil,
-                                                   authTag: encryptedRequestTag,
-                                                   key: keys.serverKey) else {
-                                                    throw attestationError(reason: "failed to decrypt requestId")
-        }
+        let requestId = try Aes256GcmEncryptedData(
+            nonce: encryptedRequestIv,
+            ciphertext: encryptedRequestId,
+            authenticationTag: encryptedRequestTag
+        ).decrypt(key: keys.serverKey.keyData)
 
         try verifyServerQuote(quote, keys: keys, mrenclave: mrenclave)
 

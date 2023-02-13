@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 @objc
@@ -17,25 +18,15 @@ public class SMKUDAccessKey: NSObject {
 
     @objc
     public init(profileKey: Data) throws {
-        guard let aesGcmKey = OWSAES256Key(data: profileKey) else {
-            throw SMKError.assertionError(description: "Profile key is not valid AES GCM key.")
-        }
-
+        let cipher = try Aes256GcmEncryption(
+            key: profileKey,
+            nonce: Data(count: Aes256GcmEncryptedData.nonceLength),
+            associatedData: []
+        )
         // We derive the "ud access key" from the private key by encrypting zeroes.
-        let emptyPlaintextLength = 16
-        let emptyPlaintext = Data(count: Int(emptyPlaintextLength))
-        let initializationVector = Data(count: Int(kAESGCM256_DefaultIVLength))
-        guard let keyData = Cryptography.encryptAESGCM(plainTextData: emptyPlaintext,
-                                                initializationVector: initializationVector,
-                                                additionalAuthenticatedData: nil,
-                                                key: aesGcmKey) else {
-                                                    throw SMKError.assertionError(description: "Could not derive UD access key from profile key.")
-        }
-        guard keyData.ciphertext.count == SMKUDAccessKey.kUDAccessKeyLength else {
-            throw SMKError.assertionError(description: "\(SMKUDAccessKey.logTag()) key has invalid length")
-        }
-
-        self.keyData = keyData.ciphertext
+        var message = Data(count: Self.kUDAccessKeyLength)
+        try cipher.encrypt(&message)
+        self.keyData = message
     }
 
     @objc
