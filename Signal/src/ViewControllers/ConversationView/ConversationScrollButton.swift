@@ -80,6 +80,7 @@ public class ConversationScrollButton: UIButton {
     private func createContents() {
         circleView.addSubview(iconView)
         iconView.autoCenterInSuperview()
+        iconView.autoSetDimensions(to: CGSize(square: 20))
         addSubview(shadowView)
         addSubview(circleView)
         circleView.autoHCenterInSuperview()
