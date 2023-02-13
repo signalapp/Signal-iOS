@@ -364,8 +364,8 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
     NSMutableArray *result = [NSMutableArray new];
     NSMutableSet *phoneNumberSet = [NSMutableSet new];
-    void (^tryParsingWithCountryCode)(NSString *, NSString *) = ^(NSString *text, NSString *countryCode) {
-        PhoneNumber *_Nullable phoneNumber = [PhoneNumber phoneNumberFromText:text andRegion:countryCode];
+    void (^tryParsingWithCountryCode)(NSString *, NSString *) = ^(NSString *blockParamText, NSString *countryCode) {
+        PhoneNumber *_Nullable phoneNumber = [PhoneNumber phoneNumberFromText:blockParamText andRegion:countryCode];
         NSString *_Nullable e164 = [phoneNumber toE164];
         if (e164.length > 0 && ![phoneNumberSet containsObject:e164]) {
             [result addObject:phoneNumber];
