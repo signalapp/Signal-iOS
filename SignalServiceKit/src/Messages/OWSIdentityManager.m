@@ -779,19 +779,19 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                            transaction:transaction]
             .doneInBackground(^(id value) {
                 OWSLogInfo(@"Successfully sent verification state NullMessage");
-                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *sdsWriteBlockTransaction) {
                     [self.sskJobQueues.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
                                                          removeMessageAfterSending:NO
                                                      limitToCurrentProcessLifetime:YES
                                                                     isHighPriority:NO
-                                                                       transaction:transaction]
-                        .doneInBackground(^(id value) {
+                                                                       transaction:sdsWriteBlockTransaction]
+                        .doneInBackground(^(id innerValue) {
                             OWSLogInfo(@"Successfully sent verification state sync message");
 
                             // Record that this verification state was successfully synced.
-                            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *innerSdsWriteBlockTransaction) {
                                 [self clearSyncMessageForAddress:message.verificationForRecipientAddress
-                                                     transaction:transaction];
+                                                     transaction:innerSdsWriteBlockTransaction];
                             });
                         })
                         .catchInBackground(^(NSError *error) {
@@ -806,9 +806,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                         @"Removing retries for syncing verification state, since user is no longer registered: %@",
                         message.verificationForRecipientAddress);
                     // Otherwise this will fail forever.
-                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *sdsWriteBlockTransaction) {
                         [self clearSyncMessageForAddress:message.verificationForRecipientAddress
-                                             transaction:transaction];
+                                             transaction:sdsWriteBlockTransaction];
                     });
                 }
             });

@@ -1136,7 +1136,7 @@ NS_ASSUME_NONNULL_BEGIN
     // definition will end if the app exits.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (callMessage.offer) {
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *sdsWriteBlockTransaction) {
                 [self.callMessageHandler receivedOffer:callMessage.offer
                                             fromCaller:envelope.sourceAddress
                                           sourceDevice:envelope.sourceDevice
@@ -1144,7 +1144,7 @@ NS_ASSUME_NONNULL_BEGIN
                                serverReceivedTimestamp:envelope.serverTimestamp
                                serverDeliveryTimestamp:serverDeliveryTimestamp
                                      supportsMultiRing:supportsMultiRing
-                                           transaction:transaction];
+                                           transaction:sdsWriteBlockTransaction];
             });
         } else if (callMessage.answer) {
             [self.callMessageHandler receivedAnswer:callMessage.answer
@@ -1170,13 +1170,13 @@ NS_ASSUME_NONNULL_BEGIN
                                        fromCaller:envelope.sourceAddress
                                      sourceDevice:envelope.sourceDevice];
         } else if (callMessage.opaque) {
-            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *sdsWriteBlockTransaction) {
                 [self.callMessageHandler receivedOpaque:callMessage.opaque
                                              fromCaller:envelope.sourceAddress
                                            sourceDevice:envelope.sourceDevice
                                 serverReceivedTimestamp:envelope.serverTimestamp
                                 serverDeliveryTimestamp:serverDeliveryTimestamp
-                                            transaction:transaction];
+                                            transaction:sdsWriteBlockTransaction];
             }];
         } else {
             OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
@@ -1530,9 +1530,9 @@ NS_ASSUME_NONNULL_BEGIN
                     return;
                 }
 
-                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *sdsWriteBlockTransaction) {
                     TSGroupThread *_Nullable oldGroupThread = [TSGroupThread fetchWithGroupId:groupId
-                                                                                  transaction:transaction];
+                                                                                  transaction:sdsWriteBlockTransaction];
                     if (oldGroupThread == nil) {
                         OWSFailDebug(@"Missing oldGroupThread.");
                         return;
@@ -1542,7 +1542,7 @@ NS_ASSUME_NONNULL_BEGIN
                         [GroupManager remoteUpdateAvatarToExistingGroupV1WithGroupModel:oldGroupThread.groupModel
                                                                              avatarData:avatarData
                                                                groupUpdateSourceAddress:groupUpdateSourceAddress
-                                                                            transaction:transaction
+                                                                            transaction:sdsWriteBlockTransaction
                                                                                   error:&error];
                     if (error != nil || result == nil) {
                         OWSFailDebug(@"Error: %@", error);
@@ -1550,7 +1550,7 @@ NS_ASSUME_NONNULL_BEGIN
                     }
 
                     // Eagerly clean up the attachment.
-                    [attachmentStream anyRemoveWithTransaction:transaction];
+                    [attachmentStream anyRemoveWithTransaction:sdsWriteBlockTransaction];
                 });
             }
             failure:^(NSError *error) {
@@ -1562,17 +1562,17 @@ NS_ASSUME_NONNULL_BEGIN
                     return;
                 }
 
-                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *sdsWriteBlockTransaction) {
                     // Eagerly clean up the attachment.
                     TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId
-                                                                                transaction:transaction];
+                                                                                transaction:sdsWriteBlockTransaction];
                     if (attachment == nil) {
                         // In the test case, database storage may be reset by the
                         // time the pointer download fails.
                         OWSFailDebugUnlessRunningTests(@"Could not load attachment.");
                         return;
                     }
-                    [attachment anyRemoveWithTransaction:transaction];
+                    [attachment anyRemoveWithTransaction:sdsWriteBlockTransaction];
                 });
             }];
     }];
@@ -2257,8 +2257,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (message.attachmentIds.count != attachmentIds.count) {
         [message anyUpdateIncomingMessageWithTransaction:transaction
-                                                   block:^(TSIncomingMessage *message) {
-                                                       message.attachmentIds = [attachmentIds copy];
+                                                   block:^(TSIncomingMessage *blockParamMessage) {
+                                                       blockParamMessage.attachmentIds = [attachmentIds copy];
                                                    }];
     }
     OWSAssertDebug(message.hasRenderableContent);
