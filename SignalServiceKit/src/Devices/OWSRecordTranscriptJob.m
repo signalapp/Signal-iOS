@@ -290,8 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!thread.isGroupThread) {
             continue;
         }
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        if (![groupThread.groupModel.groupId isEqual:groupId]) {
+        if (![((TSGroupThread *)thread).groupModel.groupId isEqual:groupId]) {
             continue;
         }
 
