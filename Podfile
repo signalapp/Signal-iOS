@@ -44,10 +44,6 @@ pod 'SQLCipher', ">= 4.0.1"
 pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
 # pod 'Mantle', path: '../Mantle'
 
-# Forked to incorporate our self-built binary artifact.
-pod 'OpenSSL-Universal', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
-# pod 'OpenSSL-Universal', path: '../GRKOpenSSLFramework'
-
 pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS', branch: 'signal-master'
 # pod 'libPhoneNumber-iOS', path: '../libPhoneNumber-iOS'
 

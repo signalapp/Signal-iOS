@@ -46,7 +46,6 @@ PODS:
     - CocoaLumberjack
     - Logging (~> 1.4)
     - SwiftProtobuf
-  - OpenSSL-Universal (1.1.1900)
   - PureLayout (3.1.4)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
@@ -54,10 +53,8 @@ PODS:
   - SignalArgon2/Tests (1.3.2)
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
-    - OpenSSL-Universal
   - SignalCoreKit/Tests (1.0.0):
     - CocoaLumberjack
-    - OpenSSL-Universal
   - SignalRingRTC (2.24.0):
     - SignalCoreKit
     - SignalRingRTC/WebRTC (= 2.24.0)
@@ -95,7 +92,6 @@ DEPENDENCIES:
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`, tag `v4.0.0`)
   - MobileCoinMinimal (from `https://github.com/signalapp/MobileCoin-Swift.git`, branch `charlesmchen/mobileCoinMinimal`)
   - MobileCoinMinimal/Tests (from `https://github.com/signalapp/MobileCoin-Swift.git`, branch `charlesmchen/mobileCoinMinimal`)
-  - OpenSSL-Universal (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - PureLayout
   - Reachability
   - SAMKeychain
@@ -150,8 +146,6 @@ EXTERNAL SOURCES:
   MobileCoinMinimal:
     :branch: charlesmchen/mobileCoinMinimal
     :git: https://github.com/signalapp/MobileCoin-Swift.git
-  OpenSSL-Universal:
-    :git: https://github.com/signalapp/GRKOpenSSLFramework
   SignalArgon2:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
@@ -193,15 +187,12 @@ CHECKOUT OPTIONS:
   MobileCoinMinimal:
     :commit: dae1e36cb6aeb8fab2c35ce857bd45cd0ce07023
     :git: https://github.com/signalapp/MobileCoin-Swift.git
-  OpenSSL-Universal:
-    :commit: 085ce28317e4db497ebdcccae61a6a11d940433c
-    :git: https://github.com/signalapp/GRKOpenSSLFramework
   SignalArgon2:
     :commit: 6a37e32167500ff7830e337b726a1653061d86b2
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalCoreKit:
-    :commit: 58287a4b0ac79ba9e80d695f27d9c0900561dd26
+    :commit: 7d2c73808ae444086dd58e6093ea668cfc6f6c31
     :git: "git@github.com:signalapp/SignalCoreKit"
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
@@ -228,12 +219,11 @@ SPEC CHECKSUMS:
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   MobileCoin: eef7c6962bce0d82270171ee9aeac9da7b91b5d4
   MobileCoinMinimal: 627ed590d8a0d5d57c39ec25727bde3d976d2f7a
-  OpenSSL-Universal: 84efb8a29841f2764ac5403e0c4119a28b713346
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
-  SignalCoreKit: 9febad2d82f80c5b2f446740c68f1fba6d4cd9b2
+  SignalCoreKit: 3191731b893914ad63ae156899405621adaf9dfa
   SignalRingRTC: 2ca5953667bf575a5cba5e8f94a5d3c14c7e0b3a
   SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
@@ -241,6 +231,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: fdf1e0d45aaec797da320300e65485ab5271b17e
+PODFILE CHECKSUM: 40da5ad6241fc0e335f229ce63373c9abead0ebc
 
 COCOAPODS: 1.11.3
