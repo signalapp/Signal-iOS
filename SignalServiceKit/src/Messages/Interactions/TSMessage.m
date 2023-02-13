@@ -768,13 +768,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     BOOL needsClone = [attachment isKindOfClass:[TSAttachmentStream class]] && !self.quotedMessage.isThumbnailOwned;
     TSAttachment * (^saveUpdatedThumbnail)(SDSAnyWriteTransaction *) = ^TSAttachment *(SDSAnyWriteTransaction *writeTx)
     {
-        __block TSAttachment *_Nullable attachment = nil;
+        __block TSAttachment *_Nullable localAttachment = nil;
         [self anyUpdateMessageWithTransaction:writeTx
                                         block:^(TSMessage *message) {
-                                            attachment = [message.quotedMessage
+                                            localAttachment = [message.quotedMessage
                                                 createThumbnailIfNecessaryWithTransaction:writeTx];
                                         }];
-        return attachment;
+        return localAttachment;
     };
 
     // If we happen to be handed a write transaction, we can perform the clone synchronously
