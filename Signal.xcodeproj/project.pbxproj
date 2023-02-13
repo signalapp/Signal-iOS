@@ -13434,6 +13434,7 @@
 					"-Werror=objc-literal-conversion",
 					"-Werror=objc-property-synthesis",
 					"-Werror=objc-protocol-property-synthesis",
+					"-Werror=shadow",
 				);
 			};
 			name = "Testable Release";
@@ -13970,6 +13971,7 @@
 					"-Werror=objc-literal-conversion",
 					"-Werror=objc-property-synthesis",
 					"-Werror=objc-protocol-property-synthesis",
+					"-Werror=shadow",
 				);
 			};
 			name = Profiling;
@@ -14377,6 +14379,7 @@
 					"-Werror=objc-literal-conversion",
 					"-Werror=objc-property-synthesis",
 					"-Werror=objc-protocol-property-synthesis",
+					"-Werror=shadow",
 				);
 			};
 			name = Debug;
@@ -14458,6 +14461,7 @@
 					"-Werror=objc-literal-conversion",
 					"-Werror=objc-property-synthesis",
 					"-Werror=objc-protocol-property-synthesis",
+					"-Werror=shadow",
 				);
 			};
 			name = "App Store Release";
