@@ -131,6 +131,9 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         .init(networkManager: context.networkManager)
     }()
 
+    /// Whether this view has ever appeared after being loaded.
+    private var viewHasAppearedAfterLoad: Bool = false
+
     // MARK: Public members
 
     weak var usernameSelectionDelegate: UsernameSelectionDelegate?
@@ -298,11 +301,24 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         )
 
         navigationItem.rightBarButtonItem = doneBarButtonItem
+    }
 
-        rebuildTableContents()
+    override func loadView() {
+        super.loadView()
+
+        viewHasAppearedAfterLoad = false
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        if !viewHasAppearedAfterLoad {
+            viewHasAppearedAfterLoad = true
+
+            // When we build the table contents, we use methods from
+            // OWSTableViewController2 that rely on the view having been sized,
+            // which hasn't happened until viewWillAppear.
+            rebuildTableContents()
+        }
+
         usernameTextField.becomeFirstResponder()
     }
 }
