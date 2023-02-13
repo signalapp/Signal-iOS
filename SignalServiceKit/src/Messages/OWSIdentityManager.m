@@ -789,10 +789,11 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                             OWSLogInfo(@"Successfully sent verification state sync message");
 
                             // Record that this verification state was successfully synced.
-                            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *innerSdsWriteBlockTransaction) {
-                                [self clearSyncMessageForAddress:message.verificationForRecipientAddress
-                                                     transaction:innerSdsWriteBlockTransaction];
-                            });
+                            DatabaseStorageWrite(
+                                self.databaseStorage, ^(SDSAnyWriteTransaction *innerSdsWriteBlockTransaction) {
+                                    [self clearSyncMessageForAddress:message.verificationForRecipientAddress
+                                                         transaction:innerSdsWriteBlockTransaction];
+                                });
                         })
                         .catchInBackground(^(NSError *error) {
                             OWSLogError(@"Failed to send verification state sync message with error: %@", error);

@@ -257,8 +257,8 @@ NS_ASSUME_NONNULL_BEGIN
                                              block:^(OWSGroupCallMessage *message) {
                                                  message.hasEnded = joinedMemberUuids.count == 0;
                                                  message.creatorUuid = uuid.UUIDString;
-                                                 message.joinedMemberUuids = [joinedMemberUuids
-                                                     map:^(NSUUID *blockParamUuid) { return blockParamUuid.UUIDString; }];
+                                                 message.joinedMemberUuids = [joinedMemberUuids map:^(
+                                                     NSUUID *blockParamUuid) { return blockParamUuid.UUIDString; }];
                                              }];
 }
 
