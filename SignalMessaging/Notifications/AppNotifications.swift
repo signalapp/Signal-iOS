@@ -652,10 +652,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                            transaction: SDSAnyReadTransaction) {
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
-        // Reaction notifications only get displayed if we can
-        // include the reaction details, otherwise we don't
-        // disturb the user for a non-message
-        guard previewType == .namePreview else { return }
+        guard previewType != .noNameNoPreview else { return }
 
         let senderName = contactsManager.displayName(for: reaction.reactor, transaction: transaction)
 
