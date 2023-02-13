@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 const NSUInteger SignalRecipientSchemaVersion = 1;
 
+const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
+
 @interface SignalRecipient ()
 
 @property (nonatomic) NSOrderedSet<NSNumber *> *devices;
@@ -37,7 +39,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     _recipientPhoneNumber = nil;
     _recipientSchemaVersion = SignalRecipientSchemaVersion;
     // New recipients start out as "unregistered in the distant past"
-    _unregisteredAtTimestamp = @1;
+    _unregisteredAtTimestamp = @(SignalRecipientDistantPastUnregisteredTimestamp);
     _devices = [NSOrderedSet orderedSet];
 
     return self;
@@ -55,7 +57,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     _recipientPhoneNumber = address.phoneNumber;
     _recipientSchemaVersion = SignalRecipientSchemaVersion;
     // New recipients start out as "unregistered in the distant past"
-    _unregisteredAtTimestamp = @1;
+    _unregisteredAtTimestamp = @(SignalRecipientDistantPastUnregisteredTimestamp);
     _devices = [NSOrderedSet orderedSet];
 
     return self;

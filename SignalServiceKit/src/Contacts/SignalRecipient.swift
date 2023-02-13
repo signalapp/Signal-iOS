@@ -16,19 +16,6 @@ extension SignalRecipient {
         (devices.array as? [NSNumber])?.map { $0.uint32Value }
     }
 
-    private static let storageServiceUnregisteredThreshold = kMonthInterval
-
-    @objc
-    public var shouldBeRepresentedInStorageService: Bool {
-        guard !isRegistered else { return true }
-
-        guard let unregisteredAtTimestamp = unregisteredAtTimestamp?.uint64Value else {
-            return false
-        }
-
-        return Date().timeIntervalSince(Date(millisecondsSince1970: unregisteredAtTimestamp)) <= Self.storageServiceUnregisteredThreshold
-    }
-
     // MARK: -
 
     public func markAsUnregistered(at timestamp: UInt64? = nil, source: SignalRecipientSource = .local, transaction: SDSAnyWriteTransaction) {

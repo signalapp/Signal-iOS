@@ -21,6 +21,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientSource) {
     SignalRecipientSourceStorageService,
 };
 
+extern const uint64_t SignalRecipientDistantPastUnregisteredTimestamp;
+
 /// SignalRecipient serves two purposes:
 ///
 /// a) It serves as a cache of "known" Signal accounts.  When the service indicates

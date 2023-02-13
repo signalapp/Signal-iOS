@@ -1030,15 +1030,17 @@ class StorageServiceOperation: OWSOperation {
                 }
 
                 var orphanedAccountCount = 0
+                let currentDate = Date()
                 for (accountId, identifier) in mutableState.accountIdToIdentifierMap where !allManifestItems.contains(identifier) {
-                    // Only consider registered recipients as orphaned, if another client removes
-                    // an unregistered recipient allow it.
+                    // Only consider registered recipients as orphaned. If another client
+                    // removes an unregistered recipient, allow it.
                     guard
-                        let address = OWSAccountIdFinder.address(forAccountId: accountId, transaction: transaction),
-                        let recipient = AnySignalRecipientFinder().signalRecipient(for: address, transaction: transaction),
-                        recipient.isRegistered
-                    else { continue }
-
+                        let storageServiceContact = StorageServiceContact.fetch(for: accountId, transaction: transaction),
+                        storageServiceContact.shouldBeInStorageService(currentDate: currentDate),
+                        storageServiceContact.registrationStatus(currentDate: currentDate) == .registered
+                    else {
+                        continue
+                    }
                     mutableState.accountIdChangeMap[accountId] = .updated
                     orphanedAccountCount += 1
                 }
@@ -1254,26 +1256,24 @@ class StorageServiceOperation: OWSOperation {
     }
 
     private func cleanUpOrphanedAccounts(transaction: SDSAnyWriteTransaction) {
-        // We don't keep unregistered accounts in storage service after a certain amount of time.
-        // We may also have records for accounts that no longer exists, e.g. that SignalRecipient
-        // was merged with another recipient. We try to proactively delete these records from storage
-        // service, but there was a period of time we didn't and we need to cleanup after ourselves.
-        let orphanedAccountIds = State.current(transaction: transaction)
-            .accountIdToIdentifierMap
-            .keys
-            .filter { accountId in
-                guard let address = OWSAccountIdFinder.address(
-                    forAccountId: accountId,
-                    transaction: transaction
-                ) else { return true }
+        // We don't keep unregistered accounts in storage service after a certain
+        // amount of time. We may also have records for accounts that no longer
+        // exist, e.g. that SignalRecipient was merged with another recipient. We
+        // try to proactively delete these records from storage service, but there
+        // was a period of time we didn't, and we need to cleanup after ourselves.
 
-                guard let recipient = AnySignalRecipientFinder().signalRecipient(
-                    for: address,
-                    transaction: transaction
-                ) else { return true }
+        let currentDate = Date()
 
-                return !recipient.shouldBeRepresentedInStorageService
+        func shouldRecipientBeInStorageService(accountId: AccountId) -> Bool {
+            guard let storageServiceContact = StorageServiceContact.fetch(for: accountId, transaction: transaction) else {
+                return false
             }
+            return storageServiceContact.shouldBeInStorageService(currentDate: currentDate)
+        }
+
+        let orphanedAccountIds = State.current(transaction: transaction).accountIdToIdentifierMap.keys.filter {
+            !shouldRecipientBeInStorageService(accountId: $0)
+        }
 
         guard !orphanedAccountIds.isEmpty else { return }
 

@@ -69,6 +69,63 @@ enum StorageServiceMergeResult<IdType> {
 
 // MARK: - Contact Record
 
+struct StorageServiceContact {
+    private enum Constant {
+        static let storageServiceUnregisteredThreshold = kMonthInterval
+    }
+
+    /// Contact records may be unregistered.
+    var unregisteredAtTimestamp: UInt64?
+
+    init(unregisteredAtTimestamp: UInt64?) {
+        self.unregisteredAtTimestamp = unregisteredAtTimestamp
+    }
+
+    enum RegistrationStatus {
+        case registered
+        case unregisteredRecently
+        case unregisteredMoreThanOneMonthAgo
+    }
+
+    func registrationStatus(currentDate: Date) -> RegistrationStatus {
+        switch unregisteredAtTimestamp {
+        case .none:
+            return .registered
+
+        case .some(let timestamp) where currentDate.timeIntervalSince(Date(millisecondsSince1970: timestamp)) <= Constant.storageServiceUnregisteredThreshold:
+            return .unregisteredRecently
+
+        case .some:
+            return .unregisteredMoreThanOneMonthAgo
+        }
+    }
+
+    static func fetch(for accountId: AccountId, transaction: SDSAnyReadTransaction) -> Self? {
+        SignalRecipient.anyFetch(uniqueId: accountId, transaction: transaction).flatMap { Self($0) }
+    }
+
+    fileprivate init?(_ signalRecipient: SignalRecipient) {
+        let unregisteredAtTimestamp: UInt64?
+        if signalRecipient.isRegistered {
+            unregisteredAtTimestamp = nil
+        } else {
+            unregisteredAtTimestamp = (
+                signalRecipient.unregisteredAtTimestamp?.uint64Value ?? SignalRecipientDistantPastUnregisteredTimestamp
+            )
+        }
+        self.init(unregisteredAtTimestamp: unregisteredAtTimestamp)
+    }
+
+    func shouldBeInStorageService(currentDate: Date) -> Bool {
+        switch registrationStatus(currentDate: currentDate) {
+        case .registered, .unregisteredRecently:
+            return true
+        case .unregisteredMoreThanOneMonthAgo:
+            return false
+        }
+    }
+}
+
 class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = AccountId
     typealias RecordType = StorageServiceProtoContactRecord
@@ -103,18 +160,21 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         unknownFields: UnknownStorage?,
         transaction: SDSAnyReadTransaction
     ) -> StorageServiceProtoContactRecord? {
-        guard
-            let address = OWSAccountIdFinder.address(forAccountId: accountId, transaction: transaction),
-            let recipient = AnySignalRecipientFinder().signalRecipient(for: address, transaction: transaction)
-        else {
+        guard let recipient = SignalRecipient.anyFetch(uniqueId: accountId, transaction: transaction) else {
+            return nil
+        }
+
+        guard let contact = StorageServiceContact(recipient), contact.shouldBeInStorageService(currentDate: Date()) else {
             return nil
         }
 
         var builder = StorageServiceProtoContactRecord.builder()
 
-        if !recipient.isRegistered, let unregisteredAtTimestamp = recipient.unregisteredAtTimestamp?.uint64Value {
+        if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
             builder.setUnregisteredAtTimestamp(unregisteredAtTimestamp)
         }
+
+        let address = recipient.address
 
         if let phoneNumber = address.phoneNumber {
             if PhoneNumber.resemblesE164(phoneNumber) {

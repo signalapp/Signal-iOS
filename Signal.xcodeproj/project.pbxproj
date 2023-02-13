@@ -764,6 +764,7 @@
 		5049FA3028BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */; };
 		5049FA3228BEAAD800D6E099 /* cdsi.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA3128BEAAD800D6E099 /* cdsi.pb.swift */; };
 		505C2ED029937B5B00C23FB2 /* Data+KeyVersionByte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */; };
+		505C2EDB29974D2000C23FB2 /* StorageServiceContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */; };
 		506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */; };
 		506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */; };
 		506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
@@ -3164,6 +3165,7 @@
 		5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2Connection.swift; sourceTree = "<group>"; };
 		5049FA3128BEAAD800D6E099 /* cdsi.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = cdsi.pb.swift; sourceTree = "<group>"; };
 		505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+KeyVersionByte.swift"; sourceTree = "<group>"; };
+		505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceContactTest.swift; sourceTree = "<group>"; };
 		506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManager.swift; sourceTree = "<group>"; };
 		506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerContainerViewController.swift; sourceTree = "<group>"; };
 		508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellBackgroundColor.swift; sourceTree = "<group>"; };
@@ -8931,6 +8933,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */,
+				505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */,
 				F992ACC328F8C9D900906038 /* StripeTest.swift */,
 				503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */,
 			);
@@ -11224,6 +11227,7 @@
 				34843B2421432293004DED45 /* SignalBaseTest.m in Sources */,
 				F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */,
 				4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */,
+				505C2EDB29974D2000C23FB2 /* StorageServiceContactTest.swift in Sources */,
 				8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */,
 				452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */,
 				F992ACC428F8C9D900906038 /* StripeTest.swift in Sources */,
