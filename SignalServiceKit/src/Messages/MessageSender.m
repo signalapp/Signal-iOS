@@ -1407,8 +1407,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     if (message.quotedMessage.thumbnailAttachmentId) {
         // We need to update the message record here to reflect the new attachments we may create.
         [message anyUpdateOutgoingMessageWithTransaction:transaction
-                                                   block:^(TSOutgoingMessage *message) {
-                                                       TSAttachmentStream *thumbnail = [message.quotedMessage
+                                                   block:^(TSOutgoingMessage *blockParamMessage) {
+                                                       TSAttachmentStream *thumbnail = [blockParamMessage.quotedMessage
                                                            createThumbnailIfNecessaryWithTransaction:transaction];
                                                        if (thumbnail.uniqueId) {
                                                            [attachmentIds addObject:thumbnail.uniqueId];
@@ -1489,13 +1489,13 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
     [outgoingMessage
         anyUpdateOutgoingMessageWithTransaction:transaction
-                                          block:^(TSOutgoingMessage *outgoingMessage) {
+                                          block:^(TSOutgoingMessage *blockParamOutgoingMessage) {
                                               NSMutableArray<NSString *> *attachmentIds =
-                                                  [outgoingMessage.attachmentIds mutableCopy];
+                                                  [blockParamOutgoingMessage.attachmentIds mutableCopy];
                                               for (TSAttachmentStream *attachmentStream in attachmentStreams) {
                                                   [attachmentIds addObject:attachmentStream.uniqueId];
                                               }
-                                              outgoingMessage.attachmentIds = [attachmentIds copy];
+                                              blockParamOutgoingMessage.attachmentIds = [attachmentIds copy];
                                           }];
 
     for (TSAttachmentStream *attachmentStream in attachmentStreams) {
