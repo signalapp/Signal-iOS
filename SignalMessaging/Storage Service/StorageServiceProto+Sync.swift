@@ -74,10 +74,21 @@ struct StorageServiceContact {
         static let storageServiceUnregisteredThreshold = kMonthInterval
     }
 
+    /// All contact records must have a UUID.
+    var serviceId: UUID
+
+    /// Contact records may have a phone number.
+    var serviceE164: String?
+
     /// Contact records may be unregistered.
     var unregisteredAtTimestamp: UInt64?
 
-    init(unregisteredAtTimestamp: UInt64?) {
+    init?(serviceId: UUID?, serviceE164: String?, unregisteredAtTimestamp: UInt64?) {
+        guard let serviceId else {
+            return nil
+        }
+        self.serviceId = serviceId
+        self.serviceE164 = serviceE164
         self.unregisteredAtTimestamp = unregisteredAtTimestamp
     }
 
@@ -100,6 +111,20 @@ struct StorageServiceContact {
         }
     }
 
+    fileprivate init?(_ contactRecord: StorageServiceProtoContactRecord) {
+        let unregisteredAtTimestamp: UInt64?
+        if contactRecord.unregisteredAtTimestamp == 0 {
+            unregisteredAtTimestamp = nil  // registered
+        } else {
+            unregisteredAtTimestamp = contactRecord.unregisteredAtTimestamp
+        }
+        self.init(
+            serviceId: contactRecord.serviceUuid.flatMap { UUID(uuidString: $0) },
+            serviceE164: contactRecord.serviceE164,
+            unregisteredAtTimestamp: unregisteredAtTimestamp
+        )
+    }
+
     static func fetch(for accountId: AccountId, transaction: SDSAnyReadTransaction) -> Self? {
         SignalRecipient.anyFetch(uniqueId: accountId, transaction: transaction).flatMap { Self($0) }
     }
@@ -113,7 +138,11 @@ struct StorageServiceContact {
                 signalRecipient.unregisteredAtTimestamp?.uint64Value ?? SignalRecipientDistantPastUnregisteredTimestamp
             )
         }
-        self.init(unregisteredAtTimestamp: unregisteredAtTimestamp)
+        self.init(
+            serviceId: signalRecipient.address.uuid,
+            serviceE164: signalRecipient.recipientPhoneNumber,
+            unregisteredAtTimestamp: unregisteredAtTimestamp
+        )
     }
 
     func shouldBeInStorageService(currentDate: Date) -> Bool {
@@ -170,27 +199,21 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         var builder = StorageServiceProtoContactRecord.builder()
 
+        builder.setServiceUuid(contact.serviceId.uuidString)
+
+        if let serviceE164 = contact.serviceE164 {
+            if PhoneNumber.resemblesE164(serviceE164) {
+                builder.setServiceE164(serviceE164)
+            } else {
+                owsFailDebug("Invalid e164.")
+            }
+        }
+
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
             builder.setUnregisteredAtTimestamp(unregisteredAtTimestamp)
         }
 
         let address = recipient.address
-
-        if let phoneNumber = address.phoneNumber {
-            if PhoneNumber.resemblesE164(phoneNumber) {
-                builder.setServiceE164(phoneNumber)
-            } else {
-                if DebugFlags.internalLogging {
-                    Logger.warn("Invalid e164: \(phoneNumber).")
-                }
-                // TODO: Should we clean up the database?
-                owsFailDebug("Invalid e164.")
-            }
-        }
-
-        if let uuidString = address.uuidString {
-            builder.setServiceUuid(uuidString)
-        }
 
         let isInWhitelist = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
         let profileKey = profileManager.profileKeyData(for: address, transaction: transaction)
@@ -288,7 +311,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         _ record: StorageServiceProtoContactRecord,
         transaction: SDSAnyWriteTransaction
     ) -> StorageServiceMergeResult<AccountId> {
-        guard let address = record.serviceAddress else {
+        guard let address = record.serviceAddress, let contact = StorageServiceContact(record) else {
             owsFailDebug("address unexpectedly missing for contact")
             return .invalid
         }
@@ -298,8 +321,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }
 
         let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
-        if record.unregisteredAtTimestamp > 0 {
-            recipient.markAsUnregistered(at: record.unregisteredAtTimestamp, source: .storageService, transaction: transaction)
+        if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
+            recipient.markAsUnregistered(at: unregisteredAtTimestamp, source: .storageService, transaction: transaction)
         } else {
             recipient.markAsRegistered(source: .storageService, transaction: transaction)
         }
@@ -412,14 +435,12 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             localThreadAssociatedData.updateWith(mutedUntilTimestamp: record.mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
-        if let uuid = address.uuid {
-            let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
-                sourceContext: .contact(contactUuid: uuid),
-                transaction: transaction
-            )
-            if record.hideStory != localStoryContextAssociatedData.isHidden {
-                localStoryContextAssociatedData.update(updateStorageService: false, isHidden: record.hideStory, transaction: transaction)
-            }
+        let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
+            sourceContext: .contact(contactUuid: contact.serviceId),
+            transaction: transaction
+        )
+        if record.hideStory != localStoryContextAssociatedData.isHidden {
+            localStoryContextAssociatedData.update(updateStorageService: false, isHidden: record.hideStory, transaction: transaction)
         }
 
         return .merged(needsUpdate: needsUpdate, recipient.accountId)

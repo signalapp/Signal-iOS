@@ -857,8 +857,8 @@ class StorageServiceOperation: OWSOperation {
         Logger.info("Creating a new manifest with manifest version: \(version). Total keys: \(allItems.count)")
 
         // We want to do this only when absolutely necessary as it's an expensive
-        // query on the server. When we set this flag, the server will query an
-        // purge and orphan records.
+        // query on the server. When we set this flag, the server will query and
+        // purge any orphaned records.
         let shouldDeletePreviousRecords = version > 1
 
         StorageService.updateManifest(

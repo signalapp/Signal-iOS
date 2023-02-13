@@ -8,7 +8,7 @@ import XCTest
 @testable import SignalMessaging
 
 class StorageServiceContactTest: XCTestCase {
-    func testRegistrationStatus() {
+    func testRegistrationStatus() throws {
         let now = Date()
         let nowMs = now.ows_millisecondsSince1970
 
@@ -22,13 +22,17 @@ class StorageServiceContactTest: XCTestCase {
         ]
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {
-            let storageServiceContact = StorageServiceContact(unregisteredAtTimestamp: unregisteredAtTimestamp)
+            let storageServiceContact = try XCTUnwrap(StorageServiceContact(
+                serviceId: UUID(),
+                serviceE164: nil,
+                unregisteredAtTimestamp: unregisteredAtTimestamp
+            ))
             let actualValue = storageServiceContact.registrationStatus(currentDate: now)
             XCTAssertEqual(actualValue, expectedValue, String(describing: unregisteredAtTimestamp))
         }
     }
 
-    func testShouldBeInStorageService() {
+    func testShouldBeInStorageService() throws {
         let now = Date()
         let nowMs = now.ows_millisecondsSince1970
 
@@ -42,7 +46,11 @@ class StorageServiceContactTest: XCTestCase {
         ]
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {
-            let storageServiceContact = StorageServiceContact(unregisteredAtTimestamp: unregisteredAtTimestamp)
+            let storageServiceContact = try XCTUnwrap(StorageServiceContact(
+                serviceId: UUID(),
+                serviceE164: nil,
+                unregisteredAtTimestamp: unregisteredAtTimestamp
+            ))
             let actualValue = storageServiceContact.shouldBeInStorageService(currentDate: now)
             XCTAssertEqual(actualValue, expectedValue, String(describing: unregisteredAtTimestamp))
         }
