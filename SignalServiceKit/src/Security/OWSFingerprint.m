@@ -206,8 +206,8 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         NSString *line = [input substringWithRange:NSMakeRange(i * lineLength, lineLength)];
 
         NSMutableArray<NSString *> *chunks = [NSMutableArray new];
-        for (uint i = 0; i < line.length / 5; i++) {
-            NSString *nextChunk = [line substringWithRange:NSMakeRange(i * 5, 5)];
+        for (uint j = 0; j < line.length / 5; j++) {
+            NSString *nextChunk = [line substringWithRange:NSMakeRange(j * 5, 5)];
             [chunks addObject:nextChunk];
         }
         [lines addObject:[chunks componentsJoinedByString:@" "]];
