@@ -6,102 +6,69 @@
 import LibSignalClient
 
 @objc
-public final class OWSDeviceProvisioner: NSObject {
+public final class OWSDeviceProvisionerConstant: NSObject {
     @objc
     public static var provisioningVersion: UInt32 { 1 }
+}
+
+public final class OWSDeviceProvisioner {
     internal static var userAgent: String { "OWI" }
 
     private let myAciIdentityKeyPair: IdentityKeyPair
     private let myPniIdentityKeyPair: IdentityKeyPair?
     private let theirPublicKey: Data
     private let ephemeralDeviceId: String
-    private let accountAddress: SignalServiceAddress
-    private let pni: UUID
+    private let myAci: UUID
+    private let myPhoneNumber: String
+    private let myPni: UUID?
     private let profileKey: Data
     private let readReceiptsEnabled: Bool
 
-    private let provisioningCodeService: OWSDeviceProvisioningCodeService
-    private let provisioningService: OWSDeviceProvisioningService
+    private let provisioningService: DeviceProvisioningService
+    private let schedulers: Schedulers
 
-#if TESTABLE_BUILD
-    init(myAciIdentityKeyPair: IdentityKeyPair,
-         theirPublicKey: Data,
-         theirEphemeralDeviceId: String,
-         accountAddress: SignalServiceAddress,
-         pni: UUID,
-         profileKey: Data,
-         readReceiptsEnabled: Bool,
-         provisioningCodeService: OWSDeviceProvisioningCodeService,
-         provisioningService: OWSDeviceProvisioningService) {
+    public init(
+        myAciIdentityKeyPair: IdentityKeyPair,
+        myPniIdentityKeyPair: IdentityKeyPair?,
+        theirPublicKey: Data,
+        theirEphemeralDeviceId: String,
+        myAci: UUID,
+        myPhoneNumber: String,
+        myPni: UUID?,
+        profileKey: Data,
+        readReceiptsEnabled: Bool,
+        provisioningService: DeviceProvisioningService,
+        schedulers: Schedulers
+    ) {
         self.myAciIdentityKeyPair = myAciIdentityKeyPair
-        self.myPniIdentityKeyPair = nil
+        self.myPniIdentityKeyPair = myPniIdentityKeyPair
         self.theirPublicKey = theirPublicKey
         self.ephemeralDeviceId = theirEphemeralDeviceId
-        self.accountAddress = accountAddress
-        self.pni = pni
+        self.myAci = myAci
+        self.myPhoneNumber = myPhoneNumber
+        self.myPni = myPni
         self.profileKey = profileKey
         self.readReceiptsEnabled = readReceiptsEnabled
-        self.provisioningCodeService = provisioningCodeService
         self.provisioningService = provisioningService
-    }
-#endif
-
-    @objc
-    public init(myAciIdentityKeyPair: ECKeyPair,
-                myPniIdentityKeyPair: ECKeyPair?,
-                theirPublicKey: Data,
-                theirEphemeralDeviceId: String,
-                accountAddress: SignalServiceAddress,
-                pni: UUID,
-                profileKey: Data,
-                readReceiptsEnabled: Bool) {
-        self.myAciIdentityKeyPair = myAciIdentityKeyPair.identityKeyPair
-        self.myPniIdentityKeyPair = myPniIdentityKeyPair?.identityKeyPair
-        self.theirPublicKey = theirPublicKey
-        self.ephemeralDeviceId = theirEphemeralDeviceId
-        self.accountAddress = accountAddress
-        self.pni = pni
-        self.profileKey = profileKey
-        self.readReceiptsEnabled = readReceiptsEnabled
-        self.provisioningCodeService = OWSDeviceProvisioningCodeService()
-        self.provisioningService = OWSDeviceProvisioningService()
+        self.schedulers = schedulers
     }
 
-    @objc(provisionWithSuccess:failure:)
-    public func provision(success successCallback: @escaping () -> Void,
-                          failure failureCallback: @escaping (Error) -> Void) {
-        provisioningCodeService.requestProvisioningCode(success: { provisioningCode in
-            Logger.info("Retrieved provisioning code.")
-            self.provision(withCode: provisioningCode, success: successCallback, failure: failureCallback)
-        }, failure: { error in
-            Logger.error("Failed to get provisioning code with error: \(error)")
-            failureCallback(error)
-        })
+    public func provision() -> Promise<Void> {
+        firstly {
+            provisioningService.requestDeviceProvisioningCode()
+        }.then(on: schedulers.sharedUserInitiated) { provisioningCode in
+            self.provisionDevice(provisioningCode: provisioningCode)
+        }
     }
 
-    private func provision(withCode provisioningCode: String,
-                           success successCallback: @escaping () -> Void,
-                           failure failureCallback: @escaping (Error) -> Void) {
+    private func provisionDevice(provisioningCode: String) -> Promise<Void> {
         let messageBody: Data
         do {
             messageBody = try self.buildEncryptedMessageBody(withCode: provisioningCode)
         } catch {
-            Logger.error("Failed building provisioning message: \(error)")
-            failureCallback(error)
-            return
+            return Promise(error: error)
         }
-
-        self.provisioningService.provision(
-            messageBody: messageBody,
-            ephemeralDeviceId: ephemeralDeviceId,
-            success: {
-                Logger.info("ProvisioningService SUCCEEDED")
-                successCallback()
-            },
-            failure: { error in
-                Logger.error("ProvisioningService FAILED with error: \(error)")
-                failureCallback(error)
-            })
+        return provisioningService.provisionDevice(messageBody: messageBody, ephemeralDeviceId: ephemeralDeviceId)
     }
 
     private func buildEncryptedMessageBody(withCode provisioningCode: String) throws -> Data {
@@ -109,24 +76,16 @@ public final class OWSDeviceProvisioner: NSObject {
             aciIdentityKeyPublic: Data(myAciIdentityKeyPair.publicKey.serialize()),
             aciIdentityKeyPrivate: Data(myAciIdentityKeyPair.privateKey.serialize()),
             provisioningCode: provisioningCode,
-            profileKey: profileKey)
+            profileKey: profileKey
+        )
         messageBuilder.setUserAgent(Self.userAgent)
         messageBuilder.setReadReceipts(readReceiptsEnabled)
-        messageBuilder.setProvisioningVersion(Self.provisioningVersion)
+        messageBuilder.setProvisioningVersion(OWSDeviceProvisionerConstant.provisioningVersion)
+        messageBuilder.setNumber(myPhoneNumber)
+        messageBuilder.setAci(myAci.uuidString)
 
-        guard let phoneNumber = accountAddress.phoneNumber else {
-            throw OWSAssertionError("phone number unexpectedly missing")
-        }
-        messageBuilder.setNumber(phoneNumber)
-
-        guard let uuidString = accountAddress.uuidString else {
-            throw OWSAssertionError("UUID unexpectedly missing")
-        }
-        messageBuilder.setAci(uuidString)
-
-        if let myPniIdentityKeyPair = myPniIdentityKeyPair {
-            // Note that we don't set a PNI at all if we don't have an identity key.
-            messageBuilder.setPni(pni.uuidString)
+        if let myPni, let myPniIdentityKeyPair {
+            messageBuilder.setPni(myPni.uuidString)
             messageBuilder.setPniIdentityKeyPublic(Data(myPniIdentityKeyPair.publicKey.serialize()))
             messageBuilder.setPniIdentityKeyPrivate(Data(myPniIdentityKeyPair.privateKey.serialize()))
         }
@@ -140,7 +99,8 @@ public final class OWSDeviceProvisioner: NSObject {
         // Note that this is a one-time-use *cipher* public key, not our Signal *identity* public key
         let envelopeBuilder = ProvisioningProtoProvisionEnvelope.builder(
             publicKey: Data(cipher.ourPublicKey.serialize()),
-            body: encryptedProvisionMessage)
+            body: encryptedProvisionMessage
+        )
         return try envelopeBuilder.buildSerializedData()
     }
 }

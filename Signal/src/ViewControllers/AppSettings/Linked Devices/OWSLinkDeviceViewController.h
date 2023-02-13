@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)confirmProvisioningWithUrl:(DeviceProvisioningURL *)deviceProvisioningURL;
 
+// Exposed for Swift
+- (void)popToLinkedDeviceList;
+
 @end
 
 NS_ASSUME_NONNULL_END

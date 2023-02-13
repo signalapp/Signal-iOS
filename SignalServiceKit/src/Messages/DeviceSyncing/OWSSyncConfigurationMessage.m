@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
     configurationBuilder.unidentifiedDeliveryIndicators = self.showUnidentifiedDeliveryIndicators;
     configurationBuilder.typingIndicators = self.showTypingIndicators;
     configurationBuilder.linkPreviews = self.sendLinkPreviews;
-    configurationBuilder.provisioningVersion = OWSDeviceProvisioner.provisioningVersion;
+    configurationBuilder.provisioningVersion = OWSDeviceProvisionerConstant.provisioningVersion;
 
     NSError *error;
     SSKProtoSyncMessageConfiguration *_Nullable configurationProto = [configurationBuilder buildAndReturnError:&error];

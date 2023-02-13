@@ -82,7 +82,7 @@ public class Deprecated_ProvisioningController: NSObject {
             // if we have some backwards compatible support and allow a limited linking with an old
             // version of the app.
             guard let provisioningVersion = message.provisioningVersion,
-                provisioningVersion >= OWSDeviceProvisioner.provisioningVersion else {
+                provisioningVersion >= OWSDeviceProvisionerConstant.provisioningVersion else {
                     OWSActionSheets.showActionSheet(
                         title: NSLocalizedString("SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE",
                                                  comment: "alert title for outdated linking device"),

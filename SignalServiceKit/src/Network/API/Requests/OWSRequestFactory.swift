@@ -15,7 +15,6 @@ public extension OWSRequestFactory {
     static let textSecureKeysAPI  = "v2/keys"
     static let textSecureSignedKeysAPI  = "v2/keys/signed"
     static let textSecureDirectoryAPI  = "v1/directory"
-    static let textSecureDeviceProvisioningCodeAPI  = "v1/devices/provisioning/code"
     static let textSecureDevicesAPIFormat  = "v1/devices/%@"
     static let textSecureVersionedProfileAPI  = "v1/profile/"
     static let textSecureProfileAvatarFormAPI  = "v1/profile/form/avatar"
@@ -98,6 +97,14 @@ public extension OWSRequestFactory {
     }
 
     // MARK: - Devices
+
+    static func deviceProvisioningCode() -> TSRequest {
+        return TSRequest(
+            url: URL(string: "v1/devices/provisioning/code")!,
+            method: "GET",
+            parameters: nil
+        )
+    }
 
     static func provisionDevice(withMessageBody messageBody: Data, ephemeralDeviceId: String) -> TSRequest {
         owsAssertDebug(!messageBody.isEmpty)

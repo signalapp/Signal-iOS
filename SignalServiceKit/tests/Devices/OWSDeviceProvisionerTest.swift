@@ -9,63 +9,73 @@ import XCTest
 import LibSignalClient
 @testable import SignalServiceKit
 
-class OWSDeviceProvisionerTest: SSKBaseTestSwift {
-
-    class OWSFakeDeviceProvisioningService: OWSDeviceProvisioningService {
-        public override func provision(messageBody: Data,
-                                       ephemeralDeviceId: String,
-                                       success: @escaping () -> Void,
-                                       failure: @escaping (Error) -> Void) {
-            Logger.info("faking successful provisioning")
-            success()
-        }
+private class MockDeviceProvisioningService: DeviceProvisioningService {
+    var deviceProvisioningCodes = [String]()
+    func requestDeviceProvisioningCode() -> Promise<String> {
+        return .value(deviceProvisioningCodes.removeFirst())
     }
 
-    // MARK: -
-
-    class OWSFakeDeviceProvisioningCodeService: OWSDeviceProvisioningCodeService {
-        public override func requestProvisioningCode(success: @escaping (String) -> Void,
-                                                     failure: @escaping (Error) -> Void) {
-            Logger.info("faking successful provisioning code fetching")
-            success("fake-provisioning-code")
-        }
+    var provisionedDevices = [(messageBody: Data, ephemeralDeviceId: String)]()
+    func provisionDevice(messageBody: Data, ephemeralDeviceId: String) -> Promise<Void> {
+        provisionedDevices.append((messageBody, ephemeralDeviceId))
+        return .value(())
     }
+}
 
-    // MARK: -
+class OWSDeviceProvisionerTest: XCTestCase {
+    private var mockDeviceProvisioningService: MockDeviceProvisioningService!
+    private var schedulers: TestSchedulers!
 
     override func setUp() {
         super.setUp()
 
-        let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.networkManagerRef = OWSFakeNetworkManager()
+        mockDeviceProvisioningService = MockDeviceProvisioningService()
+
+        schedulers = TestSchedulers(scheduler: TestScheduler())
+        schedulers.scheduler.start()
     }
 
-    func testProvisioning() {
-        let expectation = self.expectation(description: "Provisioning Success")
+    func testProvisioning() throws {
+        let linkedDeviceCipher = ProvisioningCipher.generate()
 
-        let nullKey = Data(repeating: 0, count: 32)
-        let theirPublicKey = nullKey
-        let profileKey = nullKey
-        let accountAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "13213214321")
+        let myAciIdentityKeyPair = IdentityKeyPair.generate()
+        let myPniIdentityKeyPair = IdentityKeyPair.generate()
+        let myAci = UUID()
+        let myPhoneNumber = "+16505550100"
+        let myPni = UUID()
+        let profileKey = Cryptography.generateRandomBytes(UInt(ProfileKey.SIZE))
+        let readReceiptsEnabled = true
 
-        let provisioner = OWSDeviceProvisioner(myAciIdentityKeyPair: IdentityKeyPair.generate(),
-                                               theirPublicKey: theirPublicKey,
-                                               theirEphemeralDeviceId: "",
-                                               accountAddress: accountAddress,
-                                               pni: UUID(),
-                                               profileKey: profileKey,
-                                               readReceiptsEnabled: true,
-                                               provisioningCodeService: OWSFakeDeviceProvisioningCodeService(),
-                                               provisioningService: OWSFakeDeviceProvisioningService())
+        let provisioner = OWSDeviceProvisioner(
+            myAciIdentityKeyPair: myAciIdentityKeyPair,
+            myPniIdentityKeyPair: myPniIdentityKeyPair,
+            theirPublicKey: Data(linkedDeviceCipher.secondaryDevicePublicKey.keyData),
+            theirEphemeralDeviceId: "",
+            myAci: myAci,
+            myPhoneNumber: myPhoneNumber,
+            myPni: myPni,
+            profileKey: profileKey,
+            readReceiptsEnabled: readReceiptsEnabled,
+            provisioningService: mockDeviceProvisioningService,
+            schedulers: schedulers
+        )
 
-        provisioner.provision(
-            success: {
-                expectation.fulfill()
-            },
-            failure: { error in
-                XCTFail("Failed to provision with error: \(error)")
-            })
+        let provisioningCode = "ABC123"
+        mockDeviceProvisioningService.deviceProvisioningCodes.append(provisioningCode)
 
-        self.waitForExpectations(timeout: 5.0, handler: nil)
+        try provisioner.provision().done(on: schedulers.sync) {
+            let (messageBody, _) = self.mockDeviceProvisioningService.provisionedDevices.removeFirst()
+            let provisionEnvelope = try ProvisioningProtoProvisionEnvelope(serializedData: messageBody)
+            let provisionMessage = try linkedDeviceCipher.decrypt(envelope: provisionEnvelope)
+
+            XCTAssertEqual(provisionMessage.aci, myAci)
+            XCTAssertEqual(provisionMessage.phoneNumber, myPhoneNumber)
+            XCTAssertEqual(provisionMessage.pni, myPni)
+            XCTAssertEqual(provisionMessage.aciIdentityKeyPair.publicKey, Data(myAciIdentityKeyPair.publicKey.keyBytes))
+            XCTAssertEqual(provisionMessage.pniIdentityKeyPair?.publicKey, Data(myPniIdentityKeyPair.publicKey.keyBytes))
+            XCTAssertEqual(provisionMessage.profileKey.keyData, profileKey)
+            XCTAssertEqual(provisionMessage.areReadReceiptsEnabled, readReceiptsEnabled)
+            XCTAssertEqual(provisionMessage.provisioningCode, provisioningCode)
+        }.wait()
     }
 }

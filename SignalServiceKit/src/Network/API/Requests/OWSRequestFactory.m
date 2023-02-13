@@ -57,13 +57,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
 
-+ (TSRequest *)deviceProvisioningCodeRequest
-{
-    return [TSRequest requestWithUrl:[NSURL URLWithString:self.textSecureDeviceProvisioningCodeAPI]
-                              method:@"GET"
-                          parameters:@{}];
-}
-
 + (TSRequest *)getDevicesRequest
 {
     NSString *path = [NSString stringWithFormat:self.textSecureDevicesAPIFormat, @""];
