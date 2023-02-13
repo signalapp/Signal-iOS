@@ -258,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  message.hasEnded = joinedMemberUuids.count == 0;
                                                  message.creatorUuid = uuid.UUIDString;
                                                  message.joinedMemberUuids = [joinedMemberUuids
-                                                     map:^(NSUUID *uuid) { return uuid.UUIDString; }];
+                                                     map:^(NSUUID *blockParamUuid) { return blockParamUuid.UUIDString; }];
                                              }];
 }
 
