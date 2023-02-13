@@ -187,15 +187,12 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
             return VerifySecondaryDeviceResponse(pni: pni, deviceId: deviceId)
         }.recover { error -> Promise<VerifySecondaryDeviceResponse> in
-            if let statusCode = error.httpStatusCode,
-                statusCode == 409 {
-                // Convert 409 errors into .obsoleteLinkedDevice
-                // so that they can be explicitly handled.
-
+            if let statusCode = error.httpStatusCode, statusCode == 409 {
+                // Convert 409 errors into .obsoleteLinkedDevice so that they can be
+                // explicitly handled.
                 throw SignalServiceError.obsoleteLinkedDevice
             } else {
-                // Re-throw.
-                throw error
+                throw DeviceLimitExceededError(error) ?? error
             }
         }
     }

@@ -156,6 +156,9 @@ public class Deprecated_ProvisioningController: NSObject {
                                                             UIApplication.shared.open(url, options: [:])
                     }
                     alert.addAction(updateAction)
+                case let error as DeviceLimitExceededError:
+                    alert = ActionSheetController(title: error.errorDescription, message: error.recoverySuggestion)
+                    alert.addAction(ActionSheetAction(title: CommonStrings.okButton))
                 default:
                     let title = NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title")
                     let message = error.userErrorDescription

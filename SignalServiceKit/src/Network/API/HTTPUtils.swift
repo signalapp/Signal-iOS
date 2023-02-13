@@ -91,14 +91,8 @@ extension HTTPUtils {
             Logger.warn("The requested resource could not be found: \(errorDescription)")
             return buildServiceResponseError()
         case 411:
-            Logger.info("Multi-device pairing: \(responseStatus), \(errorDescription)")
-            let description = OWSLocalizedString("MULTIDEVICE_PAIRING_MAX_DESC",
-                                                comment: "alert title: cannot link - reached max linked devices")
-            let recoverySuggestion = OWSLocalizedString("MULTIDEVICE_PAIRING_MAX_RECOVERY",
-                                                       comment: "alert body: cannot link - reached max linked devices")
-            let error = buildServiceResponseError(description: description,
-                                                  recoverySuggestion: recoverySuggestion)
-            return error
+            Logger.info("Device limit exceeded: \(errorDescription)")
+            return buildServiceResponseError()
         case 413, 429:
             Logger.warn("Rate limit exceeded: \(request.httpMethod) \(requestUrl.absoluteString)")
             let description = OWSLocalizedString("REGISTER_RATE_LIMITING_ERROR", comment: "")

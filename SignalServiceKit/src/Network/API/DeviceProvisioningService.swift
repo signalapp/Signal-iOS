@@ -22,7 +22,7 @@ public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
     public func requestDeviceProvisioningCode() -> Promise<String> {
         let request = OWSRequestFactory.deviceProvisioningCode()
         return firstly(on: schedulers.sharedUserInitiated) {
-            self.networkManager.makePromise(request: request)
+            self.networkManager.makePromise(request: request, canTryWebSocket: true)
         }.map(on: schedulers.sharedUserInitiated) { (httpResponse: HTTPResponse) -> String in
             guard let httpResponseData = httpResponse.responseBodyData else {
                 throw OWSAssertionError("Missing responseBodyData.")
@@ -32,6 +32,8 @@ public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
                 throw OWSAssertionError("Empty verificationCode.")
             }
             return nonEmptyVerificationCode
+        }.recover(on: schedulers.sharedUserInitiated) { (error: Error) -> Promise<String> in
+            throw DeviceLimitExceededError(error) ?? error
         }
     }
 
@@ -45,7 +47,8 @@ public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
             ephemeralDeviceId: ephemeralDeviceId
         )
         return firstly(on: schedulers.sharedUserInitiated) {
-            self.networkManager.makePromise(request: request).asVoid(on: self.schedulers.sync)
+            self.networkManager.makePromise(request: request, canTryWebSocket: true)
+                .asVoid(on: self.schedulers.sync)
         }.recover(on: schedulers.sharedUserInitiated) { (error: Error) -> Promise<Void> in
             owsFailDebugUnlessNetworkFailure(error)
             throw error

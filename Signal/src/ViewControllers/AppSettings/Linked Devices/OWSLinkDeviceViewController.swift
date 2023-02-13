@@ -69,6 +69,19 @@ extension OWSLinkDeviceViewController {
 
     private func retryActionSheetController(error: Error, retryBlock: @escaping () -> Void) -> ActionSheetController {
         switch error {
+        case let error as DeviceLimitExceededError:
+            let actionSheet = ActionSheetController(
+                title: error.errorDescription,
+                message: error.recoverySuggestion
+            )
+            actionSheet.addAction(ActionSheetAction(
+                title: CommonStrings.okButton,
+                handler: { [weak self] _ in
+                    self?.popToLinkedDeviceList()
+                }
+            ))
+            return actionSheet
+
         default:
             let actionSheet = ActionSheetController(
                 title: NSLocalizedString("LINKING_DEVICE_FAILED_TITLE", comment: "Alert Title"),
