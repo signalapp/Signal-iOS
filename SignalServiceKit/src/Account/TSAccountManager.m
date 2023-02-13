@@ -312,7 +312,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     shouldUpdateStorageService:(BOOL)shouldUpdateStorageService
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug([PhoneNumber resemblesE164:phoneNumber]);
+    OWSAssertDebug(phoneNumber.isStructurallyValidE164);
     OWSAssertDebug([NSObject isNullableObject:self.localUuid equalTo:uuid]);
 
     [self storeLocalNumber:phoneNumber aci:uuid pni:pni transaction:transaction];

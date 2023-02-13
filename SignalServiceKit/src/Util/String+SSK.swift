@@ -783,3 +783,24 @@ public extension String {
         Self.permissibleFilenameCharRegex.hasMatch(input: self)
     }
 }
+
+// MARK: - Phone Numbers
+
+public extension String {
+    /// A pattern for quickly deciding if a string looks like an e164. It makes
+    /// no attempt at determining whether or not a particular sequence of digits
+    /// could ever be a dialable phone number.
+    private static let validE164StructureRegex = try! NSRegularExpression(
+        pattern: #"^\+[1-9][0-9]{0,18}$"#,
+        options: []
+    )
+
+    /// Checks if the value starts with a "+" and has [1, 19] digits.
+    var isStructurallyValidE164: Bool { Self.validE164StructureRegex.hasMatch(input: self) }
+}
+
+public extension NSString {
+    /// Checks if the value starts with a "+" and has [1, 19] digits.
+    @objc
+    var isStructurallyValidE164: Bool { (self as String).isStructurallyValidE164 }
+}

@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"%@ was unexpectedly empty.", name);
         return nil;
     }
-    if (![PhoneNumber resemblesE164:value]) {
+    if (!value.isStructurallyValidE164) {
         if (SSKDebugFlags.internalLogging) {
             OWSFailDebug(@"%@ was unexpectedly invalid: %@.", name, value);
         }

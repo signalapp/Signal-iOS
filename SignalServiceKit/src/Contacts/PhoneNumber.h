@@ -47,8 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)defaultCountryCode;
 
-+ (BOOL)resemblesE164:(NSString *)text;
-
 @end
 
 NS_ASSUME_NONNULL_END

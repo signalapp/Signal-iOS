@@ -12,7 +12,7 @@ protocol ContactDiscoveryTaskQueue {
 
 final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependencies {
     func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {
-        let e164s = phoneNumbers.filter { $0.isValidE164() }
+        let e164s = phoneNumbers.filter { $0.isStructurallyValidE164 }
         guard !e164s.isEmpty else {
             return .value([])
         }

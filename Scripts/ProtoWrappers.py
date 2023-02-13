@@ -1216,7 +1216,7 @@ public func serializedData() throws -> Data {
                         if field.name.endswith('E164') and field.proto_type == 'string':
                             writer.add('if let valueParam = valueParam.nilIfEmpty {')
                             writer.push_indent()
-                            writer.add('owsAssertDebug(PhoneNumber.resemblesE164(valueParam))')
+                            writer.add('owsAssertDebug(valueParam.isStructurallyValidE164)')
                             writer.pop_indent()
                             writer.add('}')
                             writer.newline()
@@ -1248,7 +1248,7 @@ public func serializedData() throws -> Data {
                     if field.name.endswith('E164') and field.proto_type == 'string':
                         writer.add('if let valueParam = valueParam.nilIfEmpty {')
                         writer.push_indent()
-                        writer.add('owsAssertDebug(PhoneNumber.resemblesE164(valueParam))')
+                        writer.add('owsAssertDebug(valueParam.isStructurallyValidE164)')
                         writer.pop_indent()
                         writer.add('}')
                         writer.newline()

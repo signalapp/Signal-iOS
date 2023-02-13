@@ -9969,7 +9969,7 @@ public class SSKProtoVerifiedBuilder: NSObject {
     public func setDestinationE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.destinationE164 = valueParam
@@ -9977,7 +9977,7 @@ public class SSKProtoVerifiedBuilder: NSObject {
 
     public func setDestinationE164(_ valueParam: String) {
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.destinationE164 = valueParam
@@ -10247,7 +10247,7 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder: NSObject 
     public func setDestinationE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.destinationE164 = valueParam
@@ -10255,7 +10255,7 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder: NSObject 
 
     public func setDestinationE164(_ valueParam: String) {
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.destinationE164 = valueParam
@@ -10801,7 +10801,7 @@ public class SSKProtoSyncMessageSentBuilder: NSObject {
     public func setDestinationE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.destinationE164 = valueParam
@@ -10809,7 +10809,7 @@ public class SSKProtoSyncMessageSentBuilder: NSObject {
 
     public func setDestinationE164(_ valueParam: String) {
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.destinationE164 = valueParam
@@ -11821,7 +11821,7 @@ public class SSKProtoSyncMessageReadBuilder: NSObject {
     public func setSenderE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.senderE164 = valueParam
@@ -11829,7 +11829,7 @@ public class SSKProtoSyncMessageReadBuilder: NSObject {
 
     public func setSenderE164(_ valueParam: String) {
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.senderE164 = valueParam
@@ -12078,7 +12078,7 @@ public class SSKProtoSyncMessageViewedBuilder: NSObject {
     public func setSenderE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.senderE164 = valueParam
@@ -12086,7 +12086,7 @@ public class SSKProtoSyncMessageViewedBuilder: NSObject {
 
     public func setSenderE164(_ valueParam: String) {
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.senderE164 = valueParam
@@ -12783,7 +12783,7 @@ public class SSKProtoSyncMessageViewOnceOpenBuilder: NSObject {
     public func setSenderE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.senderE164 = valueParam
@@ -12791,7 +12791,7 @@ public class SSKProtoSyncMessageViewOnceOpenBuilder: NSObject {
 
     public func setSenderE164(_ valueParam: String) {
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.senderE164 = valueParam
@@ -13624,7 +13624,7 @@ public class SSKProtoSyncMessageMessageRequestResponseBuilder: NSObject {
     public func setThreadE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.threadE164 = valueParam
@@ -13632,7 +13632,7 @@ public class SSKProtoSyncMessageMessageRequestResponseBuilder: NSObject {
 
     public func setThreadE164(_ valueParam: String) {
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.threadE164 = valueParam
@@ -16766,7 +16766,7 @@ public class SSKProtoContactDetailsBuilder: NSObject {
     public func setContactE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.contactE164 = valueParam
@@ -16774,7 +16774,7 @@ public class SSKProtoContactDetailsBuilder: NSObject {
 
     public func setContactE164(_ valueParam: String) {
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.contactE164 = valueParam

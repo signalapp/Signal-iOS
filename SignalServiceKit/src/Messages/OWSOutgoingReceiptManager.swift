@@ -126,7 +126,7 @@ fileprivate extension SignalServiceAddress {
     convenience init?(identifier: String) {
         if let uuid = UUID(uuidString: identifier) {
             self.init(uuid: uuid)
-        } else if (identifier as NSString).isValidE164() {
+        } else if identifier.isStructurallyValidE164 {
             self.init(phoneNumber: identifier)
         } else {
             return nil

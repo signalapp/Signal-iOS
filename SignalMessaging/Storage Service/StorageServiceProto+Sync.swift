@@ -202,7 +202,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         builder.setServiceUuid(contact.serviceId.uuidString)
 
         if let serviceE164 = contact.serviceE164 {
-            if PhoneNumber.resemblesE164(serviceE164) {
+            if serviceE164.isStructurallyValidE164 {
                 builder.setServiceE164(serviceE164)
             } else {
                 owsFailDebug("Invalid e164.")
@@ -993,8 +993,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             .fetchOrBuildDefaultUniversalConfiguration(with: transaction)
         builder.setUniversalExpireTimer(dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0)
 
-        if let localPhoneNumber = localAddress.phoneNumber?.strippedOrNil,
-           PhoneNumber.resemblesE164(localPhoneNumber) {
+        if let localPhoneNumber = localAddress.phoneNumber?.strippedOrNil, localPhoneNumber.isStructurallyValidE164 {
             builder.setE164(localPhoneNumber)
         }
 
@@ -1233,7 +1232,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             systemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice(transaction: transaction)
         }
 
-        if let serviceLocalE164 = record.e164?.strippedOrNil, PhoneNumber.resemblesE164(serviceLocalE164) {
+        if let serviceLocalE164 = record.e164?.strippedOrNil, serviceLocalE164.isStructurallyValidE164 {
             // If the local phone number doesn't match the "local phone number" in the storage service...
             if localAddress.phoneNumber != serviceLocalE164 {
                 Logger.warn("localAddress.phoneNumber: \(String(describing: localAddress.phoneNumber)) != serviceLocalE164: \(serviceLocalE164)")

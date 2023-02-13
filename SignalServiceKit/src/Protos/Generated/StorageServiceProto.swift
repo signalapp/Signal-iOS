@@ -1637,7 +1637,7 @@ public struct StorageServiceProtoContactRecordBuilder {
     public mutating func setServiceE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.serviceE164 = valueParam
@@ -1645,7 +1645,7 @@ public struct StorageServiceProtoContactRecordBuilder {
 
     public mutating func setServiceE164(_ valueParam: String) {
         if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            owsAssertDebug(valueParam.isStructurallyValidE164)
         }
 
         proto.serviceE164 = valueParam

@@ -107,28 +107,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return number;
 }
 
-+ (NSRegularExpression *)phoneRegex
-{
-    static NSRegularExpression *regex = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSError *error;
-        regex = [NSRegularExpression regularExpressionWithPattern:@"^\\+\\d{10,15}$"
-                                                          options:0
-                                                            error:&error];
-        if (error || !regex) {
-            OWSFail(@"could not compile regular expression: %@", error);
-        }
-    });
-    return regex;
-}
-
-+ (BOOL)resemblesE164:(NSString *)text {
-    return [self.phoneRegex rangeOfFirstMatchInString:text
-                                              options:0
-                                                range:NSMakeRange(0, text.length)].location != NSNotFound;
-}
-
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input {
     return [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:input
                                                                withSpecifiedRegionCode:[self defaultCountryCode]];

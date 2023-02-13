@@ -198,6 +198,35 @@ final class StringTest: XCTestCase {
         XCTAssertEqual(format(aVeryLongTime), "88 years, 7 weeks, 6 days, 5 hours, 4 minutes, 3 seconds")
     }
 
+    func testIsStructurallyValidE164() {
+        let testCases: [(String, Bool)] = [
+            // E164 must have leading +.
+            ("+5218341639157", true),
+            ("5218341639157", false),
+            ("+18018108311", true),
+            ("18018108311", false),
+            // E164 must have exactly 1 leading +.
+            ("++18018108311", false),
+            // E164 must only contains 0-9 arabic digits.
+            ("+123a456", false),
+            ("+123\u{0661}456", false), // ARABIC-INDIC DIGIT ONE
+            ("+123\u{0031}\u{fe0f}\u{20e3}456", false), // KEYCAP DIGIT 1
+            // E164 must have at least 1 digit.
+            ("+1", true),
+            ("+", false),
+            // E164 must have no more than 19 digits.
+            ("+1234567890123456789", true),
+            ("+12345678901234567890", false),
+            // E164 must not start with a zero
+            ("+0", false),
+            ("+0123", false),
+            ("+3210", true)
+        ]
+        for (inputValue, expectedResult) in testCases {
+            XCTAssertEqual(inputValue.isStructurallyValidE164, expectedResult, "\(inputValue)")
+        }
+    }
+
     func test_filterAsE164() {
         XCTAssertEqual("", ("" as NSString).filterAsE164())
         XCTAssertEqual("", (" " as NSString).filterAsE164())
