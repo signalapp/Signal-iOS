@@ -217,11 +217,11 @@ class Deprecated_ChangePhoneNumberController: Dependencies {
 
     public var oldCountryState: RegistrationCountryState = .defaultValue
 
-    public var oldPhoneNumber: RegistrationPhoneNumber?
+    public var oldPhoneNumber: Deprecated_RegistrationPhoneNumber?
 
     public var newCountryState: RegistrationCountryState = .defaultValue
 
-    public var newPhoneNumber: RegistrationPhoneNumber?
+    public var newPhoneNumber: Deprecated_RegistrationPhoneNumber?
 
     public var captchaToken: String?
 

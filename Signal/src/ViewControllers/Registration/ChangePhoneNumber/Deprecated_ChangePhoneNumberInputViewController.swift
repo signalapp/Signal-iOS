@@ -307,7 +307,7 @@ private class ChangePhoneNumberValueViews: NSObject {
         }
     }
 
-    var phoneNumber: RegistrationPhoneNumber? {
+    var phoneNumber: Deprecated_RegistrationPhoneNumber? {
         get {
             switch value {
             case .oldValue:
@@ -431,7 +431,10 @@ private class ChangePhoneNumberValueViews: NSObject {
                   return .invalidNumber
               }
 
-        self.phoneNumber = RegistrationPhoneNumber(e164: e164, userInput: phoneNumberWithoutCallingCode)
+        self.phoneNumber = Deprecated_RegistrationPhoneNumber(
+            e164: e164,
+            userInput: phoneNumberWithoutCallingCode
+        )
         return .validNumber(phoneNumber: phoneNumber)
     }
 }
@@ -485,7 +488,7 @@ extension ChangePhoneNumberValueViews: CountryCodeViewControllerDelegate {
 
 // MARK: -
 
-extension RegistrationPhoneNumber {
+extension Deprecated_RegistrationPhoneNumber {
 
     var withoutCountryCallingCode: String? {
         guard let countryState = RegistrationCountryState.countryState(forE164: e164) else {

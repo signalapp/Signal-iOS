@@ -91,7 +91,7 @@ public struct RegistrationCountryState: Dependencies {
 // MARK: -
 
 @objc
-public class RegistrationPhoneNumber: NSObject {
+public class Deprecated_RegistrationPhoneNumber: NSObject {
     public let e164: String
     public let userInput: String
 

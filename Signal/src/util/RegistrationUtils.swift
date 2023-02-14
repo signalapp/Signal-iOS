@@ -47,7 +47,10 @@ public extension RegistrationUtils {
                         // TODO[ViewContextPiping]
                         let context = ViewControllerContext.shared
                         let onboardingController = Deprecated_OnboardingController(context: context, onboardingMode: .registering)
-                        let registrationPhoneNumber = RegistrationPhoneNumber(e164: phoneNumber, userInput: phoneNumber)
+                        let registrationPhoneNumber = Deprecated_RegistrationPhoneNumber(
+                            e164: phoneNumber,
+                            userInput: phoneNumber
+                        )
                         onboardingController.update(phoneNumber: registrationPhoneNumber)
 
                         let viewController = Deprecated_OnboardingVerificationViewController(onboardingController: onboardingController)
@@ -81,7 +84,10 @@ public extension RegistrationUtils {
                                 // TODO[ViewContextPiping]
                                 let context = ViewControllerContext.shared
                                 let onboardingController = Deprecated_OnboardingController(context: context, onboardingMode: .registering)
-                                let registrationPhoneNumber = RegistrationPhoneNumber(e164: phoneNumber, userInput: phoneNumber)
+                                let registrationPhoneNumber = Deprecated_RegistrationPhoneNumber(
+                                    e164: phoneNumber,
+                                    userInput: phoneNumber
+                                )
                                 onboardingController.update(phoneNumber: registrationPhoneNumber)
 
                                 let viewController = Deprecated_OnboardingCaptchaViewController(onboardingController: onboardingController)

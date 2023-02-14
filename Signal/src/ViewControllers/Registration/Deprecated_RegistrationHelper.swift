@@ -25,7 +25,7 @@ public class Deprecated_RegistrationHelper: Dependencies {
 
     public static func requestRegistrationVerification(delegate: Deprecated_RegistrationHelperDelegate,
                                                        fromViewController: UIViewController,
-                                                       phoneNumber: RegistrationPhoneNumber?,
+                                                       phoneNumber: Deprecated_RegistrationPhoneNumber?,
                                                        countryState: RegistrationCountryState,
                                                        captchaToken: String?,
                                                        isSMS: Bool,
@@ -43,7 +43,7 @@ public class Deprecated_RegistrationHelper: Dependencies {
 
     public static func requestChangePhoneNumberVerification(delegate: Deprecated_RegistrationHelperDelegate,
                                                             fromViewController: UIViewController,
-                                                            phoneNumber: RegistrationPhoneNumber?,
+                                                            phoneNumber: Deprecated_RegistrationPhoneNumber?,
                                                             countryState: RegistrationCountryState,
                                                             captchaToken: String?,
                                                             isSMS: Bool,
@@ -61,7 +61,7 @@ public class Deprecated_RegistrationHelper: Dependencies {
     private static func requestVerification(mode: AccountManager.VerificationMode,
                                             delegate: Deprecated_RegistrationHelperDelegate,
                                             fromViewController: UIViewController,
-                                            phoneNumber: RegistrationPhoneNumber?,
+                                            phoneNumber: Deprecated_RegistrationPhoneNumber?,
                                             countryState: RegistrationCountryState,
                                             captchaToken: String?,
                                             isSMS: Bool,

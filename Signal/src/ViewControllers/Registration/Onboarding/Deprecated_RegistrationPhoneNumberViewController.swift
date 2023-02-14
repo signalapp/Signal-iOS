@@ -585,7 +585,9 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
         }
 
         if Self.tsAccountManager.isReregistering {
-            self.requestVerification(with: RegistrationPhoneNumber(e164: localNumber.toE164(), userInput: phoneNumberText))
+            self.requestVerification(with: Deprecated_RegistrationPhoneNumber(
+                e164: localNumber.toE164(), userInput: phoneNumberText
+            ))
             return
         }
 
@@ -602,7 +604,10 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
             guard let self = self else { return }
 
             if shouldContinue {
-                self.requestVerification(with: RegistrationPhoneNumber(e164: localNumber.toE164(), userInput: phoneNumberText))
+                self.requestVerification(with: Deprecated_RegistrationPhoneNumber(
+                    e164: localNumber.toE164(),
+                    userInput: phoneNumberText
+                ))
             } else {
                 // User wants to edit, retake first responder
                 self.phoneNumberTextField.becomeFirstResponder()
@@ -610,7 +615,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
         }
     }
 
-    private func requestVerification(with phoneNumber: RegistrationPhoneNumber) {
+    private func requestVerification(with phoneNumber: Deprecated_RegistrationPhoneNumber) {
         self.onboardingController.update(phoneNumber: phoneNumber)
 
         self.verificationAnimation(shouldPlay: true)

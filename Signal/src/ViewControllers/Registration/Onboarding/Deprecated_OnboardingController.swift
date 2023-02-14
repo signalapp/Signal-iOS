@@ -423,7 +423,7 @@ public class Deprecated_OnboardingController: NSObject {
 
     public private(set) var countryState: RegistrationCountryState = .defaultValue
 
-    public private(set) var phoneNumber: RegistrationPhoneNumber?
+    public private(set) var phoneNumber: Deprecated_RegistrationPhoneNumber?
 
     public private(set) var captchaToken: String?
 
@@ -443,7 +443,7 @@ public class Deprecated_OnboardingController: NSObject {
     }
 
     @objc
-    public func update(phoneNumber: RegistrationPhoneNumber) {
+    public func update(phoneNumber: Deprecated_RegistrationPhoneNumber) {
         AssertIsOnMainThread()
 
         self.phoneNumber = phoneNumber
