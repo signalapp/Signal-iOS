@@ -697,7 +697,7 @@
 		4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */; };
 		4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C19A0FB227B356F007A0C7F /* DebugUIMessages+OWS.swift */; };
 		4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */; };
-		4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C21D5D7223AC60F00EF8A77 /* PhotoCapture.swift */; };
+		4C21D5D8223AC60F00EF8A77 /* CameraCaptureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C21D5D7223AC60F00EF8A77 /* CameraCaptureSession.swift */; };
 		4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */; };
 		4C2A538C23C5462300D28CD8 /* CVMessageMappingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2A538B23C5462300D28CD8 /* CVMessageMappingTest.swift */; };
 		4C2EBB7F2356B2B900BBC171 /* Deprecated_SecondaryLinkingSetDeviceNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2EBB7E2356B2B900BBC171 /* Deprecated_SecondaryLinkingSetDeviceNameViewController.swift */; };
@@ -3073,7 +3073,7 @@
 		4C1D233A218B6CDB00A0598F /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = translations/th.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C1D233B218B6D3100A0598F /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = translations/tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearchViewController.swift; sourceTree = "<group>"; };
-		4C21D5D7223AC60F00EF8A77 /* PhotoCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCapture.swift; sourceTree = "<group>"; };
+		4C21D5D7223AC60F00EF8A77 /* CameraCaptureSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureSession.swift; sourceTree = "<group>"; };
 		4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreMessagesView.swift; sourceTree = "<group>"; };
 		4C2A538B23C5462300D28CD8 /* CVMessageMappingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVMessageMappingTest.swift; sourceTree = "<group>"; };
 		4C2EBB7E2356B2B900BBC171 /* Deprecated_SecondaryLinkingSetDeviceNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecated_SecondaryLinkingSetDeviceNameViewController.swift; sourceTree = "<group>"; };
@@ -5297,9 +5297,9 @@
 			isa = PBXGroup;
 			children = (
 				32C584A725B81C6600256804 /* AvatarViewController.swift */,
+				4C21D5D7223AC60F00EF8A77 /* CameraCaptureSession.swift */,
 				34969559219B605E00DCFE74 /* ImagePickerController.swift */,
 				76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */,
-				4C21D5D7223AC60F00EF8A77 /* PhotoCapture.swift */,
 				E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */,
 				4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */,
 				3496955A219B605E00DCFE74 /* PhotoCollectionPickerController.swift */,
@@ -10677,6 +10677,7 @@
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
+				4C21D5D8223AC60F00EF8A77 /* CameraCaptureSession.swift in Sources */,
 				4C46361122EB98EC00185951 /* CameraFirstCaptureSendFlow.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
 				34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */,
@@ -11071,7 +11072,6 @@
 				88D1BCBB24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift in Sources */,
 				88D1BCB924F73C05009A1738 /* PhoneNumberSharingSettingsTableViewController.swift in Sources */,
 				4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */,
-				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
 				3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */,

@@ -364,15 +364,15 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
             let approvalItemsPromise: Promise<[AttachmentApprovalItem]> = Promise.when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises)
-            firstly { () -> Promise<Swift.Result<[AttachmentApprovalItem], Error>> in
+            firstly { () -> Promise<Result<[AttachmentApprovalItem], Error>> in
                 return Promise.race(
-                    approvalItemsPromise.map { attachmentApprovalItems -> Swift.Result<[AttachmentApprovalItem], Error> in
-                        Swift.Result.success(attachmentApprovalItems)
+                    approvalItemsPromise.map { attachmentApprovalItems -> Result<[AttachmentApprovalItem], Error> in
+                        .success(attachmentApprovalItems)
                     },
-                    modal.wasCancelledPromise.map { _ -> Swift.Result<[AttachmentApprovalItem], Error> in
-                        Swift.Result.failure(OWSGenericError("Modal was cancelled."))
+                    modal.wasCancelledPromise.map { _ -> Result<[AttachmentApprovalItem], Error> in
+                        .failure(OWSGenericError("Modal was cancelled."))
                     })
-            }.map { (result: Swift.Result<[AttachmentApprovalItem], Error>) in
+            }.map { (result: Result<[AttachmentApprovalItem], Error>) in
                 modal.dismiss {
                     switch result {
                     case .success(let attachmentApprovalItems):

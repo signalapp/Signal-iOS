@@ -555,7 +555,7 @@ class CameraCaptureControl: UIView {
 
 protocol CameraZoomSelectionControlDelegate: AnyObject {
 
-    func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didSelect camera: PhotoCapture.CameraType)
+    func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didSelect camera: CameraCaptureSession.CameraType)
 
     func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didChangeZoomFactor zoomFactor: CGFloat)
 }
@@ -564,9 +564,9 @@ class CameraZoomSelectionControl: UIView {
 
     weak var delegate: CameraZoomSelectionControlDelegate?
 
-    private let availableCameras: [PhotoCapture.CameraType]
+    private let availableCameras: [CameraCaptureSession.CameraType]
 
-    var selectedCamera: PhotoCapture.CameraType
+    var selectedCamera: CameraCaptureSession.CameraType
     var currentZoomFactor: CGFloat {
         didSet {
             var viewFound = false
@@ -607,7 +607,7 @@ class CameraZoomSelectionControl: UIView {
         }
     }
 
-    required init(availableCameras: [(cameraType: PhotoCapture.CameraType, defaultZoomFactor: CGFloat)]) {
+    required init(availableCameras: [(cameraType: CameraCaptureSession.CameraType, defaultZoomFactor: CGFloat)]) {
         owsAssertDebug(!availableCameras.isEmpty, "availableCameras must not be empty.")
 
         self.availableCameras = availableCameras.map { $0.cameraType }
@@ -682,7 +682,7 @@ class CameraZoomSelectionControl: UIView {
 
     private class CameraSelectionCircleView: UIView {
 
-        let camera: PhotoCapture.CameraType
+        let camera: CameraCaptureSession.CameraType
         let defaultZoomFactor: CGFloat
         var currentZoomFactor: CGFloat = 1
 
@@ -700,7 +700,7 @@ class CameraZoomSelectionControl: UIView {
             return label
         }()
 
-        required init(camera: PhotoCapture.CameraType, defaultZoomFactor: CGFloat) {
+        required init(camera: CameraCaptureSession.CameraType, defaultZoomFactor: CGFloat) {
             self.camera = camera
             self.defaultZoomFactor = defaultZoomFactor
             self.currentZoomFactor = defaultZoomFactor
@@ -893,7 +893,7 @@ private class LockView: UIView {
     }
 }
 
-class RecordingTimerView: PillView {
+class RecordingDurationView: PillView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -911,12 +911,30 @@ class RecordingTimerView: PillView {
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewMargins()
 
-        updateView()
+        updateDurationLabel()
     }
 
     @available(*, unavailable, message: "Use init(frame:) instead")
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    var duration: TimeInterval = 0 {
+        didSet {
+            updateDurationLabel()
+        }
+    }
+
+    // If `true` red dot next to duration label will flash.
+    var isRecordingInProgress: Bool = false {
+        didSet {
+            guard oldValue != isRecordingInProgress else { return }
+            if isRecordingInProgress {
+                startAnimatingRedDot()
+            } else {
+                stopAnimatingRedDot()
+            }
+        }
     }
 
     // MARK: - Subviews
@@ -939,53 +957,31 @@ class RecordingTimerView: PillView {
 
     // MARK: -
 
-    var recordingStartTime: TimeInterval?
-
-    func startCounting() {
-        guard timer == nil else { return }
-        recordingStartTime = CACurrentMediaTime()
-        timer = Timer.weakScheduledTimer(withTimeInterval: 0.1, target: self, selector: #selector(updateView), userInfo: nil, repeats: true)
-        UIView.animate(withDuration: 0.5,
-                       delay: 0,
-                       options: [.autoreverse, .repeat],
-                       animations: { self.icon.alpha = 1 })
-        updateView()
+    private func startAnimatingRedDot() {
+        UIView.animate(
+            withDuration: 0.5,
+            delay: 0,
+            options: [ .autoreverse, .repeat ],
+            animations: { self.icon.alpha = 1 }
+        )
     }
 
-    func stopCounting() {
-        timer?.invalidate()
-        timer = nil
+    private func stopAnimatingRedDot() {
         icon.layer.removeAllAnimations()
         UIView.animate(withDuration: 0.4) {
             self.icon.alpha = 0
         }
     }
 
-    // MARK: -
-
-    private var timer: Timer?
-
     private lazy var timeFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "mm:ss"
         formatter.timeZone = TimeZone(identifier: "UTC")!
-
         return formatter
     }()
 
-    // This method should only be called when the call state is "connected".
-    var recordingDuration: TimeInterval {
-        guard let recordingStartTime = recordingStartTime else {
-            return 0
-        }
-
-        return CACurrentMediaTime() - recordingStartTime
-    }
-
-    @objc
-    private func updateView() {
-        let recordingDuration = self.recordingDuration
-        let durationDate = Date(timeIntervalSinceReferenceDate: recordingDuration)
+    private func updateDurationLabel() {
+        let durationDate = Date(timeIntervalSinceReferenceDate: duration)
         label.text = timeFormatter.string(from: durationDate)
     }
 }
@@ -1320,7 +1316,7 @@ class CameraTopBar: MediaTopBar {
     let flashModeButton = FlashModeButton()
     let batchModeButton = CaptureModeButton()
 
-    let recordingTimerView = RecordingTimerView(frame: .zero)
+    let recordingTimerView = RecordingDurationView(frame: .zero)
 
     override init(frame: CGRect) {
         cameraControlsContainerView = UIStackView(arrangedSubviews: [ batchModeButton, flashModeButton ])
@@ -1381,12 +1377,12 @@ class CameraTopBar: MediaTopBar {
         case .cameraControls:
             closeButton.setIsHidden(false, animated: animated)
             cameraControlsContainerView.setIsHidden(false, animated: animated)
-            recordingTimerView.setIsHidden(true, animated: animated)
+            recordingTimerView.setIsHidden(true, animated: false)
 
         case .closeButton:
             closeButton.setIsHidden(false, animated: animated)
             cameraControlsContainerView.setIsHidden(true, animated: animated)
-            recordingTimerView.setIsHidden(true, animated: animated)
+            recordingTimerView.setIsHidden(true, animated: false)
 
         case .videoRecording:
             closeButton.setIsHidden(true, animated: animated)

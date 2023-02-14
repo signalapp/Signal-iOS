@@ -38,34 +38,34 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     weak var dataSource: PhotoCaptureViewControllerDataSource?
     private var interactiveDismiss: PhotoCaptureInteractiveDismiss?
 
-    public lazy var photoCapture = PhotoCapture()
-    private var isCaptureReady = false {
+    public lazy var cameraCaptureSession = CameraCaptureSession(delegate: self)
+    private var isCameraReady = false {
         didSet {
-            guard isCaptureReady != oldValue else { return }
+            guard isCameraReady != oldValue else { return }
 
-            if isCaptureReady {
+            if isCameraReady {
                 BenchEventComplete(eventId: "Show-Camera")
-                VolumeButtons.shared?.addObserver(observer: photoCapture)
+                VolumeButtons.shared?.addObserver(observer: cameraCaptureSession)
                 UIApplication.shared.isIdleTimerDisabled = true
             } else {
-                VolumeButtons.shared?.removeObserver(photoCapture)
+                VolumeButtons.shared?.removeObserver(cameraCaptureSession)
                 UIApplication.shared.isIdleTimerDisabled = false
             }
         }
     }
-    private var hasCaptureStarted = false {
+    private var hasCameraStarted = false {
         didSet {
-            isCaptureReady = isViewVisible && hasCaptureStarted
+            isCameraReady = isViewVisible && hasCameraStarted
         }
     }
     private var isViewVisible = false {
         didSet {
-            isCaptureReady = isViewVisible && hasCaptureStarted
+            isCameraReady = isViewVisible && hasCameraStarted
         }
     }
 
     deinit {
-        photoCapture.stopCapture().done {
+        cameraCaptureSession.stop().done {
             Logger.debug("stopCapture completed")
         }
     }
@@ -111,7 +111,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             previewOrientation = .portrait
         }
         UIViewController.attemptRotationToDeviceOrientation()
-        photoCapture.updateVideoPreviewConnection(toOrientation: previewOrientation)
+        cameraCaptureSession.updateVideoPreviewConnection(toOrientation: previewOrientation)
         updateIconOrientations(isAnimated: false, captureOrientation: previewOrientation)
 
         resumePhotoCapture()
@@ -225,7 +225,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
 
         // Show / hide camera controls and viewfinder.
         let hideCameraUI = composerMode != .camera
-        let isFrontCamera = photoCapture.desiredPosition == .front
+        let isFrontCamera = cameraCaptureSession.desiredPosition == .front
         frontCameraZoomControl?.setIsHidden(hideCameraUI || !isFrontCamera, animated: animated)
         rearCameraZoomControl?.setIsHidden(hideCameraUI || isFrontCamera, animated: animated)
         previewView.setIsHidden(hideCameraUI, animated: animated)
@@ -255,8 +255,9 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         _internalIsRecordingVideo = isRecordingVideo
 
         updateTopBarAppearance(animated: animated)
+        topBar.recordingTimerView.isRecordingInProgress = isRecordingVideo
         if isRecordingVideo {
-            topBar.recordingTimerView.startCounting()
+            topBar.recordingTimerView.duration = 0
 
             let captureControlState: CameraCaptureControl.State = UIAccessibility.isVoiceOverRunning ? .recordingUsingVoiceOver : .recording
             let animationDuration: TimeInterval = animated ? 0.4 : 0
@@ -265,8 +266,6 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
                 sideBar.cameraCaptureControl.setState(captureControlState, animationDuration: animationDuration)
             }
         } else {
-            topBar.recordingTimerView.stopCounting()
-
             let animationDuration: TimeInterval = animated ? 0.2 : 0
             bottomBar.captureControl.setState(.initial, animationDuration: animationDuration)
             if let sideBar = sideBar {
@@ -359,7 +358,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private var lastUserFocusTapPoint: CGPoint?
 
     private var previewView: CapturePreviewView {
-        photoCapture.previewView
+        cameraCaptureSession.previewView
     }
 
     // MARK: - Text Editor
@@ -480,7 +479,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         // Camera Zoom Controls
         cameraZoomControlIPhoneConstraints = []
 
-        let availableFrontCameras = photoCapture.cameraZoomFactorMap(forPosition: .front)
+        let availableFrontCameras = cameraCaptureSession.cameraZoomFactorMap(forPosition: .front)
         if availableFrontCameras.count > 0 {
             let cameras = availableFrontCameras.sorted { $0.0 < $1.0 }.map { ($0.0, $0.1) }
 
@@ -496,7 +495,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             cameraZoomControlIPhoneConstraints?.append(contentsOf: cameraZoomControlConstraints)
         }
 
-        let availableRearCameras = photoCapture.cameraZoomFactorMap(forPosition: .back)
+        let availableRearCameras = cameraCaptureSession.cameraZoomFactorMap(forPosition: .back)
         if availableRearCameras.count > 0 {
             let cameras = availableRearCameras.sorted { $0.0 < $1.0 }.map { ($0.0, $0.1) }
 
@@ -544,7 +543,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         guard sideBar == nil else { return }
 
         let sideBar = CameraSideBar(frame: .zero)
-        sideBar.cameraCaptureControl.delegate = photoCapture
+        sideBar.cameraCaptureControl.delegate = cameraCaptureSession
         sideBar.batchModeButton.addTarget(self, action: #selector(didTapBatchMode), for: .touchUpInside)
         sideBar.flashModeButton.addTarget(self, action: #selector(didTapFlashMode), for: .touchUpInside)
         sideBar.switchCameraButton.addTarget(self, action: #selector(didTapSwitchCamera), for: .touchUpInside)
@@ -647,7 +646,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     }
 
     private func updateUIOnCameraPositionChange(animated: Bool = false) {
-        let isFrontCamera = photoCapture.desiredPosition == .front
+        let isFrontCamera = cameraCaptureSession.desiredPosition == .front
         frontCameraZoomControl?.setIsHidden(!isFrontCamera, animated: animated)
         rearCameraZoomControl?.setIsHidden(isFrontCamera, animated: animated)
         bottomBar.switchCameraButton.isFrontCameraActive = isFrontCamera
@@ -677,7 +676,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         }
 
         // Don't "unrotate" the switch camera icon if the front facing camera had been selected.
-        let tranformFromCameraType: CGAffineTransform = photoCapture.desiredPosition == .front ? CGAffineTransform(rotationAngle: -.pi) : .identity
+        let tranformFromCameraType: CGAffineTransform = cameraCaptureSession.desiredPosition == .front ? CGAffineTransform(rotationAngle: -.pi) : .identity
 
         var buttonsToUpdate: [UIView] = [ topBar.batchModeButton, topBar.flashModeButton, bottomBar.photoLibraryButton ]
         if let cameraZoomControl = frontCameraZoomControl {
@@ -1010,7 +1009,7 @@ extension PhotoCaptureViewController {
         if let switchCameraButton = isIPadUIInRegularMode ? sideBar?.switchCameraButton : bottomBar.switchCameraButton {
             switchCameraButton.performSwitchAnimation()
         }
-        photoCapture.switchCameraPosition().done { [weak self] in
+        cameraCaptureSession.switchCameraPosition().done { [weak self] in
             self?.updateUIOnCameraPositionChange(animated: true)
         }.catch { error in
             self.showFailureUI(error: error)
@@ -1020,7 +1019,7 @@ extension PhotoCaptureViewController {
     @objc
     private func didTapFlashMode() {
         firstly {
-            photoCapture.switchFlashMode()
+            cameraCaptureSession.toggleFlashMode()
         }.done {
             self.updateFlashModeControl(animated: true)
         }.catch { error in
@@ -1092,12 +1091,12 @@ extension PhotoCaptureViewController {
     private func didPinchZoom(pinchGesture: UIPinchGestureRecognizer) {
         switch pinchGesture.state {
         case .began:
-            photoCapture.beginPinchZoom()
+            cameraCaptureSession.beginPinchZoom()
             fallthrough
         case .changed:
-            photoCapture.updatePinchZoom(withScale: pinchGesture.scale)
+            cameraCaptureSession.updatePinchZoom(withScale: pinchGesture.scale)
         case .ended:
-            photoCapture.completePinchZoom(withScale: pinchGesture.scale)
+            cameraCaptureSession.completePinchZoom(withScale: pinchGesture.scale)
         default:
             break
         }
@@ -1119,7 +1118,7 @@ extension PhotoCaptureViewController {
     private func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
         let viewLocation = tapGesture.location(in: previewView)
         let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
-        photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
+        cameraCaptureSession.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
         lastUserFocusTapPoint = devicePoint
 
         if let focusFrameSuperview = tapToFocusView.superview {
@@ -1166,20 +1165,19 @@ extension PhotoCaptureViewController {
 extension PhotoCaptureViewController {
 
     private func setupPhotoCapture() {
-        photoCapture.delegate = self
-        bottomBar.captureControl.delegate = photoCapture
+        bottomBar.captureControl.delegate = cameraCaptureSession
         if let sideBar = sideBar {
-            sideBar.cameraCaptureControl.delegate = photoCapture
+            sideBar.cameraCaptureControl.delegate = cameraCaptureSession
         }
 
         // If the session is already running, we're good to go.
-        guard !photoCapture.session.isRunning else {
-            self.hasCaptureStarted = true
+        guard !cameraCaptureSession.avCaptureSession.isRunning else {
+            self.hasCameraStarted = true
             return
         }
 
         firstly {
-            photoCapture.prepareVideoCapture()
+            cameraCaptureSession.prepare()
         }.catch { [weak self] error in
             guard let self = self else { return }
             self.showFailureUI(error: error)
@@ -1187,22 +1185,22 @@ extension PhotoCaptureViewController {
     }
 
     private func pausePhotoCapture() {
-        guard photoCapture.session.isRunning else { return }
+        guard cameraCaptureSession.avCaptureSession.isRunning else { return }
         firstly {
-            photoCapture.stopCapture()
+            cameraCaptureSession.stop()
         }.done { [weak self] in
-            self?.hasCaptureStarted = false
+            self?.hasCameraStarted = false
         }.catch { [weak self] error in
             self?.showFailureUI(error: error)
         }
     }
 
     private func resumePhotoCapture() {
-        guard !photoCapture.session.isRunning else { return }
+        guard !cameraCaptureSession.avCaptureSession.isRunning else { return }
         firstly {
-            photoCapture.resumeCapture()
+            cameraCaptureSession.resume()
         }.done { [weak self] in
-            self?.hasCaptureStarted = true
+            self?.hasCameraStarted = true
         }.catch { [weak self] error in
             self?.showFailureUI(error: error)
         }
@@ -1218,9 +1216,9 @@ extension PhotoCaptureViewController {
     }
 
     private func updateFlashModeControl(animated: Bool) {
-        topBar.flashModeButton.setFlashMode(photoCapture.flashMode, animated: animated)
+        topBar.flashModeButton.setFlashMode(cameraCaptureSession.flashMode, animated: animated)
         if let sideBar = sideBar {
-            sideBar.flashModeButton.setFlashMode(photoCapture.flashMode, animated: animated)
+            sideBar.flashModeButton.setFlashMode(cameraCaptureSession.flashMode, animated: animated)
         }
     }
 }
@@ -1242,21 +1240,21 @@ extension PhotoCaptureViewController: InteractiveDismissDelegate {
 
 extension PhotoCaptureViewController: CameraZoomSelectionControlDelegate {
 
-    func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didSelect camera: PhotoCapture.CameraType) {
+    func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didSelect camera: CameraCaptureSession.CameraType) {
         let position: AVCaptureDevice.Position = cameraZoomControl == frontCameraZoomControl ? .front : .back
-        photoCapture.switchCamera(to: camera, at: position, animated: true)
+        cameraCaptureSession.switchCamera(to: camera, at: position, animated: true)
     }
 
     func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didChangeZoomFactor zoomFactor: CGFloat) {
-        photoCapture.changeVisibleZoomFactor(to: zoomFactor, animated: true)
+        cameraCaptureSession.changeVisibleZoomFactor(to: zoomFactor, animated: true)
     }
 }
 
-extension PhotoCaptureViewController: PhotoCaptureDelegate {
+extension PhotoCaptureViewController: CameraCaptureSessionDelegate {
 
     // MARK: - Photo
 
-    func photoCaptureDidStart(_ photoCapture: PhotoCapture) {
+    func cameraCaptureSessionDidStart(_ session: CameraCaptureSession) {
         let captureFeedbackView = UIView()
         captureFeedbackView.backgroundColor = .black
         view.insertSubview(captureFeedbackView, aboveSubview: previewView)
@@ -1273,7 +1271,7 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         }
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessing attachment: SignalAttachment) {
+    func cameraCaptureSession(_ session: CameraCaptureSession, didFinishProcessing attachment: SignalAttachment) {
         dataSource?.addMedia(attachment: attachment)
 
         updateDoneButtonAppearance()
@@ -1285,7 +1283,7 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         }
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, didFailProcessing error: Error) {
+    func cameraCaptureSession(_ session: CameraCaptureSession, didFailWith error: Error) {
         setIsRecordingVideo(false, animated: true)
 
         if case PhotoCaptureError.invalidVideo = error {
@@ -1296,33 +1294,32 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         showFailureUI(error: error)
     }
 
-    func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool {
+    func cameraCaptureSessionCanCaptureMoreItems(_ session: CameraCaptureSession) -> Bool {
         return delegate?.photoCaptureViewControllerCanCaptureMoreItems(self) ?? false
     }
 
-    func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture) {
+    func photoCaptureDidTryToCaptureTooMany(_ session: CameraCaptureSession) {
         delegate?.photoCaptureViewControllerDidTryToCaptureTooMany(self)
     }
 
     // MARK: - Video
 
-    func photoCaptureWillBeginRecording(_ photoCapture: PhotoCapture) {
+    func cameraCaptureSessionWillStartVideoRecording(_ session: CameraCaptureSession) {
         Logger.verbose("")
         setIsRecordingVideo(true, animated: true)
     }
 
-    func photoCaptureDidBeginRecording(_ photoCapture: PhotoCapture) {
+    func cameraCaptureSessionDidStartVideoRecording(_ session: CameraCaptureSession) {
         Logger.verbose("")
     }
 
-    func photoCaptureDidFinishRecording(_ photoCapture: PhotoCapture) {
+    func cameraCaptureSessionDidStopVideoRecording(_ session: CameraCaptureSession) {
         Logger.verbose("")
         setIsRecordingVideo(false, animated: true)
     }
 
-    func photoCaptureDidCancelRecording(_ photoCapture: PhotoCapture) {
-        Logger.verbose("")
-        setIsRecordingVideo(false, animated: true)
+    func cameraCaptureSession(_ session: CameraCaptureSession, videoRecordingDurationChanged duration: TimeInterval) {
+        topBar.recordingTimerView.duration = duration
     }
 
     // MARK: -
@@ -1334,7 +1331,7 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         return previewView.bounds.height / 2
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, didChangeVideoZoomFactor zoomFactor: CGFloat, forCameraPosition position: AVCaptureDevice.Position) {
+    func cameraCaptureSession(_ session: CameraCaptureSession, didChangeZoomFactor zoomFactor: CGFloat, forCameraPosition position: AVCaptureDevice.Position) {
         guard let cameraZoomControl = position == .front ? frontCameraZoomControl : rearCameraZoomControl else { return }
         cameraZoomControl.currentZoomFactor = zoomFactor
     }
@@ -1353,14 +1350,14 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         }
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, didChangeOrientation orientation: AVCaptureVideoOrientation) {
+    func cameraCaptureSession(_ session: CameraCaptureSession, didChangeOrientation orientation: AVCaptureVideoOrientation) {
         updateIconOrientations(isAnimated: true, captureOrientation: orientation)
         if UIDevice.current.isIPad {
-            photoCapture.updateVideoPreviewConnection(toOrientation: orientation)
+            session.updateVideoPreviewConnection(toOrientation: orientation)
         }
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusing focusPoint: CGPoint) {
+    func cameraCaptureSession(_ session: CameraCaptureSession, didFinishFocusingAt focusPoint: CGPoint) {
         completeFocusAnimation(forFocusPoint: focusPoint)
     }
 }
