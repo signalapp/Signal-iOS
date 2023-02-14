@@ -1,2 +1,2 @@
-• The new and improved All Media view makes it easier to spot old GIFs in your favorite chats, keep track of where you are in the timeline while scrolling, and see the length of individual videos.
-• We fixed a few bugs, including one that sometimes made an endless progress spinner appear while trying to leave a group. If you have been enthusiastically trying to escape from an "Escape Room Enthusiasts" group, the puzzle has been solved and the door is now open.
+• Chế độ xem Tất cả tập tin Đa phương tiện mới giúp bạn dễ dàng xem lại hình GIF cũ trong các cuộc trò chuyện, theo dõi được vị trí của mình trên bảng tin khi cuộn, và thấy được độ dài của từng video.
+• Chúng tôi đã sửa một số lỗi, bao gồm lỗi đôi khi có vòng tròn trạng thái đang tải quay không ngừng khi bạn thoát hỏi một nhóm. Nếu trước đây bạn gặp vấn đề trong việc thoát khỏi một nhóm nào đó thì giờ lỗi này đã được xử lý, bạn có thể thử lại và thoát khỏi nhóm một cách nhanh chóng.

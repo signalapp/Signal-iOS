@@ -3014,7 +3014,7 @@
 "GROUP_WAS_MIGRATED" = "กลุ่มนี้ได้ปรับรุ่นเป็นกลุ่มแบบใหม่แล้ว";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "คุณเข้ากลุ่มแบบใหม่ไม่ได้และได้ถูกลบออกจากกลุ่มแล้ว";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "คุณไม่สามารถถูกเพิ่มไปยังกลุ่มแบบใหม่ได้และได้ถูกเชิญให้เข้าร่วม";
@@ -4337,58 +4337,58 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "ไม่ถูกรูปแบบ";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "ไม่สามารถเข้าถึงการรับรองความถูกต้องได้";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "รับรองความถูกต้องไม่สำเร็จ";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "รับรองความถูกต้องไม่สำเร็จหลายครั้งเกินไป โปรดลองใหม่ในภายหลัง";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "คุณต้องเปิดใช้งานรหัสผ่านในการตั้งค่า iOS เพื่อใช้งานฟีเจอร์ล็อกการชำระเงิน";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "คุณต้องเปิดใช้งานรหัสผ่านในการตั้งค่า iOS เพื่อใช้งานฟีเจอร์ล็อกการชำระเงิน";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "คุณต้องเปิดใช้งานรหัสผ่านในการตั้งค่า iOS เพื่อใช้งานฟีเจอร์ล็อกการชำระเงิน";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Add an additional layer of security and require your passcode or Touch ID to send funds";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "ยกระดับการรักษาความปลอดภัยขึ้นอีกขั้น และกำหนดให้ต้องกรอกรหัสผ่านหรือสแกน Touch ID เพื่อโอนเงิน";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Add an additional layer of security and require Face ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "ยกระดับการรักษาความปลอดภัยขึ้นอีกขั้น และกำหนดให้ต้องใช้ Face ID เพื่อโอนเงิน";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Add an additional layer of security and require passcode to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "ยกระดับการรักษาความปลอดภัยขึ้นอีกขั้น และกำหนดให้ต้องกรอกรหัสผ่านเพื่อโอนเงิน";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Add an additional layer of security and require Touch ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "ยกระดับการรักษาความปลอดภัยขึ้นอีกขั้น และกำหนดให้ต้องสแกน Touch ID เพื่อโอนเงิน";
 
 /* First time payments suggest payments lock title */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Turn on Payment Lock for Future Sends?";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "เปิดใช้ฟีเจอร์ล็อกการชำระเงินสำหรับการโอนเงินในครั้งต่อไปหรือไม่";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Require Your Passcode or Touch ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "ต้องกรอกรหัสผ่านหรือสแกน Touch ID เพื่อโอนเงิน";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Require Face ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "ต้องใช้ Face ID ในการส่ง";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Require Your Phone's Passcode to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "ต้องกรอกรหัสผ่านของโทรศัพท์เพื่อโอนเงิน";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Require Touch ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "ต้องสแกน Touch ID เพื่อโอนเงิน";
 
 /* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Authentication did not succeed. Ensure that biometrics is enabled on your device and a passcode is set.";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "รับรองความถูกต้องไม่ได้ ตรวจสอบว่าอุปกรณ์ของคุณเปิดใช้งานข้อมูลไบโอเมตริกและมีการตั้งรหัสผ่านเรียบร้อยแล้ว";
 
 /* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometric Authentication Failed";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "รับรองความถูกต้องของข้อมูลไบโอเมตริกไม่สำเร็จ";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
-"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Authenticate to confirm payment.";
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "รับรองความถูกต้องเพื่อยืนยันการชำระเงิน";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "เพิ่มบันทึก";
@@ -4424,10 +4424,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "ยังไม่ได้ตรวจยืนยันการชำระเงิน";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Payments lock authentication cancelled.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "การรับรองความถูกต้องของการล็อกการชำระเงินถูกยกเลิก";
 
 /* Indicates that a payment failed because the payments lock failed to authenticate. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Payments lock authentication failure.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "รับรองความถูกต้องของการล็อกการชำระเงินไม่สำเร็จ";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "ไม่สามารถชำระเงินได้สำเร็จ กรุณาตรวจสอบการเชื่อมต่อของคุณและลองอีกครั้ง";
@@ -5828,7 +5828,7 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "ใช้การชำระเงิน";
 
 /* Title for the 'enable payments lock' view of the payments activation flow. */
-"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Payments Lock";
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "ฟีเจอร์ล็อกการชำระเงิน";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin เป็นเงินดิจิทัลสกุลใหม่ที่เน้นเรื่องความเป็นส่วนตัว";
@@ -5849,13 +5849,13 @@
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "การถอนออกเป็นเงินสด";
 
 /* Label for button in the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Save Your Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "บันทึกวลีของคุณ";
 
 /* Description for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your balance.";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "วลีกู้คืนเป็นอีกวิธีหนึ่งในการกู้คืนยอดเงินของคุณ";
 
 /* Title for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Save Your Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "บันทึกวลีของคุณ";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "เปลี่ยนรหัส PIN";
@@ -5870,7 +5870,7 @@
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "ที่อยู่กระเป๋าเงินไม่ถูกรูปแบบ";
 
 /* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
-"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Payments Lock";
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "ฟีเจอร์ล็อกการชำระเงิน";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "ยังไม่มีกิจกรรมเร็วๆ นี้";
@@ -5903,22 +5903,22 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "แนะนำการชำระเงิน (รุ่นทดสอบ)";
 
 /* Button when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Skip Recovery Phrase";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "ข้ามขั้นตอนวลีกู้คืน";
 
 /* Message of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly reccommend you save it.";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "วลีกู้คืนจะช่วยให้คุณกู้คืนเงินได้ในกรณีที่เกิดเหตุไม่คาดฝัน เราจึงขอแนะนำให้คุณบันทึกไว้";
 
 /* Title of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continue Without Saving?";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "ดำเนินการต่อโดยไม่บันทึกใช่ไหม";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "ยอดคงเหลือของคุณจะกู้คืนมาโดยโดยอัตโนมัติเมื่อคุณติดตั้ง Signal อีกครั้ง หากคุณยืนยันรหัส Signal PIN ของคุณ คุณยังสามารถกู้คืนยอดคงเหลือได้โดยใช้วลีกู้คืน ซึ่งเป็นวลี 24 คำเฉพาะสำหรับคุณเท่านั้น จดบันทึกวลีนี้และเก็บไว้ในที่ปลอดภัย";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "You’ve got a balance! Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "คุณมียอดเงินคงเหลือ! ได้เวลาบันทึกวลีกู้คืนแล้ว ซึ่งคือรหัส 24 คำที่สามารถใช้เพื่อกู้คืนยอดเงินคงเหลือของคุณ";
 
 /* Explanation of the 'payments passphrase' when from the help card. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "ได้เวลาบันทึกวลีกู้คืนแล้ว ซึ่งคือรหัส 24 คำที่สามารถใช้เพื่อกู้คืนยอดเงินคงเหลือของคุณ";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "เติมเงิน";
@@ -5972,34 +5972,34 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "การชำระเงินถูกปิดใช้งานแล้ว";
 
 /* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Skipping this step could allow anyone who has physical access to your phone to transfer funds or view your recovery phrase.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "การข้ามขั้นตอนนี้จะทำให้ผู้อื่นสามารถใช้โทรศัพท์ของคุณโอนเงินหรือดูวลีกู้คืนของคุณได้";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Skip Enabling Face ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "ข้ามการเปิดใช้งาน Face ID ใช่หรือไม่";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Skip Enabling Passcode?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "ข้ามการเปิดใช้งานรหัสผ่านใช่หรือไม่";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Skip Enabling Touch ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "ข้ามการเปิดใช้งาน Touch ID ใช่หรือไม่";
 
 /* Enable Button title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Use Face ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "ใช้ Face ID";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Use Passcode";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "ใช้รหัสผ่าน";
 
 /* Enable Button title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Use Touch ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "ใช้ Touch ID";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help prevent a person with your phone from accessing your funds by enabling Face ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "เปิดใช้ Face ID เพื่อช่วยป้องกันไม่ให้ผู้อื่นใช้โทรศัพท์คุณเข้าถึงเงินของคุณ คุณสามารถปิดใช้งานตัวเลือกนี้ได้ในการตั้งค่า";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help prevent a person with your phone from accessing your funds by using your passcode. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "ใช้รหัสผ่านเพื่อช่วยป้องกันไม่ให้ผู้อื่นใช้โทรศัพท์คุณเข้าถึงเงินของคุณ คุณสามารถปิดใช้งานตัวเลือกนี้ได้ในการตั้งค่า";
 
 /* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help prevent a person with your phone from accessing your funds by enabling Touch ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "เปิดใช้ Touch ID เพื่อช่วยป้องกันไม่ให้ผู้อื่นใช้โทรศัพท์คุณเข้าถึงเงินของคุณ คุณสามารถปิดใช้งานตัวเลือกนี้ได้ในการตั้งค่า";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "ปรับปรุง Signal";
@@ -6095,7 +6095,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "ใส่วลีกู้คืน";
 
 /* Title for the first step of the 'save payments passphrase' views. */
-"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Save Recovery Phrase";
+"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "บันทึกวลีกู้คืน";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "สแกนรหัส QR สำหรับผู้รับการโอน";
@@ -6107,19 +6107,19 @@
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "สแกนรหัส QR";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Require your passcode or Touch ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "ต้องใช้รหัสผ่านหรือ Touch ID ในการโอนเงิน";
 
 /* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Require Face ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "ต้องใช้ Face ID ในการโอนเงิน";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Require your phone's passcode to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "ต้องใช้รหัสผ่านของโทรศัพท์ในการโอนเงิน";
 
 /* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Require Touch ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "ต้องใช้ Touch ID ในการโอนเงิน";
 
 /* Title for the payments section in the app’s privacy settings tableview */
-"SETTINGS_PAYMENTS_SECURITY_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_SECURITY_TITLE" = "การชำระเงิน";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "ส่งการชำระเงิน";
@@ -6200,10 +6200,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "จดทั้ง 24 คำต่อไปนี้ตามลำดับ เก็บรักษารายการของคุณนี้ไว้ในที่ปลอดภัย";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Do not share this list";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "อย่าเปิดเผยข้อมูลนี้กับใคร";
 
 /* Title for the content section of the  'payments lock prompt' view shown after payemts activation. */
-"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Another Layer of Protection";
+"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "อีกชั้นของการปกป้อง";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "วลีกู้คืน";
@@ -7064,13 +7064,13 @@
 "USE_PROXY_EXPLANATION" = "ใช้พร็อกซีเฉพาะเมื่อคุณไม่สามารถเชื่อมต่อ Signal ผ่านอินเทอร์เน็ตมือถือหรือ Wi-Fi เท่านั้น";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "เกิดข้อผิดพลาดขณะค้นหาชื่อผู้ใช้ โปรดลองอีกครั้งในภายหลัง";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ไม่ใช่ผู้ใช้ Signal แน่ใจหรือไม่ว่าคุณใส่ชื่อผู้ใช้ครบถ้วน";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
-"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "ไม่พบผู้ใช้";
 
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";

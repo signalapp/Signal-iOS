@@ -3014,7 +3014,7 @@
 "GROUP_WAS_MIGRATED" = "Ta grupa została zaktualizowana do Nowej grupy.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Nie mogłeś(-aś) zostać dodany(-a) do Nowej grupy i zostałeś(-aś) z niej usunięty(-a).";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Nie mogłeś(aś) zostać dodany(a) do nowej grupy i zostałeś(aś) do niej zaproszony(a).";
@@ -4337,58 +4337,58 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Nieprawidłowa";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Nie udało się uzyskać dostępu do uwierzytelniania.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Uwierzytelnianie nie powiodło się.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Zbyt wiele błędnych logowań. Spróbuj później.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Aby korzystać z zabezpieczenia płatności, musisz włączyć kod dostępu w Ustawieniach systemu iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Aby korzystać z zabezpieczenia płatności, musisz włączyć kod dostępu w Ustawieniach systemu iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Aby korzystać z zabezpieczenia płatności, musisz włączyć kod dostępu w Ustawieniach systemu iOS.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Add an additional layer of security and require your passcode or Touch ID to send funds";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Dodaj dodatkowe zabezpieczenie — wymagaj kodu dostępu lub Touch ID do wysłania środków.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Add an additional layer of security and require Face ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Dodaj dodatkowe zabezpieczenie — wymagaj Face ID do wysłania środków.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Add an additional layer of security and require passcode to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Dodaj dodatkowe zabezpieczenie — wymagaj kodu dostępu do wysłania środków.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Add an additional layer of security and require Touch ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Dodaj dodatkowe zabezpieczenie — wymagaj Touch ID do wysłania środków.";
 
 /* First time payments suggest payments lock title */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Turn on Payment Lock for Future Sends?";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Włączyć zabezpieczenie płatności dla przyszłych transakcji?";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Require Your Passcode or Touch ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Wymagaj kodu dostępu lub Face ID do wysłania.";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Require Face ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Wymagaj Face ID do wysłania";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Require Your Phone's Passcode to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Wymagaj kodu dostępu telefonu do wysłania";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Require Touch ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Wymagaj Touch ID do wysłania";
 
 /* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Authentication did not succeed. Ensure that biometrics is enabled on your device and a passcode is set.";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Uwierzytelnianie nie powiodło się. Upewnij się, że na urządzeniu włączona jest funkcja biometrii i ustawiony jest kod dostępu.";
 
 /* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometric Authentication Failed";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Uwierzytelnianie biometryczne nie powiodło się";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
-"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Authenticate to confirm payment.";
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Uwierzytelnij, aby potwierdzić płatność.";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Dodaj notatkę";
@@ -4424,10 +4424,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Płatność nie została jeszcze zweryfikowana";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Payments lock authentication cancelled.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Uwierzytelnianie zabezpieczenia płatności zostało anulowane.";
 
 /* Indicates that a payment failed because the payments lock failed to authenticate. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Payments lock authentication failure.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Uwierzytelnianie zabezpieczenia płatności nie powiodło się.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Nie udało się dokończyć płatności. Sprawdź połączenie z internetem i spróbuj ponownie.";
@@ -5828,7 +5828,7 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Włącz płatności";
 
 /* Title for the 'enable payments lock' view of the payments activation flow. */
-"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Payments Lock";
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Zabezpieczenie płatności";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin to nowa, skupiona na prywatności, cyfrowa waluta.";
@@ -5849,13 +5849,13 @@
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Wypłacanie";
 
 /* Label for button in the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Save Your Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Zapisz swoją frazę";
 
 /* Description for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your balance.";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Twoje hasło odzyskiwania to dodatkowy sposób na przywrócenie środków.";
 
 /* Title for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Save Your Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Zapisz swoją frazę";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Uaktualnij PIN";
@@ -5870,7 +5870,7 @@
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Nieprawidłowy adres portfela";
 
 /* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
-"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Payments Lock";
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Zabezpieczenie płatności";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Brak ostatnich aktywności.";
@@ -5903,22 +5903,22 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Przedstawiamy płatności (beta)";
 
 /* Button when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Skip Recovery Phrase";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Pomiń frazę odzyskiwania";
 
 /* Message of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly reccommend you save it.";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Twoja fraza odzyskiwania pozwoli na przywrócenie środków w najgorszym przypadku. Zalecamy jej zapisanie.";
 
 /* Title of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continue Without Saving?";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Kontynuować bez zapisywania?";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Twoje konto zostanie automatycznie przywrócone przy ponownej instalacji Signal, jeśli potwierdzisz swój PIN Signal. Możesz też przywrócić swoje środki, używając hasła odzyskiwania, które jest Twoim, złożonym z 24 słów, unikalnym hasłem. Zapisz je i przechowuj w bezpiecznym miejscu.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "You’ve got a balance! Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Masz środki! Czas zapisać frazę odzyskiwania — 24-wyrazowy klucz, którego możesz użyć do przywrócenia środków.";
 
 /* Explanation of the 'payments passphrase' when from the help card. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Czas zapisać frazę odzyskiwania — 24-wyrazowy klucz, którego możesz użyć do przywrócenia środków.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Dodaj środki";
@@ -5972,34 +5972,34 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Płatności dezaktywowane.";
 
 /* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Skipping this step could allow anyone who has physical access to your phone to transfer funds or view your recovery phrase.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Pominięcie tego kroku może umożliwić każdemu, kto ma fizyczny dostęp do Twojego telefonu, przelanie środków lub wyświetlenie frazy odzyskiwania.";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Skip Enabling Face ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Pominąć włączenie Face ID?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Skip Enabling Passcode?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Pominąć włączenie kodu dostępu?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Skip Enabling Touch ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Pominąć włączenie Touch ID?";
 
 /* Enable Button title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Use Face ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Użyj Face ID";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Use Passcode";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Użyj kodu dostępu";
 
 /* Enable Button title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Use Touch ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Użyj Touch ID";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help prevent a person with your phone from accessing your funds by enabling Face ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Dodaj kolejną warstwę zabezpieczeń w postaci Face ID, które uniemożliwi osobom korzystającym z Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w Ustawieniach.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help prevent a person with your phone from accessing your funds by using your passcode. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Używaj kodu dostępu, który uniemożliwi osobom korzystającym z Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w Ustawieniach.";
 
 /* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help prevent a person with your phone from accessing your funds by enabling Touch ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Dodaj kolejną warstwę zabezpieczeń w postaci Touch ID, które uniemożliwi osobom korzystającym z Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w Ustawieniach.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Zaktualizuj Signal";
@@ -6095,7 +6095,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Podaj hasło odzyskiwania";
 
 /* Title for the first step of the 'save payments passphrase' views. */
-"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Save Recovery Phrase";
+"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Zapisz frazę odzyskiwania";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Zeskanuj kod QR odbiorcy transferu.";
@@ -6107,19 +6107,19 @@
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Skanuj kod QR";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Require your passcode or Touch ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Wymagaj kodu dostępu lub Touch ID do wysłania środków.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Require Face ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Wymagaj Face ID do przekazania środków.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Require your phone's passcode to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Wymagaj kodu dostępu telefonu do wysłania środków.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Require Touch ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Wymagaj Touch ID do przekazania środków.";
 
 /* Title for the payments section in the app’s privacy settings tableview */
-"SETTINGS_PAYMENTS_SECURITY_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_SECURITY_TITLE" = "Płatności";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Wyślij płatność";
@@ -6200,10 +6200,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Zapisz następujące 24 słowa, w odpowiedniej kolejności. Przechowuj listę w bezpiecznym miejscu.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Do not share this list";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Nie udostępniaj tej listy";
 
 /* Title for the content section of the  'payments lock prompt' view shown after payemts activation. */
-"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Another Layer of Protection";
+"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Kolejna warstwa zabezpieczeń";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Hasło odzyskiwania";
@@ -7064,13 +7064,13 @@
 "USE_PROXY_EXPLANATION" = "Używaj proxy tylko wtedy, gdy nie możesz połączyć się z Signal przez sieć komórkową ani Wi-Fi.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "W czasie wyszukiwania nazwy użytkownika wystąpił błąd. Spróbuj ponownie później.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ nie jest użytkownikiem Signal. Upewnij się, że podałeś(-aś) pełną nazwę użytkownika.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
-"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Nie znaleziono użytkownika";
 
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";

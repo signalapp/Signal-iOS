@@ -1,2 +1,2 @@
-• The new and improved All Media view makes it easier to spot old GIFs in your favorite chats, keep track of where you are in the timeline while scrolling, and see the length of individual videos.
-• We fixed a few bugs, including one that sometimes made an endless progress spinner appear while trying to leave a group. If you have been enthusiastically trying to escape from an "Escape Room Enthusiasts" group, the puzzle has been solved and the door is now open.
+• 新しく改良されたオールメディアビューでは、お気に入りのチャットで古いGIFを見つけたり、タイムラインをスクロール中に自分のチャットを見落とさないようにしたり、各動画の長さを確認したりすることが簡単になりました。
+• グループを退出しようとすると、進行中のグルグルがいつまでも表示されることがあるなど、いくつかのバグを修正しました。あなたが「脱出ゲームに熱中」グループからの脱出に熱中しているなら、謎は解け、扉は開かれました。

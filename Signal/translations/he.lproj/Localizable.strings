@@ -3014,7 +3014,7 @@
 "GROUP_WAS_MIGRATED" = "קבוצה זו שודרגה אל קבוצה חדשה.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "לא יכולת להתווסף אל הקבוצה החדשה והוסרת מהקבוצה.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "לא יכולת להתווסף אל הקבוצה החדשה והוזמנת להצטרף.";
@@ -4337,58 +4337,58 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "בלתי תקף";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "האימות לא היה בר־גישה.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "אימות נכשל.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "יותר מדי ניסיונות אימות כושלים. יש לנסות שוב מאוחר יותר.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "צריך לאפשר קוד גישה בהגדרות iOS שלך על מנת להשתמש בנעילת אבטחה לתשלום.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "צריך לאפשר קוד גישה בהגדרות iOS שלך על מנת להשתמש בנעילת אבטחה לתשלום.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "צריך לאפשר קוד גישה בהגדרות iOS שלך על מנת להשתמש בנעילת אבטחה לתשלום.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Add an additional layer of security and require your passcode or Touch ID to send funds";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "מוסיפים שכבת אבטחה נוספת ודורשים קוד גישה או זיהוי טביעת אצבע כדי להעביר כספים";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Add an additional layer of security and require Face ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "מוסיפים שכבת אבטחה נוספת ודורשים זיהוי פנים כדי להעביר כספים.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Add an additional layer of security and require passcode to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "מוסיפים שכבת אבטחה נוספת ודורשים קוד גישה כדי להעביר כספים.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Add an additional layer of security and require Touch ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "מוסיפים שכבת אבטחה נוספת ודורשים זיהוי טביעת אצבע כדי להעביר כספים.";
 
 /* First time payments suggest payments lock title */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Turn on Payment Lock for Future Sends?";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "להפעיל נעילת אבטחה לתשלום עבור העברות עתידיות?";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Require Your Passcode or Touch ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "דרישת קוד גישה או זיהוי טביעת אצבע כדי לשלוח";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Require Face ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "דרישת זיהוי פנים כדי לשלוח";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Require Your Phone's Passcode to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "דרישת קוד הגישה של הטלפון שלך כדי לשלוח";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Require Touch ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "דרישת זיהוי טביעת אצבע כדי לשלוח";
 
 /* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Authentication did not succeed. Ensure that biometrics is enabled on your device and a passcode is set.";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "האימות לא הצליח. כדאי לוודא שנתונים ביומטריים מופעלים במכשיר שלך ושמוגדר קוד גישה.";
 
 /* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometric Authentication Failed";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "אימות ביומטרי נכשל";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
-"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Authenticate to confirm payment.";
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "דרוש אימות כדי לאשר תשלום.";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "הוסף הערה";
@@ -4424,10 +4424,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "תשלום אינו מוודא עדיין";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Payments lock authentication cancelled.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "אימות נעילת אבטחה לתשלום בוטל.";
 
 /* Indicates that a payment failed because the payments lock failed to authenticate. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Payments lock authentication failure.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "אימות נעילת אבטחה לתשלום נכשל.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "לא היה ניתן להשלים את התשלום. בדוק את החיבור שלך ונסה שוב.";
@@ -5828,7 +5828,7 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "אפשר תשלומים";
 
 /* Title for the 'enable payments lock' view of the payments activation flow. */
-"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Payments Lock";
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "נעילת אבטחה לתשלום";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin הוא מטבע דיגיטלי חדש ממוקד פרטיות.";
@@ -5849,13 +5849,13 @@
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "פדיון";
 
 /* Label for button in the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Save Your Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "שמירת המשפט שלך";
 
 /* Description for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your balance.";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "משפט השחזור שלך נותן לך דרך נוספת לשחזר את היתרה שלך.";
 
 /* Title for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Save Your Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "שמירת המשפט שלך";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "עדכן PIN";
@@ -5870,7 +5870,7 @@
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "כתובת ארנק בלתי תקפה";
 
 /* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
-"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Payments Lock";
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "נעילת אבטחה לתשלום";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "אין פעילות מהזמן האחרון עדיין.";
@@ -5903,22 +5903,22 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "היכרות עם תשלומים (בטא)";
 
 /* Button when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Skip Recovery Phrase";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "דילוג על משפט שחזור סיסמה";
 
 /* Message of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly reccommend you save it.";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "משפט השחזור שלך מאפשר לך לשחזר את היתרה שלך במקרה הגרוע ביותר. אנחנו ממליצים בחום לשמור אותו.";
 
 /* Title of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continue Without Saving?";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "להמשיך בלי לשמור?";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "המאזן שלך ישוחזר באופן אוטומטי כשתתקין מחדש את Signal אם תאשר את PIN של Signal שלך. אתה יכול גם לשחזר את המאזן שלך ע״י שימוש במשפט השבה, שהוא משפט בן 24 מילים ייחודי לך. כתוב אותו ואחסן אותו במקום בטוח.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "You’ve got a balance! Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "יש לך יתרה! הגיע הזמן לשמור את משפט שחזור הסיסמה שלך—סיסמה בעלת 24 מילים שאפשר להשתמש בה כדי לשחזר את היתרה הכספית שלך.";
 
 /* Explanation of the 'payments passphrase' when from the help card. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "הגיע הזמן לשמור את משפט שחזור הסיסמה שלך—סיסמה בעלת 24 מילים שאפשר להשתמש בה כדי לשחזר את היתרה הכספית שלך.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "הוסף כספים";
@@ -5972,34 +5972,34 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "הפעלת תשלומים בוטלה.";
 
 /* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Skipping this step could allow anyone who has physical access to your phone to transfer funds or view your recovery phrase.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "דילוג על שלב זה יאפשר לכל אדם עם גישה פיזית למכשיר הטלפון שלך להעביר כספים או לצפות במשפט שחזור הסיסמה שלך.";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Skip Enabling Face ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "לדלג על הפעלת זיהוי פנים?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Skip Enabling Passcode?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "לדלג על הפעלת קוד גישה?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Skip Enabling Touch ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "לדלג על הפעלת זיהוי טביעת אצבע?";
 
 /* Enable Button title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Use Face ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "שימוש בזיהוי פנים";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Use Passcode";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "שימוש בקוד גישה";
 
 /* Enable Button title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Use Touch ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "שימוש בזיהוי טביעת אצבע";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help prevent a person with your phone from accessing your funds by enabling Face ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "עוזרים למנוע מאדם שמחזיק במכשיר הטלפון שלך לגשת לכספים שלך באמצעות הפעלת זיהוי פנים. אפשר לכבות את האפשרות הזו בהגדרות.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help prevent a person with your phone from accessing your funds by using your passcode. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "עוזרים למנוע מאדם שמחזיק במכשיר הטלפון שלך לגשת לכספים שלך באמצעות שימוש בקוד גישה. אפשר לכבות את האפשרות הזו בהגדרות.";
 
 /* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help prevent a person with your phone from accessing your funds by enabling Touch ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "עוזרים למנוע מאדם שמחזיק במכשיר הטלפון שלך לגשת לכספים שלך באמצעות הפעלת זיהוי טביעת אצבע. אפשר לכבות את האפשרות הזו בהגדרות.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "עדכן את Signal";
@@ -6095,7 +6095,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "הכנס משפט השבה";
 
 /* Title for the first step of the 'save payments passphrase' views. */
-"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Save Recovery Phrase";
+"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "שמירת משפט שחזור סיסמה";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "סרוק את קוד ה־QR עבור מקבל ההעברה.";
@@ -6107,19 +6107,19 @@
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "סריקת קוד QR";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Require your passcode or Touch ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "דרישת קוד גישה או זיהוי טביעת אצבע כדי להעביר כספים.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Require Face ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "דרישת זיהוי פנים כדי להעביר כספים.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Require your phone's passcode to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "דרישת קוד הגישה של הטלפון שלך כדי להעביר כספים.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Require Touch ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "דרישת זיהוי טביעת אצבע כדי להעביר כספים.";
 
 /* Title for the payments section in the app’s privacy settings tableview */
-"SETTINGS_PAYMENTS_SECURITY_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_SECURITY_TITLE" = "תשלומים";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "שלח תשלום";
@@ -6200,10 +6200,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "כתוב את 24 המילים הבאות לפי הסדר. אחסן את הרשימה שלך במקום מאובטח.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Do not share this list";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "אין לשתף את הרשימה הזו";
 
 /* Title for the content section of the  'payments lock prompt' view shown after payemts activation. */
-"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Another Layer of Protection";
+"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "עוד שכבת הגנה";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "משפט השבה";
@@ -7064,13 +7064,13 @@
 "USE_PROXY_EXPLANATION" = "יש להשתמש בפרוקסי רק אם אין לך אפשרות להתחבר ל–Signal דרך נתונים סלולריים או Wi-Fi.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "התרחשה שגיאה בעת חיפוש שם המשתמש. יש לנסות שוב מאוחר יותר.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ הוא/היא לא משתמש/ת Signal. וודא שהכנסת את שם המשתמש השלם.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
-"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "משתמש/ת לא נמצא/ה";
 
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";

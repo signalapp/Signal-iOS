@@ -1,2 +1,2 @@
-• The new and improved All Media view makes it easier to spot old GIFs in your favorite chats, keep track of where you are in the timeline while scrolling, and see the length of individual videos.
-• We fixed a few bugs, including one that sometimes made an endless progress spinner appear while trying to leave a group. If you have been enthusiastically trying to escape from an "Escape Room Enthusiasts" group, the puzzle has been solved and the door is now open.
+• يَعمل عرض جميع الوسائط الجديدة والمُحسّنة على تسهيل اكتشاف صور GIF القديمة في دردشاتك المفضلة، وتعقّب مكانك في المخطط الزمني أثناء التمرير، ومعرفة طول مقاطع الفيديو الفردية.
+• لقد أصلحنا بعض الأخطاء، بما في ذلك خطأ تعذّر التحميل الذي كان يظهر عند محاولة مُغادرة مجموعة. إذا كنت تحاول جاهدًا مغادرة مجموعة ما، فقد تم إصلاح الأمر ويمكنك الآن المغادرة متى شئت.

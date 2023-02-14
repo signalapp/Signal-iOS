@@ -1,2 +1,2 @@
-• The new and improved All Media view makes it easier to spot old GIFs in your favorite chats, keep track of where you are in the timeline while scrolling, and see the length of individual videos.
-• We fixed a few bugs, including one that sometimes made an endless progress spinner appear while trying to leave a group. If you have been enthusiastically trying to escape from an "Escape Room Enthusiasts" group, the puzzle has been solved and the door is now open.
+• Con la nuova interfaccia per vedere tutti i media è più facile cercare le tue vecchie GIF in chat, sapere a che punto della cronologia ti trovi quando scorri e vedere la durata dei singoli video.
+• Abbiamo risolto una serie di bug, tra cui uno che a volte mostrava un'icona di caricamento ruotare senza sosta dopo aver lasciato un gruppo. Non vogliamo prigionieri: da ora sarà più semplice abbandonare un qualsiasi gruppo su Signal.

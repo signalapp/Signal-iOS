@@ -1,2 +1,2 @@
-• The new and improved All Media view makes it easier to spot old GIFs in your favorite chats, keep track of where you are in the timeline while scrolling, and see the length of individual videos.
-• We fixed a few bugs, including one that sometimes made an endless progress spinner appear while trying to leave a group. If you have been enthusiastically trying to escape from an "Escape Room Enthusiasts" group, the puzzle has been solved and the door is now open.
+• Den nye visningen for Alle medier gjør det lettere å finne gamle GIF-er i samtalene dine, holde styr på hvor du er i tidslinjen når du skroller, og se lengden på de ulike videoene i oversikten.
+• Vi har også rettet et par feil, inkludert en feil som førte til at det dukket opp et evigvarende snurrende hjul ved forsøk på å forlate en gruppe. For deg som har forsøkt å finne ut hvordan du skal komme deg ut av gruppen «Vi som elsker escape rooms», kan vi meddele at vi endelig har funnet nøkkelen og åpnet døren.

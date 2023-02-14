@@ -1,2 +1,2 @@
-• The new and improved All Media view makes it easier to spot old GIFs in your favorite chats, keep track of where you are in the timeline while scrolling, and see the length of individual videos.
-• We fixed a few bugs, including one that sometimes made an endless progress spinner appear while trying to leave a group. If you have been enthusiastically trying to escape from an "Escape Room Enthusiasts" group, the puzzle has been solved and the door is now open.
+• Nové a vylepšené zobrazení všech médií usnadňuje vyhledávání starých GIFů v oblíbených konverzacích, umožňuje sledovat, kde se při procházení nacházíte na časové ose, a zobrazovat délku jednotlivých videí.
+• Opravili jsme několik chyb, včetně té, která způsobovala, že se při pokusu o opuštění skupiny zobrazoval rotující ukazatel průběhu. Pokud jste se usilovně snažili uniknout ze skupiny „Nadšenci pro únikovky“, hádanka byla vyřešena a dveře už jsou otevřené.
