@@ -6,7 +6,6 @@
 import Foundation
 import SignalCoreKit
 
-@objc
 public protocol CountryCodeViewControllerDelegate: AnyObject {
     func countryCodeViewController(_ vc: CountryCodeViewController,
                                    didSelectCountry: RegistrationCountryState)
@@ -14,12 +13,9 @@ public protocol CountryCodeViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class CountryCodeViewController: OWSTableViewController2 {
-    @objc
     public weak var countryCodeDelegate: CountryCodeViewControllerDelegate?
 
-    @objc
     public var interfaceOrientationMask: UIInterfaceOrientationMask = UIDevice.current.defaultSupportedOrientations
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {

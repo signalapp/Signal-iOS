@@ -436,7 +436,6 @@ public class Deprecated_OnboardingController: NSObject {
 
     public private(set) var verificationRequestCount: UInt = 0
 
-    @objc
     public func update(countryState: RegistrationCountryState) {
         AssertIsOnMainThread()
 

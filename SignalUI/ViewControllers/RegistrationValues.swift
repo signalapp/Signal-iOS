@@ -7,8 +7,7 @@ import Foundation
 import SignalCoreKit
 import SignalServiceKit
 
-@objc
-public class RegistrationCountryState: NSObject {
+public struct RegistrationCountryState: Dependencies {
     // e.g. France
     public let countryName: String
     // e.g. +33
@@ -16,7 +15,6 @@ public class RegistrationCountryState: NSObject {
     // e.g. FR
     public let countryCode: String
 
-    @objc
     public init(countryName: String,
                 callingCode: String,
                 countryCode: String) {
