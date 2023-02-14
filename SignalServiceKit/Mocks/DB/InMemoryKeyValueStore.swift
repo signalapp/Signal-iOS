@@ -4,7 +4,8 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
+
+#if TESTABLE_BUILD
 
 /// Produces instances of `InMemoryKeyValueStore`.
 public class InMemoryKeyValueStoreFactory: KeyValueStoreFactory {
@@ -265,3 +266,5 @@ public class InMemoryKeyValueStore: KeyValueStoreProtocol {
         }
     }
 }
+
+#endif

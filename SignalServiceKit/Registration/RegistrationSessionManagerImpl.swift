@@ -316,6 +316,9 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         let statusCode = RegistrationServiceResponses.RequestVerificationCodeResponseCodes(rawValue: statusCode)
         switch statusCode {
         case .success:
+            // TODO[Registration]: if a code is rejected, we get a success
+            // response but with an un-verified session. Represent that
+            // explicitly here.
             return registrationSession(
                 fromResponseBody: bodyData,
                 e164: e164,

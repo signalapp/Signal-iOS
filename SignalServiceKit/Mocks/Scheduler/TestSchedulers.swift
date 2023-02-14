@@ -4,7 +4,8 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
+
+#if TESTABLE_BUILD
 
 /// Returns a single `TestScheduler` for all schedulers instances,
 /// for the purposes of testing.
@@ -38,3 +39,5 @@ public class TestSchedulers: Schedulers {
         return scheduler
     }
 }
+
+#endif

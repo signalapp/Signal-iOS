@@ -49,6 +49,14 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // MARK: Public interface
 
+    public func needsNotificationAuthorization() -> Guarantee<Bool> {
+        return Guarantee<Bool> { resolve in
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                resolve(settings.authorizationStatus == .notDetermined)
+            }
+        }
+    }
+
     public func requestPushTokens(forceRotation: Bool) -> Promise<(pushToken: String, voipToken: String?)> {
         Logger.info("")
 

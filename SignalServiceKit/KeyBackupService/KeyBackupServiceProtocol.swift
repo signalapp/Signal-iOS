@@ -24,7 +24,13 @@ public enum KBS {
     }
 
     public enum DerivedKey: Hashable {
+        /// The key required to bypass reglock and register or change number
+        /// into an owned account.
         case registrationLock
+        /// The key required to bypass sms verification when registering for an account.
+        /// Independent from reglock; if reglock is present it is _also_ required, if not
+        /// this token is still required.
+        case registrationRecoveryPassword
         case storageService
 
         case storageServiceManifest(version: UInt64)
@@ -34,6 +40,8 @@ public enum KBS {
             switch self {
             case .registrationLock:
                 return "Registration Lock"
+            case .registrationRecoveryPassword:
+                return "Registration Recovery"
             case .storageService:
                 return "Storage Service Encryption"
             case .storageServiceManifest(let version):

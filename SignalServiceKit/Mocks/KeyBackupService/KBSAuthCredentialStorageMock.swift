@@ -4,7 +4,8 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
+
+#if TESTABLE_BUILD
 
 public class KBSAuthCredentialStorageMock: KBSAuthCredentialStorage {
 
@@ -33,3 +34,4 @@ public class KBSAuthCredentialStorageMock: KBSAuthCredentialStorage {
         invalidCredentials.lazy.map(\.username).forEach { dict[$0] = nil }
     }
 }
+#endif

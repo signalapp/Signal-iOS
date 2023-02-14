@@ -4,13 +4,13 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
-import XCTest
+
+#if TESTABLE_BUILD
 
 /// OWSURLSessionProtocol mock instance that responds exclusively to TSRequest promises,
 /// taking Response objects that it uses to respond to requests in FIFO order.
 /// Every request made should have a response added to this mock, or it will
-/// XCTFail.
+/// fatalError.
 public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
 
     public struct Response {
@@ -44,7 +44,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
                     bodyData = try JSONEncoder().encode(bodyJson)
                 }
             } catch {
-                XCTFail("Failed to encode JSON with error: \(error)")
+                fatalError("Failed to encode JSON with error: \(error)")
             }
             self.matcher = { $0.url?.relativeString.hasSuffix(urlSuffix) ?? false }
             self.statusCode = statusCode
@@ -53,10 +53,14 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         }
     }
 
-    public var responses = [Response]()
+    public var responses = [(Response, Guarantee<Response>)]()
 
     public func addResponse(_ response: Response) {
-        responses.append(response)
+        responses.append((response, .value(response)))
+    }
+
+    public func addResponse(_ response: Response, atTime t: Int, on scheduler: TestScheduler) {
+        responses.append((response, scheduler.guarantee(resolvingWith: response, atTime: t)))
     }
 
     public func addResponse(
@@ -77,16 +81,18 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
     }
 
     public override func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
-        guard let responseIndex = responses.firstIndex(where: { $0.matcher(rawRequest) }) else {
-            XCTFail("Got a request with no response set up!")
-            return .pending().0
+        guard let responseIndex = responses.firstIndex(where: { $0.0.matcher(rawRequest) }) else {
+            fatalError("Got a request with no response set up!")
         }
         let response = responses.remove(at: responseIndex)
-        return .value(HTTPResponseImpl(
-            requestUrl: rawRequest.url!,
-            status: response.statusCode,
-            headers: response.headers,
-            bodyData: response.bodyData
-        ))
+        return response.1.map(on: SyncScheduler()) {
+            return HTTPResponseImpl(
+                requestUrl: rawRequest.url!,
+                status: $0.statusCode,
+                headers: $0.headers,
+                bodyData: $0.bodyData
+            )
+        }
     }
 }
+#endif

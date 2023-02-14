@@ -194,6 +194,7 @@ public enum RegistrationServiceResponses {
 
     // MARK: - Account Creation/Change Number
 
+    // TODO[Registration]: these codes have changed in the server API design document
     public enum AccountCreationResponseCodes: Int, UnknownEnumCodable {
         /// Success. Response body has `AccountIdentityResponse`.
         case success = 200
@@ -256,6 +257,14 @@ public enum RegistrationServiceResponses {
         /// Whether the account has any data in KBS.
         public let hasPreviouslyUsedKBS: Bool
 
+        public init(aci: UUID, pni: UUID, e164: String, username: String?, hasPreviouslyUsedKBS: Bool) {
+            self.aci = aci
+            self.pni = pni
+            self.e164 = e164
+            self.username = username
+            self.hasPreviouslyUsedKBS = hasPreviouslyUsedKBS
+        }
+
         public enum CodingKeys: String, CodingKey {
             case aci = "uuid"
             case pni
@@ -277,6 +286,14 @@ public enum RegistrationServiceResponses {
         public enum CodingKeys: String, CodingKey {
             case timeRemainingMs = "timeRemaining"
             case kbsAuthCredential = "backupCredentials"
+        }
+
+        public init(
+            timeRemainingMs: Int,
+            kbsAuthCredential: KBSAuthCredential
+        ) {
+            self.timeRemainingMs = timeRemainingMs
+            self.kbsAuthCredential = kbsAuthCredential
         }
 
         public init(from decoder: Decoder) throws {

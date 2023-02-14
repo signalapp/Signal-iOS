@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import SignalCoreKit
-import XCTest
+
+#if TESTABLE_BUILD
 
 /// A scheduler that tightly controls the execution of blocks and the passage of time.
 ///
@@ -119,6 +119,13 @@ public class TestScheduler: Scheduler {
         isRunning = false
     }
 
+    /// Convenience for start followed by stop.
+    /// Runs everything until there are no jobs to run, then stops.
+    public func runUntilIdle() {
+        start()
+        stop()
+    }
+
     // MARK: - Custom Work Items
 
     public func run(afterNumTicks time: Int, _ workItem: @escaping BlockVoid) {
@@ -130,19 +137,44 @@ public class TestScheduler: Scheduler {
         advanceIfRunning()
     }
 
+    public func promise<T>(resolvingWith result: T, atTime t: Int) -> Promise<T> {
+        let (promise, future) = Promise<T>.pending()
+        run(atTime: t) {
+            future.resolve(result)
+        }
+        return promise
+    }
+
+    public func promise<T>(rejectedWith error: Error, atTime t: Int) -> Promise<T> {
+        let (promise, future) = Promise<T>.pending()
+        run(atTime: t) {
+            future.reject(error)
+        }
+        return promise
+    }
+
+    public func guarantee<T>(resolvingWith result: T, atTime t: Int) -> Guarantee<T> {
+        let (guarantee, future) = Guarantee<T>.pending()
+        run(atTime: t) {
+            future.resolve(result)
+        }
+        return guarantee
+    }
+
     // MARK: - Internals
 
     private var isRunning = false
+    private var isReEntrant = false
 
     private func advanceIfRunning() {
-        guard
+        while
             isRunning,
+            !isReEntrant,
             let maxTime = workItems.keys.max(),
             maxTime >= currentTime
-        else {
-            return
+        {
+            advance(to: maxTime)
         }
-        advance(to: maxTime)
     }
 
     private func appendWorkItem(_ workItem: @escaping BlockVoid, atTime time: Int) {
@@ -152,11 +184,14 @@ public class TestScheduler: Scheduler {
     }
 
     private func executeWorkItems(atTime time: Int) {
+        isReEntrant = true
         while var workItems = self.workItems[time], workItems.isEmpty.negated {
             let item = workItems.remove(at: 0)
             self.workItems[time] = workItems
             item()
         }
+        workItems[time] = nil
+        isReEntrant = false
     }
 
     // MARK: - Scheduler conformance
@@ -204,3 +239,5 @@ public class TestScheduler: Scheduler {
         async(work)
     }
 }
+
+#endif

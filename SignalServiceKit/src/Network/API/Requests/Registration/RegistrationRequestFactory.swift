@@ -56,6 +56,8 @@ public enum RegistrationRequestFactory {
     }
 
     /// See `RegistrationServiceResponses.FulfillChallengeResponseCodes` for possible responses.
+    /// TODO[Registration]: this can also take an APNS token to resend a push challenge. Push token challenges
+    /// are  best-effort, but as an optimization we may want to do that.
     public static func fulfillChallengeRequest(
         sessionId: String,
         captchaToken: String?,
@@ -242,7 +244,7 @@ public enum RegistrationRequestFactory {
         /// Whether the user has opted to allow their account to be discoverable by phone number.
         public let discoverableByPhoneNumber: Bool
 
-        public let capabilities: Capabilities = Capabilities()
+        public let capabilities: Capabilities
 
         public enum CodingKeys: String, CodingKey {
             case authKey = "AuthKey"
@@ -268,7 +270,8 @@ public enum RegistrationRequestFactory {
             unrestrictedUnidentifiedAccess: Bool,
             registrationLockToken: String?,
             encryptedDeviceName: String?,
-            discoverableByPhoneNumber: Bool
+            discoverableByPhoneNumber: Bool,
+            canReceiveGiftBadges: Bool = RemoteConfig.canReceiveGiftBadges
         ) {
             self.authKey = authKey
             self.isManualMessageFetchEnabled = isManualMessageFetchEnabled
@@ -279,6 +282,7 @@ public enum RegistrationRequestFactory {
             self.registrationLockToken = registrationLockToken
             self.encryptedDeviceName = encryptedDeviceName
             self.discoverableByPhoneNumber = discoverableByPhoneNumber
+            self.capabilities = Capabilities(canReceiveGiftBadges: canReceiveGiftBadges)
         }
 
         public struct Capabilities: Encodable {
@@ -289,7 +293,7 @@ public enum RegistrationRequestFactory {
             public let announcementGroup = true
             public let senderKey = true
             public let stories = true
-            public let canReceiveGiftBadges = RemoteConfig.canReceiveGiftBadges
+            public let canReceiveGiftBadges: Bool
             // Every user going through the *new* registration
             // code paths should have this true.
             public let hasKBSBackups = true
