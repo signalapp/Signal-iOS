@@ -189,6 +189,8 @@ message AccountRecord {
            bool                   storiesDisabled               = 29;
            OptionalBool           storyViewReceiptsEnabled      = 30;
            bool                   readOnboardingStory           = 31;
+           reserved               /* seenGroupStoryEducation */   32; // Reserved for a future feature.
+           string                 username                      = 33;
 }
 
 message StoryDistributionListRecord {

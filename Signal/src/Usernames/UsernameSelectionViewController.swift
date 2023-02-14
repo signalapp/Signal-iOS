@@ -23,6 +23,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         let networkManager: NetworkManager
         let databaseStorage: SDSDatabaseStorage
         let usernameLookupManager: UsernameLookupManager
+        let storageServiceManager: StorageServiceManagerProtocol
     }
 
     enum Constants {
@@ -612,6 +613,9 @@ private extension UsernameSelectionViewController {
                 transaction: transaction.asV2Write
             )
         }
+
+        // We back up the username in StorageService, so trigger a backup now.
+        context.storageServiceManager.recordPendingLocalAccountUpdates()
 
         usernameSelectionDelegate?.usernameDidChange(to: usernameValue)
 

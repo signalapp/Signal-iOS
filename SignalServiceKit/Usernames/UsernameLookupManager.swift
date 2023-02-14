@@ -26,15 +26,9 @@ public protocol UsernameLookupManager {
         transaction: DBReadTransaction
     ) -> [Username?]
 
-    /// Save the given username for the given ACI.
+    /// Save the given username, or lack thereof, for the given ACI.
     func saveUsername(
-        _ username: Username,
-        forAci aci: ACI,
-        transaction: DBWriteTransaction
-    )
-
-    /// Clear the username for the given ACI, if one exists.
-    func clearUsername(
+        _ username: Username?,
         forAci aci: ACI,
         transaction: DBWriteTransaction
     )
@@ -100,25 +94,22 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
     }
 
     func saveUsername(
-        _ username: Username,
+        _ username: Username?,
         forAci aci: ACI,
         transaction: DBWriteTransaction
     ) {
-        cachedLookups[aci] = .found(username: username)
+        if let username {
+            cachedLookups[aci] = .found(username: username)
 
-        UsernameLookupRecord(aci: aci, username: username)
-            .upsert(transaction: SDSDB.shimOnlyBridge(transaction))
-    }
+            UsernameLookupRecord(aci: aci, username: username)
+                .upsert(transaction: SDSDB.shimOnlyBridge(transaction))
+        } else {
+            cachedLookups[aci] = .notFound
 
-    func clearUsername(
-        forAci aci: ACI,
-        transaction: DBWriteTransaction
-    ) {
-        cachedLookups[aci] = .notFound
-
-        UsernameLookupRecord.deleteOne(
-            forAci: aci,
-            transaction: SDSDB.shimOnlyBridge(transaction)
-        )
+            UsernameLookupRecord.deleteOne(
+                forAci: aci,
+                transaction: SDSDB.shimOnlyBridge(transaction)
+            )
+        }
     }
 }

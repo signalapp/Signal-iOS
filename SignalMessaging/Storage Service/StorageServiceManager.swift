@@ -1320,13 +1320,17 @@ class StorageServiceOperation: OWSOperation {
     // MARK: - Record Updaters
 
     private func buildAccountUpdater() -> SingleElementStateUpdater<StorageServiceAccountRecordUpdater>? {
-        guard let localAddress = TSAccountManager.localAddress else {
-            owsFailDebug("Can't update local account without local address.")
+        guard
+            let localAddress = TSAccountManager.localAddress,
+            let localAci = localAddress.uuid
+        else {
+            owsFailDebug("Can't update local account without local address and ACI.")
             return nil
         }
         return SingleElementStateUpdater(
             recordUpdater: StorageServiceAccountRecordUpdater(
                 localAddress: localAddress,
+                localAci: localAci,
                 paymentsHelper: paymentsHelperSwift,
                 preferences: preferences,
                 profileManager: profileManagerImpl,
@@ -1336,7 +1340,8 @@ class StorageServiceOperation: OWSOperation {
                 systemStoryManager: systemStoryManager,
                 tsAccountManager: tsAccountManager,
                 typingIndicators: typingIndicatorsImpl,
-                udManager: udManager
+                udManager: udManager,
+                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
             ),
             changeState: \.localAccountChangeState,
             storageIdentifier: \.localAccountIdentifier,

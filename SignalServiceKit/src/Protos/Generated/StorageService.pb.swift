@@ -737,6 +737,11 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._readOnboardingStory = newValue}
   }
 
+  var username: String {
+    get {return _storage._username}
+    set {_uniqueStorage()._username = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -1736,6 +1741,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     29: .same(proto: "storiesDisabled"),
     30: .same(proto: "storyViewReceiptsEnabled"),
     31: .same(proto: "readOnboardingStory"),
+    33: .same(proto: "username"),
   ]
 
   fileprivate class _StorageClass {
@@ -1768,6 +1774,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _storiesDisabled: Bool = false
     var _storyViewReceiptsEnabled: StorageServiceProtos_OptionalBool = .unset
     var _readOnboardingStory: Bool = false
+    var _username: String = String()
 
     static let defaultInstance = _StorageClass()
 
@@ -1803,6 +1810,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _storiesDisabled = source._storiesDisabled
       _storyViewReceiptsEnabled = source._storyViewReceiptsEnabled
       _readOnboardingStory = source._readOnboardingStory
+      _username = source._username
     }
   }
 
@@ -1850,6 +1858,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 29: try { try decoder.decodeSingularBoolField(value: &_storage._storiesDisabled) }()
         case 30: try { try decoder.decodeSingularEnumField(value: &_storage._storyViewReceiptsEnabled) }()
         case 31: try { try decoder.decodeSingularBoolField(value: &_storage._readOnboardingStory) }()
+        case 33: try { try decoder.decodeSingularStringField(value: &_storage._username) }()
         default: break
         }
       }
@@ -1949,6 +1958,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._readOnboardingStory != false {
         try visitor.visitSingularBoolField(value: _storage._readOnboardingStory, fieldNumber: 31)
       }
+      if !_storage._username.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._username, fieldNumber: 33)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1987,6 +1999,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._storiesDisabled != rhs_storage._storiesDisabled {return false}
         if _storage._storyViewReceiptsEnabled != rhs_storage._storyViewReceiptsEnabled {return false}
         if _storage._readOnboardingStory != rhs_storage._readOnboardingStory {return false}
+        if _storage._username != rhs_storage._username {return false}
         return true
       }
       if !storagesAreEqual {return false}

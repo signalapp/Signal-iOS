@@ -870,6 +870,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     typealias RecordType = StorageServiceProtoAccountRecord
 
     private let localAddress: SignalServiceAddress
+    private let localAci: UUID
     private let paymentsHelper: PaymentsHelperSwift
     private let preferences: OWSPreferences
     private let profileManager: OWSProfileManager
@@ -880,9 +881,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let tsAccountManager: TSAccountManager
     private let typingIndicators: TypingIndicators
     private let udManager: OWSUDManager
+    private let usernameLookupManager: UsernameLookupManager
 
     init(
         localAddress: SignalServiceAddress,
+        localAci: UUID,
         paymentsHelper: PaymentsHelperSwift,
         preferences: OWSPreferences,
         profileManager: OWSProfileManager,
@@ -892,9 +895,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         systemStoryManager: SystemStoryManagerProtocol,
         tsAccountManager: TSAccountManager,
         typingIndicators: TypingIndicators,
-        udManager: OWSUDManager
+        udManager: OWSUDManager,
+        usernameLookupManager: UsernameLookupManager
     ) {
         self.localAddress = localAddress
+        self.localAci = localAci
         self.paymentsHelper = paymentsHelper
         self.preferences = preferences
         self.profileManager = profileManager
@@ -905,6 +910,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.tsAccountManager = tsAccountManager
         self.typingIndicators = typingIndicators
         self.udManager = udManager
+        self.usernameLookupManager = usernameLookupManager
     }
 
     func unknownFields(for record: StorageServiceProtoAccountRecord) -> UnknownStorage? { record.unknownFields }
@@ -924,7 +930,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             builder.setProfileKey(profileKey)
         }
 
-        // TODO: [Usernames] We should persist the local username in the account record, but at the time of writing the proto field does not yet exist.
+        if let username = usernameLookupManager.fetchUsername(forAci: localAci, transaction: transaction.asV2Read) {
+            builder.setUsername(username)
+        }
 
         if let profileGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction) {
             builder.setGivenName(profileGivenName)
@@ -1033,6 +1041,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction)
         let localFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction)
         let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, downloadIfMissing: true, transaction: transaction)
+        let localUsername = usernameLookupManager.fetchUsername(forAci: localAci, transaction: transaction.asV2Read)
 
         // On the primary device, we only ever want to
         // take the profile key from storage service if
@@ -1066,6 +1075,10 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             )
         } else if localGivenName != nil && !record.hasGivenName || localFamilyName != nil && !record.hasFamilyName || localAvatarUrl != nil && !record.hasAvatarURL {
             needsUpdate = true
+        }
+
+        if localUsername != record.username {
+            usernameLookupManager.saveUsername(record.username, forAci: localAci, transaction: transaction.asV2Write)
         }
 
         let localThread = TSContactThread.getOrCreateThread(withContactAddress: localAddress, transaction: transaction)

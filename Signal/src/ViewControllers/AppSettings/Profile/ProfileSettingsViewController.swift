@@ -277,7 +277,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 context: .init(
                     networkManager: self.networkManager,
                     databaseStorage: self.databaseStorage,
-                    usernameLookupManager: self.context.usernameLookupManager
+                    usernameLookupManager: self.context.usernameLookupManager,
+                    storageServiceManager: self.storageServiceManager
                 )
             )
 
@@ -300,7 +301,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                     guard let self else { return }
 
                     self.databaseStorage.write { transaction in
-                        self.context.usernameLookupManager.clearUsername(
+                        self.context.usernameLookupManager.saveUsername(
+                            nil,
                             forAci: localAci,
                             transaction: transaction.asV2Write
                         )

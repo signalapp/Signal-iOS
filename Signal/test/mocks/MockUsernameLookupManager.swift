@@ -30,11 +30,7 @@ class MockUsernameLookupManager: UsernameLookupManager {
         }
     }
 
-    func saveUsername(_ username: Username, forAci aci: ACI, transaction: DBWriteTransaction) {
+    func saveUsername(_ username: Username?, forAci aci: ACI, transaction: DBWriteTransaction) {
         mockUsernames[aci] = username
-    }
-
-    func clearUsername(forAci aci: ACI, transaction: DBWriteTransaction) {
-        mockUsernames.removeValue(forKey: aci)
     }
 }
