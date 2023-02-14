@@ -36,6 +36,7 @@ class RegistrationPermissionsViewController: OWSViewController {
         super.init()
     }
 
+    @available(*, unavailable)
     public override init() {
         owsFail("This should not be called")
     }
