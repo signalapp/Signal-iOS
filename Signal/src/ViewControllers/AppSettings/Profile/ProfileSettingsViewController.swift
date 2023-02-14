@@ -128,19 +128,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 actionBlock: { [weak self] in
                     guard let self else { return }
 
-                    let vc = UsernameSelectionViewController(
-                        existingUsername: .init(rawUsername: self.username),
-                        localAci: localAci,
-                        context: .init(
-                            networkManager: self.networkManager,
-                            databaseStorage: self.databaseStorage,
-                            usernameLookupManager: self.context.usernameLookupManager
-                        )
-                    )
-
-                    vc.usernameSelectionDelegate = self
-
-                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                    self.handleUsernameCellTapped(localAci: localAci)
                 }
             ))
         }
@@ -279,6 +267,96 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             accessoryView: usernameShareView,
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "username")
         )
+    }
+
+    private func handleUsernameCellTapped(localAci: UUID) {
+        func presentUsernameSelection(from self: ProfileSettingsViewController) {
+            let vc = UsernameSelectionViewController(
+                existingUsername: .init(rawUsername: self.username),
+                localAci: localAci,
+                context: .init(
+                    networkManager: self.networkManager,
+                    databaseStorage: self.databaseStorage,
+                    usernameLookupManager: self.context.usernameLookupManager
+                )
+            )
+
+            vc.usernameSelectionDelegate = self
+
+            self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+        }
+
+        func deleteUsernameBehindModalActivityIndicator(from self: ProfileSettingsViewController) {
+            ModalActivityIndicatorViewController.present(
+                fromViewController: self,
+                canCancel: false
+            ) { modal in
+                firstly {
+                    Usernames.API(networkManager: self.networkManager)
+                        .attemptToDeleteCurrentUsername()
+                }.done(on: DispatchQueue.main) { [weak self] in
+                    defer { modal.dismiss() }
+
+                    guard let self else { return }
+
+                    self.databaseStorage.write { transaction in
+                        self.context.usernameLookupManager.clearUsername(
+                            forAci: localAci,
+                            transaction: transaction.asV2Write
+                        )
+                    }
+
+                    self.usernameDidChange(to: nil)
+                }.catch(on: DispatchQueue.main) { error in
+                    modal.dismiss {
+                        OWSActionSheets.showErrorAlert(
+                            message: CommonStrings.somethingWentWrongTryAgainLaterError
+                        )
+                    }
+                }
+            }
+        }
+
+        if username != nil {
+            let selectUsernameActionSheet = ActionSheetController()
+
+            selectUsernameActionSheet.addAction(.init(
+                title: CommonStrings.editButton,
+                accessibilityIdentifier: "UsernameActionSheet.edit",
+                style: .default,
+                handler: { [weak self] _ in
+                    guard let self else { return }
+                    presentUsernameSelection(from: self)
+                }
+            ))
+
+            selectUsernameActionSheet.addAction(.init(
+                title: CommonStrings.deleteButton,
+                accessibilityIdentifier: "UsernameActionSheet.delete",
+                style: .destructive,
+                handler: { [weak self] _ in
+                    OWSActionSheets.showConfirmationAlert(
+                        message: OWSLocalizedString(
+                            "USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE",
+                            comment: "A message asking the user if they are sure they want to remove their username."
+                        ),
+                        proceedTitle: OWSLocalizedString(
+                            "USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE",
+                            comment: "The title of an action sheet button that will delete a user's username."
+                        ),
+                        proceedStyle: .destructive
+                    ) { _ in
+                        guard let self else { return }
+                        deleteUsernameBehindModalActivityIndicator(from: self)
+                    }
+                }
+            ))
+
+            presentActionSheet(selectUsernameActionSheet)
+        } else {
+            // TODO: [Usernames] Present first-time education here first
+            presentUsernameSelection(from: self)
+        }
     }
 
     // MARK: - Event Handling

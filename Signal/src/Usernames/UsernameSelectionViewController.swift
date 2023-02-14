@@ -57,8 +57,6 @@ class UsernameSelectionViewController: OWSTableViewController2 {
     private enum UsernameSelectionState: Equatable {
         /// The user's existing username is unchanged.
         case noChangesToExisting
-        /// The user's existing username should be deleted.
-        case shouldDelete
         /// The username is pending reservation. Stores an attempt ID, to
         /// disambiguate multiple potentially-overlapping reservation
         /// attempts.
@@ -216,7 +214,6 @@ class UsernameSelectionViewController: OWSTableViewController2 {
             switch currentUsernameState {
             case
                     .noChangesToExisting,
-                    .shouldDelete,
                     .reservationPending,
                     .reservationSuccessful:
                 return nil
@@ -352,8 +349,7 @@ private extension UsernameSelectionViewController {
         doneBarButtonItem.isEnabled = {
             switch currentUsernameState {
             case
-                    .reservationSuccessful,
-                    .shouldDelete:
+                    .reservationSuccessful:
                 return true
             case
                     .noChangesToExisting,
@@ -380,8 +376,6 @@ private extension UsernameSelectionViewController {
                     return existingUsername.reassembled
                 }
 
-                fallthrough
-            case .shouldDelete:
                 return OWSLocalizedString(
                     "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER",
                     comment: "When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty."
@@ -410,8 +404,6 @@ private extension UsernameSelectionViewController {
         switch self.currentUsernameState {
         case .noChangesToExisting:
             self.usernameTextField.configure(forConfirmedUsername: self.existingUsername)
-        case .shouldDelete:
-            self.usernameTextField.configure(forConfirmedUsername: nil)
         case .reservationPending:
             self.usernameTextField.configureForReservationInProgress()
         case let .reservationSuccessful(reservation):
@@ -543,8 +535,6 @@ private extension UsernameSelectionViewController {
             self.confirmReservationBehindModalActivityIndicator(
                 reservedUsername: reservation.hashedUsername
             )
-        case .shouldDelete:
-            self.deleteCurrentUsernameBehindActivityIndicator()
         case
                 .noChangesToExisting,
                 .reservationPending,
@@ -605,83 +595,27 @@ private extension UsernameSelectionViewController {
         }
     }
 
-    /// Delete the user's existing username, with an activity indicator
-    /// blocking the UI. Prompts the user first to confirm deletion.
-    private func deleteCurrentUsernameBehindActivityIndicator() {
-        let confirmDeletionActionSheet = ActionSheetController(
-            title: OWSLocalizedString(
-                "USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE",
-                comment: "A message asking the user if they are sure they want to remove their username."
-            )
-        )
-
-        let confirmAction = ActionSheetAction(
-            title: OWSLocalizedString(
-                "USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE",
-                comment: "The title of an action sheet button that will delete a user's username."
-            ),
-            style: .destructive
-        ) { _ in
-            ModalActivityIndicatorViewController.present(
-                fromViewController: self,
-                canCancel: false
-            ) { modal in
-                UsernameLogger.shared.warn("Deleting existing username.")
-
-                firstly {
-                    self.apiManager.attemptToDeleteCurrentUsername()
-                }.map(on: DispatchQueue.main) {
-                    UsernameLogger.shared.info("Username deleted!")
-
-                    self.persistNewUsernameValueAndDismiss(
-                        usernameValue: nil,
-                        presentedModalActivityIndicator: modal
-                    )
-                }.catch(on: DispatchQueue.main) { error in
-                    UsernameLogger.shared.error("Error while deleting username: \(error)")
-
-                    self.dismiss(
-                        modalActivityIndicator: modal,
-                        andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError
-                    )
-                }
-            }
-        }
-
-        confirmDeletionActionSheet.addAction(confirmAction)
-        presentActionSheet(confirmDeletionActionSheet)
-    }
-
     /// Persist the given username value, dismiss the given activity indicator,
     /// then dismiss the current view.
     /// - Parameter usernameValue
-    /// A new username value. `nil` if the username was deleted.
+    /// A new username value.
     /// - Parameter presentedModalActivityIndicator
     /// A currently-presented modal activity indicator to be dismissed.
     private func persistNewUsernameValueAndDismiss(
-        usernameValue: String?,
+        usernameValue: String,
         presentedModalActivityIndicator modal: ModalActivityIndicatorViewController
     ) {
         context.databaseStorage.write { transaction in
-            let transaction: DBWriteTransaction = transaction.asV2Write
-
-            if let usernameValue {
-                context.usernameLookupManager.saveUsername(
-                    usernameValue,
-                    forAci: localAci,
-                    transaction: transaction
-                )
-            } else {
-                context.usernameLookupManager.clearUsername(
-                    forAci: localAci,
-                    transaction: transaction
-                )
-            }
+            context.usernameLookupManager.saveUsername(
+                usernameValue,
+                forAci: localAci,
+                transaction: transaction.asV2Write
+            )
         }
 
         usernameSelectionDelegate?.usernameDidChange(to: usernameValue)
 
-        modal.dismiss(animated: false) {
+        modal.dismiss {
             self.dismiss(animated: true)
         }
     }
@@ -692,7 +626,7 @@ private extension UsernameSelectionViewController {
         modalActivityIndicator modal: ModalActivityIndicatorViewController,
         andPresentErrorMessage errorMessage: String
     ) {
-        modal.dismiss(animated: false) {
+        modal.dismiss {
             OWSActionSheets.showErrorAlert(message: errorMessage)
         }
     }
@@ -730,7 +664,7 @@ private extension UsernameSelectionViewController {
             }
         } else {
             // We have an existing username, but no entered nickname.
-            currentUsernameState = .shouldDelete
+            currentUsernameState = .tooShort
         }
     }
 
