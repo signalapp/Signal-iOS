@@ -18,6 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ContactsManagerProtocol <NSObject>
 
+/// Get the ``SignalAccount`` backed by the given address, if any.
+- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
+                                             transaction:(SDSAnyReadTransaction *)transaction;
 /// The name representing this address.
 ///
 /// This will be the first of the following that exists for this address:

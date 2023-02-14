@@ -816,15 +816,10 @@ extension RecipientPickerViewController {
                     if let aci = maybeAci {
                         guard let self else { return }
 
-                        self.databaseStorage.write { transaction in
-                            DependenciesBridge.shared.usernameLookupManager.saveUsername(
-                                hashedUsername.usernameString,
-                                forAci: aci,
-                                transaction: transaction.asV2Write
-                            )
-                        }
-
-                        self.tryToSelectRecipient(.for(address: .init(uuid: aci)))
+                        self.handleUsernameLookupCompleted(
+                            withAci: aci,
+                            forUsername: hashedUsername.usernameString
+                        )
                     } else {
                         OWSActionSheets.showActionSheet(
                             title: OWSLocalizedString(
@@ -850,5 +845,53 @@ extension RecipientPickerViewController {
                 }
             }
         }
+    }
+
+    private func handleUsernameLookupCompleted(
+        withAci aci: UUID,
+        forUsername username: String
+    ) {
+        let addressForUsername = SignalServiceAddress(uuid: aci)
+
+        self.databaseStorage.write { transaction in
+            let recipient = SignalRecipient.fetchOrCreate(
+                for: addressForUsername,
+                trustLevel: .low,
+                transaction: transaction
+            )
+            recipient.markAsRegistered(transaction: transaction)
+
+            let isUsernameBestIdentifier = Usernames.BetterIdentifierChecker.assembleByQuerying(
+                forRecipient: recipient,
+                profileManager: self.profileManager,
+                contactManager: self.contactsManager,
+                transaction: transaction
+            ).usernameIsBestIdentifier()
+
+            if isUsernameBestIdentifier {
+                // If this username is the best identifier we have for this
+                // address, we should save it locally and in StorageService.
+
+                DependenciesBridge.shared.usernameLookupManager.saveUsername(
+                    username,
+                    forAci: aci,
+                    transaction: transaction.asV2Write
+                )
+
+                self.storageServiceManager.recordPendingUpdates(
+                    updatedAddresses: [addressForUsername]
+                )
+            } else {
+                // If we have a better identifier for this address, we can
+                // throw away any stored username info for it.
+
+                DependenciesBridge.shared.usernameLookupManager.clearUsername(
+                    forAci: aci,
+                    transaction: transaction.asV2Write
+                )
+            }
+        }
+
+        self.tryToSelectRecipient(.for(address: addressForUsername))
     }
 }

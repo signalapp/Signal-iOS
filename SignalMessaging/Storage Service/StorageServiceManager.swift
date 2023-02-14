@@ -1357,7 +1357,8 @@ class StorageServiceOperation: OWSOperation {
                 contactsManager: contactsManagerImpl,
                 identityManager: identityManager,
                 profileManager: profileManagerImpl,
-                tsAccountManager: tsAccountManager
+                tsAccountManager: tsAccountManager,
+                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
             ),
             changeState: \.accountIdChangeMap,
             storageIdentifier: \.accountIdToIdentifierMap,

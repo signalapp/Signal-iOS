@@ -165,6 +165,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let identityManager: OWSIdentityManager
     private let profileManager: OWSProfileManager
     private let tsAccountManager: TSAccountManager
+    private let usernameLookupManager: UsernameLookupManager
 
     init(
         blockingManager: BlockingManager,
@@ -172,7 +173,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         contactsManager: OWSContactsManager,
         identityManager: OWSIdentityManager,
         profileManager: OWSProfileManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
+        usernameLookupManager: UsernameLookupManager
     ) {
         self.blockingManager = blockingManager
         self.bulkProfileFetch = bulkProfileFetch
@@ -180,6 +182,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.identityManager = identityManager
         self.profileManager = profileManager
         self.tsAccountManager = tsAccountManager
+        self.usernameLookupManager = usernameLookupManager
     }
 
     func unknownFields(for record: StorageServiceProtoContactRecord) -> UnknownStorage? { record.unknownFields }
@@ -199,11 +202,16 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         var builder = StorageServiceProtoContactRecord.builder()
 
+        /// Helps determine if a username is the best identifier we have for
+        /// this address.
+        var usernameBetterIdentifierChecker = Usernames.BetterIdentifierChecker(forRecipient: recipient)
+
         builder.setServiceUuid(contact.serviceId.uuidString)
 
         if let serviceE164 = contact.serviceE164 {
             if serviceE164.isStructurallyValidE164 {
                 builder.setServiceE164(serviceE164)
+                usernameBetterIdentifierChecker.add(e164: serviceE164)
             } else {
                 owsFailDebug("Invalid e164.")
             }
@@ -216,12 +224,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         let address = recipient.address
 
         let isInWhitelist = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
-        let profileKey = profileManager.profileKeyData(for: address, transaction: transaction)
-        let profileGivenName = profileManager.unfilteredGivenName(for: address, transaction: transaction)
-        let profileFamilyName = profileManager.unfilteredFamilyName(for: address, transaction: transaction)
+        builder.setWhitelisted(isInWhitelist)
 
         builder.setBlocked(blockingManager.isAddressBlocked(address, transaction: transaction))
-        builder.setWhitelisted(isInWhitelist)
 
         // Identity
 
@@ -234,7 +239,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         // Profile
 
-        // TODO: [Usernames] If we have no other identifiers for a contact, we should populate the username on a ContactRecord. See the client spec for details.
+        let profileKey = profileManager.profileKeyData(for: address, transaction: transaction)
+        let profileGivenName = profileManager.unfilteredGivenName(for: address, transaction: transaction)
+        let profileFamilyName = profileManager.unfilteredFamilyName(for: address, transaction: transaction)
 
         if let profileKey = profileKey {
             builder.setProfileKey(profileKey)
@@ -242,10 +249,12 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         if let profileGivenName = profileGivenName {
             builder.setGivenName(profileGivenName)
+            usernameBetterIdentifierChecker.add(profileGivenName: profileGivenName)
         }
 
         if let profileFamilyName = profileFamilyName {
             builder.setFamilyName(profileFamilyName)
+            usernameBetterIdentifierChecker.add(profileFamilyName: profileFamilyName)
         }
 
         if
@@ -270,14 +279,17 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             if isPrimaryAndHasLocalContact || isLinkedAndHasSyncedContact {
                 if let systemGivenName = contact.firstName {
                     builder.setSystemGivenName(systemGivenName)
+                    usernameBetterIdentifierChecker.add(systemContactGivenName: systemGivenName)
                 }
 
                 if let systemFamilyName = contact.lastName {
                     builder.setSystemFamilyName(systemFamilyName)
+                    usernameBetterIdentifierChecker.add(systemContactFamilyName: systemFamilyName)
                 }
 
                 if let systemNickname = contact.nickname {
                     builder.setSystemNickname(systemNickname)
+                    usernameBetterIdentifierChecker.add(systemContactNickname: systemNickname)
                 }
             }
         }
@@ -292,6 +304,20 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         if let storyContextAssociatedData = StoryFinder.getAssocatedData(forContactAdddress: address, transaction: transaction) {
             builder.setHideStory(storyContextAssociatedData.isHidden)
+        }
+
+        // Username
+
+        if
+            usernameBetterIdentifierChecker.usernameIsBestIdentifier(),
+            let username = usernameLookupManager.fetchUsername(
+                forAci: contact.serviceId,
+                transaction: transaction.asV2Read
+            )
+        {
+            // Only add a username to the ContactRecord if we have no other
+            // identifiers to display.
+            builder.setUsername(username)
         }
 
         // Unknown
@@ -351,8 +377,6 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         } else if localProfileKey != nil && !record.hasProfileKey {
             needsUpdate = true
         }
-
-        // TODO: [Usernames] If we no other identifiers are present for a contact, we should persist the username from the ContactRecord. See the client spec for details.
 
         // Given name can never be cleared, so ignore all info
         // about the profile if there's no given name.
@@ -441,6 +465,35 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         )
         if record.hideStory != localStoryContextAssociatedData.isHidden {
             localStoryContextAssociatedData.update(updateStorageService: false, isHidden: record.hideStory, transaction: transaction)
+        }
+
+        var usernameIsBestIdentifierOnRecord: Bool = {
+            var betterIdentifierChecker = Usernames.BetterIdentifierChecker(forRecipient: recipient)
+
+            betterIdentifierChecker.add(e164: record.serviceE164)
+            betterIdentifierChecker.add(profileGivenName: record.givenName)
+            betterIdentifierChecker.add(profileFamilyName: record.familyName)
+            betterIdentifierChecker.add(systemContactGivenName: record.systemGivenName)
+            betterIdentifierChecker.add(systemContactFamilyName: record.systemFamilyName)
+            betterIdentifierChecker.add(systemContactNickname: record.systemNickname)
+
+            return betterIdentifierChecker.usernameIsBestIdentifier()
+        }()
+
+        if
+            usernameIsBestIdentifierOnRecord,
+            let username = record.username
+        {
+            usernameLookupManager.saveUsername(
+                username,
+                forAci: contact.serviceId,
+                transaction: transaction.asV2Write
+            )
+        } else {
+            usernameLookupManager.clearUsername(
+                forAci: contact.serviceId,
+                transaction: transaction.asV2Write
+            )
         }
 
         return .merged(needsUpdate: needsUpdate, recipient.accountId)

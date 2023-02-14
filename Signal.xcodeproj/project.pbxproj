@@ -1228,6 +1228,7 @@
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
+		D9C2D77A299B0B9800D79715 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
 		D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */; };
 		D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */; };
@@ -3717,6 +3718,7 @@
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
+		D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+BetterIdentifierChecker.swift"; sourceTree = "<group>"; };
 		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
 		D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManifest.swift; sourceTree = "<group>"; };
 		D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+SSK.swift"; sourceTree = "<group>"; };
@@ -6092,6 +6094,7 @@
 				88E34F2522F269B600966CC2 /* Storage Service */,
 				F00385FB273F6388000B5ABD /* Subscriptions */,
 				F9C612B5284E46A300B2199A /* test */,
+				D9C2D779299B0B8700D79715 /* Usernames */,
 				34480B471FD0A60200BC14EF /* utils */,
 				453518951FC63DBF00210559 /* Info.plist */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
@@ -7450,6 +7453,14 @@
 				D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */,
 				D99840B629775A0400F7ED6D /* Usernames+NicknameValidatorTests.swift */,
 				D925F55429834BC900158EE4 /* Usernames+ShareableUsernameTests.swift */,
+			);
+			path = Usernames;
+			sourceTree = "<group>";
+		};
+		D9C2D779299B0B8700D79715 /* Usernames */ = {
+			isa = PBXGroup;
+			children = (
+				D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */,
 			);
 			path = Usernames;
 			sourceTree = "<group>";
@@ -10643,6 +10654,7 @@
 				34A955B6271B54BD00B05242 /* UIColor+OWS.swift in Sources */,
 				450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */,
 				3402A9E3271D96570084CBAE /* UIView+OWS.swift in Sources */,
+				D9C2D77A299B0B9800D79715 /* Usernames+BetterIdentifierChecker.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsPresenter.swift in Sources */,
 				347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */,
 				346129E31FD5C0BE00532771 /* VersionMigrations.m in Sources */,

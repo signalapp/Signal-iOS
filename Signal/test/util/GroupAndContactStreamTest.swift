@@ -316,6 +316,10 @@ class GroupAndContactStreamTest: SignalBaseTest {
 }
 
 class TestContactsManager: NSObject, ContactsManagerProtocol {
+    func fetchSignalAccount(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
+        nil
+    }
+
     func isSystemContactWithSignalAccount(_ address: SignalServiceAddress) -> Bool {
         false
     }

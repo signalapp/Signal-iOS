@@ -7,6 +7,10 @@ import Contacts
 
 @objc(OWSFakeContactsManager)
 public class FakeContactsManager: NSObject, ContactsManagerProtocol {
+    public func fetchSignalAccount(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
+        return nil
+    }
+
     public func displayName(for address: SignalServiceAddress) -> String {
         return "Fake name"
     }

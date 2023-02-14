@@ -12,6 +12,10 @@ import Contacts
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
 class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
+    func fetchSignalAccount(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
+        nil
+    }
+
     func isSystemContactWithSignalAccount(_ address: SignalServiceAddress) -> Bool {
         false
     }
