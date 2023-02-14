@@ -173,6 +173,9 @@ public protocol OWSUDManager: AnyObject {
 
     @objc
     func shouldAllowUnrestrictedAccessLocal() -> Bool
+
+    func shouldAllowUnrestrictedAccessLocal(transaction: SDSAnyReadTransaction) -> Bool
+
     @objc
     func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
 
@@ -744,8 +747,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func shouldAllowUnrestrictedAccessLocal() -> Bool {
         return databaseStorage.read { transaction in
-            self.keyValueStore.getBool(self.kUDUnrestrictedAccessKey, defaultValue: false, transaction: transaction)
+            return self.shouldAllowUnrestrictedAccessLocal(transaction: transaction)
         }
+    }
+
+    public func shouldAllowUnrestrictedAccessLocal(transaction: SDSAnyReadTransaction) -> Bool {
+        return self.keyValueStore.getBool(self.kUDUnrestrictedAccessKey, defaultValue: false, transaction: transaction)
     }
 
     @objc

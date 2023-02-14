@@ -134,7 +134,7 @@ public protocol KeyBackupServiceProtocol {
 
     func useDeviceLocalMasterKey(transaction: DBWriteTransaction)
 
-    func data(for key: KBS.DerivedKey) -> Data?
+    func data(for key: KBS.DerivedKey, transaction: DBReadTransaction) -> Data?
 
     func isKeyAvailable(_ key: KBS.DerivedKey) -> Bool
 }

@@ -13,14 +13,18 @@ extension RegistrationCoordinatorImpl {
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerShim
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
+        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigShim
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerShim
+        public typealias UDManager = _RegistrationCoordinator_UDManagerShim
     }
     public enum Wrappers {
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerWrapper
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
+        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigWrapper
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerWrapper
+        public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
     }
 }
 
@@ -61,7 +65,7 @@ public class _RegistrationCoordinator_CNContactsStoreWrapper: _RegistrationCoord
 
 public protocol _RegistrationCoordinator_OWS2FAManagerShim {
 
-    var pinCode: String? { get }
+    func pinCode(_ tx: DBReadTransaction) -> String?
 }
 
 public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordinator_OWS2FAManagerShim {
@@ -69,7 +73,9 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
     private let manager: OWS2FAManager
     public init(_ manager: OWS2FAManager) { self.manager = manager }
 
-    public var pinCode: String? { manager.pinCode }
+    public func pinCode(_ tx: DBReadTransaction) -> String? {
+        manager.pinCode(with: SDSDB.shimOnlyBridge(tx))
+    }
 }
 
 // MARK: - ProfileManager
@@ -77,6 +83,10 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
 public protocol _RegistrationCoordinator_ProfileManagerShim {
 
     var hasProfileName: Bool { get }
+
+    // NOTE: non-optional because OWSProfileManager generates a random key
+    // if one doesn't already exist.
+    var localProfileKey: OWSAES256Key { get }
 }
 
 public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordinator_ProfileManagerShim {
@@ -85,6 +95,8 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
     public init(_ manager: ProfileManagerProtocol) { self.manager = manager }
 
     public var hasProfileName: Bool { manager.hasProfileName }
+
+    public var localProfileKey: OWSAES256Key { manager.localProfileKey() }
 }
 
 // MARK: - PushRegistrationManager
@@ -118,11 +130,32 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
     }
 }
 
+// MARK: - RemoteConfig
+
+public protocol _RegistrationCoordinator_RemoteConfigShim {
+
+    var canReceiveGiftBadges: Bool { get }
+}
+
+public class _RegistrationCoordinator_RemoteConfigWrapper: _RegistrationCoordinator_RemoteConfigShim {
+
+    public init() {}
+
+    public var canReceiveGiftBadges: Bool { RemoteConfig.canSendGiftBadges }
+}
+
 // MARK: - TSAccountManager
 
 public protocol _RegistrationCoordinator_TSAccountManagerShim {
 
     func hasDefinedIsDiscoverableByPhoneNumber() -> Bool
+
+    func isManualMessageFetchEnabled(_ transaction: DBReadTransaction) -> Bool
+
+    func getOrGenerateRegistrationId(_ transaction: DBWriteTransaction) -> UInt32
+    func getOrGeneratePniRegistrationId(_ transaction: DBWriteTransaction) -> UInt32
+
+    func isDiscoverableByPhoneNumber(_ transaction: DBReadTransaction) -> Bool
 }
 
 public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoordinator_TSAccountManagerShim {
@@ -132,5 +165,38 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
 
     public func hasDefinedIsDiscoverableByPhoneNumber() -> Bool {
         return manager.hasDefinedIsDiscoverableByPhoneNumber()
+    }
+
+    public func isManualMessageFetchEnabled(_ transaction: DBReadTransaction) -> Bool {
+        return manager.isManualMessageFetchEnabled(SDSDB.shimOnlyBridge(transaction))
+    }
+
+    public func getOrGenerateRegistrationId(_ transaction: DBWriteTransaction) -> UInt32 {
+        return manager.getOrGenerateRegistrationId(transaction: SDSDB.shimOnlyBridge(transaction))
+    }
+
+    public func getOrGeneratePniRegistrationId(_ transaction: DBWriteTransaction) -> UInt32 {
+        return manager.getOrGeneratePniRegistrationId(transaction: SDSDB.shimOnlyBridge(transaction))
+    }
+
+    public func isDiscoverableByPhoneNumber(_ transaction: DBReadTransaction) -> Bool {
+        return manager.isDiscoverableByPhoneNumber(with: SDSDB.shimOnlyBridge(transaction))
+    }
+}
+
+// MARK: - UDManager
+
+public protocol _RegistrationCoordinator_UDManagerShim {
+
+    func shouldAllowUnrestrictedAccessLocal(transaction: DBReadTransaction) -> Bool
+}
+
+public class _RegistrationCoordinator_UDManagerWrapper: _RegistrationCoordinator_UDManagerShim {
+
+    private let manager: OWSUDManager
+    public init(_ manager: OWSUDManager) { self.manager = manager }
+
+    public func shouldAllowUnrestrictedAccessLocal(transaction: DBReadTransaction) -> Bool {
+        return manager.shouldAllowUnrestrictedAccessLocal(transaction: SDSDB.shimOnlyBridge(transaction))
     }
 }

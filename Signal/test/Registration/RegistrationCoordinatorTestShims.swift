@@ -13,7 +13,9 @@ extension RegistrationCoordinatorImpl {
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerMock
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerMock
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
+        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigMock
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerMock
+        public typealias UDManager = _RegistrationCoordinator_UDManagerMock
     }
 }
 
@@ -42,6 +44,10 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
     public init() {}
 
     public var pinCode: String?
+
+    public func pinCode(_ tx: SignalServiceKit.DBReadTransaction) -> String? {
+        return pinCode
+    }
 }
 
 // MARK: - ProfileManager
@@ -51,6 +57,8 @@ public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinat
     public init() {}
 
     public var hasProfileName: Bool = false
+
+    public var localProfileKey: OWSAES256Key = OWSAES256Key()
 }
 
 // MARK: - PushRegistrationManager
@@ -77,6 +85,13 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
     }
 }
 
+// MARK: - Remote Config
+
+public class _RegistrationCoordinator_RemoteConfigMock: _RegistrationCoordinator_RemoteConfigShim {
+
+    public var canReceiveGiftBadges: Bool = true
+}
+
 // MARK: - TSAccountManager
 
 public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordinator_TSAccountManagerShim {
@@ -87,5 +102,32 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
 
     public func hasDefinedIsDiscoverableByPhoneNumber() -> Bool {
         return doesHaveDefinedIsDiscoverableByPhoneNumber
+    }
+
+    // These are only used to generate AccountAttributes, their values are irrelevant.
+
+    public func isManualMessageFetchEnabled(_ transaction: SignalServiceKit.DBReadTransaction) -> Bool {
+        return false
+    }
+
+    public func getOrGenerateRegistrationId(_ transaction: SignalServiceKit.DBWriteTransaction) -> UInt32 {
+        return 8
+    }
+
+    public func getOrGeneratePniRegistrationId(_ transaction: SignalServiceKit.DBWriteTransaction) -> UInt32 {
+        return 9
+    }
+
+    public func isDiscoverableByPhoneNumber(_ transaction: SignalServiceKit.DBReadTransaction) -> Bool {
+        return true
+    }
+}
+
+// MARK: UDManager
+
+public class _RegistrationCoordinator_UDManagerMock: _RegistrationCoordinator_UDManagerShim {
+
+    public func shouldAllowUnrestrictedAccessLocal(transaction: DBReadTransaction) -> Bool {
+        return true
     }
 }

@@ -944,11 +944,14 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (BOOL)isManualMessageFetchEnabled
 {
     __block BOOL result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result =
-            [self.keyValueStore getBool:TSAccountManager_ManualMessageFetchKey defaultValue:NO transaction:transaction];
-    }];
+    [self.databaseStorage readWithBlock:^(
+        SDSAnyReadTransaction *transaction) { result = [self isManualMessageFetchEnabled:transaction]; }];
     return result;
+}
+
+- (BOOL)isManualMessageFetchEnabled:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyValueStore getBool:TSAccountManager_ManualMessageFetchKey defaultValue:NO transaction:transaction];
 }
 
 - (void)setIsManualMessageFetchEnabled:(BOOL)value

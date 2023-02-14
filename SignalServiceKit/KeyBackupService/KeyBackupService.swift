@@ -461,30 +461,30 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     // MARK: - Master Key Encryption
 
-    private func dataToDeriveFrom(for key: KBS.DerivedKey) -> Data? {
+    private func dataToDeriveFrom(for key: KBS.DerivedKey, transaction: DBReadTransaction) -> Data? {
         switch key {
         case .storageServiceManifest, .storageServiceRecord:
-            return self.data(for: .storageService)
+            return self.data(for: .storageService, transaction: transaction)
         default:
             // Most keys derive directly from the master key.
             // Only a few exceptions derive from another derived key.
-            guard let masterKey = getOrLoadStateWithSneakyTransaction().masterKey else { return nil }
+            guard let masterKey = getOrLoadState(transaction: transaction).masterKey else { return nil }
             return masterKey
         }
     }
 
-    public func data(for key: KBS.DerivedKey) -> Data? {
+    public func data(for key: KBS.DerivedKey, transaction: DBReadTransaction) -> Data? {
         // If we have this derived key stored in the database, use it.
         // This should only happen if we're a linked device and received
         // the derived key via a sync message, since we won't know about
         // the master key.
-        let isPrimaryDevice = db.read { accountManager.isPrimaryDevice(transaction: $0) }
+        let isPrimaryDevice = accountManager.isPrimaryDevice(transaction: transaction)
         if (!isPrimaryDevice || appContext.isRunningTests),
-            let cachedData = getOrLoadStateWithSneakyTransaction().syncedDerivedKeys[key] {
+            let cachedData = getOrLoadState(transaction: transaction).syncedDerivedKeys[key] {
             return cachedData
         }
 
-        guard let dataToDeriveFrom = dataToDeriveFrom(for: key) else {
+        guard let dataToDeriveFrom = dataToDeriveFrom(for: key, transaction: transaction) else {
             return nil
         }
 
@@ -492,11 +492,13 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     }
 
     public func isKeyAvailable(_ key: KBS.DerivedKey) -> Bool {
-        return data(for: key) != nil
+        return db.read {
+            return data(for: key, transaction: $0) != nil
+        }
     }
 
     public func encrypt(keyType: KBS.DerivedKey, data: Data) throws -> Data {
-        guard let keyData = self.data(for: keyType) else {
+        guard let keyData = db.read(block: { self.data(for: keyType, transaction: $0) }) else {
             owsFailDebug("missing derived key \(keyType)")
             throw KBS.KBSError.assertion
         }
@@ -504,7 +506,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     }
 
     public func decrypt(keyType: KBS.DerivedKey, encryptedData: Data) throws -> Data {
-        guard let keyData = self.data(for: keyType) else {
+        guard let keyData = db.read(block: { self.data(for: keyType, transaction: $0) }) else {
             owsFailDebug("missing derived key \(keyType)")
             throw KBS.KBSError.assertion
         }
@@ -512,7 +514,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     }
 
     public func deriveRegistrationLockToken() -> String? {
-        return self.data(for: .registrationLock)?.hexadecimalString
+        return db.read(block: { self.data(for: .registrationLock, transaction: $0) })?.hexadecimalString
     }
 
     // MARK: - Master Key Management

@@ -167,6 +167,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 #pragma mark - Manual Message Fetch
 
 - (BOOL)isManualMessageFetchEnabled;
+- (BOOL)isManualMessageFetchEnabled:(SDSAnyReadTransaction *)transaction;
 - (void)setIsManualMessageFetchEnabled:(BOOL)value;
 
 #ifdef TESTABLE_BUILD

@@ -119,6 +119,10 @@ public class KeyBackupServiceMock: KeyBackupServiceProtocol {
         return dataGenerator(key)
     }
 
+    public func data(for key: KBS.DerivedKey, transaction: DBReadTransaction) -> Data? {
+        return dataGenerator(key)
+    }
+
     public func isKeyAvailable(_ key: KBS.DerivedKey) -> Bool {
         return true
     }

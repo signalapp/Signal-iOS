@@ -205,8 +205,10 @@ class KeyBackupServiceTests: XCTestCase {
 
             XCTAssertEqual(keyBackupService.hasMasterKey, vector.masterKeyData != nil)
 
-            XCTAssertEqual(vector.derivedKeyData, keyBackupService.data(for: vector.derivedKey))
-            XCTAssertEqual(vector.storageServiceKeyData, keyBackupService.data(for: .storageService))
+            db.read { tx in
+                XCTAssertEqual(vector.derivedKeyData, keyBackupService.data(for: vector.derivedKey, transaction: tx))
+                XCTAssertEqual(vector.storageServiceKeyData, keyBackupService.data(for: .storageService, transaction: tx))
+            }
 
             let encryptedData = try keyBackupService.encrypt(keyType: vector.derivedKey, data: vector.rawData)
             let decryptedData = try keyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: encryptedData)

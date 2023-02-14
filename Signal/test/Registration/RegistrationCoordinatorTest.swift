@@ -62,10 +62,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
             ows2FAManager: ows2FAManagerMock,
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,
+            remoteConfig: RegistrationCoordinatorImpl.TestMocks.RemoteConfig(),
             schedulers: TestSchedulers(scheduler: scheduler),
             sessionManager: sessionManager,
             signalService: mockSignalService,
-            tsAccountManager: tsAccountManagerMock
+            tsAccountManager: tsAccountManagerMock,
+            udManager: RegistrationCoordinatorImpl.TestMocks.UDManager()
         )
     }
 

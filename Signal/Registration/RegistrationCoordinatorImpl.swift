@@ -17,10 +17,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
     private let profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager
     private let pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager
+    private let remoteConfig: RegistrationCoordinatorImpl.Shims.RemoteConfig
     private let schedulers: Schedulers
     private let sessionManager: RegistrationSessionManager
     private let signalService: OWSSignalServiceProtocol
     private let tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager
+    private let udManager: RegistrationCoordinatorImpl.Shims.UDManager
 
     public init(
         contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore,
@@ -32,10 +34,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager,
         profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager,
         pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager,
+        remoteConfig: RegistrationCoordinatorImpl.Shims.RemoteConfig,
         schedulers: Schedulers,
         sessionManager: RegistrationSessionManager,
         signalService: OWSSignalServiceProtocol,
-        tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager
+        tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager,
+        udManager: RegistrationCoordinatorImpl.Shims.UDManager
     ) {
         self.contactsStore = contactsStore
         self.dateProvider = dateProvider
@@ -46,10 +50,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.ows2FAManager = ows2FAManager
         self.profileManager = profileManager
         self.pushRegistrationManager = pushRegistrationManager
+        self.remoteConfig = remoteConfig
         self.schedulers = schedulers
         self.sessionManager = sessionManager
         self.signalService = signalService
         self.tsAccountManager = tsAccountManager
+        self.udManager = udManager
     }
 
     // MARK: - Public API
@@ -236,6 +242,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // at the start of every session), but hit a challenge, we write this var
         // so that when we complete the challenge we send the code right away.
         var pendingCodeTransport: Registration.CodeTransport?
+
+        // TSAccountManager state
+        var registrationId: UInt32!
+        var pniRegistrationId: UInt32!
+        var isManualMessageFetchEnabled = false
+        var isDiscoverableByPhoneNumber = false
+
+        // OWSProfileManager state
+        var profileKey: OWSAES256Key!
+        var udAccessKey: SMKUDAccessKey!
+        var allowUnrestrictedUD = false
     }
 
     private var inMemoryState = InMemoryState()
@@ -317,20 +334,41 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             try? self.kvStore.getCodableValue(forKey: Constants.persistedStateKey, transaction: $0)
         }
 
-        self.loadLocalMasterKey()
-        inMemoryState.pinFromDisk = ows2FAManager.pinCode
+        // Ideally this would be in the below transaction, but OWSProfileManager
+        // isn't set up to do that and its a mess to untangle.
+        let profileKey = profileManager.localProfileKey
+        inMemoryState.profileKey = profileKey
+        let udAccessKey: SMKUDAccessKey
+        do {
+            udAccessKey = try SMKUDAccessKey(profileKey: profileKey.keyData)
+            if udAccessKey.keyData.count < 1 {
+                owsFail("Could not determine UD access key, empty key generated.")
+            }
+        } catch {
+            // Crash app if UD cannot be enabled.
+            owsFail("Could not determine UD access key: \(error).")
+        }
+        inMemoryState.udAccessKey = udAccessKey
 
-        db.read { tx in
+        db.write { tx in
+            self.loadLocalMasterKey(tx)
+            inMemoryState.pinFromDisk = ows2FAManager.pinCode(tx)
+
             let kbsAuthCredentialCandidates = kbsAuthCredentialStore.getAuthCredentials(tx)
             if kbsAuthCredentialCandidates.isEmpty.negated {
                 inMemoryState.kbsAuthCredentialCandidates = kbsAuthCredentialCandidates
             }
+            inMemoryState.isManualMessageFetchEnabled = tsAccountManager.isManualMessageFetchEnabled(tx)
+            inMemoryState.registrationId = tsAccountManager.getOrGenerateRegistrationId(tx)
+            inMemoryState.pniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx)
+            inMemoryState.isDiscoverableByPhoneNumber = tsAccountManager.isDiscoverableByPhoneNumber(tx)
+
+            inMemoryState.allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
         }
 
         let sessionGuarantee: Guarantee<Void> = sessionManager.restoreSession()
             .map(on: schedulers.main) { [weak self] session in
                 self?.processSession(session)
-                self?.inMemoryState.hasRestoredState = true
             }
 
         let permissionsGuarantee: Guarantee<Void> = requiresSystemPermissions()
@@ -340,6 +378,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         return Guarantee.when(resolved: sessionGuarantee, permissionsGuarantee).asVoid()
             .done(on: schedulers.main) { [weak self] in
+                defer {
+                    self?.inMemoryState.hasRestoredState = true
+                }
+
                 if self?.persistedState.hasShownSplash == false {
                     var showSplashIfUnshown: Bool
                     switch self?.persistedState.mode {
@@ -659,7 +701,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 // We don't need to use the credential anymore, wipe it.
                 self.inMemoryState.kbsAuthCredential = nil
-                self.loadLocalMasterKey()
+                self.db.read { self.loadLocalMasterKey($0) }
                 return self.nextStep()
             }
             .recover(on: schedulers.main) { _ in
@@ -669,11 +711,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
-    private func loadLocalMasterKey() {
-        // TODO[Registration]: this should take a transaction and pass it to these.
+    private func loadLocalMasterKey(_ tx: DBReadTransaction) {
         // The hex vs base64 different here is intentional.
-        inMemoryState.regRecoveryPw = kbs.data(for: .registrationRecoveryPassword)?.base64EncodedString()
-        inMemoryState.reglockToken = kbs.data(for: .registrationLock)?.hexadecimalString
+        inMemoryState.regRecoveryPw = kbs.data(for: .registrationRecoveryPassword, transaction: tx)?.base64EncodedString()
+        inMemoryState.reglockToken = kbs.data(for: .registrationLock, transaction: tx)?.hexadecimalString
     }
 
     // MARK: - KBS Auth Credential Candidates Pathway
@@ -1105,19 +1146,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<Service.AccountResponse> {
         switch persistedState.mode {
         case .registering, .reRegistering:
-            // TODO[Registration]: actually pull in this information.
-            // Check OWSRequestFactory.m for where we made this before.
             let accountAttributes = RegistrationRequestFactory.AccountAttributes(
                 authKey: "",
-                isManualMessageFetchEnabled: false,
-                registrationId: 0,
-                pniRegistrationId: 0,
-                unidentifiedAccessKey: nil,
-                unrestrictedUnidentifiedAccess: false,
+                isManualMessageFetchEnabled: inMemoryState.isManualMessageFetchEnabled,
+                registrationId: inMemoryState.registrationId,
+                pniRegistrationId: inMemoryState.pniRegistrationId,
+                unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
+                unrestrictedUnidentifiedAccess: inMemoryState.allowUnrestrictedUD,
                 registrationLockToken: reglockToken,
-                encryptedDeviceName: nil,
-                discoverableByPhoneNumber: false,
-                canReceiveGiftBadges: false
+                encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
+                discoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber,
+                canReceiveGiftBadges: remoteConfig.canReceiveGiftBadges
             )
             return Service.makeCreateAccountRequest(
                 method,

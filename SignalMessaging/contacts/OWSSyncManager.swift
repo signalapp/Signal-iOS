@@ -81,7 +81,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
                 return owsFailDebug("Missing thread")
             }
 
-            let storageServiceKey = DependenciesBridge.shared.keyBackupService.data(for: .storageService)
+            let storageServiceKey = DependenciesBridge.shared.keyBackupService.data(for: .storageService, transaction: transaction.asV2Read)
             let syncKeysMessage = OWSSyncKeysMessage(thread: thread, storageServiceKey: storageServiceKey, transaction: transaction)
             self.sskJobQueues.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: transaction)
         }
