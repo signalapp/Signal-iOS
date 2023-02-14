@@ -79,8 +79,8 @@ DEPENDENCIES:
   - blurhash (from `https://github.com/signalapp/blurhash`, branch `signal-master`)
   - BonMot
   - CocoaLumberjack
-  - "Curve25519Kit (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
-  - "Curve25519Kit/Tests (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
+  - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)
+  - Curve25519Kit/Tests (from `https://github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)
   - GRDB.swift/SQLCipher
   - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts.git`, commit `586a60aa38eb7667ddb74b666c6bb6f7107288fc`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
@@ -97,8 +97,8 @@ DEPENDENCIES:
   - SAMKeychain
   - SignalArgon2 (from `https://github.com/signalapp/Argon2.git`)
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
-  - "SignalCoreKit (from `git@github.com:signalapp/SignalCoreKit`)"
-  - "SignalCoreKit/Tests (from `git@github.com:signalapp/SignalCoreKit`)"
+  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
+  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.24.0`)
   - SQLCipher (>= 4.0.1)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
@@ -127,7 +127,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/blurhash
   Curve25519Kit:
     :branch: feature/SignalClient-adoption
-    :git: "ssh://git@github.com/signalapp/Curve25519Kit"
+    :git: https://github.com/signalapp/Curve25519Kit
   LibMobileCoin:
     :commit: 586a60aa38eb7667ddb74b666c6bb6f7107288fc
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
@@ -150,7 +150,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalCoreKit:
-    :git: "git@github.com:signalapp/SignalCoreKit"
+    :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
     :tag: v2.24.0
@@ -168,7 +168,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/blurhash
   Curve25519Kit:
     :commit: 0af175812b5335dd32879a3556524c569dea95c9
-    :git: "ssh://git@github.com/signalapp/Curve25519Kit"
+    :git: https://github.com/signalapp/Curve25519Kit
   LibMobileCoin:
     :commit: 586a60aa38eb7667ddb74b666c6bb6f7107288fc
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
@@ -193,7 +193,7 @@ CHECKOUT OPTIONS:
     :submodules: true
   SignalCoreKit:
     :commit: 7d2c73808ae444086dd58e6093ea668cfc6f6c31
-    :git: "git@github.com:signalapp/SignalCoreKit"
+    :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
     :tag: v2.24.0
@@ -231,6 +231,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 40da5ad6241fc0e335f229ce63373c9abead0ebc
+PODFILE CHECKSUM: e764a0431aaae9475e858d43c35ae9b384f627e9
 
 COCOAPODS: 1.11.3

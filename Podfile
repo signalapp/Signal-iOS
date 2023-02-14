@@ -10,14 +10,14 @@ source 'https://cdn.cocoapods.org/'
 
 pod 'SwiftProtobuf', ">= 1.14.0"
 
-pod 'SignalCoreKit', git: 'git@github.com:signalapp/SignalCoreKit', testspecs: ["Tests"]
+pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"]
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
 ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = 'c798c480f626bf98c5c775dfb1250b80ee6ef767c0f70ff27902beedba4cd8ed'
 pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git', tag: 'v0.22.2', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal-client', testspecs: ["Tests"]
 
-pod 'Curve25519Kit', git: 'ssh://git@github.com/signalapp/Curve25519Kit', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
+pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
 # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
@@ -30,8 +30,8 @@ pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.24.0'
 pod 'SignalArgon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
 # pod 'SignalArgon2', path: '../Argon2', testspecs: ["Tests"]
 
-# pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 pod 'GRDB.swift/SQLCipher'
+# pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 
 pod 'SQLCipher', ">= 4.0.1"
 
