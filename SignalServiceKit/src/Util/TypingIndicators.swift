@@ -330,18 +330,18 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             // or show typing indicators for other users.
             guard delegate.areTypingIndicatorsEnabled() else { return }
 
-            firstly(on: DispatchQueue.global()) {
-                SDSDatabaseStorage.shared.write { transaction in
-                    let message = TypingIndicatorMessage(thread: thread, action: action, transaction: transaction)
+            SDSDatabaseStorage.shared.write(.promise) { transaction in
+                let message = TypingIndicatorMessage(thread: thread, action: action, transaction: transaction)
 
-                    sskJobQueues.messageSenderJobQueue.add(
-                        .promise,
-                        message: message.asPreparer,
-                        limitToCurrentProcessLifetime: true,
-                        isHighPriority: true,
-                        transaction: transaction
-                    )
-                }
+                return sskJobQueues.messageSenderJobQueue.add(
+                    .promise,
+                    message: message.asPreparer,
+                    limitToCurrentProcessLifetime: true,
+                    isHighPriority: true,
+                    transaction: transaction
+                )
+            }.then(on: SyncScheduler()) { messageSendPromise in
+                return messageSendPromise
             }.catch { error in
                 Logger.error("Error: \(error)")
             }
