@@ -316,11 +316,14 @@
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
+/* A message on a button prompting the user to go settings to grant Signal photos access. */
+"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Give Access";
+
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "स्थान";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "यहां से तस्वीरें भेजने के लिये सेटिंग्स में जा कर इस एप को तस्वीरें देखने की अनुमति दें|";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal needs permission to show your photos and videos.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "एक बार तस्वीरें खीचने के बाद आप रीसेंट्स से तस्वीरें भेज पाऐंगे।";
@@ -3014,7 +3017,7 @@
 "GROUP_WAS_MIGRATED" = "इस ग्रुप को एक नए ग्रुप में अपग्रेड किया गया था।";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "आपको नए समूह में नहीं जोड़ा जा सका और आपको समूह से निकाल दिया गया है।";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "आपको नए ग्रुप में शमिल नहीं किया जा सका और आपको शामिल होने के लिए आमंत्रित किया गया है";
@@ -3898,10 +3901,10 @@
 /* Generic indicator that no value is available for display */
 "MISSING_VALUE" = "कुछ नहीं";
 
-/* alert title: cannot link - reached max linked devices */
+/* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "आप औेर डिवाइस लिंक नहीं कर सकते।";
 
-/* alert body: cannot link - reached max linked devices */
+/* A recovery suggestion shown as the body of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "आपने अपने खाते के साथ अधिकतम डिवाइस जोङ लिये हैं। औेेर डिवाइस जोङने के लिये पहले से जुङे हुए डिवाइस में से कोई हाटाएँ और दोबारा कोशिश करें।";
 
 /* Badge indicating that the user is muted. */
@@ -4337,58 +4340,58 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "अमान्य";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "प्रमाणीकरण में कुछ गलती हो रही है।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "प्रमाणीकरण असफल।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "बहुत सारी असफल प्रमाणीकरण की कोशिशें हुई हैं। कृपया थोङी देर बाद कोशिश करें।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "भुगतान लॉक इस्तेमाल करने के लिये अपने iOS सेटिंग्स से पासकोड की अनुमति दें।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "भुगतान लॉक इस्तेमाल करने के लिये अपने iOS सेटिंग्स से पासकोड की अनुमति दें।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "भुगतान लॉक इस्तेमाल करने के लिये अपने iOS सेटिंग्स से पासकोड की अनुमति दें।";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Add an additional layer of security and require your passcode or Touch ID to send funds";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "सुरक्षा की एक अतिरिक्त परत जोड़ें और पैसा भेजने के लिए अपने पासकोड या टच ID को आवश्यक बनाएं";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Add an additional layer of security and require Face ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "सुरक्षा की एक अतिरिक्त परत जोड़ें और पैसा भेजने के लिए फेस ID को आवश्यक बनाएं।";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Add an additional layer of security and require passcode to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "सुरक्षा की एक अतिरिक्त परत जोड़ें और पैसा भेजने के लिए पासकोड को आवश्यक बनाएं।";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Add an additional layer of security and require Touch ID to send funds.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "सुरक्षा की एक अतिरिक्त परत जोड़ें और पैसा भेजने के लिए टच ID को आवश्यक बनाएं।";
 
 /* First time payments suggest payments lock title */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Turn on Payment Lock for Future Sends?";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "भविष्य में भेजे जानेवाले भुगतानों पर भुगतान लॉक लगाना है क्या?";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Require Your Passcode or Touch ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "भेजने के लिए आपका पासकोड या टच ID ज़रूरी है";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Require Face ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "भेजने के लिए फेस ID को आवश्यक बनाएं";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Require Your Phone's Passcode to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "भेजने के लिए आपके फोन का पासकोड ज़रूरी है";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Require Touch ID to Send";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "भेजने के लिए टच ID को आवश्यक बनाएं";
 
 /* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Authentication did not succeed. Ensure that biometrics is enabled on your device and a passcode is set.";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "प्रमाणीकरण सफल नहीं हुआ। सुनिश्चित करें कि आपकी डिवाइस पर बायोमेट्रिक्स सक्षम है और पासकोड सेट है।";
 
 /* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometric Authentication Failed";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "बायोमेट्रिक प्रमाणीकरण विफल";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
-"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Authenticate to confirm payment.";
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "भुगतान की पुष्टि करने के लिए प्रमाणित करें।";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "नोट जोड़ें";
@@ -4424,10 +4427,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "भुगतान अभी तक सत्यापित नहीं हुआ";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Payments lock authentication cancelled.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "भुगतान लॉक प्रमाणीकरण रद्द कर दिया गया।";
 
 /* Indicates that a payment failed because the payments lock failed to authenticate. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Payments lock authentication failure.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "भुगतान लॉक प्रमाणीकरण विफल।";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "भुगतान पूरा नहीं कर सके। अपना कनेक्शन जाँचें और दोबारा प्रयास करें।";
@@ -5828,7 +5831,7 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "भुगतान चालू करें";
 
 /* Title for the 'enable payments lock' view of the payments activation flow. */
-"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Payments Lock";
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "भुगतान लॉक";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin एक नई गोपनीयता केंद्रित डिजिटल मुद्रा है।";
@@ -5849,13 +5852,13 @@
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "भुनाना";
 
 /* Label for button in the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Save Your Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "अपना वाक्य सहेजें";
 
 /* Description for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your balance.";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "आपका रिकवरी फ़्रेज़ आपको अपना बहाल रीस्टोर करने का एक और तरीका प्रदान करता है।";
 
 /* Title for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Save Your Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "अपना वाक्य सहेजें";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "पिन अपडेट करें";
@@ -5870,7 +5873,7 @@
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "अमान्य वॉलेट पता";
 
 /* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
-"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Payments Lock";
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "भुगतान लॉक";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "अभी तक हाल की कोई गतिविधि नहीं है।";
@@ -5903,22 +5906,22 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "भुगतान (बीटा) के बारे में जानकारी";
 
 /* Button when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Skip Recovery Phrase";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "रिकवरी वाक्य छोड़ें";
 
 /* Message of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly reccommend you save it.";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "आपके रिकवरी वाक्य से आप खराब-से-खराब परिस्थिति में भी अपना संतुलन वापस पा सकते हैं। हम इसकी पुरजोर सलाह देते हैं कि आप इसे सहेज लें।";
 
 /* Title of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continue Without Saving?";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "बिना सहेजे जारी रखना है?";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "आपके द्वारा Signal फिर से इंस्टॉल करते समय यदि आप अपने Signal PIN की पुष्टि करते हैं तो आपका बैलेंस अपने आप रीस्टोर हो जाएगा। आप रिकवरी फ़्रेज़ का उपयोग करके भी अपना बैलेंस रीस्टोर कर सकते हैं, जो कि एक 24-शब्दों का आपके लिए अलग वाक्यांश होता है। इसे लिख लें और किसी सुरक्षित स्थान पर रखें।";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "You’ve got a balance! Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "आपने संतुलन बना लिया है! समय है अपने रिकवरी वाक्य को सहेजने का—24 शब्दों की एक कुंजी जिसके इस्तेमाल से आप अपना संतुलन वापस पा सकते हैं।";
 
 /* Explanation of the 'payments passphrase' when from the help card. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "समय है अपने रिकवरी वाक्य को सहेजने का—24 शब्दों की एक कुंजी जिसके इस्तेमाल से आप अपना संतुलन वापस पा सकते हैं।";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "धनराशि जोड़ें";
@@ -5972,34 +5975,34 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "भुगतान निष्क्रिय किया गया।";
 
 /* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Skipping this step could allow anyone who has physical access to your phone to transfer funds or view your recovery phrase.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "इस चरण को छोड़ने से कोई भी ऐसा व्यक्ति जिसके हाथ आपका फ़ोन लग जाए, उसके इस्तेमाल से निधियाँ अंतरित कर सकता है या आपका रिकवरी वाक्य देख सकता है।";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Skip Enabling Face ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "फेस ID सक्षम करना छोड़ें?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Skip Enabling Passcode?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "पासकोड सक्षम करना छोड़ें?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Skip Enabling Touch ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "टच ID सक्षम करना छोड़ें?";
 
 /* Enable Button title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Use Face ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "फेस ID इस्तेमाल करें";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Use Passcode";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "पासकोड इस्तेमाल करें";
 
 /* Enable Button title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Use Touch ID";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "टच ID इस्तेमाल करें";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help prevent a person with your phone from accessing your funds by enabling Face ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "फेस ID सक्षम करके किसी व्यक्ति को अपने फोन से अपने पैसों तक पहुंचने से रोकने में मदद करें। आप सेटिंग्स में जा कर इस विकल्प को बंद कर सकते हैं।";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help prevent a person with your phone from accessing your funds by using your passcode. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "अपना पासकोड इस्तेमाल करके किसी व्यक्ति को अपने फोन से अपने पैसों तक पहुंचने से रोकने में मदद करें। आप सेटिंग्स में जा कर इस विकल्प को बंद कर सकते हैं।";
 
 /* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help prevent a person with your phone from accessing your funds by enabling Touch ID. You can disable this option in Settings.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "टच ID सक्षम करके किसी व्यक्ति को अपने फोन से अपने पैसों तक पहुंचने से रोकने में मदद करें। आप सेटिंग्स में जा कर इस विकल्प को बंद कर सकते हैं।";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Signal अपडेट करें";
@@ -6095,7 +6098,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "रिकवरी फ़्रेज़ दर्ज करें";
 
 /* Title for the first step of the 'save payments passphrase' views. */
-"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Save Recovery Phrase";
+"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "रिकवरी वाक्य सहेजें";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "ट्रांसफ़र रसीद के लिए QR कोड स्कैन करें।";
@@ -6107,19 +6110,19 @@
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR कोड स्कैन करें";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Require your passcode or Touch ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "पैसा भेजने के लिए आपके पासकोड या टच ID की ज़रूरत होती है।";
 
 /* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Require Face ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "पैसा भेजने के लिए फेस ID को आवश्यक बनाएं।";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Require your phone's passcode to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "पैसा भेजने के लिए अपने फोन के पासकोड की ज़रूरत होती है।";
 
 /* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Require Touch ID to transfer funds.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "पैसा भेजने के लिए टच ID को आवश्यक बनाएं।";
 
 /* Title for the payments section in the app’s privacy settings tableview */
-"SETTINGS_PAYMENTS_SECURITY_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_SECURITY_TITLE" = "भुगतान";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "भुगतान भेजें";
@@ -6200,10 +6203,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "निम्न 24 शब्दों को क्रम में लिखें। अपनी सूची को किसी सुरक्षित स्थान पर रखें।";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Do not share this list";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "इस सूची को साझा न करें";
 
 /* Title for the content section of the  'payments lock prompt' view shown after payemts activation. */
-"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Another Layer of Protection";
+"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "सुरक्षा की एक और परत";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "रिकवरी फ़्रेज़";
@@ -7063,14 +7066,32 @@
 /* Explanation of when you should use a signal proxy */
 "USE_PROXY_EXPLANATION" = "प्रॉक्सी का उपयोग केवल तभी करें जब आप मोबाइल डेटा या वाई-फाई पर Signal से कनेक्ट करने में सक्षम न हों।";
 
+/* Description of how to update discovery */
+"USERNAME_DISCOVERY_DESCRIPTION" = "Turn off phone number discovery under Settings > Privacy > Phone Number > Who can find my number, to use your username as the primary way others can contact you.";
+
+/* Description of username discriminator digits */
+"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Usernames are paired with a set of digits and aren’t shared on your profile";
+
+/* Title to set up signal username */
+"USERNAME_EDUCATION_TITLE" = "Set up your Signal username";
+
+/* Description of username link */
+"USERNAME_LINK_DESCRIPTION" = "Each username has a unique link you can share with your friends to start a chat with you";
+
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "उपभोगकर्ता नाम खोजते समय त्रुटि हुई है। कृपया कुछ देर बाद कोशिश करें।";
+
+/* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is not a valid username. Make sure you’ve entered the complete username followed by its set of digits.";
+
+/* Title for an action sheet indicating that a user-entered username value is not a valid username. */
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Invalid Username";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ एक Signal उपयोगकर्ता नहीं है। सुनिश्चित करें कि आपने उपयोगकर्ता का पूरा नाम डाला है।";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
-"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "उपयोगकर्ता नहीं मिला";
 
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
