@@ -387,7 +387,10 @@ public class SendPaymentViewController: OWSViewController {
         createSubviews()
 
         updateContents()
+    }
 
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         helper?.refreshObservedValues()
     }
 
@@ -398,8 +401,6 @@ public class SendPaymentViewController: OWSViewController {
         if !UIDevice.current.isIPad && CurrentAppContext().interfaceOrientation != .portrait {
             UIDevice.current.ows_setOrientation(.portrait)
         }
-
-        helper?.refreshObservedValues()
     }
 
     public override func themeDidChange() {

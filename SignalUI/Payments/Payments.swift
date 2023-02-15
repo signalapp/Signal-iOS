@@ -44,6 +44,7 @@ public protocol PaymentsSwift: Payments {
     var currentPaymentBalance: PaymentBalance? { get }
     func updateCurrentPaymentBalance()
     func updateCurrentPaymentBalancePromise() -> Promise<TSPaymentAmount>
+    func clearCurrentPaymentBalance()
 
     func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<TSPaymentAmount>
 
@@ -165,6 +166,10 @@ extension MockPayments: PaymentsSwift {
     }
 
     public func updateCurrentPaymentBalancePromise() -> Promise<TSPaymentAmount> {
+        owsFail("Not implemented.")
+    }
+
+    public func clearCurrentPaymentBalance() {
         owsFail("Not implemented.")
     }
 

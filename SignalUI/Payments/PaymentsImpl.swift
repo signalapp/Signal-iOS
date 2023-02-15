@@ -301,6 +301,10 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         updateCurrentPaymentBalance()
     }
 
+    public func clearCurrentPaymentBalance() {
+        paymentBalanceCache.set(nil)
+    }
+
     // MARK: -
 
     public func findPaymentModels(withMCLedgerBlockIndex mcLedgerBlockIndex: UInt64,

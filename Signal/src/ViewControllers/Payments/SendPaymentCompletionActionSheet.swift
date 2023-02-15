@@ -99,8 +99,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         createSubviews()
 
-        helper?.refreshObservedValues()
-
         // Try to optimistically prepare a payment before
         // user approves it to reduce perceived latency
         // when sending outgoing payments.
@@ -124,8 +122,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         if !UIDevice.current.isIPad && CurrentAppContext().interfaceOrientation != .portrait {
             UIDevice.current.ows_setOrientation(.portrait)
         }
-
-        helper?.refreshObservedValues()
     }
 
     public override func themeDidChange() {

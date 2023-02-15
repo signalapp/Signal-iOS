@@ -426,21 +426,19 @@ public class MobileCoinAPI: Dependencies {
         }
 
         let client = self.client
-        return firstly(on: DispatchQueue.global()) { () throws -> Promise<TSPaymentAmount> in
-            // .status(of: transaction) requires an updated balance.
-            //
-            // TODO: We could improve perf when verifying multiple transactions by getting balance just once.
-            self.getLocalBalance()
-        }.then(on: DispatchQueue.global()) { (_: TSPaymentAmount) -> Promise<MCOutgoingTransactionStatus> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<MCOutgoingTransactionStatus> in
             let (promise, future) = Promise<MCOutgoingTransactionStatus>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
                 return promise
             }
-            client.status(of: transaction) { (result: Swift.Result<MobileCoin.TransactionStatus, ConnectionError>) in
+            client.txOutStatus(
+                of: transaction
+            ) { (result: Swift.Result<MobileCoin.TransactionStatus, ConnectionError>) in
                 switch result {
                 case .success(let transactionStatus):
                     future.resolve(MCOutgoingTransactionStatus(transactionStatus: transactionStatus))
+                    Self.paymentsSwift.clearCurrentPaymentBalance()
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
                     future.reject(error)
