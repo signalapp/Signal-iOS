@@ -480,21 +480,11 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             return betterIdentifierChecker.usernameIsBestIdentifier()
         }()
 
-        if
-            usernameIsBestIdentifierOnRecord,
-            let username = record.username
-        {
-            usernameLookupManager.saveUsername(
-                username,
-                forAci: contact.serviceId,
-                transaction: transaction.asV2Write
-            )
-        } else {
-            usernameLookupManager.clearUsername(
-                forAci: contact.serviceId,
-                transaction: transaction.asV2Write
-            )
-        }
+        usernameLookupManager.saveUsername(
+            usernameIsBestIdentifierOnRecord ? record.username : nil,
+            forAci: contact.serviceId,
+            transaction: transaction.asV2Write
+        )
 
         return .merged(needsUpdate: needsUpdate, recipient.accountId)
     }

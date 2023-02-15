@@ -885,7 +885,8 @@ extension RecipientPickerViewController {
                 // If we have a better identifier for this address, we can
                 // throw away any stored username info for it.
 
-                DependenciesBridge.shared.usernameLookupManager.clearUsername(
+                DependenciesBridge.shared.usernameLookupManager.saveUsername(
+                    nil,
                     forAci: aci,
                     transaction: transaction.asV2Write
                 )
