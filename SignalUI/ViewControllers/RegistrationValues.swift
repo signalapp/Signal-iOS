@@ -90,6 +90,34 @@ public struct RegistrationCountryState: Dependencies {
 
 // MARK: -
 
+public struct RegistrationPhoneNumber {
+    public let countryState: RegistrationCountryState
+    public let nationalNumber: String
+    public let e164: String
+
+    public init(countryState: RegistrationCountryState, nationalNumber: String) {
+        self.countryState = countryState
+        self.nationalNumber = nationalNumber
+
+        self.e164 = "\(countryState.callingCode)\(nationalNumber)"
+    }
+
+    public init?(e164: String) {
+        self.e164 = e164
+
+        guard
+            let countryState = RegistrationCountryState.countryState(forE164: e164),
+            let nationalNumber = PhoneNumber(fromE164: e164)?.nationalNumber
+        else {
+            return nil
+        }
+        self.countryState = countryState
+        self.nationalNumber = nationalNumber
+    }
+}
+
+// MARK: -
+
 @objc
 public class Deprecated_RegistrationPhoneNumber: NSObject {
     public let e164: String

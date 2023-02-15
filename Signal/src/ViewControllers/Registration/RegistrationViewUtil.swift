@@ -23,13 +23,20 @@ extension UIEdgeInsets {
     }
 }
 
+// MARK: - Colors
+
+extension UIColor {
+    static var colorForRegistrationTitleLabel: UIColor { Theme.primaryTextColor }
+    static var colorForRegistrationExplanationLabel: UIColor { Theme.secondaryTextAndIconColor }
+}
+
 // MARK: - Labels
 
 extension UILabel {
     static func titleLabelForRegistration(text: String) -> UILabel {
         let result = UILabel()
         result.text = text
-        result.textColor = Theme.primaryTextColor
+        result.textColor = .colorForRegistrationTitleLabel
         result.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semibold
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
@@ -39,7 +46,7 @@ extension UILabel {
 
     static func explanationLabelForRegistration(text: String) -> UILabel {
         let result = UILabel()
-        result.textColor = Theme.secondaryTextAndIconColor
+        result.textColor = .colorForRegistrationExplanationLabel
         result.font = UIFont.ows_dynamicTypeSubheadlineClamped
         result.text = text
         result.numberOfLines = 0

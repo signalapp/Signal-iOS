@@ -1263,6 +1263,7 @@
 		F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B22912B8B7004FFFAA /* DonateViewControllerTest.swift */; };
 		F9189ABE2947D7C300CD8EF6 /* Stripe+StripeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */; };
 		F9189AC02947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9189ABF2947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift */; };
+		F9198485299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */; };
 		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
 		F924A68228F8706200E368C8 /* DonationReadMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F924A68128F8706200E368C8 /* DonationReadMoreSheetViewController.swift */; };
 		F925A3AB29493D0D009024D0 /* DisappearingMessagesFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F925A3AA29493D0C009024D0 /* DisappearingMessagesFinder.swift */; };
@@ -1376,6 +1377,7 @@
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F95A64F3299589CA007FDBDF /* RegistrationNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */; };
+		F95A64F529959065007FDBDF /* RegistrationPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */; };
 		F95D71A3299305C400ED3102 /* RegistrationViewUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */; };
 		F9613CDC2981F11400894B55 /* SqliteUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9613CDB2981F11400894B55 /* SqliteUtil.swift */; };
 		F9613CDE2981F15700894B55 /* SqliteUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */; };
@@ -3762,6 +3764,7 @@
 		F90B731E2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+MonthlyReceiptRedemption.swift"; sourceTree = "<group>"; };
 		F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+StripeError.swift"; sourceTree = "<group>"; };
 		F9189ABF2947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+LocalizedStripeError.swift"; sourceTree = "<group>"; };
+		F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberInputView.swift; sourceTree = "<group>"; };
 		F92074752888648A00B7F087 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F924A68128F8706200E368C8 /* DonationReadMoreSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReadMoreSheetViewController.swift; sourceTree = "<group>"; };
 		F925A3AA29493D0C009024D0 /* DisappearingMessagesFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesFinder.swift; sourceTree = "<group>"; };
@@ -3875,6 +3878,7 @@
 		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationNavigationController.swift; sourceTree = "<group>"; };
+		F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewUtil.swift; sourceTree = "<group>"; };
 		F9613CDB2981F11400894B55 /* SqliteUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteUtil.swift; sourceTree = "<group>"; };
 		F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteUtilTest.swift; sourceTree = "<group>"; };
@@ -4936,6 +4940,8 @@
 				34ACA7EC2733161000E47AD4 /* Deprecated_RegistrationVerificationViewController.swift */,
 				F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */,
 				F9D5C39E2993F9FF004891FC /* RegistrationPermissionsViewController.swift */,
+				F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */,
+				F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */,
 				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
 				F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */,
 			);
@@ -11178,6 +11184,8 @@
 				6600F38E29918A6100B1EDB7 /* RegistrationCoordinatorImpl.swift in Sources */,
 				F95A64F3299589CA007FDBDF /* RegistrationNavigationController.swift in Sources */,
 				F9D5C39F2993F9FF004891FC /* RegistrationPermissionsViewController.swift in Sources */,
+				F9198485299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift in Sources */,
+				F95A64F529959065007FDBDF /* RegistrationPhoneNumberViewController.swift in Sources */,
 				F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */,
 				6600F39029918CBF00B1EDB7 /* RegistrationStep.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
