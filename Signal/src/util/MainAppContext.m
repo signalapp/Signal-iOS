@@ -282,14 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DispatchMainThreadSafe(^{
         if (self.isMainAppAndActive) {
-            // App active blocks typically will be used to safely access the
-            // shared data container, so use a background task to protect this
-            // work.
-            OWSBackgroundTask *_Nullable backgroundTask =
-                [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
             block();
-            OWSAssertDebug(backgroundTask);
-            backgroundTask = nil;
             return;
         }
 
@@ -302,19 +295,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.isMainAppAndActive);
 
-    // App active blocks typically will be used to safely access the
-    // shared data container, so use a background task to protect this
-    // work.
-    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
     NSArray<AppActiveBlock> *appActiveBlocks = [self.appActiveBlocks copy];
     [self.appActiveBlocks removeAllObjects];
     for (AppActiveBlock block in appActiveBlocks) {
         block();
     }
-
-    OWSAssertDebug(backgroundTask);
-    backgroundTask = nil;
 }
 
 - (id<SSKKeychainStorage>)keychainStorage

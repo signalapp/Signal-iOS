@@ -194,6 +194,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // Wait until the app is active...
     [CurrentAppContext() runNowOrWhenMainAppIsActive:^{
         // ...but perform the work off the main thread.
+        OWSBackgroundTask *_Nullable backgroundTask =
+            [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
         dispatch_async(self.workQueue, ^{
             OWSOrphanData *_Nullable orphanData = [self findOrphanDataSync];
             if (orphanData) {
@@ -203,6 +205,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                         success:success
                                         failure:failure];
             }
+            [backgroundTask endBackgroundTask];
         });
     }];
 }
@@ -782,11 +785,12 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // Wait until the app is active...
     [CurrentAppContext() runNowOrWhenMainAppIsActive:^{
         // ...but perform the work off the main thread.
+        OWSBackgroundTask *_Nullable backgroundTask =
+            [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
         dispatch_async(self.workQueue, ^{
-            if ([self processOrphansSync:orphanData
-                     shouldRemoveOrphans:shouldRemoveOrphans]) {
+            BOOL result = [self processOrphansSync:orphanData shouldRemoveOrphans:shouldRemoveOrphans];
+            if (result) {
                 success();
-                return;
             } else {
                 [self processOrphans:orphanData
                        remainingRetries:remainingRetries - 1
@@ -794,6 +798,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                 success:success
                                 failure:failure];
             }
+            [backgroundTask endBackgroundTask];
         });
     }];
 }

@@ -58,6 +58,8 @@ typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTask
 + (OWSBackgroundTask *)backgroundTaskWithLabel:(NSString *)label
                                completionBlock:(BackgroundTaskCompletionBlock)completionBlock;
 
+- (void)endBackgroundTask;
+
 @end
 
 NS_ASSUME_NONNULL_END
