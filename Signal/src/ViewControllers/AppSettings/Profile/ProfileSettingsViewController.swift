@@ -356,8 +356,13 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
             presentActionSheet(selectUsernameActionSheet)
         } else {
-            // TODO: [Usernames] Present first-time education here first
-            presentUsernameSelection(from: self)
+            // TODO: [Usernames] Track if we have shown username education
+            let usernameEducationSheet = UsernameEducationViewController()
+            usernameEducationSheet.continueCompletion = { [weak self] in
+                guard let self else { return }
+                presentUsernameSelection(from: self)
+            }
+            presentFormSheet(usernameEducationSheet, animated: true)
         }
     }
 
