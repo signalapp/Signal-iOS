@@ -42,7 +42,8 @@ public class DependenciesBridge {
     public let kbsCredentialStorage: KBSAuthCredentialStorage
     public let keyBackupService: KeyBackupServiceProtocol
 
-    public private(set) var usernameLookupManager: UsernameLookupManager
+    public let usernameLookupManager: UsernameLookupManager
+    public let usernameEducationManager: UsernameEducationManager
 
     /// Initialize and configure the ``DependenciesBridge`` singleton.
     public static func setupSingleton(
@@ -92,5 +93,6 @@ public class DependenciesBridge {
             twoFAManager: KBS.Wrappers.OWS2FAManager(ows2FAManager)
         )
         self.usernameLookupManager = UsernameLookupManagerImpl()
+        self.usernameEducationManager = UsernameEducationManagerImpl(keyValueStoreFactory: keyValueStoreFactory)
     }
 }

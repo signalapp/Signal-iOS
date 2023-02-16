@@ -159,38 +159,39 @@ message AccountRecord {
     bytes paymentsEntropy = 2;
   }
 
-           bytes                  profileKey                    = 1;
-           string                 givenName                     = 2;
-           string                 familyName                    = 3;
-           string                 avatarUrl                     = 4;
-           bool                   noteToSelfArchived            = 5;
-           bool                   readReceipts                  = 6;
-           bool                   sealedSenderIndicators        = 7;
-           bool                   typingIndicators              = 8;
-           bool                   proxiedLinkPreviews           = 9;    // Legacy link previews flag
-           bool                   noteToSelfMarkedUnread        = 10;
-           bool                   linkPreviews                  = 11;
-           PhoneNumberSharingMode phoneNumberSharingMode        = 12;
-           bool                   notDiscoverableByPhoneNumber  = 13;
-  repeated PinnedConversation     pinnedConversations           = 14;
-           bool                   preferContactAvatars          = 15;
-           Payments               payments                      = 16;
-           uint32                 universalExpireTimer          = 17;
-           string                 e164                          = 19;
-  repeated string                 preferredReactionEmoji        = 20;
-           bytes                  subscriberID                  = 21;
-           string                 subscriberCurrencyCode        = 22;
-           bool                   displayBadgesOnProfile        = 23;
-           bool                   subscriptionManuallyCancelled = 24;
-           bool                   keepMutedChatsArchived        = 25;
-           bool                   myStoryPrivacyHasBeenSet      = 26; // Removed 'has' prefix on spec definition to avoid name conflict.
-           bool                   viewedOnboardingStory         = 27; // Removed 'has' prefix on spec definition to avoid name conflict.
-           // reserved            deprecatedStoriesDisabled     = 28;
-           bool                   storiesDisabled               = 29;
-           OptionalBool           storyViewReceiptsEnabled      = 30;
-           bool                   readOnboardingStory           = 31;
-           reserved               /* seenGroupStoryEducation */   32; // Reserved for a future feature.
-           string                 username                      = 33;
+           bytes                  profileKey                      = 1;
+           string                 givenName                       = 2;
+           string                 familyName                      = 3;
+           string                 avatarUrl                       = 4;
+           bool                   noteToSelfArchived              = 5;
+           bool                   readReceipts                    = 6;
+           bool                   sealedSenderIndicators          = 7;
+           bool                   typingIndicators                = 8;
+           bool                   proxiedLinkPreviews             = 9;    // Legacy link previews flag
+           bool                   noteToSelfMarkedUnread          = 10;
+           bool                   linkPreviews                    = 11;
+           PhoneNumberSharingMode phoneNumberSharingMode          = 12;
+           bool                   notDiscoverableByPhoneNumber    = 13;
+  repeated PinnedConversation     pinnedConversations             = 14;
+           bool                   preferContactAvatars            = 15;
+           Payments               payments                        = 16;
+           uint32                 universalExpireTimer            = 17;
+           string                 e164                            = 19;
+  repeated string                 preferredReactionEmoji          = 20;
+           bytes                  subscriberID                    = 21;
+           string                 subscriberCurrencyCode          = 22;
+           bool                   displayBadgesOnProfile          = 23;
+           bool                   subscriptionManuallyCancelled   = 24;
+           bool                   keepMutedChatsArchived          = 25;
+           bool                   myStoryPrivacyHasBeenSet        = 26; // Removed 'has' prefix on spec definition to avoid name conflict.
+           bool                   viewedOnboardingStory           = 27; // Removed 'has' prefix on spec definition to avoid name conflict.
+           reserved               /* deprecatedStoriesDisabled */   28;
+           bool                   storiesDisabled                 = 29;
+           OptionalBool           storyViewReceiptsEnabled        = 30;
+           bool                   readOnboardingStory             = 31;
+           reserved               /* seenGroupStoryEducation */     32; // Reserved for a future feature.
+           string                 username                        = 33;
+           bool                   completedUsernameOnboarding     = 34; // Removed 'has' prefix on spec definition to avoid name conflict.
 }
 
 message StoryDistributionListRecord {

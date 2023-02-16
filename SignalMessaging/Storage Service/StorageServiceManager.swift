@@ -1341,7 +1341,8 @@ class StorageServiceOperation: OWSOperation {
                 tsAccountManager: tsAccountManager,
                 typingIndicators: typingIndicatorsImpl,
                 udManager: udManager,
-                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
+                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
+                usernameEducationManager: DependenciesBridge.shared.usernameEducationManager
             ),
             changeState: \.localAccountChangeState,
             storageIdentifier: \.localAccountIdentifier,

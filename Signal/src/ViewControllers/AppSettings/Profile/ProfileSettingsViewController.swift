@@ -356,13 +356,32 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
             presentActionSheet(selectUsernameActionSheet)
         } else {
-            // TODO: [Usernames] Track if we have shown username education
-            let usernameEducationSheet = UsernameEducationViewController()
-            usernameEducationSheet.continueCompletion = { [weak self] in
-                guard let self else { return }
+            let shouldShowUsernameEducation: Bool = databaseStorage.read { transaction in
+                context.usernameEducationManager.shouldShowUsernameEducation(transaction: transaction.asV2Read)
+            }
+
+            if shouldShowUsernameEducation {
+                let usernameEducationSheet = UsernameEducationViewController()
+
+                usernameEducationSheet.continueCompletion = { [weak self] in
+                    guard let self else { return }
+
+                    self.databaseStorage.write { transaction in
+                        self.context.usernameEducationManager.setShouldShowUsernameEducation(
+                            false,
+                            transaction: transaction.asV2Write
+                        )
+                    }
+
+                    self.storageServiceManager.recordPendingLocalAccountUpdates()
+
+                    presentUsernameSelection(from: self)
+                }
+
+                presentFormSheet(usernameEducationSheet, animated: true)
+            } else {
                 presentUsernameSelection(from: self)
             }
-            presentFormSheet(usernameEducationSheet, animated: true)
         }
     }
 

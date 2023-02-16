@@ -467,7 +467,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             localStoryContextAssociatedData.update(updateStorageService: false, isHidden: record.hideStory, transaction: transaction)
         }
 
-        var usernameIsBestIdentifierOnRecord: Bool = {
+        let usernameIsBestIdentifierOnRecord: Bool = {
             var betterIdentifierChecker = Usernames.BetterIdentifierChecker(forRecipient: recipient)
 
             betterIdentifierChecker.add(e164: record.serviceE164)
@@ -925,6 +925,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let typingIndicators: TypingIndicators
     private let udManager: OWSUDManager
     private let usernameLookupManager: UsernameLookupManager
+    private let usernameEducationManager: UsernameEducationManager
 
     init(
         localAddress: SignalServiceAddress,
@@ -939,7 +940,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         tsAccountManager: TSAccountManager,
         typingIndicators: TypingIndicators,
         udManager: OWSUDManager,
-        usernameLookupManager: UsernameLookupManager
+        usernameLookupManager: UsernameLookupManager,
+        usernameEducationManager: UsernameEducationManager
     ) {
         self.localAddress = localAddress
         self.localAci = localAci
@@ -954,6 +956,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.typingIndicators = typingIndicators
         self.udManager = udManager
         self.usernameLookupManager = usernameLookupManager
+        self.usernameEducationManager = usernameEducationManager
     }
 
     func unknownFields(for record: StorageServiceProtoAccountRecord) -> UnknownStorage? { record.unknownFields }
@@ -1069,6 +1072,10 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         builder.setKeepMutedChatsArchived(SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction))
 
         builder.setStoriesDisabled(!StoryManager.areStoriesEnabled(transaction: transaction))
+
+        builder.setCompletedUsernameOnboarding(
+            !usernameEducationManager.shouldShowUsernameEducation(transaction: transaction.asV2Read)
+        )
 
         return builder.buildInfallibly()
     }
@@ -1325,6 +1332,14 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localStoriesDisabled = !StoryManager.areStoriesEnabled(transaction: transaction)
         if localStoriesDisabled != record.storiesDisabled {
             StoryManager.setAreStoriesEnabled(!record.storiesDisabled, shouldUpdateStorageService: false, transaction: transaction)
+        }
+
+        let hasCompletedUsernameOnboarding = !usernameEducationManager.shouldShowUsernameEducation(transaction: transaction.asV2Read)
+        if !hasCompletedUsernameOnboarding && record.completedUsernameOnboarding {
+            usernameEducationManager.setShouldShowUsernameEducation(
+                false,
+                transaction: transaction.asV2Write
+            )
         }
 
         return .merged(needsUpdate: needsUpdate, ())

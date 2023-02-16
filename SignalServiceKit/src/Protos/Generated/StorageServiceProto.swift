@@ -3006,6 +3006,13 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         return !proto.username.isEmpty
     }
 
+    public var completedUsernameOnboarding: Bool {
+        return proto.completedUsernameOnboarding
+    }
+    public var hasCompletedUsernameOnboarding: Bool {
+        return true
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -3153,6 +3160,9 @@ extension StorageServiceProtoAccountRecord {
         }
         if let _value = username {
             builder.setUsername(_value)
+        }
+        if hasCompletedUsernameOnboarding {
+            builder.setCompletedUsernameOnboarding(completedUsernameOnboarding)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -3347,6 +3357,10 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setUsername(_ valueParam: String) {
         proto.username = valueParam
+    }
+
+    public mutating func setCompletedUsernameOnboarding(_ valueParam: Bool) {
+        proto.completedUsernameOnboarding = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
