@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
+import UIKit
 
 class MediaZoomAnimationController: NSObject {
     private let item: Media
@@ -19,7 +20,7 @@ class MediaZoomAnimationController: NSObject {
 
 extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.15
+        return kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.25
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -140,28 +141,27 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
 
         fromContextProvider.mediaWillPresent(fromContext: fromMediaContext)
         toContextProvider.mediaWillPresent(toContext: toMediaContext)
-        UIView.animate(
-            withDuration: duration,
-            delay: 0,
-            options: [.curveEaseInOut],
-            animations: {
-                fromTransitionalOverlayView?.alpha = 0.0
-                toView.alpha = 1.0
-                toTransitionalOverlayView?.alpha = 1.0
-                transitionView.frame = toMediaContext.presentationFrame
-                transitionView.layer.cornerRadius = toMediaContext.cornerRadius
-        },
-            completion: { _ in
-                fromContextProvider.mediaDidPresent(fromContext: fromMediaContext)
-                toContextProvider.mediaDidPresent(toContext: toMediaContext)
-                transitionView.removeFromSuperview()
-                fromTransitionalOverlayView?.removeFromSuperview()
-                toTransitionalOverlayView?.removeFromSuperview()
 
-                toMediaContext.mediaView.alpha = 1.0
-                fromMediaContext.mediaView.alpha = 1.0
+        let animator = UIViewPropertyAnimator(duration: duration, springDamping: 0.77, springResponse: 0.3)
+        animator.addAnimations {
+            fromTransitionalOverlayView?.alpha = 0.0
+            toView.alpha = 1.0
+            toTransitionalOverlayView?.alpha = 1.0
+            transitionView.frame = toMediaContext.presentationFrame
+            transitionView.layer.cornerRadius = toMediaContext.cornerRadius
+        }
+        animator.addCompletion { _ in
+            fromContextProvider.mediaDidPresent(fromContext: fromMediaContext)
+            toContextProvider.mediaDidPresent(toContext: toMediaContext)
+            transitionView.removeFromSuperview()
+            fromTransitionalOverlayView?.removeFromSuperview()
+            toTransitionalOverlayView?.removeFromSuperview()
 
-                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-        })
+            toMediaContext.mediaView.alpha = 1.0
+            fromMediaContext.mediaView.alpha = 1.0
+
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+        }
+        animator.startAnimation()
     }
 }

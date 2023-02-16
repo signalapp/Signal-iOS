@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import SignalCoreKit
+import SignalUI
 
 protocol InteractivelyDismissableViewController: UIViewController {
     func performInteractiveDismissal(animated: Bool)
@@ -11,7 +13,9 @@ protocol InteractivelyDismissableViewController: UIViewController {
 
 protocol InteractiveDismissDelegate: AnyObject {
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
-    func interactiveDismissUpdate(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint)
+    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition,
+                            didChangeProgress: CGFloat,
+                            touchOffset: CGPoint)
     func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
     func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
 }
@@ -20,9 +24,10 @@ extension InteractiveDismissDelegate {
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
 
     }
-    func interactiveDismissUpdate(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
-
-    }
+    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition,
+                            didChangeProgress: CGFloat,
+                            touchOffset: CGPoint
+    ) { }
     func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
 
     }
@@ -81,7 +86,7 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             gestureRecognizer.setTranslation(.zero, in: coordinateSpace)
         }
 
-        let totalDistance: CGFloat = 100
+        let distanceToCompletion: CGFloat = 88
         let velocityThreshold: CGFloat = 500
 
         switch gestureRecognizer.state {
@@ -96,12 +101,13 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             }
 
             let offset = gestureRecognizer.translation(in: coordinateSpace)
-            let progress = abs(offset.y) / totalDistance
+            let progress = CGFloatClamp01(offset.length / distanceToCompletion)
             // `farEnoughToCompleteTransition` is cancelable if the user reverses direction
-            farEnoughToCompleteTransition = progress >= 0.5
+            farEnoughToCompleteTransition = progress == 1
+
             update(progress)
 
-            interactiveDismissDelegate?.interactiveDismissUpdate(self, didChangeTouchOffset: offset)
+            interactiveDismissDelegate?.interactiveDismiss(self, didChangeProgress: progress, touchOffset: offset)
 
         case .cancelled:
             interactiveDismissDelegate?.interactiveDismissDidFinish(self)

@@ -65,7 +65,7 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             farEnoughToCompleteTransition = progress >= 1
             update(progress)
 
-            interactiveDismissDelegate?.interactiveDismissUpdate(self, didChangeTouchOffset: offset)
+            interactiveDismissDelegate?.interactiveDismiss(self, didChangeProgress: progress, touchOffset: offset)
             if handlesAnimation {
                 guard let frame = initialDimissFrame else {return}
                 let delta = self.constainSwipe(offset: offset)
