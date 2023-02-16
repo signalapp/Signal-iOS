@@ -2169,8 +2169,10 @@
 		F9D5C39F2993F9FF004891FC /* RegistrationPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D5C39E2993F9FF004891FC /* RegistrationPermissionsViewController.swift */; };
 		F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */; };
 		F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */; };
+		F9E3006C299D76C3000323F8 /* RegistrationVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E3006B299D76C3000323F8 /* RegistrationVerificationViewController.swift */; };
 		F9E3720C2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E3720B2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift */; };
 		F9E39CE929493D4C001D7721 /* DisappearingMessageFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F925A3AC29493D35009024D0 /* DisappearingMessageFinderTest.swift */; };
+		F9EC3FEA299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9EC3FE9299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift */; };
 		F9F4DE2A283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */; };
 		F9F797DF296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F797DE296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift */; };
 		F9F797E1296CCC630025C103 /* DonationViewsUtil+Gifting.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */; };
@@ -4671,7 +4673,9 @@
 		F9D5C39E2993F9FF004891FC /* RegistrationPermissionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPermissionsViewController.swift; sourceTree = "<group>"; };
 		F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewController.swift; sourceTree = "<group>"; };
 		F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationViewsUtil.swift; sourceTree = "<group>"; };
+		F9E3006B299D76C3000323F8 /* RegistrationVerificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationVerificationViewController.swift; sourceTree = "<group>"; };
 		F9E3720B2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BadgeGiftingConfirmationViewController+ApplePay.swift"; sourceTree = "<group>"; };
+		F9EC3FE9299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationVerificationCodeView.swift; sourceTree = "<group>"; };
 		F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingConfirmationViewController.swift; sourceTree = "<group>"; };
 		F9F797DE296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+GiftDonation.swift"; sourceTree = "<group>"; };
 		F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+Gifting.swift"; sourceTree = "<group>"; };
@@ -4943,6 +4947,8 @@
 				F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */,
 				F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */,
 				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
+				F9EC3FE9299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift */,
+				F9E3006B299D76C3000323F8 /* RegistrationVerificationViewController.swift */,
 				F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */,
 			);
 			path = Registration;
@@ -11190,6 +11196,8 @@
 				6600F39029918CBF00B1EDB7 /* RegistrationStep.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */,
+				F9EC3FEA299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift in Sources */,
+				F9E3006C299D76C3000323F8 /* RegistrationVerificationViewController.swift in Sources */,
 				F95D71A3299305C400ED3102 /* RegistrationViewUtil.swift in Sources */,
 				D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
@@ -11328,7 +11336,6 @@
 				349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */,
 				661278082996BA8900A1D5A1 /* RegistrationCoordinatorTest.swift in Sources */,
 				6612780D2996BD0300A1D5A1 /* RegistrationCoordinatorTestShims.swift in Sources */,
-				3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */,
 				3499998122EF1E2100654932 /* SearcherTest.swift in Sources */,
 				505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */,
 				1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */,
