@@ -174,8 +174,8 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
         // Setup subviews and stack views
         let titleString = (Self.tsAccountManager.isReregistering
                            ? NSLocalizedString(
-                            "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING",
-                            comment: "Title of the 'onboarding phone number' view when the user is re-registering.")
+                            "REGISTRATION_PHONE_NUMBER_TITLE",
+                            comment: "During registration, users are asked to enter their phone number. This is the title on that screen.")
                             : NSLocalizedString(
                                 "ONBOARDING_PHONE_NUMBER_TITLE",
                                 comment: "Title of the 'onboarding phone number' view."))

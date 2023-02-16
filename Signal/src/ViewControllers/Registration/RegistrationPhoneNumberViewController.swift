@@ -178,15 +178,19 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     )
 
     private lazy var titleLabel: UILabel = {
-        // TODO[Registration] Localize this text.
-        let result = UILabel.titleLabelForRegistration(text: "Your Phone Number")
+        let result = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
+            "REGISTRATION_PHONE_NUMBER_TITLE",
+            comment: "During registration, users are asked to enter their phone number. This is the title on that screen."
+        ))
         result.accessibilityIdentifier = "registration.phonenumber.titleLabel"
         return result
     }()
 
     private lazy var explanationLabel: UILabel = {
-        // TODO[Registration] Localize this text.
-        let result = UILabel.explanationLabelForRegistration(text: "Enter your phone number to get started.")
+        let result = UILabel.explanationLabelForRegistration(text: OWSLocalizedString(
+            "REGISTRATION_PHONE_NUMBER_SUBTITLE",
+            comment: "During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions."
+        ))
         result.accessibilityIdentifier = "registration.phonenumber.explanationLabel"
         return result
     }()
