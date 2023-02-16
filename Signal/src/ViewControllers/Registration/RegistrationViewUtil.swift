@@ -4,7 +4,17 @@
 //
 
 import Foundation
+import SignalMessaging
 import SignalUI
+
+// MARK: - Strings
+
+extension String {
+    var e164FormattedAsPhoneNumberWithoutBreaks: String {
+        let formatted = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: self)
+        return formatted.replacingOccurrences(of: " ", with: "\u{00a0}")
+    }
+}
 
 // MARK: - Layout margins
 
@@ -69,6 +79,47 @@ extension OWSFlatButton {
             selector: selector
         )
         result.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
+        return result
+    }
+}
+
+// MARK: - Action sheets
+
+extension ActionSheetController {
+    enum RegistrationVerificationConfirmationMode {
+        case sms
+        case voice
+    }
+
+    static func forRegistrationVerificationConfirmation(
+        mode: RegistrationVerificationConfirmationMode,
+        e164: String,
+        didConfirm: @escaping () -> Void,
+        didRequestEdit: @escaping () -> Void
+    ) -> ActionSheetController {
+        let result = ActionSheetController(
+            title: {
+                let format = OWSLocalizedString(
+                    "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT",
+                    comment: "Title for confirmation alert during phone number registration. Embeds {{phone number}}."
+                )
+                return String(format: format, e164.e164FormattedAsPhoneNumberWithoutBreaks)
+            }(),
+            message: OWSLocalizedString(
+                "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE",
+                comment: "Message for confirmation alert during phone number registration."
+            )
+        )
+
+        let confirmButtonTitle = CommonStrings.yesButton
+        result.addAction(.init(title: confirmButtonTitle) { _ in didConfirm() })
+
+        let editButtonTitle = OWSLocalizedString(
+            "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON",
+            comment: "A button allowing user to cancel registration and edit a phone number"
+        )
+        result.addAction(.init(title: editButtonTitle) { _ in didRequestEdit() })
+
         return result
     }
 }

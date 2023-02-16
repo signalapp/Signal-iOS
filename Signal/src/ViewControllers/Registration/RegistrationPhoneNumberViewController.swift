@@ -7,6 +7,13 @@ import Foundation
 import UIKit
 import SignalMessaging
 
+// MARK: - RegistrationPhoneNumberValidationError
+
+enum RegistrationPhoneNumberValidationError {
+    case invalidNumber(invalidE164: String)
+    case rateLimited(expiration: Date)
+}
+
 // MARK: - RegistrationPhoneNumberState
 
 struct RegistrationPhoneNumberState {
@@ -17,11 +24,6 @@ struct RegistrationPhoneNumberState {
         )
         case reregistration(e164: String)
         case changingPhoneNumber(oldE164: String)
-    }
-
-    enum RegistrationPhoneNumberValidationError {
-        case invalidNumber(invalidE164: String)
-        case rateLimited(expiration: Date)
     }
 
     let mode: RegistrationPhoneNumberMode
@@ -98,6 +100,14 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     private var nationalNumber: String { phoneNumberInput.nationalNumber }
     private var e164: String { phoneNumberInput.e164 }
 
+    private var localValidationError: RegistrationPhoneNumberValidationError? {
+        didSet { render() }
+    }
+
+    private var validationError: RegistrationPhoneNumberValidationError? {
+        return state.validationError ?? localValidationError
+    }
+
     private var canChangePhoneNumber: Bool {
         switch state.mode {
         case .initialRegistration, .changingPhoneNumber:
@@ -121,7 +131,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             if e164 == oldE164 { return false }
         }
 
-        switch state.validationError {
+        switch validationError {
         case nil:
             break
         case let .invalidNumber(invalidE164):
@@ -219,7 +229,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         super.viewDidAppear(animated)
 
         let shouldBecomeFirstResponder: Bool = {
-            switch state.validationError {
+            switch validationError {
             case .rateLimited:
                 return false
             case nil, .invalidNumber:
@@ -277,7 +287,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         phoneNumberInput.render()
 
         // We always render the warning label but sometimes invisibly. This avoids UI jumpiness.
-        switch state.validationError {
+        switch validationError {
         case nil:
             validationWarningLabel.alpha = 0
             validationWarningLabel.text = OWSLocalizedString(
@@ -329,7 +339,23 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
         phoneNumberInput.resignFirstResponder()
 
-        presenter?.goToNextStep(withE164: e164)
+        let e164 = self.e164
+
+        guard
+            let phoneNumber = PhoneNumber(fromE164: e164),
+            PhoneNumberValidator().isValidForRegistration(phoneNumber: phoneNumber)
+        else {
+            localValidationError = .invalidNumber(invalidE164: e164)
+            return
+        }
+        localValidationError = nil
+
+        presentActionSheet(.forRegistrationVerificationConfirmation(
+            mode: .sms,
+            e164: e164,
+            didConfirm: { [weak self] in self?.presenter?.goToNextStep(withE164: e164) },
+            didRequestEdit: { [weak self] in self?.phoneNumberInput.becomeFirstResponder() }
+        ))
     }
 
     @objc

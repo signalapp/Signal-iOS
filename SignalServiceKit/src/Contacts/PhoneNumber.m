@@ -103,7 +103,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     OWSAssertDebug([text hasPrefix:COUNTRY_CODE_PREFIX]);
     PhoneNumber *number = [PhoneNumber phoneNumberFromText:text andRegion:@"ZZ"];
 
-    OWSAssertDebug(number != nil);
     return number;
 }
 

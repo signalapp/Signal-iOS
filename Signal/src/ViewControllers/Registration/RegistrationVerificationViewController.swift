@@ -99,16 +99,11 @@ class RegistrationVerificationViewController: OWSViewController {
     }()
 
     private lazy var explanationLabel: UILabel = {
-        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: state.e164)
-        let formattedPhoneNumberWithoutBreaks = formattedPhoneNumber.replacingOccurrences(
-            of: " ",
-            with: "\u{00a0}"
-        )
         let format = OWSLocalizedString(
             "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT",
             comment: "Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}."
         )
-        let text = String(format: format, formattedPhoneNumberWithoutBreaks)
+        let text = String(format: format, state.e164.e164FormattedAsPhoneNumberWithoutBreaks)
 
         let result = UILabel.explanationLabelForRegistration(text: text)
         result.accessibilityIdentifier = "registration.verification.explanationLabel"
@@ -283,9 +278,12 @@ class RegistrationVerificationViewController: OWSViewController {
 
         guard canRequestSMSCode else { return }
 
-        // TODO[Registration]: Show an action sheet to confirm this.
-
-        presenter?.requestSMSCode()
+        presentActionSheet(.forRegistrationVerificationConfirmation(
+            mode: .sms,
+            e164: state.e164,
+            didConfirm: { [weak self] in self?.presenter?.requestSMSCode() },
+            didRequestEdit: { [weak self] in self?.presenter?.returnToPhoneNumberEntry() }
+        ))
     }
 
     @objc
@@ -294,9 +292,12 @@ class RegistrationVerificationViewController: OWSViewController {
 
         guard canRequestVoiceCode else { return }
 
-        // TODO[Registration]: Show an action sheet to confirm this.
-
-        presenter?.requestVoiceCode()
+        presentActionSheet(.forRegistrationVerificationConfirmation(
+            mode: .voice,
+            e164: state.e164,
+            didConfirm: { [weak self] in self?.presenter?.requestVoiceCode() },
+            didRequestEdit: { [weak self] in self?.presenter?.returnToPhoneNumberEntry() }
+        ))
     }
 }
 
