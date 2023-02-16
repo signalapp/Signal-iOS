@@ -12,7 +12,7 @@ public class DispatchQueueSchedulers: Schedulers {
     public let sync: Scheduler = SyncScheduler()
 
     public var main: Scheduler {
-        return DispatchQueue.sharedBackground
+        return DispatchQueue.main
     }
 
     public func global(qos: DispatchQoS.QoSClass) -> Scheduler {
