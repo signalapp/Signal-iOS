@@ -1369,6 +1369,7 @@
 		F945FE4D298481EA00C835C7 /* RingrtcFieldTrialsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F945FE4C298481EA00C835C7 /* RingrtcFieldTrialsTest.swift */; };
 		F945FE502984822D00C835C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = F945FE4F2984822D00C835C7 /* UserDefaults.swift */; };
 		F9479EF8293D212C003B3503 /* StickerPackInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9479EF7293D212C003B3503 /* StickerPackInfo.swift */; };
+		F9480121299E89F8005442BE /* RegistrationCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9480120299E89F8005442BE /* RegistrationCaptchaViewController.swift */; };
 		F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */; };
 		F94C912028FDEA2E0065DF75 /* Decimal+Rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */; };
 		F94C912228FDEAF50065DF75 /* Decimal+IsInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */; };
@@ -3872,6 +3873,7 @@
 		F945FE4C298481EA00C835C7 /* RingrtcFieldTrialsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingrtcFieldTrialsTest.swift; sourceTree = "<group>"; };
 		F945FE4F2984822D00C835C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		F9479EF7293D212C003B3503 /* StickerPackInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackInfo.swift; sourceTree = "<group>"; };
+		F9480120299E89F8005442BE /* RegistrationCaptchaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCaptchaViewController.swift; sourceTree = "<group>"; };
 		F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeMessageSender.swift; sourceTree = "<group>"; };
 		F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Rounded.swift"; sourceTree = "<group>"; };
 		F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+IsInteger.swift"; sourceTree = "<group>"; };
@@ -4942,6 +4944,7 @@
 				34ACA7ED2733161000E47AD4 /* Deprecated_RegistrationHelper.swift */,
 				34404274273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift */,
 				34ACA7EC2733161000E47AD4 /* Deprecated_RegistrationVerificationViewController.swift */,
+				F9480120299E89F8005442BE /* RegistrationCaptchaViewController.swift */,
 				F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */,
 				F9D5C39E2993F9FF004891FC /* RegistrationPermissionsViewController.swift */,
 				F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */,
@@ -11184,6 +11187,7 @@
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
+				F9480121299E89F8005442BE /* RegistrationCaptchaViewController.swift in Sources */,
 				6600F39629919ECC00B1EDB7 /* RegistrationCoodinatorShims.swift in Sources */,
 				66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */,
 				66A93A8029940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift in Sources */,

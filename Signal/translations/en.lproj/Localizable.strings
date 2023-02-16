@@ -5179,6 +5179,9 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Failed to re-register for push notifications.";
 
+/* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
+"REGISTRATION_CAPTCHA_TITLE" = "We need to verify that you’re human";
+
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Country Code";
 
