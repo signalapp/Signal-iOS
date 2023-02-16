@@ -277,6 +277,15 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         rebuildTableContents()
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate(alongsideTransition: { [weak self] _ in
+            guard let self else { return }
+            self.rebuildTableContents()
+        })
+    }
+
     /// Only allow gesture-based dismissal when there have been no edits.
     override var isModalInPresentation: Bool {
         get { hasUnsavedEdits }
