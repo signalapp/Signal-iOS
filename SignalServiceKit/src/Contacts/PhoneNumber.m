@@ -98,12 +98,13 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return countryCode;
 }
 
-+ (nullable PhoneNumber *)phoneNumberFromE164:(NSString *)text {
-    OWSAssertDebug(text != nil);
-    OWSAssertDebug([text hasPrefix:COUNTRY_CODE_PREFIX]);
-    PhoneNumber *number = [PhoneNumber phoneNumberFromText:text andRegion:@"ZZ"];
++ (nullable PhoneNumber *)phoneNumberFromE164:(NSString *)e164
+{
+    if (![e164 hasPrefix:COUNTRY_CODE_PREFIX]) {
+        return nil;
+    }
 
-    return number;
+    return [PhoneNumber phoneNumberFromText:e164 andRegion:@"ZZ"];
 }
 
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input {
@@ -165,7 +166,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
         return phoneNumber;
     }
 
-    PhoneNumber *_Nullable parsedPhoneNumber = [self tryParsePhoneNumberFromE164:phoneNumber];
+    PhoneNumber *_Nullable parsedPhoneNumber = [PhoneNumber phoneNumberFromE164:phoneNumber];
     if (!parsedPhoneNumber) {
         OWSLogWarn(@"could not parse phone number.");
         return phoneNumber;
@@ -555,15 +556,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 #pragma mark -
-
-+ (nullable PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text {
-    OWSAssertDebug(text != nil);
-    if (![text hasPrefix:COUNTRY_CODE_PREFIX]) {
-        return nil;
-    }
-
-    return [self phoneNumberFromE164:text];
-}
 
 - (NSURL *)toSystemDialerURL {
     NSString *link = [NSString stringWithFormat:@"telprompt://%@", self.e164];

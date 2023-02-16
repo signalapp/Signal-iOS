@@ -93,7 +93,7 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
 - (nullable NSString *)tryToConvertToE164
 {
     PhoneNumber *_Nullable parsedPhoneNumber;
-    parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromE164:self.phoneNumber];
+    parsedPhoneNumber = [PhoneNumber phoneNumberFromE164:self.phoneNumber];
     if (!parsedPhoneNumber) {
         parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:self.phoneNumber];
     }
@@ -580,7 +580,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     NSMutableArray<NSString *> *e164PhoneNumbers = [NSMutableArray new];
     for (OWSContactPhoneNumber *phoneNumber in self.phoneNumbers) {
         PhoneNumber *_Nullable parsedPhoneNumber;
-        parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromE164:phoneNumber.phoneNumber];
+        parsedPhoneNumber = [PhoneNumber phoneNumberFromE164:phoneNumber.phoneNumber];
         if (!parsedPhoneNumber) {
             parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber.phoneNumber];
         }
@@ -628,7 +628,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         // Make a best effort to parse the phone number to e164.
         NSString *unparsedPhoneNumber = phoneNumberField.value.stringValue;
         PhoneNumber *_Nullable parsedPhoneNumber;
-        parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromE164:unparsedPhoneNumber];
+        parsedPhoneNumber = [PhoneNumber phoneNumberFromE164:unparsedPhoneNumber];
         if (!parsedPhoneNumber) {
             parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:unparsedPhoneNumber];
         }

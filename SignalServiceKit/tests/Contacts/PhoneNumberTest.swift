@@ -7,6 +7,18 @@ import XCTest
 import SignalServiceKit
 
 class PhoneNumberTestSwift: SSKBaseTestSwift {
+    func testInitWithE164() {
+        let shouldBeNil: [String] = ["", "+", "1", "19025550123", "+190255501238"]
+        for input in shouldBeNil {
+            XCTAssertNil(PhoneNumber(fromE164: input), input)
+        }
+
+        let shouldNotBeNil: [String] = ["+19025550123", "+33170393800"]
+        for input in shouldNotBeNil {
+            XCTAssertEqual(PhoneNumber(fromE164: input)?.toE164(), input, input)
+        }
+    }
+
     func testTryParsePhoneNumberTextOnly() {
         let testCases: [String: String?] = [
             // Phone numbers with explicit region codes
