@@ -278,6 +278,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)finishProcessingEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
 {
+    [self saveSpamReportingTokenForEnvelope:envelope transaction:transaction];
+
     // If we reach here, we were able to successfully handle the message.
     // We need to check to make sure that we clear any placeholders that may have been
     // inserted for this message. This would happen if:
@@ -454,8 +456,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
-
-    [self saveSpamReportingTokenForEnvelope:request.envelope transaction:transaction];
 
     switch (request.messageType) {
         case OWSMessageManagerMessageTypeSyncMessage:
