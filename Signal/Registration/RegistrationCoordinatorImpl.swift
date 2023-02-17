@@ -84,6 +84,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    public func continueFromSplash() -> Guarantee<RegistrationStep> {
+        db.write { tx in
+            self.updatePersistedState(tx) {
+                $0.hasShownSplash = true
+            }
+        }
+        return nextStep()
+    }
+
     public func requestPermissions() -> Guarantee<RegistrationStep> {
         // Notifications first, then contacts if needed.
         return pushRegistrationManager.registerUserNotificationSettings()
@@ -650,12 +659,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func nextStepForOpeningPath() -> Guarantee<RegistrationStep> {
         if persistedState.hasShownSplash.negated {
-            // We don't need to show it again.
-            db.write { tx in
-                self.updatePersistedState(tx) {
-                    $0.hasShownSplash = true
-                }
-            }
             return .value(.splash)
         }
         if inMemoryState.needsSomePermissions {

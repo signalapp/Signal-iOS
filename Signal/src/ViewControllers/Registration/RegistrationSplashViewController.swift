@@ -8,9 +8,27 @@ import UIKit
 import SafariServices
 import SignalMessaging
 
+// MARK: - RegistrationSplashPresenter
+
+public protocol RegistrationSplashPresenter: AnyObject {
+    func continueFromSplash()
+}
+
+// MARK: - RegistrationSplashViewController
+
 public class RegistrationSplashViewController: OWSViewController {
+
+    private weak var presenter: RegistrationSplashPresenter?
+
+    public init(presenter: RegistrationSplashPresenter) {
+        self.presenter = presenter
+        super.init()
+    }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
+
+        navigationItem.setHidesBackButton(true, animated: false)
 
         view.backgroundColor = Theme.backgroundColor
 
@@ -121,6 +139,6 @@ public class RegistrationSplashViewController: OWSViewController {
     @objc
     private func continuePressed() {
         Logger.info("")
-        owsFail("TODO[Registration] Not implemented")
+        presenter?.continueFromSplash()
     }
 }

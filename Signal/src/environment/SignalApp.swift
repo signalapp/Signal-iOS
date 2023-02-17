@@ -95,7 +95,6 @@ extension SignalApp {
             udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(Self.udManager)
         )
         let navController = RegistrationNavigationController(coordinator: coordinator)
-        navController.setViewControllers([RegistrationSplashViewController()], animated: false)
 
         appDelegate.window??.rootViewController = navController
 

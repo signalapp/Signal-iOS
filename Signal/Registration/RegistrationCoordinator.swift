@@ -18,6 +18,9 @@ public protocol RegistrationCoordinator {
     /// step to know what view to push next.
     func nextStep() -> Guarantee<RegistrationStep>
 
+    /// Continue past the splash screen (marking it as shown).
+    func continueFromSplash() -> Guarantee<RegistrationStep>
+
     /// Show the system permissions prompts, proceeding to the next step when done.
     ///
     /// If something goes wrong, the next step will be the same as the current step

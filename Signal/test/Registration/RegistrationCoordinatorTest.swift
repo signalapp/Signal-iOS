@@ -94,7 +94,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // With no state set up, should show the splash.
         XCTAssertEqual(coordinator.nextStep().value, .splash)
         // Once we show it, don't show it again.
-        XCTAssertNotEqual(coordinator.nextStep().value, .splash)
+        XCTAssertNotEqual(coordinator.continueFromSplash().value, .splash)
     }
 
     func testOpeningPath_contacts() {
@@ -110,7 +110,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(coordinator.nextStep().value, .splash)
 
         // Now we should show the permissions.
-        XCTAssertEqual(coordinator.nextStep().value, .permissions)
+        XCTAssertEqual(coordinator.continueFromSplash().value, .permissions)
         // Doesn't change even if we try and proceed.
         XCTAssertEqual(coordinator.nextStep().value, .permissions)
 
@@ -650,7 +650,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // The very first thing should take us to the splash and permissions,
         // as this flow can start from a fresh device.
         XCTAssertEqual(coordinator.nextStep().value, .splash)
-        XCTAssertEqual(coordinator.nextStep().value, .permissions)
+        XCTAssertEqual(coordinator.continueFromSplash().value, .permissions)
 
         // Get past permissions.
         // We haven't set a phone number so it should ask for that next.
@@ -804,7 +804,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(coordinator.nextStep().value, .splash)
 
         // We haven't set a phone number so it should ask for that next.
-        XCTAssertEqual(coordinator.requestPermissions().value, .phoneNumberEntry)
+        XCTAssertEqual(coordinator.continueFromSplash().value, .phoneNumberEntry)
 
         scheduler.stop()
         scheduler.adjustTime(to: 0)
@@ -1351,7 +1351,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // The very first thing should take us to the splash and permissions,
         // as this flow can start from a fresh device.
         XCTAssertEqual(coordinator.nextStep().value, .splash)
-        XCTAssertEqual(coordinator.nextStep().value, .permissions)
+        XCTAssertEqual(coordinator.continueFromSplash().value, .permissions)
 
         // Get past permissions.
         // We haven't set a phone number so it should ask for that next.
