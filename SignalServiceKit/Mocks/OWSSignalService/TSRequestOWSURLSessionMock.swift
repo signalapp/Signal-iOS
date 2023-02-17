@@ -20,6 +20,8 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         let headers: OWSHttpHeaders
         let bodyData: Data?
 
+        let error: Error?
+
         public init(
             matcher: @escaping (TSRequest) -> Bool,
             statusCode: Int = 200,
@@ -30,6 +32,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             self.statusCode = statusCode
             self.headers = headers
             self.bodyData = bodyData
+            self.error = nil
         }
 
         public init(
@@ -50,6 +53,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             self.statusCode = statusCode
             self.headers = OWSHttpHeaders(httpHeaders: headers, overwriteOnConflict: true)
             self.bodyData = bodyData
+            self.error = nil
         }
 
         public init(
@@ -64,6 +68,30 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
                 headers: headers,
                 bodyJson: bodyJson
             )
+        }
+
+        private init(
+            matcher: @escaping (TSRequest) -> Bool,
+            error: Error
+        ) {
+            self.matcher = matcher
+            self.statusCode = 0
+            self.headers = .init()
+            self.bodyData = nil
+            self.error = error
+        }
+
+        public static func networkError(
+            url: URL
+        ) -> Self {
+            Self.init(matcher: { $0.url == url }, error: OWSHTTPError.networkFailure(requestUrl: url))
+        }
+
+        public static func networkError(
+            matcher: @escaping (TSRequest) -> Bool,
+            url: URL
+        ) -> Self {
+            Self.init(matcher: matcher, error: OWSHTTPError.networkFailure(requestUrl: url))
         }
     }
 
@@ -113,13 +141,16 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             fatalError("Got a request with no response set up!")
         }
         let response = responses.remove(at: responseIndex)
-        return response.1.map(on: SyncScheduler()) {
-            return HTTPResponseImpl(
+        return response.1.then(on: SyncScheduler()) { response throws -> Promise<HTTPResponse> in
+            if let error = response.error {
+                throw error
+            }
+            return .value(HTTPResponseImpl(
                 requestUrl: rawRequest.url!,
-                status: $0.statusCode,
-                headers: $0.headers,
-                bodyData: $0.bodyData
-            )
+                status: response.statusCode,
+                headers: response.headers,
+                bodyData: response.bodyData
+            ))
         }
     }
 }

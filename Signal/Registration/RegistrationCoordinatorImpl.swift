@@ -512,6 +512,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         // Update the account attributes once, now, at the end.
+        return updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
+    }
+
+    private func updateAccountAttributesAndFinish(
+        accountIdentity: AccountIdentity,
+        retriesLeft: Int = Constants.networkErrorRetries
+    ) -> Guarantee<RegistrationStep> {
         return Service
             .makeUpdateAccountAttributesRequest(
                 makeAccountAttributes(authToken: accountIdentity.authToken),
@@ -534,7 +541,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.storageServiceManager.backupPendingChanges()
                     return .value(.done)
                 }
-                // TODO[Registration]: handle account attributes update error?
+                if error.isNetworkConnectivityFailure, retriesLeft > 0 {
+                    return self.updateAccountAttributesAndFinish(
+                        accountIdentity: accountIdentity,
+                        retriesLeft: retriesLeft - 1
+                    )
+                }
+                // TODO[Registration]: what should we do with a non-transiest account attributes update error?
                 Logger.error("Failed to register due to failed account attributes update: \(error)")
                 return .value(.showGenericError)
             }
@@ -689,7 +702,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         )
     }
 
-    private func registerForRegRecoveryPwPath(regRecoveryPw: String, e164: String) -> Guarantee<RegistrationStep> {
+    private func registerForRegRecoveryPwPath(
+        regRecoveryPw: String,
+        e164: String,
+        retriesLeft: Int = Constants.networkErrorRetries
+    ) -> Guarantee<RegistrationStep> {
         if inMemoryState.pinFromUser == nil {
             // We need the user to confirm their pin.
             // TODO[Registration]: set state that tells the pin entry controller
@@ -703,14 +720,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         ).then(on: schedulers.main) { [weak self] accountResponse in
             return self?.handleCreateAccountResponseFromRegRecoveryPassword(
                 accountResponse,
-                e164: e164
+                regRecoveryPw: regRecoveryPw,
+                e164: e164,
+                retriesLeft: retriesLeft
             ) ?? .value(.showGenericError)
         }
     }
 
     private func handleCreateAccountResponseFromRegRecoveryPassword(
         _ response: AccountResponse,
-        e164: String
+        regRecoveryPw: String,
+        e164: String,
+        retriesLeft: Int
     ) -> Guarantee<RegistrationStep> {
         // TODO[Registration] handle error case for rejected e164.
         switch response {
@@ -764,8 +785,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Now we have to start a session; its the only way to recover.
             return self.startSession(e164: e164)
 
-        case .retryAfter:
-            // TODO[Registration] handle retries, possibly automatically if short enough.
+        case .retryAfter(let timeInterval):
+            if timeInterval < Constants.autoRetryInterval {
+                return Guarantee
+                    .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
+                    .then(on: self.schedulers.sync) { [weak self] in
+                        guard let self else {
+                            return .value(.showGenericError)
+                        }
+                        return self.registerForRegRecoveryPwPath(
+                            regRecoveryPw: regRecoveryPw,
+                            e164: e164
+                        )
+                    }
+            }
             return .value(.showGenericError)
 
         case .deviceTransferPossible:
@@ -774,7 +807,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nextStep()
 
         case .networkError:
-            // TODO[Registration]: handle retries
+            if retriesLeft > 0 {
+                return registerForRegRecoveryPwPath(
+                    regRecoveryPw: regRecoveryPw,
+                    e164: e164,
+                    retriesLeft: retriesLeft - 1
+                )
+            }
             return .value(.showGenericError)
 
         case .genericError:
@@ -824,7 +863,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func restoreKBSMasterSecretForAuthCredentialPath(
         pin: String,
-        credential: KBSAuthCredential
+        credential: KBSAuthCredential,
+        retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         kbs.restoreKeysAndBackup(pin: pin, authMethod: .kbsAuth(credential, backup: nil))
             .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
@@ -847,6 +887,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // recover. Give it all up and wipe our KBS info.
                     self.wipeInMemoryStateToPreventKBSPathAttempts()
                     return self.nextStep()
+                case .networkError:
+                    if retriesLeft > 0 {
+                        return self.restoreKBSMasterSecretForAuthCredentialPath(
+                            pin: pin,
+                            credential: credential,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    }
+                    return .value(.showGenericError)
                 case .genericError:
                     return .value(.showGenericError)
                 }
@@ -873,6 +922,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(.phoneNumberEntry)
         }
         // Check the candidates.
+        return makeKBSAuthCredentialCheckRequest(
+            kbsAuthCredentialCandidates: kbsAuthCredentialCandidates,
+            e164: e164
+        )
+    }
+
+    private func makeKBSAuthCredentialCheckRequest(
+        kbsAuthCredentialCandidates: [KBSAuthCredential],
+        e164: String,
+        retriesLeft: Int = Constants.networkErrorRetries
+    ) -> Guarantee<RegistrationStep> {
         return Service.makeKBSAuthCheckRequest(
             e164: e164,
             candidateCredentials: kbsAuthCredentialCandidates,
@@ -885,7 +945,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return self.handleKBSAuthCredentialCheckResponse(
                 response,
                 kbsAuthCredentialCandidates: kbsAuthCredentialCandidates,
-                e164: e164
+                e164: e164,
+                retriesLeft: retriesLeft
             )
         }
     }
@@ -893,13 +954,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func handleKBSAuthCredentialCheckResponse(
         _ response: Service.KBSAuthCheckResponse,
         kbsAuthCredentialCandidates: [KBSAuthCredential],
-        e164: String
+        e164: String,
+        retriesLeft: Int
     ) -> Guarantee<RegistrationStep> {
         var matchedCredential: KBSAuthCredential?
         var credentialsToDelete = [KBSAuthCredential]()
         switch response {
         case .networkError:
-            // TODO[Registration]: handle retries
+            if retriesLeft > 0 {
+                return makeKBSAuthCredentialCheckRequest(
+                    kbsAuthCredentialCandidates: kbsAuthCredentialCandidates,
+                    e164: e164,
+                    retriesLeft: retriesLeft - 1
+                )
+            }
             self.inMemoryState.kbsAuthCredentialCandidates = nil
             return self.nextStep()
         case .genericError:
@@ -937,15 +1005,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func nextStepForSessionPath(_ session: RegistrationSession) -> Guarantee<RegistrationStep> {
         if session.verified {
             // We have to complete registration.
-            return self.makeRegisterOrChangeNumberRequest(
-                .sessionId(session.id),
-                e164: session.e164
-            ).then(on: schedulers.main) { [weak self] response in
-                guard let self = self else {
-                    return .value(.showGenericError)
-                }
-                return self.handleCreateAccountResponseFromSession(response)
-            }
+            return self.makeRegisterOrChangeNumberRequestFromSession(session)
         }
 
         if inMemoryState.needsToAskForDeviceTransfer {
@@ -1047,8 +1107,29 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.sessionManager.completeSession()
     }
 
+    private func makeRegisterOrChangeNumberRequestFromSession(
+        _ session: RegistrationSession,
+        retriesLeft: Int = Constants.networkErrorRetries
+    ) -> Guarantee<RegistrationStep> {
+        return self.makeRegisterOrChangeNumberRequest(
+            .sessionId(session.id),
+            e164: session.e164
+        ).then(on: schedulers.main) { [weak self] response in
+            guard let self = self else {
+                return .value(.showGenericError)
+            }
+            return self.handleCreateAccountResponseFromSession(
+                response,
+                sessionFromBeforeRequest: session,
+                retriesLeft: retriesLeft
+            )
+        }
+    }
+
     private func handleCreateAccountResponseFromSession(
-        _ response: AccountResponse
+        _ response: AccountResponse,
+        sessionFromBeforeRequest: RegistrationSession,
+        retriesLeft: Int
     ) -> Guarantee<RegistrationStep> {
         switch response {
         case .success(let identityResponse):
@@ -1081,14 +1162,31 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             resetSession()
             return nextStep()
 
-        case .retryAfter:
-            // TODO[Registration] handle retries, possibly automatically if short enough.
+        case .retryAfter(let timeInterval):
+            if timeInterval < Constants.autoRetryInterval {
+                return Guarantee
+                    .after(on: schedulers.sharedBackground, seconds: timeInterval)
+                    .then(on: schedulers.sync) { [weak self] in
+                        guard let self else {
+                            return .value(.showGenericError)
+                        }
+                        return self.makeRegisterOrChangeNumberRequestFromSession(
+                            sessionFromBeforeRequest
+                        )
+                    }
+            }
+            // TODO[Registration] bubble up the error to the ui properly.
             return .value(.showGenericError)
         case .deviceTransferPossible:
             inMemoryState.needsToAskForDeviceTransfer = true
             return .value(.transferSelection)
         case .networkError:
-            // TODO[Registration] handle retries
+            if retriesLeft > 0 {
+                return makeRegisterOrChangeNumberRequestFromSession(
+                    sessionFromBeforeRequest,
+                    retriesLeft: retriesLeft - 1
+                )
+            }
             return .value(.showGenericError)
         case .genericError:
             return .value(.showGenericError)
@@ -1096,7 +1194,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func startSession(
-        e164: String
+        e164: String,
+        retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         return pushRegistrationManager.requestPushToken()
             .then(on: schedulers.sharedBackground) { [weak self] apnsToken -> Guarantee<RegistrationStep> in
@@ -1119,11 +1218,27 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     case .invalidArgument:
                         // TODO[Registration] populate error state for phone number entry.
                         return .value(.phoneNumberEntry)
-                    case .retryAfter:
-                        // TODO[Registration] handle retries, possibly automatically if short enough.
+                    case .retryAfter(let timeInterval):
+                        if timeInterval < Constants.autoRetryInterval {
+                            return Guarantee
+                                .after(on: strongSelf.schedulers.sharedBackground, seconds: timeInterval)
+                                .then(on: strongSelf.schedulers.sync) { [weak self] in
+                                    guard let self else {
+                                        return .value(.showGenericError)
+                                    }
+                                    return self.startSession(
+                                        e164: e164
+                                    )
+                                }
+                        }
                         return .value(.phoneNumberEntry)
                     case .networkFailure:
-                        // TODO[Registration] handle retries
+                        if retriesLeft > 0 {
+                            return strongSelf.startSession(
+                                e164: e164,
+                                retriesLeft: retriesLeft - 1
+                            )
+                        }
                         return .value(.showGenericError)
                     case .genericError:
                         return .value(.showGenericError)
@@ -1134,7 +1249,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func requestSessionCode(
         session: RegistrationSession,
-        transport: Registration.CodeTransport
+        transport: Registration.CodeTransport,
+        retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         return sessionManager.requestVerificationCode(
             for: session,
@@ -1174,14 +1290,39 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .value(.showGenericError)
                 }
             case .retryAfterTimeout(let session):
-                // TODO[Registration]: just auto retry if short enough?
-                // Clear the pending code; we want the user to press again
-                // once the timeout expires.
-                self.inMemoryState.pendingCodeTransport = nil
                 self.processSession(session)
-                return self.nextStep()
+
+                let timeInterval: TimeInterval?
+                switch transport {
+                case .sms:
+                    timeInterval = session.nextSMS
+                case .voice:
+                    timeInterval = session.nextCall
+                }
+                if let timeInterval, timeInterval < Constants.autoRetryInterval {
+                    return Guarantee
+                        .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
+                        .then(on: self.schedulers.sync) { [weak self] in
+                            guard let self else {
+                                return .value(.showGenericError)
+                            }
+                            return self.requestSessionCode(
+                                session: session,
+                                transport: transport
+                            )
+                        }
+                } else {
+                    self.inMemoryState.pendingCodeTransport = nil
+                    return self.nextStep()
+                }
             case .networkFailure:
-                // TODO[Registration] handle retries
+                if retriesLeft > 0 {
+                    return self.requestSessionCode(
+                        session: session,
+                        transport: transport,
+                        retriesLeft: retriesLeft - 1
+                    )
+                }
                 return .value(.showGenericError)
             case .genericError:
                 self.inMemoryState.pendingCodeTransport = nil
@@ -1192,7 +1333,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func submitCaptchaChallengeFulfillment(
         session: RegistrationSession,
-        token: String
+        token: String,
+        retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         return sessionManager.fulfillChallenge(
             for: session,
@@ -1227,14 +1369,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .value(.showGenericError)
                 }
             case .retryAfterTimeout(let session):
-                // TODO[Registration]: just auto retry if short enough?
+                Logger.error("Should not have to retry a captcha challenge request")
                 // Clear the pending code; we want the user to press again
                 // once the timeout expires.
                 self.inMemoryState.pendingCodeTransport = nil
                 self.processSession(session)
                 return self.nextStep()
             case .networkFailure:
-                // TODO[Registration] handle retries
+                if retriesLeft > 0 {
+                    return self.submitCaptchaChallengeFulfillment(
+                        session: session,
+                        token: token,
+                        retriesLeft: retriesLeft - 1
+                    )
+                }
                 return .value(.showGenericError)
             case .genericError:
                 return .value(.showGenericError)
@@ -1244,7 +1392,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func submitSessionCode(
         session: RegistrationSession,
-        code: String
+        code: String,
+        retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         return sessionManager.submitVerificationCode(
             for: session,
@@ -1283,11 +1432,30 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .value(.showGenericError)
                 }
             case .retryAfterTimeout(let session):
-                // TODO[Registration]: need to wait out timeout; show error, or retry if short enough.
                 self.processSession(session)
+                if let timeInterval = session.nextVerificationAttempt, timeInterval < Constants.autoRetryInterval {
+                    return Guarantee
+                        .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
+                        .then(on: self.schedulers.sync) { [weak self] in
+                            guard let self else {
+                                return .value(.showGenericError)
+                            }
+                            return self.submitSessionCode(
+                                session: session,
+                                code: code
+                            )
+                        }
+                }
+                // TODO[Registration]: show some kind of error.
                 return self.nextStep()
             case .networkFailure:
-                // TODO[Registration] handle retries
+                if retriesLeft > 0 {
+                    return self.submitSessionCode(
+                        session: session,
+                        code: code,
+                        retriesLeft: retriesLeft - 1
+                    )
+                }
                 return .value(.showGenericError)
             case .genericError:
                 return .value(.showGenericError)
@@ -1359,7 +1527,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return exportAndWipeState(accountIdentity: accountIdentity)
     }
 
-    private func syncPushTokens(_ accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
+    private func syncPushTokens(
+        _ accountIdentity: AccountIdentity,
+        retriesLeft: Int = Constants.networkErrorRetries
+    ) -> Guarantee<RegistrationStep> {
         pushRegistrationManager
             .syncPushTokensForcingUpload(
                 authUsername: accountIdentity.authUsername,
@@ -1391,13 +1562,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         }
                     }
                     return self.nextStep()
+                case .networkError:
+                    if retriesLeft > 0 {
+                        return self.syncPushTokens(
+                            accountIdentity,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    }
+                    return .value(.showGenericError)
                 case .genericError:
                     return .value(.showGenericError)
                 }
             }
     }
 
-    private func restoreKBSBackupPostRegistration(pin: String, accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
+    private func restoreKBSBackupPostRegistration(
+        pin: String,
+        accountIdentity: AccountIdentity,
+        retriesLeft: Int = Constants.networkErrorRetries
+    ) -> Guarantee<RegistrationStep> {
         let backupAuthMethod = KBS.AuthMethod.chatServerAuth(username: accountIdentity.authUsername, password: accountIdentity.authPassword)
         let authMethod: KBS.AuthMethod
         if let kbsAuthCredential = inMemoryState.kbsAuthCredentialForPostRegRestoration {
@@ -1428,13 +1611,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // recover. Keep going like if nothing happened.
                     self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
                     return self.nextStep()
+                case .networkError:
+                    if retriesLeft > 0 {
+                        return self.restoreKBSBackupPostRegistration(
+                            pin: pin,
+                            accountIdentity: accountIdentity,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    }
+                    return .value(.showGenericError)
                 case .genericError:
                     return .value(.showGenericError)
                 }
             }
     }
 
-    private func backupToKBS(pin: String, accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
+    private func backupToKBS(
+        pin: String,
+        accountIdentity: AccountIdentity,
+        retriesLeft: Int = Constants.networkErrorRetries
+    ) -> Guarantee<RegistrationStep> {
         let authMethod: KBS.AuthMethod
         let backupAuthMethod = KBS.AuthMethod.chatServerAuth(
             username: accountIdentity.authUsername,
@@ -1473,8 +1669,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 guard let self else {
                     return .value(.showGenericError)
                 }
-                // TODO[Registration]: retry network failures.
-                if case OWSHTTPError.networkFailure = error {
+                if error.isNetworkConnectivityFailure {
+                    if retriesLeft > 0 {
+                        return self.backupToKBS(
+                            pin: pin,
+                            accountIdentity: accountIdentity,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    }
                     return .value(.showGenericError)
                 }
                 Logger.error("Failed to back up to KBS with error: \(error)")
@@ -1658,5 +1860,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     enum Constants {
         static let persistedStateKey = "state"
+
+        // how many times we will retry network errors.
+        static let networkErrorRetries = 1
+
+        // If a request that can be retried has a timeout below this
+        // threshold, we will auto-retry it.
+        // (e.g. you try sending an sms code and the nextSMS is less than this.)
+        static let autoRetryInterval: TimeInterval = 0.5
     }
 }

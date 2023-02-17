@@ -191,6 +191,7 @@ extension Registration {
     public enum SyncPushTokensResult {
         case success
         case pushUnsupported(description: String)
+        case networkError
         case genericError
     }
 }
@@ -238,6 +239,9 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
         return job.run()
             .map(on: SyncScheduler()) { return .success }
             .recover(on: SyncScheduler()) { error -> Guarantee<Registration.SyncPushTokensResult> in
+                if error.isNetworkConnectivityFailure {
+                    return .value(.networkError)
+                }
                 switch error {
                 case PushRegistrationError.pushNotSupported(let description):
                     return .value(.pushUnsupported(description: description))

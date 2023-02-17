@@ -175,8 +175,10 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                     throw KBS.KBSError.invalidPin(triesRemaining: UInt32(remainingAttempts))
                 case .backupMissing:
                     throw KBS.KBSError.backupMissing
-                case .genericError:
-                    throw KBS.KBSError.assertion
+                case .networkError(let error):
+                    throw error
+                case .genericError(let error):
+                    throw error
                 }
             }
     }
@@ -198,7 +200,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     ) -> Guarantee<KBS.RestoreKeysResult> {
         guard let enclave = enclavesToCheck.first else {
             owsFailDebug("Unexpectedly tried to restore keys with no specified enclaves")
-            return .value(.genericError)
+            return .value(.genericError(KBS.KBSError.assertion))
         }
         return restoreKeysAndBackup(
             pin: pin,
@@ -206,7 +208,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             enclave: enclave
         ).then(on: schedulers.sync) { result -> Guarantee<KBS.RestoreKeysResult> in
             switch result {
-            case .success, .invalidPin, .genericError:
+            case .success, .invalidPin, .networkError, .genericError:
                 return .value(result)
             case .backupMissing:
                 if enclavesToCheck.count > 1 {
@@ -304,14 +306,17 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             return .success
         }
         .recover(on: schedulers.global()) { error -> Guarantee<KBS.RestoreKeysResult> in
+            if error.isNetworkConnectivityFailure {
+                return .value(.networkError(error))
+            }
             guard let kbsError = error as? KBS.KBSError else {
                 owsFailDebug("Unexpectedly surfacing a non KBS error \(error)")
-                return .value(.genericError)
+                return .value(.genericError(error))
             }
 
             switch kbsError {
             case .assertion:
-                return .value(.genericError)
+                return .value(.genericError(error))
             case .invalidPin(let remainingAttempts):
                 return .value(.invalidPin(remainingAttempts: Int(remainingAttempts)))
             case .backupMissing:

@@ -88,8 +88,9 @@ public enum KBS {
         // This could mean there was never a backup, or it's been
         // deleted due to using up all pin attempts.
         case backupMissing
-        // Network or other issue.
-        case genericError
+        case networkError(Error)
+        // Some other issue.
+        case genericError(Error)
     }
 }
 

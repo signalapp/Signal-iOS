@@ -492,6 +492,137 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertFalse(kbs.hasMasterKey)
     }
 
+    func testRegRecoveryPwPath_retryNetworkError() throws {
+        // Set profile info so we skip those steps.
+        setupDefaultAccountAttributes()
+
+        // Set a PIN on disk.
+        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+
+        // Make KBS give us back a reg recovery password.
+        kbs.dataGenerator = {
+            switch $0 {
+            case .registrationRecoveryPassword:
+                return Stubs.regRecoveryPwData
+            case .registrationLock:
+                return Stubs.reglockData
+            default:
+                return nil
+            }
+        }
+        kbs.hasMasterKey = true
+
+        // Run the scheduler for a bit; we don't care about timing these bits.
+        scheduler.start()
+
+        // We haven't set a phone number so it should ask for that.
+        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
+
+        // Give it a phone number, which should show the PIN entry step.
+        var nextStep = coordinator.submitE164(Stubs.e164)
+        // Now it should ask for the PIN to confirm the user knows it.
+        XCTAssertEqual(nextStep.value, .pinEntry)
+
+        // Now we want to control timing so we can verify things happened in the right order.
+        scheduler.stop()
+        scheduler.adjustTime(to: 0)
+
+        // Give it the pin code, which should make it try and register.
+        nextStep = coordinator.submitPINCode(Stubs.pinCode)
+
+        let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
+            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+            e164: Stubs.e164,
+            accountAttributes: Stubs.accountAttributes(),
+            skipDeviceTransfer: true
+        )
+
+        // Fail the request at t=2 with a network error.
+        let failResponse = TSRequestOWSURLSessionMock.Response.networkError(url: expectedRecoveryPwRequest.url!)
+        mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
+
+        let identityResponse = Stubs.accountIdentityResponse()
+        let authUsername = identityResponse.aci.uuidString
+        var authPassword: String!
+
+        // Once the first request fails, at t=2, it should retry.
+        scheduler.run(atTime: 1) {
+            // Resolve with success at t=3
+            let expectedRequest = RegistrationRequestFactory.createAccountRequest(
+                verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+                e164: Stubs.e164,
+                accountAttributes: Stubs.accountAttributes(),
+                skipDeviceTransfer: true
+            )
+
+            self.mockURLSession.addResponse(
+                TSRequestOWSURLSessionMock.Response(
+                    matcher: { request in
+                        // The password is generated internally by RegistrationCoordinator.
+                        // Extract it so we can check that the same password sent to the server
+                        // to register is used later for other requests.
+                        authPassword = Self.attributesFromCreateAccountRequest(request).authKey
+                        return request.url == expectedRequest.url
+                    },
+                    statusCode: 200,
+                    bodyData: try! JSONEncoder().encode(identityResponse)
+                ),
+                atTime: 3,
+                on: self.scheduler
+            )
+        }
+
+        // When registered at t=3, it should try and sync push tokens. Succeed at t=4
+        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { username, password in
+            XCTAssertEqual(self.scheduler.currentTime, 3)
+            XCTAssertEqual(username, authUsername)
+            XCTAssertEqual(password, authPassword)
+            return self.scheduler.guarantee(resolvingWith: .success, atTime: 4)
+        }
+
+        // We haven't done a kbs backup; that should happen at t=4. Succeed at t=5.
+        kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+            XCTAssertEqual(self.scheduler.currentTime, 4)
+            XCTAssertEqual(pin, Stubs.pinCode)
+            // We don't have a kbs auth credential, it should use chat server creds.
+            XCTAssertEqual(authMethod, .chatServerAuth(username: authUsername, password: authPassword))
+            XCTAssertFalse(rotateMasterKey)
+            self.kbs.hasMasterKey = true
+            return self.scheduler.promise(resolvingWith: (), atTime: 5)
+        }
+
+        // Once we sync push tokens at t=5, we should restore from storage service.
+        // Succeed at t=6.
+        accountManagerMock.performInitialStorageServiceRestoreMock = {
+            XCTAssertEqual(self.scheduler.currentTime, 5)
+            return self.scheduler.promise(resolvingWith: (), atTime: 6)
+        }
+
+        // Once we do the storage service restore at t=6,
+        // we will sync account attributes and then we are finished!
+        let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+            Stubs.accountAttributes(),
+            authUsername: "", // doesn't matter for url matching
+            authPassword: "" // doesn't matter for url matching
+        )
+        self.mockURLSession.addResponse(
+            TSRequestOWSURLSessionMock.Response(
+                matcher: { request in
+                    return request.url == expectedAttributesRequest.url
+                },
+                statusCode: 200,
+                bodyData: nil
+            ),
+            atTime: 7,
+            on: scheduler
+        )
+
+        scheduler.runUntilIdle()
+        XCTAssertEqual(scheduler.currentTime, 7)
+
+        XCTAssertEqual(nextStep.value, .done)
+    }
+
     // MARK: - KBS Auth Credential Path
 
     func testKBSAuthCredentialPath_happyPath() {

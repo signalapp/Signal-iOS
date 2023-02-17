@@ -544,11 +544,11 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
                 )
             }
             .recover(on: schedulers.sync) { (error: Error) -> Guarantee<ResponseType> in
+                if error.isNetworkConnectivityFailure {
+                    return .value(networkFailureError)
+                }
                 guard let error = error as? OWSHTTPError else {
                     return .value(fallbackError)
-                }
-                if case .networkFailure = error {
-                    return .value(networkFailureError)
                 }
                 let response = handler(
                     e164,

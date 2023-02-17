@@ -258,10 +258,22 @@ extension RegistrationCoordinatorImpl {
         public static func makeEnableReglockRequest(
             reglockToken: String,
             signalService: OWSSignalServiceProtocol,
-            schedulers: Schedulers
+            schedulers: Schedulers,
+            retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) -> Promise<Void> {
             let request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request).asVoid()
+                .recover(on: schedulers.sync) { error in
+                    if error.isNetworkConnectivityFailure, retriesLeft > 0 {
+                        return makeEnableReglockRequest(
+                            reglockToken: reglockToken,
+                            signalService: signalService,
+                            schedulers: schedulers,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    }
+                    return .init(error: error)
+                }
         }
 
         /// Returns nil error if success.
@@ -270,7 +282,8 @@ extension RegistrationCoordinatorImpl {
             authUsername: String,
             authPassword: String,
             signalService: OWSSignalServiceProtocol,
-            schedulers: Schedulers
+            schedulers: Schedulers,
+            retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) -> Guarantee<Error?> {
             let request = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
                 attributes,
@@ -286,6 +299,16 @@ extension RegistrationCoordinatorImpl {
                     return nil
                 }
                 .recover(on: schedulers.sync) { error in
+                    if error.isNetworkConnectivityFailure, retriesLeft > 0 {
+                        return makeUpdateAccountAttributesRequest(
+                            attributes,
+                            authUsername: authUsername,
+                            authPassword: authPassword,
+                            signalService: signalService,
+                            schedulers: schedulers,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    }
                     return .value(error)
                 }
         }
@@ -307,11 +330,11 @@ extension RegistrationCoordinatorImpl {
                     )
                 }
                 .recover(on: schedulers.sharedBackground) { (error: Error) -> Guarantee<ResponseType> in
+                    if error.isNetworkConnectivityFailure {
+                        return .value(networkFailureError)
+                    }
                     guard let error = error as? OWSHTTPError else {
                         return .value(fallbackError)
-                    }
-                    if case .networkFailure = error {
-                        return .value(networkFailureError)
                     }
                     let response = handler(
                         error.responseStatusCode,
