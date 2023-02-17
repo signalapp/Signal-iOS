@@ -238,7 +238,7 @@ public class MessageProcessor: NSObject {
         serialQueue.async {
             guard !self.isDrainingPendingEnvelopes else { return }
             self.isDrainingPendingEnvelopes = true
-            while self.drainNextBatch() {}
+            while autoreleasepool(invoking: { self.drainNextBatch() }) {}
             self.isDrainingPendingEnvelopes = false
             if self.pendingEnvelopes.isEmpty {
                 NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
@@ -251,49 +251,47 @@ public class MessageProcessor: NSObject {
         assertOnQueue(serialQueue)
         owsAssertDebug(isDrainingPendingEnvelopes)
 
-        return autoreleasepool {
-            // We want a value that is just high enough to yield perf benefits.
-            let kIncomingMessageBatchSize = 16
-            // If the app is in the background, use batch size of 1.
-            // This reduces the risk of us never being able to drain any
-            // messages from the queue. We should fine tune this number
-            // to yield the best perf we can get.
-            let batchSize = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
-            let batch = pendingEnvelopes.nextBatch(batchSize: batchSize)
-            let batchEnvelopes = batch.batchEnvelopes
-            let pendingEnvelopesCount = batch.pendingEnvelopesCount
+        // We want a value that is just high enough to yield perf benefits.
+        let kIncomingMessageBatchSize = 16
+        // If the app is in the background, use batch size of 1.
+        // This reduces the risk of us never being able to drain any
+        // messages from the queue. We should fine tune this number
+        // to yield the best perf we can get.
+        let batchSize = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
+        let batch = pendingEnvelopes.nextBatch(batchSize: batchSize)
+        let batchEnvelopes = batch.batchEnvelopes
+        let pendingEnvelopesCount = batch.pendingEnvelopesCount
 
-            guard !batchEnvelopes.isEmpty, messagePipelineSupervisor.isMessageProcessingPermitted else {
-                if DebugFlags.internalLogging {
-                    Logger.info("Processing complete: \(self.queuedContentCount) (memoryUsage: \(LocalDevice.memoryUsageString).")
-                }
-                return false
+        guard !batchEnvelopes.isEmpty, messagePipelineSupervisor.isMessageProcessingPermitted else {
+            if DebugFlags.internalLogging {
+                Logger.info("Processing complete: \(self.queuedContentCount) (memoryUsage: \(LocalDevice.memoryUsageString).")
             }
+            return false
+        }
 
-            let startTime = CACurrentMediaTime()
-            Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s). (memoryUsage: \(LocalDevice.memoryUsageString)")
+        let startTime = CACurrentMediaTime()
+        Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s). (memoryUsage: \(LocalDevice.memoryUsageString)")
 
-            var processedEnvelopes: [PendingEnvelope] = []
-            SDSDatabaseStorage.shared.write { transaction in
-                var remainingEnvelopes = batchEnvelopes
-                while messagePipelineSupervisor.isMessageProcessingPermitted && !remainingEnvelopes.isEmpty {
-                    autoreleasepool {
-                        let combinedRequest = buildNextCombinedRequest(envelopes: &remainingEnvelopes,
-                                                                       transaction: transaction)
-                        let processed = handle(combinedRequest: combinedRequest,
-                                               transaction: transaction)
-                        if processed {
-                            let envelopes = combinedRequest.processingRequests.lazy.map { $0.pendingEnvelope }
-                            processedEnvelopes.append(contentsOf: envelopes)
-                        }
+        var processedEnvelopes: [PendingEnvelope] = []
+        SDSDatabaseStorage.shared.write { transaction in
+            var remainingEnvelopes = batchEnvelopes
+            while messagePipelineSupervisor.isMessageProcessingPermitted && !remainingEnvelopes.isEmpty {
+                autoreleasepool {
+                    let combinedRequest = buildNextCombinedRequest(envelopes: &remainingEnvelopes,
+                                                                   transaction: transaction)
+                    let processed = handle(combinedRequest: combinedRequest,
+                                           transaction: transaction)
+                    if processed {
+                        let envelopes = combinedRequest.processingRequests.lazy.map { $0.pendingEnvelope }
+                        processedEnvelopes.append(contentsOf: envelopes)
                     }
                 }
             }
-            pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopes)
-            let duration = CACurrentMediaTime() - startTime
-            Logger.info(String.init(format: "Processed %.0d envelopes in %0.2fms -> %.2f envelopes per second", batchEnvelopes.count, duration * 1000, duration > 0 ? Double(batchEnvelopes.count) / duration : 0))
-            return true
         }
+        pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopes)
+        let duration = CACurrentMediaTime() - startTime
+        Logger.info(String.init(format: "Processed %.0d envelopes in %0.2fms -> %.2f envelopes per second", batchEnvelopes.count, duration * 1000, duration > 0 ? Double(batchEnvelopes.count) / duration : 0))
+        return true
     }
 
     // If envelopes is not empty, this will emit a single request for a non-delivery receipt or one or more requests
