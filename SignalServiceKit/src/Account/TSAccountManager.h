@@ -10,11 +10,34 @@ extern NSNotificationName const NSNotificationNameOnboardingStateDidChange;
 extern NSString *const TSRemoteAttestationAuthErrorKey;
 extern NSNotificationName const NSNotificationNameLocalNumberDidChange;
 
+extern NSString *const TSAccountManager_RegisteredNumberKey;
+extern NSString *const TSAccountManager_RegistrationDateKey;
+extern NSString *const TSAccountManager_RegisteredUUIDKey;
+extern NSString *const TSAccountManager_RegisteredPNIKey;
+extern NSString *const TSAccountManager_IsDeregisteredKey;
+extern NSString *const TSAccountManager_ReregisteringPhoneNumberKey;
+extern NSString *const TSAccountManager_ReregisteringUUIDKey;
+extern NSString *const TSAccountManager_IsOnboardedKey;
+extern NSString *const TSAccountManager_IsTransferInProgressKey;
+extern NSString *const TSAccountManager_WasTransferredKey;
+extern NSString *const TSAccountManager_HasPendingRestoreDecisionKey;
+extern NSString *const TSAccountManager_IsDiscoverableByPhoneNumberKey;
+extern NSString *const TSAccountManager_LastSetIsDiscoverableByPhoneNumberKey;
+
+extern NSString *const TSAccountManager_UserAccountCollection;
+extern NSString *const TSAccountManager_ServerAuthTokenKey;
+extern NSString *const TSAccountManager_ServerSignalingKey;
+extern NSString *const TSAccountManager_ManualMessageFetchKey;
+
+extern NSString *const TSAccountManager_DeviceNameKey;
+extern NSString *const TSAccountManager_DeviceIdKey;
+
 @class AnyPromise;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SignalServiceAddress;
+@class TSAccountState;
 @class TSRequest;
 
 typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
@@ -29,6 +52,15 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 @interface TSAccountManager : NSObject
 
+/// This property should only be accessed while @synchronized on self.
+///
+/// Generally, it will nil until loaded for the first time (while warming
+/// the caches) and non-nil after.
+///
+/// There's an important exception: we discard (but don't reload) the cache
+/// when notified of a cross-process write.
+@property (nonatomic, nullable) TSAccountState *cachedAccountState;
+
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
@@ -38,6 +70,12 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 #pragma mark - Initializers
 
 - (void)warmCaches;
+
+- (TSAccountState *)getOrLoadAccountStateWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (TSAccountState *)getOrLoadAccountStateWithSneakyTransaction;
+
+- (TSAccountState *)loadAccountStateWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (TSAccountState *)loadAccountStateWithSneakyTransaction;
 
 - (OWSRegistrationState)registrationState;
 
@@ -110,14 +148,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (BOOL)isOnboarded;
 - (BOOL)isOnboardedWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (BOOL)isDiscoverableByPhoneNumber;
-- (BOOL)isDiscoverableByPhoneNumberWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (BOOL)hasDefinedIsDiscoverableByPhoneNumber;
-- (BOOL)hasDefinedIsDiscoverableByPhoneNumberWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (void)setIsDiscoverableByPhoneNumber:(BOOL)isDiscoverableByPhoneNumber
-                  updateStorageService:(BOOL)updateStorageService
-                           transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Register with phone number
 

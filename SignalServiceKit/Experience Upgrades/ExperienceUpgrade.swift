@@ -107,6 +107,7 @@ extension ExperienceUpgrade {
         case
                 .introducingPins,
                 .notificationPermissionReminder,
+                .createUsernameReminder,
                 .pinReminder,
                 .contactPermissionReminder,
                 .unrecognized:

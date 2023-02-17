@@ -8,7 +8,7 @@ import SignalUI
 import SignalMessaging
 import SafariServices
 
-public class UsernameEducationViewController: OWSTableViewController2 {
+class UsernameEducationViewController: OWSTableViewController2 {
 
     private enum Constants {
         static let headerHeight: CGFloat = 44.0

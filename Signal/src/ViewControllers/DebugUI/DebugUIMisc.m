@@ -211,6 +211,12 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Clear My Story privacy settings"
                                      actionBlock:^() { [DebugUIMisc clearMyStoryPrivacySettings]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Enable username education prompt"
+                                     actionBlock:^() { [DebugUIMisc enableUsernameEducation]; }]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Delete all persisted ExperienceUpgrade records"
+                                     actionBlock:^() { [DebugUIMisc removeAllRecordedExperienceUpgrades]; }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 

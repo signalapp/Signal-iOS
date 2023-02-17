@@ -17,6 +17,9 @@ public enum ExperienceUpgradeManifest: Dependencies {
     /// Prompts the user to enable notifications permissions.
     case notificationPermissionReminder
 
+    /// Prompts the user to create a username.
+    case createUsernameReminder
+
     /// Prompts the user according to the contained ``RemoteMegaphoneModel``.
     ///
     /// Remote megaphones are fetched from the service, and expected to change
@@ -92,6 +95,8 @@ extension ExperienceUpgradeManifest {
                 return .introducingPins
             case Self.notificationPermissionReminder.uniqueId:
                 return .notificationPermissionReminder
+            case Self.createUsernameReminder.uniqueId:
+                return .createUsernameReminder
             case Self.pinReminder.uniqueId:
                 return .pinReminder
             case Self.contactPermissionReminder.uniqueId:
@@ -119,6 +124,7 @@ extension ExperienceUpgradeManifest {
     static let wellKnownLocalUpgradeManifests: Set<ExperienceUpgradeManifest> = [
         .introducingPins,
         .notificationPermissionReminder,
+        .createUsernameReminder,
         .pinReminder,
         .contactPermissionReminder
     ]
@@ -136,6 +142,8 @@ extension ExperienceUpgradeManifest {
             return "009"
         case .notificationPermissionReminder:
             return "notificationPermissionReminder"
+        case .createUsernameReminder:
+            return "createUsernameReminder"
         case .remoteMegaphone(let megaphone):
             return megaphone.id
         case .pinReminder:
@@ -196,14 +204,16 @@ extension ExperienceUpgradeManifest: ExperienceUpgradeSortable {
             return (0, 0)
         case .notificationPermissionReminder:
             return (1, 0)
+        case .createUsernameReminder:
+            return (2, 0)
         case .remoteMegaphone(let megaphone):
             // Remote megaphone manifests use higher numbers to indicate higher
             // priority, so we should invert their priority here.
-            return (2, -1 * megaphone.manifest.priority)
+            return (3, -1 * megaphone.manifest.priority)
         case .pinReminder:
-            return (3, 0)
-        case .contactPermissionReminder:
             return (4, 0)
+        case .contactPermissionReminder:
+            return (5, 0)
         case .unrecognized:
             return (Int.max, Int.max)
         }
@@ -224,6 +234,7 @@ extension ExperienceUpgradeManifest {
         switch self {
         case
                 .introducingPins,
+                .createUsernameReminder,
                 .remoteMegaphone:
             return false
         case
@@ -247,6 +258,7 @@ extension ExperienceUpgradeManifest {
             return false
         case
                 .notificationPermissionReminder,
+                .createUsernameReminder,
                 .remoteMegaphone,
                 .contactPermissionReminder:
             return true
@@ -262,6 +274,7 @@ extension ExperienceUpgradeManifest {
         case
                 .introducingPins,
                 .notificationPermissionReminder,
+                .createUsernameReminder,
                 .pinReminder,
                 .contactPermissionReminder,
                 .unrecognized:
@@ -285,6 +298,9 @@ extension ExperienceUpgradeManifest {
             return 2 * kDayInterval
         case .notificationPermissionReminder:
             return 3 * kDayInterval
+        case .createUsernameReminder:
+            // On snooze, never show again.
+            return .infinity
         case .remoteMegaphone(let megaphone):
             let daysToSnooze: UInt = {
                 // If we have snooze duration days as action data, get the
@@ -323,7 +339,7 @@ extension ExperienceUpgradeManifest {
         case .contactPermissionReminder:
             return 30 * kDayInterval
         case .unrecognized:
-            return Date.distantFuture.timeIntervalSince1970
+            return .infinity
         }
     }
 
@@ -334,6 +350,7 @@ extension ExperienceUpgradeManifest {
         case
                 .introducingPins,
                 .notificationPermissionReminder,
+                .createUsernameReminder,
                 .pinReminder,
                 .contactPermissionReminder:
             return Int.max
@@ -350,6 +367,7 @@ extension ExperienceUpgradeManifest {
         switch self {
         case
                 .notificationPermissionReminder,
+                .createUsernameReminder,
                 .contactPermissionReminder:
             return kDayInterval
         case .introducingPins:
@@ -380,6 +398,7 @@ extension ExperienceUpgradeManifest {
         case
                 .introducingPins,
                 .notificationPermissionReminder,
+                .createUsernameReminder,
                 .pinReminder,
                 .contactPermissionReminder:
             return Date.distantFuture
@@ -399,7 +418,8 @@ extension ExperienceUpgradeManifest {
                 .unrecognized:
             return false
         case
-                .notificationPermissionReminder:
+                .notificationPermissionReminder,
+                .createUsernameReminder:
             return true
         case
                 .contactPermissionReminder:
@@ -444,6 +464,8 @@ extension ExperienceUpgradeManifest {
             return checkPreconditionsForIntroducingPins(transaction: transaction)
         case .notificationPermissionReminder:
             return checkPreconditionsForNotificationsPermissionsReminder()
+        case .createUsernameReminder:
+            return checkPreconditionsForCreateUsernameReminder(transaction: transaction)
         case .remoteMegaphone(let megaphone):
             return checkPreconditionsForRemoteMegaphone(megaphone)
         case .pinReminder:
@@ -493,6 +515,40 @@ extension ExperienceUpgradeManifest {
             Logger.warn("failed to query notification permission")
             return false
         }
+    }
+
+    private static func checkPreconditionsForCreateUsernameReminder(transaction: SDSAnyReadTransaction) -> Bool {
+        guard let localAci = tsAccountManager.localUuid else {
+            owsFailBeta("Missing local ACI!")
+            return false
+        }
+
+        guard
+            DependenciesBridge.shared.usernameLookupManager.fetchUsername(
+                forAci: localAci,
+                transaction: transaction.asV2Read
+            ) == nil
+        else {
+            // If we have a username, do not show the reminder.
+            return false
+        }
+
+        guard !tsAccountManager.isDiscoverableByPhoneNumber(with: transaction) else {
+            // If phone number discovery is enabled, do not prompt to create a
+            // username.
+            return false
+        }
+
+        /// The elapsed interval since the user disabled phone number
+        /// discovery. Note that we need to invert the sign as this date will
+        /// be in the past.
+        let timeIntervalSinceDisabledDiscovery = tsAccountManager
+            .lastSetIsDiscoverablyByPhoneNumberAt(with: transaction)
+            .timeIntervalSinceNow * -1
+
+        let requiredDelayAfterDisablingDiscovery: TimeInterval = 3 * kDayInterval
+
+        return timeIntervalSinceDisabledDiscovery > requiredDelayAfterDisablingDiscovery
     }
 
     private static func checkPreconditionsForPinReminder(transaction: SDSAnyReadTransaction) -> Bool {

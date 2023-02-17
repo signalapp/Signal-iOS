@@ -34,15 +34,17 @@ NSString *const TSAccountManager_IsOnboardedKey = @"TSAccountManager_IsOnboarded
 NSString *const TSAccountManager_IsTransferInProgressKey = @"TSAccountManager_IsTransferInProgressKey";
 NSString *const TSAccountManager_WasTransferredKey = @"TSAccountManager_WasTransferredKey";
 NSString *const TSAccountManager_HasPendingRestoreDecisionKey = @"TSAccountManager_HasPendingRestoreDecisionKey";
-NSString *const TSAccountManager_IsDiscoverableByPhoneNumber = @"TSAccountManager_IsDiscoverableByPhoneNumber";
+NSString *const TSAccountManager_IsDiscoverableByPhoneNumberKey = @"TSAccountManager_IsDiscoverableByPhoneNumber";
+NSString *const TSAccountManager_LastSetIsDiscoverableByPhoneNumberKey
+    = @"TSAccountManager_LastSetIsDiscoverableByPhoneNumberKey";
 
 NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountCollection";
-NSString *const TSAccountManager_ServerAuthToken = @"TSStorageServerAuthToken";
+NSString *const TSAccountManager_ServerAuthTokenKey = @"TSStorageServerAuthToken";
 NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignalingKey";
 NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_ManualMessageFetchKey";
 
-NSString *const TSAccountManager_DeviceName = @"TSAccountManager_DeviceName";
-NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
+NSString *const TSAccountManager_DeviceNameKey = @"TSAccountManager_DeviceName";
+NSString *const TSAccountManager_DeviceIdKey = @"TSAccountManager_DeviceId";
 
 NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 {
@@ -60,135 +62,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }
 }
 
-// A cache of frequently-accessed database state.
-//
-// * Instances of TSAccountState are immutable.
-// * None of this state should change often.
-// * Whenever any of this state changes, we reload all of it.
-//
-// This cache changes all of its properties in lockstep, which
-// helps ensure consistency.  e.g. isRegistered is true IFF
-// localNumber is non-nil.
-@interface TSAccountState : NSObject
-
-@property (nonatomic, readonly, nullable) NSString *localNumber;
-@property (nonatomic, readonly, nullable) NSUUID *localUuid;
-@property (nonatomic, readonly, nullable) NSUUID *localPni;
-@property (nonatomic, readonly, nullable) NSString *reregistrationPhoneNumber;
-@property (nonatomic, readonly, nullable) NSUUID *reregistrationUUID;
-
-@property (nonatomic, readonly) BOOL isRegistered;
-@property (nonatomic, readonly) BOOL isDeregistered;
-@property (nonatomic, readonly) BOOL isOnboarded;
-@property (nonatomic, readonly) BOOL isDiscoverableByPhoneNumber;
-@property (nonatomic, readonly) BOOL hasDefinedIsDiscoverableByPhoneNumber;
-
-@property (nonatomic, readonly) BOOL isTransferInProgress;
-@property (nonatomic, readonly) BOOL wasTransferred;
-
-@property (nonatomic, readonly, nullable) NSString *serverSignalingKey;
-@property (nonatomic, readonly, nullable) NSString *serverAuthToken;
-
-@property (nonatomic, readonly, nullable) NSDate *registrationDate;
-
-@property (nonatomic, readonly, nullable) NSString *deviceName;
-@property (nonatomic, readonly) UInt32 deviceId;
-
-@end
-
-#pragma mark -
-
-@implementation TSAccountState
-
-- (instancetype)initWithTransaction:(SDSAnyReadTransaction *)transaction keyValueStore:(SDSKeyValueStore *)keyValueStore
-{
-    OWSAssertDebug(transaction != nil);
-    OWSAssertDebug(keyValueStore != nil);
-
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    // WARNING: TSAccountState is loaded before data migrations have run (as well as after).
-    // Do not use data migrations to update TSAccountState data; do it through schema migrations
-    // or through normal write transactions. TSAccountManager should be the only code accessing this state anyway.
-
-    _localNumber = [keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
-    _registrationDate = [keyValueStore getDate:TSAccountManager_RegistrationDateKey transaction:transaction];
-
-    NSString *_Nullable uuidString = [keyValueStore getString:TSAccountManager_RegisteredUUIDKey
-                                                  transaction:transaction];
-    _localUuid = (uuidString != nil ? [[NSUUID alloc] initWithUUIDString:uuidString] : nil);
-
-    NSString *_Nullable pniString = [keyValueStore getString:TSAccountManager_RegisteredPNIKey transaction:transaction];
-    _localPni = (pniString != nil ? [[NSUUID alloc] initWithUUIDString:pniString] : nil);
-
-    _reregistrationPhoneNumber = [keyValueStore getString:TSAccountManager_ReregisteringPhoneNumberKey
-                                              transaction:transaction];
-    NSString *_Nullable reregistrationUUIDString = [keyValueStore getString:TSAccountManager_ReregisteringUUIDKey
-                                                                transaction:transaction];
-    _reregistrationUUID
-        = (reregistrationUUIDString != nil ? [[NSUUID alloc] initWithUUIDString:reregistrationUUIDString] : nil);
-    _isDeregistered = [keyValueStore getBool:TSAccountManager_IsDeregisteredKey
-                                defaultValue:NO
-                                 transaction:transaction];
-    _serverSignalingKey = [keyValueStore getString:TSAccountManager_ServerSignalingKey transaction:transaction];
-    _serverAuthToken = [keyValueStore getString:TSAccountManager_ServerAuthToken transaction:transaction];
-
-    _deviceName = [keyValueStore getString:TSAccountManager_DeviceName transaction:transaction];
-    _deviceId = [keyValueStore getUInt32:TSAccountManager_DeviceId
-                            defaultValue:1 // lazily migrate legacy primary devices
-                             transaction:transaction];
-    _isOnboarded = [keyValueStore getBool:TSAccountManager_IsOnboardedKey defaultValue:NO transaction:transaction];
-
-
-    // When we enable the ability to change whether you're discoverable
-    // by phone number, new registrations must not be discoverable by
-    // default. In order to accommodate this, the default "isDiscoverable"
-    // flag will be NO until you have successfully registered (aka defined
-    // a local phone number).
-    BOOL isDiscoverableByDefault = YES;
-    if (SSKFeatureFlags.phoneNumberDiscoverability) {
-        isDiscoverableByDefault = self.isRegistered;
-    }
-
-    _isDiscoverableByPhoneNumber = [keyValueStore getBool:TSAccountManager_IsDiscoverableByPhoneNumber
-                                             defaultValue:isDiscoverableByDefault
-                                              transaction:transaction];
-    _hasDefinedIsDiscoverableByPhoneNumber = [keyValueStore hasValueForKey:TSAccountManager_IsDiscoverableByPhoneNumber
-                                                               transaction:transaction];
-
-    _isTransferInProgress = [keyValueStore getBool:TSAccountManager_IsTransferInProgressKey
-                                      defaultValue:NO
-                                       transaction:transaction];
-    _wasTransferred = [keyValueStore getBool:TSAccountManager_WasTransferredKey
-                                defaultValue:NO
-                                 transaction:transaction];
-
-    return self;
-}
-
-- (BOOL)isRegistered
-{
-    return nil != self.localNumber;
-}
-
-- (BOOL)isReregistering
-{
-    // TODO: Support re-registration with only reregistrationUUID.
-    // TODO: Eventually require reregistrationUUID during re-registration.
-    return nil != self.reregistrationPhoneNumber;
-}
-
-- (void)log
-{
-    OWSLogInfo(@"isRegistered: %d", self.isRegistered);
-    OWSLogInfo(@"isDeregistered: %d", self.isDeregistered);
-}
-
-@end
-
 #pragma mark -
 
 // We use @synchronized and db transactions often within this class.
@@ -203,15 +76,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 // * If you update any account state in the database, reload the cache
 //   immediately.
 @interface TSAccountManager () <DatabaseChangeDelegate>
-
-// This property should only be accessed while @synchronized on self.
-//
-// Generally, it will nil until loaded for the first time (while warming
-// the caches) and non-nil after.
-//
-// There's an important exception: we discard (but don't reload) the cache
-// when notified of a cross-process write.
-@property (nonatomic, nullable) TSAccountState *cachedAccountState;
 
 @end
 
@@ -692,50 +556,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     [self postOnboardingStateDidChangeNotification];
 }
 
-- (BOOL)isDiscoverableByPhoneNumber
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].isDiscoverableByPhoneNumber;
-}
-
-- (BOOL)isDiscoverableByPhoneNumberWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self getOrLoadAccountStateWithTransaction:transaction].isDiscoverableByPhoneNumber;
-}
-
-- (BOOL)hasDefinedIsDiscoverableByPhoneNumber
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].hasDefinedIsDiscoverableByPhoneNumber;
-}
-
-- (BOOL)hasDefinedIsDiscoverableByPhoneNumberWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self getOrLoadAccountStateWithTransaction:transaction].hasDefinedIsDiscoverableByPhoneNumber;
-}
-
-- (void)setIsDiscoverableByPhoneNumber:(BOOL)isDiscoverableByPhoneNumber
-                  updateStorageService:(BOOL)updateStorageService
-                           transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!SSKFeatureFlags.phoneNumberDiscoverability) {
-        return;
-    }
-
-    @synchronized(self) {
-        [self.keyValueStore setBool:isDiscoverableByPhoneNumber
-                                key:TSAccountManager_IsDiscoverableByPhoneNumber
-                        transaction:transaction];
-        [self loadAccountStateWithTransaction:transaction];
-    }
-
-    [transaction addAsyncCompletionOffMain:^{
-        [self updateAccountAttributes];
-
-        if (updateStorageService) {
-            [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
-        }
-    }];
-}
-
 #pragma mark Server keying material
 
 // NOTE: We no longer set this for new accounts.
@@ -769,8 +589,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     @synchronized(self) {
-        [self.keyValueStore setString:authToken key:TSAccountManager_ServerAuthToken transaction:transaction];
-        [self.keyValueStore setUInt32:deviceId key:TSAccountManager_DeviceId transaction:transaction];
+        [self.keyValueStore setString:authToken key:TSAccountManager_ServerAuthTokenKey transaction:transaction];
+        [self.keyValueStore setUInt32:deviceId key:TSAccountManager_DeviceIdKey transaction:transaction];
 
         [self loadAccountStateWithTransaction:transaction];
     }
@@ -779,7 +599,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (void)setStoredDeviceName:(NSString *)deviceName transaction:(SDSAnyWriteTransaction *)transaction
 {
     @synchronized(self) {
-        [self.keyValueStore setString:deviceName key:TSAccountManager_DeviceName transaction:transaction];
+        [self.keyValueStore setString:deviceName key:TSAccountManager_DeviceNameKey transaction:transaction];
 
         [self loadAccountStateWithTransaction:transaction];
     }

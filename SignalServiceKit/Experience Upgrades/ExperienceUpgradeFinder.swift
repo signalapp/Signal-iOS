@@ -12,18 +12,18 @@ public class ExperienceUpgradeFinder: NSObject {
 
     public class func next(transaction: GRDBReadTransaction) -> ExperienceUpgrade? {
         return allKnownExperienceUpgrades(transaction: transaction.asAnyRead)
-            .filter { upgrade in
+            .first(where: { upgrade in
                 if
-                    upgrade.manifest.shouldBeShown(transaction: transaction.asAnyRead),
                     !upgrade.isComplete,
                     !upgrade.isSnoozed,
-                    !upgrade.hasPassedNumberOfDaysToShow
+                    !upgrade.hasPassedNumberOfDaysToShow,
+                    upgrade.manifest.shouldBeShown(transaction: transaction.asAnyRead)
                 {
                     return true
                 }
 
                 return false
-            }.first
+            })
     }
 
     public class func markAsViewed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {

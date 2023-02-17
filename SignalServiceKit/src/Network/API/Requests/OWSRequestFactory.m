@@ -414,7 +414,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     }
 
     if (SSKFeatureFlags.phoneNumberDiscoverability) {
-        accountAttributes[@"discoverableByPhoneNumber"] = @(self.tsAccountManager.isDiscoverableByPhoneNumber);
+        accountAttributes[@"discoverableByPhoneNumber"] = @([self.tsAccountManager isDiscoverableByPhoneNumber]);
     }
 
     accountAttributes[@"capabilities"] = [self deviceCapabilitiesWithIsSecondaryDevice:isSecondaryDevice];

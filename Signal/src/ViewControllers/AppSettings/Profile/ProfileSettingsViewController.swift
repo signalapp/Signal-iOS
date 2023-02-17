@@ -271,10 +271,12 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     private func handleUsernameCellTapped(localAci: UUID) {
         func presentUsernameSelection(from self: ProfileSettingsViewController) {
-            let vc = UsernameSelectionViewController(
-                existingUsername: .init(rawUsername: self.username),
+            let usernameSelectionCoordinator = UsernameSelectionCoordinator(
                 localAci: localAci,
+                currentUsername: self.username,
+                usernameSelectionDelegate: self,
                 context: .init(
+                    usernameEducationManager: self.context.usernameEducationManager,
                     networkManager: self.networkManager,
                     databaseStorage: self.databaseStorage,
                     usernameLookupManager: self.context.usernameLookupManager,
@@ -282,9 +284,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 )
             )
 
-            vc.usernameSelectionDelegate = self
-
-            self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+            usernameSelectionCoordinator.present(fromViewController: self)
         }
 
         func deleteUsernameBehindModalActivityIndicator(from self: ProfileSettingsViewController) {
@@ -356,32 +356,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
             presentActionSheet(selectUsernameActionSheet)
         } else {
-            let shouldShowUsernameEducation: Bool = databaseStorage.read { transaction in
-                context.usernameEducationManager.shouldShowUsernameEducation(transaction: transaction.asV2Read)
-            }
-
-            if shouldShowUsernameEducation {
-                let usernameEducationSheet = UsernameEducationViewController()
-
-                usernameEducationSheet.continueCompletion = { [weak self] in
-                    guard let self else { return }
-
-                    self.databaseStorage.write { transaction in
-                        self.context.usernameEducationManager.setShouldShowUsernameEducation(
-                            false,
-                            transaction: transaction.asV2Write
-                        )
-                    }
-
-                    self.storageServiceManager.recordPendingLocalAccountUpdates()
-
-                    presentUsernameSelection(from: self)
-                }
-
-                presentFormSheet(usernameEducationSheet, animated: true)
-            } else {
-                presentUsernameSelection(from: self)
-            }
+            presentUsernameSelection(from: self)
         }
     }
 

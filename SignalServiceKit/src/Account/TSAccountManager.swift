@@ -127,6 +127,7 @@ public extension TSAccountManager {
         return AnyPromise(updateAccountAttributes())
     }
 
+    @discardableResult
     func updateAccountAttributes() -> Promise<Void> {
         Self.databaseStorage.write { transaction in
             self.keyValueStore.setDate(Date(),
@@ -483,5 +484,72 @@ public extension TSAccountManager {
     @objc(clearKBSKeysWithTransaction:)
     func clearKBSKeys(with transaction: SDSAnyWriteTransaction) {
         DependenciesBridge.shared.keyBackupService.clearKeys(transaction: transaction.asV2Write)
+    }
+}
+
+// MARK: - Phone number discoverability
+
+public extension TSAccountManager {
+    /// This method may open a transaction.
+    func hasDefinedIsDiscoverableByPhoneNumber() -> Bool {
+        getOrLoadAccountStateWithSneakyTransaction().hasDefinedIsDiscoverableByPhoneNumber
+    }
+
+    func hasDefinedIsDiscoverableByPhoneNumber(with transaction: SDSAnyReadTransaction) -> Bool {
+        getOrLoadAccountState(with: transaction).hasDefinedIsDiscoverableByPhoneNumber
+    }
+
+    /// This method may open a transaction.
+    @objc
+    func isDiscoverableByPhoneNumber() -> Bool {
+        getOrLoadAccountStateWithSneakyTransaction().isDiscoverableByPhoneNumber
+    }
+
+    func isDiscoverableByPhoneNumber(with transaction: SDSAnyReadTransaction) -> Bool {
+        getOrLoadAccountState(with: transaction).isDiscoverableByPhoneNumber
+    }
+
+    func lastSetIsDiscoverablyByPhoneNumberAt(with transaction: SDSAnyReadTransaction) -> Date {
+        getOrLoadAccountState(with: transaction).lastSetIsDiscoverableByPhoneNumberAt
+    }
+
+    func setIsDiscoverableByPhoneNumber(
+        _ isDiscoverableByPhoneNumber: Bool,
+        updateStorageService: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard FeatureFlags.phoneNumberDiscoverability else {
+            return
+        }
+
+        performWithSynchronizedSelf {
+            keyValueStore.setBool(
+                isDiscoverableByPhoneNumber,
+                key: TSAccountManager_IsDiscoverableByPhoneNumberKey,
+                transaction: transaction
+            )
+
+            keyValueStore.setDate(
+                Date(),
+                key: TSAccountManager_LastSetIsDiscoverableByPhoneNumberKey,
+                transaction: transaction
+            )
+
+            loadAccountState(with: transaction)
+        }
+
+        transaction.addAsyncCompletionOffMain {
+            self.updateAccountAttributes()
+
+            if updateStorageService {
+                self.storageServiceManager.recordPendingLocalAccountUpdates()
+            }
+        }
+    }
+
+    private func performWithSynchronizedSelf(block: () -> Void) {
+        objc_sync_enter(self)
+        block()
+        objc_sync_exit(self)
     }
 }

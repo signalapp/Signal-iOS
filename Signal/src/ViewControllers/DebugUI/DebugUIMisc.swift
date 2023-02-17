@@ -98,6 +98,21 @@ public extension DebugUIMisc {
             StoryManager.setHasSetMyStoriesPrivacy(false, transaction: transaction, shouldUpdateStorageService: true)
         }
     }
+
+    static func enableUsernameEducation() {
+        databaseStorage.write { transaction in
+            DependenciesBridge.shared.usernameEducationManager.setShouldShowUsernameEducation(
+                true,
+                transaction: transaction.asV2Write
+            )
+        }
+    }
+
+    static func removeAllRecordedExperienceUpgrades() {
+        databaseStorage.write { transaction in
+            ExperienceUpgrade.anyRemoveAllWithInstantiation(transaction: transaction)
+        }
+    }
 }
 
 #endif

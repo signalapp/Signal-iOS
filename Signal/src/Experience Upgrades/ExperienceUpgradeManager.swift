@@ -133,6 +133,7 @@ class ExperienceUpgradeManager: NSObject {
                 .introducingPins,
                 .pinReminder,
                 .notificationPermissionReminder,
+                .createUsernameReminder,
                 .contactPermissionReminder:
             return true
         case .remoteMegaphone:
@@ -145,7 +146,7 @@ class ExperienceUpgradeManager: NSObject {
         }
     }
 
-    fileprivate static func megaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) -> MegaphoneView? {
+    private static func megaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) -> MegaphoneView? {
         switch experienceUpgrade.manifest {
         case .introducingPins:
             return IntroducingPinsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
@@ -153,6 +154,33 @@ class ExperienceUpgradeManager: NSObject {
             return PinReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .notificationPermissionReminder:
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .createUsernameReminder:
+            guard let localAci = tsAccountManager.localUuid else {
+                return nil
+            }
+
+            let currentUsername: String? = databaseStorage.read { transaction in
+                DependenciesBridge.shared.usernameLookupManager.fetchUsername(
+                    forAci: localAci,
+                    transaction: transaction.asV2Read
+                )
+            }
+
+            return CreateUsernameMegaphone(
+                usernameSelectionCoordinator: .init(
+                    localAci: localAci,
+                    currentUsername: currentUsername,
+                    context: .init(
+                        usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
+                        networkManager: networkManager,
+                        databaseStorage: databaseStorage,
+                        usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
+                        storageServiceManager: storageServiceManager
+                    )
+                ),
+                experienceUpgrade: experienceUpgrade,
+                fromViewController: fromViewController
+            )
         case .contactPermissionReminder:
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .remoteMegaphone(let megaphone):
