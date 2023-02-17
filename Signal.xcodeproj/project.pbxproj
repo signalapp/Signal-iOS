@@ -1363,6 +1363,7 @@
 		F94262A0289B1B5600460798 /* SMKSecretSessionCipherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426238289B1B5500460798 /* SMKSecretSessionCipherTest.swift */; };
 		F94262A1289B1B5600460798 /* SignalServiceAddressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */; };
 		F94262A2289B1B5600460798 /* SSKBaseTestSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */; };
+		F9426D18299FEC8900357352 /* RegistrationTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426D17299FEC8900357352 /* RegistrationTransferChoiceViewController.swift */; };
 		F9427EAB297F1E88008EF0AC /* SpamReportingToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAA297F1E88008EF0AC /* SpamReportingToken.swift */; };
 		F9427EAE297F1EE3008EF0AC /* SpamReportingTokenTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */; };
 		F9427EB0297F24AB008EF0AC /* SpamReportingTokenRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */; };
@@ -3870,6 +3871,7 @@
 		F9426238289B1B5500460798 /* SMKSecretSessionCipherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKSecretSessionCipherTest.swift; sourceTree = "<group>"; };
 		F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceAddressTest.swift; sourceTree = "<group>"; };
 		F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SSKBaseTestSwift.swift; path = SignalServiceKit/tests/SSKBaseTestSwift.swift; sourceTree = SOURCE_ROOT; };
+		F9426D17299FEC8900357352 /* RegistrationTransferChoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferChoiceViewController.swift; sourceTree = "<group>"; };
 		F9427EAA297F1E88008EF0AC /* SpamReportingToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingToken.swift; sourceTree = "<group>"; };
 		F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenTest.swift; sourceTree = "<group>"; };
 		F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenRecord.swift; sourceTree = "<group>"; };
@@ -4957,6 +4959,7 @@
 				F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */,
 				F9EECB00299EC9D8005FDD52 /* RegistrationProfileViewController.swift */,
 				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
+				F9426D17299FEC8900357352 /* RegistrationTransferChoiceViewController.swift */,
 				F9EC3FE9299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift */,
 				F9E3006B299D76C3000323F8 /* RegistrationVerificationViewController.swift */,
 				F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */,
@@ -11217,6 +11220,7 @@
 				F9EECB01299EC9D8005FDD52 /* RegistrationProfileViewController.swift in Sources */,
 				F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */,
 				6600F39029918CBF00B1EDB7 /* RegistrationStep.swift in Sources */,
+				F9426D18299FEC8900357352 /* RegistrationTransferChoiceViewController.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */,
 				F9EC3FEA299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift in Sources */,

@@ -5182,6 +5182,12 @@
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Country Code";
 
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
+
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Enter Number";
 
