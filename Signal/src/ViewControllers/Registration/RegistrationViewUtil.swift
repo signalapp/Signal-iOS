@@ -40,6 +40,12 @@ extension UIColor {
     static var colorForRegistrationExplanationLabel: UIColor { Theme.secondaryTextAndIconColor }
 }
 
+// MARK: - Fonts
+
+extension UIFont {
+    static var fontForRegistrationExplanationLabel: UIFont { .ows_dynamicTypeSubheadlineClamped }
+}
+
 // MARK: - Labels
 
 extension UILabel {
@@ -57,7 +63,7 @@ extension UILabel {
     static func explanationLabelForRegistration(text: String) -> UILabel {
         let result = UILabel()
         result.textColor = .colorForRegistrationExplanationLabel
-        result.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        result.font = .fontForRegistrationExplanationLabel
         result.text = text
         result.numberOfLines = 0
         result.textAlignment = .center

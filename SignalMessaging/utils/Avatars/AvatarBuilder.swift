@@ -357,15 +357,17 @@ public class AvatarBuilder: NSObject {
         diameterPixels: UInt,
         transaction: SDSAnyReadTransaction
     ) -> UIImage? {
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing local address")
-            return nil
-        }
-
-        let theme = AvatarTheme.forAddress(localAddress)
-        let nameComponents = Self.contactsManager.nameComponents(for: localAddress, transaction: transaction)
-
         let requestType: RequestType = {
+            guard let localAddress = tsAccountManager.localAddress else {
+                return .contactDefaultIcon(theme: .default)
+            }
+
+            let theme = AvatarTheme.forAddress(localAddress)
+            let nameComponents = Self.contactsManager.nameComponents(
+                for: localAddress,
+                transaction: transaction
+            )
+
             if let nameComponents = nameComponents,
                let initials = Self.contactInitials(forPersonNameComponents: nameComponents) {
                 return .text(text: initials, theme: theme)
@@ -373,11 +375,13 @@ public class AvatarBuilder: NSObject {
                 return .contactDefaultIcon(theme: theme)
             }
         }()
+
         let request = Request(
             requestType: requestType,
             diameterPixels: CGFloat(diameterPixels),
             shouldBlurAvatar: false
         )
+
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
