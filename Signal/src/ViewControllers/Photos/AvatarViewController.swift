@@ -4,15 +4,14 @@
 //
 
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 import UIKit
 
-@objc(OWSAvatarViewController)
 class AvatarViewController: UIViewController, InteractivelyDismissableViewController {
     private var interactiveDismissal: MediaInteractiveDismiss?
     let avatarImage: UIImage
 
-    @objc
     var maxAvatarPointSize: CGSize {
         let currentScale = avatarImage.scale
         let desiredScale = UIScreen.main.scale
@@ -28,12 +27,8 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
     private let circleView = CircleView()
 
-    private let closeButton: OWSButton = {
-        let button = OWSButton(imageName: "x-24", tintColor: Theme.darkThemePrimaryColor)
-        return button
-    }()
+    private var navigationBarTopLayoutConstraint: NSLayoutConstraint?
 
-    @objc
     init?(thread: TSThread, renderLocalUserAsNoteToSelf: Bool, readTx: SDSAnyReadTransaction) {
         let localUserDisplayMode: LocalUserDisplayMode = (renderLocalUserAsNoteToSelf
                                                             ? .noteToSelf
@@ -51,7 +46,6 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         transitioningDelegate = self
     }
 
-    @objc
     init?(address: SignalServiceAddress, renderLocalUserAsNoteToSelf: Bool, readTx: SDSAnyReadTransaction) {
         let diameter = UInt(UIScreen.main.bounds.size.smallerAxis)
         guard let avatarImage: UIImage = {
@@ -80,19 +74,15 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         transitioningDelegate = self
     }
 
-    override func loadView() {
-        let view = UIView()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
         view.backgroundColor = Theme.darkThemeBackgroundColor
-        view.addSubview(circleView)
-        view.addSubview(closeButton)
 
         circleView.clipsToBounds = true
-        circleView.addSubview(imageView)
-        imageView.autoPinEdgesToSuperviewEdges()
-
+        view.addSubview(circleView)
         circleView.autoCenterInSuperview()
         circleView.autoPinToSquareAspectRatio()
-
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
             circleView.autoMatch(.width, to: .width, of: view, withOffset: -48)
             circleView.autoMatch(.height, to: .height, of: view, withOffset: -48)
@@ -100,21 +90,60 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         circleView.autoMatch(.width, to: .width, of: view, withOffset: -48, relation: .lessThanOrEqual)
         circleView.autoMatch(.height, to: .height, of: view, withOffset: -48, relation: .lessThanOrEqual)
 
-        closeButton.autoPinTopToSuperviewMargin(withInset: 8)
-        closeButton.autoPinLeadingToSuperviewMargin()
-
-        self.view = view
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
         imageView.image = avatarImage
+        circleView.addSubview(imageView)
+        imageView.autoPinEdgesToSuperviewEdges()
+
+        // Use UINavigationBar so that close button X on the left has a standard position in all cases.
+        let navigationBar = UINavigationBar()
+        navigationBar.tintColor = Theme.darkThemeNavbarIconColor
+        if #available(iOS 13, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithTransparentBackground()
+            navigationBar.standardAppearance = appearance
+            navigationBar.compactAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.overrideUserInterfaceStyle = .dark
+        } else {
+            navigationBar.barTintColor = .clear
+            navigationBar.isTranslucent = false
+        }
+        view.addSubview(navigationBar)
+        navigationBar.autoPinWidthToSuperview()
+        navigationBarTopLayoutConstraint = navigationBar.autoPinEdge(toSuperviewEdge: .top)
+        navigationBar.autoPinEdge(toSuperviewEdge: .bottom)
+
+        let navigationItem = UINavigationItem(title: "")
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(imageLiteralResourceName: "x-24"),
+            style: .plain,
+            target: self,
+            action: #selector(didTapClose),
+            accessibilityIdentifier: "close")
+        navigationBar.setItems([navigationItem], animated: false)
 
         interactiveDismissal = MediaInteractiveDismiss(targetViewController: self)
         interactiveDismissal?.addGestureRecognizer(to: view)
-        closeButton.block = { [weak self] in
-            self?.performInteractiveDismissal(animated: true)
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        if let navigationBarTopLayoutConstraint {
+            // On iPhones with a Dynamic Island standard position of a navigation bar is bottom of the status bar,
+            // which is ~5 dp smaller than the top safe area (https://useyourloaf.com/blog/iphone-14-screen-sizes/) .
+            // Since it is not possible to constrain top edge of our manually maintained navigation bar to that position
+            // the workaround is to detect exactly safe area of 59 points and decrease it.
+            var topInset = view.safeAreaInsets.top
+            if topInset == 59 {
+                topInset -= 5 + CGHairlineWidth()
+            }
+            navigationBarTopLayoutConstraint.constant = topInset
         }
+    }
+
+    @objc
+    private func didTapClose() {
+        performInteractiveDismissal(animated: true)
     }
 
     func performInteractiveDismissal(animated: Bool) {
@@ -148,16 +177,17 @@ extension AvatarViewController: UIViewControllerTransitioningDelegate {
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let animationController = MediaDismissAnimationController(
             image: avatarImage,
-            interactionController: interactiveDismissal)
-
+            interactionController: interactiveDismissal
+        )
         interactiveDismissal?.interactiveDismissDelegate = animationController
         return animationController
     }
 
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        guard let animator = animator as? MediaDismissAnimationController,
-              let interactionController = animator.interactionController,
-              interactionController.interactionInProgress
+        guard
+            let animator = animator as? MediaDismissAnimationController,
+            let interactionController = animator.interactionController,
+            interactionController.interactionInProgress
         else {
             return nil
         }
