@@ -28,7 +28,7 @@ extension RegistrationCoordinatorImpl {
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerWrapper
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
-        public typealias ReceuptManager = _RegistrationCoordinator_ReceiptManagerWrapper
+        public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
         public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigWrapper
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper

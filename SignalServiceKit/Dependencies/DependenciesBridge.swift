@@ -42,6 +42,8 @@ public class DependenciesBridge {
     public let kbsCredentialStorage: KBSAuthCredentialStorage
     public let keyBackupService: KeyBackupServiceProtocol
 
+    public let registrationSessionManager: RegistrationSessionManager
+
     public let usernameLookupManager: UsernameLookupManager
     public let usernameEducationManager: UsernameEducationManager
 
@@ -91,6 +93,13 @@ public class DependenciesBridge {
             syncManager: syncManager,
             tsConstants: tsConstants,
             twoFAManager: KBS.Wrappers.OWS2FAManager(ows2FAManager)
+        )
+        self.registrationSessionManager = RegistrationSessionManagerImpl(
+            dateProvider: { Date() },
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            schedulers: schedulers,
+            signalService: signalService
         )
         self.usernameLookupManager = UsernameLookupManagerImpl()
         self.usernameEducationManager = UsernameEducationManagerImpl(keyValueStoreFactory: keyValueStoreFactory)

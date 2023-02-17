@@ -105,7 +105,14 @@ public class FeatureFlags: BaseFlags {
         return false
     }
 
-    public static let useNewRegistrationFlow = false
+    public static let useNewRegistrationFlow: Bool = {
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["REG_BRAVO_TESTING"] == "1" {
+            return true
+        }
+        #endif
+        return false
+    }()
 
     @objc
     public static func logFlags() {

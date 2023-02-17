@@ -73,8 +73,28 @@ extension SignalApp {
     }
 
     private func showRegistrationView(appDelegate: UIApplicationDelegate) {
-        // This code is likely to change significantly.
-        let navController = RegistrationNavigationController()
+        let coordinator = RegistrationCoordinatorImpl(
+            accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(Self.accountManager),
+            contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
+            dateProvider: { Date() },
+            db: DependenciesBridge.shared.db,
+            experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
+            kbs: DependenciesBridge.shared.keyBackupService,
+            kbsAuthCredentialStore: DependenciesBridge.shared.kbsCredentialStorage,
+            keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
+            ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(Self.ows2FAManager),
+            profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(Self.profileManager),
+            pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(Self.pushRegistrationManager),
+            receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(Self.receiptManager),
+            remoteConfig: RegistrationCoordinatorImpl.Wrappers.RemoteConfig(),
+            schedulers: DependenciesBridge.shared.schedulers,
+            sessionManager: DependenciesBridge.shared.registrationSessionManager,
+            signalService: Self.signalService,
+            storageServiceManager: Self.storageServiceManager,
+            tsAccountManager: RegistrationCoordinatorImpl.Wrappers.TSAccountManager(Self.tsAccountManager),
+            udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(Self.udManager)
+        )
+        let navController = RegistrationNavigationController(coordinator: coordinator)
         navController.setViewControllers([RegistrationSplashViewController()], animated: false)
 
         appDelegate.window??.rootViewController = navController
