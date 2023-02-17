@@ -114,6 +114,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (BOOL)isDiscoverableByPhoneNumber;
 - (BOOL)isDiscoverableByPhoneNumberWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (BOOL)hasDefinedIsDiscoverableByPhoneNumber;
+- (BOOL)hasDefinedIsDiscoverableByPhoneNumberWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setIsDiscoverableByPhoneNumber:(BOOL)isDiscoverableByPhoneNumber
                   updateStorageService:(BOOL)updateStorageService
                            transaction:(SDSAnyWriteTransaction *)transaction;
@@ -125,6 +126,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 // - uploaded pre-keys
 // - uploaded push tokens
 - (void)didRegister;
+- (void)didRegisterWithE164:(NSString *)e164
+                        aci:(NSUUID *)aci
+                        pni:(nullable NSUUID *)pni
+                  authToken:(NSString *)authToken
+                transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)recordUuidForLegacyUser:(NSUUID *)uuid NS_SWIFT_NAME(recordUuidForLegacyUser(_:));
 
 #pragma mark - De-Registration
@@ -169,6 +175,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (BOOL)isManualMessageFetchEnabled;
 - (BOOL)isManualMessageFetchEnabled:(SDSAnyReadTransaction *)transaction;
 - (void)setIsManualMessageFetchEnabled:(BOOL)value;
+- (void)setIsManualMessageFetchEnabled:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction;
 
 #ifdef TESTABLE_BUILD
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid;

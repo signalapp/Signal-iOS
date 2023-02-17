@@ -245,7 +245,7 @@ public enum RegistrationServiceResponses {
         static public var unknown: Self { .unexpectedError }
     }
 
-    public struct AccountIdentityResponse: Codable {
+    public struct AccountIdentityResponse: Codable, Equatable {
         /// The users account identifier.
         public let aci: UUID
         /// The user's phone number identifier.

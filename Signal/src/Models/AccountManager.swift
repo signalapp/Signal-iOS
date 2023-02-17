@@ -488,6 +488,14 @@ public class AccountManager: NSObject {
         }
     }
 
+    func updatePushTokens(request: TSRequest) -> Promise<Void> {
+        return Promise { future in
+            tsAccountManager.registerForPushNotifications(request: request,
+                                                          success: { future.resolve() },
+                                                          failure: future.reject)
+        }
+    }
+
     // MARK: Turn Server
 
     func getTurnServerInfo() -> Promise<TurnServerInfo> {

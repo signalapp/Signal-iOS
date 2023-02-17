@@ -260,30 +260,35 @@ extension TSAccountManager {
                                            voipToken: String?,
                                            success: @escaping () -> Void,
                                            failure: @escaping (Error) -> Void) {
-        registerForPushNotifications(pushToken: pushToken,
-                                     voipToken: voipToken,
+        let request = OWSRequestFactory.registerForPushRequest(withPushIdentifier: pushToken,
+                                                               voipIdentifier: voipToken)
+        registerForPushNotifications(request: request,
+                                     success: success,
+                                     failure: failure)
+    }
+
+    @objc
+    open func registerForPushNotifications(request: TSRequest,
+                                           success: @escaping () -> Void,
+                                           failure: @escaping (Error) -> Void) {
+        registerForPushNotifications(request: request,
                                      success: success,
                                      failure: failure,
                                      remainingRetries: 3)
     }
 
     @objc
-    open func registerForPushNotifications(pushToken: String,
-                                           voipToken: String?,
+    open func registerForPushNotifications(request: TSRequest,
                                            success: @escaping () -> Void,
                                            failure: @escaping (Error) -> Void,
                                            remainingRetries: Int) {
-
-        let request = OWSRequestFactory.registerForPushRequest(withPushIdentifier: pushToken,
-                                                               voipIdentifier: voipToken)
         firstly {
             networkManager.makePromise(request: request)
         }.done(on: DispatchQueue.global()) { _ in
             success()
         }.catch(on: DispatchQueue.global()) { error in
             if remainingRetries > 0 {
-                self.registerForPushNotifications(pushToken: pushToken,
-                                                  voipToken: voipToken,
+                self.registerForPushNotifications(request: request,
                                                   success: success,
                                                   failure: failure,
                                                   remainingRetries: remainingRetries - 1)

@@ -8,52 +8,64 @@ import Foundation
 
 public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
+    private let accountManager: RegistrationCoordinatorImpl.Shims.AccountManager
     private let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
     private let dateProvider: DateProvider
     private let db: DB
+    private let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
     private let kbs: KeyBackupServiceProtocol
     private let kbsAuthCredentialStore: KBSAuthCredentialStorage
     private let kvStore: KeyValueStoreProtocol
     private let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
     private let profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager
     private let pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager
+    private let receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager
     private let remoteConfig: RegistrationCoordinatorImpl.Shims.RemoteConfig
     private let schedulers: Schedulers
     private let sessionManager: RegistrationSessionManager
     private let signalService: OWSSignalServiceProtocol
+    private let storageServiceManager: StorageServiceManagerProtocol
     private let tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager
     private let udManager: RegistrationCoordinatorImpl.Shims.UDManager
 
     public init(
+        accountManager: RegistrationCoordinatorImpl.Shims.AccountManager,
         contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore,
         dateProvider: @escaping DateProvider,
         db: DB,
+        experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager,
         kbs: KeyBackupServiceProtocol,
         kbsAuthCredentialStore: KBSAuthCredentialStorage,
         keyValueStoreFactory: KeyValueStoreFactory,
         ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager,
         profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager,
         pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager,
+        receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager,
         remoteConfig: RegistrationCoordinatorImpl.Shims.RemoteConfig,
         schedulers: Schedulers,
         sessionManager: RegistrationSessionManager,
         signalService: OWSSignalServiceProtocol,
+        storageServiceManager: StorageServiceManagerProtocol,
         tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager,
         udManager: RegistrationCoordinatorImpl.Shims.UDManager
     ) {
+        self.accountManager = accountManager
         self.contactsStore = contactsStore
         self.dateProvider = dateProvider
         self.db = db
+        self.experienceManager = experienceManager
         self.kbs = kbs
         self.kbsAuthCredentialStore = kbsAuthCredentialStore
         self.kvStore = keyValueStoreFactory.keyValueStore(collection: "RegistrationCoordinator")
         self.ows2FAManager = ows2FAManager
         self.profileManager = profileManager
         self.pushRegistrationManager = pushRegistrationManager
+        self.receiptManager = receiptManager
         self.remoteConfig = remoteConfig
         self.schedulers = schedulers
         self.sessionManager = sessionManager
         self.signalService = signalService
+        self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
     }
@@ -187,9 +199,39 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // TODO[Registration]: should we reject the pin code right here and now if it differs
         // from what we had on disk?
         self.inMemoryState.pinFromUser = code
-        // TODO[Registration]: if we get the pin code after registered, we should
-        // pull down backups from KBS.
+        // Individual pathway's steps should handle whatever needs to be done with the pin,
+        // depending on the current pathway.
         return nextStep()
+    }
+
+    public func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) -> Guarantee<RegistrationStep> {
+        self.inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = true
+        self.inMemoryState.isDiscoverableByPhoneNumber = isDiscoverable
+        db.write { tx in
+            // We will update storage service at the end of registration.
+            tsAccountManager.setIsDiscoverableByPhoneNumber(true, updateStorageService: false, tx)
+        }
+
+        return nextStep()
+    }
+
+    public func setProfileInfo(givenName: String, familyName: String?, avatarData: Data?) -> Guarantee<RegistrationStep> {
+        return profileManager.updateLocalProfile(givenName: givenName, familyName: familyName, avatarData: avatarData)
+            .map(on: schedulers.sync) { return nil }
+            .recover(on: schedulers.sync) { (error) -> Guarantee<Error?> in
+                return .value(error)
+            }
+            .then(on: schedulers.main) { [weak self] (error) -> Guarantee<RegistrationStep> in
+                guard let self else {
+                    return .value(.showGenericError)
+                }
+                guard error == nil else {
+                    // TODO[Registration]: should we differentiate errors?
+                    return .value(.showGenericError)
+                }
+                self.inMemoryState.hasProfileName = true
+                return self.nextStep()
+            }
     }
 
     // MARK: - Internal
@@ -212,6 +254,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // we get to that step without asking again.
         var hasEnteredE164 = false
 
+        var shouldRestoreKBSMasterKeyAfterRegistration = false
         // base64 encoded data
         var regRecoveryPw: String?
         // hexadecimal encoded data
@@ -223,6 +266,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // A credential we know to be valid and useable for
         // the current e164.
         var kbsAuthCredential: KBSAuthCredential?
+        var skipUsingKBSAuthCredentialForRegistration = false
+
+        var kbsAuthCredentialForRegistration: KBSAuthCredential? {
+            return skipUsingKBSAuthCredentialForRegistration ? nil : kbsAuthCredential
+        }
+        var kbsAuthCredentialForPostRegRestoration: KBSAuthCredential? {
+            return kbsAuthCredential
+        }
 
         // We always require the user to enter the PIN
         // during the in memory app session even if we
@@ -243,28 +294,51 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // so that when we complete the challenge we send the code right away.
         var pendingCodeTransport: Registration.CodeTransport?
 
+        // Every time we go through registration, we should back up our KBS master
+        // secret's random bytes to KBS. Its safer to do this more than it is to do
+        // it less, so keeping this state in memory.
+        var hasBackedUpToKBS = false
+        var didSkipKBSBackup = false
+        var shouldBackUpToKBS: Bool {
+            return hasBackedUpToKBS.negated && didSkipKBSBackup.negated
+        }
+
+        // OWS2FAManager state
+        // If we are re-registering or changing number and
+        // reglock was enabled, we should enable it again when done.
+        var wasReglockEnabled = false
+        var hasSetReglock = false
+
         // TSAccountManager state
         var registrationId: UInt32!
         var pniRegistrationId: UInt32!
         var isManualMessageFetchEnabled = false
+        var hasDefinedIsDiscoverableByPhoneNumber = false
         var isDiscoverableByPhoneNumber = false
 
         // OWSProfileManager state
         var profileKey: OWSAES256Key!
         var udAccessKey: SMKUDAccessKey!
         var allowUnrestrictedUD = false
+        var hasProfileName = false
+
+        // Once we have our kbs master key locally,
+        // we can restore profile info from storage service.
+        var hasRestoredFromStorageService = false
+        var hasSkippedRestoreFromStorageService = false
+        var shouldRestoreFromStorageService: Bool {
+            return !hasRestoredFromStorageService && !hasSkippedRestoreFromStorageService
+        }
     }
 
     private var inMemoryState = InMemoryState()
 
     // MARK: - Persisted State
 
-    private typealias AccountIdentity = RegistrationServiceResponses.AccountIdentityResponse
-
-    enum Mode: Codable {
+    enum Mode: Codable, Equatable {
         case registering
         case reRegistering
-        case changingNumber
+        case changingNumber(oldE164: String, oldAuthToken: String)
     }
 
     /// This state is kept across launches of registration. Whatever is set
@@ -289,6 +363,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// we remember it so we don't re-register when we quit the app
         /// before finishing post-registration steps.
         var accountIdentity: AccountIdentity?
+
+        /// Once per registration we want to sync push tokens up to
+        /// the server. This might fail non-transiently because the device
+        /// doesn't support push. We'd mark this as true and move on.
+        var didSyncPushTokens: Bool = false
 
         /// When we try and register, the server gives us an error if its possible
         /// to execute a device-to-device transfer. The user can decline; if they
@@ -336,19 +415,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         // Ideally this would be in the below transaction, but OWSProfileManager
         // isn't set up to do that and its a mess to untangle.
-        let profileKey = profileManager.localProfileKey
-        inMemoryState.profileKey = profileKey
-        let udAccessKey: SMKUDAccessKey
-        do {
-            udAccessKey = try SMKUDAccessKey(profileKey: profileKey.keyData)
-            if udAccessKey.keyData.count < 1 {
-                owsFail("Could not determine UD access key, empty key generated.")
-            }
-        } catch {
-            // Crash app if UD cannot be enabled.
-            owsFail("Could not determine UD access key: \(error).")
-        }
-        inMemoryState.udAccessKey = udAccessKey
+        self.loadProfileState()
 
         db.write { tx in
             self.loadLocalMasterKey(tx)
@@ -361,9 +428,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.isManualMessageFetchEnabled = tsAccountManager.isManualMessageFetchEnabled(tx)
             inMemoryState.registrationId = tsAccountManager.getOrGenerateRegistrationId(tx)
             inMemoryState.pniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx)
+            inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber(tx)
             inMemoryState.isDiscoverableByPhoneNumber = tsAccountManager.isDiscoverableByPhoneNumber(tx)
 
             inMemoryState.allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
+
+            inMemoryState.wasReglockEnabled = ows2FAManager.isReglockEnabled(tx)
         }
 
         let sessionGuarantee: Guarantee<Void> = sessionManager.restoreSession()
@@ -409,6 +479,64 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         }
                     }
                 }
+            }
+    }
+
+    /// Once registration is complete, we need to take our internal state and write it out to
+    /// external classes so that the rest of the app has all our updated information.
+    /// Once this is done, we can wipe the internal state of this class so that we get a fresh
+    /// registration if we ever re-register while in the same app session.
+    private func exportAndWipeState(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
+
+        db.write { tx in
+            if inMemoryState.hasBackedUpToKBS {
+                // No need to show the experience if we made the pin
+                // and backed up.
+                experienceManager.clearIntroducingPinsExperience(tx)
+            }
+
+            switch persistedState.mode {
+            case .reRegistering, .changingNumber:
+                break
+            case .registering:
+                // For new users, read receipts are on by default.
+                receiptManager.setAreReadReceiptsEnabled(true, tx)
+                receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
+                // New users also have the onboarding banner cards enabled
+                experienceManager.enableAllGetStartedCards(tx)
+            }
+
+            // TODO[Registration]: should this happen after updating account attributes,
+            // since that can fail?
+            tsAccountManager.didRegister(accountIdentity.response, authToken: accountIdentity.authToken, tx)
+        }
+
+        // Update the account attributes once, now, at the end.
+        return Service
+            .makeUpdateAccountAttributesRequest(
+                makeAccountAttributes(authToken: accountIdentity.authToken),
+                authUsername: accountIdentity.authUsername,
+                authPassword: accountIdentity.authPassword,
+                signalService: signalService,
+                schedulers: schedulers
+            )
+            .then(on: schedulers.main) { [weak self] error -> Guarantee<RegistrationStep> in
+                guard let self else {
+                    return .value(.showGenericError)
+                }
+                guard let error else {
+                    // We are done! Wipe everything
+                    self.inMemoryState = InMemoryState()
+                    self.db.write { tx in
+                        try? self.kvStore.setCodable(PersistedState(), key: Constants.persistedStateKey, transaction: tx)
+                    }
+                    // Do any storage service backups we have pending.
+                    self.storageServiceManager.backupPendingChanges()
+                    return .value(.done)
+                }
+                // TODO[Registration]: handle account attributes update error?
+                Logger.error("Failed to register due to failed account attributes update: \(error)")
+                return .value(.showGenericError)
             }
     }
 
@@ -469,7 +597,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // or proceed to profile setup (if it succeeds) we must wipe this state.
             return .registrationRecoveryPassword(password: password)
         }
-        if let credential = inMemoryState.kbsAuthCredential {
+        if let credential = inMemoryState.kbsAuthCredentialForRegistration {
             // If we have a validated kbs auth credential, try using that
             // to recover the KBS master key to register.
             // Once again, to get off this path and fall back to session (if it fails)
@@ -571,8 +699,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         return self.makeRegisterOrChangeNumberRequest(
             .recoveryPassword(regRecoveryPw),
-            e164: e164,
-            reglockToken: inMemoryState.reglockToken
+            e164: e164
         ).then(on: schedulers.main) { [weak self] accountResponse in
             return self?.handleCreateAccountResponseFromRegRecoveryPassword(
                 accountResponse,
@@ -582,7 +709,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func handleCreateAccountResponseFromRegRecoveryPassword(
-        _ response: Service.AccountResponse,
+        _ response: AccountResponse,
         e164: String
     ) -> Guarantee<RegistrationStep> {
         // TODO[Registration] handle error case for rejected e164.
@@ -629,7 +756,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             db.write { tx in
                 // We do want to clear out any credentials permanently; we know we
                 // have to use the session path so credentials aren't helpful.
-                kbsAuthCredentialStore.deleteInvalidCredentials([inMemoryState.kbsAuthCredential].compacted(), tx)
+                kbsAuthCredentialStore.deleteInvalidCredentials([inMemoryState.kbsAuthCredentialForRegistration].compacted(), tx)
             }
             // Wipe our in memory KBS state; its now useless.
             wipeInMemoryStateToPreventKBSPathAttempts()
@@ -654,6 +781,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func wipeInMemoryStateToPreventKBSPathAttempts() {
         inMemoryState.reglockToken = nil
         inMemoryState.regRecoveryPw = nil
+        inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = true
         // Wiping auth credential state too; if we failed with the local
         // kbs master key we don't expect the backed up master key to work
         // either so we shouldn't bother trying.
@@ -684,30 +812,40 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(.pinEntry)
         }
 
-        return restoreKBSMasterSecret(
+        return restoreKBSMasterSecretForAuthCredentialPath(
             pin: pin,
             credential: kbsAuthCredential
         )
     }
 
-    private func restoreKBSMasterSecret(
+    private func restoreKBSMasterSecretForAuthCredentialPath(
         pin: String,
         credential: KBSAuthCredential
     ) -> Guarantee<RegistrationStep> {
-        kbs.restoreKeysAndBackup(with: pin, and: credential)
-            .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
+        kbs.restoreKeysAndBackup(pin: pin, authMethod: .kbsAuth(credential, backup: nil))
+            .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
                 guard let self = self else {
                     return .value(.showGenericError)
                 }
-                // We don't need to use the credential anymore, wipe it.
-                self.inMemoryState.kbsAuthCredential = nil
-                self.db.read { self.loadLocalMasterKey($0) }
-                return self.nextStep()
-            }
-            .recover(on: schedulers.main) { _ in
-                // TODO[Registration] build in some retry logic, and differentiate
-                // KBS errors (invalid PIN vs invalid credential, etc).
-                return .value(.pinEntry)
+                switch result {
+                case .success:
+                    // We don't need to use the credential anymore for registration.
+                    self.inMemoryState.skipUsingKBSAuthCredentialForRegistration = true
+                    // This step also backs up, no need to do that again later.
+                    self.inMemoryState.hasBackedUpToKBS = true
+                    self.db.read { self.loadLocalMasterKey($0) }
+                    return self.nextStep()
+                case .invalidPin:
+                    // TODO[Registration] report the remaining attempts to the UI.
+                    return .value(.pinEntry)
+                case .backupMissing:
+                    // If we are unable to talk to KBS, it got wiped and we can't
+                    // recover. Give it all up and wipe our KBS info.
+                    self.wipeInMemoryStateToPreventKBSPathAttempts()
+                    return self.nextStep()
+                case .genericError:
+                    return .value(.showGenericError)
+                }
             }
     }
 
@@ -715,6 +853,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // The hex vs base64 different here is intentional.
         inMemoryState.regRecoveryPw = kbs.data(for: .registrationRecoveryPassword, transaction: tx)?.base64EncodedString()
         inMemoryState.reglockToken = kbs.data(for: .registrationLock, transaction: tx)?.hexadecimalString
+        // If we have a local master key, theres no need to restore after registration.
+        // (we will still back up though)
+        inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = !kbs.hasMasterKey(transaction: tx)
     }
 
     // MARK: - KBS Auth Credential Candidates Pathway
@@ -790,8 +931,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // We have to complete registration.
             return self.makeRegisterOrChangeNumberRequest(
                 .sessionId(session.id),
-                e164: session.e164,
-                reglockToken: inMemoryState.reglockToken
+                e164: session.e164
             ).then(on: schedulers.main) { [weak self] response in
                 guard let self = self else {
                     return .value(.showGenericError)
@@ -890,7 +1030,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func handleCreateAccountResponseFromSession(
-        _ response: Service.AccountResponse
+        _ response: AccountResponse
     ) -> Guarantee<RegistrationStep> {
         switch response {
         case .success(let identityResponse):
@@ -912,7 +1052,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             db.write { tx in
                 kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
             }
+            // Set the credential for our use, but don't try and register with it
+            // via the auth credential pathway.
             self.inMemoryState.kbsAuthCredential = reglockFailure.kbsAuthCredential
+            self.inMemoryState.skipUsingKBSAuthCredentialForRegistration = true
             return nextStep()
 
         case .rejectedVerificationMethod:
@@ -1088,8 +1231,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// Returns the next step the user needs to go through _after_ the actual account
     /// registration or change number is complete (e.g. profile setup).
     private func nextStepForProfileSetup(
-        _ accountIdentity: RegistrationServiceResponses.AccountIdentityResponse
+        _ accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
+        if !persistedState.didSyncPushTokens {
+            return syncPushTokens(accountIdentity)
+        }
         if inMemoryState.pinFromUser == nil {
             // Need to enter the pin.
             if inMemoryState.pinFromDisk == nil {
@@ -1102,15 +1248,234 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return .value(.pinEntry)
             }
         }
-        if !tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber() {
+        if
+            let pin = inMemoryState.pinFromUser,
+            inMemoryState.shouldBackUpToKBS
+        {
+            // If we have no kbs data, fetch it.
+            if accountIdentity.response.hasPreviouslyUsedKBS, inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration {
+                return restoreKBSBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
+            } else {
+                // If we haven't backed up, do so now.
+                return backupToKBS(pin: pin, accountIdentity: accountIdentity)
+            }
+        }
+        if inMemoryState.wasReglockEnabled && inMemoryState.hasSetReglock.negated {
+            return enableReglockIfNeeded()
+        }
+        if inMemoryState.shouldRestoreFromStorageService {
+            return accountManager.performInitialStorageServiceRestore()
+                .map(on: schedulers.main) { [weak self] in
+                    self?.inMemoryState.hasRestoredFromStorageService = true
+                    return ()
+                }
+                .recover(on: schedulers.main) { [weak self] _ in
+                    self?.inMemoryState.hasSkippedRestoreFromStorageService = true
+                    return .value(())
+                }
+                .then(on: schedulers.sync) { [weak self] in
+                    self?.loadProfileState()
+                    return self?.nextStep() ?? .value(.showGenericError)
+                }
+        }
+        if !inMemoryState.hasDefinedIsDiscoverableByPhoneNumber {
             return .value(.phoneNumberDiscoverability)
         }
-        if !profileManager.hasProfileName {
+        if !inMemoryState.hasProfileName {
             return .value(.setupProfile)
         }
-        // TODO[Registration]: at this point we should write all external state
-        // as needed (e.g. to TSAccountManager) and should back up to KBS.
-        return .value(.done)
+
+        // We are ready to finish! Export all state and wipe things
+        // so we can re-register later if desired.
+        return exportAndWipeState(accountIdentity: accountIdentity)
+    }
+
+    private func syncPushTokens(_ accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
+        pushRegistrationManager
+            .syncPushTokensForcingUpload(
+                authUsername: accountIdentity.authUsername,
+                authPassword: accountIdentity.authPassword
+            )
+            .then(on: schedulers.main) { [weak self] result in
+                guard let self else {
+                    return .value(.showGenericError)
+                }
+                switch result {
+                case .success:
+                    self.db.write { tx in
+                        self.updatePersistedState(tx) {
+                            $0.didSyncPushTokens = true
+                        }
+                    }
+                    return self.nextStep()
+                case .pushUnsupported(let description):
+                    // This can happen with:
+                    // - simulators, none of which support receiving push notifications
+                    // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
+                    // In these cases, mark the sync as done, but enable manual message fetch.
+                     Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
+                    self.inMemoryState.isManualMessageFetchEnabled = true
+                    self.db.write { tx in
+                        self.tsAccountManager.setIsManualMessageFetchEnabled(true, tx)
+                        self.updatePersistedState(tx) {
+                            $0.didSyncPushTokens = true
+                        }
+                    }
+                    return self.nextStep()
+                case .genericError:
+                    return .value(.showGenericError)
+                }
+            }
+    }
+
+    private func restoreKBSBackupPostRegistration(pin: String, accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
+        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(username: accountIdentity.authUsername, password: accountIdentity.authPassword)
+        let authMethod: KBS.AuthMethod
+        if let kbsAuthCredential = inMemoryState.kbsAuthCredentialForPostRegRestoration {
+            authMethod = .kbsAuth(kbsAuthCredential, backup: backupAuthMethod)
+        } else {
+            authMethod = backupAuthMethod
+        }
+        return kbs
+            .restoreKeysAndBackup(
+                pin: pin,
+                authMethod: authMethod
+            )
+            .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
+                guard let self else {
+                    return .value(.showGenericError)
+                }
+                switch result {
+                case .success:
+                    self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
+                    // This backs up too, no need to do that again after.
+                    self.inMemoryState.hasBackedUpToKBS = true
+                    return self.nextStep()
+                case .invalidPin:
+                    // TODO[Registration] report the remaining attempts to the UI.
+                    return .value(.pinEntry)
+                case .backupMissing:
+                    // If we are unable to talk to KBS, it got wiped and we can't
+                    // recover. Keep going like if nothing happened.
+                    self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
+                    return self.nextStep()
+                case .genericError:
+                    return .value(.showGenericError)
+                }
+            }
+    }
+
+    private func backupToKBS(pin: String, accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
+        let authMethod: KBS.AuthMethod
+        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(
+            username: accountIdentity.authUsername,
+            password: accountIdentity.authPassword
+        )
+        if let kbsAuthCredential = inMemoryState.kbsAuthCredentialForPostRegRestoration {
+            authMethod = .kbsAuth(kbsAuthCredential, backup: backupAuthMethod)
+        } else {
+            authMethod = backupAuthMethod
+        }
+        return kbs
+            .generateAndBackupKeys(
+                pin: pin,
+                authMethod: authMethod,
+                rotateMasterKey: false
+            )
+            .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep>  in
+                guard let strongSelf = self else {
+                    return .value(.showGenericError)
+                }
+                strongSelf.inMemoryState.hasBackedUpToKBS = true
+                strongSelf.db.write { tx in
+                    strongSelf.ows2FAManager.markPinEnabled(pin, tx)
+                }
+                return strongSelf.accountManager.performInitialStorageServiceRestore()
+                    .map(on: strongSelf.schedulers.main) { [weak self] in
+                        self?.inMemoryState.hasRestoredFromStorageService = true
+                    }
+                    // Ignore errors. This matches the legacy registration flow.
+                    .recover(on: strongSelf.schedulers.sync) { _ in return .value(()) }
+                    .then(on: strongSelf.schedulers.sync) { [weak self] in
+                        return self?.nextStep() ?? .value(.showGenericError)
+                    }
+            }
+            .recover(on: schedulers.main) { [weak self] error -> Guarantee<RegistrationStep> in
+                guard let self else {
+                    return .value(.showGenericError)
+                }
+                // TODO[Registration]: retry network failures.
+                if case OWSHTTPError.networkFailure = error {
+                    return .value(.showGenericError)
+                }
+                Logger.error("Failed to back up to KBS with error: \(error)")
+                // We want to let people get through registration even if backups
+                // go wrong. Show an error but let the user continue when they try the next step.
+                self.inMemoryState.didSkipKBSBackup = true
+                return .value(.showGenericError)
+            }
+    }
+
+    private func enableReglockIfNeeded() -> Guarantee<RegistrationStep> {
+        guard inMemoryState.wasReglockEnabled, inMemoryState.hasSetReglock.negated else {
+            // Don't auto-enable reglock unless it was enabled to begin with.
+            return nextStep()
+        }
+        let reglockToken: String?
+        if let token = inMemoryState.reglockToken {
+            reglockToken = token
+        } else {
+            // Try loading from KBS.
+            db.read { tx in
+                loadLocalMasterKey(tx)
+            }
+            reglockToken = inMemoryState.reglockToken
+        }
+        guard let reglockToken else {
+            owsFailDebug("Unable to generate reglock token when we have a master key.")
+            // Let the user keep going, they still have their old reglock.
+            inMemoryState.hasSetReglock = true
+            return nextStep()
+        }
+        return Service.makeEnableReglockRequest(
+            reglockToken: reglockToken,
+            signalService: signalService,
+            schedulers: schedulers
+        ).recover(on: schedulers.sync) { _ -> Guarantee<Void> in
+            // This isn't immediately catastrophic; this user already had reglock
+            // enabled, so while it may now be out of date, its still there and
+            // preventing others from getting in. We defer updating this until
+            // later (when we update account attributes).
+            // This matches legacy registration behavior.
+            Logger.error("Unable to set reglock, so old reglock password will remain enforced.")
+            return .value(())
+        }.then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
+            guard let self else {
+                return .value(.showGenericError)
+            }
+            self.inMemoryState.hasSetReglock = true
+            self.db.write { tx in
+                self.ows2FAManager.markRegistrationLockEnabled(tx)
+            }
+            return self.nextStep()
+        }
+    }
+
+    private func loadProfileState() {
+        let profileKey = profileManager.localProfileKey
+        inMemoryState.profileKey = profileKey
+        let udAccessKey: SMKUDAccessKey
+        do {
+            udAccessKey = try SMKUDAccessKey(profileKey: profileKey.keyData)
+            if udAccessKey.keyData.count < 1 {
+                owsFail("Could not determine UD access key, empty key generated.")
+            }
+        } catch {
+            // Crash app if UD cannot be enabled.
+            owsFail("Could not determine UD access key: \(error).")
+        }
+        inMemoryState.udAccessKey = udAccessKey
+        inMemoryState.hasProfileName = profileManager.hasProfileName
     }
 
     // MARK: Device Transfer
@@ -1141,41 +1506,82 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func makeRegisterOrChangeNumberRequest(
         _ method: RegistrationRequestFactory.VerificationMethod,
-        e164: String,
-        reglockToken: String?
-    ) -> Guarantee<Service.AccountResponse> {
+        e164: String
+    ) -> Guarantee<AccountResponse> {
         switch persistedState.mode {
         case .registering, .reRegistering:
-            let accountAttributes = RegistrationRequestFactory.AccountAttributes(
-                authKey: "",
-                isManualMessageFetchEnabled: inMemoryState.isManualMessageFetchEnabled,
-                registrationId: inMemoryState.registrationId,
-                pniRegistrationId: inMemoryState.pniRegistrationId,
-                unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
-                unrestrictedUnidentifiedAccess: inMemoryState.allowUnrestrictedUD,
-                registrationLockToken: reglockToken,
-                encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
-                discoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber,
-                canReceiveGiftBadges: remoteConfig.canReceiveGiftBadges
-            )
-            return Service.makeCreateAccountRequest(
-                method,
-                e164: e164,
-                accountAttributes: accountAttributes,
-                skipDeviceTransfer: shouldSkipDeviceTransfer(),
-                signalService: signalService,
-                schedulers: schedulers
-            )
+            // The auth token we use going forwards for chat server auth headers
+            // is generated by the client. We do that here and put it on the
+            // AccountIdentity we generate after success so that we eventually
+            // write it to TSAccountManager when all is said and done, and use
+            // it for requests we need to make between now and then.
+            let authToken = generateServerAuthToken()
+            let accountAttributes = makeAccountAttributes(authToken: authToken)
+            return Service
+                .makeCreateAccountRequest(
+                    method,
+                    e164: e164,
+                    accountAttributes: accountAttributes,
+                    skipDeviceTransfer: shouldSkipDeviceTransfer(),
+                    signalService: signalService,
+                    schedulers: schedulers
+                )
 
-        case .changingNumber:
+        case .changingNumber(_, let oldAuthToken):
             return Service.makeChangeNumberRequest(
                 method,
                 e164: e164,
-                reglockToken: reglockToken,
+                reglockToken: inMemoryState.reglockToken,
+                authToken: oldAuthToken,
                 signalService: signalService,
                 schedulers: schedulers
             )
         }
+    }
+
+    private func makeAccountAttributes(authToken: String) -> RegistrationRequestFactory.AccountAttributes {
+        return RegistrationRequestFactory.AccountAttributes(
+            authKey: authToken,
+            isManualMessageFetchEnabled: inMemoryState.isManualMessageFetchEnabled,
+            registrationId: inMemoryState.registrationId,
+            pniRegistrationId: inMemoryState.pniRegistrationId,
+            unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
+            unrestrictedUnidentifiedAccess: inMemoryState.allowUnrestrictedUD,
+            registrationLockToken: inMemoryState.reglockToken,
+            encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
+            discoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber,
+            canReceiveGiftBadges: remoteConfig.canReceiveGiftBadges
+        )
+    }
+
+    private func generateServerAuthToken() -> String {
+        return Cryptography.generateRandomBytes(16).hexadecimalString
+    }
+
+    struct AccountIdentity: Codable {
+        let response: RegistrationServiceResponses.AccountIdentityResponse
+        /// The auth token used to communicate with the server.
+        /// We create this locally and include it in the create account request,
+        /// then use it to authenticate subsequent requests.
+        let authToken: String
+
+        var authUsername: String {
+            return response.aci.uuidString
+        }
+        var authPassword: String {
+            return authToken
+        }
+    }
+
+    enum AccountResponse {
+        case success(AccountIdentity)
+        case reglockFailure(RegistrationServiceResponses.RegistrationLockFailureResponse)
+        /// The verification method attempted was rejected.
+        /// Either the session was invalid/expired or the registration recovery password was wrong.
+        case rejectedVerificationMethod
+        case deviceTransferPossible
+        case retryAfter(TimeInterval)
+        case genericError
     }
 
     // MARK: - Constants

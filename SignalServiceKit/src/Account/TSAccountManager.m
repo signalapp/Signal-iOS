@@ -438,10 +438,12 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     NSString *phoneNumber;
     NSUUID *aci;
     NSUUID *pni;
+    NSString *authToken;
     @synchronized(self) {
         phoneNumber = self.phoneNumberAwaitingVerification;
         aci = self.uuidAwaitingVerification;
         pni = self.pniAwaitingVerification;
+        authToken = self.storedServerAuthToken;
     }
 
     if (!phoneNumber) {
@@ -455,10 +457,19 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     // Allow the PNI to be nil.
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self storeLocalNumber:phoneNumber aci:aci pni:pni transaction:transaction];
+        [self didRegisterWithE164:phoneNumber aci:aci pni:pni authToken:authToken transaction:transaction];
     });
+}
 
-    [self postRegistrationStateDidChangeNotification];
+- (void)didRegisterWithE164:(NSString *)e164
+                        aci:(NSUUID *)aci
+                        pni:(nullable NSUUID *)pni
+                  authToken:(NSString *)authToken
+                transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self storeLocalNumber:e164 aci:aci pni:pni transaction:transaction];
+    [self setStoredServerAuthToken:authToken deviceId:OWSDevicePrimaryDeviceId transaction:transaction];
+    [transaction addSyncCompletion:^{ [self postRegistrationStateDidChangeNotification]; }];
 }
 
 - (void)recordUuidForLegacyUser:(NSUUID *)uuid
@@ -694,6 +705,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (BOOL)hasDefinedIsDiscoverableByPhoneNumber
 {
     return [self getOrLoadAccountStateWithSneakyTransaction].hasDefinedIsDiscoverableByPhoneNumber;
+}
+
+- (BOOL)hasDefinedIsDiscoverableByPhoneNumberWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self getOrLoadAccountStateWithTransaction:transaction].hasDefinedIsDiscoverableByPhoneNumber;
 }
 
 - (void)setIsDiscoverableByPhoneNumber:(BOOL)isDiscoverableByPhoneNumber
@@ -957,8 +973,13 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (void)setIsManualMessageFetchEnabled:(BOOL)value
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.keyValueStore setBool:value key:TSAccountManager_ManualMessageFetchKey transaction:transaction];
+        [self setIsManualMessageFetchEnabled:value transaction:transaction];
     });
+}
+
+- (void)setIsManualMessageFetchEnabled:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.keyValueStore setBool:value key:TSAccountManager_ManualMessageFetchKey transaction:transaction];
 }
 
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid

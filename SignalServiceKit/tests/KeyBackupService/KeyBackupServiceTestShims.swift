@@ -67,16 +67,16 @@ public class _KeyBackupService_OWS2FAManagerTestMock: KBS.Shims.OWS2FAManager {
 public class _KeyBackupService_RemoteAttestationMock: KBS.Shims.RemoteAttestation {
     public init() {}
 
-    var authCredentialInputs = [KBSAuthCredential?]()
+    var authMethodInputs = [RemoteAttestation.KeyBackupAuthMethod]()
     var enclaveInputs = [KeyBackupEnclave]()
 
     var promisesToReturn = [Promise<RemoteAttestation>]()
 
     public func performForKeyBackup(
-        auth: KBSAuthCredential?,
+        authMethod: RemoteAttestation.KeyBackupAuthMethod,
         enclave: KeyBackupEnclave
     ) -> Promise<RemoteAttestation> {
-        authCredentialInputs.append(auth)
+        authMethodInputs.append(authMethod)
         enclaveInputs.append(enclave)
         return promisesToReturn.remove(at: 0)
     }

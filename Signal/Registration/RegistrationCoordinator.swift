@@ -59,5 +59,13 @@ public protocol RegistrationCoordinator {
     /// step but with attached metadata giving more info on the rejection.
     func submitPINCode(_ code: String) -> Guarantee<RegistrationStep>
 
-    // TODO[Registration]: profile setup steps need some calls here too.
+    /// Set whether the user's PNI should be discoverable by phone number.
+    /// If the update is rejected for any reason, the next step will be the same current
+    /// step but with attached metadata giving more info on the rejection.
+    func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) -> Guarantee<RegistrationStep>
+
+    /// Set the user's profile information.
+    /// If the update is rejected for any reason, the next step will be the same current
+    /// step but with attached metadata giving more info on the rejection.
+    func setProfileInfo(givenName: String, familyName: String?, avatarData: Data?) -> Guarantee<RegistrationStep>
 }

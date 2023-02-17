@@ -224,7 +224,7 @@ class KeyBackupServiceTests: XCTestCase {
         remoteAttestation.promisesToReturn.append(.value(fakeRemoteAttestation(firstCredential)))
 
         // Try once without auth, and with a success response.
-        var promise: Promise<RemoteAttestation> = keyBackupService.performRemoteAttestation(auth: nil, enclave: tsConstants.keyBackupEnclave)
+        var promise: Promise<RemoteAttestation> = keyBackupService.performRemoteAttestation(auth: .implicit, enclave: tsConstants.keyBackupEnclave)
         promise.observe(on: scheduler) {
             switch $0 {
             case .success:
@@ -235,7 +235,7 @@ class KeyBackupServiceTests: XCTestCase {
         }
 
         // Input should be empty.
-        XCTAssertEqual(remoteAttestation.authCredentialInputs, [nil])
+        XCTAssertEqual(remoteAttestation.authMethodInputs, [.chatServerImplicitCredentials])
 
         // Check that auth has been stored.
         XCTAssertEqual(credentialStorage.dict[firstCredential.username], firstCredential)
@@ -247,10 +247,10 @@ class KeyBackupServiceTests: XCTestCase {
         // handle situations where it gets a fresh auth credential for whatever reason, in which
         // case we should overwrite the credential we have. This tests for that.
         let secondCredential = KBSAuthCredential(credential: .init(username: "abc", password: "456"))
-        remoteAttestation.authCredentialInputs = []
+        remoteAttestation.authMethodInputs = []
         remoteAttestation.promisesToReturn.append(.value(fakeRemoteAttestation(secondCredential)))
 
-        promise = keyBackupService.performRemoteAttestation(auth: nil, enclave: tsConstants.keyBackupEnclave)
+        promise = keyBackupService.performRemoteAttestation(auth: .implicit, enclave: tsConstants.keyBackupEnclave)
         promise.observe(on: scheduler) {
             switch $0 {
             case .success:
@@ -261,7 +261,7 @@ class KeyBackupServiceTests: XCTestCase {
         }
 
         // Should have used existing auth.
-        XCTAssertEqual(remoteAttestation.authCredentialInputs, [firstCredential])
+        XCTAssertEqual(remoteAttestation.authMethodInputs, [.kbsAuth(firstCredential.credential)])
 
         // The new credential should've been stored.
         XCTAssertEqual(credentialStorage.dict[secondCredential.username], secondCredential)
@@ -269,12 +269,12 @@ class KeyBackupServiceTests: XCTestCase {
 
         // Reset for a third round, which should reuse the existing auth credential.
         let thirdCredential = KBSAuthCredential(credential: .init(username: "def", password: "789"))
-        remoteAttestation.authCredentialInputs = []
+        remoteAttestation.authMethodInputs = []
         // Fail one request then accept the next
         remoteAttestation.promisesToReturn.append(.init(error: FakeError()))
         remoteAttestation.promisesToReturn.append(.value(fakeRemoteAttestation(thirdCredential)))
 
-        promise = keyBackupService.performRemoteAttestation(auth: nil, enclave: tsConstants.keyBackupEnclave)
+        promise = keyBackupService.performRemoteAttestation(auth: .implicit, enclave: tsConstants.keyBackupEnclave)
         promise.observe(on: scheduler) {
             switch $0 {
             case .success:
@@ -285,7 +285,7 @@ class KeyBackupServiceTests: XCTestCase {
         }
 
         // Should have used existing auth.
-        XCTAssertEqual(remoteAttestation.authCredentialInputs, [secondCredential, nil])
+        XCTAssertEqual(remoteAttestation.authMethodInputs, [.kbsAuth(secondCredential.credential), .chatServerImplicitCredentials])
 
         // The new credential should've been stored.
         XCTAssertEqual(credentialStorage.dict[thirdCredential.username], thirdCredential)

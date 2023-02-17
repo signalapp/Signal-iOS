@@ -101,18 +101,18 @@ public class _KeyBackupService_OWS2FAManagerWrapper: KBS.Shims.OWS2FAManager {
 
 public protocol _KeyBackupService_RemoteAttestationShim {
     func performForKeyBackup(
-        auth: KBSAuthCredential?,
+        authMethod: RemoteAttestation.KeyBackupAuthMethod,
         enclave: KeyBackupEnclave
     ) -> Promise<RemoteAttestation>
 }
 
 public class _KeyBackupService_RemoteAttestationWrapper: _KeyBackupService_RemoteAttestationShim {
     public func performForKeyBackup(
-        auth: KBSAuthCredential?,
+        authMethod: RemoteAttestation.KeyBackupAuthMethod,
         enclave: KeyBackupEnclave
     ) -> Promise<RemoteAttestation> {
         return RemoteAttestation.performForKeyBackup(
-            auth: auth?.credential,
+            authMethod: authMethod,
             enclave: enclave
         )
     }

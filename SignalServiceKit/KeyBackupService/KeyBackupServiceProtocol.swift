@@ -66,6 +66,31 @@ public enum KBS {
             return Cryptography.computeSHA256HMAC(data, key: dataToDeriveFrom)
         }
     }
+
+    /// An auth credential is needed to talk to the KBS server.
+    /// This defines how we should get that auth credential
+    public indirect enum AuthMethod: Equatable {
+        /// Explicitly provide an auth credential to use directly with kbs.
+        /// note: if it fails, will fall back to the backup or implicit if unset.
+        case kbsAuth(KBSAuthCredential, backup: AuthMethod?)
+        /// Get a KBS auth credential from the chat server first with the
+        /// provided credentials, then user it to talk to the KBS server.
+        case chatServerAuth(username: String, password: String)
+        /// Use whatever KBS auth credential we have cached; if unavailable or
+        /// if invalid, falls back to getting a KBS auth credential from the chat server
+        /// with the chat server auth credentials we have cached.
+        case implicit
+    }
+
+    public enum RestoreKeysResult {
+        case success
+        case invalidPin(remainingAttempts: Int)
+        // This could mean there was never a backup, or it's been
+        // deleted due to using up all pin attempts.
+        case backupMissing
+        // Network or other issue.
+        case genericError
+    }
 }
 
 public protocol KeyBackupServiceProtocol {
@@ -94,11 +119,18 @@ public protocol KeyBackupServiceProtocol {
     /// Loads the users key, if any, from the KBS into the database.
     func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential?) -> Promise<Void>
 
+    /// Loads the users key, if any, from the KBS into the database.
+    func restoreKeysAndBackup(pin: String, authMethod: KBS.AuthMethod) -> Guarantee<KBS.RestoreKeysResult>
+
     func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise
 
     /// Backs up the user's master key to KBS and stores it locally in the database.
     /// If the user doesn't have a master key already a new one is generated.
     func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> Promise<Void>
+
+    /// Backs up the user's master key to KBS and stores it locally in the database.
+    /// If the user doesn't have a master key already a new one is generated.
+    func generateAndBackupKeys(pin: String, authMethod: KBS.AuthMethod, rotateMasterKey: Bool) -> Promise<Void>
 
     /// Remove the keys locally from the device and from the KBS,
     /// they will not be able to be restored.

@@ -17,13 +17,38 @@ public struct RemoteAttestation: Dependencies {
 // MARK: - KBS
 
 public extension RemoteAttestation {
+
+    enum KeyBackupAuthMethod: Equatable {
+        /// Uses a pre-existing KBS auth credential.
+        case kbsAuth(Auth)
+        /// Hits the chat server for auth credentials using the provided chat server (not kbs) credentials.
+        case chatServer(authUsername: String, authPassword: String)
+        /// Hits the chat server for auth credentials using the chat server credentials on TSAccountManager.
+        case chatServerImplicitCredentials
+    }
+
     static func performForKeyBackup(
-        auth: Auth?,
+        authMethod: KeyBackupAuthMethod,
         enclave: KeyBackupEnclave
     ) -> Promise<RemoteAttestation> {
+        var kbsAuth: Auth?
+        var chatServerAuthUsername: String?
+        var chatServerAuthPassword: String?
+        switch authMethod {
+        case .kbsAuth(let auth):
+            kbsAuth = auth
+        case let .chatServer(authUsername, authPassword):
+            chatServerAuthUsername = authUsername
+            chatServerAuthPassword = authPassword
+        case .chatServerImplicitCredentials:
+            // Don't set anything; the request will implicitly pull credentials.
+            break
+        }
         return performAttestation(
             for: .keyBackup,
-            auth: auth,
+            auth: kbsAuth,
+            chatServerAuthUsername: chatServerAuthUsername,
+            chatServerAuthPassword: chatServerAuthPassword,
             config: EnclaveConfig(
                 enclaveName: enclave.name,
                 mrenclave: enclave.mrenclave,
@@ -101,7 +126,7 @@ public extension RemoteAttestation {
 
 extension RemoteAttestation {
     static func authForCDSI() -> Promise<Auth> {
-        return Auth.fetch(forService: .cdsi)
+        return Auth.fetch(forService: .cdsi, authUsername: nil, authPassword: nil)
     }
 }
 
@@ -160,16 +185,30 @@ public extension RemoteAttestation {
 }
 
 fileprivate extension RemoteAttestation.Auth {
-    static func fetch(forService service: RemoteAttestation.Service) -> Promise<RemoteAttestation.Auth> {
-        guard tsAccountManager.isRegisteredAndReady else {
-            return Promise(error: OWSGenericError("Not registered."))
-        }
-
+    /// - parameter authUsername: If present (alongside authPassword), used in the request.
+    ///   If either authUsername or authPassword is missing, uses auth information from TSAccountManager.
+    /// - parameter authPassword: If present (alongside authUsername), used in the request.
+    ///   If either authUsername or authPassword is missing, uses auth information from TSAccountManager.
+    static func fetch(
+        forService service: RemoteAttestation.Service,
+        authUsername: String?,
+        authPassword: String?
+    ) -> Promise<RemoteAttestation.Auth> {
         if DebugFlags.internalLogging {
             Logger.info("service: \(service)")
         }
 
         let request = service.authRequest()
+
+        if let authUsername, let authPassword {
+            request.shouldHaveAuthorizationHeaders = true
+            request.authUsername = authUsername
+            request.authPassword = authPassword
+        } else {
+            guard tsAccountManager.isRegisteredAndReady else {
+                return Promise(error: OWSGenericError("Not registered."))
+            }
+        }
 
         return firstly {
             networkManager.makePromise(request: request)
@@ -291,13 +330,15 @@ fileprivate extension RemoteAttestation {
     static func performAttestation(
         for service: Service,
         auth: Auth? = nil,
+        chatServerAuthUsername: String? = nil,
+        chatServerAuthPassword: String? = nil,
         config: EnclaveConfig
     ) -> Promise<AttestationResponse> {
         firstly(on: DispatchQueue.global()) { () -> Promise<Auth> in
             if let auth = auth {
                 return Promise.value(auth)
             } else {
-                return Auth.fetch(forService: service)
+                return Auth.fetch(forService: service, authUsername: chatServerAuthUsername, authPassword: chatServerAuthPassword)
             }
         }.then(on: DispatchQueue.global()) { (auth: Auth) -> Promise<AttestationResponse> in
             let clientEphemeralKeyPair = Curve25519.generateKeyPair()

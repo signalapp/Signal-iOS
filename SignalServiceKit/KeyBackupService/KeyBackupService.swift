@@ -149,7 +149,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
         return restoreKeys(
             pin: pin,
-            auth: auth,
+            auth: .kbsAuth(auth, backup: nil),
             enclave: enclave,
             ignoreCachedToken: true
         ).map(on: schedulers.global()) { restoredKeys -> String in
@@ -165,44 +165,65 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     }
 
     /// Loads the users key, if any, from the KBS into the database.
-    public func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential? = nil) -> Promise<Void> {
+    public func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential?) -> Promise<Void> {
+        return restoreKeysAndBackup(pin: pin, authMethod: auth.map { KBS.AuthMethod.kbsAuth($0, backup: nil) } ?? KBS.AuthMethod.implicit)
+            .then(on: schedulers.sync) { result -> Promise<Void> in
+                switch result {
+                case .success:
+                    return .value(())
+                case .invalidPin(remainingAttempts: let remainingAttempts):
+                    throw KBS.KBSError.invalidPin(triesRemaining: UInt32(remainingAttempts))
+                case .backupMissing:
+                    throw KBS.KBSError.backupMissing
+                case .genericError:
+                    throw KBS.KBSError.assertion
+                }
+            }
+    }
+
+    public func restoreKeysAndBackup(pin: String, authMethod: KBS.AuthMethod) -> Guarantee<KBS.RestoreKeysResult> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
         // record of you. It's important that these are ordered from neweset enclave
         // to oldest enclave, so we start with the newest enclave and then progressively
         // check older enclaves.
         let enclavesToCheck = [TSConstants.keyBackupEnclave] + TSConstants.keyBackupPreviousEnclaves
-        return restoreKeysAndBackup(pin: pin, auth: auth, enclavesToCheck: enclavesToCheck)
+        return restoreKeysAndBackup(pin: pin, auth: authMethod, enclavesToCheck: enclavesToCheck)
     }
 
     private func restoreKeysAndBackup(
         pin: String,
-        auth: KBSAuthCredential?,
+        auth: KBS.AuthMethod,
         enclavesToCheck: [KeyBackupEnclave]
-    ) -> Promise<Void> {
+    ) -> Guarantee<KBS.RestoreKeysResult> {
         guard let enclave = enclavesToCheck.first else {
             owsFailDebug("Unexpectedly tried to restore keys with no specified enclaves")
-            return Promise(error: KBS.KBSError.assertion)
+            return .value(.genericError)
         }
         return restoreKeysAndBackup(
             pin: pin,
             auth: auth,
             enclave: enclave
-        ).recover { error -> Promise<Void> in
-            if let error = error as? KBS.KBSError, error == .backupMissing, enclavesToCheck.count > 1 {
-                // There's no backup on this enclave, but we have more enclaves we can try.
-                return self.restoreKeysAndBackup(pin: pin, auth: auth, enclavesToCheck: Array(enclavesToCheck.dropFirst()))
+        ).then(on: schedulers.sync) { result -> Guarantee<KBS.RestoreKeysResult> in
+            switch result {
+            case .success, .invalidPin, .genericError:
+                return .value(result)
+            case .backupMissing:
+                if enclavesToCheck.count > 1 {
+                    // There's no backup on this enclave, but we have more enclaves we can try.
+                    return self.restoreKeysAndBackup(pin: pin, auth: auth, enclavesToCheck: Array(enclavesToCheck.dropFirst()))
+                } else {
+                    return .value(result)
+                }
             }
-
-            throw error
         }
     }
 
     private func restoreKeysAndBackup(
         pin: String,
-        auth: KBSAuthCredential?,
+        auth: KBS.AuthMethod,
         enclave: KeyBackupEnclave
-    ) -> Promise<Void> {
+    ) -> Guarantee<KBS.RestoreKeysResult> {
         Logger.info("Attempting KBS restore from enclave \(enclave.name)")
 
         return restoreKeys(
@@ -265,12 +286,13 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                     )
                 }
             }
-        }.then { () -> Promise<Void> in
+        }.then(on: schedulers.sync) { () -> Promise<Void> in
             // If we restored from an enclave that's not the current enclave,
             // we need to delete the keys from the old enclave.
             guard enclave != self.currentEnclave else { return Promise.value(()) }
             Logger.info("Deleting restored keys from old enclave")
             return self.deleteKeyRequest(
+                auth: auth,
                 enclave: enclave
             ).done { _ in
                 Logger.info("Successfully deleted keys from previous enclave")
@@ -278,13 +300,23 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 owsFailDebug("Failed to delete keys from previous enclave \(error)")
                 throw error
             }
-        }.recover(on: schedulers.global()) { error in
+        }.map(on: schedulers.sync) {
+            return .success
+        }
+        .recover(on: schedulers.global()) { error -> Guarantee<KBS.RestoreKeysResult> in
             guard let kbsError = error as? KBS.KBSError else {
                 owsFailDebug("Unexpectedly surfacing a non KBS error \(error)")
-                throw error
+                return .value(.genericError)
             }
 
-            throw kbsError
+            switch kbsError {
+            case .assertion:
+                return .value(.genericError)
+            case .invalidPin(let remainingAttempts):
+                return .value(.invalidPin(remainingAttempts: Int(remainingAttempts)))
+            case .backupMissing:
+                return .value(.backupMissing)
+            }
         }
     }
 
@@ -296,7 +328,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     private func restoreKeys(
         pin: String,
-        auth: KBSAuthCredential?,
+        auth: KBS.AuthMethod,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false
     ) -> Promise<RestoredKeys> {
@@ -367,9 +399,20 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     /// Backs up the user's master key to KBS and stores it locally in the database.
     /// If the user doesn't have a master key already a new one is generated.
-    public func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> Promise<Void> {
+    public func generateAndBackupKeys(
+        with pin: String,
+        rotateMasterKey: Bool
+    ) -> Promise<Void> {
+        return generateAndBackupKeys(pin: pin, authMethod: .implicit, rotateMasterKey: rotateMasterKey)
+    }
+
+    public func generateAndBackupKeys(
+        pin: String,
+        authMethod: KBS.AuthMethod,
+        rotateMasterKey: Bool
+    ) -> Promise<Void> {
         return fetchBackupId(
-            auth: nil,
+            auth: authMethod,
             enclave: currentEnclave
         ).map(on: schedulers.global()) { backupId -> (Data, Data, Data) in
             let masterKey: Data = {
@@ -384,7 +427,8 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             self.backupKeyRequest(
                 accessKey: accessKey,
                 encryptedMasterKey: encryptedMasterKey,
-                enclave: self.currentEnclave
+                enclave: self.currentEnclave,
+                auth: authMethod
             ).map { ($0, masterKey) }
         }.done(on: schedulers.global()) { response, masterKey in
             guard let status = response.status else {
@@ -452,7 +496,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     /// Remove the keys locally from the device and from the KBS,
     /// they will not be able to be restored.
     public func deleteKeys() -> Promise<Void> {
-        return deleteKeyRequest(enclave: currentEnclave).ensure {
+        return deleteKeyRequest(auth: .implicit, enclave: currentEnclave).ensure {
             // Even if the request to delete our keys from KBS failed,
             // purge them from the database.
             self.db.write { self.clearKeys(transaction: $0) }
@@ -744,7 +788,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 return Promise.value(())
             }
 
-            return self.deleteKeyRequest(enclave: previousEnclave).asVoid().recover { error in
+            return self.deleteKeyRequest(auth: .implicit, enclave: previousEnclave).asVoid().recover { error in
                 // We ignore errors from the delete key request, because the migration was
                 // successful. Most likely, this will happen because the old enclave is no
                 // longer passing attestation. We just do our best to try and clean up.
@@ -908,7 +952,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     // MARK: - Requests
 
     private func enclaveRequest<RequestType: KBSRequestOption>(
-        auth: KBSAuthCredential? = nil,
+        auth: KBS.AuthMethod,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false,
         requestOptionBuilder: @escaping (Token) throws -> RequestType
@@ -1002,7 +1046,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         accessKey: Data,
         encryptedMasterKey: Data,
         enclave: KeyBackupEnclave,
-        auth: KBSAuthCredential? = nil
+        auth: KBS.AuthMethod
     ) -> Promise<KeyBackupProtoBackupResponse> {
         return enclaveRequest(auth: auth, enclave: enclave) { token -> KeyBackupProtoBackupRequest in
             guard let serviceId = Data.data(fromHex: enclave.serviceId) else {
@@ -1034,7 +1078,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     private func restoreKeyRequest(
         accessKey: Data,
         enclave: KeyBackupEnclave,
-        auth: KBSAuthCredential? = nil,
+        auth: KBS.AuthMethod,
         ignoreCachedToken: Bool = false
     ) -> Promise<KeyBackupProtoRestoreResponse> {
         return enclaveRequest(auth: auth, enclave: enclave, ignoreCachedToken: ignoreCachedToken) { token -> KeyBackupProtoRestoreRequest in
@@ -1062,8 +1106,11 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         }
     }
 
-    private func deleteKeyRequest(enclave: KeyBackupEnclave) -> Promise<KeyBackupProtoDeleteResponse> {
-        return enclaveRequest(enclave: enclave) { token -> KeyBackupProtoDeleteRequest in
+    private func deleteKeyRequest(
+        auth: KBS.AuthMethod,
+        enclave: KeyBackupEnclave
+    ) -> Promise<KeyBackupProtoDeleteResponse> {
+        return enclaveRequest(auth: auth, enclave: enclave) { token -> KeyBackupProtoDeleteRequest in
             guard let serviceId = Data.data(fromHex: enclave.serviceId) else {
                 owsFailDebug("failed to encode service id")
                 throw KBS.KBSError.assertion
@@ -1212,7 +1259,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         }
     }
 
-    private func fetchBackupId(auth: KBSAuthCredential?, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
+    private func fetchBackupId(auth: KBS.AuthMethod, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
         if !ignoreCachedToken, let currentToken = nextToken(
             enclaveName: enclave.name
         ) { return Promise.value(currentToken.backupId) }
@@ -1274,25 +1321,63 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     /// Calls `RemoteAttestation.performForKeyBackup(auth: enclave:)` with either the provided credential,
     /// or any we have stored locally.
     /// Stores the resulting credential to disk for reuse in the future.
-    internal func performRemoteAttestation(auth: KBSAuthCredential?, enclave: KeyBackupEnclave) -> Promise<RemoteAttestation> {
-        let auth = auth ?? self.db.read { credentialStorage.getAuthCredentialForCurrentUser($0) }
+    internal func performRemoteAttestation(auth: KBS.AuthMethod, enclave: KeyBackupEnclave) -> Promise<RemoteAttestation> {
+        let authMethod: RemoteAttestation.KeyBackupAuthMethod
+        var backupAuthMethod: RemoteAttestation.KeyBackupAuthMethod?
+        let implicitAuthMethod: RemoteAttestation.KeyBackupAuthMethod
+        var kbsAuth: KBSAuthCredential?
+        let cachedKbsAuth: KBSAuthCredential? = self.db.read(block: { credentialStorage.getAuthCredentialForCurrentUser($0) })
+
+        if let cachedKbsAuth {
+            backupAuthMethod = .chatServerImplicitCredentials
+            implicitAuthMethod = .kbsAuth(cachedKbsAuth.credential)
+            kbsAuth = cachedKbsAuth
+        } else {
+            backupAuthMethod = nil
+            implicitAuthMethod = .chatServerImplicitCredentials
+        }
+
+        switch auth {
+        case let .kbsAuth(kBSAuthCredential, backup):
+            authMethod = .kbsAuth(kBSAuthCredential.credential)
+            kbsAuth = kBSAuthCredential
+            switch backup {
+            case .kbsAuth(let backupCredential, _):
+                backupAuthMethod = .kbsAuth(backupCredential.credential)
+            case let .chatServerAuth(username, password):
+                backupAuthMethod = .chatServer(authUsername: username, authPassword: password)
+            case .none, .implicit:
+                if kbsAuth == cachedKbsAuth {
+                    backupAuthMethod = .chatServerImplicitCredentials
+                } else {
+                    backupAuthMethod = implicitAuthMethod
+                }
+            }
+        case let .chatServerAuth(username, password):
+            authMethod = .chatServer(authUsername: username, authPassword: password)
+        case .implicit:
+            authMethod = implicitAuthMethod
+        }
         return remoteAttestation
             .performForKeyBackup(
-                auth: auth,
+                authMethod: authMethod,
                 enclave: enclave
             )
             .recover(on: schedulers.sync) { [credentialStorage, remoteAttestation, db] error in
                 Logger.warn("KBS attestation failed, rotating auth credential.")
                 // If we fail for any reason, be aggressive and clear our auth
                 // credential and retry so we fetch a new one. It's cheap to do so.
-                if let auth {
-                    db.asyncWrite { credentialStorage.deleteInvalidCredentials([auth], $0) }
+                if let kbsAuth {
+                    db.asyncWrite { credentialStorage.deleteInvalidCredentials([kbsAuth], $0) }
                 }
-                return remoteAttestation
-                    .performForKeyBackup(
-                        auth: nil,
+                if let backupAuthMethod {
+                    return remoteAttestation.performForKeyBackup(
+                        authMethod: backupAuthMethod,
                         enclave: enclave
                     )
+                } else {
+                    return Promise(error: error)
+                }
             }
             .map(on: schedulers.sync) { [credentialStorage, db] attestation in
                 let credential = attestation.auth

@@ -53,17 +53,6 @@ extension RegistrationCoordinatorImpl {
             }
         }
 
-        enum AccountResponse {
-            case success(RegistrationServiceResponses.AccountIdentityResponse)
-            case reglockFailure(RegistrationServiceResponses.RegistrationLockFailureResponse)
-            /// The verification method attempted was rejected.
-            /// Either the session was invalid/expired or the registration recovery password was wrong.
-            case rejectedVerificationMethod
-            case deviceTransferPossible
-            case retryAfter(TimeInterval)
-            case genericError
-        }
-
         static func makeCreateAccountRequest(
             _ method: RegistrationRequestFactory.VerificationMethod,
             e164: String,
@@ -82,12 +71,20 @@ extension RegistrationCoordinatorImpl {
                 request,
                 signalService: signalService,
                 schedulers: schedulers,
-                handler: self.handleCreateAccountResponse(statusCode:retryAfterHeader:bodyData:),
+                handler: {
+                    self.handleCreateAccountResponse(
+                        authToken: accountAttributes.authKey,
+                        statusCode: $0,
+                        retryAfterHeader: $1,
+                        bodyData: $2
+                    )
+                },
                 fallbackError: .genericError
             )
         }
 
         private static func handleCreateAccountResponse(
+            authToken: String,
             statusCode: Int,
             retryAfterHeader: String?,
             bodyData: Data?
@@ -103,7 +100,7 @@ extension RegistrationCoordinatorImpl {
                     Logger.warn("Unable to parse Account identity from response")
                     return .genericError
                 }
-                return .success(response)
+                return .success(AccountIdentity(response: response, authToken: authToken))
 
             case .deviceTransferPossible:
                 return .deviceTransferPossible
@@ -156,6 +153,7 @@ extension RegistrationCoordinatorImpl {
             _ method: RegistrationRequestFactory.VerificationMethod,
             e164: String,
             reglockToken: String?,
+            authToken: String,
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers
         ) -> Guarantee<AccountResponse> {
@@ -168,12 +166,15 @@ extension RegistrationCoordinatorImpl {
                 request,
                 signalService: signalService,
                 schedulers: schedulers,
-                handler: self.handleChangeNumberResponse(statusCode:retryAfterHeader:bodyData:),
+                handler: {
+                    return self.handleChangeNumberResponse(authToken: authToken, statusCode: $0, retryAfterHeader: $1, bodyData: $2)
+                },
                 fallbackError: .genericError
             )
         }
 
         private static func handleChangeNumberResponse(
+            authToken: String,
             statusCode: Int,
             retryAfterHeader: String?,
             bodyData: Data?
@@ -189,7 +190,7 @@ extension RegistrationCoordinatorImpl {
                     Logger.warn("Unable to parse Account identity from response")
                     return .genericError
                 }
-                return .success(response)
+                return .success(AccountIdentity(response: response, authToken: authToken))
 
             case .reglockFailed:
                 guard let bodyData else {
@@ -225,6 +226,41 @@ extension RegistrationCoordinatorImpl {
             case .none, .unexpectedError:
                 return .genericError
             }
+        }
+
+        public static func makeEnableReglockRequest(
+            reglockToken: String,
+            signalService: OWSSignalServiceProtocol,
+            schedulers: Schedulers
+        ) -> Promise<Void> {
+            let request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
+            return signalService.urlSessionForMainSignalService().promiseForTSRequest(request).asVoid()
+        }
+
+        /// Returns nil error if success.
+        public static func makeUpdateAccountAttributesRequest(
+            _ attributes: RegistrationRequestFactory.AccountAttributes,
+            authUsername: String,
+            authPassword: String,
+            signalService: OWSSignalServiceProtocol,
+            schedulers: Schedulers
+        ) -> Guarantee<Error?> {
+            let request = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+                attributes,
+                authUsername: authUsername,
+                authPassword: authPassword
+            )
+            return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
+                .map(on: schedulers.sync) { response in
+                    guard response.responseStatusCode == 200 else {
+                        // TODO[Registration]: what other error codes can come up here?
+                        return OWSAssertionError("Got unexpected response code from update attributes request.")
+                    }
+                    return nil
+                }
+                .recover(on: schedulers.sync) { error in
+                    return .value(error)
+                }
         }
 
         private static func makeRequest<ResponseType>(

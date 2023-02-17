@@ -401,4 +401,28 @@ public enum RegistrationRequestFactory {
         result.shouldHaveAuthorizationHeaders = true
         return result
     }
+
+    public static func updatePrimaryDeviceAccountAttributesRequest(
+        _ accountAttributes: AccountAttributes,
+        authUsername: String,
+        authPassword: String
+    ) -> TSRequest {
+        let urlPathComponents = URLPathComponents(
+            ["v1", "accounts", "attributes"]
+        )
+        var urlComponents = URLComponents()
+        urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
+        let url = urlComponents.url!
+
+        // The request expects the AccountAttributes to be the root object.
+        // Serialize it to JSON then get the key value dict to do that.
+        let data = try! JSONEncoder().encode(accountAttributes)
+        let parameters = try! JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as! [String: Any]
+
+        let result = TSRequest(url: url, method: "PUT", parameters: parameters)
+        result.shouldHaveAuthorizationHeaders = true
+        result.authUsername = authUsername
+        result.authPassword = authPassword
+        return result
+    }
 }

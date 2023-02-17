@@ -344,6 +344,7 @@ extension StoryManager {
         keyValueStore.getBool(areViewReceiptsEnabledKey, transaction: transaction) ?? receiptManager.areReadReceiptsEnabled(transaction: transaction)
     }
 
+    // TODO: should this live on OWSReceiptManager?
     public static func setAreViewReceiptsEnabled(_ enabled: Bool, shouldUpdateStorageService: Bool = true, transaction: SDSAnyWriteTransaction) {
         keyValueStore.setBool(enabled, key: areViewReceiptsEnabledKey, transaction: transaction)
         areViewReceiptsEnabled = enabled

@@ -19,14 +19,18 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     private var coordinator: RegistrationCoordinatorImpl!
 
+    private var accountManagerMock: RegistrationCoordinatorImpl.TestMocks.AccountManager!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
+    private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
     private var kbs: KeyBackupServiceMock!
     private var kbsAuthCredentialStore: KBSAuthCredentialStorageMock!
     private var mockURLSession: TSRequestOWSURLSessionMock!
     private var ows2FAManagerMock: RegistrationCoordinatorImpl.TestMocks.OWS2FAManager!
     private var profileManagerMock: RegistrationCoordinatorImpl.TestMocks.ProfileManager!
     private var pushRegistrationManagerMock: RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager!
+    private var receiptManagerMock: RegistrationCoordinatorImpl.TestMocks.ReceiptManager!
     private var sessionManager: RegistrationSessionManagerMock!
+    private var storageServiceManagerMock: FakeStorageServiceManager!
     private var tsAccountManagerMock: RegistrationCoordinatorImpl.TestMocks.TSAccountManager!
 
     public override func setUp() {
@@ -34,13 +38,17 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         Stubs.date = date
 
+        accountManagerMock = RegistrationCoordinatorImpl.TestMocks.AccountManager()
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
+        experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
         kbs = KeyBackupServiceMock()
         kbsAuthCredentialStore = KBSAuthCredentialStorageMock()
         ows2FAManagerMock = RegistrationCoordinatorImpl.TestMocks.OWS2FAManager()
         profileManagerMock = RegistrationCoordinatorImpl.TestMocks.ProfileManager()
         pushRegistrationManagerMock = RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager()
+        receiptManagerMock = RegistrationCoordinatorImpl.TestMocks.ReceiptManager()
         sessionManager = RegistrationSessionManagerMock()
+        storageServiceManagerMock = FakeStorageServiceManager()
         tsAccountManagerMock = RegistrationCoordinatorImpl.TestMocks.TSAccountManager()
 
         let mockURLSession = TSRequestOWSURLSessionMock()
@@ -53,19 +61,23 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler = TestScheduler()
 
         coordinator = RegistrationCoordinatorImpl(
+            accountManager: accountManagerMock,
             contactsStore: contactsStore,
             dateProvider: { self.date },
             db: MockDB(),
+            experienceManager: experienceManager,
             kbs: kbs,
             kbsAuthCredentialStore: kbsAuthCredentialStore,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
             ows2FAManager: ows2FAManagerMock,
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,
+            receiptManager: receiptManagerMock,
             remoteConfig: RegistrationCoordinatorImpl.TestMocks.RemoteConfig(),
             schedulers: TestSchedulers(scheduler: scheduler),
             sessionManager: sessionManager,
             signalService: mockSignalService,
+            storageServiceManager: storageServiceManagerMock,
             tsAccountManager: tsAccountManagerMock,
             udManager: RegistrationCoordinatorImpl.TestMocks.UDManager()
         )
@@ -77,6 +89,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Don't care about timing, just start it.
         scheduler.start()
 
+        setupDefaultAccountAttributes()
+
         // With no state set up, should show the splash.
         XCTAssertEqual(coordinator.nextStep().value, .splash)
         // Once we show it, don't show it again.
@@ -86,6 +100,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
     func testOpeningPath_contacts() {
         // Don't care about timing, just start it.
         scheduler.start()
+
+        setupDefaultAccountAttributes()
 
         contactsStore.doesNeedContactsAuthorization = true
         pushRegistrationManagerMock.doesNeedNotificationAuthorization = true
@@ -106,15 +122,15 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     // MARK: - Reg Recovery Password Path
 
-    func testRegRecoveryPwPath_happyPath() {
+    func testRegRecoveryPwPath_happyPath() throws {
         // Don't care about timing, just start it.
         scheduler.start()
 
         // Set profile info so we skip those steps.
-        self.setAllProfileInfo()
+        setupDefaultAccountAttributes()
 
         // Set a PIN on disk.
-        ows2FAManagerMock.pinCode = Stubs.pinCode
+        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make KBS give us back a reg recovery password.
         kbs.dataGenerator = {
@@ -143,28 +159,72 @@ public class RegistrationCoordinatorTest: XCTestCase {
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
         )
-
+        let identityResponse = Stubs.accountIdentityResponse()
+        let authUsername = identityResponse.aci.uuidString
+        var authPassword: String!
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
-            urlSuffix: expectedRequest.url!.absoluteString,
+            matcher: { request in
+                // The password is generated internally by RegistrationCoordinator.
+                // Extract it so we can check that the same password sent to the server
+                // to register is used later for other requests.
+                authPassword = Self.attributesFromCreateAccountRequest(request).authKey
+                return request.url == expectedRequest.url
+            },
             statusCode: 200,
-            bodyJson: Stubs.accountIdentityResponse()
+            bodyData: try JSONEncoder().encode(identityResponse)
         ))
+
+        // When registered, it should try and sync push tokens.
+        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { username, password in
+            XCTAssertEqual(username, authUsername)
+            XCTAssertEqual(password, authPassword)
+            return .value(.success)
+        }
+
+        // We haven't done a kbs backup; that should happen now.
+        kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+            XCTAssertEqual(pin, Stubs.pinCode)
+            // We don't have a kbs auth credential, it should use chat server creds.
+            XCTAssertEqual(authMethod, .chatServerAuth(username: authUsername, password: authPassword))
+            XCTAssertFalse(rotateMasterKey)
+            self.kbs.hasMasterKey = true
+            return .value(())
+        }
+
+        // Once we sync push tokens, we should restore from storage service.
+        accountManagerMock.performInitialStorageServiceRestoreMock = {
+            return .value(())
+        }
+
+        // Once we do the storage service restore,
+        // we will sync account attributes and then we are finished!
+        let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+            Stubs.accountAttributes(),
+            authUsername: "", // doesn't matter for url matching
+            authPassword: "" // doesn't matter for url matching
+        )
+        self.mockURLSession.addResponse(
+            matcher: { request in
+                return request.url == expectedAttributesRequest.url
+            },
+            statusCode: 200
+        )
 
         nextStep = coordinator.submitPINCode(Stubs.pinCode).value
         XCTAssertEqual(nextStep, .done)
     }
 
-    func testRegRecoveryPwPath_wrongPIN() {
+    func testRegRecoveryPwPath_wrongPIN() throws {
         // Don't care about timing, just start it.
         scheduler.start()
+
+        // Set profile info so we skip those steps.
+        setupDefaultAccountAttributes()
 
         let wrongPinCode = "ABCD"
 
         // Set a different PIN on disk.
-        ows2FAManagerMock.pinCode = Stubs.pinCode
-
-        // Set profile info so we skip those steps.
-        self.setAllProfileInfo()
+        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make KBS give us back a reg recovery password.
         kbs.dataGenerator = {
@@ -198,11 +258,53 @@ public class RegistrationCoordinatorTest: XCTestCase {
             skipDeviceTransfer: true
         )
 
+        let identityResponse = Stubs.accountIdentityResponse()
+        let authUsername = identityResponse.aci.uuidString
+        var authPassword: String!
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
-            urlSuffix: expectedRequest.url!.absoluteString,
+            matcher: { request in
+                authPassword = Self.attributesFromCreateAccountRequest(request).authKey
+                return request.url == expectedRequest.url
+            },
             statusCode: 200,
-            bodyJson: Stubs.accountIdentityResponse()
+            bodyData: try JSONEncoder().encode(identityResponse)
         ))
+
+        // When registered, it should try and sync push tokens.
+        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { username, password in
+            XCTAssertEqual(username, authUsername)
+            XCTAssertEqual(password, authPassword)
+            return .value(.success)
+        }
+
+        // We haven't done a kbs backup; that should happen now.
+        kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+            XCTAssertEqual(pin, Stubs.pinCode)
+            // We don't have a kbs auth credential, it should use chat server creds.
+            XCTAssertEqual(authMethod, .chatServerAuth(username: authUsername, password: authPassword))
+            XCTAssertFalse(rotateMasterKey)
+            self.kbs.hasMasterKey = true
+            return .value(())
+        }
+
+        // Once we sync push tokens, we should restore from storage service.
+        accountManagerMock.performInitialStorageServiceRestoreMock = {
+            return .value(())
+        }
+
+        // Once we do the storage service restore,
+        // we will sync account attributes and then we are finished!
+        let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+            Stubs.accountAttributes(),
+            authUsername: "", // doesn't matter for url matching
+            authPassword: "" // doesn't matter for url matching
+        )
+        self.mockURLSession.addResponse(
+            matcher: { request in
+                return request.url == expectedAttributesRequest.url
+            },
+            statusCode: 200
+        )
 
         nextStep = coordinator.submitPINCode(Stubs.pinCode).value
         XCTAssertEqual(nextStep, .done)
@@ -210,10 +312,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     func testRegRecoveryPwPath_wrongPassword() {
         // Set profile info so we skip those steps.
-        self.setAllProfileInfo()
+        setupDefaultAccountAttributes()
 
         // Set a PIN on disk.
-        ows2FAManagerMock.pinCode = Stubs.pinCode
+        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make KBS give us back a reg recovery password.
         kbs.dataGenerator = {
@@ -269,6 +371,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
         }
 
+        // Before requesting a session at t=2, it should ask for push tokens to give the session.
+        pushRegistrationManagerMock.requestPushTokenMock = {
+            XCTAssertEqual(self.scheduler.currentTime, 2)
+            return .value(Stubs.apnsToken)
+        }
+
         // Then when it gets back the session at t=3, it should immediately ask for
         // a verification code to be sent.
         scheduler.run(atTime: 3) {
@@ -294,10 +402,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     func testRegRecoveryPwPath_failedReglock() {
         // Set profile info so we skip those steps.
-        self.setAllProfileInfo()
+        setupDefaultAccountAttributes()
 
         // Set a PIN on disk.
-        ows2FAManagerMock.pinCode = Stubs.pinCode
+        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make KBS give us back a reg recovery password.
         kbs.dataGenerator = {
@@ -357,6 +465,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
         }
 
+        // Before requesting a session at t=2, it should ask for push tokens to give the session.
+        pushRegistrationManagerMock.requestPushTokenMock = {
+            XCTAssertEqual(self.scheduler.currentTime, 2)
+            return .value(Stubs.apnsToken)
+        }
+
         // Then when it gets back the session at t=3, it should immediately ask for
         // a verification code to be sent.
         scheduler.run(atTime: 3) {
@@ -381,8 +495,11 @@ public class RegistrationCoordinatorTest: XCTestCase {
     // MARK: - KBS Auth Credential Path
 
     func testKBSAuthCredentialPath_happyPath() {
-        // Don't care about timing, just start it.
+        // Run the scheduler for a bit; we don't care about timing these bits.
         scheduler.start()
+
+        // Don't care about timing, just start it.
+        setupDefaultAccountAttributes()
 
         // Set profile info so we skip those steps.
         self.setAllProfileInfo()
@@ -444,40 +561,81 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Once we do that, it should follow the Reg Recovery Password Path.
         let nextStepPromise = coordinator.submitPINCode(Stubs.pinCode)
 
-        // At t=2, resolve the key restoration from kbs and have it start returning the key.
-        scheduler.run(atTime: 2) {
-            self.kbs.dataGenerator = {
-                switch $0 {
-                case .registrationRecoveryPassword:
-                    return Stubs.regRecoveryPwData
-                case .registrationLock:
-                    return Stubs.reglockData
-                default:
-                    return nil
-                }
-            }
+        // At t=1, resolve the key restoration from kbs and have it start returning the key.
+        kbs.restoreKeysAndBackupMock = { pin, authMethod in
+            XCTAssertEqual(self.scheduler.currentTime, 0)
+            XCTAssertEqual(pin, Stubs.pinCode)
+            XCTAssertEqual(authMethod, .kbsAuth(Stubs.kbsAuthCredential, backup: nil))
             self.kbs.hasMasterKey = true
+            return self.scheduler.guarantee(resolvingWith: .success, atTime: 1)
         }
-        kbs.restoreKeysAndBackupPromise = scheduler.promise(resolvingWith: (), atTime: 2)
 
-        // At t=3, resolve the reg recovery pw request.
-        scheduler.run(atTime: 1) {
-            let expectedRegRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-                verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-                e164: Stubs.e164,
-                accountAttributes: Stubs.accountAttributes(),
-                skipDeviceTransfer: true
-            )
-            self.mockURLSession.addResponse(
-                TSRequestOWSURLSessionMock.Response(
-                    urlSuffix: expectedRegRecoveryPwRequest.url!.absoluteString,
-                    statusCode: 200,
-                    bodyJson: Stubs.accountIdentityResponse()
-                ),
-                atTime: 3,
-                on: self.scheduler
-            )
+        // At t=1 it should get the latest credentials from kbs.
+        self.kbs.dataGenerator = {
+            XCTAssertEqual(self.scheduler.currentTime, 1)
+            switch $0 {
+            case .registrationRecoveryPassword:
+                return Stubs.regRecoveryPwData
+            case .registrationLock:
+                return Stubs.reglockData
+            default:
+                return nil
+            }
         }
+
+        // Now still at t=1 it should make a reg recovery pw request, resolve it at t=2.
+        let accountIdentityResponse = Stubs.accountIdentityResponse()
+        let authUsername = accountIdentityResponse.aci.uuidString
+        var authPassword: String!
+        let expectedRegRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
+            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+            e164: Stubs.e164,
+            accountAttributes: Stubs.accountAttributes(),
+            skipDeviceTransfer: true
+        )
+        self.mockURLSession.addResponse(
+            TSRequestOWSURLSessionMock.Response(
+                matcher: { request in
+                    XCTAssertEqual(self.scheduler.currentTime, 1)
+                    authPassword = Self.attributesFromCreateAccountRequest(request).authKey
+                    return request.url == expectedRegRecoveryPwRequest.url
+                },
+                statusCode: 200,
+                bodyJson: accountIdentityResponse
+            ),
+            atTime: 2,
+            on: self.scheduler
+        )
+
+        // When registered at t=2, it should try and sync push tokens.
+        // Resolve at t=3.
+        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { username, password in
+            XCTAssertEqual(self.scheduler.currentTime, 2)
+            XCTAssertEqual(username, authUsername)
+            XCTAssertEqual(password, authPassword)
+            return self.scheduler.guarantee(resolvingWith: .success, atTime: 3)
+        }
+
+        // At t=3 once we sync push tokens, we should restore from storage service.
+        accountManagerMock.performInitialStorageServiceRestoreMock = {
+            XCTAssertEqual(self.scheduler.currentTime, 3)
+            return self.scheduler.promise(resolvingWith: (), atTime: 4)
+        }
+
+        // And at t=4 once we do the storage service restore,
+        // we will sync account attributes and then we are finished!
+        let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+            Stubs.accountAttributes(),
+            authUsername: "", // doesn't matter for url matching
+            authPassword: "" // doesn't matter for url matching
+        )
+        self.mockURLSession.addResponse(
+            matcher: { request in
+                XCTAssertEqual(self.scheduler.currentTime, 4)
+                return request.url == expectedAttributesRequest.url
+            },
+            statusCode: 200
+        )
 
         for i in 0...2 {
             scheduler.run(atTime: i) {
@@ -485,7 +643,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
         }
 
-        scheduler.advance(to: 3)
+        scheduler.runUntilIdle()
+        XCTAssertEqual(scheduler.currentTime, 4)
 
         XCTAssertEqual(nextStepPromise.value, .done)
     }
@@ -495,7 +654,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.start()
 
         // Set profile info so we skip those steps.
-        self.setAllProfileInfo()
+        setupDefaultAccountAttributes()
 
         contactsStore.doesNeedContactsAuthorization = false
         pushRegistrationManagerMock.doesNeedNotificationAuthorization = false
@@ -560,6 +719,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 atTime: 4
             )
         }
+
+        pushRegistrationManagerMock.requestPushTokenMock = { .value(Stubs.apnsToken)}
 
         scheduler.runUntilIdle()
         XCTAssertEqual(scheduler.currentTime, 4)
@@ -655,6 +816,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             atTime: 7
         )
 
+        let accountIdentityResponse = Stubs.accountIdentityResponse()
+        let authUsername = accountIdentityResponse.aci.uuidString
+        var authPassword: String!
+
         // That means at t=7 it should try and register with the verified
         // session; be ready for that starting at t=6 (but not before).
         scheduler.run(atTime: 6) {
@@ -667,22 +832,72 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Resolve it at t=8
             self.mockURLSession.addResponse(
                 TSRequestOWSURLSessionMock.Response(
-                    urlSuffix: expectedRequest.url!.absoluteString,
+                    matcher: { request in
+                        authPassword = Self.attributesFromCreateAccountRequest(request).authKey
+                        return request.url == expectedRequest.url
+                    },
                     statusCode: 200,
-                    bodyJson: Stubs.accountIdentityResponse()
+                    bodyJson: accountIdentityResponse
                 ),
                 atTime: 8,
                 on: self.scheduler
             )
         }
 
+        // Once we are registered at t=8, we should try and sync push tokens
+        // with the credentials we got in the identity response.
+        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { username, password in
+            XCTAssertEqual(self.scheduler.currentTime, 8)
+            XCTAssertEqual(username, authUsername)
+            XCTAssertEqual(password, authPassword)
+            return self.scheduler.guarantee(resolvingWith: .success, atTime: 9)
+        }
+
         scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 8)
+        XCTAssertEqual(scheduler.currentTime, 9)
 
         // Now we should ask for the PIN to recover our KBS data.
         XCTAssertEqual(nextStep.value, .pinEntry)
 
-        // TODO[Registration]: test entering the PIN and pulling data from KBS.
+        scheduler.adjustTime(to: 0)
+
+        // When we submit the pin, it should backup with kbs.
+        nextStep = coordinator.submitPINCode(Stubs.pinCode)
+
+        // Finish the validation at t=1.
+        kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+            XCTAssertEqual(self.scheduler.currentTime, 0)
+            XCTAssertEqual(pin, Stubs.pinCode)
+            XCTAssertEqual(authMethod, .chatServerAuth(username: authUsername, password: authPassword))
+            XCTAssertFalse(rotateMasterKey)
+            return self.scheduler.promise(resolvingWith: (), atTime: 1)
+        }
+
+        // At t=1 once we sync push tokens, we should restore from storage service.
+        accountManagerMock.performInitialStorageServiceRestoreMock = {
+            XCTAssertEqual(self.scheduler.currentTime, 1)
+            return self.scheduler.promise(resolvingWith: (), atTime: 2)
+        }
+
+        // And at t=2 once we do the storage service restore,
+        // we will sync account attributes and then we are finished!
+        let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+            Stubs.accountAttributes(),
+            authUsername: authUsername,
+            authPassword: authPassword
+        )
+        self.mockURLSession.addResponse(
+            matcher: { request in
+                XCTAssertEqual(self.scheduler.currentTime, 2)
+                return request.url == expectedAttributesRequest.url
+            },
+            statusCode: 200
+        )
+
+        scheduler.runUntilIdle()
+        XCTAssertEqual(scheduler.currentTime, 2)
+
+        XCTAssertEqual(nextStep.value, .done)
     }
 
     public func testSessionPath_captchaChallenge() {
@@ -985,9 +1200,18 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     // MARK: - Helpers
 
+    private func setupDefaultAccountAttributes() {
+        ows2FAManagerMock.pinCodeMock = { nil }
+        ows2FAManagerMock.isReglockEnabledMock = { false }
+
+        tsAccountManagerMock.isManualMessageFetchEnabledMock = { false }
+
+        setAllProfileInfo()
+    }
+
     private func setAllProfileInfo() {
-        tsAccountManagerMock.doesHaveDefinedIsDiscoverableByPhoneNumber = true
-        profileManagerMock.hasProfileName = true
+        tsAccountManagerMock.hasDefinedIsDiscoverableByPhoneNumberMock = { true }
+        profileManagerMock.hasProfileNameMock = { true }
     }
 
     private func setUpSessionPath() {
@@ -995,7 +1219,9 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.start()
 
         // Set profile info so we skip those steps.
-        self.setAllProfileInfo()
+        self.setupDefaultAccountAttributes()
+
+        pushRegistrationManagerMock.requestPushTokenMock = { .value(Stubs.apnsToken)}
 
         contactsStore.doesNeedContactsAuthorization = true
         pushRegistrationManagerMock.doesNeedNotificationAuthorization = true
@@ -1016,6 +1242,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.adjustTime(to: 0)
     }
 
+    private static func attributesFromCreateAccountRequest(
+        _ request: TSRequest
+    ) -> RegistrationRequestFactory.AccountAttributes {
+        return request.parameters["accountAttributes"] as! RegistrationRequestFactory.AccountAttributes
+    }
+
     // MARK: - Stubs
 
     private enum Stubs {
@@ -1032,6 +1264,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
         static let kbsAuthCredential = KBSAuthCredential(credential: RemoteAttestation.Auth(username: "abcd", password: "1234"))
 
         static let captchaToken = "captchaToken"
+        static let apnsToken = "apnsToken"
+
+        static let authUsername = "username_jdhfsalkjfhd"
+        static let authPassword = "password_dskafjasldkfjasf"
 
         static var date: Date!
 

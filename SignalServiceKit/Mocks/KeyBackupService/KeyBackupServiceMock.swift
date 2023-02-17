@@ -43,14 +43,24 @@ public class KeyBackupServiceMock: KeyBackupServiceProtocol {
         return AnyPromise(Promise<Void>.value(()))
     }
 
+    public var generateAndBackupKeysMock: ((_ pin: String, _ authMethod: KBS.AuthMethod, _ rotateMasterKey: Bool) -> Promise<Void>)?
+
     public func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> Promise<Void> {
-        return .value(())
+        return generateAndBackupKeysMock!(pin, .implicit, rotateMasterKey)
     }
 
-    public var restoreKeysAndBackupPromise: Promise<Void>?
+    public func generateAndBackupKeys(pin: String, authMethod: KBS.AuthMethod, rotateMasterKey: Bool) -> Promise<Void> {
+        return generateAndBackupKeysMock!(pin, authMethod, rotateMasterKey)
+    }
 
     public func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential?) -> Promise<Void> {
-        return restoreKeysAndBackupPromise!
+        fatalError("Unimplemented")
+    }
+
+    public var restoreKeysAndBackupMock: ((_ pin: String, _ authMethod: KBS.AuthMethod) -> Guarantee<KBS.RestoreKeysResult>)?
+
+    public func restoreKeysAndBackup(pin: String, authMethod: KBS.AuthMethod) -> Guarantee<KBS.RestoreKeysResult> {
+        return restoreKeysAndBackupMock!(pin, authMethod)
     }
 
     public func deleteKeys() -> Promise<Void> {

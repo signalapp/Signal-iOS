@@ -33,7 +33,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         }
 
         public init(
-            urlSuffix: String,
+            matcher: @escaping (TSRequest) -> Bool,
             statusCode: Int = 200,
             headers: [String: String] = [:],
             bodyJson: Codable? = nil
@@ -46,10 +46,24 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             } catch {
                 fatalError("Failed to encode JSON with error: \(error)")
             }
-            self.matcher = { $0.url?.relativeString.hasSuffix(urlSuffix) ?? false }
+            self.matcher = matcher
             self.statusCode = statusCode
             self.headers = OWSHttpHeaders(httpHeaders: headers, overwriteOnConflict: true)
             self.bodyData = bodyData
+        }
+
+        public init(
+            urlSuffix: String,
+            statusCode: Int = 200,
+            headers: [String: String] = [:],
+            bodyJson: Codable? = nil
+        ) {
+            self.init(
+                matcher: { $0.url?.relativeString.hasSuffix(urlSuffix) ?? false },
+                statusCode: statusCode,
+                headers: headers,
+                bodyJson: bodyJson
+            )
         }
     }
 
@@ -61,6 +75,20 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
 
     public func addResponse(_ response: Response, atTime t: Int, on scheduler: TestScheduler) {
         responses.append((response, scheduler.guarantee(resolvingWith: response, atTime: t)))
+    }
+
+    public func addResponse(
+        matcher: @escaping (TSRequest) -> Bool,
+        statusCode: Int = 200,
+        headers: [String: String] = [:],
+        bodyJson: Codable? = nil
+    ) {
+        addResponse(Response(
+            matcher: matcher,
+            statusCode: statusCode,
+            headers: headers,
+            bodyJson: bodyJson
+        ))
     }
 
     public func addResponse(
