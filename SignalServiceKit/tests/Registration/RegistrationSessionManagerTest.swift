@@ -85,7 +85,6 @@ public class RegistrationSessionManagerTest: XCTestCase {
                 nextCall: 2,
                 nextVerificationAttempt: 3,
                 allowedToRequestCode: true,
-                lastCodeRequestDate: self.date,
                 requestedInformation: [.captcha, .pushChallenge],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false
@@ -120,7 +119,6 @@ public class RegistrationSessionManagerTest: XCTestCase {
                 nextCall: nil,
                 nextVerificationAttempt: nil,
                 allowedToRequestCode: true,
-                lastCodeRequestDate: self.date,
                 requestedInformation: [.captcha, .pushChallenge],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false
@@ -158,7 +156,6 @@ public class RegistrationSessionManagerTest: XCTestCase {
                 nextCall: 2,
                 nextVerificationAttempt: 3,
                 allowedToRequestCode: true,
-                lastCodeRequestDate: self.date,
                 requestedInformation: [.captcha, .pushChallenge],
                 // We saw unknown challenges
                 hasUnknownChallengeRequiringAppUpdate: true,
@@ -348,9 +345,9 @@ public class RegistrationSessionManagerTest: XCTestCase {
             Bool // expects session in response
         )] = [
             (.success, .success(responseSession), true),
-            (.notAccepted, .invalidArgument(responseSession), true),
+            (.notAccepted, .rejectedArgument(responseSession), true),
             (.missingSession, .invalidSession, false),
-            (.invalidArgument, .invalidArgument(responseSession), true),
+            (.notAccepted, .rejectedArgument(responseSession), true),
             (.unexpectedError, .genericError, false)
         ]
         for (statusCode, expectedResponse, sessionInBody) in statusCodeResponsePairs {
@@ -410,11 +407,11 @@ public class RegistrationSessionManagerTest: XCTestCase {
             Registration.UpdateSessionResponse,
             Bool // expects session in response
         )] = [
-            (.success, .success(sessionConverter(responseBody, forRequestVerificationCode: true)), true),
-            (.transportInvalid, .genericError, false),
-            (.challengeRequired, .challengeRequired(sessionConverter(responseBody, forRequestVerificationCode: false)), true),
+            (.success, .success(sessionConverter(responseBody)), true),
+            (.malformedRequest, .genericError, false),
+            (.disallowed, .disallowed(sessionConverter(responseBody)), true),
             (.missingSession, .invalidSession, false),
-            (.notPermitted, .retryAfterTimeout(sessionConverter(responseBody, forRequestVerificationCode: false)), true),
+            (.retry, .retryAfterTimeout(sessionConverter(responseBody)), true),
             (.unexpectedError, .genericError, false)
         ]
         for (statusCode, expectedResponse, sessionInBody) in statusCodeResponsePairs {
@@ -498,29 +495,34 @@ public class RegistrationSessionManagerTest: XCTestCase {
             code: code
         )
 
-        // will have a new id, which is fine cuz it lets us differentiate.
-        let responseBody = stubWireSession()
-        let responseSession = sessionConverter(responseBody)
+        // will have a new ids, which is fine cuz it lets us differentiate.
+        let verifiedResponseBody = stubWireSession(verified: true)
+        let verifiedResponseSession = sessionConverter(verifiedResponseBody)
+        let unVerifiedResponseBody = stubWireSession(verified: false)
+        let unVerifiedResponseSession = sessionConverter(unVerifiedResponseBody)
+        let unVerifiedWithNoAttemptResponseBody = stubWireSession(verified: false, hasNextVerificationAttempt: false)
+        let unVerifiedWithNoAttemptResponseSession = sessionConverter(unVerifiedWithNoAttemptResponseBody)
 
         let statusCodeResponsePairs: [(
             RegistrationServiceResponses.SubmitVerificationCodeResponseCodes,
             Registration.UpdateSessionResponse,
-            Bool // expects session in response
+            RegistrationServiceResponses.RegistrationSession?
         )] = [
-            (.success, .success(responseSession), true),
-            // Server doesn't give us an updated session in the response,
-            // so we just expect the old one
-            (.codeInvalid, .invalidArgument(oldSession), true),
-            (.missingSession, .invalidSession, false),
-            (.codeNotYetSent, .invalidSession, false),
-            (.notPermitted, .retryAfterTimeout(responseSession), true),
-            (.unexpectedError, .genericError, false)
+            (.success, .success(verifiedResponseSession), verifiedResponseBody),
+            (.success, .rejectedArgument(unVerifiedResponseSession), unVerifiedResponseBody),
+            (.malformedRequest, .genericError, nil),
+            (.missingSession, .invalidSession, nil),
+            (.newCodeRequired, .success(verifiedResponseSession), verifiedResponseBody),
+            (.newCodeRequired, .retryAfterTimeout(unVerifiedResponseSession), unVerifiedResponseBody),
+            (.newCodeRequired, .disallowed(unVerifiedWithNoAttemptResponseSession), unVerifiedWithNoAttemptResponseBody),
+            (.retry, .retryAfterTimeout(unVerifiedResponseSession), unVerifiedResponseBody),
+            (.unexpectedError, .genericError, nil)
         ]
         for (statusCode, expectedResponse, sessionInBody) in statusCodeResponsePairs {
             mockURLSession.addResponse(
                 forUrlSuffix: expectedRequest.url!.relativeString,
                 statusCode: statusCode.rawValue,
-                bodyJson: sessionInBody ? responseBody : nil
+                bodyJson: sessionInBody
             )
             registrationSessionManager.submitVerificationCode(
                 for: oldSession,
@@ -542,32 +544,33 @@ public class RegistrationSessionManagerTest: XCTestCase {
             receivedDate: date,
             nextSMS: 1,
             nextCall: 1,
-            nextVerificationAttempt: 1,
+            nextVerificationAttempt: nil,
             allowedToRequestCode: true,
-            lastCodeRequestDate: nil,
             requestedInformation: [],
             hasUnknownChallengeRequiringAppUpdate: false,
             verified: false
         )
     }
 
-    private func stubWireSession() -> RegistrationServiceResponses.RegistrationSession {
+    private func stubWireSession(
+        verified: Bool = false,
+        hasNextVerificationAttempt: Bool = true
+    ) -> RegistrationServiceResponses.RegistrationSession {
         return RegistrationServiceResponses.RegistrationSession(
             id: UUID().uuidString,
             nextSms: (0...100).randomElement(),
             nextCall: (0...100).randomElement(),
-            nextVerificationAttempt: (0...100).randomElement(),
+            nextVerificationAttempt: hasNextVerificationAttempt ? (0...100).randomElement() : nil,
             allowedToRequestCode: false,
             requestedInformation: [.captcha, .pushChallenge],
-            verified: false
+            verified: verified
         )
     }
 
     // Keep this independent of the production code converter for an extra layer of durability.
     private func sessionConverter(
         _ wireSession: RegistrationServiceResponses.RegistrationSession,
-        e164: String = "+17875550100",
-        forRequestVerificationCode: Bool = false
+        e164: String = "+17875550100"
     ) -> RegistrationSession {
         let requestedInformation: [RegistrationSession.Challenge] = wireSession.requestedInformation.compactMap {
             switch $0 {
@@ -586,7 +589,6 @@ public class RegistrationSessionManagerTest: XCTestCase {
             nextCall: wireSession.nextCall.map { TimeInterval($0) },
             nextVerificationAttempt: wireSession.nextVerificationAttempt.map { TimeInterval($0) },
             allowedToRequestCode: wireSession.allowedToRequestCode,
-            lastCodeRequestDate: forRequestVerificationCode ? date : nil,
             requestedInformation: requestedInformation,
             hasUnknownChallengeRequiringAppUpdate: false,
             verified: wireSession.verified

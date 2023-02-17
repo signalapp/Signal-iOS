@@ -359,7 +359,7 @@ public enum RegistrationRequestFactory {
         return result
     }
 
-    // TODO: Extra PNI-related fields aren't being set right now.
+    // TODO[Registration]: Extra PNI-related fields aren't being set right now.
     // pniIdentityKey, deviceMessages, devicePniSignedPrekeys, pniRegistrationIds
     // They are required and requests will fail until they are set.
     /// Update the phone number on an account.

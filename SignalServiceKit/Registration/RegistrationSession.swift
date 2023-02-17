@@ -41,12 +41,26 @@ public struct RegistrationSession: Codable, Equatable {
     }
 
     /// How long after `receivedDate` we must wait to submit a sms/call verification code to the server.
-    /// If null, no further verification code submissions are allowed within this session, typically meaning
-    /// the session should be terminated and a new one started.
+    /// If null, no code is available for submission, either because:
+    /// 1) No code has ever been sent
+    /// 2) A code was sent but it expired
+    /// 3) All attempts have been exhausted for the current code
+    /// In all of these cases, the next step is requesting a new code, which may change
+    /// the value of this field. If a code cannot be requested, the session
+    /// can be considered invalid and discarded.
     public let nextVerificationAttempt: TimeInterval?
 
     public var nextVerificationAttemptDate: Date? {
         return nextSMS.map { receivedDate.addingTimeInterval($0) }
+    }
+
+    /// If true, the server believes that there is a code that has been sent, is still valid,
+    /// and is waiting to be submitted (and attempts have not been exhausted). The user
+    /// should be allowed to submit the code (or resend).
+    /// If false, there is no code able to be submitted, a new code _must_ be requested,
+    /// and the user should only be given code sending as an option.
+    public var hasCodeAvailableToSubmit: Bool {
+        return nextVerificationAttempt != nil
     }
 
     /// If true, `requestedInformation` can be ignored and the user can request a verification code
@@ -54,11 +68,6 @@ public struct RegistrationSession: Codable, Equatable {
     /// If false, the demands in `requestedInformation` must be satisfied before a verification code
     /// will be sent.
     public let allowedToRequestCode: Bool
-
-    /// If set, the date at which a verification code was most recently requested.
-    /// (Measured against the time that we got a server response from the request.)
-    /// Used to determine if a code needs to be sent upon session restoration from disk.
-    public let lastCodeRequestDate: Date?
 
     public enum Challenge: Codable, Equatable {
         /// A captcha challenge to be shown and completed by the user.
@@ -92,7 +101,6 @@ public struct RegistrationSession: Codable, Equatable {
         case nextCall
         case nextVerificationAttempt
         case allowedToRequestCode
-        case lastCodeRequestDate
         case requestedInformation
         case hasUnknownChallengeRequiringAppUpdate
         case verified

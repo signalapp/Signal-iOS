@@ -10,12 +10,18 @@ extension RegistrationCoordinatorImpl {
 
     enum Service {
 
+        enum KBSAuthCheckResponse {
+            case success(RegistrationServiceResponses.KBSAuthCheckResponse)
+            case networkError
+            case genericError
+        }
+
         static func makeKBSAuthCheckRequest(
             e164: String,
             candidateCredentials: [KBSAuthCredential],
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers
-        ) -> Guarantee<RegistrationServiceResponses.KBSAuthCheckResponse?> {
+        ) -> Guarantee<KBSAuthCheckResponse> {
             let request = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
                 e164: e164,
                 credentials: candidateCredentials
@@ -25,7 +31,8 @@ extension RegistrationCoordinatorImpl {
                 signalService: signalService,
                 schedulers: schedulers,
                 handler: self.handleKBSAuthCheckResponse(statusCode:retryAfterHeader:bodyData:),
-                fallbackError: nil
+                fallbackError: .genericError,
+                networkFailureError: .networkError
             )
         }
 
@@ -33,23 +40,25 @@ extension RegistrationCoordinatorImpl {
             statusCode: Int,
             retryAfterHeader: String?,
             bodyData: Data?
-        ) -> RegistrationServiceResponses.KBSAuthCheckResponse? {
+        ) -> KBSAuthCheckResponse {
             let statusCode = RegistrationServiceResponses.KBSAuthCheckResponseCodes(rawValue: statusCode)
             switch statusCode {
             case .success:
                 guard let bodyData else {
                     Logger.warn("Got empty KBS auth check response")
-                    return nil
+                    return .genericError
                 }
                 guard let response = try? JSONDecoder().decode(RegistrationServiceResponses.KBSAuthCheckResponse.self, from: bodyData) else {
                     Logger.warn("Unable to parse KBS auth check response from response")
-                    return nil
+                    return .genericError
                 }
 
-                return response
-            case .none, .invalidArgument, .invalidJSON, .unexpectedError:
-                // TODO: should treat these errors differently?
-                return nil
+                return .success(response)
+            case .malformedRequest, .invalidJSON:
+                Logger.error("Malformed kbs auth check request")
+                return .genericError
+            case .none, .unexpectedError:
+                return .genericError
             }
         }
 
@@ -79,7 +88,8 @@ extension RegistrationCoordinatorImpl {
                         bodyData: $2
                     )
                 },
-                fallbackError: .genericError
+                fallbackError: .genericError,
+                networkFailureError: .networkError
             )
         }
 
@@ -104,6 +114,10 @@ extension RegistrationCoordinatorImpl {
 
             case .deviceTransferPossible:
                 return .deviceTransferPossible
+
+            case .regRecoveryPasswordRejected:
+                Logger.warn("Reg recovery password rejected when creating account.")
+                return .rejectedVerificationMethod
 
             case .reglockFailed:
                 guard let bodyData else {
@@ -169,7 +183,8 @@ extension RegistrationCoordinatorImpl {
                 handler: {
                     return self.handleChangeNumberResponse(authToken: authToken, statusCode: $0, retryAfterHeader: $1, bodyData: $2)
                 },
-                fallbackError: .genericError
+                fallbackError: .genericError,
+                networkFailureError: .networkError
             )
         }
 
@@ -219,8 +234,20 @@ extension RegistrationCoordinatorImpl {
                 }
                 return .retryAfter(retryAfter)
 
-            case .unauthorized:
-                Logger.warn("Got unauthorized response for change number")
+            case .unauthorized, .regRecoveryPasswordRejected:
+                return .rejectedVerificationMethod
+
+            case .malformedRequest:
+                Logger.error("Got malformed request for change number")
+                return .genericError
+
+            case .invalidArgument:
+                Logger.error("Got invalid argument for change number")
+                return .genericError
+
+            case .mismatchedDevicesToNotify, .mismatchedDevicesToNotifyRegistrationIds:
+                // TODO[PNP]: What should be done about this category of error?
+                Logger.error("Got mismatched device list information for change number")
                 return .genericError
 
             case .none, .unexpectedError:
@@ -268,7 +295,8 @@ extension RegistrationCoordinatorImpl {
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers,
             handler: @escaping (_ statusCode: Int, _ retryAfterHeader: String?, _ bodyData: Data?) -> ResponseType,
-            fallbackError: ResponseType
+            fallbackError: ResponseType,
+            networkFailureError: ResponseType
         ) -> Guarantee<ResponseType> {
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
                 .map(on: schedulers.sharedBackground) { (response: HTTPResponse) -> ResponseType in
@@ -281,6 +309,9 @@ extension RegistrationCoordinatorImpl {
                 .recover(on: schedulers.sharedBackground) { (error: Error) -> Guarantee<ResponseType> in
                     guard let error = error as? OWSHTTPError else {
                         return .value(fallbackError)
+                    }
+                    if case .networkFailure = error {
+                        return .value(networkFailureError)
                     }
                     let response = handler(
                         error.responseStatusCode,

@@ -107,7 +107,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         switch response {
         case .success(let session):
             db.write { self.persist(session: session, $0) }
-        case .invalidArgument, .retryAfter, .genericError:
+        case .invalidArgument, .retryAfter, .networkFailure, .genericError:
             break
         }
         return response
@@ -115,12 +115,16 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     private func persistSessionFromResponse(_ response: Registration.UpdateSessionResponse) -> Registration.UpdateSessionResponse {
         switch response {
-        case let .success(session), let .challengeRequired(session), let .retryAfterTimeout(session), let .invalidArgument(session):
+        case
+            let .success(session),
+            let .disallowed(session),
+            let .rejectedArgument(session),
+            let .retryAfterTimeout(session):
             db.write { self.persist(session: session, $0) }
         case .invalidSession:
             // Clear the session we've stored as it's invalid.
             db.write { self.clearPersistedSession($0) }
-        case .serverFailure, .genericError:
+        case .serverFailure, .networkFailure, .genericError:
             break
         }
         return response
@@ -175,7 +179,8 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             request,
             e164: e164,
             handler: self.handleBeginSessionResponse(forE164:statusCode:retryAfterHeader:bodyData:),
-            fallbackError: .genericError
+            fallbackError: .genericError,
+            networkFailureError: .networkFailure
         )
     }
 
@@ -190,8 +195,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         case .success:
             return registrationSession(
                 fromResponseBody: bodyData,
-                e164: e164,
-                lastCodeRequestDate: nil
+                e164: e164
             ).map { .success($0) } ?? .genericError
         case .invalidArgument, .missingArgument:
             return .invalidArgument
@@ -250,17 +254,18 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         case .success:
             return registrationSession(
                 fromResponseBody: bodyData,
-                e164: e164,
-                lastCodeRequestDate: sessionAtSendTime.lastCodeRequestDate
+                e164: e164
             ).map { .success($0) } ?? .genericError
-        case .invalidArgument, .notAccepted:
+        case .notAccepted:
             return registrationSession(
                 fromResponseBody: bodyData,
-                e164: e164,
-                lastCodeRequestDate: sessionAtSendTime.lastCodeRequestDate
-            ).map { .invalidArgument($0) } ?? .genericError
+                e164: e164
+            ).map { .rejectedArgument($0) } ?? .genericError
         case .missingSession:
             return .invalidSession
+        case .malformedRequest:
+            Logger.error("Malformed fulfill challenge request")
+            return .genericError
         case .unexpectedError, .none:
             return .genericError
         }
@@ -316,31 +321,25 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         let statusCode = RegistrationServiceResponses.RequestVerificationCodeResponseCodes(rawValue: statusCode)
         switch statusCode {
         case .success:
-            // TODO[Registration]: if a code is rejected, we get a success
-            // response but with an un-verified session. Represent that
-            // explicitly here.
             return registrationSession(
                 fromResponseBody: bodyData,
-                e164: e164,
-                lastCodeRequestDate: dateProvider()
+                e164: e164
             ).map { .success($0) } ?? .genericError
-        case .challengeRequired:
+        case .disallowed:
             return registrationSession(
                 fromResponseBody: bodyData,
-                e164: e164,
-                lastCodeRequestDate: sessionAtSendTime.lastCodeRequestDate
-            ).map { .challengeRequired($0) } ?? .genericError
-        case .notPermitted:
+                e164: e164
+            ).map { .disallowed($0) } ?? .genericError
+        case .retry:
             return registrationSession(
                 fromResponseBody: bodyData,
-                e164: e164,
-                lastCodeRequestDate: sessionAtSendTime.lastCodeRequestDate
+                e164: e164
             ).map { .retryAfterTimeout($0) } ?? .genericError
         case .providerFailure:
             return serverFailureResponse(fromResponseBody: bodyData, sessionAtSendTime: sessionAtSendTime).map { .serverFailure($0) } ?? .genericError
         case .missingSession:
             return .invalidSession
-        case .transportInvalid, .unexpectedError, .none:
+        case .malformedRequest, .unexpectedError, .none:
             return .genericError
         }
     }
@@ -371,28 +370,48 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         let statusCode = RegistrationServiceResponses.SubmitVerificationCodeResponseCodes(rawValue: statusCode)
         switch statusCode {
         case .success:
+            guard let session = registrationSession(
+                    fromResponseBody: bodyData,
+                    e164: e164
+                )
+            else {
+                return .genericError
+            }
+            if session.verified {
+                return .success(session)
+            } else {
+                return .rejectedArgument(session)
+            }
+        case .malformedRequest:
+            Logger.error("Verification code was invalidly formatted (not just incorrect).")
+            return .genericError
+        case .retry:
             return registrationSession(
                 fromResponseBody: bodyData,
-                e164: e164,
-                lastCodeRequestDate: sessionAtSendTime.lastCodeRequestDate
-            ).map { .success($0) } ?? .genericError
-        case .codeInvalid:
-            // Note: session is not in the response for this case, we just use the one we had, which _may_
-            // be out of date but we will discover that next time we try and use it.
-            // The alternative is to issue a get request for the session...which is just another round trip anyway.
-            return .invalidArgument(sessionAtSendTime)
-        case .notPermitted:
-            return registrationSession(
-                fromResponseBody: bodyData,
-                e164: e164,
-                lastCodeRequestDate: sessionAtSendTime.lastCodeRequestDate
+                e164: e164
             ).map { .retryAfterTimeout($0) } ?? .genericError
         case .missingSession:
             return .invalidSession
-        case .codeNotYetSent:
-            // In this scenario, we want to start a new session, as it should only happen
-            // if we try to send a code for an already-verified session.
-            return .invalidSession
+        case .newCodeRequired:
+            guard let session = registrationSession(
+                    fromResponseBody: bodyData,
+                    e164: e164
+                )
+            else {
+                return .genericError
+            }
+            if session.verified {
+                // Unclear how this could happen but hey,
+                // the session is verified. Pretend that worked
+                // and keep going
+                return .success(session)
+            } else if session.nextVerificationAttempt != nil {
+                // We can submit a code, but not yet.
+                return .retryAfterTimeout(session)
+            } else {
+                // There is no code to submit.
+                return .disallowed(session)
+            }
         case .unexpectedError, .none:
             return .genericError
         }
@@ -446,8 +465,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         case .success:
             return registrationSession(
                 fromResponseBody: bodyData,
-                e164: e164,
-                lastCodeRequestDate: sessionAtSendTime.lastCodeRequestDate
+                e164: e164
             ).map { .success($0) } ?? .genericError
         case .missingSession:
             return .sessionInvalid
@@ -466,8 +484,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     private func registrationSession(
         fromResponseBody bodyData: Data?,
-        e164: String,
-        lastCodeRequestDate: Date?
+        e164: String
     ) -> RegistrationSession? {
         guard let bodyData else {
             Logger.warn("Got empty registration session response")
@@ -477,7 +494,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             Logger.warn("Unable to parse registration session from response")
             return nil
         }
-        return session.toLocalSession(forE164: e164, lastCodeRequestDate: lastCodeRequestDate, receivedAt: dateProvider())
+        return session.toLocalSession(forE164: e164, receivedAt: dateProvider())
     }
 
     private func serverFailureResponse(
@@ -514,7 +531,8 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         _ request: TSRequest,
         e164: String,
         handler: @escaping (_ e164: String, _ statusCode: Int, _ retryAfterHeader: String?, _ bodyData: Data?) -> ResponseType,
-        fallbackError: ResponseType
+        fallbackError: ResponseType,
+        networkFailureError: ResponseType
     ) -> Guarantee<ResponseType> {
         return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
             .map(on: schedulers.sync) { (response: HTTPResponse) -> ResponseType in
@@ -528,6 +546,9 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             .recover(on: schedulers.sync) { (error: Error) -> Guarantee<ResponseType> in
                 guard let error = error as? OWSHTTPError else {
                     return .value(fallbackError)
+                }
+                if case .networkFailure = error {
+                    return .value(networkFailureError)
                 }
                 let response = handler(
                     e164,
@@ -550,7 +571,8 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             handler: { _, statusCode, _, bodyData in
                 return handler(session, statusCode, bodyData)
             },
-            fallbackError: .genericError
+            fallbackError: .genericError,
+            networkFailureError: .networkFailure
         )
     }
 }
@@ -559,7 +581,6 @@ fileprivate extension RegistrationServiceResponses.RegistrationSession {
 
     func toLocalSession(
         forE164 e164: String,
-        lastCodeRequestDate: Date?,
         receivedAt: Date
     ) -> RegistrationSession {
         let mappedChallenges = requestedInformation.compactMap(\.asLocalChallenge)
@@ -572,7 +593,6 @@ fileprivate extension RegistrationServiceResponses.RegistrationSession {
             nextCall: nextCall.map { TimeInterval($0) },
             nextVerificationAttempt: nextVerificationAttempt.map { TimeInterval($0) },
             allowedToRequestCode: allowedToRequestCode,
-            lastCodeRequestDate: lastCodeRequestDate,
             requestedInformation: mappedChallenges,
             hasUnknownChallengeRequiringAppUpdate: hasUnknownChallengeRequiringAppUpdate,
             verified: verified

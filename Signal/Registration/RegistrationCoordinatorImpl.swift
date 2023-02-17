@@ -773,6 +773,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.needsToAskForDeviceTransfer = true
             return nextStep()
 
+        case .networkError:
+            // TODO[Registration]: handle retries
+            return .value(.showGenericError)
+
         case .genericError:
             return .value(.showGenericError)
         }
@@ -887,30 +891,34 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func handleKBSAuthCredentialCheckResponse(
-        _ response: RegistrationServiceResponses.KBSAuthCheckResponse?,
+        _ response: Service.KBSAuthCheckResponse,
         kbsAuthCredentialCandidates: [KBSAuthCredential],
         e164: String
     ) -> Guarantee<RegistrationStep> {
         var matchedCredential: KBSAuthCredential?
         var credentialsToDelete = [KBSAuthCredential]()
-        guard let response else {
-            // TODO[Registration] build in some retry logic
-
+        switch response {
+        case .networkError:
+            // TODO[Registration]: handle retries
+            self.inMemoryState.kbsAuthCredentialCandidates = nil
+            return self.nextStep()
+        case .genericError:
             // If we failed to verify, wipe the candidates so we don't try again
             // and keep going.
             self.inMemoryState.kbsAuthCredentialCandidates = nil
             return self.nextStep()
-        }
-        for candidate in kbsAuthCredentialCandidates {
-            let result: RegistrationServiceResponses.KBSAuthCheckResponse.Result? = response.result(for: candidate)
-            switch result {
-            case .match:
-                matchedCredential = candidate
-            case .notMatch:
-                // Still valid, keep it around but don't use it.
-                continue
-            case .invalid, .none:
-                credentialsToDelete.append(candidate)
+        case .success(let response):
+            for candidate in kbsAuthCredentialCandidates {
+                let result: RegistrationServiceResponses.KBSAuthCheckResponse.Result? = response.result(for: candidate)
+                switch result {
+                case .match:
+                    matchedCredential = candidate
+                case .notMatch:
+                    // Still valid, keep it around but don't use it.
+                    continue
+                case .invalid, .none:
+                    credentialsToDelete.append(candidate)
+                }
             }
         }
         // Wipe the candidates so we don't re-check them.
@@ -945,60 +953,51 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if let pendingCodeTransport = inMemoryState.pendingCodeTransport {
+            guard session.allowedToRequestCode else {
+                // Check for challenges.
+                switch session.requestedInformation.first {
+                case .none:
+                    if session.hasUnknownChallengeRequiringAppUpdate {
+                        inMemoryState.pendingCodeTransport = nil
+                        return .value(.appUpdateBanner)
+                    } else {
+                        // We want to reset the whole session.
+                        self.resetSession()
+                        return self.nextStep()
+                    }
+                case .captcha:
+                    return .value(.captchaChallenge)
+                case .pushChallenge:
+                    // TODO[Registration]: complete push challenge.
+                    return .value(.splash)
+                }
+            }
+
             // If we have pending transport and can send, send.
             if session.allowedToRequestCode {
                 switch pendingCodeTransport {
                 case .sms:
                     if let nextSMSDate = session.nextSMSDate, nextSMSDate <= dateProvider() {
+                        // TODO[Registration]: let the verification code entry step know
+                        // that the timeout hasn't passed if we fail the above check.
                         return requestSessionCode(session: session, transport: pendingCodeTransport)
                     }
                 case .voice:
                     if let nextCallDate = session.nextCallDate, nextCallDate <= dateProvider() {
+                        // TODO[Registration]: let the verification code entry step know
+                        // that the timeout hasn't passed if we fail the above check.
                         return requestSessionCode(session: session, transport: pendingCodeTransport)
                     }
                 }
             }
-        } else if
-            let lastCodeDate = session.lastCodeRequestDate,
-            dateProvider().timeIntervalSince(lastCodeDate) <= Constants.codeResendTimeout
-        {
+        }
+
+        if session.hasCodeAvailableToSubmit {
             return .value(.verificationCodeEntry)
         }
 
-        guard session.allowedToRequestCode else {
-            // Check for challenges.
-            switch session.requestedInformation.first {
-            case .none:
-                if session.hasUnknownChallengeRequiringAppUpdate {
-                    inMemoryState.pendingCodeTransport = nil
-                    return .value(.appUpdateBanner)
-                } else {
-                    // We want to reset the whole session.
-                    self.resetSession()
-                    return self.nextStep()
-                }
-            case .captcha:
-                return .value(.captchaChallenge)
-            case .pushChallenge:
-                // TODO[Registration]: complete push challenge.
-                return .value(.splash)
-            }
-        }
-
-        if
-            session.lastCodeRequestDate == nil,
-            let nextSMSDate = session.nextSMSDate,
-            nextSMSDate <= dateProvider()
-        {
-            // If we've _never_ asked for a code, issue a code
-            // request right away.
-            return requestSessionCode(session: session, transport: .sms)
-        }
-
-        // Otherwise we've sent a code, but it was a long time ago.
-        // We don't want to automatically send a code, so take the user
-        // to the phone number entry step from which they can tap to send
-        // the code.
+        // Otherwise we have no code awaiting submission and aren't
+        // trying to send one yet, so just go to phone number entry.
         return .value(.phoneNumberEntry)
     }
 
@@ -1008,11 +1007,30 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.session = session
             return
         }
-        if session?.nextVerificationAttempt == nil {
-            // If we can't ever submit a verification code,
-            // this session is useless.
-            resetSession()
-            return
+
+        if
+            let session,
+            // If we can't submit a code...
+            session.nextVerificationAttempt == nil,
+            // Can't request a code (and can't do any challenges to move on)...
+            (session.allowedToRequestCode || session.requestedInformation.isEmpty.negated),
+            // And have exhausted our ability to request codes...
+            session.nextSMS == nil,
+            session.nextCall == nil
+        {
+            // Then this session is incapable of being verified, and we should
+            // discard it.
+
+            // UNLESS it has an unknown challenge type on it.
+            // In this case, the session might still be good, and we want to
+            // alert the user instead of discarding.
+            if session.hasUnknownChallengeRequiringAppUpdate {
+                inMemoryState.session = session
+                return
+            } else {
+                resetSession()
+                return
+            }
         }
         inMemoryState.session = session
     }
@@ -1069,6 +1087,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .deviceTransferPossible:
             inMemoryState.needsToAskForDeviceTransfer = true
             return .value(.transferSelection)
+        case .networkError:
+            // TODO[Registration] handle retries
+            return .value(.showGenericError)
         case .genericError:
             return .value(.showGenericError)
         }
@@ -1092,6 +1113,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     switch response {
                     case .success(let session):
                         strongSelf.processSession(session)
+                        // When we get a new session, immediately send an sms code.
+                        strongSelf.inMemoryState.pendingCodeTransport = .sms
                         return strongSelf.nextStep()
                     case .invalidArgument:
                         // TODO[Registration] populate error state for phone number entry.
@@ -1099,6 +1122,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     case .retryAfter:
                         // TODO[Registration] handle retries, possibly automatically if short enough.
                         return .value(.phoneNumberEntry)
+                    case .networkFailure:
+                        // TODO[Registration] handle retries
+                        return .value(.showGenericError)
                     case .genericError:
                         return .value(.showGenericError)
                     }
@@ -1118,17 +1144,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return .value(.showGenericError)
             }
             switch result {
-            case
-                    .success(let session),
-                    .invalidArgument(let session),
-                    .retryAfterTimeout(let session):
+            case .success(let session):
                 self.inMemoryState.pendingCodeTransport = nil
-                // TODO[Registration] handle invalid e164 differently to show error
                 self.processSession(session)
                 return self.nextStep()
-            case .challengeRequired(let session):
-                // Don't clear any pending code transport, so we resend once
-                // the user completes the challenge.
+            case .rejectedArgument(let session):
+                Logger.error("Should never get rejected argument error from requesting code. E164 already set on session.")
+                // Wipe the pending code request, so we don't retry.
+                self.inMemoryState.pendingCodeTransport = nil
+                self.processSession(session)
+                return self.nextStep()
+            case .disallowed(let session):
+                // Whatever caused this should be represented on the session itself,
+                // and once we unblock we should retry sending so don't clear the pending
+                // code transport.
                 self.processSession(session)
                 return self.nextStep()
             case .invalidSession:
@@ -1144,6 +1173,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // TODO[Registration] show some particular error here.
                     return .value(.showGenericError)
                 }
+            case .retryAfterTimeout(let session):
+                // TODO[Registration]: just auto retry if short enough?
+                // Clear the pending code; we want the user to press again
+                // once the timeout expires.
+                self.inMemoryState.pendingCodeTransport = nil
+                self.processSession(session)
+                return self.nextStep()
+            case .networkFailure:
+                // TODO[Registration] handle retries
+                return .value(.showGenericError)
             case .genericError:
                 self.inMemoryState.pendingCodeTransport = nil
                 return .value(.showGenericError)
@@ -1163,14 +1202,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return .value(.showGenericError)
             }
             switch result {
-            case
-                    .success(let session),
-                    .challengeRequired(let session),
-                    .invalidArgument(let session),
-                    .retryAfterTimeout(let session):
-                // TODO[Registration] handle invalid captcha token differently to show error
+            case .success(let session):
                 self.processSession(session)
                 return self.nextStep()
+            case .rejectedArgument(let session):
+                // TODO[Registration] invalid captcha token; show error
+                self.processSession(session)
+                return self.nextStep()
+            case .disallowed(let session):
+                Logger.warn("Disallowed to complete a challenge which should be impossible.")
+                // Don't keep trying to send a code.
+                self.inMemoryState.pendingCodeTransport = nil
+                self.processSession(session)
+                return .value(.showGenericError)
             case .invalidSession:
                 self.resetSession()
                 return self.nextStep()
@@ -1182,6 +1226,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // TODO[Registration] show some particular error here.
                     return .value(.showGenericError)
                 }
+            case .retryAfterTimeout(let session):
+                // TODO[Registration]: just auto retry if short enough?
+                // Clear the pending code; we want the user to press again
+                // once the timeout expires.
+                self.inMemoryState.pendingCodeTransport = nil
+                self.processSession(session)
+                return self.nextStep()
+            case .networkFailure:
+                // TODO[Registration] handle retries
+                return .value(.showGenericError)
             case .genericError:
                 return .value(.showGenericError)
             }
@@ -1200,13 +1254,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return .value(.showGenericError)
             }
             switch result {
-            case
-                    .success(let session),
-                    .challengeRequired(let session),
-                    .invalidArgument(let session),
-                    .retryAfterTimeout(let session):
-                // TODO[Registration] handle invalid code differently to show error
-                // than other errors.
+            case .success(let session):
+                if !session.verified {
+                    // The code must have been wrong.
+                    fallthrough
+                }
+                self.processSession(session)
+                return self.nextStep()
+            case .rejectedArgument(let session):
+                // TODO[Registration]: wrong code; show error
+                self.processSession(session)
+                return self.nextStep()
+            case .disallowed(let session):
+                // This state means the session state is updated
+                // such that what comes next has changed, e.g. we can't send a verification
+                // code and will kick the user back to sending an sms code.
                 self.processSession(session)
                 return self.nextStep()
             case .invalidSession:
@@ -1220,6 +1282,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // TODO[Registration] show some particular error here.
                     return .value(.showGenericError)
                 }
+            case .retryAfterTimeout(let session):
+                // TODO[Registration]: need to wait out timeout; show error, or retry if short enough.
+                self.processSession(session)
+                return self.nextStep()
+            case .networkFailure:
+                // TODO[Registration] handle retries
+                return .value(.showGenericError)
             case .genericError:
                 return .value(.showGenericError)
             }
@@ -1581,6 +1650,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case rejectedVerificationMethod
         case deviceTransferPossible
         case retryAfter(TimeInterval)
+        case networkError
         case genericError
     }
 
@@ -1588,11 +1658,5 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     enum Constants {
         static let persistedStateKey = "state"
-
-        /// If we last sent a verification code more than this long ago,
-        /// we'd default to letting the user send a new code by going
-        /// back to the phone number entry screen. This is so we
-        /// avoid sending too many or too few SMS codes.
-        static let codeResendTimeout: TimeInterval = 60 * 20 // 20 mins
     }
 }

@@ -40,7 +40,7 @@ public enum RegistrationServiceResponses {
         case notAccepted = 403
         /// No session was found with the given ID. A new session should be initiated.
         case missingSession = 404
-        case invalidArgument = 422
+        case malformedRequest = 422
         case unexpectedError = -1
 
         static public var unknown: Self { .unexpectedError }
@@ -49,16 +49,18 @@ public enum RegistrationServiceResponses {
     public enum RequestVerificationCodeResponseCodes: Int, UnknownEnumCodable {
         /// Success. Response body has `RegistrationSession` object.
         case success = 200
-        case transportInvalid = 400
+        case malformedRequest = 400
         /// No session was found with the given ID. A new session should be initiated.
         case missingSession = 404
-        /// The client must fulfill some challenge before proceeding (found on the session object).
+        /// The current session state disallows requesting a code.
+        /// The client may have to fulfill some challenge before proceeding,
+        /// or the session might already be verified. Check the session object to know.
         /// Response body has `RegistrationSession` object.
-        case challengeRequired = 409
+        case disallowed = 409
         /// May need to wait before trying again; check session object for timeouts.
         /// If no timeout is specified, a different transport or starting a fresh session may be required.
         /// Response body has `RegistrationSession` object.
-        case notPermitted = 429
+        case retry = 429
         /// The attempt to send a verification code failed because an external service (e.g. the SMS provider) refused to deliver the code.
         /// Response body has `SendVerificationCodeFailedResponse` with more detailed information.
         case providerFailure = 502
@@ -68,20 +70,24 @@ public enum RegistrationServiceResponses {
     }
 
     public enum SubmitVerificationCodeResponseCodes: Int, UnknownEnumCodable {
-        /// Success. Response body has `RegistrationSession` object.
+        /// The code was valid, but may not be correct. The
+        /// `isVerified` field on the session object indicates
+        /// correctness.
+        /// Response body has `RegistrationSession` object.
         case success = 200
-        case codeInvalid = 400
+        /// The code was illegally formatted.
+        case malformedRequest = 400
         /// No session was found with the given ID. A new session should be initiated.
         case missingSession = 404
         /// This session will not accept additional verification code submissions either because no code has been sent for this session
         /// (clients must request and presumably receive a verification code before submitting a code)
         /// or because the phone number has already been verified with another code.
         /// Response body has `RegistrationSession` object.
-        case codeNotYetSent = 409
+        case newCodeRequired = 409
         /// May need to wait before trying again; check session object for timeouts.
-        /// If no timeout is specified, starting a fresh session may be required.
+        /// If no timeout is specified, sending a new code or starting a fresh session may be required.
         /// Response body has `RegistrationSession` object.
-        case notPermitted = 429
+        case retry = 429
         case unexpectedError = -1
 
         static public var unknown: Self { .unexpectedError }
@@ -161,7 +167,7 @@ public enum RegistrationServiceResponses {
         /// Success. Response body has `KBSAuthCheckResponse` object.
         case success = 200
         /// The server couldn't parse the set of credentials.
-        case invalidArgument = 422
+        case malformedRequest = 422
         /// The POST request body is not valid JSON.
         case invalidJSON = 400
         case unexpectedError = -1
@@ -194,7 +200,6 @@ public enum RegistrationServiceResponses {
 
     // MARK: - Account Creation/Change Number
 
-    // TODO[Registration]: these codes have changed in the server API design document
     public enum AccountCreationResponseCodes: Int, UnknownEnumCodable {
         /// Success. Response body has `AccountIdentityResponse`.
         case success = 200
@@ -206,6 +211,9 @@ public enum RegistrationServiceResponses {
         /// to verify ownership of the given phone number.
         /// Response body has an optional string error message.
         case unauthorized = 401
+        /// The provided registration recovery password is either incorrect
+        /// or registration via reg recovery password is impossible for this number.
+        case regRecoveryPasswordRejected = 403
         /// The caller has not explicitly elected to skip transferring data
         /// from another device, but a device transfer is technically possible.
         case deviceTransferPossible = 409
@@ -225,12 +233,26 @@ public enum RegistrationServiceResponses {
         static public var unknown: Self { .unexpectedError }
     }
 
-    // TODO[Registration]: Fill in 409 and 410 errors once we know what they are.
     public enum ChangeNumberResponseCodes: Int, UnknownEnumCodable {
         /// Success. Response body has `AccountIdentityResponse`.
         case success = 200
+        /// Incorrect request body shape, missing required Authorization header,
+        /// or Authorization e164 did not match e164 from session.
+        /// Response body has a string error message.
+        case malformedRequest = 400
         /// The provided credentials were insufficient to verify ownership of the given phone number.
-        case unauthorized = 403
+        case unauthorized = 401
+        /// The provided registration recovery password is either incorrect
+        /// or registration via reg recovery password is impossible for this number.
+        case regRecoveryPasswordRejected = 403
+        /// The devices to notify in the request did not match the known
+        /// linked devices.
+        case mismatchedDevicesToNotify = 409
+        /// The devices to notify in the request were correct, but their
+        /// provided registrationIds did not match.
+        case mismatchedDevicesToNotifyRegistrationIds = 410
+        /// Response body has an optional string error message.
+        case invalidArgument = 422
         /// An account with the given phone number already exists and has a registration lock,
         /// and the client has not provided appropriate reglock credentials (either because the
         /// user inputted the wrong PIN, or because the client has the wrong random number

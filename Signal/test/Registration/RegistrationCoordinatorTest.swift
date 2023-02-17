@@ -366,7 +366,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.run(atTime: 1) {
             // Resolve with a session at time 3.
             self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session()),
+                resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
                 atTime: 3
             )
         }
@@ -382,7 +382,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.run(atTime: 3) {
             // Resolve with an updated session at time 4.
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session(lastCodeRequestDate: self.date)),
+                resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
                 atTime: 4
             )
         }
@@ -460,7 +460,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.run(atTime: 1) {
             // Resolve with a session at time 3.
             self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session()),
+                resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
                 atTime: 3
             )
         }
@@ -476,7 +476,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.run(atTime: 3) {
             // Resolve with an updated session at time 4.
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session(lastCodeRequestDate: self.date)),
+                resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
                 atTime: 4
             )
         }
@@ -705,7 +705,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.run(atTime: 1) {
             // Resolve with a session at time 3.
             self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session()),
+                resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
                 atTime: 3
             )
         }
@@ -715,7 +715,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.run(atTime: 3) {
             // Resolve with an updated session at time 4.
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session(lastCodeRequestDate: self.date)),
+                resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
                 atTime: 4
             )
         }
@@ -753,9 +753,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
-                nextVerificationAttempt: 0,
+                nextVerificationAttempt: nil,
                 allowedToRequestCode: true,
-                lastCodeRequestDate: nil,
                 requestedInformation: [],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false
@@ -776,7 +775,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     nextCall: 0,
                     nextVerificationAttempt: 0,
                     allowedToRequestCode: true,
-                    lastCodeRequestDate: self.date,
                     requestedInformation: [],
                     hasUnknownChallengeRequiringAppUpdate: false,
                     verified: false
@@ -806,9 +804,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
-                nextVerificationAttempt: 0,
+                nextVerificationAttempt: nil,
                 allowedToRequestCode: true,
-                lastCodeRequestDate: date,
                 requestedInformation: [],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: true
@@ -915,9 +912,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
-                nextVerificationAttempt: 0,
+                nextVerificationAttempt: nil,
                 allowedToRequestCode: false,
-                lastCodeRequestDate: nil,
                 requestedInformation: [.captcha, .pushChallenge],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false
@@ -945,9 +941,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
-                nextVerificationAttempt: 0,
+                nextVerificationAttempt: nil,
                 allowedToRequestCode: true,
-                lastCodeRequestDate: nil,
                 requestedInformation: [],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false
@@ -970,7 +965,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     nextCall: 0,
                     nextVerificationAttempt: 0,
                     allowedToRequestCode: false,
-                    lastCodeRequestDate: self.date,
                     requestedInformation: [.captcha, .pushChallenge],
                     hasUnknownChallengeRequiringAppUpdate: false,
                     verified: false
@@ -1004,7 +998,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 nextCall: 0,
                 nextVerificationAttempt: 0,
                 allowedToRequestCode: true,
-                lastCodeRequestDate: self.date,
                 requestedInformation: [],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false
@@ -1013,7 +1006,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         )
 
         // This means at t=10 when we fulfill the challenge, it should
-        // immediately try and send the that couldn't be sent before because
+        // immediately try and send the code that couldn't be sent before because
         // of the challenge.
         // Reply to this at t=12.
         let secondCodeDate = date.addingTimeInterval(10)
@@ -1027,7 +1020,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     nextCall: 0,
                     nextVerificationAttempt: 0,
                     allowedToRequestCode: true,
-                    lastCodeRequestDate: secondCodeDate,
                     requestedInformation: [],
                     hasUnknownChallengeRequiringAppUpdate: false,
                     verified: false
@@ -1066,9 +1058,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
-                nextVerificationAttempt: 0,
+                nextVerificationAttempt: nil,
                 allowedToRequestCode: false,
-                lastCodeRequestDate: nil,
                 requestedInformation: [.captcha],
                 hasUnknownChallengeRequiringAppUpdate: true,
                 verified: false
@@ -1098,9 +1089,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
-                nextVerificationAttempt: 0,
+                nextVerificationAttempt: nil,
                 allowedToRequestCode: false,
-                lastCodeRequestDate: nil,
                 requestedInformation: [],
                 hasUnknownChallengeRequiringAppUpdate: true,
                 verified: false
@@ -1135,9 +1125,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
-                nextVerificationAttempt: 0,
+                nextVerificationAttempt: nil,
                 allowedToRequestCode: true,
-                lastCodeRequestDate: nil,
                 requestedInformation: [],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false
@@ -1158,7 +1147,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     nextCall: 0,
                     nextVerificationAttempt: 0,
                     allowedToRequestCode: true,
-                    lastCodeRequestDate: self.date,
                     requestedInformation: [],
                     hasUnknownChallengeRequiringAppUpdate: false,
                     verified: false
@@ -1296,18 +1284,15 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
         }
 
-        static func session(
-            lastCodeRequestDate: Date? = nil
-        ) -> RegistrationSession {
+        static func session(hasSentVerificationCode: Bool) -> RegistrationSession {
             return RegistrationSession(
                 id: UUID().uuidString,
                 e164: e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
-                nextVerificationAttempt: 0,
+                nextVerificationAttempt: hasSentVerificationCode ? 0 : nil,
                 allowedToRequestCode: true,
-                lastCodeRequestDate: lastCodeRequestDate,
                 requestedInformation: [],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false

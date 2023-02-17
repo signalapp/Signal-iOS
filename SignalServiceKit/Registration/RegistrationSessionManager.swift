@@ -52,7 +52,9 @@ public enum Registration {
         case invalidArgument
         /// The server indicated the client should retry after at least this much time has passed.
         case retryAfter(TimeInterval)
-        /// Some other generic unknown error, such as a network error.
+        /// A network failure.
+        case networkFailure
+        /// Some other generic unknown error.
         case genericError
     }
 
@@ -60,13 +62,17 @@ public enum Registration {
     /// relevant to the registration flow, in other words those that should have distinct error behaviors.
     public enum UpdateSessionResponse: Equatable {
         case success(RegistrationSession)
-        /// A challenge must be completed before retrying the request.
-        case challengeRequired(RegistrationSession)
-        /// Some input was incorrect or badly formatted; typically
+        /// Some input was incorrect or otherwise rejected; typically
         /// should have the user update and retry.
         /// `RegistrationSession` state should be checked regardless, as
         /// (for example) a new challenge may have been requested.
-        case invalidArgument(RegistrationSession)
+        case rejectedArgument(RegistrationSession)
+        /// This happens when the attempted operation cannot be fulfilled
+        /// given the current session state, and a different operation must
+        /// be completed first, such as a challenge.
+        /// For example, a verification code may have been submitted
+        /// despite no code being available for submission.
+        case disallowed(RegistrationSession)
         /// The request was made before the required timeout; it should be
         /// made again after the time specified in the `RegistrationSession`.
         case retryAfterTimeout(RegistrationSession)
@@ -77,7 +83,9 @@ public enum Registration {
         /// If non-permanent, a retry after some delay is allowed.
         /// Otherwise, registration may not be possible.
         case serverFailure(ServerFailureResponse)
-        /// Some other generic unknown error, such as a network error.
+        /// A network failure.
+        case networkFailure
+        /// Some other generic unknown error.
         case genericError
     }
 
