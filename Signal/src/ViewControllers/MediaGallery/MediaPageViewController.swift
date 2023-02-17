@@ -125,6 +125,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: Top Bar
     lazy var topContainer = UIView()
+    // See `viewSafeAreaInsetsDidChange` why this is needed.
+    private var navigationBarTopLayoutConstraint: NSLayoutConstraint?
 
     // MARK: Bottom Bar
     lazy var bottomContainer = UIView()
@@ -184,38 +186,37 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         galleryRailView.delegate = self
         galleryRailView.autoSetDimension(.height, toSize: 72)
 
-        topContainer.backgroundColor = UIColor.ows_black.withAlphaComponent(0.4)
-
         view.addSubview(topContainer)
         topContainer.autoPinWidthToSuperview()
         topContainer.autoPinEdge(toSuperviewEdge: .top)
+        topContainer.backgroundColor = .ows_blackAlpha40
 
-        let toolbarHeight: CGFloat = 44
+        let navigationBar = UINavigationBar()
+        navigationBar.delegate = self
+        navigationBar.tintColor = Theme.darkThemeNavbarIconColor
+        if #available(iOS 13, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithTransparentBackground()
+            navigationBar.standardAppearance = appearance
+            navigationBar.compactAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.overrideUserInterfaceStyle = .dark
+        } else {
+            navigationBar.barTintColor = .clear
+            navigationBar.isTranslucent = false
+        }
+        navigationBar.setItems([ UINavigationItem(title: ""), UINavigationItem(title: "") ], animated: false)
+        topContainer.addSubview(navigationBar)
+        navigationBar.autoPinWidthToSuperview()
+        navigationBarTopLayoutConstraint = navigationBar.autoPinEdge(toSuperviewEdge: .top)
+        navigationBar.autoPinEdge(toSuperviewEdge: .bottom)
 
-        let fakeNavBar = UIView()
-        fakeNavBar.autoSetDimension(.height, toSize: toolbarHeight)
-        topContainer.addSubview(fakeNavBar)
-        fakeNavBar.autoPinWidthToSuperview()
-        fakeNavBar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        fakeNavBar.autoPinEdge(toSuperviewEdge: .bottom)
+        topContainer.addSubview(headerView)
+        headerView.autoAlignAxis(.vertical, toSameAxisOf: navigationBar)
+        headerView.autoAlignAxis(.horizontal, toSameAxisOf: navigationBar)
 
-        fakeNavBar.addSubview(headerView)
-        headerView.autoCenterInSuperview()
-
-        let isRTL = CurrentAppContext().isRTL
-        let imageName = isRTL ? "NavBarBackRTL" : "NavBarBack"
-        let backButton = UIButton(type: .custom)
-        backButton.setTemplateImageName(imageName, tintColor: .white)
-        backButton.addTarget(self, action: #selector(didPressDismissButton(_:)), for: .touchUpInside)
-
-        fakeNavBar.addSubview(backButton)
-        backButton.autoPinEdge(toSuperviewSafeArea: .leading)
-        backButton.autoSetDimensions(to: CGSize(square: toolbarHeight))
-        backButton.autoVCenterInSuperview()
-
-        footerBar.tintColor = .white
-
-        bottomContainer.backgroundColor = UIColor.ows_black.withAlphaComponent(0.4)
+        footerBar.tintColor = Theme.darkThemePrimaryColor
+        bottomContainer.backgroundColor = .ows_blackAlpha40
 
         let bottomStack = UIStackView(arrangedSubviews: [captionContainerView, galleryRailView, footerBar])
         bottomStack.axis = .vertical
@@ -226,7 +227,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         bottomContainer.autoPinWidthToSuperview()
         bottomContainer.autoPinEdge(toSuperviewEdge: .bottom)
         footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        footerBar.autoSetDimension(.height, toSize: toolbarHeight)
+        footerBar.autoSetDimension(.height, toSize: 44)
 
         updateTitle()
         updateCaption(item: currentItem)
@@ -243,6 +244,21 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         setNeedsStatusBarAppearanceUpdate()
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        if let navigationBarTopLayoutConstraint {
+            // On iPhones with a Dynamic Island standard position of a navigation bar is bottom of the status bar,
+            // which is ~5 dp smaller than the top safe area (https://useyourloaf.com/blog/iphone-14-screen-sizes/) .
+            // Since it is not possible to constrain top edge of our manually maintained navigation bar to that position
+            // the workaround is to detect exactly safe area of 59 points and decrease it.
+            var topInset = view.safeAreaInsets.top
+            if topInset == 59 {
+                topInset -= 5 + CGHairlineWidth()
+            }
+            navigationBarTopLayoutConstraint.constant = topInset
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -381,11 +397,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         Logger.debug("")
 
         self.dismissSelf(animated: true)
-    }
-
-    @objc
-    public func didPressDismissButton(_ sender: Any) {
-        dismissSelf(animated: true)
     }
 
     @objc
@@ -933,5 +944,12 @@ extension MediaPageViewController: ForwardMessageDelegate {
 
     public func forwardMessageFlowDidCancel() {
         dismiss(animated: true)
+    }
+}
+
+extension MediaPageViewController: UINavigationBarDelegate {
+    func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
+        dismissSelf(animated: true)
+        return false
     }
 }
