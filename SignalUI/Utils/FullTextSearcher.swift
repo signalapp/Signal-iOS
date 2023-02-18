@@ -11,7 +11,7 @@ public typealias MessageSortKey = UInt64
 public struct ConversationSortKey: Comparable {
     let isContactThread: Bool
     let creationDate: Date?
-    let lastInteractionRowId: Int64
+    let lastInteractionRowId: UInt64
 
     // MARK: Comparable
 

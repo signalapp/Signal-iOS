@@ -67,7 +67,7 @@ class TSPrivateStoryThreadSerializer: SDSSerializer {
         let conversationColorName: String = model.conversationColorNameObsolete
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchivedObsolete
-        let lastInteractionRowId: Int64 = model.lastInteractionRowId
+        let lastInteractionRowId: UInt64 = model.lastInteractionRowId
         let messageDraft: String? = model.messageDraft
         let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDateObsolete)
         let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible

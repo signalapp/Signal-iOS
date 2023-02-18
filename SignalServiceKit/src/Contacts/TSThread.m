@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) MessageBodyRanges *messageDraftBodyRanges;
 
 @property (atomic) uint64_t mutedUntilTimestampObsolete;
-@property (nonatomic) int64_t lastInteractionRowId;
+@property (nonatomic) uint64_t lastInteractionRowId;
 
 @property (nonatomic, nullable) NSDate *mutedUntilDateObsolete;
 @property (nonatomic) uint64_t lastVisibleSortIdObsolete;
@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
                     creationDate:(nullable NSDate *)creationDate
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
-            lastInteractionRowId:(int64_t)lastInteractionRowId
+            lastInteractionRowId:(uint64_t)lastInteractionRowId
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
@@ -385,14 +385,14 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     [self updateWithMessage:message wasMessageInserted:NO transaction:transaction];
 }
 
-- (int64_t)messageSortIdForMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
+- (uint64_t)messageSortIdForMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (message.grdbId == nil) {
         OWSFailDebug(@"Missing messageSortId.");
     } else if (message.grdbId.unsignedLongLongValue == 0) {
         OWSFailDebug(@"Invalid messageSortId.");
     } else {
-        return message.grdbId.longLongValue;
+        return message.grdbId.unsignedLongLongValue;
     }
     return 0;
 }
@@ -417,7 +417,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
         return;
     }
 
-    int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
+    uint64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToMarkAsVisible = !self.shouldThreadBeVisible;
 
     ThreadAssociatedData *associatedData = [ThreadAssociatedData fetchOrDefaultForThread:self transaction:transaction];
@@ -494,7 +494,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     OWSAssertDebug(message != nil);
     OWSAssertDebug(transaction != nil);
 
-    int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
+    uint64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToUpdateLastInteractionRowId = messageSortId == self.lastInteractionRowId;
 
     NSNumber *_Nullable lastVisibleSortId = [self lastVisibleSortIdWithTransaction:transaction];

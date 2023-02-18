@@ -34,7 +34,7 @@ public struct ThreadRecord: SDSRecord {
     public let conversationColorName: String
     public let creationDate: Double?
     public let isArchived: Bool
-    public let lastInteractionRowId: Int64
+    public let lastInteractionRowId: UInt64
     public let messageDraft: String?
     public let mutedUntilDate: Double?
     public let shouldThreadBeVisible: Bool
@@ -164,7 +164,7 @@ extension TSThread {
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
-            let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastInteractionRowId: UInt64 = record.lastInteractionRowId
             let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
@@ -210,7 +210,7 @@ extension TSThread {
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
-            let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastInteractionRowId: UInt64 = record.lastInteractionRowId
             let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
@@ -253,7 +253,7 @@ extension TSThread {
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
-            let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastInteractionRowId: UInt64 = record.lastInteractionRowId
             let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
@@ -300,7 +300,7 @@ extension TSThread {
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
-            let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastInteractionRowId: UInt64 = record.lastInteractionRowId
             let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
@@ -402,7 +402,7 @@ extension TSThread: DeepCopyable {
             let creationDate: Date? = modelToCopy.creationDate
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
-            let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastInteractionRowId: UInt64 = modelToCopy.lastInteractionRowId
             let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
@@ -460,7 +460,7 @@ extension TSThread: DeepCopyable {
             let creationDate: Date? = modelToCopy.creationDate
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
-            let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastInteractionRowId: UInt64 = modelToCopy.lastInteractionRowId
             let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
@@ -514,7 +514,7 @@ extension TSThread: DeepCopyable {
             let creationDate: Date? = modelToCopy.creationDate
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
-            let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastInteractionRowId: UInt64 = modelToCopy.lastInteractionRowId
             let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
@@ -571,7 +571,7 @@ extension TSThread: DeepCopyable {
             let creationDate: Date? = modelToCopy.creationDate
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
-            let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastInteractionRowId: UInt64 = modelToCopy.lastInteractionRowId
             let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
@@ -1092,7 +1092,7 @@ class TSThreadSerializer: SDSSerializer {
         let conversationColorName: String = model.conversationColorNameObsolete
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchivedObsolete
-        let lastInteractionRowId: Int64 = model.lastInteractionRowId
+        let lastInteractionRowId: UInt64 = model.lastInteractionRowId
         let messageDraft: String? = model.messageDraft
         let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDateObsolete)
         let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible
