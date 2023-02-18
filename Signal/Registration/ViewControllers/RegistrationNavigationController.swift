@@ -86,8 +86,17 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
-        case .permissions:
-            fatalError("Unimplemented")
+        case .permissions(let state):
+            return Controller(
+                type: RegistrationPermissionsViewController.self,
+                make: { presenter in
+                    return RegistrationPermissionsViewController(state: state, presenter: presenter)
+                },
+                // The state never changes here. In theory we would build
+                // state update support in the permissions controller,
+                // but its overkill so we have not.
+                update: nil
+            )
         case .phoneNumberEntry:
             fatalError("Unimplemented")
         case .verificationCodeEntry:
@@ -128,6 +137,13 @@ extension RegistrationNavigationController: RegistrationSplashPresenter {
 
     public func continueFromSplash() {
         pushNextController(coordinator.continueFromSplash())
+    }
+}
+
+extension RegistrationNavigationController: RegistrationPermissionsPresenter {
+
+    func requestPermissions() {
+        pushNextController(coordinator.requestPermissions())
     }
 }
 

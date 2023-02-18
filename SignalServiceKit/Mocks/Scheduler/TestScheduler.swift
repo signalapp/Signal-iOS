@@ -163,7 +163,7 @@ public class TestScheduler: Scheduler {
 
     // MARK: - Internals
 
-    private var isRunning = false
+    public private(set) var isRunning = false
     private var isReEntrant = false
 
     private func advanceIfRunning() {

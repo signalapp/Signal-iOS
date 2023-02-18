@@ -97,7 +97,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertNotEqual(coordinator.continueFromSplash().value, .splash)
     }
 
-    func testOpeningPath_contacts() {
+    func testOpeningPath_permissions() {
         // Don't care about timing, just start it.
         scheduler.start()
 
@@ -110,14 +110,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(coordinator.nextStep().value, .splash)
 
         // Now we should show the permissions.
-        XCTAssertEqual(coordinator.continueFromSplash().value, .permissions)
+        XCTAssertEqual(coordinator.continueFromSplash().value, .permissions(Stubs.permissionsState()))
         // Doesn't change even if we try and proceed.
-        XCTAssertEqual(coordinator.nextStep().value, .permissions)
+        XCTAssertEqual(coordinator.nextStep().value, .permissions(Stubs.permissionsState()))
 
         // Once the state is updated we can proceed.
         let nextStep = coordinator.requestPermissions().value
         XCTAssertNotEqual(nextStep, .splash)
-        XCTAssertNotEqual(nextStep, .permissions)
+        XCTAssertNotEqual(nextStep, .permissions(Stubs.permissionsState()))
     }
 
     // MARK: - Reg Recovery Password Path
@@ -143,6 +143,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 return nil
             }
         }
+
+        // NOTE: We expect to skip opening path steps because
+        // if we have a KBS master key locally, this _must_ be
+        // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
         XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
@@ -237,6 +241,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 return nil
             }
         }
+
+        // NOTE: We expect to skip opening path steps because
+        // if we have a KBS master key locally, this _must_ be
+        // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
         XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
@@ -333,6 +341,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Run the scheduler for a bit; we don't care about timing these bits.
         scheduler.start()
 
+        // NOTE: We expect to skip opening path steps because
+        // if we have a KBS master key locally, this _must_ be
+        // a previously registered device, and we can skip intros.
+
         // We haven't set a phone number so it should ask for that.
         XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
 
@@ -422,6 +434,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         // Run the scheduler for a bit; we don't care about timing these bits.
         scheduler.start()
+
+        // NOTE: We expect to skip opening path steps because
+        // if we have a KBS master key locally, this _must_ be
+        // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
         XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
@@ -514,6 +530,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         // Run the scheduler for a bit; we don't care about timing these bits.
         scheduler.start()
+
+        // NOTE: We expect to skip opening path steps because
+        // if we have a KBS master key locally, this _must_ be
+        // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
         XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
@@ -635,9 +655,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Set profile info so we skip those steps.
         self.setAllProfileInfo()
 
-        contactsStore.doesNeedContactsAuthorization = true
-        pushRegistrationManagerMock.doesNeedNotificationAuthorization = true
-
         // Put some auth credentials in storage.
         let credentialCandidates: [KBSAuthCredential] = [
             Stubs.kbsAuthCredential,
@@ -647,14 +664,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
         ]
         kbsAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
 
-        // The very first thing should take us to the splash and permissions,
-        // as this flow can start from a fresh device.
-        XCTAssertEqual(coordinator.nextStep().value, .splash)
-        XCTAssertEqual(coordinator.continueFromSplash().value, .permissions)
-
-        // Get past permissions.
-        // We haven't set a phone number so it should ask for that next.
-        XCTAssertEqual(coordinator.requestPermissions().value, .phoneNumberEntry)
+        // Get past the opening.
+        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry)
 
         // Give it a phone number, which should cause it to check the auth credentials.
         // Match the main auth credential.
@@ -787,9 +798,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Set profile info so we skip those steps.
         setupDefaultAccountAttributes()
 
-        contactsStore.doesNeedContactsAuthorization = false
-        pushRegistrationManagerMock.doesNeedNotificationAuthorization = false
-
         // Put some auth credentials in storage.
         let credentialCandidates: [KBSAuthCredential] = [
             Stubs.kbsAuthCredential,
@@ -799,12 +807,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
         ]
         kbsAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
 
-        // The very first thing should take us to the splash (we've granted permissions above),
-        // as this flow can start from a fresh device.
-        XCTAssertEqual(coordinator.nextStep().value, .splash)
-
-        // We haven't set a phone number so it should ask for that next.
-        XCTAssertEqual(coordinator.continueFromSplash().value, .phoneNumberEntry)
+        // Get past the opening.
+        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry)
 
         scheduler.stop()
         scheduler.adjustTime(to: 0)
@@ -1317,6 +1321,42 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     // TODO[Registration]: test the profile setup steps.
 
+    // MARK: Happy Path Setups
+
+    private func preservingSchedulerState(_ block: () -> Void) {
+        let startTime = scheduler.currentTime
+        let wasRunning = scheduler.isRunning
+        scheduler.stop()
+        scheduler.adjustTime(to: 0)
+        block()
+        scheduler.adjustTime(to: startTime)
+        if wasRunning {
+            scheduler.start()
+        }
+    }
+
+    private func goThroughOpeningHappyPath(expectedNextStep: RegistrationStep) {
+        preservingSchedulerState {
+            contactsStore.doesNeedContactsAuthorization = true
+            pushRegistrationManagerMock.doesNeedNotificationAuthorization = true
+
+            // Gotta get the splash out of the way.
+            var nextStep = coordinator.nextStep()
+            scheduler.runUntilIdle()
+            XCTAssertEqual(nextStep.value, .splash)
+
+            // Now we should show the permissions.
+            nextStep = coordinator.continueFromSplash()
+            scheduler.runUntilIdle()
+            XCTAssertEqual(nextStep.value, .permissions(Stubs.permissionsState()))
+
+            // Once the state is updated we can proceed.
+            nextStep = coordinator.requestPermissions()
+            scheduler.runUntilIdle()
+            XCTAssertEqual(nextStep.value, expectedNextStep)
+        }
+    }
+
     // MARK: - Helpers
 
     private func setupDefaultAccountAttributes() {
@@ -1334,31 +1374,16 @@ public class RegistrationCoordinatorTest: XCTestCase {
     }
 
     private func setUpSessionPath() {
-        // Don't care about timing, just start it.
-        scheduler.start()
-
         // Set profile info so we skip those steps.
         self.setupDefaultAccountAttributes()
 
         pushRegistrationManagerMock.requestPushTokenMock = { .value(Stubs.apnsToken)}
 
-        contactsStore.doesNeedContactsAuthorization = true
-        pushRegistrationManagerMock.doesNeedNotificationAuthorization = true
-
         // No other setup; no auth credentials, kbs keys, etc in storage
         // so that we immediately go to the session flow.
 
-        // The very first thing should take us to the splash and permissions,
-        // as this flow can start from a fresh device.
-        XCTAssertEqual(coordinator.nextStep().value, .splash)
-        XCTAssertEqual(coordinator.continueFromSplash().value, .permissions)
-
-        // Get past permissions.
-        // We haven't set a phone number so it should ask for that next.
-        XCTAssertEqual(coordinator.requestPermissions().value, .phoneNumberEntry)
-
-        scheduler.stop()
-        scheduler.adjustTime(to: 0)
+        // Get past the opening.
+        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry)
     }
 
     private static func attributesFromCreateAccountRequest(
@@ -1428,6 +1453,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false
             )
+        }
+
+        // MARK: Step States
+
+        static func permissionsState() -> RegistrationPermissionsState {
+            return RegistrationPermissionsState(shouldRequestAccessToContacts: true)
         }
     }
 }

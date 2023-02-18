@@ -9,7 +9,7 @@ public enum RegistrationStep: Equatable {
 
     // MARK: - Opening Steps
     case splash
-    case permissions
+    case permissions(RegistrationPermissionsState)
 
     // MARK: - Actually registering
 

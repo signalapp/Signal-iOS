@@ -8,16 +8,14 @@ import Lottie
 
 // MARK: - RegistrationPermissionsState
 
-struct RegistrationPermissionsState {
+public struct RegistrationPermissionsState: Equatable {
     let shouldRequestAccessToContacts: Bool
 }
 
 // MARK: - RegistrationPermissionsPresenter
 
 protocol RegistrationPermissionsPresenter: AnyObject {
-    func requestAccessToNotifications() -> Guarantee<Void>
-    func requestAccessToContacts() -> Guarantee<Void>
-    func goToNextStep()
+    func requestPermissions()
 }
 
 // MARK: - RegistrationPermissionsViewController
@@ -53,6 +51,8 @@ class RegistrationPermissionsViewController: OWSViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+
+        navigationItem.setHidesBackButton(true, animated: false)
 
         view.backgroundColor = Theme.backgroundColor
 
@@ -147,26 +147,6 @@ class RegistrationPermissionsViewController: OWSViewController {
     // MARK: Requesting permissions
 
     private func requestPermissions() {
-        firstly { [weak self] () -> Guarantee<Void> in
-            guard let presenter = self?.presenter else { return .value(()) }
-
-            Logger.info("Requesting notification permissions")
-            return presenter.requestAccessToNotifications()
-        }.then { [weak self] () -> Guarantee<Void> in
-            guard let self, let presenter = self.presenter else {
-                return .value(())
-            }
-
-            if self.state.shouldRequestAccessToContacts {
-                Logger.info("Requesting contact permissions")
-                return presenter.requestAccessToContacts()
-            } else {
-                Logger.info("Not requesting contact permissions")
-                return .value(())
-            }
-        }.done { [weak self] in
-            Logger.info("Done requesting permissions")
-            self?.presenter?.goToNextStep()
-        }
+        presenter?.requestPermissions()
     }
 }
