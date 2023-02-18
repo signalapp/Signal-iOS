@@ -23,8 +23,8 @@ pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspec
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
 # pod 'blurhash', path: '../blurhash'
 
-ENV['RINGRTC_PREBUILD_CHECKSUM'] = '513e68f96fef4ba48f63f0d857ba6619087bda1e308fe83233d07928bb4bdb79'
-pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.24.0', inhibit_warnings: true
+ENV['RINGRTC_PREBUILD_CHECKSUM'] = '65536015cd641dc08c01c934043f73a092d7e6e5b295c6c21977f528b2dc87e0'
+pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.25.0', inhibit_warnings: true
 # pod 'SignalRingRTC', path: '../ringrtc', testspecs: ["Tests"]
 
 pod 'SignalArgon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
