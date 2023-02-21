@@ -18,9 +18,7 @@ public enum RegistrationStep: Equatable {
     /// the user to confirm the number at least once before proceeding.
     /// The number may be used to send an SMS or as a way to identify the
     /// account being registered for via KBS backup info.
-    /// TODO[Registration]: define the view model struct to be passed here,
-    /// which should include error state if the phone number is invalid or rejected.
-    case phoneNumberEntry
+    case phoneNumberEntry(RegistrationPhoneNumberState)
 
     /// If registering via session, the step to enter the verification code.
     /// TODO[Registration]: define the view model struct to be passed here,
@@ -59,10 +57,17 @@ public enum RegistrationStep: Equatable {
 
     // MARK: - Non-ViewController steps
 
+    public enum ErrorSheet: Equatable {
+        /// We should tell the user their attempt has expired
+        /// and they need to start over.
+        case sessionInvalidated
+        // TODO[Registration]: define other error types.
+        case todo
+    }
+
     /// Special cases; should display an error on the current screen, whatever it is.
     /// (If this is returned as the first step, show the splash and then this error).
-    /// TODO[Registration] define what this must contain.
-    case showGenericError
+    case showErrorSheet(ErrorSheet)
 
     /// Special case, should display a banner on the current screen, whatever it is.
     /// Happens if we get a response from the server we can't parse; we assume this means

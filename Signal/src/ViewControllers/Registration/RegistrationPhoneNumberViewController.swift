@@ -9,19 +9,18 @@ import SignalMessaging
 
 // MARK: - RegistrationPhoneNumberValidationError
 
-enum RegistrationPhoneNumberValidationError {
+public enum RegistrationPhoneNumberValidationError: Equatable {
     case invalidNumber(invalidE164: String)
     case rateLimited(expiration: Date)
 }
 
 // MARK: - RegistrationPhoneNumberState
 
-struct RegistrationPhoneNumberState {
-    enum RegistrationPhoneNumberMode {
-        case initialRegistration(
-            defaultCountryState: RegistrationCountryState,
-            previouslyEnteredE164: String?
-        )
+public struct RegistrationPhoneNumberState: Equatable {
+    public enum RegistrationPhoneNumberMode: Equatable {
+        /// PreviouslyEnteredE164 is if the user entered a number, quit, and came back.
+        /// Will be used to pre-populate the entry field.
+        case initialRegistration(previouslyEnteredE164: String?)
         case reregistration(e164: String)
         case changingPhoneNumber(oldE164: String)
     }
@@ -48,12 +47,12 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
         self.phoneNumberInput = RegistrationPhoneNumberInputView(initialPhoneNumber: {
             switch state.mode {
-            case let .initialRegistration(defaultCountryState, previouslyEnteredE164):
+            case let .initialRegistration(previouslyEnteredE164):
                 if let e164 = previouslyEnteredE164, let result = RegistrationPhoneNumber(e164: e164) {
                     return result
                 }
                 return RegistrationPhoneNumber(
-                    countryState: defaultCountryState,
+                    countryState: .defaultValue,
                     nationalNumber: ""
                 )
             case let .reregistration(e164):
@@ -73,6 +72,10 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         super.init()
 
         self.phoneNumberInput.delegate = self
+    }
+
+    public func updateState(_ state: RegistrationPhoneNumberState) {
+        self.state = state
     }
 
     @available(*, unavailable)

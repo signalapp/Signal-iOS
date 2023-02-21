@@ -149,7 +149,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
-        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
+        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164).value
@@ -247,7 +247,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
-        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
+        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164).value
@@ -346,7 +346,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
-        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
+        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164)
@@ -440,7 +440,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
-        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
+        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164)
@@ -536,7 +536,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
-        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry)
+        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164)
@@ -665,7 +665,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         kbsAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
 
         // Get past the opening.
-        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry)
+        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should cause it to check the auth credentials.
         // Match the main auth credential.
@@ -808,7 +808,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         kbsAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
 
         // Get past the opening.
-        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry)
+        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         scheduler.stop()
         scheduler.adjustTime(to: 0)
@@ -1030,6 +1030,66 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(scheduler.currentTime, 2)
 
         XCTAssertEqual(nextStep.value, .done)
+    }
+
+    public func testSessionPath_invalidE164() {
+        setUpSessionPath()
+
+        let badE164 = "555555555555"
+
+        // Give it a phone number, which should cause it to start a session.
+        let nextStep = coordinator.submitE164(badE164)
+
+        // At t=2, reject for invalid argument (the e164).
+        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+            resolvingWith: .invalidArgument,
+            atTime: 2
+        )
+
+        scheduler.runUntilIdle()
+        XCTAssertEqual(scheduler.currentTime, 2)
+
+        // It should put us on the phone number entry screen again
+        // with an error.
+        XCTAssertEqual(
+            nextStep.value,
+            .phoneNumberEntry(
+                Stubs.phoneNumberEntryState(
+                    previouslyEnteredE164: badE164,
+                    withValidationErrorFor: .invalidArgument
+                )
+            )
+        )
+    }
+
+    public func testSessionPath_rateLimitSessionCreation() {
+        setUpSessionPath()
+
+        let retryTimeInterval: TimeInterval = 5
+
+        // Give it a phone number, which should cause it to start a session.
+        let nextStep = coordinator.submitE164(Stubs.e164)
+
+        // At t=2, reject with a rate limit.
+        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+            resolvingWith: .retryAfter(retryTimeInterval),
+            atTime: 2
+        )
+
+        scheduler.runUntilIdle()
+        XCTAssertEqual(scheduler.currentTime, 2)
+
+        // It should put us on the phone number entry screen again
+        // with an error.
+        XCTAssertEqual(
+            nextStep.value,
+            .phoneNumberEntry(
+                Stubs.phoneNumberEntryState(
+                    previouslyEnteredE164: Stubs.e164,
+                    withValidationErrorFor: .retryAfter(retryTimeInterval)
+                )
+            )
+        )
     }
 
     public func testSessionPath_captchaChallenge() {
@@ -1309,12 +1369,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
             atTime: 7
         )
 
-        // That means at t=7 it should fall all the way back to phone
-        // number entry.
+        // That means at t=7 it should show an error, and then phone number entry.
         scheduler.runUntilIdle()
         XCTAssertEqual(scheduler.currentTime, 7)
-        // TODO[Registration]: test error state on the phone number entry screen.
-        XCTAssertEqual(nextStep.value, .phoneNumberEntry)
+        XCTAssertEqual(nextStep.value, .showErrorSheet(.sessionInvalidated))
+        nextStep = coordinator.nextStep()
+        scheduler.runUntilIdle()
+        XCTAssertEqual(nextStep.value, .phoneNumberEntry(Stubs.phoneNumberEntryState(previouslyEnteredE164: Stubs.e164)))
     }
 
     // MARK: - Profile Setup Path
@@ -1383,7 +1444,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // so that we immediately go to the session flow.
 
         // Get past the opening.
-        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry)
+        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState()))
     }
 
     private static func attributesFromCreateAccountRequest(
@@ -1459,6 +1520,30 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         static func permissionsState() -> RegistrationPermissionsState {
             return RegistrationPermissionsState(shouldRequestAccessToContacts: true)
+        }
+
+        static func phoneNumberEntryState(
+            previouslyEnteredE164: String? = nil,
+            withValidationErrorFor response: Registration.BeginSessionResponse = .success(Stubs.session(hasSentVerificationCode: false))
+        ) -> RegistrationPhoneNumberState {
+            let validationError: RegistrationPhoneNumberValidationError?
+            switch response {
+            case .success:
+                validationError = nil
+            case .invalidArgument:
+                validationError = .invalidNumber(invalidE164: previouslyEnteredE164 ?? Stubs.e164)
+            case .retryAfter(let timeInterval):
+                validationError = .rateLimited(expiration: self.date.addingTimeInterval(timeInterval))
+            case .networkFailure, .genericError:
+                XCTFail("Should not be generating phone number state for error responses.")
+                validationError = nil
+            }
+
+            return RegistrationPhoneNumberState(
+                // TODO[Registration]: test other modes (re-registration, change number)
+                mode: .initialRegistration(previouslyEnteredE164: previouslyEnteredE164),
+                validationError: validationError
+            )
         }
     }
 }

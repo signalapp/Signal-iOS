@@ -7,7 +7,7 @@ import Foundation
 import SignalCoreKit
 import SignalServiceKit
 
-public struct RegistrationCountryState: Dependencies {
+public struct RegistrationCountryState: Equatable, Dependencies {
     // e.g. France
     public let countryName: String
     // e.g. +33

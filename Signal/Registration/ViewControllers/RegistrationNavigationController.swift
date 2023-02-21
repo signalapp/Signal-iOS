@@ -97,8 +97,16 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // but its overkill so we have not.
                 update: nil
             )
-        case .phoneNumberEntry:
-            fatalError("Unimplemented")
+        case .phoneNumberEntry(let state):
+            return Controller(
+                type: RegistrationPhoneNumberViewController.self,
+                make: { presenter in
+                    return RegistrationPhoneNumberViewController(state: state, presenter: presenter)
+                },
+                update: { controller in
+                    controller.updateState(state)
+                }
+            )
         case .verificationCodeEntry:
             fatalError("Unimplemented")
         case .transferSelection:
@@ -111,7 +119,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             fatalError("Unimplemented")
         case .setupProfile:
             fatalError("Unimplemented")
-        case .showGenericError:
+        case .showErrorSheet:
             fatalError("Unimplemented")
         case .appUpdateBanner:
             fatalError("Unimplemented")
@@ -144,6 +152,13 @@ extension RegistrationNavigationController: RegistrationPermissionsPresenter {
 
     func requestPermissions() {
         pushNextController(coordinator.requestPermissions())
+    }
+}
+
+extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
+
+    func goToNextStep(withE164 e164: String) {
+        pushNextController(coordinator.submitE164(e164))
     }
 }
 
