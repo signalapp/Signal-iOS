@@ -6,7 +6,7 @@
 import Foundation
 import SignalMessaging
 
-struct RegistrationPhoneNumberDiscoverabilityState {
+public struct RegistrationPhoneNumberDiscoverabilityState: Equatable {
     let e164: String
 }
 

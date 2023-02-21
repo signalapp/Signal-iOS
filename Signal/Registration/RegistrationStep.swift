@@ -47,7 +47,7 @@ public enum RegistrationStep: Equatable {
     /// If the account has not set whether its phone number should be
     /// discoverable, this step happens after registration is complete.
     /// (Typically skipped during re-registration as a result.)
-    case phoneNumberDiscoverability
+    case phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState)
 
     /// If the account has not set profile info, this step happens after registration is complete.
     /// (Typically skipped during re-registration as a result.)

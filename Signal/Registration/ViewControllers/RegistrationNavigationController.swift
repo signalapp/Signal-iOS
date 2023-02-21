@@ -137,8 +137,17 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
-        case .phoneNumberDiscoverability:
-            fatalError("Unimplemented")
+        case .phoneNumberDiscoverability(let state):
+            return Controller(
+                type: RegistrationPhoneNumberDiscoverabilityViewController.self,
+                make: { presenter in
+                    return RegistrationPhoneNumberDiscoverabilityViewController(state: state, presenter: presenter)
+                },
+                // The state never changes here. In theory we would build
+                // state update support in the controller,
+                // but its overkill so we have not.
+                update: nil
+            )
         case .setupProfile:
             return Controller(
                 type: RegistrationProfileViewController.self,
@@ -191,6 +200,13 @@ extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
     }
 }
 
+extension RegistrationNavigationController: RegistrationCaptchaPresenter {
+
+    func submitCaptcha(_ token: String) {
+        pushNextController(coordinator.submitCaptcha(token))
+    }
+}
+
 extension RegistrationNavigationController: RegistrationVerificationPresenter {
 
     func returnToPhoneNumberEntry() {
@@ -228,10 +244,10 @@ extension RegistrationNavigationController: RegistrationProfilePresenter {
     }
 }
 
-extension RegistrationNavigationController: RegistrationCaptchaPresenter {
+extension RegistrationNavigationController: RegistrationPhoneNumberDiscoverabilityPresenter {
 
-    func submitCaptcha(_ token: String) {
-        pushNextController(coordinator.submitCaptcha(token))
+    func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) {
+        pushNextController(coordinator.setPhoneNumberDiscoverability(isDiscoverable))
     }
 }
 

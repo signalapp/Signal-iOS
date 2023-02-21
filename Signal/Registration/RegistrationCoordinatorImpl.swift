@@ -1610,7 +1610,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
         }
         if !inMemoryState.hasDefinedIsDiscoverableByPhoneNumber {
-            return .value(.phoneNumberDiscoverability)
+            return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(e164: accountIdentity.response.e164)))
         }
         if !inMemoryState.hasProfileName {
             return .value(.setupProfile)
