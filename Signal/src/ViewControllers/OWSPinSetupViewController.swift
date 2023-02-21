@@ -26,7 +26,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         let explanationLabel = LinkingTextView()
         let explanationText: String
         switch mode {
-        case .onboardingCreating, .creating:
+        case .deprecated_onboardingCreating, .creating:
             explanationText = NSLocalizedString("PIN_CREATION_EXPLANATION",
                                                 comment: "The explanation in the 'pin creation' view.")
         case .changing:
@@ -159,7 +159,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
 
     enum Mode: Equatable {
-        case onboardingCreating
+        case deprecated_onboardingCreating
         case creating
         case changing
         case confirming(pinToMatch: String)
@@ -238,7 +238,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
     @objc
     class func onboardingCreating(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
-        return .init(mode: .onboardingCreating, completionHandler: completionHandler)
+        return .init(mode: .deprecated_onboardingCreating, completionHandler: completionHandler)
     }
 
     @objc
@@ -276,7 +276,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             [backButton, moreButton, titleLabel].forEach { $0.isHidden = true }
         } else {
             // If we're in onboarding mode, don't allow going back
-            if case .onboardingCreating = mode {
+            if case .deprecated_onboardingCreating = mode {
                 backButton.isHidden = true
             } else {
                 backButton.isHidden = false
@@ -479,7 +479,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         }
 
         switch mode {
-        case .onboardingCreating, .changing, .creating:
+        case .deprecated_onboardingCreating, .changing, .creating:
             let confirmingVC = PinSetupViewController(
                 mode: .confirming(pinToMatch: pin),
                 initialMode: initialMode,
@@ -604,7 +604,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                 // We only want to stop for network errors if we're past onboarding.
                 // During onboarding, we want to let the user continue even when
                 // a network issue is encountered during PIN creation.
-                if self.initialMode != .onboardingCreating {
+                if self.initialMode != .deprecated_onboardingCreating {
                     throw PinSetupError.networkFailure
                 }
             }
@@ -693,7 +693,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                     )
                 case .enable2FA:
                     switch self.initialMode {
-                    case .onboardingCreating:
+                    case .deprecated_onboardingCreating:
                         OWSActionSheets.showActionSheet(
                             title: NSLocalizedString(
                                 "PIN_CREATION_ERROR_TITLE",
