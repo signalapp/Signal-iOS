@@ -133,7 +133,14 @@ public class RegistrationNavigationController: OWSNavigationController {
         case .phoneNumberDiscoverability:
             fatalError("Unimplemented")
         case .setupProfile:
-            fatalError("Unimplemented")
+            return Controller(
+                type: RegistrationProfileViewController.self,
+                make: { presenter in
+                    return RegistrationProfileViewController(presenter: presenter)
+                },
+                // No state to update.
+                update: nil
+            )
         case .showErrorSheet:
             fatalError("Unimplemented")
         case .appUpdateBanner:
@@ -204,6 +211,13 @@ extension RegistrationNavigationController: RegistrationTransferChoicePresenter 
 
     func continueRegistration() {
         pushNextController(coordinator.skipDeviceTransfer())
+    }
+}
+
+extension RegistrationNavigationController: RegistrationProfilePresenter {
+
+    func goToNextStep(givenName: String, familyName: String?, avatarData: Data?) {
+        pushNextController(coordinator.setProfileInfo(givenName: givenName, familyName: familyName, avatarData: avatarData))
     }
 }
 
