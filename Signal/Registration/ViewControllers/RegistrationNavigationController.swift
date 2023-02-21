@@ -118,7 +118,14 @@ public class RegistrationNavigationController: OWSNavigationController {
                 }
             )
         case .transferSelection:
-            fatalError("Unimplemented")
+            return Controller(
+                type: RegistrationTransferChoiceViewController.self,
+                make: { presenter in
+                    return RegistrationTransferChoiceViewController(presenter: presenter)
+                },
+                // No state to update.
+                update: nil
+            )
         case .pinEntry:
             fatalError("Unimplemented")
         case .captchaChallenge:
@@ -186,6 +193,17 @@ extension RegistrationNavigationController: RegistrationVerificationPresenter {
 
     func submitVerificationCode(_ code: String) {
         pushNextController(coordinator.submitVerificationCode(code))
+    }
+}
+
+extension RegistrationNavigationController: RegistrationTransferChoicePresenter {
+
+    func transferDevice() {
+        // TODO[Registration]: hand off to the device transfer flow.
+    }
+
+    func continueRegistration() {
+        pushNextController(coordinator.skipDeviceTransfer())
     }
 }
 

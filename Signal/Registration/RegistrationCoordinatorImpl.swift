@@ -213,6 +213,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return nextStep()
     }
 
+    public func skipDeviceTransfer() -> Guarantee<RegistrationStep> {
+        db.write { tx in
+            updatePersistedState(tx) {
+                $0.hasDeclinedTransfer = true
+            }
+        }
+        return self.nextStep()
+    }
+
     public func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) -> Guarantee<RegistrationStep> {
         self.inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = true
         self.inMemoryState.isDiscoverableByPhoneNumber = isDiscoverable
@@ -702,7 +711,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(.pinEntry)
         }
 
-        if inMemoryState.needsToAskForDeviceTransfer {
+        if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
             return .value(.transferSelection)
         }
 

@@ -62,6 +62,11 @@ public protocol RegistrationCoordinator {
     /// step but with attached metadata giving more info on the rejection.
     func submitPINCode(_ code: String) -> Guarantee<RegistrationStep>
 
+    /// When registering, the server will inform us (via an error code) if device transfer is
+    /// possible from an existing device. In this case, the user must either transfer or explicitly
+    /// decline transferring; this method informs the flow of the latter choice.
+    func skipDeviceTransfer() -> Guarantee<RegistrationStep>
+
     /// Set whether the user's PNI should be discoverable by phone number.
     /// If the update is rejected for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the rejection.
