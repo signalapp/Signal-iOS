@@ -129,7 +129,14 @@ public class RegistrationNavigationController: OWSNavigationController {
         case .pinEntry:
             fatalError("Unimplemented")
         case .captchaChallenge:
-            fatalError("Unimplemented")
+            return Controller(
+                type: RegistrationCaptchaViewController.self,
+                make: { presenter in
+                    return RegistrationCaptchaViewController(presenter: presenter)
+                },
+                // No state to update.
+                update: nil
+            )
         case .phoneNumberDiscoverability:
             fatalError("Unimplemented")
         case .setupProfile:
@@ -218,6 +225,13 @@ extension RegistrationNavigationController: RegistrationProfilePresenter {
 
     func goToNextStep(givenName: String, familyName: String?, avatarData: Data?) {
         pushNextController(coordinator.setProfileInfo(givenName: givenName, familyName: familyName, avatarData: avatarData))
+    }
+}
+
+extension RegistrationNavigationController: RegistrationCaptchaPresenter {
+
+    func submitCaptcha(_ token: String) {
+        pushNextController(coordinator.submitCaptcha(token))
     }
 }
 
