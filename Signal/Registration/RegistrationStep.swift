@@ -21,9 +21,7 @@ public enum RegistrationStep: Equatable {
     case phoneNumberEntry(RegistrationPhoneNumberState)
 
     /// If registering via session, the step to enter the verification code.
-    /// TODO[Registration]: define the view model struct to be passed here,
-    /// which should include error state if the code is invalid or rejected.
-    case verificationCodeEntry
+    case verificationCodeEntry(RegistrationVerificationState)
 
     /// When registering, the server can inform the client that a device-to-device
     /// transfer is possible. If so, the user must either do the transfer, or explicitly
@@ -61,6 +59,11 @@ public enum RegistrationStep: Equatable {
         /// We should tell the user their attempt has expired
         /// and they need to start over.
         case sessionInvalidated
+        /// The user can no longer submit a verification code.
+        /// This could be because the previously sent code expired,
+        /// or because they used up their verification code attempts.
+        /// In either case, they need to send a new code to proceed.
+        case verificationCodeSubmissionUnavailable
         // TODO[Registration]: define other error types.
         case todo
     }

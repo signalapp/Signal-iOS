@@ -5,12 +5,28 @@
 
 import Foundation
 
+// MARK: - RegistrationVerificationValidationError
+
+public enum RegistrationVerificationValidationError: Equatable {
+    case invalidVerificationCode(invalidCode: String)
+    // These three errors are what happens when we try and
+    // take the three respective actions but are rejected
+    // with a timeout. The State should have timeout information.
+    case smsResendTimeout
+    case voiceResendTimeout
+    case submitCodeTimeout
+}
+
 // MARK: - RegistrationVerificationState
 
-struct RegistrationVerificationState {
+public struct RegistrationVerificationState: Equatable {
     let e164: String
     let nextSMSDate: Date?
     let nextCallDate: Date?
+    // TODO[Registration]: use this state to render a countdown.
+    let nextVerificationAttemptDate: Date
+    // TODO[Registration]: use this state to render error UI.
+    let validationError: RegistrationVerificationValidationError?
 }
 
 // MARK: - RegistrationVerificationPresenter
@@ -38,6 +54,10 @@ class RegistrationVerificationViewController: OWSViewController {
     @available(*, unavailable)
     public override init() {
         owsFail("This should not be called")
+    }
+
+    public func updateState(_ state: RegistrationVerificationState) {
+        self.state = state
     }
 
     deinit {

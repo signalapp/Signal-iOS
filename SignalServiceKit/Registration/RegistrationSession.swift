@@ -51,7 +51,7 @@ public struct RegistrationSession: Codable, Equatable {
     public let nextVerificationAttempt: TimeInterval?
 
     public var nextVerificationAttemptDate: Date? {
-        return nextSMS.map { receivedDate.addingTimeInterval($0) }
+        return nextVerificationAttempt.map { receivedDate.addingTimeInterval($0) }
     }
 
     /// If true, the server believes that there is a code that has been sent, is still valid,

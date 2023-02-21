@@ -107,8 +107,16 @@ public class RegistrationNavigationController: OWSNavigationController {
                     controller.updateState(state)
                 }
             )
-        case .verificationCodeEntry:
-            fatalError("Unimplemented")
+        case .verificationCodeEntry(let state):
+            return Controller(
+                type: RegistrationVerificationViewController.self,
+                make: { presenter in
+                    return RegistrationVerificationViewController(state: state, presenter: presenter)
+                },
+                update: { controller in
+                    controller.updateState(state)
+                }
+            )
         case .transferSelection:
             fatalError("Unimplemented")
         case .pinEntry:
@@ -159,6 +167,25 @@ extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
 
     func goToNextStep(withE164 e164: String) {
         pushNextController(coordinator.submitE164(e164))
+    }
+}
+
+extension RegistrationNavigationController: RegistrationVerificationPresenter {
+
+    func returnToPhoneNumberEntry() {
+        // TODO[Registration]: figure out our story on going back.
+    }
+
+    func requestSMSCode() {
+        pushNextController(coordinator.requestSMSCode())
+    }
+
+    func requestVoiceCode() {
+        pushNextController(coordinator.requestVoiceCode())
+    }
+
+    func submitVerificationCode(_ code: String) {
+        pushNextController(coordinator.submitVerificationCode(code))
     }
 }
 

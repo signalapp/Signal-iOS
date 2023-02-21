@@ -18,7 +18,7 @@ public enum RegistrationPhoneNumberValidationError: Equatable {
 
 public struct RegistrationPhoneNumberState: Equatable {
     public enum RegistrationPhoneNumberMode: Equatable {
-        /// PreviouslyEnteredE164 is if the user entered a number, quit, and came back.
+        /// previouslyEnteredE164 is if the user entered a number, quit, and came back.
         /// Will be used to pre-populate the entry field.
         case initialRegistration(previouslyEnteredE164: String?)
         case reregistration(e164: String)

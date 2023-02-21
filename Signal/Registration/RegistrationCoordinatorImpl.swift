@@ -1052,22 +1052,47 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 switch pendingCodeTransport {
                 case .sms:
                     if let nextSMSDate = session.nextSMSDate, nextSMSDate <= dateProvider() {
-                        // TODO[Registration]: let the verification code entry step know
-                        // that the timeout hasn't passed if we fail the above check.
                         return requestSessionCode(session: session, transport: pendingCodeTransport)
+                    } else if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                        return .value(.verificationCodeEntry(self.verificationCodeEntryState(
+                            session: session,
+                            nextVerificationAttemptDate: nextVerificationAttemptDate,
+                            validationError: .smsResendTimeout
+                        )))
+                    } else if let nextSMSDate = session.nextSMSDate {
+                        return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
+                            mode: self.phoneNumberEntryStateMode(),
+                            validationError: .rateLimited(expiration: nextSMSDate)
+                        )))
+                    } else {
+                        return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
                     }
                 case .voice:
                     if let nextCallDate = session.nextCallDate, nextCallDate <= dateProvider() {
-                        // TODO[Registration]: let the verification code entry step know
-                        // that the timeout hasn't passed if we fail the above check.
                         return requestSessionCode(session: session, transport: pendingCodeTransport)
+                    } else if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                        return .value(.verificationCodeEntry(self.verificationCodeEntryState(
+                            session: session,
+                            nextVerificationAttemptDate: nextVerificationAttemptDate,
+                            validationError: .voiceResendTimeout
+                        )))
+                    } else if let nextSMSDate = session.nextSMSDate {
+                        return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
+                            mode: self.phoneNumberEntryStateMode(),
+                            validationError: .rateLimited(expiration: nextSMSDate)
+                        )))
+                    } else {
+                        return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
                     }
                 }
             }
         }
 
-        if session.hasCodeAvailableToSubmit {
-            return .value(.verificationCodeEntry)
+        if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+            return .value(.verificationCodeEntry(self.verificationCodeEntryState(
+                session: session,
+                nextVerificationAttemptDate: nextVerificationAttemptDate
+            )))
         }
 
         // Otherwise we have no code awaiting submission and aren't
@@ -1335,7 +1360,29 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         }
                 } else {
                     self.inMemoryState.pendingCodeTransport = nil
-                    return self.nextStep()
+                    if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                        // Show an error on the verification code entry screen.
+                        return .value(.verificationCodeEntry(self.verificationCodeEntryState(
+                            session: session,
+                            nextVerificationAttemptDate: nextVerificationAttemptDate,
+                            validationError: {
+                                switch transport {
+                                case .sms: return .smsResendTimeout
+                                case .voice: return .voiceResendTimeout
+                                }
+                            }()
+                        )))
+                    } else if let timeInterval {
+                        // We were trying to resend from the phone number screen.
+                        return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
+                            mode: self.phoneNumberEntryStateMode(),
+                            validationError: .rateLimited(expiration: self.dateProvider().addingTimeInterval(timeInterval))
+                        )))
+                    } else {
+                        // Can't send a code, session is useless.
+                        self.resetSession()
+                        return .value(.showErrorSheet(.sessionInvalidated))
+                    }
                 }
             case .networkFailure:
                 if retriesLeft > 0 {
@@ -1433,15 +1480,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 self.processSession(session)
                 return self.nextStep()
             case .rejectedArgument(let session):
-                // TODO[Registration]: wrong code; show error
                 self.processSession(session)
-                return self.nextStep()
+                if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                    return .value(.verificationCodeEntry(self.verificationCodeEntryState(
+                        session: session,
+                        nextVerificationAttemptDate: nextVerificationAttemptDate,
+                        validationError: .invalidVerificationCode(invalidCode: code)
+                    )))
+                } else {
+                    // Something went wrong, we can't submit again.
+                    return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
+                }
             case .disallowed(let session):
                 // This state means the session state is updated
                 // such that what comes next has changed, e.g. we can't send a verification
                 // code and will kick the user back to sending an sms code.
                 self.processSession(session)
-                return self.nextStep()
+                return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
             case .invalidSession:
                 self.resetSession()
                 return .value(.showErrorSheet(.sessionInvalidated))
@@ -1468,8 +1523,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             )
                         }
                 }
-                // TODO[Registration]: show some kind of error.
-                return self.nextStep()
+                if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                    return .value(.verificationCodeEntry(self.verificationCodeEntryState(
+                        session: session,
+                        nextVerificationAttemptDate: nextVerificationAttemptDate,
+                        validationError: .submitCodeTimeout
+                    )))
+                } else {
+                    // Something went wrong, we can't submit again.
+                    return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
+                }
             case .networkFailure:
                 if retriesLeft > 0 {
                     return self.submitSessionCode(
@@ -1889,6 +1952,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .changingNumber(let oldE164, _):
             return .changingPhoneNumber(oldE164: oldE164)
         }
+    }
+
+    private func verificationCodeEntryState(
+        session: RegistrationSession,
+        nextVerificationAttemptDate: Date,
+        validationError: RegistrationVerificationValidationError? = nil
+    ) -> RegistrationVerificationState {
+        return RegistrationVerificationState(
+            e164: session.e164,
+            nextSMSDate: session.nextSMSDate,
+            nextCallDate: session.nextCallDate,
+            nextVerificationAttemptDate: nextVerificationAttemptDate,
+            validationError: validationError
+        )
     }
 
     // MARK: - Constants
