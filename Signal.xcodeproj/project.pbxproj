@@ -1255,6 +1255,7 @@
 		F0FB6B20269E625A00AC2A41 /* ContextMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */; };
 		F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */; };
 		F903C29B28EC7AE60035B42B /* TSAccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */; };
+		F905DFEB29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F905DFEA29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift */; };
 		F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */; };
 		F908179628EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */; };
 		F908AA7D28CE629700472E68 /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
@@ -3768,6 +3769,7 @@
 		F27BDDCCAEDF770CCFFF1C14 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
 		F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerTest.swift; sourceTree = "<group>"; };
+		F905DFEA29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberDiscoverabilityViewController.swift; sourceTree = "<group>"; };
 		F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptsViewController.swift; sourceTree = "<group>"; };
 		F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBDatabaseStorageAdapterTest.swift; sourceTree = "<group>"; };
 		F908AA7728CB894400472E68 /* PngChunkerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PngChunkerTest.swift; sourceTree = "<group>"; };
@@ -4965,6 +4967,7 @@
 				F9480120299E89F8005442BE /* RegistrationCaptchaViewController.swift */,
 				F92E4C73299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift */,
 				F9D5C39E2993F9FF004891FC /* RegistrationPermissionsViewController.swift */,
+				F905DFEA29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift */,
 				F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */,
 				F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */,
 				F9E3006029A02D8800DCA219 /* RegistrationPinViewController.swift */,
@@ -11231,6 +11234,7 @@
 				F92E4C74299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift in Sources */,
 				F95A64F3299589CA007FDBDF /* RegistrationNavigationController.swift in Sources */,
 				F9D5C39F2993F9FF004891FC /* RegistrationPermissionsViewController.swift in Sources */,
+				F905DFEB29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift in Sources */,
 				F9198485299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift in Sources */,
 				F95A64F529959065007FDBDF /* RegistrationPhoneNumberViewController.swift in Sources */,
 				F9E3006129A02D8800DCA219 /* RegistrationPinViewController.swift in Sources */,
