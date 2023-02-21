@@ -77,8 +77,14 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         self.conversationStyle = conversationStyle
         self.mediaCache = mediaCache
         self.inputToolbarDelegate = inputToolbarDelegate
+        self.linkPreviewFetcher = LinkPreviewFetcher(
+            linkPreviewManager: Self.linkPreviewManager,
+            schedulers: DependenciesBridge.shared.schedulers
+        )
 
         super.init(frame: .zero)
+
+        self.linkPreviewFetcher.onStateChange = { [weak self] in self?.updateLinkPreviewView() }
 
         createContentsWithMessageDraft(
             messageDraft,
@@ -884,7 +890,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     func clearTextMessage(animated: Bool) {
         setMessageBody(nil, animated: animated)
         inputTextView.undoManager?.removeAllActions()
-        wasLinkPreviewCancelled = false
     }
 
     // MARK: Quoted Reply
@@ -976,24 +981,9 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     // MARK: Link Preview
 
-    private class InputLinkPreview: Equatable {
-        let previewUrl: URL
-        var linkPreviewDraft: OWSLinkPreviewDraft?
-
-        required init(previewUrl: URL) {
-            self.previewUrl = previewUrl
-        }
-
-        static func == (lhs: ConversationInputToolbar.InputLinkPreview, rhs: ConversationInputToolbar.InputLinkPreview) -> Bool {
-            return lhs.previewUrl == rhs.previewUrl
-        }
-    }
-
-    private var inputLinkPreview: InputLinkPreview?
+    private let linkPreviewFetcher: LinkPreviewFetcher
 
     private var linkPreviewView: LinkPreviewView?
-
-    private var wasLinkPreviewCancelled = false
 
     private var isLinkPreviewHidden = true
 
@@ -1024,65 +1014,26 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     var linkPreviewDraft: OWSLinkPreviewDraft? {
         AssertIsOnMainThread()
 
-        guard !wasLinkPreviewCancelled else { return nil }
-
-        return inputLinkPreview?.linkPreviewDraft
+        return linkPreviewFetcher.linkPreviewDraftIfLoaded
     }
 
     private func updateInputLinkPreview() {
         AssertIsOnMainThread()
 
+        linkPreviewFetcher.update(messageBody?.text ?? "", enableIfEmpty: true)
+    }
+
+    private func updateLinkPreviewView() {
         let animateChanges = window != nil
 
-        guard let bodyText = messageBody?.text.trimmingCharacters(in: .whitespacesAndNewlines), !bodyText.isEmpty else {
-            clearLinkPreviewStateAndHideView(animated: animateChanges)
-            wasLinkPreviewCancelled = false
-            return
+        switch linkPreviewFetcher.currentState {
+        case .none, .failed:
+            hideLinkPreviewView(animated: animateChanges)
+        case .loading:
+            ensureLinkPreviewView(withState: LinkPreviewLoading(linkType: .preview))
+        case .loaded(let linkPreviewDraft):
+            ensureLinkPreviewView(withState: LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft))
         }
-
-        guard !wasLinkPreviewCancelled else {
-            clearLinkPreviewStateAndHideView(animated: animateChanges)
-            return
-        }
-
-        // Don't include link previews for oversize text messages.
-        guard bodyText.lengthOfBytes(using: .utf8) < kOversizeTextMessageSizeThreshold else {
-            clearLinkPreviewStateAndHideView(animated: animateChanges)
-            return
-        }
-
-        guard
-            let previewUrl = linkPreviewManager.findFirstValidUrl(in: inputTextView.text, bypassSettingsCheck: false),
-            !previewUrl.absoluteString.isEmpty else
-        {
-            clearLinkPreviewStateAndHideView(animated: animateChanges)
-            return
-        }
-
-        guard previewUrl != inputLinkPreview?.previewUrl else {
-            // No need to update.
-            return
-        }
-
-        let inputLinkPreview = InputLinkPreview(previewUrl: previewUrl)
-        self.inputLinkPreview = inputLinkPreview
-
-        ensureLinkPreviewView(withState: LinkPreviewLoading(linkType: .preview))
-
-        linkPreviewManager.fetchLinkPreview(for: previewUrl)
-            .done { [weak self] linkPreviewDraft in
-                guard let self = self else { return }
-                guard self.inputLinkPreview == inputLinkPreview else {
-                    // Obsolete callback.
-                    return
-                }
-                inputLinkPreview.linkPreviewDraft = linkPreviewDraft
-                self.ensureLinkPreviewView(withState: LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft))
-            }
-            .catch { [weak self] _ in
-                // The link preview could not be loaded.
-                self?.clearLinkPreviewStateAndHideView(animated: animateChanges)
-            }
     }
 
     private func ensureLinkPreviewView(withState state: LinkPreviewState) {
@@ -1135,11 +1086,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         animator.startAnimation()
     }
 
-    private func clearLinkPreviewStateAndHideView(animated: Bool) {
-        inputLinkPreview = nil
-        hideLinkPreviewView(animated: animated)
-    }
-
     private func hideLinkPreviewView(animated: Bool) {
         AssertIsOnMainThread()
 
@@ -1174,8 +1120,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     public func linkPreviewDidCancel() {
         AssertIsOnMainThread()
 
-        wasLinkPreviewCancelled = true
-        clearLinkPreviewStateAndHideView(animated: true)
+        linkPreviewFetcher.disable()
     }
 
     // MARK: Stickers

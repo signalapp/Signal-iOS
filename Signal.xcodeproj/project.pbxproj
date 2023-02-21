@@ -744,6 +744,8 @@
 		4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */; };
 		4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */; };
 		4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */; };
+		5003BB3F299DA0F10037159B /* LinkPreviewFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */; };
+		5003BB41299E1FD10037159B /* LinkPreviewFetcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */; };
 		500824CE292737FC005A5DC0 /* WebSocketPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CD292737FC005A5DC0 /* WebSocketPromise.swift */; };
 		500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */; };
 		500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */; };
@@ -3169,6 +3171,8 @@
 		500049CA28330184006A7466 /* mr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = mr; path = translations/mr.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CB28330185006A7466 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = nb; path = translations/nb.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CD28330189006A7466 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fa; path = translations/fa.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetcher.swift; sourceTree = "<group>"; };
+		5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetcherTest.swift; sourceTree = "<group>"; };
 		500824CD292737FC005A5DC0 /* WebSocketPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketPromise.swift; sourceTree = "<group>"; };
 		500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2OperationTest.swift; sourceTree = "<group>"; };
 		500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+ReusableCell.swift"; sourceTree = "<group>"; };
@@ -5470,6 +5474,7 @@
 			isa = PBXGroup;
 			children = (
 				F963F819292DA8E2007DBBBD /* FormattedNumberFieldTest.swift */,
+				5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */,
 				34BB78B8272C51E800DA0D04 /* MobileCoinHelperTests.swift */,
 				509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */,
 			);
@@ -5536,6 +5541,7 @@
 				34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */,
 				34A95507271B510400B05242 /* GroupViewUtils.swift */,
 				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
+				5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */,
 				34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */,
 				34A955BC271B560000B05242 /* NameCollisionFinder.swift */,
 				34A95504271B510400B05242 /* OWSAnyTouchGestureRecognizer.h */,
@@ -10468,6 +10474,7 @@
 				88B986FB28807F1D00F8C74D /* InviteFlow.swift in Sources */,
 				3402AA54271D9DCD0084CBAE /* LinearHorizontalLayout.swift in Sources */,
 				3402AA7F271D9E180084CBAE /* LinkingTextView.swift in Sources */,
+				5003BB3F299DA0F10037159B /* LinkPreviewFetcher.swift in Sources */,
 				3402AA77271D9E180084CBAE /* LinkPreviewState.swift in Sources */,
 				3402AA6D271D9E180084CBAE /* LinkPreviewView.swift in Sources */,
 				3402AA8C271D9E180084CBAE /* LoopingVideoView.swift in Sources */,
@@ -10597,6 +10604,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F963F81A292DA8E2007DBBBD /* FormattedNumberFieldTest.swift in Sources */,
+				5003BB41299E1FD10037159B /* LinkPreviewFetcherTest.swift in Sources */,
 				34BB78B9272C51E800DA0D04 /* MobileCoinHelperTests.swift in Sources */,
 				509913BE2913274100F34F8E /* PhoneNumberFinderTests.swift in Sources */,
 			);

@@ -15,10 +15,17 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
     weak var delegate: LinkPreviewAttachmentViewControllerDelegate?
 
+    private let linkPreviewFetcher: LinkPreviewFetcher
+
     init(_ linkPreview: OWSLinkPreviewDraft?) {
+        self.linkPreviewFetcher = LinkPreviewFetcher(
+            linkPreviewManager: Self.linkPreviewManager,
+            schedulers: DependenciesBridge.shared.schedulers,
+            onlyParseIfEnabled: false,
+            linkPreviewDraft: linkPreview
+        )
         super.init()
-        self.linkPreview = linkPreview
-        self.currentPreviewUrl = linkPreview?.url
+        self.linkPreviewFetcher.onStateChange = { [weak self] in self?.updateLinkPreview(animated: true) }
     }
 
     convenience required init() {
@@ -91,12 +98,11 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         textField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
         doneButton.addTarget(self, action: #selector(doneButtonPressed), for: .touchUpInside)
 
-        if let linkPreview = linkPreview {
-            textField.text = linkPreview.urlString
-            linkPreviewPanel.setState(.draft(linkPreview), animated: false)
+        if let initialLinkPreview = linkPreviewFetcher.linkPreviewDraftIfLoaded {
+            textField.text = initialLinkPreview.urlString
         }
 
-        updateUIOnLinkPreviewStateChange()
+        updateLinkPreview(animated: false)
    }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -136,19 +142,14 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         }
     }
 
-    private func updateUIOnLinkPreviewStateChange() {
-        doneButton.isEnabled = linkPreview != nil
-        updateSheetHeight()
-    }
-
     @objc
     private func textDidChange() {
-        updateLinkPreviewIfNecessary()
+        linkPreviewFetcher.update(textField.text ?? "", prependSchemeIfNeeded: true)
     }
 
     @objc
     private func doneButtonPressed() {
-        guard let linkPreview = linkPreview else { return }
+        guard case .draft(let linkPreview) = linkPreviewPanel.state else { return }
         delegate?.linkPreviewAttachmentViewController(self, didFinishWith: linkPreview)
     }
 
@@ -204,59 +205,32 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
     // MARK: - Link Preview fetching
 
-    private var linkPreview: OWSLinkPreviewDraft?
-
-    private var currentPreviewUrl: URL? {
-        didSet {
-            guard currentPreviewUrl != oldValue else { return }
-            guard let previewUrl = currentPreviewUrl else { return }
-
-            linkPreviewPanel.setState(.loading, animated: true)
-
-            linkPreviewManager.fetchLinkPreview(for: previewUrl).done(on: DispatchQueue.main) { [weak self] draft in
-                guard let self = self else { return }
-                guard self.currentPreviewUrl == previewUrl else { return }
-                self.displayLinkPreview(draft)
-            }.catch(on: DispatchQueue.main) { [weak self] error in
-                guard let self = self else { return }
-                guard self.currentPreviewUrl == previewUrl else { return }
-
-                self.displayLinkPreview(OWSLinkPreviewDraft(url: previewUrl, title: nil))
-            }
+    private func updateLinkPreview(animated: Bool) {
+        let newState: LinkPreviewPanel.State
+        switch (linkPreviewFetcher.currentState, linkPreviewFetcher.currentUrl) {
+        case (.none, _):
+            newState = .placeholder
+        case (.loading, _):
+            newState = .loading
+        case (.loaded(let linkPreviewDraft), _):
+            newState = .draft(linkPreviewDraft)
+        case (.failed, .some(let linkPreviewUrl)):
+            newState = .draft(OWSLinkPreviewDraft(url: linkPreviewUrl, title: nil))
+        case (.failed, .none):
+            owsFailDebug("Must have linkPreviewUrl in the .failed state.")
+            newState = .placeholder
         }
-    }
+        linkPreviewPanel.setState(newState, animated: animated)
 
-    private func updateLinkPreviewIfNecessary() {
-        guard var sourceString = textField.text?.ows_stripped(), !sourceString.isEmpty else { return }
-
-        // Prepend HTTPS if address is missing one and it doesn't appear to have any other protocol specified.
-        let httpsSchemePrefix = "https://"
-        if sourceString.range(of: httpsSchemePrefix, options: [ .caseInsensitive, .anchored ]) == nil && sourceString.range(of: "://") == nil {
-            sourceString.insert(contentsOf: httpsSchemePrefix, at: sourceString.startIndex)
-        }
-
-        guard let previewUrl = linkPreviewManager.findFirstValidUrl(in: sourceString, bypassSettingsCheck: true) else {
-            clearLinkPreview()
-            return
-        }
-        currentPreviewUrl = previewUrl
-    }
-
-    private func displayLinkPreview(_ linkPreview: OWSLinkPreviewDraft) {
-        self.linkPreview = linkPreview
-        linkPreviewPanel.setState(.draft(linkPreview), animated: true)
-        updateUIOnLinkPreviewStateChange()
-    }
-
-    private func clearLinkPreview(withError error: Error? = nil) {
-        currentPreviewUrl = nil
-        linkPreview = nil
-        if let error = error, case LinkPreviewError.fetchFailure = error {
-            linkPreviewPanel.setState(.error, animated: true)
+        let isDoneEnabled: Bool
+        if case .draft = newState {
+            isDoneEnabled = true
         } else {
-            linkPreviewPanel.setState(.placeholder, animated: true)
+            isDoneEnabled = false
         }
-        updateUIOnLinkPreviewStateChange()
+        doneButton.isEnabled = isDoneEnabled
+
+        updateSheetHeight()
     }
 
     private class LinkPreviewPanel: UIView {

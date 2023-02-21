@@ -27,6 +27,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
     // MARK: - Properties
 
     private let initialMessageBody: MessageBody
+    private let linkPreviewFetcher: LinkPreviewFetcher
 
     private let textView = MentionTextView()
     private let footerView = ApprovalFooterView()
@@ -50,8 +51,14 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
     required public init(messageBody: MessageBody) {
         self.initialMessageBody = messageBody
+        self.linkPreviewFetcher = LinkPreviewFetcher(
+            linkPreviewManager: Self.linkPreviewManager,
+            schedulers: DependenciesBridge.shared.schedulers
+        )
 
         super.init()
+
+        self.linkPreviewFetcher.onStateChange = { [weak self] in self?.updateLinkPreviewView() }
     }
 
     // MARK: - UIViewController
@@ -102,18 +109,12 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         super.viewDidAppear(animated)
 
         updateSendButton()
-        updateLinkPreviewIfNecessary()
+        updateLinkPreviewText()
 
         textView.becomeFirstResponder()
     }
 
     // MARK: - Link Previews
-
-    private var wasLinkPreviewCancelled = false {
-        didSet {
-            updateLinkPreviewIfNecessary()
-        }
-    }
 
     private lazy var linkPreviewView: LinkPreviewView = {
         let linkPreviewView = LinkPreviewView(draftDelegate: self)
@@ -121,53 +122,21 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         return linkPreviewView
     }()
 
-    private var currentLinkPreviewState: LinkPreviewDraft?
+    private func updateLinkPreviewText() {
+        linkPreviewFetcher.update(textView.text)
+    }
 
-    private var currentPreviewUrl: URL? {
-        didSet {
-            guard currentPreviewUrl != oldValue else { return }
-
-            // Always clear this when the URL changes. If we're setting a new URL,
-            // we'll reassign it after fetching the new preview. If we cleared the URL,
-            // we'll leave it nil.
-            currentLinkPreviewState = nil
-
-            guard let previewUrl = currentPreviewUrl else {
-                linkPreviewView.isHidden = true
-                return
-            }
-
+    private func updateLinkPreviewView() {
+        switch linkPreviewFetcher.currentState {
+        case .none, .failed:
+            linkPreviewView.isHidden = true
+        case .loading:
             linkPreviewView.configureForNonCVC(state: LinkPreviewLoading(linkType: .preview), isDraft: true)
             linkPreviewView.isHidden = false
-
-            linkPreviewManager.fetchLinkPreview(for: previewUrl).done(on: DispatchQueue.main) { [weak self] draft in
-                guard let self = self else { return }
-                guard self.currentPreviewUrl == previewUrl else { return }
-                let linkPreviewState = LinkPreviewDraft(linkPreviewDraft: draft)
-                self.linkPreviewView.configureForNonCVC(state: linkPreviewState, isDraft: true)
-                self.currentLinkPreviewState = linkPreviewState
-            }.catch { [weak self] _ in
-                self?.clearLinkPreview()
-            }
+        case .loaded(let linkPreviewDraft):
+            linkPreviewView.configureForNonCVC(state: LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft), isDraft: true)
+            linkPreviewView.isHidden = false
         }
-    }
-
-    private func updateLinkPreviewIfNecessary() {
-        guard !wasLinkPreviewCancelled else { return clearLinkPreview() }
-
-        let trimmedText = textView.text.ows_stripped()
-        guard !trimmedText.isEmpty else { return clearLinkPreview() }
-
-        let isOversizedText = trimmedText.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold
-        guard !isOversizedText else { return clearLinkPreview() }
-
-        guard let previewUrl = linkPreviewManager.findFirstValidUrl(in: trimmedText, bypassSettingsCheck: false) else { return clearLinkPreview() }
-
-        currentPreviewUrl = previewUrl
-    }
-
-    private func clearLinkPreview() {
-        currentPreviewUrl = nil
     }
 
     // MARK: - Create Views
@@ -206,7 +175,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
     public func textViewDidChange(_ textView: UITextView) {
         updateSendButton()
-        updateLinkPreviewIfNecessary()
+        updateLinkPreviewText()
     }
 
     public func textViewDidBeginTypingMention(_ textView: MentionTextView) {}
@@ -236,7 +205,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
 extension TextApprovalViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
-        let linkPreviewDraft = currentLinkPreviewState?.linkPreviewDraft
+        let linkPreviewDraft = linkPreviewFetcher.linkPreviewDraftIfLoaded
         delegate?.textApproval(self, didApproveMessage: self.textView.messageBody, linkPreviewDraft: linkPreviewDraft)
     }
 
@@ -293,8 +262,7 @@ extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
 // MARK: -
 
 extension TextApprovalViewController: LinkPreviewViewDraftDelegate {
-
     public func linkPreviewDidCancel() {
-        wasLinkPreviewCancelled = true
+        linkPreviewFetcher.disable()
     }
 }

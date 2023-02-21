@@ -131,7 +131,7 @@ public class OWSLinkPreview: MTLModel, Codable {
     ) throws -> OWSLinkPreview {
         let urlString = proto.url
 
-        guard let url = URL(string: urlString), url.isPermittedLinkPreviewUrl() else {
+        guard let url = URL(string: urlString), url.isPermittedLinkPreviewUrl(parsedFrom: nil) else {
             Logger.error("Could not parse preview url.")
             throw LinkPreviewError.invalidPreview
         }
@@ -306,8 +306,13 @@ public class OWSLinkPreview: MTLModel, Codable {
 
 // MARK: -
 
+public protocol LinkPreviewManager {
+    var areLinkPreviewsEnabledWithSneakyTransaction: Bool { get }
+    func fetchLinkPreview(for url: URL) -> Promise<OWSLinkPreviewDraft>
+}
+
 @objc
-public class OWSLinkPreviewManager: NSObject, Dependencies {
+public class OWSLinkPreviewManager: NSObject, Dependencies, LinkPreviewManager {
 
     // Although link preview fetches are non-blocking, the user may still end up
     // waiting for the fetch to complete. Because of this, UserInitiated is likely
@@ -316,33 +321,8 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
 
     // MARK: - Public
 
-    public func findFirstValidUrl(in searchString: String, bypassSettingsCheck: Bool) -> URL? {
-        guard bypassSettingsCheck || areLinkPreviewsEnabledWithSneakyTransaction() else { return nil }
-        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
-            owsFailDebug("Could not create NSDataDetector")
-            return nil
-        }
-
-        guard LinkValidator.canParseURLs(in: searchString) else {
-            return nil
-        }
-
-        var result: URL?
-        detector.enumerateMatches(in: searchString, range: searchString.entireRange) { match, _, stop in
-            guard let match = match else { return }
-            guard let parsedUrl = match.url else { return }
-            guard let matchedRange = Range(match.range, in: searchString) else { return }
-            let matchedString = String(searchString[matchedRange])
-            if parsedUrl.isPermittedLinkPreviewUrl(parsedFrom: matchedString) {
-                result = parsedUrl
-                stop.pointee = true
-            }
-        }
-        return result
-    }
-
     public func fetchLinkPreview(for url: URL) -> Promise<OWSLinkPreviewDraft> {
-        guard areLinkPreviewsEnabledWithSneakyTransaction() else {
+        guard areLinkPreviewsEnabledWithSneakyTransaction else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
 
@@ -405,7 +385,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
 
     // MARK: - Private, Utilities
 
-    func areLinkPreviewsEnabledWithSneakyTransaction() -> Bool {
+    public var areLinkPreviewsEnabledWithSneakyTransaction: Bool {
         return databaseStorage.read { transaction in
             SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         }
@@ -432,7 +412,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
         )
         urlSession.allowRedirects = true
         urlSession.customRedirectHandler = { request in
-            guard request.url?.isPermittedLinkPreviewUrl() == true else {
+            guard request.url?.isPermittedLinkPreviewUrl(parsedFrom: nil) == true else {
                 return nil
             }
             return request
@@ -657,26 +637,15 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
     }
 }
 
-fileprivate extension URL {
+extension URL {
     private static let schemeAllowSet: Set = ["https"]
     private static let tldRejectSet: Set = ["onion", "i2p"]
     private static let urlDelimeters: Set<Character> = Set(":/?#[]@")
 
-    var mimeType: String? {
-        if pathExtension.isEmpty {
-            return nil
-        }
-        guard let mimeType = MIMETypeUtil.mimeType(forFileExtension: pathExtension) else {
-            Logger.error("Image url has unknown content type: \(pathExtension).")
-            return nil
-        }
-        return mimeType
-    }
-
     /// Helper method that validates:
     /// - TLD is permitted
     /// - Comprised of valid character set
-    static private func isValidHostname(_ hostname: String) -> Bool {
+    private static func isValidHostname(_ hostname: String) -> Bool {
         // Technically, a TLD separator can be something other than a period (e.g. https://一二三。中国)
         // But it looks like NSURL/NSDataDetector won't even parse that. So we'll require periods for now
         let hostnameComponents = hostname.split(separator: ".")
@@ -700,28 +669,26 @@ fileprivate extension URL {
     ///
     /// If no sourceString is provided, the validated host will be whatever is returned from `host`, which will always
     /// be ASCII.
-    func isPermittedLinkPreviewUrl(parsedFrom sourceString: String? = nil) -> Bool {
-        guard let scheme = scheme?.lowercased().nilIfEmpty else { return false }
+    func isPermittedLinkPreviewUrl(parsedFrom sourceString: String?) -> Bool {
+        guard let scheme = scheme?.lowercased().nilIfEmpty, Self.schemeAllowSet.contains(scheme) else { return false }
         guard user == nil else { return false }
         guard password == nil else { return false }
-        let rawHostname: String?
 
-        if var sourceString = sourceString {
+        let rawHostname: String?
+        if var sourceString {
             let schemePrefix = "\(scheme)://"
             if let schemeRange = sourceString.range(of: schemePrefix, options: [ .anchored, .caseInsensitive ]) {
                 sourceString.removeSubrange(schemeRange)
             }
-
-            rawHostname = sourceString
-                .split(maxSplits: 1, whereSeparator: { Self.urlDelimeters.contains($0) }).first
-                .map { String($0) }
+            let delimiterIndex = sourceString.firstIndex(where: { Self.urlDelimeters.contains($0) })
+            rawHostname = String(sourceString[..<(delimiterIndex ?? sourceString.endIndex)])
         } else {
             // The hostname will be punycode and all ASCII
             rawHostname = host
         }
+        guard let hostname = rawHostname, Self.isValidHostname(hostname) else { return false }
 
-        guard let hostnameToValidate = rawHostname else { return false }
-        return Self.schemeAllowSet.contains(scheme) && Self.isValidHostname(hostnameToValidate)
+        return true
     }
 }
 

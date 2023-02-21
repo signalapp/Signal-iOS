@@ -25,4 +25,27 @@ public enum LinkValidator {
             return false
         }
     }
+
+    public static func firstLinkPreviewURL(in entireMessage: String) -> URL? {
+        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
+            owsFailDebug("Could not create NSDataDetector")
+            return nil
+        }
+
+        guard canParseURLs(in: entireMessage) else {
+            return nil
+        }
+
+        var result: URL?
+        detector.enumerateMatches(in: entireMessage, range: entireMessage.entireRange) { match, _, stop in
+            guard let match = match else { return }
+            guard let parsedUrl = match.url else { return }
+            guard let matchedRange = Range(match.range, in: entireMessage) else { return }
+            guard parsedUrl.absoluteString.isEmpty.negated else { return }
+            guard parsedUrl.isPermittedLinkPreviewUrl(parsedFrom: String(entireMessage[matchedRange])) else { return }
+            result = parsedUrl
+            stop.pointee = true
+        }
+        return result
+    }
 }
