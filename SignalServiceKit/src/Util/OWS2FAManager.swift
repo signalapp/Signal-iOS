@@ -185,6 +185,38 @@ extension OWS2FAManager {
         }
     }
 
+    public static func isWeakPin(_ pin: String) -> Bool {
+        let normalizedPin = KeyBackupService.normalizePin(pin)
+
+        guard pin.count >= kMin2FAv2PinLength else { return true }
+
+        // We only check numeric pins for weakness
+        guard normalizedPin.digitsOnly() == normalizedPin else { return false }
+
+        var allTheSame = true
+        var forwardSequential = true
+        var reverseSequential = true
+
+        var previousWholeNumberValue: Int?
+        for character in normalizedPin {
+            guard let current = character.wholeNumberValue else {
+                owsFailDebug("numeric pin unexpectedly contatined non-numeric characters")
+                break
+            }
+
+            defer { previousWholeNumberValue = current }
+            guard let previous = previousWholeNumberValue else { continue }
+
+            if previous != current { allTheSame = false }
+            if previous + 1 != current { forwardSequential = false }
+            if previous - 1 != current { reverseSequential = false }
+
+            if !allTheSame && !forwardSequential && !reverseSequential { break }
+        }
+
+        return allTheSame || forwardSequential || reverseSequential
+    }
+
     // MARK: - KeyBackupService Wrappers/Helpers
 
     @objc

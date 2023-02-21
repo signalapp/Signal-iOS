@@ -473,7 +473,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             return
         }
 
-        if isWeakPin(pin) {
+        if OWS2FAManager.isWeakPin(pin) {
             validationState = .weak
             return
         }
@@ -491,36 +491,6 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         case .confirming:
             enable2FAAndContinue(withPin: pin)
         }
-    }
-
-    private func isWeakPin(_ pin: String) -> Bool {
-        let normalizedPin = KeyBackupService.normalizePin(pin)
-
-        // We only check numeric pins for weakness
-        guard normalizedPin.digitsOnly() == normalizedPin else { return false }
-
-        var allTheSame = true
-        var forwardSequential = true
-        var reverseSequential = true
-
-        var previousWholeNumberValue: Int?
-        for character in normalizedPin {
-            guard let current = character.wholeNumberValue else {
-                owsFailDebug("numeric pin unexpectedly contatined non-numeric characters")
-                break
-            }
-
-            defer { previousWholeNumberValue = current }
-            guard let previous = previousWholeNumberValue else { continue }
-
-            if previous != current { allTheSame = false }
-            if previous + 1 != current { forwardSequential = false }
-            if previous - 1 != current { reverseSequential = false }
-
-            if !allTheSame && !forwardSequential && !reverseSequential { break }
-        }
-
-        return allTheSame || forwardSequential || reverseSequential
     }
 
     private func updateValidationWarnings() {
