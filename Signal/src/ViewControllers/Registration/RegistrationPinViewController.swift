@@ -78,27 +78,35 @@ class RegistrationPinViewController: OWSViewController {
 
     // MARK: Rendering
 
-    private lazy var moreButton: UIButton = {
-        let result = ContextMenuButton(contextMenu: .init([
-            .init(
-                title: OWSLocalizedString(
-                    "PIN_CREATION_LEARN_MORE",
-                    comment: "Learn more action on the pin creation view"
-                ),
-                handler: { [weak self] _ in
-                    self?.showLearnMoreUi()
-                }
+    private func moreButtonContextMenu(canSkip: Bool) -> ContextMenu {
+        var actions: [ContextMenuAction] = [.init(
+            title: OWSLocalizedString(
+                "PIN_CREATION_LEARN_MORE",
+                comment: "Learn more action on the pin creation view"
             ),
-            .init(
+            handler: { [weak self] _ in
+                self?.showLearnMoreUi()
+            }
+        )]
+
+        if canSkip {
+            actions.append(.init(
                 title: OWSLocalizedString(
                     "PIN_CREATION_SKIP",
                     comment: "Skip action on the pin creation view"
                 ),
-                handler: { _ in
-                    // TODO[Registration] Let users disable PINs
+                handler: { [weak self] _ in
+                    Logger.info("")
+                    self?.presenter?.submitWithSkippedPin()
                 }
-            )
-        ]))
+            ))
+        }
+
+        return ContextMenu(actions)
+    }
+
+    private lazy var moreButton: ContextMenuButton = {
+        let result = ContextMenuButton()
         result.showsContextMenuAsPrimaryAction = true
         result.autoSetDimensions(to: .square(40))
         return result
@@ -248,6 +256,8 @@ class RegistrationPinViewController: OWSViewController {
     }
 
     private func initialRender() {
+        navigationItem.setHidesBackButton(true, animated: false)
+
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
         scrollView.autoPinWidthToSuperviewMargins()
@@ -286,14 +296,13 @@ class RegistrationPinViewController: OWSViewController {
     private func render() {
         switch state.operation {
         case .creatingNewPin:
-            navigationItem.setHidesBackButton(true, animated: false)
             navigationItem.leftBarButtonItem = moreBarButton
+            moreButton.contextMenu = moreButtonContextMenu(canSkip: true)
         case .confirmingNewPin:
-            navigationItem.setHidesBackButton(false, animated: false)
             navigationItem.leftBarButtonItem = backBarButton
-        case .enteringExistingPin:
-            navigationItem.setHidesBackButton(true, animated: false)
-            navigationItem.leftBarButtonItem = nil
+        case let .enteringExistingPin(canSkip):
+            navigationItem.leftBarButtonItem = moreBarButton
+            moreButton.contextMenu = moreButtonContextMenu(canSkip: canSkip)
         }
 
         navigationItem.rightBarButtonItem = canSubmit ? nextBarButton : nil
