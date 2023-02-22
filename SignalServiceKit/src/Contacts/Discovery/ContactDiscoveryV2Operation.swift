@@ -384,11 +384,11 @@ final class ContactDiscoveryV2Operation {
         }
         remainingData = remainingData.dropFirst(aciCount)
 
-        guard let e164 = E164("+\(rawE164)") else {
-            throw ContactDiscoveryError.assertionError(description: "malformed e164")
-        }
         guard pni != UUID.allZeros else {
             return nil
+        }
+        guard let e164 = E164("+\(rawE164)") else {
+            throw ContactDiscoveryError.assertionError(description: "malformed e164")
         }
         return DiscoveryResult(
             e164: e164,

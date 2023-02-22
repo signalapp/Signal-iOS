@@ -115,6 +115,43 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
         XCTAssertEqual(operationResults?.first?.aci, aci)
     }
 
+    func testNotDiscoverable() throws {
+        let operation = ContactDiscoveryV2Operation(
+            e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
+            compatibilityMode: .fetchAllACIs,
+            persistentState: nil,
+            connectionFactory: connectionFactory
+        )
+
+        // Prepare the server's responses to the client's request.
+        let connection = MockContactDiscoveryV2Connection()
+        connection.onSendRequestAndReadResponse = { _ in
+            var response = CDSI_ClientResponse()
+            response.token = Cryptography.generateRandomBytes(65)
+            return .value(try! response.serializedData())
+        }
+        connection.onSendRequestAndReadAllResponses = { _ in
+            var response = CDSI_ClientResponse()
+            response.e164PniAciTriples = Data(count: 40)
+            return .value([try! response.serializedData()])
+        }
+        connectionFactory.onConnectAndPerformHandshake = { queue in
+            return .value(connection)
+        }
+
+        // Run the discovery operation.
+        var operationResults: [ContactDiscoveryV2Operation.DiscoveryResult]?
+        let operationExpectation = expectation(description: "Waiting for operation.")
+        operation.perform(on: DispatchQueue.main).done { results in
+            operationResults = results
+            operationExpectation.fulfill()
+        }.cauterize()
+        waitForExpectations(timeout: 10)
+
+        // Make sure we got back the result we expected.
+        XCTAssertEqual(operationResults?.count, 0)
+    }
+
     /// If the server reports a rate limit, we should parse "retry after".
     func testRateLimitError() throws {
         let operation = ContactDiscoveryV2Operation(
