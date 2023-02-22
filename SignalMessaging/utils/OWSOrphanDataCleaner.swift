@@ -75,4 +75,103 @@ extension OWSOrphanDataCleaner {
             return false
         }
     }
+
+    @objc
+    static func findJobRecordAttachmentIds(transaction: SDSAnyReadTransaction) -> [String]? {
+        var attachmentIds = [String]()
+        var shouldAbort = false
+
+        func findAttachmentIds<JobRecordType: SSKJobRecord>(
+            label: String,
+            transaction: SDSAnyReadTransaction,
+            jobRecordAttachmentIds: (JobRecordType) -> some Sequence<String>
+        ) {
+            do {
+                try AnyJobRecordFinder<JobRecordType>().enumerateJobRecords(
+                    label: label,
+                    transaction: transaction,
+                    block: { jobRecord, stop in
+                        guard isMainAppAndActive() else {
+                            shouldAbort = true
+                            stop = true
+                            return
+                        }
+                        attachmentIds.append(contentsOf: jobRecordAttachmentIds(jobRecord))
+                    }
+                )
+            } catch {
+                Logger.warn("Couldn't enumerate job records: \(error)")
+            }
+        }
+
+        findAttachmentIds(
+            label: MessageSenderJobQueue.jobRecordLabel,
+            transaction: transaction,
+            jobRecordAttachmentIds: { (jobRecord: SSKMessageSenderJobRecord) in
+                fetchMessage(for: jobRecord, transaction: transaction)?.allAttachmentIds() ?? []
+            }
+        )
+
+        if shouldAbort {
+            return nil
+        }
+
+        findAttachmentIds(
+            label: OWSBroadcastMediaMessageJobRecord.defaultLabel,
+            transaction: transaction,
+            jobRecordAttachmentIds: { (jobRecord: OWSBroadcastMediaMessageJobRecord) in jobRecord.attachmentIdMap.keys }
+        )
+
+        if shouldAbort {
+            return nil
+        }
+
+        findAttachmentIds(
+            label: OWSIncomingGroupSyncJobRecord.defaultLabel,
+            transaction: transaction,
+            jobRecordAttachmentIds: { (jobRecord: OWSIncomingGroupSyncJobRecord) in [jobRecord.attachmentId] }
+        )
+
+        if shouldAbort {
+            return nil
+        }
+
+        findAttachmentIds(
+            label: OWSIncomingContactSyncJobRecord.defaultLabel,
+            transaction: transaction,
+            jobRecordAttachmentIds: { (jobRecord: OWSIncomingContactSyncJobRecord) in [jobRecord.attachmentId] }
+        )
+
+        if shouldAbort {
+            return nil
+        }
+
+        return attachmentIds
+    }
+
+    private static func fetchMessage(
+        for jobRecord: SSKMessageSenderJobRecord,
+        transaction: SDSAnyReadTransaction
+    ) -> TSMessage? {
+        if let invisibleMessage = jobRecord.invisibleMessage {
+            return invisibleMessage
+        }
+
+        let fetchMessageForMessageId: () -> TSMessage? = {
+            guard let messageId = jobRecord.messageId else {
+                return nil
+            }
+            guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
+                // Interaction may have been deleted.
+                Logger.warn("Missing interaction")
+                return nil
+            }
+            return interaction as? TSMessage
+        }
+        if let fetchedMessage = fetchMessageForMessageId() {
+            return fetchedMessage
+        }
+
+        return nil
+    }
 }

@@ -110,21 +110,28 @@ public class MessageProcessor: NSObject {
 
                 // We may have legacy decrypt jobs queued. We want to schedule them for
                 // processing immediately when we launch, so that we can drain the old queue.
-                let legacyDecryptJobRecords = AnyJobRecordFinder<SSKMessageDecryptJobRecord>().allRecords(
-                    label: "SSKMessageDecrypt",
-                    status: .ready,
-                    transaction: transaction
-                )
-                for jobRecord in legacyDecryptJobRecords {
-                    guard let envelopeData = jobRecord.envelopeData else {
-                        owsFailDebug("Skipping job with no envelope data")
-                        continue
+                do {
+                    let legacyDecryptJobRecords = try AnyJobRecordFinder<SSKMessageDecryptJobRecord>().allRecords(
+                        label: "SSKMessageDecrypt",
+                        status: .ready,
+                        transaction: transaction
+                    )
+                    for jobRecord in legacyDecryptJobRecords {
+                        guard let envelopeData = jobRecord.envelopeData else {
+                            owsFailDebug("Skipping job with no envelope data")
+                            continue
+                        }
+                        self.processEncryptedEnvelopeData(
+                            envelopeData,
+                            serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp,
+                            envelopeSource: .unknown,
+                            completion: { _ in
+                                SDSDatabaseStorage.shared.write { jobRecord.anyRemove(transaction: $0) }
+                            }
+                        )
                     }
-                    self.processEncryptedEnvelopeData(envelopeData,
-                                                      serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp,
-                                                      envelopeSource: .unknown) { _ in
-                        SDSDatabaseStorage.shared.write { jobRecord.anyRemove(transaction: $0) }
-                    }
+                } catch {
+                    Logger.error("Couldn't fetch legacy job records: \(error)")
                 }
             }
         }

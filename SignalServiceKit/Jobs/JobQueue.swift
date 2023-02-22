@@ -71,7 +71,6 @@ public protocol JobQueue: DurableOperationDelegate, Dependencies {
     var isSetup: AtomicBool { get set }
     func setup()
     func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction)
-    func didFlushQueue(transaction: SDSAnyWriteTransaction)
 
     func operationQueue(jobRecord: JobRecordType) -> OperationQueue
     func buildOperation(jobRecord: JobRecordType, transaction: SDSAnyReadTransaction) throws -> DurableOperationType
@@ -116,7 +115,12 @@ public extension JobQueue {
     }
 
     func hasPendingJobs(transaction: SDSAnyReadTransaction) -> Bool {
-        return nil != finder.getNextReady(label: self.jobRecordLabel, transaction: transaction)
+        do {
+            return try finder.getNextReady(label: self.jobRecordLabel, transaction: transaction) != nil
+        } catch let error {
+            Logger.error("Couldn't fetch pending job: \(error)")
+            return false
+        }
     }
 
     func startWorkImmediatelyIfAppIsReady(transaction: SDSAnyWriteTransaction) {
@@ -170,10 +174,16 @@ public extension JobQueue {
     }
 
     func workStep(transaction: SDSAnyWriteTransaction) {
-        guard let nextJob: JobRecordType = self.finder.getNextReady(label: jobRecordLabel, transaction: transaction) else {
+        let nextJob: JobRecordType
+        switch Result(catching: { try finder.getNextReady(label: jobRecordLabel, transaction: transaction) }) {
+        case .success(nil):
             Logger.verbose("nothing left to enqueue")
-            didFlushQueue(transaction: transaction)
             return
+        case .failure(let error):
+            Logger.error("Couldn't start next job: \(error)")
+            return
+        case .success(.some(let someJob)):
+            nextJob = someJob
         }
 
         do {
@@ -217,7 +227,13 @@ public extension JobQueue {
             return
         }
         databaseStorage.write { transaction in
-            let runningRecords = self.finder.allRecords(label: self.jobRecordLabel, status: .running, transaction: transaction)
+            let runningRecords: [JobRecordType]
+            do {
+                runningRecords = try finder.allRecords(label: self.jobRecordLabel, status: .running, transaction: transaction)
+            } catch {
+                Logger.error("Couldn't restart old jobs: \(error)")
+                return
+            }
             Logger.info("marking old `running` \(self.jobRecordLabel) JobRecords as ready: \(runningRecords.count)")
             for jobRecord in runningRecords {
                 do {
@@ -240,7 +256,13 @@ public extension JobQueue {
             return
         }
         databaseStorage.write { transaction in
-            let staleRecords = self.finder.staleReadyRecords(label: self.jobRecordLabel, transaction: transaction)
+            let staleRecords: [JobRecordType]
+            do {
+                staleRecords = try finder.staleReadyRecords(label: self.jobRecordLabel, transaction: transaction)
+            } catch {
+                Logger.error("Couldn't prune stale jobs: \(error)")
+                return
+            }
             Logger.info("Pruning stale \(self.jobRecordLabel) JobRecords exclusively for previous process: \(staleRecords.count)")
             for jobRecord in staleRecords {
                 jobRecord.anyRemove(transaction: transaction)
@@ -327,8 +349,6 @@ public extension JobQueue {
     func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: SDSAnyWriteTransaction) {
         runningOperations.remove(operation)
         operation.jobRecord.anyRemove(transaction: transaction)
-
-        notifyFlushQueueIfPossible(transaction: transaction)
     }
 
     func durableOperation(_ operation: DurableOperationType, didReportError: Error, transaction: SDSAnyWriteTransaction) {
@@ -343,19 +363,6 @@ public extension JobQueue {
     func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: SDSAnyWriteTransaction) {
         runningOperations.remove(operation)
         operation.jobRecord.saveAsPermanentlyFailed(transaction: transaction)
-
-        notifyFlushQueueIfPossible(transaction: transaction)
-    }
-
-    func notifyFlushQueueIfPossible(transaction: SDSAnyWriteTransaction) {
-        guard nil == finder.getNextReady(label: jobRecordLabel, transaction: transaction) else {
-            return
-        }
-        self.didFlushQueue(transaction: transaction)
-    }
-
-    func didFlushQueue(transaction: SDSAnyWriteTransaction) {
-        // Do nothing.
     }
 }
 
@@ -363,59 +370,53 @@ public protocol JobRecordFinder {
     associatedtype ReadTransaction
     associatedtype JobRecordType: SSKJobRecord
 
-    func getNextReady(label: String, transaction: ReadTransaction) -> JobRecordType?
-    func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) -> [JobRecordType]
-    func staleReadyRecords(label: String, transaction: ReadTransaction) -> [JobRecordType]
-    func enumerateJobRecords(label: String, transaction: ReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void)
-    func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void)
+    func getNextReady(label: String, transaction: ReadTransaction) throws -> JobRecordType?
+    func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) throws -> [JobRecordType]
+    func staleReadyRecords(label: String, transaction: ReadTransaction) throws -> [JobRecordType]
+    func enumerateJobRecords(label: String, transaction: ReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws
+    func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws
 }
 
 extension JobRecordFinder {
-    public func getNextReady(label: String, transaction: ReadTransaction) -> JobRecordType? {
+    public func getNextReady(label: String, transaction: ReadTransaction) throws -> JobRecordType? {
         var result: JobRecordType?
-        self.enumerateJobRecords(label: label, status: .ready, transaction: transaction) { jobRecord, stopPointer in
-            if let exclusiveProcessIdentifier = jobRecord.exclusiveProcessIdentifier,
-               exclusiveProcessIdentifier != SSKJobRecord.currentProcessIdentifier {
-                // Skip job records that aren't for the current process, we can't run these.
+        try enumerateJobRecords(label: label, status: .ready, transaction: transaction) { jobRecord, stop in
+            // Skip job records that aren't for the current process, we can't run these.
+            guard jobRecord.canBeRunByCurrentProcess else {
                 return
             }
             result = jobRecord
-            stopPointer.pointee = true
+            stop = true
         }
         return result
     }
 
-    public func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) -> [JobRecordType] {
+    public func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) throws -> [JobRecordType] {
         var result: [JobRecordType] = []
-        self.enumerateJobRecords(label: label, status: status, transaction: transaction) { jobRecord, _ in
+        try enumerateJobRecords(label: label, status: status, transaction: transaction) { jobRecord, _ in
             result.append(jobRecord)
         }
         return result
     }
 
-    public func staleReadyRecords(label: String, transaction: ReadTransaction) -> [JobRecordType] {
+    public func staleReadyRecords(label: String, transaction: ReadTransaction) throws -> [JobRecordType] {
         var result: [JobRecordType] = []
-        self.enumerateJobRecords(label: label, status: .ready, transaction: transaction) { jobRecord, _ in
-            guard let exclusiveProcessIdentifier = jobRecord.exclusiveProcessIdentifier,
-                  exclusiveProcessIdentifier != SSKJobRecord.currentProcessIdentifier else { return }
+        try enumerateJobRecords(label: label, status: .ready, transaction: transaction) { jobRecord, _ in
+            guard !jobRecord.canBeRunByCurrentProcess else {
+                return
+            }
             result.append(jobRecord)
         }
         return result
     }
 }
 
-@objc
-public class JobRecordFinderObjC: NSObject {
-    private let jobRecordFinder = AnyJobRecordFinder<SSKJobRecord>()
-
-    @objc
-    public func enumerateJobRecords(label: String, transaction: SDSAnyReadTransaction, block: @escaping (SSKJobRecord, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        jobRecordFinder.enumerateJobRecords(label: label, transaction: transaction, block: block)
-    }
-
-    @objc
-    public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: SDSAnyReadTransaction, block: @escaping (SSKJobRecord, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        jobRecordFinder.enumerateJobRecords(label: label, status: status, transaction: transaction, block: block)
+private extension SSKJobRecord {
+    var canBeRunByCurrentProcess: Bool {
+        if let exclusiveProcessIdentifier, exclusiveProcessIdentifier != SSKJobRecord.currentProcessIdentifier {
+            return false
+        }
+        return true
     }
 }
 
@@ -426,17 +427,17 @@ public class AnyJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord
 }
 
 extension AnyJobRecordFinder: JobRecordFinder {
-    public func enumerateJobRecords(label: String, transaction: SDSAnyReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateJobRecords(label: String, transaction: SDSAnyReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            grdbAdapter.enumerateJobRecords(label: label, transaction: grdbRead, block: block)
+            try grdbAdapter.enumerateJobRecords(label: label, transaction: grdbRead, block: block)
         }
     }
 
-    public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: SDSAnyReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: SDSAnyReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            grdbAdapter.enumerateJobRecords(label: label, status: status, transaction: grdbRead, block: block)
+            try grdbAdapter.enumerateJobRecords(label: label, status: status, transaction: grdbRead, block: block)
         }
     }
 }
@@ -446,44 +447,36 @@ class GRDBJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
 }
 
 extension GRDBJobRecordFinder: JobRecordFinder {
-    private func iterateJobsWith(cursor: SSKJobRecordCursor, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        var stop: ObjCBool = false
-        while true {
-            do {
-                if let next = try cursor.next() {
-                    guard let jobRecord = next as? JobRecordType else {
-                        owsFailDebug("expecting jobRecord but found: \(next)")
-                        return
-                    }
-                    block(jobRecord, &stop)
-                    if stop.boolValue {
-                        return
-                    }
-                } else {
-                    return
-                }
-            } catch let error {
-                owsFailDebug("error fetching jobRecord: \(error)")
+    private func iterateJobsWith(cursor: SSKJobRecordCursor, block: (JobRecordType, inout Bool) -> Void) throws {
+        var stop = false
+        while let next = try cursor.next() {
+            guard let jobRecord = next as? JobRecordType else {
+                owsFailDebug("expecting jobRecord but found: \(type(of: next))")
+                continue
+            }
+            block(jobRecord, &stop)
+            if stop {
+                return
             }
         }
     }
 
-    func enumerateJobRecords(label: String, transaction: GRDBReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
-
+    func enumerateJobRecords(label: String, transaction: GRDBReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws {
         let sql = """
         SELECT * FROM \(JobRecordRecord.databaseTableName)
         WHERE \(jobRecordColumn: .label) = ?
         ORDER BY \(jobRecordColumn: .id)
         """
 
-        let cursor = JobRecordType.grdbFetchCursor(sql: sql,
-                                                   arguments: [label],
-                                                   transaction: transaction)
-        iterateJobsWith(cursor: cursor, block: block)
+        let cursor = JobRecordType.grdbFetchCursor(
+            sql: sql,
+            arguments: [label],
+            transaction: transaction
+        )
+        try iterateJobsWith(cursor: cursor, block: block)
     }
 
-    func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: GRDBReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
-
+    func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: GRDBReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws {
         let sql = """
             SELECT * FROM \(JobRecordRecord.databaseTableName)
             WHERE \(jobRecordColumn: .status) = ?
@@ -491,9 +484,11 @@ extension GRDBJobRecordFinder: JobRecordFinder {
             ORDER BY \(jobRecordColumn: .id)
         """
 
-        let cursor = JobRecordType.grdbFetchCursor(sql: sql,
-                                                   arguments: [status.rawValue, label],
-                                                   transaction: transaction)
-        iterateJobsWith(cursor: cursor, block: block)
+        let cursor = JobRecordType.grdbFetchCursor(
+            sql: sql,
+            arguments: [status.rawValue, label],
+            transaction: transaction
+        )
+        try iterateJobsWith(cursor: cursor, block: block)
     }
 }

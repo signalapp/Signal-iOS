@@ -24,6 +24,9 @@ extern NSString *const OWSOrphanDataCleaner_LastCleaningDateKey;
 // This is exposed for the tests.
 + (void)auditAndCleanup:(BOOL)shouldCleanup completion:(nullable dispatch_block_t)completion;
 
+// Exposed for Swift
++ (BOOL)isMainAppAndActive;
+
 @end
 
 NS_ASSUME_NONNULL_END

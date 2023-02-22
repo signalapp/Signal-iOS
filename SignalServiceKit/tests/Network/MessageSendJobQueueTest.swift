@@ -99,7 +99,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let finder = AnyJobRecordFinder()
         var readyRecords: [SSKJobRecord] = []
         self.read { transaction in
-            readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction)
+            readyRecords = try! finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction)
         }
         XCTAssertEqual(1, readyRecords.count)
 
@@ -173,7 +173,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let finder = AnyJobRecordFinder()
         var readyRecords: [SSKJobRecord] = []
         self.read { transaction in
-            readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction)
+            readyRecords = try! finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction)
         }
         XCTAssertEqual(1, readyRecords.count)
 

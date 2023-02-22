@@ -534,65 +534,13 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             return;
         }
 
-        [MessageSenderJobQueue
-            enumerateEnqueuedInteractionsWithTransaction:transaction
-                                                   block:^(TSInteraction *interaction, BOOL *stop) {
-                                                       if (!self.isMainAppAndActive) {
-                                                           shouldAbort = YES;
-                                                           *stop = YES;
-                                                           return;
-                                                       }
-                                                       if (![interaction isKindOfClass:[TSMessage class]]) {
-                                                           return;
-                                                       }
-                                                       TSMessage *message = (TSMessage *)interaction;
-                                                       [allMessageAttachmentIds
-                                                           addObjectsFromArray:message.allAttachmentIds];
-                                                   }];
-
-        [[JobRecordFinderObjC new]
-            enumerateJobRecordsWithLabel:OWSBroadcastMediaMessageJobRecord.defaultLabel
-                             transaction:transaction
-                                   block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
-                                       if (![jobRecord isKindOfClass:OWSBroadcastMediaMessageJobRecord.class]) {
-                                           OWSFailDebug(@"unexpected jobRecord: %@", jobRecord);
-                                           return;
-                                       }
-                                       OWSBroadcastMediaMessageJobRecord *broadcastJobRecord
-                                           = (OWSBroadcastMediaMessageJobRecord *)jobRecord;
-                                       [allMessageAttachmentIds
-                                           addObjectsFromArray:broadcastJobRecord.attachmentIdMap.allKeys];
-                                   }];
-
-        [[JobRecordFinderObjC new]
-            enumerateJobRecordsWithLabel:OWSIncomingGroupSyncJobRecord.defaultLabel
-                             transaction:transaction
-                                   block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
-                                       if (![jobRecord isKindOfClass:OWSIncomingGroupSyncJobRecord.class]) {
-                                           OWSFailDebug(@"unexpected jobRecord: %@", jobRecord);
-                                           return;
-                                       }
-                                       OWSIncomingGroupSyncJobRecord *groupSyncJobRecord
-                                           = (OWSIncomingGroupSyncJobRecord *)jobRecord;
-                                       [allMessageAttachmentIds addObject:groupSyncJobRecord.attachmentId];
-                                   }];
-
-        [[JobRecordFinderObjC new]
-            enumerateJobRecordsWithLabel:OWSIncomingContactSyncJobRecord.defaultLabel
-                             transaction:transaction
-                                   block:^(SSKJobRecord *jobRecord, BOOL *stopPtr) {
-                                       if (![jobRecord isKindOfClass:OWSIncomingContactSyncJobRecord.class]) {
-                                           OWSFailDebug(@"unexpected jobRecord: %@", jobRecord);
-                                           return;
-                                       }
-                                       OWSIncomingContactSyncJobRecord *contactSyncJobRecord
-                                           = (OWSIncomingContactSyncJobRecord *)jobRecord;
-                                       [allMessageAttachmentIds addObject:contactSyncJobRecord.attachmentId];
-                                   }];
-
-        if (shouldAbort) {
+        NSArray<NSString *> *jobRecordAttachmentIds = [self findJobRecordAttachmentIdsWithTransaction:transaction];
+        if (jobRecordAttachmentIds == nil) {
+            shouldAbort = YES;
             return;
         }
+
+        [allMessageAttachmentIds addObjectsFromArray:jobRecordAttachmentIds];
 
         [activeStickerFilePaths
             addObjectsFromArray:[StickerManager filepathsForAllInstalledStickersWithTransaction:transaction]];

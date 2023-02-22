@@ -288,29 +288,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             return existingQueue
         }
     }
-
-    @objc
-    public static func enumerateEnqueuedInteractions(transaction: SDSAnyReadTransaction,
-                                                     block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
-
-        let finder = AnyJobRecordFinder<SSKMessageSenderJobRecord>()
-        finder.enumerateJobRecords(label: self.jobRecordLabel, transaction: transaction) { job, stop in
-            if let interaction = job.invisibleMessage {
-                block(interaction, stop)
-                return
-            }
-            guard let messageId = job.messageId else {
-                return
-            }
-            guard let interaction = TSInteraction.anyFetch(uniqueId: messageId,
-                                                           transaction: transaction) else {
-                // Interaction may have been deleted.
-                Logger.warn("Missing interaction")
-                return
-            }
-            block(interaction, stop)
-        }
-    }
 }
 
 public class MessageSenderOperation: OWSOperation, DurableOperation {
