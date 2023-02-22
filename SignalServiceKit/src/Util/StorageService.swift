@@ -437,13 +437,7 @@ public struct StorageService: Dependencies {
 
             return StorageResponse(status: status, data: responseData)
         }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<StorageResponse> in
-            if let httpStatusCode = error.httpStatusCode,
-               httpStatusCode == 401 {
-                // Not registered.
-                Logger.warn("Error: \(error)")
-            } else {
-                owsFailDebugUnlessNetworkFailure(error)
-            }
+            owsFailDebugUnlessNetworkFailure(error)
             throw StorageError.networkError(statusCode: 0, underlyingError: error)
         }
     }
