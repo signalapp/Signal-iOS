@@ -775,7 +775,7 @@
 		506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */; };
 		506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */; };
 		506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
-		5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */; };
+		5075004628B09CE6001922C9 /* ContactDiscoveryE164CollectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryE164CollectionTest.swift */; };
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
 		508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */; };
 		509913BE2913274100F34F8E /* PhoneNumberFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */; };
@@ -1738,7 +1738,6 @@
 		F9C5CCBB289453B300548EEE /* PhoneNumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D3289453B100548EEE /* PhoneNumberUtil.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCBC289453B300548EEE /* PhoneNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D4289453B100548EEE /* PhoneNumber.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCBD289453B300548EEE /* UUIDBackfillTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D6289453B100548EEE /* UUIDBackfillTask.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCBE289453B300548EEE /* SGXContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D7289453B100548EEE /* SGXContactDiscoveryOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC4289453B300548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1989,7 +1988,6 @@
 		F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDBF289453B400548EEE /* OWSUploadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEC289453B200548EEE /* OWSUploadOperation.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC0289453B400548EEE /* RESTNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAED289453B200548EEE /* RESTNetworkManager.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDC1289453B400548EEE /* ContactDiscoveryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEE289453B200548EEE /* ContactDiscoveryService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEF289453B200548EEE /* HTTPEntities.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC3289453B400548EEE /* DeviceProvisioningService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC4289453B400548EEE /* NetworkInterfaceSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3118,7 +3116,7 @@
 		4C42960F231A1AA400D9D240 /* MessageSendingPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSendingPerformanceTest.swift; sourceTree = "<group>"; };
 		4C46361022EB98EC00185951 /* CameraFirstCaptureSendFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFirstCaptureSendFlow.swift; sourceTree = "<group>"; };
 		4C4AE69F224AF21900D4AF6F /* SendMediaNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMediaNavigationController.swift; sourceTree = "<group>"; };
-		4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryOperationTest.swift; sourceTree = "<group>"; };
+		4C4BC6C22102D697004040C9 /* ContactDiscoveryE164CollectionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryE164CollectionTest.swift; sourceTree = "<group>"; };
 		4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberValidator.swift; sourceTree = "<group>"; };
 		4C5250D321E7C51900CE3D95 /* PhoneNumberValidatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberValidatorTest.swift; sourceTree = "<group>"; };
 		4C63CBFF210A620B003AE45C /* SignalTSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalTSan.supp; sourceTree = "<group>"; };
@@ -4256,7 +4254,6 @@
 		F9C5C9D3289453B100548EEE /* PhoneNumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberUtil.m; sourceTree = "<group>"; };
 		F9C5C9D4289453B100548EEE /* PhoneNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumber.m; sourceTree = "<group>"; };
 		F9C5C9D6289453B100548EEE /* UUIDBackfillTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UUIDBackfillTask.swift; sourceTree = "<group>"; };
-		F9C5C9D7289453B100548EEE /* SGXContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SGXContactDiscoveryOperation.swift; sourceTree = "<group>"; };
 		F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryTask.swift; sourceTree = "<group>"; };
 		F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryOperation.swift; sourceTree = "<group>"; };
 		F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSDisappearingMessagesConfiguration+SDS.swift"; sourceTree = "<group>"; };
@@ -4507,7 +4504,6 @@
 		F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RESTNetworkManager.swift; sourceTree = "<group>"; };
 		F9C5CAEC289453B200548EEE /* OWSUploadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUploadOperation.m; sourceTree = "<group>"; };
 		F9C5CAED289453B200548EEE /* RESTNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RESTNetworkManager.m; sourceTree = "<group>"; };
-		F9C5CAEE289453B200548EEE /* ContactDiscoveryService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryService.swift; sourceTree = "<group>"; };
 		F9C5CAEF289453B200548EEE /* HTTPEntities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPEntities.swift; sourceTree = "<group>"; };
 		F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningService.swift; sourceTree = "<group>"; };
 		F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceSet.swift; sourceTree = "<group>"; };
@@ -6291,8 +6287,8 @@
 		5075004528B09CCC001922C9 /* Discovery */ = {
 			isa = PBXGroup;
 			children = (
+				4C4BC6C22102D697004040C9 /* ContactDiscoveryE164CollectionTest.swift */,
 				50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */,
-				4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */,
 				500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */,
 			);
 			path = Discovery;
@@ -8444,7 +8440,6 @@
 				F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */,
 				5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */,
 				5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */,
-				F9C5C9D7289453B100548EEE /* SGXContactDiscoveryOperation.swift */,
 				F9C5C9D6289453B100548EEE /* UUIDBackfillTask.swift */,
 			);
 			path = Discovery;
@@ -8813,7 +8808,6 @@
 			children = (
 				F9C5CADB289453B200548EEE /* Giphy */,
 				F9C5CAE1289453B200548EEE /* Requests */,
-				F9C5CAEE289453B200548EEE /* ContactDiscoveryService.swift */,
 				505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */,
 				F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */,
 				F9C5CAEF289453B200548EEE /* HTTPEntities.swift */,
@@ -11465,7 +11459,6 @@
 				F9C5CCE4289453B300548EEE /* Contact.swift in Sources */,
 				506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */,
 				F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */,
-				F9C5CDC1289453B400548EEE /* ContactDiscoveryService.swift in Sources */,
 				F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */,
 				5049FA3028BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift in Sources */,
 				5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */,
@@ -11872,7 +11865,6 @@
 				F9C5CC96289453B300548EEE /* SessionRecord.pb.swift in Sources */,
 				F9C5CD35289453B300548EEE /* SessionRecordMigration.swift in Sources */,
 				1700E34128BD41150073D949 /* SetAlgebra+SSK.swift in Sources */,
-				F9C5CCBE289453B300548EEE /* SGXContactDiscoveryOperation.swift in Sources */,
 				F9C5CCC6289453B300548EEE /* SignalAccount+SDS.swift in Sources */,
 				F9C5CCD9289453B300548EEE /* SignalAccount.m in Sources */,
 				F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */,
@@ -12069,8 +12061,8 @@
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
 				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
+				5075004628B09CE6001922C9 /* ContactDiscoveryE164CollectionTest.swift in Sources */,
 				50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */,
-				5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */,
 				500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */,
 				F962B38C293F9F9F00765BD8 /* CRC32Test.swift in Sources */,
 				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,

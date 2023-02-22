@@ -68,60 +68,6 @@ public extension RemoteAttestation {
     }
 }
 
-// MARK: - CDS
-
-public extension RemoteAttestation {
-    struct CDSAttestation {
-        /// An opaque, server-specified identifier to link an attestation to its corresponding envelope
-        public typealias Id = String
-
-        let cookies: [HTTPCookie]
-        let auth: Auth
-        let enclaveConfig: EnclaveConfig
-        let remoteAttestations: [Id: RemoteAttestation]
-    }
-
-    static func performForCDS() -> Promise<CDSAttestation> {
-        return performAttestation(
-            for: .contactDiscovery,
-            config: EnclaveConfig(
-                enclaveName: TSConstants.contactDiscoveryEnclaveName,
-                mrenclave: TSConstants.contactDiscoveryMrEnclave,
-                host: TSConstants.contactDiscoverySGXURL,
-                censorshipCircumventionPrefix: TSConstants.contactDiscoveryCensorshipPrefix
-            )
-        ).map { attestationResponse -> CDSAttestation in
-            let attestationBody: [CDSAttestation.Id: [String: Any]] = try attestationResponse.responseBody.required(key: "attestations")
-
-            // The client MUST reject server responses with more than 3 Remote Attestation Responses attached,
-            // for security reasons.
-            guard (1..<4).contains(attestationBody.count) else {
-                throw ParamParser.ParseError.invalidFormat("attestations", description: "invalid attestation count: \(attestationBody.count)")
-            }
-
-            let attestations: [CDSAttestation.Id: RemoteAttestation] = try attestationBody.mapValues { attestationParams in
-                let parser = ParamParser(dictionary: attestationParams)
-                return try parseAttestationResponse(params: parser,
-                                            clientEphemeralKeyPair: attestationResponse.clientEphemeralKeyPair,
-                                            cookies: attestationResponse.cookies,
-                                            enclaveName: attestationResponse.enclaveConfig.enclaveName,
-                                            mrenclave: attestationResponse.enclaveConfig.mrenclave,
-                                            auth: attestationResponse.auth)
-            }
-
-            let attestation = CDSAttestation(cookies: attestationResponse.cookies,
-                                             auth: attestationResponse.auth,
-                                             enclaveConfig: attestationResponse.enclaveConfig,
-                                             remoteAttestations: attestations)
-            owsAssertDebug(attestation.auth.username.strippedOrNil != nil)
-            owsAssertDebug(attestation.auth.password.strippedOrNil != nil)
-            owsAssertDebug(attestation.enclaveConfig.enclaveName.strippedOrNil != nil)
-            owsAssertDebug(attestation.enclaveConfig.host.strippedOrNil != nil)
-            return attestation
-        }
-    }
-}
-
 // MARK: - CSDI
 
 extension RemoteAttestation {
@@ -302,13 +248,11 @@ public extension RemoteAttestation {
 
 fileprivate extension RemoteAttestation {
     enum Service {
-        case contactDiscovery
         case keyBackup
         case cdsi
 
         func authRequest() -> TSRequest {
             switch self {
-            case .contactDiscovery: return OWSRequestFactory.remoteAttestationAuthRequestForContactDiscovery()
             case .keyBackup: return OWSRequestFactory.remoteAttestationAuthRequestForKeyBackup()
             case .cdsi: return OWSRequestFactory.remoteAttestationAuthRequestForCDSI()
             }
@@ -396,11 +340,6 @@ fileprivate extension RemoteAttestation {
         var parameters: [String: Any] = [
             "clientPublic": clientEphemeralKeyPair.publicKey.base64EncodedString()
         ]
-
-        // When making requests to CDS, we need to tell the service to use IASv4
-        if case .contactDiscovery = service {
-            parameters["iasVersion"] = 4
-        }
 
         let request = TSRequest(url: URL(string: path)!,
                                 method: "PUT",

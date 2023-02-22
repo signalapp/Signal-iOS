@@ -78,15 +78,8 @@ public class ContactDiscoveryError: NSError, UserErrorDescriptionProvider {
         case generic = 1
         case assertion
 
-        /// An error indicating that the current user has an expired auth token
-        case unauthorized
-        /// An error indicating that a hardcoded resource is unavailable. Best recourse is to update the app.
-        case unexpectedResponse
-        /// An error indicating response timeout.
-        case timeout
         /// An error indicating that the failure was because of a rate limit
         case rateLimit
-
         /// Any generic 4xx error that doesn't fit in the above categories
         case genericClientError
         /// Any generic 5xx error that doesn't fit in the above categories

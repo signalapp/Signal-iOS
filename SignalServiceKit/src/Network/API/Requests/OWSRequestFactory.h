@@ -135,7 +135,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 #pragma mark - Remote Attestation
 
 + (TSRequest *)remoteAttestationAuthRequestForKeyBackup;
-+ (TSRequest *)remoteAttestationAuthRequestForContactDiscovery;
 + (TSRequest *)remoteAttestationAuthRequestForCDSI;
 
 #pragma mark - KBS

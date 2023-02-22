@@ -278,8 +278,6 @@ fileprivate extension HTTPUtils {
             return httpError.isNetworkConnectivityError
         case GroupsV2Error.timeout:
             return true
-        case let contactDiscoveryError as ContactDiscoveryError:
-            return contactDiscoveryError.kind == .timeout
         case PaymentsError.timeout:
             return true
         default:

@@ -241,10 +241,6 @@ public class RemoteConfig: BaseFlags {
         getUIntValue(forFlag: .maxGroupCallRingSize, defaultValue: 16)
     }
 
-    public static var contactDiscoveryV2KillSwitch: Bool {
-        isEnabled(.contactDiscoveryV2KillSwitch)
-    }
-
     public static var enableAutoAPNSRotation: Bool {
         return isEnabled(.enableAutoAPNSRotation, defaultValue: false)
     }
@@ -519,7 +515,6 @@ private struct Flags {
         case paypalOneTimeDonationKillSwitch
         case paypalGiftDonationKillSwitch
         case paypalMonthlyDonationKillSwitch
-        case contactDiscoveryV2KillSwitch
         case enableAutoAPNSRotation
         case ringrtcNwPathMonitorTrialKillSwitch
     }
