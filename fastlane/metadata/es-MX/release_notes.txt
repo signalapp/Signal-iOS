@@ -1,1 +1,2 @@
-• We fixed a bug that made it difficult to share text content from other apps (like Apple Notes) as Signal Stories. Text has arguably been an important component of some of the best stories throughout history, so we're excited to close the chapter on this particular problem.
+• New animation improvements in the media and avatar viewers let you smoothly step back and see the big picture.
+• We fixed a couple of layout bugs that would sometimes cause buttons to show up in the wrong place on new iPhones, like invisible castaways marooned underneath Apple's Dynamic Island.
