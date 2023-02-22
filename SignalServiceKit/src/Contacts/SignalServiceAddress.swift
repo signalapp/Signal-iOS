@@ -35,6 +35,11 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return phoneNumber
     }
 
+    public var e164: E164? { phoneNumber.flatMap { E164($0) } }
+
+    @objc
+    public var e164ObjC: E164ObjC? { phoneNumber.flatMap { E164ObjC($0) } }
+
     /// Optional, since while in *most* cases we can be sure this is present
     /// we cannot be positive. Some examples:
     ///
@@ -61,6 +66,11 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
     private var backingUuidUnsynchronized: UUID?
 
+    public var serviceId: ServiceId? { uuid.map { ServiceId($0) } }
+
+    @objc
+    public var serviceIdObjC: ServiceIdObjC? { uuid.map { ServiceIdObjC(uuidValue: $0) } }
+
     @objc
     public var uuidString: String? {
         return uuid?.uuidString
@@ -69,13 +79,31 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     // MARK: - Initializers
 
     @objc
-    public convenience init(uuidString: String) {
-        self.init(uuidString: uuidString, phoneNumber: nil)
+    public convenience init(e164ObjC: E164ObjC) {
+        self.init(e164ObjC.wrappedValue)
+    }
+
+    public convenience init(_ e164: E164) {
+        self.init(phoneNumber: e164.stringValue)
     }
 
     @objc
     public convenience init(phoneNumber: String) {
         self.init(uuidString: nil, phoneNumber: phoneNumber)
+    }
+
+    @objc
+    public convenience init(uuidString: String) {
+        self.init(uuidString: uuidString, phoneNumber: nil)
+    }
+
+    @objc
+    public convenience init(serviceIdObjC: ServiceIdObjC) {
+        self.init(serviceIdObjC.wrappedValue)
+    }
+
+    public convenience init(_ serviceId: ServiceId) {
+        self.init(uuid: serviceId.uuidValue)
     }
 
     @objc

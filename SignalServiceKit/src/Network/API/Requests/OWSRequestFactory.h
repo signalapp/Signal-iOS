@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class PreKeyRecord;
 @class ProfileValue;
 @class SMKUDAccessKey;
+@class ServiceIdObjC;
 @class SignalServiceAddress;
 @class SignedPreKeyRecord;
 @class TSRequest;
@@ -41,11 +42,11 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                            udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
     NS_SWIFT_NAME(getUnversionedProfileRequest(address:udAccessKey:));
 
-+ (TSRequest *)getVersionedProfileRequestWithAddress:(SignalServiceAddress *)address
-                                   profileKeyVersion:(nullable NSString *)profileKeyVersion
-                                   credentialRequest:(nullable NSData *)credentialRequest
-                                         udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-    NS_SWIFT_NAME(getVersionedProfileRequest(address:profileKeyVersion:credentialRequest:udAccessKey:));
++ (TSRequest *)getVersionedProfileRequestWithServiceId:(ServiceIdObjC *)serviceId
+                                     profileKeyVersion:(nullable NSString *)profileKeyVersion
+                                     credentialRequest:(nullable NSData *)credentialRequest
+                                           udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+    NS_SWIFT_NAME(getVersionedProfileRequest(serviceId:profileKeyVersion:credentialRequest:udAccessKey:));
 
 + (TSRequest *)turnServerInfoRequest;
 
@@ -70,7 +71,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                             transport:(TSVerificationTransport)transport
     NS_SWIFT_NAME(requestVerificationCodeRequest(e164:preauthChallenge:captchaToken:transport:));
 
-+ (TSRequest *)submitMessageRequestWithServiceId:(NSUUID *)serviceId
++ (TSRequest *)submitMessageRequestWithServiceId:(ServiceIdObjC *)serviceId
                                         messages:(NSArray<DeviceMessage *> *)messages
                                        timestamp:(uint64_t)timestamp
                                      udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
@@ -115,7 +116,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)currentSignedPreKeyRequest;
 
-+ (TSRequest *)recipientPreKeyRequestWithServiceId:(NSUUID *)serviceId
++ (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
                                           deviceId:(NSString *)deviceId
                                        udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 

@@ -1390,18 +1390,17 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         return Promise.when(fulfilled: promises)
     }
 
-    private func loadPresentProfileKeyCredentials(for uuids: Set<UUID>) -> ProfileKeyCredentialMap {
+    private func loadPresentProfileKeyCredentials(for serviceIdUuidValues: Set<UUID>) -> ProfileKeyCredentialMap {
         databaseStorage.read { transaction in
             var credentialMap = ProfileKeyCredentialMap()
 
-            for uuid in uuids {
+            for serviceIdUuidValue in serviceIdUuidValues {
                 do {
-                    let address = SignalServiceAddress(uuid: uuid)
                     if let credential = try self.versionedProfilesSwift.validProfileKeyCredential(
-                        for: address,
+                        for: ServiceId(serviceIdUuidValue),
                         transaction: transaction
                     ) {
-                        credentialMap[uuid] = credential
+                        credentialMap[serviceIdUuidValue] = credential
                     }
                 } catch {
                     owsFailDebug("Error loading profile key credential: \(error)")
@@ -1417,8 +1416,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         do {
+            guard let serviceId = address.serviceId else {
+                throw OWSAssertionError("Missing serviceId.")
+            }
             return try self.versionedProfilesSwift.validProfileKeyCredential(
-                for: address,
+                for: serviceId,
                 transaction: transaction
             ) != nil
         } catch let error {

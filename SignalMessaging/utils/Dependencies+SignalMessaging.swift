@@ -198,30 +198,6 @@ public extension Dependencies {
     }
 }
 
-// MARK: - Swift-only Dependencies
-
-public extension NSObject {
-    var versionedProfilesSwift: VersionedProfilesSwift {
-        versionedProfiles as! VersionedProfilesSwift
-    }
-
-    static var versionedProfilesSwift: VersionedProfilesSwift {
-        versionedProfiles as! VersionedProfilesSwift
-    }
-}
-
-// MARK: - Swift-only Dependencies
-
-public extension Dependencies {
-    var versionedProfilesSwift: VersionedProfilesSwift {
-        versionedProfiles as! VersionedProfilesSwift
-    }
-
-    static var versionedProfilesSwift: VersionedProfilesSwift {
-        versionedProfiles as! VersionedProfilesSwift
-    }
-}
-
 // MARK: -
 
 @objc

@@ -122,7 +122,7 @@ extension ConversationViewController: MessageRequestDelegate {
             return owsFailDebug("Unexpected thread type for reporting spam \(type(of: thread))")
         }
 
-        guard let senderUuid = contactThread.contactAddress.uuid else {
+        guard let serviceId = contactThread.contactAddress.serviceId else {
             return owsFailDebug("Missing uuid for reporting spam from \(contactThread.contactAddress)")
         }
 
@@ -154,7 +154,7 @@ extension ConversationViewController: MessageRequestDelegate {
             var reportingToken: SpamReportingToken?
             do {
                 reportingToken = try SpamReportingTokenRecord.reportingToken(
-                    for: senderUuid,
+                    for: serviceId,
                     database: transaction.unwrapGrdbRead.database
                 )
             } catch {
@@ -170,13 +170,13 @@ extension ConversationViewController: MessageRequestDelegate {
         }
 
         Logger.info(
-            "Reporting \(guidsToReport.count) message(s) from \(senderUuid) as spam. We \(reportingToken == nil ? "do not have" : "have") a reporting token"
+            "Reporting \(guidsToReport.count) message(s) from \(serviceId) as spam. We \(reportingToken == nil ? "do not have" : "have") a reporting token"
         )
 
         var promises = [Promise<Void>]()
         for guid in guidsToReport {
             let request = OWSRequestFactory.reportSpam(
-                from: senderUuid,
+                from: serviceId,
                 withServerGuid: guid,
                 reportingToken: reportingToken
             )
@@ -184,9 +184,9 @@ extension ConversationViewController: MessageRequestDelegate {
         }
 
         Promise.when(fulfilled: promises).done {
-            Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(senderUuid) as spam.")
+            Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(serviceId) as spam.")
         }.catch { error in
-            owsFailDebug("Failed to report message(s) from \(senderUuid) as spam with error: \(error)")
+            owsFailDebug("Failed to report message(s) from \(serviceId) as spam with error: \(error)")
         }
     }
 

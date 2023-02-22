@@ -262,7 +262,7 @@ public class ProfileFetcherJob: NSObject {
         Logger.verbose("address: \(address)")
 
         // If we don't have a UUID, the request will fail, so bail out early.
-        guard address.uuid != nil else {
+        guard let serviceId = address.serviceId else {
             return Promise(error: ProfileFetchError.missing)
         }
 
@@ -285,7 +285,10 @@ public class ProfileFetcherJob: NSObject {
 
                 if shouldUseVersionedFetch {
                     do {
-                        let request = try self.versionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+                        let request = try self.versionedProfilesSwift.versionedProfileRequest(
+                            for: serviceId,
+                            udAccessKey: udAccessKeyForRequest
+                        )
                         currentVersionedProfileRequest = request
                         return request.request
                     } catch {
@@ -300,7 +303,7 @@ public class ProfileFetcherJob: NSObject {
             udAuthFailureBlock: {
                 // Do nothing
             },
-            address: address,
+            serviceId: serviceId,
             udAccess: udAccess,
             options: [.allowIdentifiedFallback, .isProfileFetch]
         )

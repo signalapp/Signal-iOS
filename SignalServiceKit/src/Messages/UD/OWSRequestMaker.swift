@@ -68,6 +68,7 @@ public final class RequestMaker: Dependencies {
     private let label: String
     private let requestFactoryBlock: RequestFactoryBlock
     private let udAuthFailureBlock: UDAuthFailureBlock
+    private let serviceId: ServiceId
     private let address: SignalServiceAddress
     private let udAccess: OWSUDAccess?
     private let options: Options
@@ -76,14 +77,15 @@ public final class RequestMaker: Dependencies {
         label: String,
         requestFactoryBlock: @escaping RequestFactoryBlock,
         udAuthFailureBlock: @escaping UDAuthFailureBlock,
-        address: SignalServiceAddress,
+        serviceId: ServiceId,
         udAccess: OWSUDAccess?,
         options: Options
     ) {
         self.label = label
         self.requestFactoryBlock = requestFactoryBlock
         self.udAuthFailureBlock = udAuthFailureBlock
-        self.address = address
+        self.serviceId = serviceId
+        self.address = SignalServiceAddress(serviceId)
         self.udAccess = udAccess
         self.options = options
     }

@@ -175,18 +175,15 @@ public extension MessageSender {
 
         Logger.info("recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
 
-        guard let recipientUuid = recipientAddress.uuid else {
+        guard let serviceId = recipientAddress.serviceIdObjC else {
             owsFailDebug("Skipping prekey request due to missing uuid.")
             return failure(MessageSenderError.missingDevice)
         }
 
-        guard isDeviceNotMissing(
-            recipientAddress: recipientAddress,
-            deviceId: deviceId
-        ) else {
-            // We don't want to retry prekey requests if we've recently gotten
-            // a "404 missing device" for the same recipient/device.  Fail immediately
-            // as though we hit the "404 missing device" error again.
+        if deviceRecentlyReportedMissing(serviceId: serviceId.wrappedValue, deviceId: deviceId.uint32Value) {
+            // We don't want to retry prekey requests if we've recently gotten a "404
+            // missing device" for the same recipient/device. Fail immediately as
+            // though we hit the "404 missing device" error again.
             Logger.info("Skipping prekey request to avoid missing device error.")
             return failure(MessageSenderError.missingDevice)
         }
@@ -218,7 +215,7 @@ public extension MessageSender {
             requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest? in
                 Logger.verbose("Building prekey request for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
                 return OWSRequestFactory.recipientPreKeyRequest(
-                    withServiceId: recipientUuid,
+                    withServiceId: serviceId,
                     deviceId: deviceId.stringValue,
                     udAccessKey: udAccessKeyForRequest
                 )
@@ -228,7 +225,7 @@ public extension MessageSender {
                 // to this recipient also use basic auth.
                 messageSend.setHasUDAuthFailed()
             },
-            address: recipientAddress,
+            serviceId: serviceId.wrappedValue,
             udAccess: udAccess,
             // The v2/keys endpoint isn't supported via web sockets, so don't try and
             // send pre key requests via the web socket.
@@ -246,7 +243,7 @@ public extension MessageSender {
         }.catch(on: DispatchQueue.global()) { error in
             if let httpStatusCode = error.httpStatusCode {
                 if httpStatusCode == 404 {
-                    self.hadMissingDeviceError(recipientAddress: recipientAddress, deviceId: deviceId)
+                    self.reportMissingDeviceError(serviceId: serviceId.wrappedValue, deviceId: deviceId.uint32Value)
                     return failure(MessageSenderError.missingDevice)
                 } else if httpStatusCode == 413 || httpStatusCode == 429 {
                     return failure(MessageSenderError.prekeyRateLimit)
@@ -456,52 +453,50 @@ fileprivate extension MessageSender {
 // MARK: - Missing Devices
 
 fileprivate extension MessageSender {
-
     private struct CacheKey: Hashable {
-        let recipientAddress: SignalServiceAddress
-        let deviceId: NSNumber
+        let serviceId: ServiceId
+        let deviceId: UInt32
     }
 
-    // This property should only be accessed on cacheQueue.
-    private static var missingDevicesCache = [CacheKey: Date]()
+    private static var missingDevicesCache = AtomicDictionary<CacheKey, Date>(lock: .init())
 
-    class func hadMissingDeviceError(recipientAddress: SignalServiceAddress,
-                                     deviceId: NSNumber) {
+    static func reportMissingDeviceError(serviceId: ServiceId, deviceId: UInt32) {
         assert(!Thread.isMainThread)
-        let cacheKey = CacheKey(recipientAddress: recipientAddress, deviceId: deviceId)
 
-        guard deviceId.uint32Value == OWSDevicePrimaryDeviceId else {
-            // For now, only bother ignoring primary devices.
-            // 404s should cause the recipient's device list
-            // to be updated, so linked devices shouldn't be
-            // a problem.
+        guard deviceId == OWSDevicePrimaryDeviceId else {
+            // For now, only bother ignoring primary devices. HTTP 404s should cause
+            // the recipient's device list to be updated, so linked devices shouldn't
+            // be a problem.
             return
         }
 
-        cacheQueue.sync {
-            missingDevicesCache[cacheKey] = Date()
-        }
+        let cacheKey = CacheKey(serviceId: serviceId, deviceId: deviceId)
+        missingDevicesCache[cacheKey] = Date()
     }
 
-    class func isDeviceNotMissing(recipientAddress: SignalServiceAddress,
-                                  deviceId: NSNumber) -> Bool {
+    static func deviceRecentlyReportedMissing(serviceId: ServiceId, deviceId: UInt32) -> Bool {
         assert(!Thread.isMainThread)
-        let cacheKey = CacheKey(recipientAddress: recipientAddress, deviceId: deviceId)
 
-        // Prekey rate limits are strict. Therefore, we want to avoid
-        // requesting prekey bundles that are missing on the service
-        // (404).
-        return cacheQueue.sync { () -> Bool in
-            guard let date = missingDevicesCache[cacheKey] else {
-                return true
-            }
-            // If the "missing device" was recorded more than N minutes ago,
-            // try another prekey fetch.  It's conceivable that the recipient
-            // has registered (in the primary device case) or
-            // linked to the device (in the secondary device case).
-            let missingDeviceLifetime = kMinuteInterval * 1
-            return abs(date.timeIntervalSinceNow) >= missingDeviceLifetime
+        // Prekey rate limits are strict. Therefore, we want to avoid requesting
+        // prekey bundles that are missing on the service (404).
+
+        let cacheKey = CacheKey(serviceId: serviceId, deviceId: deviceId)
+        let recentlyReportedMissingDate = missingDevicesCache[cacheKey]
+
+        guard let recentlyReportedMissingDate else {
+            return false
         }
+
+        // If the "missing device" was recorded more than N minutes ago, try
+        // another prekey fetch.  It's conceivable that the recipient has
+        // registered (in the primary device case) or linked to the device (in the
+        // secondary device case).
+        let missingDeviceLifetime = kMinuteInterval * 1
+        guard abs(recentlyReportedMissingDate.timeIntervalSinceNow) < missingDeviceLifetime else {
+            return false
+        }
+
+        return true
     }
 }
 
@@ -777,12 +772,11 @@ extension MessageSender {
 
     func performMessageSendRequest(
         _ messageSend: OWSMessageSend,
-        serviceId: UUID,
+        serviceId: ServiceIdObjC,
         deviceMessages: [DeviceMessage]
     ) {
         owsAssertDebug(!Thread.isMainThread)
 
-        let address: SignalServiceAddress = messageSend.address
         let message: TSOutgoingMessage = messageSend.message
 
         if deviceMessages.isEmpty {
@@ -820,7 +814,7 @@ extension MessageSender {
                 // to this recipient also use basic auth.
                 messageSend.setHasUDAuthFailed()
             },
-            address: address,
+            serviceId: serviceId.wrappedValue,
             udAccess: messageSend.udSendingAccess?.udAccess,
             options: []
         )

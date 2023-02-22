@@ -69,10 +69,10 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
     func testSubmitMessageRequest() throws {
         let udAccessKey = try getUdAccessKey()
 
-        let recipientUuid = UUID()
+        let serviceId = ServiceId(UUID())
 
         let request = OWSRequestFactory.submitMessageRequest(
-            withServiceId: recipientUuid,
+            withServiceId: ServiceIdObjC(serviceId),
             messages: [],
             timestamp: 1234,
             udAccessKey: udAccessKey,
@@ -83,7 +83,7 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
 
         let url = try XCTUnwrap(request.url, "request.url")
         XCTAssertEqual(request.httpMethod, "PUT")
-        XCTAssertEqual(url.path, "v1/messages/\(recipientUuid.uuidString)")
+        XCTAssertEqual(url.path, "v1/messages/\(serviceId.uuidValue.uuidString)")
         XCTAssertEqual(Set(request.parameters.keys), Set(["messages", "timestamp", "online", "urgent"]))
         XCTAssertEqual(request.parameters["messages"] as? NSArray, [])
         XCTAssertEqual(request.parameters["timestamp"] as? UInt, 1234)
@@ -186,7 +186,7 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
 
     func testReportSpamFromUuid() {
         let request = OWSRequestFactory.reportSpam(
-            from: UUID(uuidString: "37EBAFB5-91D6-4C63-BFF7-82F540856386")!,
+            from: ServiceId(uuidString: "37EBAFB5-91D6-4C63-BFF7-82F540856386")!,
             withServerGuid: "abc 123",
             reportingToken: nil
         )
@@ -203,7 +203,7 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
     func testReportSpamFromUuidWithEmptyServerGuid() {
         // This will probably never happen, but if the server wants, this should be allowed.
         let request = OWSRequestFactory.reportSpam(
-            from: UUID(uuidString: "EB7B0432-BE7F-4A62-9859-4D7835D0D724")!,
+            from: ServiceId(uuidString: "EB7B0432-BE7F-4A62-9859-4D7835D0D724")!,
             withServerGuid: "",
             reportingToken: nil
         )
@@ -216,7 +216,7 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
 
     func testReportSpamWithReportingToken() {
         let request = OWSRequestFactory.reportSpam(
-            from: UUID(),
+            from: ServiceId(UUID()),
             withServerGuid: "abc123",
             reportingToken: .init(data: .init([97, 98, 99]))
         )

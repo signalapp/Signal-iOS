@@ -85,15 +85,12 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return request;
 }
 
-+ (TSRequest *)getVersionedProfileRequestWithAddress:(SignalServiceAddress *)address
-                                   profileKeyVersion:(nullable NSString *)profileKeyVersion
-                                   credentialRequest:(nullable NSData *)credentialRequest
-                                         udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
++ (TSRequest *)getVersionedProfileRequestWithServiceId:(ServiceIdObjC *)serviceId
+                                     profileKeyVersion:(nullable NSString *)profileKeyVersion
+                                     credentialRequest:(nullable NSData *)credentialRequest
+                                           udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
-    OWSAssertDebug(address.isValid);
-    OWSAssertDebug(address.uuid != nil);
-
-    NSString *uuidParam = address.uuid.UUIDString.lowercaseString;
+    NSString *uuidParam = serviceId.uuidValue.UUIDString.lowercaseString;
     NSString *_Nullable profileKeyVersionParam = profileKeyVersion.lowercaseString;
     NSString *_Nullable credentialRequestParam = credentialRequest.hexadecimalString.lowercaseString;
 
@@ -166,13 +163,14 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)recipientPreKeyRequestWithServiceId:(NSUUID *)serviceId
++ (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
                                           deviceId:(NSString *)deviceId
                                        udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
     OWSAssertDebug(deviceId.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"%@/%@/%@", self.textSecureKeysAPI, serviceId.UUIDString, deviceId];
+    NSString *path =
+        [NSString stringWithFormat:@"%@/%@/%@", self.textSecureKeysAPI, serviceId.uuidValue.UUIDString, deviceId];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
@@ -474,7 +472,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return [capabilities copy];
 }
 
-+ (TSRequest *)submitMessageRequestWithServiceId:(NSUUID *)serviceId
++ (TSRequest *)submitMessageRequestWithServiceId:(ServiceIdObjC *)serviceId
                                         messages:(NSArray<DeviceMessage *> *)messages
                                        timestamp:(uint64_t)timestamp
                                      udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
@@ -485,7 +483,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
     OWSAssertDebug(timestamp > 0);
 
-    NSString *path = [self.textSecureMessagesAPI stringByAppendingString:serviceId.UUIDString];
+    NSString *path = [self.textSecureMessagesAPI stringByAppendingString:serviceId.uuidValue.UUIDString];
 
     path = [path stringByAppendingFormat:@"?story=%@", isStory ? @"true" : @"false"];
 

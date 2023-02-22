@@ -22,29 +22,29 @@ final class SpamReportingTokenRecordTest: XCTestCase {
     }
 
     func testRoundTrip() throws {
-        let sourceUuid = UUID()
+        let sourceServiceId = ServiceId(UUID())
         let spamReportingToken = SpamReportingToken(data: .init([1, 2, 3]))!
 
         let databaseQueue = try createDatabaseQueue()
 
         try databaseQueue.write { db in
             let record = SpamReportingTokenRecord(
-                sourceUuid: sourceUuid,
+                sourceUuid: sourceServiceId,
                 spamReportingToken: spamReportingToken
             )
             try record.insert(db)
         }
 
         let loadedRecord = try databaseQueue.read { db in
-            try SpamReportingTokenRecord.fetchOne(db, key: sourceUuid)!
+            try SpamReportingTokenRecord.fetchOne(db, key: sourceServiceId)!
         }
-        XCTAssertEqual(loadedRecord.sourceUuid, sourceUuid)
+        XCTAssertEqual(loadedRecord.sourceUuid, sourceServiceId)
         XCTAssertEqual(loadedRecord.spamReportingToken, spamReportingToken)
     }
 
     func testUpsert() throws {
-        let sourceUuid1 = UUID()
-        let sourceUuid2 = UUID()
+        let sourceServiceId1 = ServiceId(UUID())
+        let sourceServiceId2 = ServiceId(UUID())
         let spamReportingToken1 = SpamReportingToken(data: .init([1]))!
         let spamReportingToken2 = SpamReportingToken(data: .init([2]))!
 
@@ -52,9 +52,9 @@ final class SpamReportingTokenRecordTest: XCTestCase {
 
         try databaseQueue.write { db in
             let recordsToUpsert: [SpamReportingTokenRecord] = [
-                .init(sourceUuid: sourceUuid1, spamReportingToken: spamReportingToken1),
-                .init(sourceUuid: sourceUuid2, spamReportingToken: spamReportingToken1),
-                .init(sourceUuid: sourceUuid1, spamReportingToken: spamReportingToken2)
+                .init(sourceUuid: sourceServiceId1, spamReportingToken: spamReportingToken1),
+                .init(sourceUuid: sourceServiceId2, spamReportingToken: spamReportingToken1),
+                .init(sourceUuid: sourceServiceId1, spamReportingToken: spamReportingToken2)
             ]
             for record in recordsToUpsert {
                 try record.upsert(db)
@@ -62,8 +62,8 @@ final class SpamReportingTokenRecordTest: XCTestCase {
         }
 
         let (tokenForUuid1, tokenForUuid2) = try databaseQueue.read { db in (
-            try SpamReportingTokenRecord.fetchOne(db, key: sourceUuid1)?.spamReportingToken,
-            try SpamReportingTokenRecord.fetchOne(db, key: sourceUuid2)?.spamReportingToken
+            try SpamReportingTokenRecord.fetchOne(db, key: sourceServiceId1)?.spamReportingToken,
+            try SpamReportingTokenRecord.fetchOne(db, key: sourceServiceId2)?.spamReportingToken
         )}
         XCTAssertEqual(tokenForUuid1, spamReportingToken2)
         XCTAssertEqual(tokenForUuid2, spamReportingToken1)

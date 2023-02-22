@@ -994,7 +994,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
     // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
     // If we have no UUID, consider the recipient unregistered.
-    NSUUID *serviceId = address.uuid;
+    ServiceIdObjC *serviceId = address.serviceIdObjC;
     if (serviceId == nil) {
         [self failSendForUnregisteredRecipient:messageSend];
         return;

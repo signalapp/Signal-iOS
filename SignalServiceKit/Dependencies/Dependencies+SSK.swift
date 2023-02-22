@@ -1046,6 +1046,14 @@ public extension NSObject {
     static var paymentsCurrenciesSwift: PaymentsCurrenciesSwift {
         SSKEnvironment.shared.paymentsCurrenciesRef as! PaymentsCurrenciesSwift
     }
+
+    var versionedProfilesSwift: VersionedProfilesSwift {
+        versionedProfiles as! VersionedProfilesSwift
+    }
+
+    static var versionedProfilesSwift: VersionedProfilesSwift {
+        versionedProfiles as! VersionedProfilesSwift
+    }
 }
 
 // MARK: - Swift-only Dependencies
@@ -1090,6 +1098,14 @@ public extension Dependencies {
 
     static var paymentsCurrenciesSwift: PaymentsCurrenciesSwift {
         SSKEnvironment.shared.paymentsCurrenciesRef as! PaymentsCurrenciesSwift
+    }
+
+    var versionedProfilesSwift: VersionedProfilesSwift {
+        versionedProfiles as! VersionedProfilesSwift
+    }
+
+    static var versionedProfilesSwift: VersionedProfilesSwift {
+        versionedProfiles as! VersionedProfilesSwift
     }
 }
 

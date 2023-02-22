@@ -34,16 +34,16 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
 
     private class MockContactDiscoveryV2PersistentState: ContactDiscoveryV2PersistentState {
         var token: Data?
-        var prevE164s = Set<String>()
+        var prevE164s = Set<E164>()
 
-        func load() -> (token: Data, e164s: ContactDiscoveryE164Collection<Set<String>>)? {
+        func load() -> (token: Data, e164s: ContactDiscoveryE164Collection<Set<E164>>)? {
             if let token {
-                return (token, try! ContactDiscoveryE164Collection(prevE164s))
+                return (token, ContactDiscoveryE164Collection(prevE164s))
             }
             return nil
         }
 
-        func save(newToken: Data, clearE164s: Bool, newE164s: Set<String>) throws {
+        func save(newToken: Data, clearE164s: Bool, newE164s: Set<E164>) throws {
             token = newToken
             if clearE164s {
                 prevE164s.removeAll()
@@ -62,12 +62,12 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     private lazy var connectionFactory = MockContactDiscoveryV2ConnectionFactory()
 
     /// In .oneOffUserRequest mode, we should disregard tokens entirely.
-    func testOneOffRequest() {
+    func testOneOffRequest() throws {
         let aci = UUID()
         let pni = UUID()
 
         let operation = ContactDiscoveryV2Operation(
-            e164sToLookup: ["+16505550100"],
+            e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
             compatibilityMode: .fetchAllACIs,
             persistentState: nil,
             connectionFactory: connectionFactory
@@ -110,7 +110,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
 
         // Make sure we got back the result we expected.
         XCTAssertEqual(operationResults?.count, 1)
-        XCTAssertEqual(operationResults?.first?.e164, "+16505550100")
+        XCTAssertEqual(operationResults?.first?.e164.stringValue, "+16505550100")
         XCTAssertEqual(operationResults?.first?.pni, pni)
         XCTAssertEqual(operationResults?.first?.aci, aci)
     }
@@ -118,7 +118,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     /// If the server reports a rate limit, we should parse "retry after".
     func testRateLimitError() throws {
         let operation = ContactDiscoveryV2Operation(
-            e164sToLookup: ["+16505550100"],
+            e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
             compatibilityMode: .fetchAllACIs,
             persistentState: persistentState,
             connectionFactory: connectionFactory
@@ -127,7 +127,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
         // Establish the initial state.
         let initialToken = Cryptography.generateRandomBytes(65)
         persistentState.token = initialToken
-        let initialPrevE164s: Set<String> = ["+16505550199"]
+        let initialPrevE164s: Set<E164> = [try XCTUnwrap(E164("+16505550199"))]
         persistentState.prevE164s = initialPrevE164s
 
         // Prepare the server's responses to the client's request.
@@ -161,9 +161,9 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     }
 
     /// If the server reports an invalid token, we should clear the token.
-    func testInvalidTokenError() {
+    func testInvalidTokenError() throws {
         let operation = ContactDiscoveryV2Operation(
-            e164sToLookup: ["+16505550100"],
+            e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
             compatibilityMode: .fetchAllACIs,
             persistentState: persistentState,
             connectionFactory: connectionFactory

@@ -12,7 +12,7 @@ protocol ContactDiscoveryTaskQueue {
 
 final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependencies {
     func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {
-        let e164s = phoneNumbers.filter { $0.isStructurallyValidE164 }
+        let e164s = Set(phoneNumbers.compactMap { E164($0) })
         guard !e164s.isEmpty else {
             return .value([])
         }
@@ -30,11 +30,9 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
             let discoveredE164s = Set(discoveredContacts.map { $0.e164 })
 
             let discoveredAddresses = discoveredContacts
-                .map { SignalServiceAddress(uuid: $0.uuid, phoneNumber: $0.e164, trustLevel: .high) }
+                .map { SignalServiceAddress(uuid: $0.uuid, phoneNumber: $0.e164.stringValue, trustLevel: .high) }
 
-            let undiscoverableAddresses = e164s
-                .subtracting(discoveredE164s)
-                .map { SignalServiceAddress(uuid: nil, phoneNumber: $0, trustLevel: .low) }
+            let undiscoverableAddresses = e164s.subtracting(discoveredE164s).map { SignalServiceAddress($0) }
 
             return Self.storeResults(
                 discoveredAddresses: discoveredAddresses,
@@ -43,7 +41,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
         }
     }
 
-    private static func createContactDiscoveryOperation(for e164s: Set<String>, mode: ContactDiscoveryMode) -> ContactDiscoveryOperation {
+    private static func createContactDiscoveryOperation(for e164s: Set<E164>, mode: ContactDiscoveryMode) -> ContactDiscoveryOperation {
         if FeatureFlags.contactDiscoveryV2 && !RemoteConfig.contactDiscoveryV2KillSwitch {
             return ContactDiscoveryV2CompatibilityOperation(e164sToLookup: e164s, mode: mode)
         } else {

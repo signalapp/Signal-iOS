@@ -8,7 +8,7 @@ import LibSignalClient
 
 struct CDSRegisteredContact: Hashable {
     let signalUuid: UUID
-    let e164PhoneNumber: String
+    let e164PhoneNumber: E164
 }
 
 /// Fetches contact info from the ContactDiscoveryService
@@ -16,8 +16,8 @@ struct CDSRegisteredContact: Hashable {
 class SGXContactDiscoveryOperation: ContactDiscoveryOperation {
     static let batchSize = 2048
 
-    private let e164sToLookup: Set<String>
-    required init(e164sToLookup: Set<String>, mode: ContactDiscoveryMode) {
+    private let e164sToLookup: Set<E164>
+    required init(e164sToLookup: Set<E164>, mode: ContactDiscoveryMode) {
         self.e164sToLookup = e164sToLookup
         Logger.debug("with e164sToLookup.count: \(e164sToLookup.count)")
     }
@@ -46,7 +46,7 @@ class SGXContactDiscoveryOperation: ContactDiscoveryOperation {
     // Below, we have a bunch of then blocks being performed on a global concurrent queue
     // It might be worthwhile to audit and see if we can move these onto the queue passed into `perform(on:)`
 
-    private func makeContactDiscoveryRequest(e164sToLookup: [String]) -> Promise<Set<CDSRegisteredContact>> {
+    private func makeContactDiscoveryRequest(e164sToLookup: [E164]) -> Promise<Set<CDSRegisteredContact>> {
         firstly { () -> Promise<RemoteAttestation.CDSAttestation> in
             RemoteAttestation.performForCDS()
 
@@ -108,17 +108,16 @@ class SGXContactDiscoveryOperation: ContactDiscoveryOperation {
                 }
 
                 Logger.verbose("Signal user. e164: \(e164PhoneNumber), uuid: \(uuid)")
-                registeredContacts.insert(CDSRegisteredContact(signalUuid: uuid,
-                                                               e164PhoneNumber: e164PhoneNumber))
+                registeredContacts.insert(CDSRegisteredContact(signalUuid: uuid, e164PhoneNumber: e164PhoneNumber))
             }
 
             return registeredContacts
         }
     }
 
-    func buildIntersectionQuery(e164sToLookup: [String], remoteAttestations: [RemoteAttestation.CDSAttestation.Id: RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
+    func buildIntersectionQuery(e164sToLookup: [E164], remoteAttestations: [RemoteAttestation.CDSAttestation.Id: RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
         let noncePlainTextData = Randomness.generateRandomBytes(32)
-        let addressPlainTextData = try ContactDiscoveryE164Collection(e164sToLookup).encodedValues
+        let addressPlainTextData = ContactDiscoveryE164Collection(e164sToLookup).encodedValues
         let queryData = Data.join([noncePlainTextData, addressPlainTextData])
 
         let key = OWSAES256Key.generateRandom()

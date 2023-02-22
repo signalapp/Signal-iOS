@@ -29,17 +29,18 @@ public protocol VersionedProfileRequest: AnyObject {
 
 @objc
 public protocol VersionedProfiles: AnyObject {
-    @objc(clearProfileKeyCredentialForAddress:transaction:)
-    func clearProfileKeyCredential(for address: SignalServiceAddress,
-                                   transaction: SDSAnyWriteTransaction)
+    @objc(clearProfileKeyCredentialForServiceId:transaction:)
+    func clearProfileKeyCredential(
+        for serviceId: ServiceIdObjC,
+        transaction: SDSAnyWriteTransaction
+    )
 
     func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction)
 
-    func versionedProfileRequest(address: SignalServiceAddress,
-                                 udAccessKey: SMKUDAccessKey?) throws -> VersionedProfileRequest
-
-    func didFetchProfile(profile: SignalServiceProfile,
-                         profileRequest: VersionedProfileRequest)
+    func didFetchProfile(
+        profile: SignalServiceProfile,
+        profileRequest: VersionedProfileRequest
+    )
 }
 
 // MARK: -
@@ -53,8 +54,13 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
                               visibleBadgeIds: [String],
                               unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate>
 
+    func versionedProfileRequest(
+        for serviceId: ServiceId,
+        udAccessKey: SMKUDAccessKey?
+    ) throws -> VersionedProfileRequest
+
     func validProfileKeyCredential(
-        for address: SignalServiceAddress,
+        for serviceId: ServiceId,
         transaction: SDSAnyReadTransaction
     ) throws -> ExpiringProfileKeyCredential?
 }
@@ -63,13 +69,15 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
 
 @objc
 public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedProfiles {
-    public func clearProfileKeyCredential(for address: SignalServiceAddress,
+    public func clearProfileKeyCredential(for serviceId: ServiceIdObjC,
                                           transaction: SDSAnyWriteTransaction) {}
 
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {}
 
-    public func versionedProfileRequest(address: SignalServiceAddress,
-                                        udAccessKey: SMKUDAccessKey?) throws -> VersionedProfileRequest {
+    public func versionedProfileRequest(
+        for serviceId: ServiceId,
+        udAccessKey: SMKUDAccessKey?
+    ) throws -> VersionedProfileRequest {
         owsFail("Not implemented.")
     }
 
@@ -86,7 +94,7 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
         owsFail("Not implemented.")
     }
 
-    public func validProfileKeyCredential(for address: SignalServiceAddress,
+    public func validProfileKeyCredential(for serviceId: ServiceId,
                                           transaction: SDSAnyReadTransaction) throws -> ExpiringProfileKeyCredential? {
         owsFail("Not implemented")
     }

@@ -16,10 +16,10 @@ private enum Constant {
 
 /// Runs a CDSv1-compatible operation against the CDSv2 backend.
 final class ContactDiscoveryV2CompatibilityOperation: ContactDiscoveryOperation {
-    let e164sToLookup: Set<String>
+    let e164sToLookup: Set<E164>
     let mode: ContactDiscoveryMode
 
-    init(e164sToLookup: Set<String>, mode: ContactDiscoveryMode) {
+    init(e164sToLookup: Set<E164>, mode: ContactDiscoveryMode) {
         self.e164sToLookup = e164sToLookup
         self.mode = mode
     }
@@ -59,7 +59,7 @@ protocol ContactDiscoveryV2PersistentState {
     ///
     /// If the data isn't available, can't be read, or is corrupted, return
     /// `nil` to reset the token.
-    func load() -> (token: Data, e164s: ContactDiscoveryE164Collection<Set<String>>)?
+    func load() -> (token: Data, e164s: ContactDiscoveryE164Collection<Set<E164>>)?
 
     /// Save the token response from the server.
     /// - Parameters:
@@ -69,7 +69,7 @@ protocol ContactDiscoveryV2PersistentState {
     ///       written. This is most useful when saving the initial token or
     ///       resetting the token after it's been corrupted.
     ///   - newE164s: The e164s that should be saved.
-    func save(newToken: Data, clearE164s: Bool, newE164s: Set<String>) throws
+    func save(newToken: Data, clearE164s: Bool, newE164s: Set<E164>) throws
 
     /// Reset the token.
     ///
@@ -81,7 +81,7 @@ protocol ContactDiscoveryV2PersistentState {
 
 final class ContactDiscoveryV2Operation {
 
-    let e164sToLookup: Set<String>
+    let e164sToLookup: Set<E164>
 
     let compatibilityMode: CompatibilityMode
     enum CompatibilityMode {
@@ -104,7 +104,7 @@ final class ContactDiscoveryV2Operation {
     let connectionFactory: ContactDiscoveryV2ConnectionFactory
 
     init(
-        e164sToLookup: Set<String>,
+        e164sToLookup: Set<E164>,
         compatibilityMode: CompatibilityMode,
         persistentState: ContactDiscoveryV2PersistentState?,
         connectionFactory: ContactDiscoveryV2ConnectionFactory
@@ -115,7 +115,7 @@ final class ContactDiscoveryV2Operation {
         self.connectionFactory = connectionFactory
     }
 
-    convenience init(e164sToLookup: Set<String>, mode: ContactDiscoveryMode, compatibilityMode: CompatibilityMode) {
+    convenience init(e164sToLookup: Set<E164>, mode: ContactDiscoveryMode, compatibilityMode: CompatibilityMode) {
         let persistentState: ContactDiscoveryV2PersistentState?
         if mode == .oneOffUserRequest {
             persistentState = nil
@@ -169,7 +169,7 @@ final class ContactDiscoveryV2Operation {
         /// The set of e164s that needs to be persisted alongside the token we
         /// receive from the server. This may be empty, and it may contain only a
         /// few e164s in the common case.
-        var newE164s: Set<String>
+        var newE164s: Set<E164>
 
         /// The data to send to the server as part of the initial request.
         var requestData: Data
@@ -178,7 +178,7 @@ final class ContactDiscoveryV2Operation {
     private func buildRequest() throws -> InitialRequest {
         let prevToken: Data
         let prevE164s: Data
-        let newE164s: Set<String>
+        let newE164s: Set<E164>
 
         if let priorFetchResult = persistentState?.load() {
             // We've got a valid token from a prior request. Use that.
@@ -195,7 +195,7 @@ final class ContactDiscoveryV2Operation {
         var request = CDSI_ClientRequest()
         request.token = prevToken
         request.prevE164S = prevE164s
-        request.newE164S = try ContactDiscoveryE164Collection(newE164s).encodedValues
+        request.newE164S = ContactDiscoveryE164Collection(newE164s).encodedValues
 
         switch compatibilityMode {
         case .fetchAllACIs:
@@ -343,7 +343,7 @@ final class ContactDiscoveryV2Operation {
     // MARK: - Parsing the Response
 
     struct DiscoveryResult {
-        var e164: String
+        var e164: E164
 
         /// If the lookup succeeds, we'll get back a PNI. If it doesn't succeed, the
         /// user with a particular e164 may not be registered, or they may have
@@ -369,10 +369,10 @@ final class ContactDiscoveryV2Operation {
     }
 
     static func decodePniAciElement(_ remainingData: inout Data) throws -> DiscoveryResult? {
-        guard let (e164, e164Count) = UInt64.from(bigEndianData: remainingData) else {
+        guard let (rawE164, rawE164Count) = UInt64.from(bigEndianData: remainingData) else {
             throw ContactDiscoveryError.assertionError(description: "malformed e164/aci/pni triples")
         }
-        remainingData = remainingData.dropFirst(e164Count)
+        remainingData = remainingData.dropFirst(rawE164Count)
 
         guard let (pni, pniCount) = UUID.from(data: remainingData) else {
             throw ContactDiscoveryError.assertionError(description: "malformed e164/aci/pni triples")
@@ -384,11 +384,14 @@ final class ContactDiscoveryV2Operation {
         }
         remainingData = remainingData.dropFirst(aciCount)
 
+        guard let e164 = E164("+\(rawE164)") else {
+            throw ContactDiscoveryError.assertionError(description: "malformed e164")
+        }
         guard pni != UUID.allZeros else {
             return nil
         }
         return DiscoveryResult(
-            e164: "+\(e164)",
+            e164: e164,
             pni: pni,
             aci: aci == UUID.allZeros ? nil : aci
         )
@@ -413,15 +416,20 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
     private static let tokenStore = SDSKeyValueStore(collection: "CdsMetadata")
     private static let tokenKey = "token"
 
-    func load() -> (token: Data, e164s: ContactDiscoveryE164Collection<Set<String>>)? {
+    func load() -> (token: Data, e164s: ContactDiscoveryE164Collection<Set<E164>>)? {
         databaseStorage.read { transaction in
             guard let existingToken = Self.tokenStore.getData(Self.tokenKey, transaction: transaction) else {
                 return nil
             }
-            let validatedE164s: ContactDiscoveryE164Collection<Set<String>>
+            let validatedE164s: ContactDiscoveryE164Collection<Set<E164>>
             do {
-                let prevE164s = try CdsPreviousE164.fetchAll(transaction.unwrapGrdbRead.database).map { $0.e164 }
-                validatedE164s = try ContactDiscoveryE164Collection(Set(prevE164s))
+                let prevE164s = try CdsPreviousE164.fetchAll(transaction.unwrapGrdbRead.database).map {
+                    guard let e164 = E164($0.e164) else {
+                        throw ContactDiscoveryError.assertionError(description: "Found malformed E164 in database.")
+                    }
+                    return e164
+                }
+                validatedE164s = ContactDiscoveryE164Collection(Set(prevE164s))
             } catch {
                 // If we find an invalid local value, it's very likely that our local
                 // e164/token state is inconsistent. To recover from this scenario, we
@@ -433,7 +441,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
         }
     }
 
-    func save(newToken: Data, clearE164s: Bool, newE164s: Set<String>) throws {
+    func save(newToken: Data, clearE164s: Bool, newE164s: Set<E164>) throws {
         try databaseStorage.write { transaction in
             let database = transaction.unwrapGrdbWrite.database
 
@@ -448,7 +456,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
             }
 
             for newE164 in newE164s {
-                try CdsPreviousE164(e164: newE164).insert(database)
+                try CdsPreviousE164(e164: newE164.stringValue).insert(database)
             }
 
             Logger.info("CDSv2: Saved CDS token and \(newE164s.count) new CdsE164s")

@@ -159,8 +159,8 @@ extension OWSMessageManager {
         transaction: SDSAnyWriteTransaction
     ) {
         guard
-            let rawSourceUuid = envelope.sourceUuid,
-            let sourceUuid = UUID(uuidString: rawSourceUuid)
+            let sourceUuid = envelope.sourceUuid,
+            let sourceServiceId = ServiceId(uuidString: sourceUuid)
         else {
             Logger.warn(
                 "Received an envelope without a valid source UUID. Did the server send bad data?"
@@ -179,7 +179,7 @@ extension OWSMessageManager {
         Logger.info("Saving spam reporting token. Envelope timestamp: \(envelope.timestamp)")
         do {
             try SpamReportingTokenRecord(
-                sourceUuid: sourceUuid,
+                sourceUuid: sourceServiceId,
                 spamReportingToken: spamReportingToken
             ).upsert(transaction.unwrapGrdbWrite.database)
         } catch {

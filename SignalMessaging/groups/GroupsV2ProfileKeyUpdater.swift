@@ -315,8 +315,10 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                     guard groupV2Snapshot.profileKeys.values.contains(profileKeyData) else {
                         owsFailDebug("Update failed.")
                         self.databaseStorage.write { transaction in
-                            self.versionedProfiles.clearProfileKeyCredential(for: localAddress,
-                                                                             transaction: transaction)
+                            self.versionedProfiles.clearProfileKeyCredential(
+                                for: ServiceIdObjC(uuidValue: localUuid),
+                                transaction: transaction
+                            )
                         }
                         return
                     }

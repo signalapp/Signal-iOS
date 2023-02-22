@@ -487,7 +487,10 @@ extension SignalRecipient {
             }
 
             if !newAddress.isLocalAddress {
-                self.versionedProfiles.clearProfileKeyCredential(for: newAddress, transaction: transaction.asAnyWrite)
+                self.versionedProfiles.clearProfileKeyCredential(
+                    for: ServiceIdObjC(uuidValue: newUuid),
+                    transaction: transaction.asAnyWrite
+                )
 
                 if let oldPhoneNumber {
                     // The "obsolete" address is the address the old phone number.
