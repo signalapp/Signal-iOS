@@ -33,6 +33,29 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
+        let whoCanSection = OWSTableSection()
+
+        if FeatureFlags.phoneNumberSharing ||
+            (FeatureFlags.phoneNumberDiscoverability &&
+             tsAccountManager.isPrimaryDevice) {
+            whoCanSection.add(.disclosureItem(
+                withText: OWSLocalizedString(
+                    "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE",
+                    comment: "The title for phone number privacy settings."),
+                actionBlock: { [weak self] in
+                    let vc = PhoneNumberPrivacySettingsViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+            whoCanSection.footerTitle = OWSLocalizedString(
+                "SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL",
+                comment: "Description label for Phone Number Privacy")
+        }
+
+        if !whoCanSection.items.isEmpty {
+            contents.addSection(whoCanSection)
+        }
+
         let blockedSection = OWSTableSection()
         blockedSection.add(.disclosureItem(
             withText: NSLocalizedString(
@@ -45,40 +68,6 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             }
         ))
         contents.addSection(blockedSection)
-
-        let whoCanSection = OWSTableSection()
-
-        if FeatureFlags.phoneNumberSharing {
-            whoCanSection.add(.disclosureItem(
-                withText: NSLocalizedString(
-                    "SETTINGS_PHONE_NUMBER_SHARING",
-                    comment: "Label for the 'phone number sharing' setting."
-                ),
-                detailText: PhoneNumberSharingSettingsTableViewController.nameForCurrentMode,
-                actionBlock: { [weak self] in
-                    let vc = PhoneNumberSharingSettingsTableViewController()
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            ))
-        }
-
-        if FeatureFlags.phoneNumberDiscoverability, tsAccountManager.isPrimaryDevice {
-            whoCanSection.add(.disclosureItem(
-                withText: NSLocalizedString(
-                    "SETTINGS_PHONE_NUMBER_DISCOVERABILITY",
-                    comment: "Label for the 'phone number discoverability' setting."
-                ),
-                detailText: PhoneNumberDiscoverabilitySettingsTableViewController.nameForCurrentDiscoverability,
-                actionBlock: { [weak self] in
-                    let vc = PhoneNumberDiscoverabilitySettingsTableViewController()
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            ))
-        }
-
-        if !whoCanSection.items.isEmpty {
-            contents.addSection(whoCanSection)
-        }
 
         let messagingSection = OWSTableSection()
         messagingSection.footerTitle = NSLocalizedString(
