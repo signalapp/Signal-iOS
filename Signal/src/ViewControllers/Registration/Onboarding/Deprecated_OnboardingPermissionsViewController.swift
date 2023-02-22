@@ -20,7 +20,7 @@ public class Deprecated_OnboardingPermissionsViewController: Deprecated_Onboardi
         case .registering: // primary
             shouldRequestAccessToContacts = true
         case .provisioning:  // linked
-            shouldRequestAccessToContacts = !FeatureFlags.contactDiscoveryV2
+            shouldRequestAccessToContacts = false
         }
         super.init(onboardingController: onboardingController)
     }

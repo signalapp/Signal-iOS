@@ -720,33 +720,14 @@ extension OWSContactsManager {
             )
             var newSignalAccountsMap = [SignalServiceAddress: SignalAccount]()
 
-            if !FeatureFlags.contactDiscoveryV2 {
-                // If we find a persisted contact that is not from the local address book,
-                // it represents a contact from the address book on the primary device that
-                // was synced to this (linked) device. We should keep it, and not overwrite
-                // it since the primary device's system contacts always take precendence.
-                for signalAccount in oldSignalAccounts {
-                    if signalAccount.contact?.isFromLocalAddressBook == false {
-                        newSignalAccountsMap[signalAccount.recipientAddress] = signalAccount
-                    }
-                }
-            }
-
             var signalAccountsToInsert = [SignalAccount]()
             for newSignalAccount in newSignalAccounts {
                 let address = newSignalAccount.recipientAddress
 
                 // The user might have multiple entries in their address book with the same phone number.
-                if FeatureFlags.contactDiscoveryV2 {
-                    if newSignalAccountsMap[address] != nil {
-                        Logger.warn("Ignoring redundant signal account: \(address)")
-                        continue
-                    }
-                } else {
-                    if newSignalAccountsMap[address]?.contact?.isFromLocalAddressBook == true {
-                        Logger.warn("Ignoring redundant signal account: \(address)")
-                        continue
-                    }
+                if newSignalAccountsMap[address] != nil {
+                    Logger.warn("Ignoring redundant signal account: \(address)")
+                    continue
                 }
 
                 let oldSignalAccountToKeep: SignalAccount?
@@ -756,12 +737,6 @@ extension OWSContactsManager {
 
                 case .some(let oldSignalAccount) where oldSignalAccount.hasSameContent(newSignalAccount):
                     // Same content, no need to update.
-                    oldSignalAccountToKeep = oldSignalAccount
-
-                case .some(let oldSignalAccount) where !FeatureFlags.contactDiscoveryV2 && oldSignalAccount.contact?.isFromLocalAddressBook == false:
-                    // If the contact is not local to this device, then we are a linked device
-                    // and have synced this from the primary. We should not overwrite the
-                    // synced primary-device system contact.
                     oldSignalAccountToKeep = oldSignalAccount
 
                 case .some:
@@ -867,10 +842,7 @@ extension OWSContactsManager {
             let mapping = accounts.reduce(into: [SignalServiceAddress: Contact]()) { partialResult, kv in
                 let (address, account) = kv
 
-                guard
-                    let contact = account.contact,
-                    contact.isFromLocalAddressBook
-                else {
+                guard let contact = account.contact else {
                     return
                 }
 

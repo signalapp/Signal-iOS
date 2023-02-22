@@ -312,12 +312,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             // bit of speed to save memory.
             var uniqueIdsToRemove = [String]()
             SignalAccount.anyEnumerate(transaction: transaction, batchSize: 8) { signalAccount, _ in
-                if !FeatureFlags.contactDiscoveryV2 {
-                    guard let contact = signalAccount.contact, !contact.isFromLocalAddressBook else {
-                        // This only cleans up contacts from a contact sync.
-                        return
-                    }
-                }
                 guard !setOfAddresses.contains(signalAccount.recipientAddress) else {
                     // This contact was received in this batch, so don't remove it.
                     return

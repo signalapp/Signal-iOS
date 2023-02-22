@@ -2542,24 +2542,22 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
-        if FeatureFlags.contactDiscoveryV2 {
-            migrator.registerMigration(.dataMigration_removeLinkedDeviceSystemContacts) { transaction in
-                guard !tsAccountManager.isPrimaryDevice else {
-                    return .success(())
-                }
-
-                let keyValueCollections = [
-                    "ContactsManagerCache.uniqueIdStore",
-                    "ContactsManagerCache.phoneNumberStore",
-                    "ContactsManagerCache.allContacts"
-                ]
-
-                for collection in keyValueCollections {
-                    SDSKeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite)
-                }
-
+        migrator.registerMigration(.dataMigration_removeLinkedDeviceSystemContacts) { transaction in
+            guard !tsAccountManager.isPrimaryDevice else {
                 return .success(())
             }
+
+            let keyValueCollections = [
+                "ContactsManagerCache.uniqueIdStore",
+                "ContactsManagerCache.phoneNumberStore",
+                "ContactsManagerCache.allContacts"
+            ]
+
+            for collection in keyValueCollections {
+                SDSKeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite)
+            }
+
+            return .success(())
         }
 
         // MARK: - Data Migration Insertion Point

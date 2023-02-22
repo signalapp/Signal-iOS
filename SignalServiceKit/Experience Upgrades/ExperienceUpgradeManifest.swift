@@ -423,7 +423,7 @@ extension ExperienceUpgradeManifest {
             return true
         case
                 .contactPermissionReminder:
-            return !FeatureFlags.contactDiscoveryV2
+            return false
         case
                 .remoteMegaphone:
             // Controlled by conditional check

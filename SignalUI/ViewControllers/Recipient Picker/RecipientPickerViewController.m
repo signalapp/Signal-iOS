@@ -186,10 +186,6 @@ const NSUInteger kMinimumSearchLength = 1;
     if (self.tsAccountManager.isRegisteredPrimaryDevice) {
         // primary *only* does contact refresh
         refreshPromise = [self.contactsManagerImpl userRequestedSystemContactsRefresh];
-    } else if (!SSKFeatureFlags.contactDiscoveryV2) {
-        refreshPromise = [self.contactsManagerImpl userRequestedSystemContactsRefresh].then(^(id value) {
-            return [self.syncManager sendAllSyncRequestMessagesWithTimeout:20];
-        });
     } else {
         refreshPromise = [self.syncManager sendAllSyncRequestMessagesWithTimeout:20];
     }

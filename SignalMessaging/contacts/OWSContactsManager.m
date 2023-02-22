@@ -92,7 +92,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (BOOL)isEditingAllowed
 {
-    return !SSKFeatureFlags.contactDiscoveryV2 || self.tsAccountManager.isPrimaryDevice;
+    return self.tsAccountManager.isPrimaryDevice;
 }
 
 - (ContactAuthorizationForEditing)editingAuthorization

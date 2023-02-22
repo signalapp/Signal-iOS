@@ -94,9 +94,6 @@ public class FeatureFlags: BaseFlags {
     public static let isPrerelease = build.includes(.beta)
 
     @objc
-    public static let contactDiscoveryV2 = true
-
-    @objc
     public static var notificationServiceExtension: Bool {
         // The CallKit APIs for the NSE are only available from iOS 14.5 and on,
         // however there is a significant bug in iOS 14 where the NSE will not

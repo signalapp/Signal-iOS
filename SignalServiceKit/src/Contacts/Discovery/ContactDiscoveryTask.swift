@@ -42,7 +42,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
     }
 
     private static func createContactDiscoveryOperation(for e164s: Set<E164>, mode: ContactDiscoveryMode) -> ContactDiscoveryOperation {
-        if FeatureFlags.contactDiscoveryV2 && !RemoteConfig.contactDiscoveryV2KillSwitch {
+        if !RemoteConfig.contactDiscoveryV2KillSwitch {
             return ContactDiscoveryV2CompatibilityOperation(e164sToLookup: e164s, mode: mode)
         } else {
             return SGXContactDiscoveryOperation(e164sToLookup: e164s, mode: mode)
