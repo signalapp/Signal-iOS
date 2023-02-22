@@ -317,13 +317,13 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Give Access";
+"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "액세스 허용";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "위치";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal needs permission to show your photos and videos.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal에서 사진이나 동영상을 표시하려면 권한이 필요합니다.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "사진을 찍은 후 여기에서 최근 연락처에게 보낼 수 있습니다.";
@@ -461,10 +461,10 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "차단";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%1$@\" 그룹을 차단하고 나가시겠습니까?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "'%1$@' 그룹을 차단하고 나갈까요?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%1$@ 님을 차단하시겠습니까?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%1$@을(를) 차단할까요?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "차단한 그룹";
@@ -491,10 +491,10 @@
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "그룹 멤버가 나를 다시 그룹에 추가할 수 있게 됩니다.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "이 그룹을 차단을 해제하겠습니까?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "이 그룹을 차단 해제할까요?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%1$@ 대화의 차단을 해제하시겠습니까?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%1$@ 대화를 차단 해제할까요?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "차단";
@@ -503,10 +503,10 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ 대화를 차단했습니다.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "사용자 차단함";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "사용자를 차단함";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "그룹 차단함";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "그룹을 차단함";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "본인은 차단할 수 없습니다.";
@@ -515,13 +515,13 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "오류";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ 대화의 차단을 해제했습니다.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ 대화를 차단 해제했습니다.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "이제 그룹에 있는 멤버가 나를 다시 그룹에 추가할 수 있습니다.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "차단한 사용자는 나에게 전화 또는 메시지를 보낼 수 없습니다.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "차단한 사용자는 나에게 전화를 걸거나 메시지를 보낼 수 없습니다.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "새 기능: 얼굴 또는 그린 곳을 가릴 수 있습니다.";
@@ -1145,7 +1145,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "채팅을 삭제하시겠습니까?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "다음 기간 동안 이 채팅 음소거…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "다음 기간 동안 이 채팅 알림 끄기…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1일";
@@ -1265,7 +1265,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "알림을 껐다면 무시";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "알림을 끈 대화에서 언급되면 알림을 받으시겠습니까?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "알림을 끈 대화에서 멘션 될 경우 알림을 받아보시겠어요?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "언급";
@@ -1274,7 +1274,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "메세지";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "다음 기간 동안 이 채팅 음소거…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "다음 기간 동안 이 채팅 알림 끄기…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "항상";
@@ -1310,13 +1310,13 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "항상 알림 끔";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "음소거됨";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "알림 끔";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%1$@까지";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%1$@까지 알림 끄기";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%1$@까지 알림을 껐습니다.";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "새 연락처 만들기";
@@ -1395,6 +1395,15 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "국가 코드 선택";
+
+/* Body text for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Usernames let others message you without needing your phone number.";
+
+/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
+"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Set Up";
+
+/* Title for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Set up your Signal username";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "카드가 만료되었습니다. 카드 세부 정보가 올바른지 확인하고 다시 시도하세요.";
@@ -1892,7 +1901,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "기부를 완료할 수 없습니다.";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "이 사용자를 대신해 기부하려면 이 사용자에 대한 차단을 해지해야 합니다.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "이 사용자를 대신해 기부하려면 이 사용자를 차단 해제해야 합니다.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "기부를 완료할 수 없습니다.";
@@ -2372,7 +2381,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "음성 또는 영상 통화를 더 이상 수신하지 않으며 차단된 사람도 나의 통화를 수신할 수 없습니다.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ 차단됨";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ 님을 차단함";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "이 그룹의 관리자만 통화를 시작할 수 있습니다.";
@@ -2381,7 +2390,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "그룹 통화를 시작할 수 없음";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ 차단됨";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ 님을 차단함";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "계속 전화";
@@ -2417,7 +2426,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%1$@ 님의 음성 및 영상 통화를 수신할 수 없습니다.";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "이는 안전 번호 변경을 확인하지 않았거나, 기기에 문제가 있거나 사용자를 차단했기 때문일 수 있습니다.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "이는 해당 사용자가 안전 번호 변경을 확인하지 않았거나, 기기에 문제가 있거나 나를 차단했기 때문일 수 있습니다.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%1$@ 님의 음성 및 영상 통화를 수신할 수 없습니다.";
@@ -3059,10 +3068,10 @@
 "GROUPS_INVITE_BLOCK_GROUP" = "그룹 차단";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "그룹 및 %1$@ 차단";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "그룹 및 %1$@ 님 차단";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%1$@ 차단";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%1$@ 님 차단";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "친구 초대";
@@ -3314,7 +3323,7 @@
 "IN_CALL_TERMINATED" = "통화 종료됨";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "보관된 음소거 채팅은 새 메시지가 도착해도 보관 상태로 유지됩니다.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "알림을 꺼서 보관한 채팅은 새 메시지가 도착해도 보관 상태로 유지됩니다.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "새 메시지가 도착하면 보관된 채팅이 수신함으로 이동합니다.";
@@ -3710,19 +3719,19 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "차단 후 삭제";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "스팸 보고하고 차단하기";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "스팸 신고 및 차단";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "차단한 사용자는 나에게 전화 또는 메시지를 보낼 수 없습니다.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "차단한 사용자는 나에게 전화를 걸거나 메시지를 보낼 수 없습니다.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%1$@ 사용자를 차단하시겠습니까?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%1$@을(를) 차단할까요?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "이 그룹에서 나가게 되며 메시지 또는 새 소식을 받을 수 없게 됩니다.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ 그룹을 차단하고 나가시겠습니까?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ 그룹을 차단하고 나갈까요?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "삭제";
@@ -3764,7 +3773,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "요청 검토";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "스팸으로 보고하고 차단하기";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "스팸으로 신고하고 차단했습니다.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "수락";
@@ -3773,13 +3782,13 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "차단";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%1$@ 님이 나에게 메시지를 보내고 내 이름과 사진을 공유할 수 있도록 하시겠습니까? 차단을 해제하기 전까지는 어떠한 메시지도 받지 않습니다.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%1$@ 님이 내게 메시지를 보내고 내 이름과 사진을 공유할 수 있도록 허용할까요? 차단을 해제할 때까지 모든 메시지를 차단합니다.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "이 그룹을 차단 해제하고 그룹 멤버에게 내 이름과 사진을 공유하시겠습니까? 차단을 해제하기 전까지는 메시지를 받지 않습니다.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "이 그룹을 차단 해제하고 그룹 멤버에게 내 이름과 사진을 공유할까요? 차단을 해제할 때까지 모든 메시지를 차단합니다.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "이 그룹을 차단 해제하시겠습니까? 차단을 해제하기 전까지 상대는 내가 메시지를 보았는지 알 수 없습니다.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "이 그룹을 차단 해제할까요? 차단을 해제할 때까지 상대는 내가 메시지를 보았는지 알 수 없습니다.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "계속";
@@ -4191,9 +4200,6 @@
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "전화번호를 입력하세요.";
-
-/* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "당신 전화번호";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "잘못된 전화번호입니다. 올바른 전화번호 입력 후 가입하세요";
@@ -4643,13 +4649,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "모두에게 허용";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "내 휴대전화 번호를 연락처로 가지고 있는 모든 사람들이 나를 Signal 연락처에서 볼 수 있습니다. 다른 사람들은 나를 검색으로 찾아볼 수 있습니다.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to reach you with your phone number when they start a new chat or group.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "모두에게 금지";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Signal을 이용하는 모두가 내 휴대전화 번호를 통해 나를 찾아볼 수 없습니다. 내 휴대전화 번호를 연락처로 가지고 있는 사람 또한 연락처에서 나를 볼 수 없으며, 다른 사람들 또한 휴대전화 번호 검색을 통하여 나를 찾을 수 없습니다.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to reach you with your phone number.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "예시: %1$@";
@@ -4812,6 +4818,9 @@
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "더 강력한 PIN 선택";
+
+/* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PINs keep your information stored with Signal encrypted so only you can access it. Choose a stronger PIN to protect your account.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "지금은 PIN을 끌 수 없습니다. 나중에 다시 알려드리겠습니다.";
@@ -5179,8 +5188,17 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "푸시 알림 재등록에 실패했습니다.";
 
+/* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
+"REGISTRATION_CAPTCHA_TITLE" = "We need to verify that you’re human";
+
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "국가 코드";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "번호 입력";
@@ -5200,8 +5218,50 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "지원되지 않는 전화번호 형식입니다. 지원 팀에 문의하세요.";
 
+/* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Enter your phone number to get started.";
+
+/* During registration, users are asked to enter their phone number. This is the title on that screen. */
+"REGISTRATION_PHONE_NUMBER_TITLE" = "Your Phone Number";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "전화번호";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Re-enter the PIN you just created.";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Confirm your PIN";
+
+/* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CREATE_TITLE" = "Create your PIN";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Enter your PIN";
+
+/* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Last Name";
+
+/* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "First Name";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Your name, photo and changes to it will be visible to your contacts and when you start or accept new chats.";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "About Profile Privacy";
+
+/* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profiles are visible to people you message, contacts, and groups.";
+
+/* During registration, users set up their profile. This is the title on the screen where this is done. */
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Set up your profile";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "메시지를 보내기 전에 등록해야 합니다.";
@@ -5681,10 +5741,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "메시지 소리";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "보관된 음소거 채팅은 새 메시지가 도착해도 보관 상태로 유지됩니다.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "알림을 꺼서 보관한 채팅은 새 메시지가 도착해도 보관 상태로 유지됩니다.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "음소거 채팅 보관 상태로 유지";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "알림을 끈 채팅 보관 상태로 유지";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "이용약관 및 개인정보 처리방침";
@@ -5723,7 +5783,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "설정";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "음소거된 채팅 포함";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "알림을 끈 채팅 포함";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "배지 숫자";
@@ -5927,7 +5987,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "자금 추가";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "블록 번호";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "번호 차단";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "네트워크 사용료";
@@ -6217,17 +6277,17 @@
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "지갑 주소";
 
-/* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "전화번호로 나를 찾기";
+/* The title for the phone number discoverability setting section. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who Can Find Me By Number";
 
-/* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "전화번호로 나를 찾기";
+/* Description label for Phone Number Privacy */
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choose who can see your phone number and who can contact you on Signal with it.";
 
-/* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "내 전화번호 보기";
+/* The title for phone number privacy settings. */
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Phone Number";
 
-/* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "내 전화번호 보기";
+/* The title for the phone number sharing setting section. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Who Can See My Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "리마인더 해제";
@@ -6974,7 +7034,7 @@
 "UNARCHIVE_ACTION" = "보관 해제";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "연락처에 없는 사용자 입니다. 이 사용자를 차단하시겠습니까?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "연락처에 없는 사용자입니다. 이 사용자를 차단할까요?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "알 수 없는 연락처";
@@ -7067,25 +7127,25 @@
 "USE_PROXY_EXPLANATION" = "모바일 데이터 또는 Wi-Fi에서 Signal에 연결할 수 없는 경우에만 프록시를 사용하세요.";
 
 /* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Turn off phone number discovery under Settings > Privacy > Phone Number > Who can find my number, to use your username as the primary way others can contact you.";
+"USERNAME_DISCOVERY_DESCRIPTION" = "'설정 > 개인정보보호 > 전화번호 > 내 번호로 나를 찾을 수 있는 사람'에서 '전화번호 검색'을 꺼서 다른 사람이 나에게 연락할 때 기본적으로 사용자 이름을 사용하도록 하세요.";
 
 /* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Usernames are paired with a set of digits and aren’t shared on your profile";
+"USERNAME_DISCRIMINATOR_DESCRIPTION" = "사용자 이름은 일련번호와 짝지어 사용되며 프로필에서 공유되지 않습니다.";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Set up your Signal username";
+"USERNAME_EDUCATION_TITLE" = "Signal 사용자 이름 설정";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Each username has a unique link you can share with your friends to start a chat with you";
+"USERNAME_LINK_DESCRIPTION" = "각 사용자 이름에는 친구와 공유하여 채팅을 시작할 수 있는 고유 링크가 있습니다.";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "사용자 이름 검색 중 오류가 발생했습니다. 나중에 다시 시도하세요.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is not a valid username. Make sure you’ve entered the complete username followed by its set of digits.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@은(는) 올바른 사용자 이름이 아닙니다. 전체 사용자 이름과 일련번호를 차례로 입력했는지 확인하세요.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Invalid Username";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "잘못된 사용자 이름";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ 님은 Signal 사용자가 아닙니다. 사용자 이름을 제대로 입력했는지 확인하세요.";

@@ -317,13 +317,13 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Give Access";
+"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Accorder l’accès";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Position";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal needs permission to show your photos and videos.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal a besoin d’une autorisation pour afficher vos photos et vidéos.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Après avoir pris des photos, vous pourrez envoyer les plus récentes d’ici.";
@@ -461,10 +461,10 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloquer";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquer le groupe « %1$@ » et le quitter ?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquer le groupe « %1$@ » et le quitter ?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Bloquer %1$@ ?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Bloquer %1$@ ?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Groupes bloqués";
@@ -491,7 +491,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Les membres du groupe pourront vous rajouter à ce groupe.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Débloquer ce groupe ?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Débloquer ce groupe ?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Débloquer %1$@ ?";
@@ -1396,6 +1396,15 @@
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Sélectionner l’indicatif de pays";
 
+/* Body text for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Usernames let others message you without needing your phone number.";
+
+/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
+"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Set Up";
+
+/* Title for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Set up your Signal username";
+
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Votre carte a expiré. Veuillez vérifier que les informations de votre carte sont correctes puis réessayez.";
 
@@ -1892,7 +1901,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "Impossible d'effectuer un don";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Vous ne pouvez pas effectuer de don pour cet utilisateur car vous l'avez bloqué.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Vous ne pouvez pas effectuer un don pour cet utilisateur car vous l’avez bloqué.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Impossible d'effectuer un don";
@@ -3314,7 +3323,7 @@
 "IN_CALL_TERMINATED" = "Appel terminé";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Les conversations en mode silencieux sont archivées, y compris après réception d'un nouveau message.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Les conversations en mode silencieux sont archivées, y compris après réception d’un nouveau message.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Les conversations archivées sont déplacées vers la boîte de réception à l'arrivée d'un nouveau message.";
@@ -3716,13 +3725,13 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Les personnes bloquées ne pourront ni vous appeler ni vous envoyer de messages.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Bloquer %1$@ ?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Bloquer %1$@ ?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Vous quitterez ce groupe et ne recevrez plus ni messages ni mises à jour.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquer et quitter %1$@ ?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquer et quitter %1$@ ?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Supprimer";
@@ -3764,7 +3773,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Examiner la demande";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Signalé comme indésirable et bloqué";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Signalé comme indésirable et bloqué.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Accepter";
@@ -3773,13 +3782,13 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Bloquer";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Autoriser %1$@ à échanger des messages et partager vos nom et photo avec ce contact ? Vous ne recevrez aucun message tant que vous ne l’aurez pas débloqué.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Autoriser %1$@ à vous envoyer des messages et partager vos nom et photo avec ce contact ? Vous ne recevrez aucun message tant que vous ne l’aurez pas débloqué.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Débloquer ce groupe et partager vos nom et photo avec ses membres ? Vous ne recevrez aucun message tant que vous ne l’aurez pas débloqué.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Débloquer ce groupe et partager vos nom et photo avec ses membres ? Vous ne recevrez aucun message tant que vous ne l’aurez pas débloqué.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Débloquer ce groupe ? Ils ne sauront pas que vous avez lu leurs messages tant que vous ne les aurez pas débloqués.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Débloquer ce groupe ? Ses membres ne sauront pas que vous avez lu leurs messages tant que vous ne les aurez pas débloqués.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Poursuivre";
@@ -4191,9 +4200,6 @@
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Saisir votre numéro de téléphone";
-
-/* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Votre numéro de téléphone";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Le numéro de téléphone est invalide. Pour vous inscrire, veuillez saisir un numéro de téléphone valide.";
@@ -4643,13 +4649,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Tout le monde";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Quiconque a votre numéro de téléphone dans ses contacts vous verra comme contact sur Signal. Les autres pourront vous trouver dans Recherche.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to reach you with your phone number when they start a new chat or group.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Personne";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Personne sur Signal ne pourra vous trouver avec votre numéro de téléphone. Vous ne serez pas visible comme contact pour les personnes qui ont votre numéro de téléphone dans leurs contacts et les autres ne pourront pas vous trouver avec votre numéro de téléphone dans Recherche.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to reach you with your phone number.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemple : %1$@";
@@ -4812,6 +4818,9 @@
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Choisissez une NIP plus robuste";
+
+/* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PINs keep your information stored with Signal encrypted so only you can access it. Choose a stronger PIN to protect your account.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "Impossible de désactiver votre NIP. Nous vous le proposerons plus tard.";
@@ -5179,8 +5188,17 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Échec de réactivation des notifications poussées";
 
+/* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
+"REGISTRATION_CAPTCHA_TITLE" = "We need to verify that you’re human";
+
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Code de pays";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Saisissez le numéro";
@@ -5200,8 +5218,50 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Ce format de numéro de téléphone n’est pas pris en charge, veuillez contacter l’assistance.";
 
+/* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Enter your phone number to get started.";
+
+/* During registration, users are asked to enter their phone number. This is the title on that screen. */
+"REGISTRATION_PHONE_NUMBER_TITLE" = "Your Phone Number";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Numéro de téléphone";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Re-enter the PIN you just created.";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Confirm your PIN";
+
+/* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CREATE_TITLE" = "Create your PIN";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Enter your PIN";
+
+/* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Last Name";
+
+/* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "First Name";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Your name, photo and changes to it will be visible to your contacts and when you start or accept new chats.";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "About Profile Privacy";
+
+/* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profiles are visible to people you message, contacts, and groups.";
+
+/* During registration, users set up their profile. This is the title on the screen where this is done. */
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Set up your profile";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Vous devez d’abord vous inscrire avant de pouvoir envoyer un message.";
@@ -5681,7 +5741,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Son de message";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Les conversations en mode silencieux sont archivées, y compris après réception d'un nouveau message.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Les conversations en mode silencieux sont archivées, y compris après réception d’un nouveau message.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Garder les conversations en mode silencieux archivées";
@@ -6217,17 +6277,17 @@
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "L’adresse de votre portefeuille";
 
-/* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Me trouver par mon numéro de téléphone";
+/* The title for the phone number discoverability setting section. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who Can Find Me By Number";
 
-/* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Me trouver d’après mon numéro de téléphone";
+/* Description label for Phone Number Privacy */
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choose who can see your phone number and who can contact you on Signal with it.";
 
-/* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "Voir mon numéro de téléphone";
+/* The title for phone number privacy settings. */
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Phone Number";
 
-/* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Voir mon numéro de téléphone";
+/* The title for the phone number sharing setting section. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Who Can See My Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Désactiver les rappels";
@@ -6974,7 +7034,7 @@
 "UNARCHIVE_ACTION" = "Désarchiver";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "L’utilisateur n’est pas dans vos contacts. Voulez-vous bloquer cet utilisateur ?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "L’utilisateur n’est pas dans vos contacts. Voulez-vous bloquer cet utilisateur ?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Contact inconnu";
@@ -7067,25 +7127,25 @@
 "USE_PROXY_EXPLANATION" = "N’utilisez un proxy que si vous n’arrivez pas à vous connecter à Signal par les données mobiles ou par Wi-Fi.";
 
 /* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Turn off phone number discovery under Settings > Privacy > Phone Number > Who can find my number, to use your username as the primary way others can contact you.";
+"USERNAME_DISCOVERY_DESCRIPTION" = "Désactivez la découverte du numéro de téléphone dans les Paramètres > Confidentialité > Numéro de téléphone > Qui peut trouver mon numéro, pour utiliser votre nom d’utilisateur comme principal moyen pour les autres utilisateurs de vous contacter.";
 
 /* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Usernames are paired with a set of digits and aren’t shared on your profile";
+"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Les noms d’utilisateur sont associés à des ensembles de chiffres et ne sont pas affichés sur votre profil";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Set up your Signal username";
+"USERNAME_EDUCATION_TITLE" = "Configurer votre nom d’utilisateur Signal";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Each username has a unique link you can share with your friends to start a chat with you";
+"USERNAME_LINK_DESCRIPTION" = "Chaque nom d’utilisateur possède un lien unique que vous pouvez partager avec vos amis pour démarrer une conversation";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Une erreur s’est produite lors de la recherche du nom d’utilisateur. Veuillez réessayer plus tard.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is not a valid username. Make sure you’ve entered the complete username followed by its set of digits.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ n’est pas un nom d’utilisateur valide. Assurez-vous de saisir le nom d’utilisateur complet suivi de son ensemble de chiffres associé.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Invalid Username";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Nom d’utilisateur invalide";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ n’est pas un utilisateur de Signal. Assurez-vous d’avoir saisi le nom d’utilisateur en entier.";

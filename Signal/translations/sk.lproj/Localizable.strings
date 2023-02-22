@@ -317,13 +317,13 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Give Access";
+"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Udeliť prístup";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Poloha";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal needs permission to show your photos and videos.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Na zobrazenie vašich fotiek a videí Signal potrebuje povolenie.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Keď spravíte fotky, najnovšie budete môcť poslať sem.";
@@ -464,7 +464,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Zablokovať a opustiť skupinu „%1$@“?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokovať %1$@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokovať používateľa %1$@?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blokované skupiny";
@@ -494,7 +494,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Odblokovať túto skupinu?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Odblokovať používateľa %1$@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Odblokovať konverzáciu %1$@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blokovať";
@@ -503,25 +503,25 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ bol zablokovaný.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Používateľ blokovaný";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Používateľ zablokovaný";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Skupina bola zablokovaná";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Skupina zablokovaná";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Nemôžete blokovať sám seba.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Nemôžete blokovať sám/sama seba.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Chyba";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Používateľ %1$@ bol odblokovaný.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Konverzácia %1$@ bola odblokovaná.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existujúci členovia vás teraz môžu znovu pridať do skupiny.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokovaní používatelia Vám nebudú môcť zavolať alebo posielať správy.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokovaní používatelia vám nebudú môcť volať ani posielať správy.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Nové: Rozmažte tváre alebo kreslite kdekoľvek pre rozmazanie.";
@@ -581,7 +581,7 @@
 "BUTTON_SUBMIT" = "Potvrdiť";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Zapnúť zvuky";
+"BUTTON_UNMUTE" = "Zrušiť stlmenie";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Zobraziť";
@@ -932,7 +932,7 @@
 "CONTACT_ADDRESS" = "Adresa";
 
 /* An indicator that a contact or group has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "Blokovaný/á";
+"CONTACT_CELL_IS_BLOCKED" = "Blokované";
 
 /* An indicator that a contact is no longer verified. */
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Neoverený";
@@ -1265,7 +1265,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Neupozorniť, ak je stlmené";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Prijímať hlásenia, keď vás spomenú v stlmených chatoch?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Chcete dostávať upozornenia, keď vás spomenú v stlmených rozhovoroch?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Spomenutia";
@@ -1274,13 +1274,13 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "Poslať správu";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Ignorovať túto konverzáciu pre…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stlmiť tento čet na…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Vždy";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "Stlmiť";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "stlmiť";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hodín";
@@ -1395,6 +1395,15 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Vybrať kód krajiny";
+
+/* Body text for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Usernames let others message you without needing your phone number.";
+
+/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
+"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Set Up";
+
+/* Title for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Set up your Signal username";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Platnosť karty vypršala. Skontrolujte, či sú údaje z vašej karty správne a skúste to znova.";
@@ -2126,7 +2135,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Nahrávanie denníkov zlyhalo.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Správa nebola odoslaná pretože používateľ bol zablokovaný.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Správa nebola odoslaná, pretože používateľ bol zablokovaný.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Správa nebola odoslaná pretože sa nenašiel žiadny platný adresát.";
@@ -2417,7 +2426,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Nie je možné prijať audio a video od používateľa %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Môže to byť pre to, že daný používateľ nepotvrdil zmenu vášho bezpečnostného čísla, že sa vyskytol problém s jeho zariadením, alebo že vás zablokoval.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Môže to byť preto, že daný používateľ nepotvrdil zmenu vášho bezpečnostného čísla, vyskytol sa problém s jeho zariadením, alebo vás zablokoval.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Nie je možné prijať audio a video od používateľa %1$@";
@@ -3035,10 +3044,10 @@
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Poslať správu administrátorovi";
 
 /* Label for button that lets the user block a request to join the group. */
-"GROUPS_BLOCK_REQUEST_BUTTON" = "Žiadosť o blokovanie";
+"GROUPS_BLOCK_REQUEST_BUTTON" = "Blokovať žiadosť";
 
 /* Label for button that will block a request to join a group. */
-"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Žiadosť o blokovanie";
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Blokovať žiadosť";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
 "GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ sa nebude môcť pripojiť alebo požiadať o pripojenie k tejto skupine prostredníctvom odkazu na skupinu. Používateľa môže naďalej pridať správca.";
@@ -3059,10 +3068,10 @@
 "GROUPS_INVITE_BLOCK_GROUP" = "Blokovať skupinu";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Blokovať skupinu a %1$@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Blokovať skupinu a používateľa %1$@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blokovať %1$@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blokovať používateľa %1$@";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "Pozvať priateľov";
@@ -3221,7 +3230,7 @@
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archivované chaty";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Blokovaná";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Blokované";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Hľadať";
@@ -3314,7 +3323,7 @@
 "IN_CALL_TERMINATED" = "Hovor ukončený.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Stlmené chaty, ktoré sú archivované, zostanú archivované, keď príde nová správa.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Stlmené čety, ktoré sú archivované, zostanú archivované, keď príde nová správa.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archivované chaty sa presunú do doručenej pošty, keď príde nová správa.";
@@ -3716,13 +3725,13 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blokované osoby vám nebudú môcť volať ani posielať správy.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Blokovať %1$@?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Blokovať používateľa %1$@?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Opustíte túto skupinu a už nebudete dostávať správy ani aktualizácie.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Blokovať a opustiť %1$@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Blokovať a opustiť skupinu %1$@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Vymazať";
@@ -3773,13 +3782,13 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokovať";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Povoliť používateľovi %1$@, aby vám  posielal správy a zdieľať s ním vaše meno a foto? Kým ho neodblokujete, nepríjmete od neho žiadne správy.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Povoliť používateľovi %1$@, aby vám posielal správy a zdieľať s ním vaše meno a fotku? Kým ho neodblokujete, nepríjmete od neho žiadne správy.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Odblokovať túto skupinu a zdieľať vaše meno a foto s jej členmi? Kým ju neodblokujete, nepríjmete z nej žiadne správy.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Odblokovať túto skupinu a zdieľať vaše meno a fotku s jej členmi? Kým ju neodblokujete, nepríjmete od nej žiadne správy.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Odblokovať túto skupinu? Kým ju neodblokujete, jej členovia sa nedozvú, že ste ich správy videli.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Odblokovať túto skupinu? Kým ju neodblokujete, jej členovia sa nedozvedia, že ste videli ich správy.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Pokračovať";
@@ -3908,7 +3917,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosiahli ste maximálny počet zariadení, ktoré môžete momentálne prepojiť so svojim účtom. Prosím, odstráňte nejaké zariadenie a skúste to znovu.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Stlmený/á";
+"MUTED_BADGE" = "Stlmené";
 
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Tu sa zobrazia aktualizácie vášho príbehu.";
@@ -4191,9 +4200,6 @@
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Zadajte svoje telefónne číslo";
-
-/* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Tvoje telefónne číslo";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Neplatné telefónne číslo. Pre registráciu zadajte, prosím, platné telefónne číslo.";
@@ -4643,13 +4649,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Všetci";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Všetci, čo majú vaše telefónne číslo vo svojich kontaktoch, vás budú vidieť ako kontakt v službe Signal. Ostatní vás budú môcť nájsť vo vyhľadávaní.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to reach you with your phone number when they start a new chat or group.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nikto";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nikto v službe Signal vás nebude môcť nájsť podľa vášho telefónneho čísla. Tí, čo majú vaše telefónne číslo vo svojich kontaktoch, vás nebudú vidieť ako kontakt a ostatní vás pomocou vášho telefónneho čísla nebudú môcť nájsť vo vyhľadávaní.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to reach you with your phone number.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Príklad: %1$@";
@@ -4812,6 +4818,9 @@
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Zvoľte si silnejší PIN";
+
+/* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PINs keep your information stored with Signal encrypted so only you can access it. Choose a stronger PIN to protect your account.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "Váš PIN sa nepodarilo vypnúť. Upozorníme vás neskôr.";
@@ -5179,8 +5188,17 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Opätovné zaregistrovanie push notifikácií zlyhalo.";
 
+/* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
+"REGISTRATION_CAPTCHA_TITLE" = "We need to verify that you’re human";
+
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Kód krajiny";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Vložte číslo";
@@ -5200,8 +5218,50 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Tento formát telefónneho čísla nie je podporovaný, kontaktuje podporu prosím.";
 
+/* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Enter your phone number to get started.";
+
+/* During registration, users are asked to enter their phone number. This is the title on that screen. */
+"REGISTRATION_PHONE_NUMBER_TITLE" = "Your Phone Number";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefónne číslo";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Re-enter the PIN you just created.";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Confirm your PIN";
+
+/* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CREATE_TITLE" = "Create your PIN";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Enter your PIN";
+
+/* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Last Name";
+
+/* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "First Name";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Your name, photo and changes to it will be visible to your contacts and when you start or accept new chats.";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "About Profile Privacy";
+
+/* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profiles are visible to people you message, contacts, and groups.";
+
+/* During registration, users set up their profile. This is the title on the screen where this is done. */
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Set up your profile";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Pred odoslaním správy sa musíte zaregistrovať.";
@@ -5540,7 +5600,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Žiadne výsledky hľadania";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Blokovaní";
+"SETTINGS_BLOCK_LIST_TITLE" = "Blokované";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Vždy presmerovať hovory";
@@ -5681,10 +5741,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Zvuk správy";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Stlmené chaty, ktoré sú archivované, zostanú archivované, keď príde nová správa.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Stlmené čety, ktoré sú archivované, zostanú archivované, keď príde nová správa.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Ponechať stlmené chaty archivované";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Ponechať stlmené čety archivované";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Podmienky a Ochrana osobných údajov";
@@ -5723,7 +5783,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Nastavenia";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Zahrnúť stlmené konverzácie";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Zahrnúť stlmené čety";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Počet odznakov";
@@ -5927,7 +5987,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Pridať prostriedky";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Číslo bloku";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Blokovať číslo";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Sieťový poplatok";
@@ -6217,17 +6277,17 @@
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Adresa vašej peňaženky";
 
-/* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Nájsť ma podľa telefónneho čísla";
+/* The title for the phone number discoverability setting section. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who Can Find Me By Number";
 
-/* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Nájsť ma podľa telefónneho čísla";
+/* Description label for Phone Number Privacy */
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choose who can see your phone number and who can contact you on Signal with it.";
 
-/* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "Ukázať moje telefónne číslo";
+/* The title for phone number privacy settings. */
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Phone Number";
 
-/* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Ukázať moje telefónne číslo";
+/* The title for the phone number sharing setting section. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Who Can See My Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Vypnúť upomienky";
@@ -7067,25 +7127,25 @@
 "USE_PROXY_EXPLANATION" = "Proxy používajte iba v prípade, že sa nemôžete pripojiť k Signalu cez mobilné dáta alebo Wi-Fi.";
 
 /* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Turn off phone number discovery under Settings > Privacy > Phone Number > Who can find my number, to use your username as the primary way others can contact you.";
+"USERNAME_DISCOVERY_DESCRIPTION" = "Vypnite vyhľadávanie podľa telefónneho čísla v časti Nastavenia > Súkromie > Telefónne číslo > Kto môže nájsť moje číslo, aby bolo vaše používateľské meno primárnym spôsobom, ako vás ostatní môžu kontaktovať.";
 
 /* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Usernames are paired with a set of digits and aren’t shared on your profile";
+"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Používateľské mená sú spárované so súpravou číslic a nezdieľajú sa vo vašom profile";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Set up your Signal username";
+"USERNAME_EDUCATION_TITLE" = "Nastavte si používateľské meno Signal";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Each username has a unique link you can share with your friends to start a chat with you";
+"USERNAME_LINK_DESCRIPTION" = "Každé používateľské meno má jedinečný odkaz, ktorý môžete zdieľať so svojimi priateľmi, aby ste mohli začať četovať";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Pri vyhľadávaní používateľského mena došlo ku chybe. Prosím, zopakujte to neskôr.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is not a valid username. Make sure you’ve entered the complete username followed by its set of digits.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ nie je platné používateľské meno. Uistite sa, že ste zadali celé používateľské meno a za ním súpravu číslic.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Invalid Username";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Neplatné používateľské meno";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ nepoužíva Signal. Uistite sa, že ste zadali celé používateľské meno.";

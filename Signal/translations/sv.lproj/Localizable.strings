@@ -317,13 +317,13 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Give Access";
+"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Ge åtkomst";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Plats";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal needs permission to show your photos and videos.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal behöver behörighet för att visa dina foton och videoklipp.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "När du har tagit foton kan du skicka dina senaste här.";
@@ -500,7 +500,7 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blockera";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ har blivit blockerad.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ har blockerats.";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Användaren blockerad";
@@ -515,7 +515,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Fel";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ har blivit avblockerad.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ har avblockerats.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Befintliga medlemmar kan nu lägga till dig i gruppen igen.";
@@ -581,7 +581,7 @@
 "BUTTON_SUBMIT" = "Skicka";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Av-tysta";
+"BUTTON_UNMUTE" = "Avtysta";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Visa";
@@ -1145,7 +1145,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Ta bort chatt?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Tysta denna chatt för …";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Tysta denna chatt i …";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dag";
@@ -1274,7 +1274,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "meddelande";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Tysta denna chatt i…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Tysta denna chatt i …";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Alltid";
@@ -1361,7 +1361,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Avblockera användare";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Av-tysta";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Avtysta";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
@@ -1395,6 +1395,15 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Välj landskod";
+
+/* Body text for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Usernames let others message you without needing your phone number.";
+
+/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
+"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Set Up";
+
+/* Title for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Set up your Signal username";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Ditt kort har gått ut. Kontrollera att dina kortuppgifter är korrekta och försök igen.";
@@ -3314,7 +3323,7 @@
 "IN_CALL_TERMINATED" = "Samtalet avslutades.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Avstängda chattar som är arkiverade förblir arkiverade när ett nytt meddelande kommer.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Tystade chattar som är arkiverade förblir arkiverade när ett nytt meddelande kommer.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arkiverade chattar flyttas till inkorgen när ett nytt meddelande kommer.";
@@ -3713,7 +3722,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Rapportera som skräppost och blockera";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blockerade personer kommer inte att kunna ringa dig eller skicka meddelanden.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blockerade personer kommer inte att kunna ringa eller skicka meddelanden till dig.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Blockera %1$@?";
@@ -3773,7 +3782,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blockera";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Tillåt att %1$@ meddelar dig och dela ditt namn och foto? Du får inte några meddelanden förrän du har avblockerat.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Tillåt %1$@ att skicka meddelade till dig och dela ditt namn och foto? Du får inte några meddelanden förrän du har avblockerat.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Avblockera denna grupp och dela ditt namn och foto med dess medlemmar? Du får inte några meddelanden förrän du har avblockerat.";
@@ -4191,9 +4200,6 @@
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Ange ditt telefonnummer";
-
-/* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Ditt telefonnummer";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ogiltigt telefonnummer. Ange ett giltigt telefonnummer för att registrera dig.";
@@ -4643,13 +4649,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Alla";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Den som har ditt telefonnummer i sina kontakter ser dig som en kontakt på Signal. Andra kommer att kunna hitta dig i sökningen.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to reach you with your phone number when they start a new chat or group.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Ingen";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Ingen på Signal kommer att kunna hitta dig med ditt telefonnummer. Du kommer inte att synas som kontakt för personer som har ditt telefonnummer i sina kontakter och andra kan inte hitta dig med ditt telefonnummer i sökningen.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to reach you with your phone number.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Exempel: %1$@";
@@ -4812,6 +4818,9 @@
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Välj en starkare PIN-kod";
+
+/* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PINs keep your information stored with Signal encrypted so only you can access it. Choose a stronger PIN to protect your account.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "Din PIN-kod kunde inte inaktiveras. Vi ber dig igen senare.";
@@ -5179,8 +5188,17 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Det gick inte att omregistrera för pushnotiser.";
 
+/* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
+"REGISTRATION_CAPTCHA_TITLE" = "We need to verify that you’re human";
+
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landskod";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Ange nummer";
@@ -5200,8 +5218,50 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Formatet på telefonnumret stöds inte, kontaktar supporten.";
 
+/* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Enter your phone number to get started.";
+
+/* During registration, users are asked to enter their phone number. This is the title on that screen. */
+"REGISTRATION_PHONE_NUMBER_TITLE" = "Your Phone Number";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefonnummer";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Re-enter the PIN you just created.";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Confirm your PIN";
+
+/* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CREATE_TITLE" = "Create your PIN";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Enter your PIN";
+
+/* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Last Name";
+
+/* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "First Name";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Your name, photo and changes to it will be visible to your contacts and when you start or accept new chats.";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "About Profile Privacy";
+
+/* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profiles are visible to people you message, contacts, and groups.";
+
+/* During registration, users set up their profile. This is the title on the screen where this is done. */
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Set up your profile";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Du behöver registrera dig innan du kan skicka ett meddelande.";
@@ -5531,7 +5591,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (standard)";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Lägg till en blockerad användare";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Lägg till blockerad användare";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Du har inga kontakter med Signal.";
@@ -5681,10 +5741,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Meddelandeljud";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Avstängda chattar som är arkiverade förblir arkiverade när ett nytt meddelande kommer.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Tystade chattar som är arkiverade förblir arkiverade när ett nytt meddelande kommer.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Håll avstängda chattar arkiverade";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Håll tystade chattar arkiverade";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Villkor & integritetspolicy";
@@ -5927,7 +5987,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Lägga till pengar";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Blockera nummer";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Blocknummer";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Nätverksavgift";
@@ -6217,17 +6277,17 @@
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Din plånboksadress";
 
-/* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Hitta mig med telefonnummer";
+/* The title for the phone number discoverability setting section. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who Can Find Me By Number";
 
-/* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Hitta mig med telefonnummer";
+/* Description label for Phone Number Privacy */
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choose who can see your phone number and who can contact you on Signal with it.";
 
-/* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "Se mitt telefonnummer";
+/* The title for phone number privacy settings. */
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Phone Number";
 
-/* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Se mitt telefonnummer";
+/* The title for the phone number sharing setting section. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Who Can See My Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Stäng av påminnelser";
@@ -7067,25 +7127,25 @@
 "USE_PROXY_EXPLANATION" = "Använd endast en proxy om du inte kan ansluta till Signal med mobildata eller Wi-Fi.";
 
 /* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Turn off phone number discovery under Settings > Privacy > Phone Number > Who can find my number, to use your username as the primary way others can contact you.";
+"USERNAME_DISCOVERY_DESCRIPTION" = "För att använda ditt användarnamn som det primära sättet andra kan kontakta dig på så kan du stänga av upptäckt av telefonnummer under Inställningar > Telefonnummer > Vem kan hitta mitt nummer.";
 
 /* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Usernames are paired with a set of digits and aren’t shared on your profile";
+"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Användarnamn paras ihop med en uppsättning siffror och delas inte i din profil";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Set up your Signal username";
+"USERNAME_EDUCATION_TITLE" = "Ställ in ditt Signal-användarnamn";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Each username has a unique link you can share with your friends to start a chat with you";
+"USERNAME_LINK_DESCRIPTION" = "Varje användarnamn har en unik länk som du kan dela med dina vänner för att starta en chatt med dig";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Ett fel uppstod när användarnamnet letades upp. Försök igen senare.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is not a valid username. Make sure you’ve entered the complete username followed by its set of digits.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ är inte ett giltigt användarnamn. Kontrollera att du har angett hela användarnamnet följt av dess uppsättning siffror.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Invalid Username";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Ogiltigt användarnamn";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ är inte en Signal-användare. Se till att du har angett det fullständiga användarnamnet.";

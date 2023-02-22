@@ -317,13 +317,13 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Give Access";
+"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Να δοθεί πρόσβαση";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Τοποθεσία";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal needs permission to show your photos and videos.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Το Signal χρειάζεται άδεια για να εμφανίσει τις φωτογραφίες και τα βίντεό σου.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Μόλις τραβήξεις φωτογραφίες, θα μπορείς να στέλνεις τις πιο πρόσφατες από εδώ.";
@@ -458,19 +458,19 @@
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Δεν θα λαμβάνεις πια μηνύματα ή ενημερώσεις από αυτήν την ομάδα.";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "Φραγή";
+"BLOCK_LIST_BLOCK_BUTTON" = "Αποκλεισμός";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Φραγή και αποχώρηση από την ομάδα \"%1$@\";";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Αποκλεισμός και αποχώρηση από την ομάδα \"%1$@\";";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Φραγή του/της %1$@;";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Αποκλεισμός του/της %1$@;";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Φραγμένες ομάδες";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Αποκλεισμένες ομάδες";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Φραγμένοι χρήστες/τριες";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Αποκλεισμένοι χρήστες";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
 "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Η ομάδα είναι ήδη αποκλεισμένη.";
@@ -479,7 +479,7 @@
 "BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Ο/Η χρήστης είναι ήδη αποκλεισμένος/η.";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Κατάργηση φραγής";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Κατάργηση αποκλεισμού";
 
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Θα μπορείτε να στέλνετε μηνύματα και να καλείτε ο ένας τον άλλον.";
@@ -491,37 +491,37 @@
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Τα μέλη της ομάδας θα μπορούν να σε ξαναπροσθέσουν στην ομάδα.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Κατάργηση φραγής της ομάδας;";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Κατάργηση αποκλεισμού της ομάδας;";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Κατάργηση φραγής του/της %1$@;";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Κατάργηση αποκλεισμού του/της %1$@;";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Φραγή";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Αποκλεισμός";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ είναι σε φραγή";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "Η συνομιλία %1$@ έχει αποκλειστεί.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Ο χρήστης φράχθηκε";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Ο χρήστης αποκλείστηκε";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Η ομάδα φράχθηκε";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Η ομάδα αποκλείστηκε";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Δεν μπορείς να βάλεις φραγή στον εαυτό σου.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Δεν μπορείς να αποκλείσεις στον εαυτό σου.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Σφάλμα";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Καταργήθηκε η φραγή του/της %1$@";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Καταργήθηκε ο αποκλεισμός του/της %1$@.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Τα υπάρχοντα μέλη μπορούν να σε ξαναπροσθέσουν στην ομάδα.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Οι φραγμένοι χρήστες δεν θα μπορούν να σε καλέσουν ή να σου στείλουν μηνύματα.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Οι αποκλεισμένοι χρήστες δεν θα μπορούν να σε καλέσουν ή να σου στείλουν μηνύματα.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Νέο: Θόλωσε τα πρόσωπα ή ζωγράφισε οπουδήποτε για να θολώσεις.";
@@ -581,7 +581,7 @@
 "BUTTON_SUBMIT" = "Αποστολή";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Αποσίγαση";
+"BUTTON_UNMUTE" = "Αναίρεση σίγασης";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Εμφάνιση";
@@ -932,7 +932,7 @@
 "CONTACT_ADDRESS" = "Διεύθυνση";
 
 /* An indicator that a contact or group has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "Φραγμένος/η";
+"CONTACT_CELL_IS_BLOCKED" = "Λίστα αποκλεισμού";
 
 /* An indicator that a contact is no longer verified. */
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Μη επιβεβαιωμένος/η";
@@ -1223,10 +1223,10 @@
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Δεν θα λαμβάνεις πια μηνύματα ή ενημερώσεις από αυτήν την ομάδα.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Φραγή ομάδας";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Αποκλεισμός ομάδας";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Φραγή χρήστη";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Αποκλεισμός χρήστη";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Eπεξεργασία";
@@ -1289,7 +1289,7 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Σίγαση";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Μη σιγασμένο";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Χωρίς σίγαση";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 ημέρα";
@@ -1355,10 +1355,10 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Μόνο διαχειριστές";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Κατάργηση φραγής ομάδας";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Κατάργηση αποκλεισμού ομάδας";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Κατάργηση φραγής χρήστη";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Κατάργηση αποκλεισμού χρήστη";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Αναίρεση σίγασης";
@@ -1395,6 +1395,15 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Επιλογή κωδικού χώρας";
+
+/* Body text for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Usernames let others message you without needing your phone number.";
+
+/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
+"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Set Up";
+
+/* Title for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Set up your Signal username";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Η κάρτα σου έχει λήξει. Επαλήθευσε ότι τα στοιχεία της κάρτας σου είναι σωστά και δοκίμασε ξανά.";
@@ -2126,7 +2135,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Αποτυχία στο ανέβασμα αρχείων καταγραφής";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Δεν μπορούμε να στείλουμε μήνυμα στον/στην χρήστη/τρια επειδή τον/την έχεις βάλει σε φραγή.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Δεν μπορούμε να στείλουμε μήνυμα στον χρήστη επειδή τον έχεις αποκλείσει.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Αποτυχία αποστολής μηνύματος λόγω απουσίας έγκυρων παραληπτών.";
@@ -2372,7 +2381,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Δεν θα λαμβάνεις τον ήχο ή την εικόνα του/της και δεν θα λαμβάνει τα δικά σου.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "Ο/Η %1$@ είναι σε φραγή";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "Ο/Η %1$@ έχει αποκλειστεί";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Μόνο οι διαχειριστές της ομάδας μπορούν να ξεκινήσουν μια κλήση.";
@@ -2381,7 +2390,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Δεν μπορείς να πραγματοποιήσεις Ομαδική κλήση";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "Ο/Η %1$@ είναι σε φραγή";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "Ο/Η %1$@ έχει αποκλειστεί";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Συνέχεια κλήσης";
@@ -2417,7 +2426,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Αδυναμία λήψης ήχου & εικόνας από τον/την %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Αυτό ίσως οφείλεται στο ότι δεν έχει επιβεβαιώσει την αλλαγή του αριθμού ασφαλείας σου, ότι υπάρχει πρόβλημα με τη συσκευή του/της ή ότι σε έχει μπλοκάρει.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Αυτό ίσως οφείλεται στο ότι δεν έχει επιβεβαιώσει την αλλαγή του αριθμού ασφαλείας σου, ότι υπάρχει πρόβλημα με τη συσκευή του/της ή ότι σε έχει αποκλείσει.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Αδυναμία λήψης ήχου και εικόνας από τον/την %1$@";
@@ -3035,16 +3044,16 @@
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Επικοινωνία με διαχειριστή/τρια";
 
 /* Label for button that lets the user block a request to join the group. */
-"GROUPS_BLOCK_REQUEST_BUTTON" = "Μπλοκάρισμα αιτήματος";
+"GROUPS_BLOCK_REQUEST_BUTTON" = "Αποκλεισμός αιτήματος";
 
 /* Label for button that will block a request to join a group. */
-"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Μπλοκάρισμα αιτήματος";
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Αποκλεισμός αιτήματος";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
 "GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "Ο/Η %1$@ δεν θα μπορέσει να γίνει μέλος ή να ζητήσει να γίνει μέλος αυτής της ομάδας μέσω του συνδέσμου ομάδας. Θα πρέπει να τους προσθέσει ένας διαχειριστής.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
-"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Μπλοκάρισμα αιτήματος;";
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Αποκλεισμός αιτήματος;";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Διάλεξε έναν νέο διαχειριστή ή διαχειρίστρια πριν φύγεις.";
@@ -3056,13 +3065,13 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Δεν μπορέσαμε να δεχτούμε την πρόσκληση.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Φραγή ομάδας";
+"GROUPS_INVITE_BLOCK_GROUP" = "Αποκλεισμός ομάδας";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Φραγή ομάδας και του/της %1$@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Αποκλεισμός ομάδας και του/της %1$@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Φραγή του/της %1$@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Αποκλεισμός του/της %1$@";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "Πρόσκληση φίλων";
@@ -3221,7 +3230,7 @@
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Αρχειοθετημένες συνομιλίες";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Φραγμένος/η";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Λίστα αποκλεισμού";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Αναζήτηση";
@@ -3704,25 +3713,25 @@
 "MESSAGE_PREVIEW" = "Προεπισκόπηση μηνύματος";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_ACTION" = "Φραγή";
+"MESSAGE_REQUEST_BLOCK_ACTION" = "Αποκλεισμός";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Αποκλεισμός και διαγραφή";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Αναφορά ως ανεπιθύμητο και φραγή";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Αναφορά ως ανεπιθύμητο και αποκλεισμός";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Τα φραγμένα άτομα δεν θα μπορούν να σε καλέσουν ή να σου στείλουν μηνύματα.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Τα αποκλεισμένα άτομα δεν θα μπορούν να σε καλέσουν ή να σου στείλουν μηνύματα.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Φραγή του/της %1$@;";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Αποκλεισμός του/της %1$@;";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Θα φύγεις απ' την ομάδα και δεν θα λαμβάνεις πια μηνύματα ή ενημερώσεις.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Φραγή και αποχώρηση από %1$@;";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Αποκλεισμός και αποχώρηση από %1$@;";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Διαγραφή";
@@ -3764,22 +3773,22 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Ανασκόπηση αιτήματος";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Αναφέρθηκε ως ανεπιθύμητο και είναι σε φραγή.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Αναφέρθηκε ως ανεπιθύμητο και είναι σε αποκλεισμό.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Αποδοχή";
 
 /* A button used to block a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Φραγή";
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Αποκλεισμός";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Να επιτραπεί στον/στην %1$@ να σου στείλει μηνύματα, και να μοιραστεί το όνομα και η φωτογραφία σου μαζί του/της; Δεν θα λάβεις κανένα μήνυμα μέχρι να καταργήσεις τη φραγή του/της.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Να επιτραπεί στον/στην %1$@ να σου στείλει μηνύματα, και να μοιραστεί το όνομα και η φωτογραφία σου μαζί του/της; Δεν θα λάβεις κανένα μήνυμα μέχρι να καταργήσεις τον αποκλεισμό του/της.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Θέλεις να καταργηθεί η φραγή αυτής της ομάδας και να μοιραστεί το όνομα και η φωτογραφία σου με τα μέλη της; Δεν θα λάβεις κανένα μήνυμα μέχρι να καταργήσεις τη φραγή της.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Θέλεις να καταργηθεί ο αποκλεισμός αυτής της ομάδας και να μοιραστεί το όνομα και η φωτογραφία σου με τα μέλη της; Δεν θα λάβεις κανένα μήνυμα μέχρι να καταργήσεις τον αποκλεισμό της.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Κατάργηση της φραγής αυτής της ομάδας; Δεν θα γνωρίζουν οτι έχεις δει τα μηνυματά τους μέχρι να καταργήσεις τη φραγή.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Κατάργηση του αποκλεισμού αυτής της ομάδας; Δεν θα γνωρίζουν ότι έχεις δει τα μηνύματά τους μέχρι να καταργήσεις τον αποκλεισμό.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Συνέχεια";
@@ -3803,7 +3812,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Θέλεις να μπεις σε αυτή την ομάδα; Δεν θα γνωρίζουν οτι έχεις δει τα μηνυματά τους μέχρι να δεχτείς.";
 
 /* A button used to unlock a blocked conversation. */
-"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Κατάργηση φραγής";
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Κατάργηση αποκλεισμού";
 
 /* Label for button to cancel your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Ακύρωση αιτήματος";
@@ -4191,9 +4200,6 @@
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Εισαγωγή αριθμού τηλεφώνου";
-
-/* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Ο αριθμός τηλεφώνου σου";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Μη έγκυρος αριθμός τηλεφώνου. Παρακαλώ γράψε έναν έγκυρο αριθμό τηλεφώνου για να εγγραφτείς.";
@@ -4643,13 +4649,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Όλοι";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Οποιοσδήποτε έχει τον αριθμό τηλεφώνου σου στις επαφές του/της, θα μπορεί να σε δει ως επαφή στο Signal. Άλλοι θα μπορούν να σε βρουν στην αναζήτηση.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to reach you with your phone number when they start a new chat or group.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Κανένας";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Κανένας στο Signal δεν θα μπορεί να σε βρει με τον αριθμό τηλεφώνου σου. Δεν θα είσαι ορατός/η ως επαφή σε άτομα που έχουν τον αριθμό σου στις επαφές τους, και άλλα άτομα δεν θα μπορούν να σε βρούν με τον αριθμό σου στην αναζήτηση.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to reach you with your phone number.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Παράδειγμα: %1$@";
@@ -4812,6 +4818,9 @@
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Διάλεξε ενα δυνατότερο PIN";
+
+/* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PINs keep your information stored with Signal encrypted so only you can access it. Choose a stronger PIN to protect your account.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "Δεν ήταν δυνατή η απενεργοποίηση του PIN σου. Θα σου το ζητήσουμε ξανά αργότερα.";
@@ -5179,8 +5188,17 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Αποτυχία επανεγγραφής για λήψη ειδοποιήσεων.";
 
+/* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
+"REGISTRATION_CAPTCHA_TITLE" = "We need to verify that you’re human";
+
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Κωδικός χώρας";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Εισαγωγή αριθμού";
@@ -5200,8 +5218,50 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Αυτή η μορφή αριθμού δεν υποστηρίζεται, παρακαλώ επικοινώνησε με την υποστήριξη.";
 
+/* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Enter your phone number to get started.";
+
+/* During registration, users are asked to enter their phone number. This is the title on that screen. */
+"REGISTRATION_PHONE_NUMBER_TITLE" = "Your Phone Number";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Αριθμός τηλεφώνου";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Re-enter the PIN you just created.";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Confirm your PIN";
+
+/* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CREATE_TITLE" = "Create your PIN";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Enter your PIN";
+
+/* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Last Name";
+
+/* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "First Name";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Your name, photo and changes to it will be visible to your contacts and when you start or accept new chats.";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "About Profile Privacy";
+
+/* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profiles are visible to people you message, contacts, and groups.";
+
+/* During registration, users set up their profile. This is the title on the screen where this is done. */
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Set up your profile";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Θα πρέπει να εγγραφείς πριν μπορέσεις να στείλεις ένα μήνυμα.";
@@ -5471,7 +5531,7 @@
 "SETTINGS_ACCOUNT" = "Λογαριασμός";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Φραγή";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Αποκλεισμός";
 
 /* Label for the 'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Παράκαμψη λογοκρισίας";
@@ -5531,7 +5591,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (προεπιλογή)";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Προσθήκη φραγμένου χρήστη";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Προσθήκη αποκλεισμένου χρήστη";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Δεν έχεις επαφές στο Signal.";
@@ -5540,7 +5600,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Δεν βρέθηκαν αποτελέσματα";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Λίστα Φραγής";
+"SETTINGS_BLOCK_LIST_TITLE" = "Λίστα αποκλεισμού";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Αναμετάδοση όλων των κλήσεων";
@@ -5723,7 +5783,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Ρυθμίσεις";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Προσμέτρηση σιγασμένων συνομιλιών";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Προσμέτρηση συνομιλιών σε σίγαση";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Έμβλημα μέτρησης";
@@ -5927,7 +5987,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Προσθήκη Χρημάτων";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Φραγή αριθμού";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Αποκλεισμός αριθμού";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Τέλος Δικτύου";
@@ -6217,17 +6277,17 @@
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Η διεύθυνση πορτοφολιού σας";
 
-/* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Να με βρίσκουν με τον αριθμό τηλεφώνου μου";
+/* The title for the phone number discoverability setting section. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who Can Find Me By Number";
 
-/* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Να με βρίσκουν με τον αριθμό τηλεφώνου μου";
+/* Description label for Phone Number Privacy */
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choose who can see your phone number and who can contact you on Signal with it.";
 
-/* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "Να δουν το αριθμού τηλεφώνου μου";
+/* The title for phone number privacy settings. */
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Phone Number";
 
-/* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Να δουν το αριθμού τηλεφώνου μου";
+/* The title for the phone number sharing setting section. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Who Can See My Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Απενεργοποίηση υπενθυμίσεων";
@@ -6974,7 +7034,7 @@
 "UNARCHIVE_ACTION" = "Μεταφορά στα εισερχόμενα";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Ο/Η χρήστης/τρια δεν είναι στις επαφές σου. Θέλεις να μπει σε φραγή;";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Ο χρήστης δεν είναι στις επαφές σου. Θέλεις να τον αποκλείσεις;";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Άγνωστη επαφή";
@@ -7067,25 +7127,25 @@
 "USE_PROXY_EXPLANATION" = "Χρησιμοποίησε proxy μόνο αν δεν μπορείς να συνδεθείς στο Signal από δεδομένα κινητής ή Wi-Fi.";
 
 /* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Turn off phone number discovery under Settings > Privacy > Phone Number > Who can find my number, to use your username as the primary way others can contact you.";
+"USERNAME_DISCOVERY_DESCRIPTION" = "Απενεργοποίησε την επιλογή της ανακάλυψης του αριθμού τηλεφώνου στις Ρυθμίσεις > Ιδιωτικότητα > Αριθμός τηλεφώνου > Ποιος μπορεί να βρει τον αριθμό μου, για να χρησιμοποιήσεις το όνομα χρήστη σου ως τον κύριο τρόπο επικοινωνίας με άλλους.";
 
 /* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Usernames are paired with a set of digits and aren’t shared on your profile";
+"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Τα ονόματα χρήστη αντιστοιχίζονται με ένα σύνολο ψηφίων και δεν κοινοποιούνται στο προφίλ σου";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Set up your Signal username";
+"USERNAME_EDUCATION_TITLE" = "Ρύθμισε το όνομα χρήστη σου στο Signal";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Each username has a unique link you can share with your friends to start a chat with you";
+"USERNAME_LINK_DESCRIPTION" = "Κάθε όνομα χρήστη έχει έναν μοναδικό σύνδεσμο που μπορείς να μοιραστείς με τους φίλους σου για να ξεκινήσουν μια συνομιλία μαζί σου";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Σφάλμα με την αναζήτηση του ονόματος χρήστη. Δοκίμασε πάλι αργότερα.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is not a valid username. Make sure you’ve entered the complete username followed by its set of digits.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "Το όνομα χρήστη %1$@ δεν είναι έγκυρο. Επιβεβαίωσε ότι έγραψες ολόκληρο το όνομα χρήστη, μαζί με το σύνολο ψηφίων.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Invalid Username";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Μη έγκυρο όνομα χρήστη";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "Το όνομα χρήστη %1$@ δεν υπάρχει στο Signal. Επιβεβαίωσε ότι έγραψες ολόκληρο το όνομα χρήστη.";

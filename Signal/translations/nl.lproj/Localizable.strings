@@ -317,13 +317,13 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Give Access";
+"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Toestemming geven";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Locatie";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal needs permission to show your photos and videos.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal heeft toestemming nodig om je foto's en video's weer te kunnen geven.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Zodra je foto's hebt genomen, kun je van hieruit je recente foto's verzenden.";
@@ -461,7 +461,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokkeren";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "De groep “%1$@” blokkeren en verlaten?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "De groep %1$@ blokkeren en verlaten?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%1$@ blokkeren?";
@@ -476,7 +476,7 @@
 "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Groepsgesprek is al geblokkeerd.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Deze persoon is al geblokkeerd";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Deze persoon is al geblokkeerd.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Deblokkeren";
@@ -521,7 +521,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Bestaande leden kunnen je nu opnieuw aan de groep toevoegen.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Geblokkeerde personen kunnen niet zien dat ze geblokkeerd zijn: het lijkt voor hen alsof je telefoon over gaat, en alsof berichten worden afgeleverd.\nJe huidige profielnaam en -foto blijven voor geblokkeerde personen zichtbaar maar worden niet bijgewerkt als je een nieuwe foto of naam instelt.\nGeblokkeerde personen kunnen in groepsgesprekken de berichten die jij stuurt niet zien.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Geblokkeerde personen kunnen je niet bellen en geen berichten sturen.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Nieuw: Vervaag gezichten of teken om andere dingen te vervagen.";
@@ -548,7 +548,7 @@
 "BUTTON_EDIT" = "Aanpassen";
 
 /* Label for the 'mute' button. */
-"BUTTON_MUTE" = "Meldingen dempen";
+"BUTTON_MUTE" = "Dempen";
 
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Volgende";
@@ -581,7 +581,7 @@
 "BUTTON_SUBMIT" = "Indienen";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Meldingen niet langer dempen";
+"BUTTON_UNMUTE" = "Niet langer dempen";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Weergeven";
@@ -1145,7 +1145,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Gesprek verwijderen?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Dit gesprek dempen voor …";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Dit gesprek dempen voor…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dag";
@@ -1262,10 +1262,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Geef me altijd een melding";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Geef me geen melding als gedempt";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Geen melding geven als gedempt";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Wil je meldingen ontvangen wanneer iemand je vermeldt in een gedempt gesprek?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Wil je meldingen ontvangen als iemand je vermeldt in een gedempt gesprek?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Vermeldingen";
@@ -1274,13 +1274,13 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "Bericht verzenden";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Dit gesprek dempen voor …";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Dit gesprek dempen voor…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Voor altijd";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "Meldingen dempen";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "dempen";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 uur";
@@ -1361,7 +1361,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Persoon deblokkeren";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Meldingen niet langer dempen";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet langer dempen";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "Video";
@@ -1395,6 +1395,15 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Selecteer landcode";
+
+/* Body text for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Usernames let others message you without needing your phone number.";
+
+/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
+"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Set Up";
+
+/* Title for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Set up your Signal username";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Je kaart is verlopen. Controleer of je kaartgegevens correct zijn en probeer het opnieuw.";
@@ -1892,7 +1901,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "Kan geen donatie doen";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Je kunt geen donatie doen voor deze gebruiker omdat je diegene hebt geblokkeerd.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Je kunt geen donatie doen voor deze persoon omdat je diegene hebt geblokkeerd.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Kan geen donatie doen";
@@ -2126,7 +2135,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Het uploaden van logs is mislukt.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Bericht verzenden mislukt omdat je deze persoon hebt geblokkeerd.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kon bericht niet versturen, omdat je deze persoon hebt geblokkeerd.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Bericht kon niet verzonden worden wegens gebrek aan geldige ontvangers.";
@@ -2417,7 +2426,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Kan geen beeld & geluid van %1$@ ontvangen";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Dit kan gebeuren als je jullie veiligheidsnummer niet opnieuw hebt geverifieerd nadat die is veranderd, als er een probleem is met je apparaat of als hij of zij jou heeft geblokkeerd.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Dit kan zijn omdat ze jouw wijziging van het veiligheidsnummer niet hebben geverifieerd, er een probleem is met hun apparaat, of ze jou hebben geblokkeerd.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Kan geen beeld en geluid van %1$@ ontvangen";
@@ -3035,16 +3044,16 @@
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Bericht verzenden naar een beheerder";
 
 /* Label for button that lets the user block a request to join the group. */
-"GROUPS_BLOCK_REQUEST_BUTTON" = "Verzoeken blokkeren";
+"GROUPS_BLOCK_REQUEST_BUTTON" = "Verzoek blokkeren";
 
 /* Label for button that will block a request to join a group. */
-"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Verzoeken blokkeren";
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Verzoek blokkeren";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
 "GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ zal niet langer via de groepslink lid kunnen worden van deze groep en ook niet kunnen verzoeken om lid te worden van de groep. Hij of zij kan nog wel lid worden als een beheerder hem of haar toevoegt.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
-"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Verzoeken blokkeren?";
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Verzoek blokkeren?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Kies een nieuwe beheerder voor de groep voor je deze verlaat.";
@@ -3314,7 +3323,7 @@
 "IN_CALL_TERMINATED" = "Oproep beëindigd.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Gedempte gesprekken die zijn gearchiveerd blijven gearchiveerd als er een nieuw bericht binnenkomt.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Gedempte gesprekken die zijn gearchiveerd, blijven gearchiveerd als er een nieuw bericht binnenkomt.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Gearchiveerde gesprekken zullen uit het archief gaan als er een nieuw bericht binnenkomt.";
@@ -3707,13 +3716,13 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blokkeren";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokkeren en wissen";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokkeren en verwijderen";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Spam melden en blokkeren";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Geblokkeerde personen kunnen niet zien dat ze geblokkeerd zijn: het lijkt voor hen alsof je telefoon over gaat en alsof berichten worden afgeleverd.\nJe huidige profielnaam en -foto blijven voor geblokkeerde personen zichtbaar maar worden ze niet bijgewerkt als je een nieuwe foto of naam instelt.\nGeblokkeerde personen kunnen in groepsgesprekken de berichten die jij stuurt niet zien.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Geblokkeerde personen kunnen je niet bellen en geen berichten sturen.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%1$@ blokkeren?";
@@ -3722,7 +3731,7 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Je zult deze groep verlaten en niet langer berichten of meldingen ontvangen.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "“%1$@” blokkeren en wissen?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ blokkeren en verwijderen?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Wissen";
@@ -3773,13 +3782,13 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokkeren";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen, en sta je toe dat hij of zij je profielnaam, -foto en -omschrijving kan zien? Totdat je hem of haar hebt gedeblokkeerd zul je geen berichten of oproepen ontvangen en kan hij of zij veranderingen van je profiel niet zien.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %1$@ ontvangen en sta je toe dat diegene je profielnaam en -foto kan zien? Totdat je dit contact hebt gedeblokkeerd, zul je geen berichten ontvangen.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van de groep je profielnaam, -foto en -omschrijving kunnen zien? Totdat je de groep hebt gedeblokkeerd zul je geen berichten of oproepen ontvangen en kunnen leden van deze groep veranderingen van je profiel niet zien.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Wil je deze groep deblokkeren en toestaan dat leden je profielnaam en -foto kunnen zien? Totdat je de groep hebt gedeblokkeerd, zul je geen berichten ontvangen.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Deze groep deblokkeren? Als je leesbevestigingen hebt ingeschakeld kunnen de leden van deze groep die nog niet zien totdat je de groep hebt gedeblokkeerd.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Deze groep deblokkeren? Ze kunnen pas zien dat je hun berichten hebt gelezen als je ze deblokkeert.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Doorgaan";
@@ -4191,9 +4200,6 @@
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Voer je telefoonnummer in";
-
-/* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Je telefoonnummer";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Dat telefoonnummer is ongeldig. Vul een geldig telefoonnummer in om je te registreren.";
@@ -4643,13 +4649,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Iedereen";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Iedereen die je telefoonnummer in zijn contactenlijst heeft zal jou in Signal als een contactpersoon zien. Anderen zullen je kunnen vinden via de zoekfunctie.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to reach you with your phone number when they start a new chat or group.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Niemand";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Niemand in Signal zal je kunnen vinden met je telefoonnummer. Je zal niet zichtbaar zijn als contactpersoon voor mensen die jouw telefoonnummer in hun contactenlijst hebben en andere zullen je niet kunnen vinden met jouw telefoonnummer in zoeken.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to reach you with your phone number.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Voorbeeld: %1$@";
@@ -4812,6 +4818,9 @@
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Verzin een sterkere pincode";
+
+/* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PINs keep your information stored with Signal encrypted so only you can access it. Choose a stronger PIN to protect your account.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "Je pincode kon niet uitgeschakeld worden We zullen het je later opnieuw vragen.";
@@ -5179,8 +5188,17 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Opnieuw registreren voor pushmeldingen is mislukt.";
 
+/* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
+"REGISTRATION_CAPTCHA_TITLE" = "We need to verify that you’re human";
+
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landcode";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Vul nummer in";
@@ -5200,8 +5218,50 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Deze opmaak van een telefoonnummer wordt niet ondersteund, neem contact op met support.";
 
+/* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Enter your phone number to get started.";
+
+/* During registration, users are asked to enter their phone number. This is the title on that screen. */
+"REGISTRATION_PHONE_NUMBER_TITLE" = "Your Phone Number";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefoonnummer";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Re-enter the PIN you just created.";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Confirm your PIN";
+
+/* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CREATE_TITLE" = "Create your PIN";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Enter your PIN";
+
+/* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Last Name";
+
+/* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "First Name";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Your name, photo and changes to it will be visible to your contacts and when you start or accept new chats.";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "About Profile Privacy";
+
+/* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profiles are visible to people you message, contacts, and groups.";
+
+/* During registration, users set up their profile. This is the title on the screen where this is done. */
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Set up your profile";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Je moet je registreren voordat je een bericht kunt verzenden.";
@@ -5471,7 +5531,7 @@
 "SETTINGS_ACCOUNT" = "Jouw registratie";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blokkeer";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blokkeren";
 
 /* Label for the 'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censuuromzeiling";
@@ -5531,7 +5591,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (systeemstandaard)";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Contactpersoon aan blokkeerlijst toevoegen";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Geblokkeerde gebruiker toevoegen";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Je hebt geen contactpersonen op Signal.";
@@ -5681,7 +5741,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Berichtgeluid";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Gedempte gesprekken die zijn gearchiveerd blijven gearchiveerd als er een nieuw bericht binnenkomt.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Gedempte gesprekken die zijn gearchiveerd, blijven gearchiveerd als er een nieuw bericht binnenkomt.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Gedempte gesprekken gearchiveerd houden";
@@ -6217,17 +6277,17 @@
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Het adres van je portemonnee";
 
-/* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Vind me via mijn telefoonnummer";
+/* The title for the phone number discoverability setting section. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who Can Find Me By Number";
 
-/* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Vind me via mijn telefoonnummer";
+/* Description label for Phone Number Privacy */
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choose who can see your phone number and who can contact you on Signal with it.";
 
-/* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "Mijn telefoonnummer zien";
+/* The title for phone number privacy settings. */
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Phone Number";
 
-/* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Mijn telefoonnummer zien";
+/* The title for the phone number sharing setting section. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Who Can See My Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Herinneringen uitschakelen";
@@ -6974,7 +7034,7 @@
 "UNARCHIVE_ACTION" = "Dearchiveren";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Deze persoon staat niet in je contactenlijst. Wil je deze persoon blokkeren?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Deze persoon staat niet in je contactenlijst. Wil je diegene blokkeren?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Onbekend contactpersoon";
@@ -7067,25 +7127,25 @@
 "USE_PROXY_EXPLANATION" = "Gebruik alleen een proxy als je geen verbinding kunt maken met Signal via mobiele data of wifi.";
 
 /* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Turn off phone number discovery under Settings > Privacy > Phone Number > Who can find my number, to use your username as the primary way others can contact you.";
+"USERNAME_DISCOVERY_DESCRIPTION" = "Zet telefoonnummerdetectie uit in Instellingen > Privacy > Telefoonnummer > Wie kan mijn nummer vinden, om je gebruikersnaam te gebruiken als de primaire manier waarop anderen contact met je kunnen opnemen.";
 
 /* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Usernames are paired with a set of digits and aren’t shared on your profile";
+"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Gebruikersnamen zijn gekoppeld aan een reeks cijfers en worden niet gedeeld op je profiel";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Set up your Signal username";
+"USERNAME_EDUCATION_TITLE" = "Je Signal-gebruikersnaam instellen";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Each username has a unique link you can share with your friends to start a chat with you";
+"USERNAME_LINK_DESCRIPTION" = "Elke gebruikersnaam heeft een unieke link die je kunt delen met je vrienden om een chat met je te starten";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Er is iets fout gegaan bij het opzoeken van de gebruikersnaam. Probeer het later opnieuw.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is not a valid username. Make sure you’ve entered the complete username followed by its set of digits.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is geen geldige gebruikersnaam. Zorg ervoor dat je de volledige gebruikersnaam hebt ingevoerd, gevolgd door de bijbehorende reeks cijfers.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Invalid Username";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Ongeldige gebruikersnaam";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is geen Signal-gebruiker. Ga na dat je de complete gebruikersnaam hebt ingevuld.";

@@ -317,13 +317,13 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Give Access";
+"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Омогућите приступ";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Локација";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal needs permission to show your photos and videos.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal-у је потребна дозвола за приказивање ваших слика и видео снимака.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Одавде ћете моћи слати фотографије које сте недавно фотографисали.";
@@ -461,22 +461,22 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Блокирај";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Блокирај и напусти групу „%1$@”?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Желите ли да блокирате и напустите групу „%1$@“?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Блокирај %1$@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Желите ли да блокирате овог корисника (%1$@)?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Блокиране групе";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Блокиране особе";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Блокирани корисници";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
 "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Група је већ блокирана.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Особа је већ блокирана.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Корисник је већ блокиран.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Одблокирај";
@@ -491,22 +491,22 @@
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Постојећи чланови групе ће моћи да вас поново додају у ову групу.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Одблокирај ову групу?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Желите ли да одблокирате ову групу?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Одблокирај %1$@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Желите ли да одблокирате ову преписку (%1$@)?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Блокирај";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ је блокиран/на.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "Преписка је блокирана (%1$@).";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Блокирана особа";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Корисник је блокиран";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Блокирана група";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Група је блокирана";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Не можете блокирати себе.";
@@ -515,13 +515,13 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Грешка";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ је одблокиран/на.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Преписка је одблокирана (%1$@).";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Постојећи чланови вас сада могу поново додaти у групу.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Блокиране особе вас не могу звати и слати вам поруке.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Блокирани корисници вас не могу звати нити вам слати поруке.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Ново: замутите лица и друге делове фотографије.";
@@ -548,7 +548,7 @@
 "BUTTON_EDIT" = "Уреди";
 
 /* Label for the 'mute' button. */
-"BUTTON_MUTE" = "Утишај";
+"BUTTON_MUTE" = "Искључи обавештења";
 
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Даље";
@@ -581,7 +581,7 @@
 "BUTTON_SUBMIT" = "Пошаљи";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Обавести";
+"BUTTON_UNMUTE" = "Укључи обавештења";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Приказ";
@@ -680,7 +680,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Заврши позив";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Пригуши микрофон";
+"CALL_VIEW_MUTE_LABEL" = "Искључи микрофон";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ ће добити ваш захтев за разговор. Моћи ћете да их зовете након што је ваш захтев одобрен.";
@@ -932,7 +932,7 @@
 "CONTACT_ADDRESS" = "Адреса";
 
 /* An indicator that a contact or group has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "Блокиран/на";
+"CONTACT_CELL_IS_BLOCKED" = "Блокирано";
 
 /* An indicator that a contact is no longer verified. */
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Није оверен/на";
@@ -1145,7 +1145,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Избришите преписку?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Утишај ћаскање на одређено време…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Искључи обавештења за ћаскање на одређено време…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 дан";
@@ -1262,10 +1262,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Увек обавештавај";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Не обавештавај ако је Мутирано";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Не обавештавај ако су искључена обавештења";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Желите ли да примате обавештења када сте поменути у утишаним ћаскањима?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Желите ли да примате обавештења када вас неко помене у ћаскањима за која су искључена обавештења?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Помињања";
@@ -1274,22 +1274,22 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "порука";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Утишај ћаскање на одређено време…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Искључи обавештења за ћаскање на одређено време…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Увек";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "утишај";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "искључи обавештења";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 сати";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Утишај";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Искључи обавештења";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Није утишано";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Обавештења нису искључена";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 дан";
@@ -1307,16 +1307,16 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Увек";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Увек утишанп";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Обавештења су трајно искључена";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "утишано";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "обавештења су искључена";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "до %1$@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Утишано до %1$@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Обавештења су искључена до дана %1$@";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Направи нови контакт";
@@ -1358,7 +1358,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Одблокирај групу";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Одблокирај особу";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Одблокирај корисника";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Укључи обавештења";
@@ -1395,6 +1395,15 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Изаберите позивни број државе";
+
+/* Body text for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Usernames let others message you without needing your phone number.";
+
+/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
+"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Set Up";
+
+/* Title for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Set up your Signal username";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Картица вам је истекла. Проверите да ли су подаци на картици тачни и пробајте поново.";
@@ -2126,7 +2135,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Грешка при отпремању извештаја.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Не можете слати поруке овој особи јер сте је блокирали.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Не можете слати поруке овом кориснику јер сте га блокирали.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Порука није послата јер су примаоци неисправни.";
@@ -2372,7 +2381,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Нећете добити њихов аудио или видео, а ни они ваш.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ је блокиран";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "Корисник је блокиран (%1$@)";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Само админи ове групе могу започети позив.";
@@ -2381,7 +2390,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Не може да се покрене групни позив";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ је блокиран";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "Корисник је блокиран (%1$@)";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Настави позив";
@@ -2417,7 +2426,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Не може да се прими звук & видео од %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "То је можда зато што нису потврдили промену вашег безбедносног броја, постоји проблем са њиховим уређајем или су вас блокирали.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "То је можда зато што корисник није потврдио промену вашег сигурносног броја, постоји проблем са његовим уређајем или вас је блокирао.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Не може да се прими звук и видео од %1$@";
@@ -3044,7 +3053,7 @@
 "GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ neće moći da se pridruži grupi ili zatraži da se pridruži grupi preko linka. Admin i dalje može da doda ovog korisnika.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
-"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Блокирати захтев?";
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Желите ли да блокирате захтев?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Изаберите новог администратора пре напуштања групе.";
@@ -3059,10 +3068,10 @@
 "GROUPS_INVITE_BLOCK_GROUP" = "Блокирај групу";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Блокирај групу и %1$@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Блокирај групу и корисника (%1$@)";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Блокирај %1$@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Блокирај корисника (%1$@)";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "Позивница пријатељима";
@@ -3221,7 +3230,7 @@
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Архивиране преписке";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Блокиран/на";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Блокирано";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Претрага";
@@ -3314,7 +3323,7 @@
 "IN_CALL_TERMINATED" = "Позив је завршен.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Ćaskanja sa isključenim obaveštenjima koja su arhivirana ostaće arhivirana kada stigne nova poruka.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Ћаскања са искљученим обавештењима која су архивирана остаће архивирана када стигне нова порука.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arhivirana ćaskanja će se premestiti u prijemno sanduče kada stigne nova poruka.";
@@ -3710,19 +3719,19 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Блокирај и избриши";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Пријавити нежељену пошту и блокирати";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Пријави спам и блокирај";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Блокиране особе вас не могу звати и слати вам поруке.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Блокирани људи неће моћи да вас зову нити да вам шаљу поруке.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Блокирајте „%1$@”?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Желите ли да блокирате овог корисника (%1$@)?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Напустићете групу и више нећете примати поруке и обавештења.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Блокирај и напусти %1$@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Желите ли да блокирате и напустите групу %1$@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Избриши";
@@ -3764,7 +3773,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Прегледајте захтев";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Пријављено као нежељена пошта и блокирано.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Пријављено је као спам и блокирано.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Прихвати";
@@ -3773,13 +3782,13 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Блокирај";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Да ли дозвољавате да вам %1$@ шаље поруке и да види ваше име и слику? Нећете добити ни једну поруку док их не одблокирате.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Желите ли да дозволите да вам %1$@ шаље поруке и види ваше име и слику? Нећете примати поруке док не одблокирате овог корисника.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Да ли желите да одблокирате ову групу и да са њеним члановима поделите ваше име и слику? Нећете добити ни једну поруку док је не одблокирате.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Желите ли да одблокирате ову групу и да са њеним члановима поделите своје име и слику? Нећете примати поруке док је не одблокирате.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Деблокирати ову групу? Неће знати да сте видели њихове поруке док их не деблокирате.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Желите ли да одблокирате ову групу? Њени чланови неће знати да сте видели њихове поруке док је не одблокирате.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Настави";
@@ -3908,7 +3917,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Достигли сте ограничење броја уређаја повезаних на ваш налог. Молимо вас да уклоните један уређај и покушате поново.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Утишано";
+"MUTED_BADGE" = "Обавештења су искључена";
 
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Ажурирања ваше приче ће се појавити овде.";
@@ -4191,9 +4200,6 @@
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Унесите ваш број телефона";
-
-/* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Ваш број телефона";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Погрешан број телефона. Унесите исправан број телефона да се региструјете.";
@@ -4643,13 +4649,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Било ко";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Свако ко у контактима има ваш телефонски број видеће вас као контакт на Signal. Други ће вас моћи пронаћи у претрази.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to reach you with your phone number when they start a new chat or group.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "никога";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Нико на Signal неће моћи да вас пронађе са вашим бројем телефона. Нећете бити видљиви као контакт особама који имају ваш број телефона у контактима, а други неће моћи да вас пронађу са вашим бројем телефона у претрази.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to reach you with your phone number.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Пример: %1$@";
@@ -4812,6 +4818,9 @@
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Унесите компликованији PIN";
+
+/* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PINs keep your information stored with Signal encrypted so only you can access it. Choose a stronger PIN to protect your account.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "Ваш PIN није могао бити онемогућен. Обавестићемо вас поново касније.";
@@ -5179,8 +5188,17 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Грешка при поновној пријави на сервис за обавештења.";
 
+/* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
+"REGISTRATION_CAPTCHA_TITLE" = "We need to verify that you’re human";
+
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Позивни број државе";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Унесите број";
@@ -5200,8 +5218,50 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Формат овог броја телефона није подржан. Молимо вас да контактирате подршку.";
 
+/* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Enter your phone number to get started.";
+
+/* During registration, users are asked to enter their phone number. This is the title on that screen. */
+"REGISTRATION_PHONE_NUMBER_TITLE" = "Your Phone Number";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Број телефона";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Re-enter the PIN you just created.";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Confirm your PIN";
+
+/* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CREATE_TITLE" = "Create your PIN";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Enter your PIN";
+
+/* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Last Name";
+
+/* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "First Name";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Your name, photo and changes to it will be visible to your contacts and when you start or accept new chats.";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "About Profile Privacy";
+
+/* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profiles are visible to people you message, contacts, and groups.";
+
+/* During registration, users set up their profile. This is the title on the screen where this is done. */
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Set up your profile";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Морате се регистровати пре слања порука.";
@@ -5540,7 +5600,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Нема резултата претраге";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Блокиран/на";
+"SETTINGS_BLOCK_LIST_TITLE" = "Блокирано";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Увек премости позиве";
@@ -5681,10 +5741,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Звук поруке";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Ćaskanja sa isključenim obaveštenjima koja su arhivirana ostaće arhivirana kada stigne nova poruka.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Ћаскања са искљученим обавештењима која су архивирана остаће архивирана када стигне нова порука.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Ostavi ćaskanja sa isključenim obaveštenjima arhivirana";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Остави ћаскања са искљученим обавештењима архивирана";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Услови коришћења и правила о приватности";
@@ -5723,7 +5783,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Подешавања";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Убаци утишана ћаскања";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Укључи ћаскања са искљученим обавештењима";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Индикатор обавештења";
@@ -6217,17 +6277,17 @@
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Адреса Вашег новчаника";
 
-/* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Пронађите ме по броју телефона";
+/* The title for the phone number discoverability setting section. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who Can Find Me By Number";
 
-/* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Пронађите ме по броју телефона";
+/* Description label for Phone Number Privacy */
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choose who can see your phone number and who can contact you on Signal with it.";
 
-/* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "Види мој број телефона";
+/* The title for phone number privacy settings. */
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Phone Number";
 
-/* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Види мој број телефона";
+/* The title for the phone number sharing setting section. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Who Can See My Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Искључи подсетнике";
@@ -6974,7 +7034,7 @@
 "UNARCHIVE_ACTION" = "Одархивирај";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Особа није у вашем именику. Да ли желите да је блокирате?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Корисник није у вашем именику. Желите ли да је блокирате?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Непознат контакт";
@@ -7067,25 +7127,25 @@
 "USE_PROXY_EXPLANATION" = "Користите прокси сервер само ако не можете да се повежете са Signal-ом преко мобилног интернета или Wi-Fi мреже.";
 
 /* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Turn off phone number discovery under Settings > Privacy > Phone Number > Who can find my number, to use your username as the primary way others can contact you.";
+"USERNAME_DISCOVERY_DESCRIPTION" = "Искључите откривање броја телефона у одељку Подешавања > Приватност > Број телефона > Ко може да пронађе мој број да бисте користили своје корисничко име као примарни начин на који други могу да вас контактирају.";
 
 /* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Usernames are paired with a set of digits and aren’t shared on your profile";
+"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Корисничка имена су упарена са скупом цифара и не деле се на вашем профилу";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Set up your Signal username";
+"USERNAME_EDUCATION_TITLE" = "Подесите корисничко име за Signal";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Each username has a unique link you can share with your friends to start a chat with you";
+"USERNAME_LINK_DESCRIPTION" = "Свако корисничко име има јединствени линк који можете да поделите са пријатељима да би могли да ћаскају са вама";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Грешка при тражењу корисничког имена. Покушајте поново касније.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is not a valid username. Make sure you’ve entered the complete username followed by its set of digits.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ није важеће корисничко име. Проверите да ли сте унели цело корисничко име праћено његовим скупом цифара.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Invalid Username";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Неважеће корисничко име";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ није корисник Signal-а. Проверите да ли сте добро унели корисничко име.";

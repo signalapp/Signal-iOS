@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>آپ نے اس گروپ کے %1$d ممبر کو بلاک کیا تھا</string>
+			<string>آپ نے اس گروپ کے %1$d ممبر کو بلاک کر دیا</string>
 			<key>other</key>
-			<string>آپ نے اس گروپ کے %1$d ممبرز کو بلاک کیا تھا</string>
+			<string>آپ نے اس گروپ کے %1$d ممبرز کو بلاک کر دیا</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>

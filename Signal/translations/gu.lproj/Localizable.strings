@@ -317,13 +317,13 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Give Access";
+"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "ઍક્સેસ આપો";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "સ્થળ";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal needs permission to show your photos and videos.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "તમારા ફોટા અને વીડિયો બતાવવા માટે Signalને પરવાનગીની જરૂર છે.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "એકવાર તમે ફોટા ખેંચી લો, પછી તમે તમારા રિસન્ટ્સ અહીં મોકલી શકશો.";
@@ -458,28 +458,28 @@
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "તમે હવે આ ગ્રુપમાંથી મેસેજ અથવા અપડેટ્સ પ્રાપ્ત કરશો નહીં.";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "અવરોધિત કરો";
+"BLOCK_LIST_BLOCK_BUTTON" = "બ્લૉક કરો";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%1$@\" જૂથને ગ્રુપ કરો અને છોડો?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%1$@\" ગ્રૂપને બ્લૉક કરી અને છોડી દેવું છે?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%1$@ને બ્લૉક?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%1$@ને બ્લૉક કરવા છે?";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "બ્લૉક કરેલ ગ્રુપ";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "બ્લૉક કરેલા ગ્રૂપ";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "બ્લૉક કરેલ વપરાશકર્તાઓ";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "બ્લૉક કરેલા ઉપયોગકર્તાઓ";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "ગ્રુપ પહેલેથી બ્લૉક છે.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "ગ્રૂપ પહેલેથી બ્લૉક કરેલ છે.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "વપરાશકર્તા પહેલેથી બ્લૉક છે.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "ઉપયોગકર્તા પહેલેથી બ્લૉક છે.";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "અનાવરોધિત કરો";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "અનબ્લૉક કરો";
 
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "તમે એકબીજાને મેસેજ અને કૉલ કરી શકશો.";
@@ -491,37 +491,37 @@
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "ગ્રુપના સભ્યો તમને આ ગ્રુપમાં ફરીથી ઉમેરવામાં સમર્થ હશે.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "આ ગ્રુપને અનબ્લૉક કરીએ?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "આ ગ્રૂપને અનબ્લૉક કરવું છે?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%1$@ ને અનબ્લૉક?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%1$@ને અનબ્લૉક કરવા છે?";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "અવરોધિત કરો";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "બ્લૉક કરો";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ બ્લૉક કરવામાં આવ્યું છે.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ને બ્લૉક કરવામાં આવ્યા છે.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "વપરાશકર્તા બ્લૉક";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ઉપયોગકર્તાને બ્લૉક કર્યા";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "ગ્રુપ બ્લૉક";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "ગ્રૂપ બ્લૉક કર્યું";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "તમે તમારી જાતને બ્લૉક કરી શકતા નથી.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "તમે પોતાને બ્લૉક કરી શકતા નથી.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "ભૂલ";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ અનબ્લૉક કરવામાં આવી છે.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ને અનબ્લૉક કરવામાં આવ્યા છે.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "હાલના સભ્યો તમને ફરીથી ગ્રુપમાં ઉમેરી શકે છે.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "અવરોધિત વપરાશકર્તાઓ તમને કૉલ કરી શકશે નહીં અથવા તમને મેસેજ મોકલશે નહીં.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "બ્લૉક કરેલા ઉપયોગકર્તાઓ તમને કૉલ કે મેસેજ કરી શકશે નહીં.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "નવું: ચહેરાને ઝાંખા કરો અથવા ઝાંખા કરવા માટે ગમે તે જગ્યાએ દોરો.";
@@ -548,7 +548,7 @@
 "BUTTON_EDIT" = "ફેરફાર કરો";
 
 /* Label for the 'mute' button. */
-"BUTTON_MUTE" = "મ્યુટ";
+"BUTTON_MUTE" = "મ્યૂટ કરો";
 
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "આગળ";
@@ -581,7 +581,7 @@
 "BUTTON_SUBMIT" = "સબમિટ કરો";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "અનમ્યૂટ";
+"BUTTON_UNMUTE" = "અનમ્યૂટ કરો";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "વ્યૂ";
@@ -680,7 +680,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "કૉલ નો અંત કરો";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "મ્યુટ";
+"CALL_VIEW_MUTE_LABEL" = "મ્યૂટ કરો";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ ને તમારી પાસેથી મેસેજ વિનંતી પ્રાપ્ત થશે. એકવાર તમારી મેસેજ વિનંતી સ્વીકારવામાં આવે પછી તમે કૉલ કરી શકો છો.";
@@ -932,7 +932,7 @@
 "CONTACT_ADDRESS" = "સરનામું";
 
 /* An indicator that a contact or group has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "બ્લૉક કરેલ";
+"CONTACT_CELL_IS_BLOCKED" = "બ્લૉક કર્યા";
 
 /* An indicator that a contact is no longer verified. */
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "ચકાસાયેલ નથી";
@@ -1145,7 +1145,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ચેટ ડિલીટ કરવી છે?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "આ ચેટને આટલા સમય માટે મ્યૂટ કરો…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "આ ચેટને આટલા સમય માટે મ્યૂટ કરો...";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 દિવસ";
@@ -1223,10 +1223,10 @@
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "તમે હવે આ ગ્રુપ માંથી મેસેજ અથવા અપડેટ્સ પ્રાપ્ત કરશો નહીં.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "ગ્રુપ બ્લૉક";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "ગ્રૂપને બ્લૉક કરો";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "વપરાશકર્તા બ્લૉક";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "ઉપયોગકર્તાને બ્લૉક કરો";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "ફેરફાર કરો";
@@ -1262,10 +1262,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "હંમેશાં સૂચિત કરો";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "જો મ્યૂટ કરેલ હોય તો સૂચિત ન કરો";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "જો મ્યૂટ કરેલા હોય તો સૂચિત ન કરો";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "જ્યારે તમારો મ્યૂટ ચેટમાં ઉલ્લેખ થાય છે ત્યારે સૂચનાઓ પ્રાપ્ત કરવી છે?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "જ્યારે તમારો મ્યૂટ કરેલી ચેટમાં ઉલ્લેખ કરવામાં આવે ત્યારે નોટિફિકેશન મેળવવી છે?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "ઉલ્લેખો";
@@ -1286,10 +1286,10 @@
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 કલાક";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "મ્યુટ";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "મ્યૂટ કરો";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "મ્યૂટ નહીં";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "મ્યૂટ કર્યું નથી";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 દિવસ";
@@ -1307,7 +1307,7 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "હંમેશાં";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "હંમેશાં મ્યૂટ કરેલ છે";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "હંમેશાં માટે મ્યૂટ કર્યું";
 
 /* Button to unmute the chat */
 "CONVERSATION_SETTINGS_MUTED_BUTTON" = "મ્યૂટ કરેલ છે";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%1$@ ત્યાં સુધી";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%1$@ સુધી મ્યુટ ન થાય ત્યાં સુધી મ્યૂટ કરેલ છે";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%1$@ સુધી મ્યૂટ કરેલ છે";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "નવો સંપર્ક બનાવો";
@@ -1355,13 +1355,13 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "ફક્ત એડમિન";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "ગ્રુપ અનબ્લૉક કરો";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "ગ્રૂપ અનબ્લૉક કરો";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "વપરાશકર્તા અનબ્લૉક કરો";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "ઉપયોગકર્તાને અનબ્લૉક કરો";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "અનમ્યૂટ";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "અનમ્યૂટ કરો";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "વિડિયો";
@@ -1395,6 +1395,15 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "દેશ કોડ પસંદ કરો";
+
+/* Body text for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Usernames let others message you without needing your phone number.";
+
+/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
+"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Set Up";
+
+/* Title for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Set up your Signal username";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "તમારા કાર્ડની સમયસીમા સમાપ્ત થઈ ગઈ છે. તમારી કાર્ડની વિગતો સાચી છે તેની ખાતરી કરો અને ફરી પ્રયત્ન કરો.";
@@ -1892,7 +1901,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "દાન આપી શકાતું નથી";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "તમે આ ઉપયોગકર્તા માટે દાન આપી શકતા નથી કારણ કે તમે તેમને બ્લોક કર્યા છે.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "તમે આ ઉપયોગકર્તા માટે દાન આપી શકતા નથી કારણ કે તમે તેમને બ્લૉક કર્યા છે.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "દાન આપી શકાતું નથી";
@@ -2126,7 +2135,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "લૉગ અપલોડ કરવામાં નિષ્ફળ ગયા.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "વપરાશકર્તાને મેસેજ આપવામાં નિષ્ફળ કારણ કે તમે તેમને બ્લોક કર્યા છે.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "ઉપયોગકર્તાને મેસેજ ન થઈ શક્યો કારણ કે તમે તેમને બ્લૉક કર્યા છે.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "માન્ય પ્રાપ્તિકર્તાઓની અછતને કારણે મેસેજ મોકલવાનું નિષ્ફળ થયું.";
@@ -2372,7 +2381,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "તમને તેમનો ઓડિયો અથવા વિડિયો નહીં મળે અને તેઓ તમારો ઓડિયો પ્રાપ્ત કરશે નહીં.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ ને બ્લૉક કરેલ છે";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ને બ્લૉક કરેલ છે";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "આ ગ્રુપના એડમિન જ કોલ શરૂ કરી શકે છે.";
@@ -2381,7 +2390,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "ગ્રુપ કૉલ શરૂ કરી શકાતો નથી";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ ને બ્લૉક કરેલ છે";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ને બ્લૉક કરેલ છે";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "કૉલ ચાલુ રાખો";
@@ -3056,13 +3065,13 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "આમંત્રણ સ્વીકારી શક્યાં નથી.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "ગ્રુપ બ્લૉક";
+"GROUPS_INVITE_BLOCK_GROUP" = "ગ્રૂપને બ્લૉક કરો";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "બ્લોક ગ્રુપ અને %1$@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "ગ્રૂપ અને %1$@ને બ્લૉક કરો";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "બ્લોક %1$@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%1$@ને બ્લૉક કરો";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "મિત્રોને આમંત્રિત કરો";
@@ -3221,7 +3230,7 @@
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "આર્કાઇવ કરેલી ચેટ";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "બ્લૉક કરેલ";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "બ્લૉક કર્યા";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "શોધો";
@@ -3314,7 +3323,7 @@
 "IN_CALL_TERMINATED" = "કૉલ સમાપ્ત થયો.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "મ્યૂટ કરેલ ચેટ જેને આર્કાઇવ કરેલ છે તે નવો મેસેજ આવે ત્યારે પણ આર્કાઇવ રહેશે.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "મ્યૂટ કરેલી ચેટ જેને આર્કાઇવ કરેલ છે તે નવો મેસેજ આવે ત્યારે પણ આર્કાઇવ જ રહેશે.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "નવો મેસેજ આવે ત્યારે આર્કાઇવ કરેલ ચેટ ઇનબોક્સ પર ખસેડવામાં આવશે.";
@@ -3704,25 +3713,25 @@
 "MESSAGE_PREVIEW" = "મેસેજ પ્રિવ્યૂ";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_ACTION" = "અવરોધિત કરો";
+"MESSAGE_REQUEST_BLOCK_ACTION" = "બ્લૉક કરો";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "બ્લોક કરો અને ડિલીટ કરો";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "બ્લૉક કરો અને ડિલીટ કરો";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "સ્પામની જાણ કરો અને બ્લૉક કરો";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "બ્લોક લોકો તમને કૉલ કરી શકશે નહીં અથવા તમને મેસેજ મોકલશે નહીં.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "બ્લૉક કરેલ લોકો તમને કૉલ કે મેસેજ કરી શકશે નહીં.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%1$@ને બ્લૉક?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%1$@ને બ્લૉક કરવા છે?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "તમે આ ગ્રુપને છોડી દો અને મેસેજ અથવા અપડેટ્સ પ્રાપ્ત કરશે નહીં.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ ને બ્લોક કરો અને છોડો?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ને બ્લૉક કરીને છોડી દેવું છે?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "ડિલીટ કરો";
@@ -3764,22 +3773,22 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "વિનંતીની સમીક્ષા કરો";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "સ્પામ તરીકે નોંધાયેલ છે અને બ્લૉક કરેલ છે.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "સ્પામ તરીકે જાણ કરી અને બ્લૉક કર્યા.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "સ્વીકાર";
 
 /* A button used to block a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "અવરોધિત કરો";
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "બ્લૉક કરો";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%1$@ ને તમને મેસેજ કરવા દો અને તેમની સાથે તમારું નામ અને ફોટો શેર કરવા છે? જ્યાં સુધી તમે તેમને અનબ્લૉક નહીં કરો ત્યાં સુધી તમને કોઈ મેસેજ પ્રાપ્ત થશે નહીં.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%1$@ને તમને મેસેજ કરવા અને તેમની સાથે તમારું નામ અને ફોટો શેર કરવા દેવા છે? જ્યાં સુધી તમે તેમને અનબ્લૉક નહીં કરો ત્યાં સુધી તમને કોઈ મેસેજ પ્રાપ્ત થશે નહીં.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "આ ગ્રુપને અનબ્લૉક કરવું છે અને તેના સભ્યો સાથે તમારું નામ અને ફોટો શેર કરવા છે? જ્યાં સુધી તમે તેમને અનબ્લૉક નહીં કરો ત્યાં સુધી તમને કોઈ મેસેજ પ્રાપ્ત થશે નહીં.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "આ ગ્રૂપને અનબ્લૉક કરી અને તેના સભ્યો સાથે તમારું નામ અને ફોટો શેર કરવા છે? તમે તેમને અનબ્લૉક નહીં કરો ત્યાં સુધી તમને કોઈ મેસેજ પ્રાપ્ત થશે નહીં.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "આ ગ્રુપને અનબ્લૉક કરવું છે? જ્યાં સુધી તમે તેમને અનબ્લૉક ન કરો ત્યાં સુધી તેઓ જાણશે નહીં કે તમે તેમના મેસેજ જોયા છે.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "આ ગ્રૂપને અનબ્લૉક કરવું છે? જ્યાં સુધી તમે તેમને અનબ્લૉક નહીં કરો ત્યાં સુધી તેઓ જાણશે નહીં કે તમે તેમના મેસેજ જોયા છે.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "ચાલુ રાખો";
@@ -3803,7 +3812,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "આ ગ્રુપમાં જોડાવું છે? જ્યાં સુધી તમે સ્વીકારશો નહીં ત્યાં સુધી તેઓ જાણશે નહીં કે તમે તેમના મેસેજ જોયા છે.";
 
 /* A button used to unlock a blocked conversation. */
-"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "અનાવરોધિત કરો";
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "અનબ્લૉક કરો";
 
 /* Label for button to cancel your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "વિનંતી રદ કરો";
@@ -3908,7 +3917,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "તમે હાલમાં તમારા એકાઉન્ટ સાથે લિંક કરી શકતા મહત્તમ ડિવાઇસ પર પહોંચી ગયા છો. કૃપા કરીને કોઈ ડિવાઇસ દૂર કરો અને ફરીથી પ્રયાસ કરો.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "મ્યૂટ કરેલ છે";
+"MUTED_BADGE" = "મ્યૂટ કર્યા";
 
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "તમારી સ્ટોરી પરના અપડેટ્સ અહીં દેખાશે.";
@@ -4191,9 +4200,6 @@
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "તમારો ફોન નંબર દાખલ કરો";
-
-/* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "તમારો ફોન નંબર";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "અમાન્ય ફોન નંબર. રજીસ્ટર કરવા માટે કૃપા કરીને માન્ય ફોન નંબર દાખલ કરો.";
@@ -4643,13 +4649,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "પ્રત્યેક";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "જે કોઈના સંપર્કોમાં તમારો ફોન નંબર હશે તે તમને Signal પર સંપર્ક તરીકે જોઈ શકશે. અન્ય લોકો તમને સર્ચમાં શોધી શકશે.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to reach you with your phone number when they start a new chat or group.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "કોઈ નથી";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Signal પર કોઈ પણ તમને તમારા ફોન નંબર સાથે શોધી શકશે નહીં. તમે એવા લોકો માટે સંપર્ક તરીકે દેખાશે નહીં જેમના સંપર્કમાં તમારો ફોન નંબર છે અને અન્ય લોકો તમને સર્ચમાં તમારા ફોન નંબર સાથે શોધી શકશે નહીં.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to reach you with your phone number.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "ઉદાહરણ: %1$@";
@@ -4812,6 +4818,9 @@
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "એક મજબૂત PIN પસંદ કરો";
+
+/* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PINs keep your information stored with Signal encrypted so only you can access it. Choose a stronger PIN to protect your account.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "તમારો PIN અક્ષમ થઈ શક્યો નહીં. અમે તમને ફરીથી પછીથી પ્રેરિત કરીશું.";
@@ -5179,8 +5188,17 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "પુશ સૂચનો માટે ફરીથી રજીસ્ટર કરવામાં નિષ્ફળ.";
 
+/* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
+"REGISTRATION_CAPTCHA_TITLE" = "We need to verify that you’re human";
+
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "દેશનો કોડ";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "નંબર દાખલ કરો";
@@ -5200,8 +5218,50 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "આ ફોન નંબર ફોર્મેટ સપોર્ટેડ નથી, કૃપા કરીને સપોર્ટનો સંપર્ક કરો.";
 
+/* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Enter your phone number to get started.";
+
+/* During registration, users are asked to enter their phone number. This is the title on that screen. */
+"REGISTRATION_PHONE_NUMBER_TITLE" = "Your Phone Number";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "ફોન નંબર";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Re-enter the PIN you just created.";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Confirm your PIN";
+
+/* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CREATE_TITLE" = "Create your PIN";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Enter your PIN";
+
+/* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Last Name";
+
+/* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "First Name";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Your name, photo and changes to it will be visible to your contacts and when you start or accept new chats.";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "About Profile Privacy";
+
+/* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profiles are visible to people you message, contacts, and groups.";
+
+/* During registration, users set up their profile. This is the title on the screen where this is done. */
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Set up your profile";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "ફોન નંબર તમારે મેસેજ મોકલતા પહેલા રજીસ્ટર કરવાની જરૂર છે.";
@@ -5471,7 +5531,7 @@
 "SETTINGS_ACCOUNT" = "એકાઉન્ટ";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "અવરોધિત કરો";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "બ્લૉક કરો";
 
 /* Label for the 'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "સેન્સરશીપ છેતરપિંડી";
@@ -5531,7 +5591,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (મૂળભૂત)";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "બ્લોક કરેલ વપરાશકર્તા ઉમેરો";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "બ્લૉક કરેલો ઉપયોગકર્તા ઉમેરો";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "તમારી પાસે Signal પર કોઈ સંપર્કો નથી.";
@@ -5540,7 +5600,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "કોઈ શોધ પરિણામ નથી";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "બ્લૉક કરેલ";
+"SETTINGS_BLOCK_LIST_TITLE" = "બ્લૉક કર્યા";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "હંમેશા રિલે કૉલ";
@@ -5681,10 +5741,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "મેસેજ અવાજ";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "મ્યૂટ કરેલ ચેટ જેને આર્કાઇવ કરેલ છે તે નવો મેસેજ આવે ત્યારે પણ આર્કાઇવ રહેશે.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "મ્યૂટ કરેલી ચેટ જેને આર્કાઇવ કરેલ છે તે નવો મેસેજ આવે ત્યારે પણ આર્કાઇવ જ રહેશે.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "મ્યૂટ કરેલ ચેટને આર્કાઇવ રાખો";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "મ્યૂટ કરેલી ચેટને આર્કાઇવ રાખો";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "શરતો અને ગોપનીયતા નીતિ";
@@ -5723,7 +5783,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "સેટિંગ્સ";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "મ્યૂટ કરેલ ચેટ સામેલ કરો";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "મ્યૂટ કરેલી ચેટ સામેલ કરો";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "બેજ કાઉન્ટ";
@@ -6217,17 +6277,17 @@
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "તમારું વૉલેટ એડ્રેસ";
 
-/* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "ફોન નંબર દ્વારા મને શોધો";
+/* The title for the phone number discoverability setting section. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who Can Find Me By Number";
 
-/* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "ફોન નંબર દ્વારા મને શોધો";
+/* Description label for Phone Number Privacy */
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choose who can see your phone number and who can contact you on Signal with it.";
 
-/* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "મારો ફોન નંબર જુઓ";
+/* The title for phone number privacy settings. */
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Phone Number";
 
-/* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "મારો ફોન નંબર જુઓ";
+/* The title for the phone number sharing setting section. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Who Can See My Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "રિમાઇન્ડર્સ બંધ કરો";
@@ -6974,7 +7034,7 @@
 "UNARCHIVE_ACTION" = "અનઆર્કાઇવ";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "વપરાશકર્તા તમારા સંપર્કોમાં નથી. શું તમે આ વપરાશકર્તાને બ્લોક કરવા માંગો છો?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "ઉપયોગકર્તા તમારા સંપર્કોમાં નથી. શું તમે આ ઉપયોગકર્તાને બ્લૉક કરવા માગો છો?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "અજાણ્યો સંપર્ક";
@@ -7067,25 +7127,25 @@
 "USE_PROXY_EXPLANATION" = "જો તમે મોબાઇલ ડેટા અથવા વાઇ-ફાઇ દ્વારા Signal સાથે કનેક્ટ ન કરી શકતા હો તો જ પ્રૉક્સીનો ઉપયોગ કરો.";
 
 /* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Turn off phone number discovery under Settings > Privacy > Phone Number > Who can find my number, to use your username as the primary way others can contact you.";
+"USERNAME_DISCOVERY_DESCRIPTION" = "અન્ય લોકો તમારો સંપર્ક કરી શકે તેની પ્રાથમિક રીત તરીકે તમારા યુઝરનેમનો ઉપયોગ કરવા માટે સેટિંગ્સ > ગોપનીયતા > ફોન નંબર > મારો નંબર કોણ શોધી શકે છે પર જઈને ફોન નંબરની શોધ બંધ કરો.";
 
 /* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Usernames are paired with a set of digits and aren’t shared on your profile";
+"USERNAME_DISCRIMINATOR_DESCRIPTION" = "યુઝરનેમને અંકોના સમૂહ સાથે જોડવામાં આવે છે અને તમારી પ્રોફાઇલ પર શેર કરવામાં આવતાં નથી";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Set up your Signal username";
+"USERNAME_EDUCATION_TITLE" = "તમારું Signal યુઝરનેમ સેટ કરો";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Each username has a unique link you can share with your friends to start a chat with you";
+"USERNAME_LINK_DESCRIPTION" = "દરેક યુઝરનેમમાં એક અનન્ય લિંક હોય છે જે તમે તમારા મિત્રો તમારી સાથે ચેટ શરૂ કરી શકે તે માટે તેમની સાથે શેર કરી શકો છો";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "વપરાશકર્તા નામ શોધતી વખતે ભૂલ આવી. પછીથી ફરી પ્રયત્ન કરો.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is not a valid username. Make sure you’ve entered the complete username followed by its set of digits.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ એ માન્ય યુઝરનેમ નથી. ખાતરી કરો કે તમે આખું યુઝરનેમ દાખલ કર્યું છે જેની પાછળ તેના અંકોનો સમૂહ પણ હોય.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Invalid Username";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "અમાન્ય યુઝરનેમ";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ એ Signal વપરાશકર્તા નથી. ખાતરી કરો કે તમે સંપૂર્ણ વપરાશકર્તાનામ દાખલ કર્યું છે.";

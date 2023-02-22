@@ -794,7 +794,7 @@
 			<key>one</key>
 			<string>Блокирали сте %1$d члана ове групе</string>
 			<key>other</key>
-			<string>Блокирали сте њих %1$d у групи</string>
+			<string>Блокирали сте њих %1$d у овој групи</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>

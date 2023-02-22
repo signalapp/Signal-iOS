@@ -317,13 +317,13 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Give Access";
+"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "מתן גישה";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "מיקום";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal needs permission to show your photos and videos.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal צריכה הרשאה כדי להראות את התמונות והסרטונים שלך.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "ברגע שתצלם תצלומים, תוכל לשלוח את האחרונים שלך כאן.";
@@ -458,7 +458,7 @@
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "לא תקבל יותר הודעות או עדכונים מקבוצה זו.";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "חסום";
+"BLOCK_LIST_BLOCK_BUTTON" = "חסימה";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "לחסום ולעזוב את הקבוצה \"%1$@\"?";
@@ -473,13 +473,13 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "משתמשים חסומים";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "הקבוצה נחסמה כבר.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "הקבוצה כבר נחסמה.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "המשתמש נחסם כבר.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "המשתמש/ת כבר נחסם/ה.";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "שחרר חסימה";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "ביטול חסימה";
 
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "תוכל להתכתב ולהתקשר זה עם זה.";
@@ -491,37 +491,37 @@
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "חברי קבוצה יוכלו להוסיף אותך שוב אל קבוצה זו.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "לשחרר חסימה של קבוצה זו?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "לבטל חסימה של קבוצה זו?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "לשחרר חסימה של %1$@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "לבטל חסימה של %1$@?";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "חסום";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "חסימה";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ נחסם.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "חסמת את %1$@.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "משתמש נחסם";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "חסמת את המשתמש/ת";
 
 /* The title of the 'group blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "קבוצה נחסמה";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "אינך יכול לחסום את עצמך.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "אי אפשר לחסום את עצמך.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "שגיאה";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "חסימה של %1$@ שוחררה.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "בוטלה החסימה של %1$@.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "חברי קבוצה קיימים יכולים כעת להוסיף אותך אל הקבוצה שוב.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "משתמשים חסומים לא יוכלו להתקשר אליך או לשלוח לך הודעות.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "משתמשים חסומים לא יוכלו להתקשר או לשלוח לך הודעות.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "חדש: טשטש פרצופים או צייר בכל מקום כדי לטשטש.";
@@ -548,7 +548,7 @@
 "BUTTON_EDIT" = "ערוך";
 
 /* Label for the 'mute' button. */
-"BUTTON_MUTE" = "השתק";
+"BUTTON_MUTE" = "השתקה";
 
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "הבא";
@@ -581,7 +581,7 @@
 "BUTTON_SUBMIT" = "הגש";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "בטל השתקה";
+"BUTTON_UNMUTE" = "ביטול השתקה";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "הצג";
@@ -680,7 +680,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "סיים שיחה";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "השתק";
+"CALL_VIEW_MUTE_LABEL" = "השתקה";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ יקבל בקשת התכתבות ממך. אתה יכול להתקשר ברגע שבקשת ההתכתבות שלך תאושר.";
@@ -932,7 +932,7 @@
 "CONTACT_ADDRESS" = "כתובת";
 
 /* An indicator that a contact or group has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "חסום";
+"CONTACT_CELL_IS_BLOCKED" = "חסום/ה";
 
 /* An indicator that a contact is no longer verified. */
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "לא מאומת";
@@ -1145,7 +1145,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "למחוק צ'אט?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "השתק התכתבות זו למשך…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "השתקת צ׳אט זה למשך…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "יום";
@@ -1223,10 +1223,10 @@
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "לא תקבל יותר הודעות או עדכונים מקבוצה זו.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "חסום קבוצה";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "חסימת קבוצה";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "חסום משתמש";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "חסימת משתמש/ת";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "ערוך";
@@ -1262,10 +1262,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "יידע תמיד";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "אל תיידע אם מושתק";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "לא לשלוח התראות אם מושתק";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "לקבל התראות כאשר אתה מוזכר בהתכתבויות מושתקות?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "לקבל התראות אם מזכירים אותך בצ׳אטים מושתקים?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "אזכורים";
@@ -1274,19 +1274,19 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "התכתב";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "השתק התכתבות זו למשך…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "השתקת צ׳אט זה למשך…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "תמיד";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "השתק";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "השתקה";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 שעות";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "השתק";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "השתקה";
 
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "לא מושתק";
@@ -1307,7 +1307,7 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "תמיד";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "תמיד מושתק";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "מושתק תמיד";
 
 /* Button to unmute the chat */
 "CONVERSATION_SETTINGS_MUTED_BUTTON" = "מושתק";
@@ -1355,13 +1355,13 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "רק מנהלנים";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "שחרר חסימת קבוצה";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "ביטול חסימת קבוצה";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "שחרר חסימת משתמש";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "ביטול חסימת משתמש/ת";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "בטל השתקה";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "ביטול השתקה";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "וידאו";
@@ -1395,6 +1395,15 @@
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "בחר קוד מדינה";
+
+/* Body text for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Usernames let others message you without needing your phone number.";
+
+/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
+"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Set Up";
+
+/* Title for an interactive in-app prompt to set up a Signal username. */
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Set up your Signal username";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "פג תוקף הכרטיס שלך. יש לוודא שפרטי הכרטיס שלך נכונים ולנסות שוב.";
@@ -2126,7 +2135,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "נכשל בהעלאת יומנים.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "נכשל בשליחת הודעה למשתמש מאחר שחסמת אותו";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "שליחת ההודעה למשתמש/ת נכשלה כי חסמת אותו או אותה.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "שליחת ההודעה נכשלה עקב העדר מקבלים תקפים.";
@@ -2372,7 +2381,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "לא תקבל שמע או וידאו והצד השני לא יקבל את שלך.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ חסום/ה";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "חסמת את %1$@";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "רק מנהלנים של קבוצה זו יכולים להתחיל שיחה.";
@@ -2381,7 +2390,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "לא ניתן להתחיל שיחה קבוצתית";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ חסום/ה";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "חסמת את %1$@";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "המשך שיחה";
@@ -2417,7 +2426,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "לא ניתן לקבל שמע ווידאו מאת %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "ייתכן שזה מאחר שהם לא וידאו את שינוי מספר הביטחון שלך, או שיש בעיה עם המכשיר שלהם, או שהם חסמו אותך.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "זה יכול להיות בגלל שהיא או הוא לא אישרו את שינוי מספר הבטיחות שלך, או שיש בעיה עם המכשיר שלהם, או שהם חסמו אותך.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "לא ניתן לקבל שמע ווידאו מאת %1$@";
@@ -3035,10 +3044,10 @@
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "שלח הודעה אל מנהלן";
 
 /* Label for button that lets the user block a request to join the group. */
-"GROUPS_BLOCK_REQUEST_BUTTON" = "חסום בקשה";
+"GROUPS_BLOCK_REQUEST_BUTTON" = "חסימת בקשה";
 
 /* Label for button that will block a request to join a group. */
-"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "חסום בקשה";
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "חסימת בקשה";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
 "GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "ל%1$@ לא תהיה אפשרות להצטרף או לבקש להצטרף לקבוצה הזו דרך הלינק הקבוצתי. מנהל עדיין יוכל להוסיף אותו או אותה.";
@@ -3056,13 +3065,13 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "לא היה ניתן לאשר הזמנה.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "חסום קבוצה";
+"GROUPS_INVITE_BLOCK_GROUP" = "חסימת קבוצה";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "חסום קבוצה ואת %1$@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "חסימת קבוצה ואת %1$@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "חסום את %1$@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "חסימת %1$@";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "הזמן חברים";
@@ -3221,7 +3230,7 @@
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "התכתבויות מאוחסנות בארכיון";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "חסום";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "חסום/ה";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "חיפוש";
@@ -3314,7 +3323,7 @@
 "IN_CALL_TERMINATED" = "השיחה הסתיימה.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "התכתבויות מושתקות שמאוחסנות בארכיון ישארו בארכיון כשהודעה חדשה מגיעה.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "צ׳אטים מושתקים שמאוחסנים בארכיון יישארו בארכיון כשהודעה חדשה מגיעה.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "התכתבויות שמאוחסנות בארכיון יועברו אל תיבת הדואר הנכנס כשהודעה חדשה מגיעה.";
@@ -3704,16 +3713,16 @@
 "MESSAGE_PREVIEW" = "תצוגה מקדימה של הודעה";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_ACTION" = "חסום";
+"MESSAGE_REQUEST_BLOCK_ACTION" = "חסימה";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "חסימה ומחיקה";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "דווח על זבל וחסום";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "דיווח על דואר זבל וחסימה";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "אנשים חסומים לא יוכלו להתקשר אליך או לשלוח לך הודעות.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "אנשים חסומים לא יוכלו להתקשר או לשלוח לך הודעות.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "לחסום את %1$@?";
@@ -3764,22 +3773,22 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "סקור בקשה";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "דֻּוַּח כזבל ונחסם.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "דווח/ה כדואר זבל ונחסם/ה.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "אשר";
 
 /* A button used to block a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "חסום";
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "חסימה";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "לאפשר אל %1$@ לשלוח לך הודעות ולשתף את השם והתמונה שלך איתו/איתה? לא תקבל הודעות כלשהן עד שלא תבטל חסימה.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "לאפשר ל%1$@ לשלוח לך הודעות ולשתף איתו או איתה את השם והתמונה שלך? לא תוצג לך אף הודעה עד שהחסימה תבוטל.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "לשחרר חסימה של קבוצה זו ולשתף את השם והתמונה שלך עם חברי הקבוצה? לא תקבל הודעות כלשהן עד שלא תשחרר חסימה.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "לבטל את החסימה של קבוצה זו ולשתף את השם והתמונה שלך עם חברי הקבוצה? לא תוצג לך אף הודעה עד שהחסימה תבוטל.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "לשחרר חסימה של קבוצה זו? הקבוצה לא תידע שראית את ההודעות שלה עד שלא תשחרר חסימה שלה.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "לבטל את החסימה של קבוצה זו? חברי הקבוצה לא ידעו שראית את ההודעות שלהם עד שהחסימה תבוטל.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "המשך";
@@ -3803,7 +3812,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "להצטרף אל קבוצה זו? הקבוצה לא תידע שראית את ההודעות שלה עד שתאשר.";
 
 /* A button used to unlock a blocked conversation. */
-"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "שחרר חסימה";
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "ביטול חסימה";
 
 /* Label for button to cancel your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "בטל הזמנה";
@@ -3908,7 +3917,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "הגעת למספר המרבי של מכשירים שניתן לקשר אל החשבון שלך כרגע. יש להסיר מכשיר ולנסות שוב.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "מושתק";
+"MUTED_BADGE" = "מושתק/ת";
 
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "עדכונים לסטורי שלך יופיעו כאן.";
@@ -4191,9 +4200,6 @@
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "הכנס את מספר הטלפון שלך";
-
-/* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "מספר הטלפון שלך";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "מספר בלתי תקף של טלפון. אנא הכנס מספר תקף של טלפון כדי להירשם.";
@@ -4643,13 +4649,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "כולם";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "כל אחד שיש לו את מספר הטלפון שלך באנשי הקשר שלו, יראה אותך כאיש קשר ב־Signal. אחרים יוכלו למצוא אותך בחיפוש.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to reach you with your phone number when they start a new chat or group.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "אף אחד";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "אף אחד ב־Signal לא יוכל למצוא אותך עם מספר הטלפון שלך. לא תהיה גלוי כאיש קשר בפני אנשים שיש להם את מספר הטלפון שלך באנשי הקשר שלהם ואחרים לא יוכלו למצוא אותך עם מספר הטלפון שלך בחיפוש.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to reach you with your phone number.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "דוגמה: %1$@";
@@ -4812,6 +4818,9 @@
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "בחר PIN חזק יותר";
+
+/* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PINs keep your information stored with Signal encrypted so only you can access it. Choose a stronger PIN to protect your account.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "ה־PIN שלך לא היה יכול להיות מושבת. ניידע אותך שוב מאוחר יותר.";
@@ -5179,8 +5188,17 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "נכשל בהרשמה מחדש עבור התראות דחיפה.";
 
+/* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
+"REGISTRATION_CAPTCHA_TITLE" = "We need to verify that you’re human";
+
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "קוד מדינה";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "הכנס מספר";
@@ -5200,8 +5218,50 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "תסדיר זה של מספר הטלפון אינו נתמך. אנא צור קשר עם התמיכה.";
 
+/* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Enter your phone number to get started.";
+
+/* During registration, users are asked to enter their phone number. This is the title on that screen. */
+"REGISTRATION_PHONE_NUMBER_TITLE" = "Your Phone Number";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "מספר טלפון";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Re-enter the PIN you just created.";
+
+/* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Confirm your PIN";
+
+/* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_CREATE_TITLE" = "Create your PIN";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PINs can help you restore your account and keep your info encrypted with Signal.";
+
+/* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Enter your PIN";
+
+/* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Last Name";
+
+/* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
+"REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "First Name";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Your name, photo and changes to it will be visible to your contacts and when you start or accept new chats.";
+
+/* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "About Profile Privacy";
+
+/* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profiles are visible to people you message, contacts, and groups.";
+
+/* During registration, users set up their profile. This is the title on the screen where this is done. */
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Set up your profile";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "אתה צריך להירשם לפני שתוכל לשלוח הודעה.";
@@ -5471,7 +5531,7 @@
 "SETTINGS_ACCOUNT" = "חשבון";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "חסום";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "חסימה";
 
 /* Label for the 'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "עקיפת צנזורה";
@@ -5531,7 +5591,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (ברירת מחדל)";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "הוסף משתמש חסום";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "הוספת משתמש/ת חסום/ה";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "אין לך אנשי קשר ב־Signal.";
@@ -5681,10 +5741,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "צליל הודעה";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "התכתבויות מושתקות שמאוחסנות בארכיון ישארו בארכיון כשהודעה חדשה מגיעה.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "צ׳אטים מושתקים שמאוחסנים בארכיון יישארו בארכיון כשהודעה חדשה מגיעה.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "השארת התכתבויות מושתקות בארכיון";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "השארת צ׳אטים מושתקים בארכיון";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "תנאים ומדיניות פרטיות";
@@ -5723,7 +5783,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "הגדרות";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "כלול התכתבויות מושתקות";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "כלילת צ׳אטים מושתקים";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "ספירת גשרים";
@@ -5927,7 +5987,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "הוסף כספים";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "חסום מספר";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "חסימת מספר";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "עמלת רשת";
@@ -6217,17 +6277,17 @@
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "כתובת הארנק שלך";
 
-/* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "מצא אותי לפי מספר טלפון";
+/* The title for the phone number discoverability setting section. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who Can Find Me By Number";
 
-/* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "מצא אותי לפי מספר טלפון";
+/* Description label for Phone Number Privacy */
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choose who can see your phone number and who can contact you on Signal with it.";
 
-/* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "ראה את מספר הטלפון שלי";
+/* The title for phone number privacy settings. */
+"SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Phone Number";
 
-/* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "ראה את מספר הטלפון שלי";
+/* The title for the phone number sharing setting section. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Who Can See My Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "כבה תזכורות";
@@ -6974,7 +7034,7 @@
 "UNARCHIVE_ACTION" = "הוצא מארכיון";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "המשתמש אינו באנשי הקשר שלך. האם אתה רוצה לחסום משתמש זה?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "המשתמש/ת לא באנשי הקשר שלך. רוצה לחסום אותו או אותה?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "איש קשר בלתי ידוע";
@@ -7067,25 +7127,25 @@
 "USE_PROXY_EXPLANATION" = "יש להשתמש בפרוקסי רק אם אין לך אפשרות להתחבר ל–Signal דרך נתונים סלולריים או Wi-Fi.";
 
 /* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Turn off phone number discovery under Settings > Privacy > Phone Number > Who can find my number, to use your username as the primary way others can contact you.";
+"USERNAME_DISCOVERY_DESCRIPTION" = "אפשר לכבות את גילוי מספר הטלפון תחת הגדרות > פרטיות > מספר טלפון > מי יכול למצוא את המספר שלי, כדי להשתמש בשם המשתמש שלך בתור הדרך העיקרית שבה אנשים יכולים ליצור איתך קשר.";
 
 /* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Usernames are paired with a set of digits and aren’t shared on your profile";
+"USERNAME_DISCRIMINATOR_DESCRIPTION" = "שמות משתמש מוצמדים לסט של ספרות ולא משותפים בפרופיל שלך";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Set up your Signal username";
+"USERNAME_EDUCATION_TITLE" = "הגדרת שם המשתמש שלך ב–Signal";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Each username has a unique link you can share with your friends to start a chat with you";
+"USERNAME_LINK_DESCRIPTION" = "לכל שם משתמש יש לינק ייחודי שאפשר לשתף עם חברים כדי שהם יוכלו להתחיל איתך צ׳אט";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "התרחשה שגיאה בעת חיפוש שם המשתמש. יש לנסות שוב מאוחר יותר.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ is not a valid username. Make sure you’ve entered the complete username followed by its set of digits.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ הוא לא שם משתמש חוקי. כדאי לוודא שהכנסת את שם המשתמש המלא ואחריו סט הספרות שלו.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Invalid Username";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "שם משתמש לא חוקי";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ הוא/היא לא משתמש/ת Signal. וודא שהכנסת את שם המשתמש השלם.";

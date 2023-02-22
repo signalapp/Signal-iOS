@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>તમે આ ગ્રુપના %1$d સભ્યને બ્લૉક કર્યા</string>
+			<string>તમે આ ગ્રૂપના %1$d સભ્યને બ્લૉક કર્યા</string>
 			<key>other</key>
-			<string>તમે આ ગ્રુપના %1$d સભ્યોને બ્લૉક કર્યા</string>
+			<string>તમે આ ગ્રૂપના %1$d સભ્યોને બ્લૉક કર્યા</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>

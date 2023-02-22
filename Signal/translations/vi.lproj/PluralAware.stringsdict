@@ -694,7 +694,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Bạn đã Chặn %1$d Thành viên của Nhóm này</string>
+			<string>Bạn đã chặn %1$d thành viên của nhóm này</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
