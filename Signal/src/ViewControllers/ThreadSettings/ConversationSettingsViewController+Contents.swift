@@ -313,7 +313,7 @@ extension ConversationSettingsViewController {
                         comment: "table cell label in conversation settings"
                     ),
                     accessoryText: disappearingMessagesConfiguration.isEnabled
-                        ? NSString.formatDurationSeconds(disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
+                        ? DateUtil.formatDuration(seconds: disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
                         : CommonStrings.switchOff,
                     accessoryType: .disclosureIndicator,
                     accessoryImage: nil,

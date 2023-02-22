@@ -293,8 +293,8 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 iconView.contentMode = .scaleAspectFit
 
                 let disappearingMessagesTimerLabelView = UILabel()
-                disappearingMessagesTimerLabelView.text = NSString.formatDurationSeconds(
-                    disappearingMessagesDuration,
+                disappearingMessagesTimerLabelView.text = DateUtil.formatDuration(
+                    seconds: disappearingMessagesDuration,
                     useShortFormat: true
                 )
                 disappearingMessagesTimerLabelView.font = .ows_dynamicTypeBody2

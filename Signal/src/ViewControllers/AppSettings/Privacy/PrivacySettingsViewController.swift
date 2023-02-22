@@ -111,8 +111,8 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                         comment: "Label for the 'disappearing messages' privacy settings."
                     ),
                     accessoryText: disappearingMessagesConfiguration.isEnabled
-                    ? NSString.formatDurationSeconds(disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
-                    : CommonStrings.switchOff,
+                        ? DateUtil.formatDuration(seconds: disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
+                        : CommonStrings.switchOff,
                     accessoryType: .disclosureIndicator,
                     accessoryImage: nil,
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "disappearing_messages")
@@ -315,7 +315,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 comment: "Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately."
             )
         }
-        return NSString.formatDurationSeconds(UInt32(value), useShortFormat: useShortFormat)
+        return DateUtil.formatDuration(seconds: UInt32(value), useShortFormat: useShortFormat)
     }
 
     @objc

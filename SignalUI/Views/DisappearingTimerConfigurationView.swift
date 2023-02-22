@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 public protocol DisappearingTimerConfigurationViewDelegate: AnyObject {
@@ -41,7 +42,7 @@ public class DisappearingTimerConfigurationView: UIView {
         imageView.contentMode = .scaleAspectFit
 
         self.label = UILabel()
-        label.text = NSString.formatDurationSeconds(durationSeconds, useShortFormat: true)
+        label.text = DateUtil.formatDuration(seconds: durationSeconds, useShortFormat: true)
         label.font = UIFont.systemFont(ofSize: 10)
         label.textAlignment = .center
         label.minimumScaleFactor = 0.5

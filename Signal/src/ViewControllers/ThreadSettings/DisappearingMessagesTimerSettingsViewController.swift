@@ -138,7 +138,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
         for duration in disappearingMessagesDurations {
             section.add(.actionItem(
                 icon: (configuration.isEnabled && duration == configuration.durationSeconds) ? .accessoryCheckmark : .empty,
-                name: NSString.formatDurationSeconds(duration, useShortFormat: false),
+                name: DateUtil.formatDuration(seconds: duration, useShortFormat: false),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "timer_\(duration)"),
                 actionBlock: { [weak self] in
                     guard let self = self else { return }
@@ -157,7 +157,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
                 "DISAPPEARING_MESSAGES_CUSTOM_TIME",
                 comment: "Disappearing message option to define a custom time"
             ),
-            accessoryText: isCustomTime ? NSString.formatDurationSeconds(configuration.durationSeconds, useShortFormat: false) : nil,
+            accessoryText: isCustomTime ? DateUtil.formatDuration(seconds: configuration.durationSeconds, useShortFormat: false) : nil,
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "timer_custom"),
             actionBlock: { [weak self] in
                 guard let self = self else { return }

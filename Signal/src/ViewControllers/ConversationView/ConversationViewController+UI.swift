@@ -237,8 +237,8 @@ extension ConversationViewController {
 
             subtitleText.appendTemplatedImage(named: "timer-outline-16", font: subtitleFont)
             subtitleText.append(iconSpacer, attributes: attributes)
-            subtitleText.append(NSString.formatDurationSeconds(
-                disappearingMessagesConfiguration.durationSeconds,
+            subtitleText.append(DateUtil.formatDuration(
+                seconds: disappearingMessagesConfiguration.durationSeconds,
                 useShortFormat: true
             ),
             attributes: attributes)

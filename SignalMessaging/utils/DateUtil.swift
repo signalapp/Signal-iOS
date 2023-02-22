@@ -111,8 +111,150 @@ extension DateUtil {
             return OWSLocalizedString("DATE_NOW", comment: "The present; the current time.")
         } else {
             let secondsDiff = calendar.dateComponents([.second], from: date, to: Date()).second ?? 0
-            return NSString.formatDurationSeconds(UInt32(secondsDiff), useShortFormat: true)
+            return formatDuration(seconds: UInt32(secondsDiff), useShortFormat: true)
         }
+    }
+
+    public static func formatDuration(seconds: UInt32, useShortFormat: Bool) -> String {
+        let secondsPerMinute: UInt32 = 60
+        let secondsPerHour = secondsPerMinute * 60
+        let secondsPerDay = secondsPerHour * 24
+        let secondsPerWeek = secondsPerDay * 7
+
+        let formatString: String
+        let formatReplacement: UInt32
+
+        if seconds < secondsPerMinute { // XX Seconds
+            if useShortFormat {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_SECONDS_SHORT_FORMAT",
+                    comment: "Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings"
+                )
+            } else {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_SECONDS",
+                    comment: "{{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings"
+                )
+            }
+            formatReplacement = seconds
+
+        } else if seconds < secondsPerMinute * 3 / 2 { // 1 Minute
+            if useShortFormat {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_MINUTES_SHORT_FORMAT",
+                    comment: "Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings"
+                )
+            } else {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_SINGLE_MINUTE",
+                    comment: "{{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings"
+                )
+            }
+            formatReplacement = seconds / secondsPerMinute
+
+        } else if seconds < secondsPerHour { // Multiple Minutes
+            if useShortFormat {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_MINUTES_SHORT_FORMAT",
+                    comment: "Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings"
+                )
+            } else {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_MINUTES",
+                    comment: "{{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings"
+                )
+            }
+            formatReplacement = seconds / secondsPerMinute
+
+        } else if seconds < secondsPerHour * 3 / 2 { // 1 Hour
+            if useShortFormat {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_HOURS_SHORT_FORMAT",
+                    comment: "Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings"
+                )
+            } else {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_SINGLE_HOUR",
+                    comment: "{{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings"
+                )
+            }
+            formatReplacement = seconds / secondsPerHour
+
+        } else if seconds < secondsPerDay { // Multiple Hours
+            if useShortFormat {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_HOURS_SHORT_FORMAT",
+                    comment: "Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings"
+                )
+            } else {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_HOURS",
+                    comment: "{{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings"
+                )
+            }
+            formatReplacement = seconds / secondsPerHour
+
+        } else if seconds < secondsPerDay * 3 / 2 { // 1 Day
+            if useShortFormat {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_DAYS_SHORT_FORMAT",
+                    comment: "Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings"
+                )
+            } else {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_SINGLE_DAY",
+                    comment: "{{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings"
+                )
+            }
+            formatReplacement = seconds / secondsPerDay
+
+        } else if seconds < secondsPerWeek { // Multiple Days
+            if useShortFormat {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_DAYS_SHORT_FORMAT",
+                    comment: "Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings"
+                )
+            } else {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_DAYS",
+                    comment: "{{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings"
+                )
+            }
+            formatReplacement = seconds / secondsPerDay
+
+        } else if seconds < secondsPerWeek * 3 / 2 { // 1 Week
+            if useShortFormat {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_WEEKS_SHORT_FORMAT",
+                    comment: "Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings"
+                )
+            } else {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_SINGLE_WEEK",
+                    comment: "{{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings"
+                )
+            }
+            formatReplacement = seconds / secondsPerWeek
+
+        } else { // Multiple weeks
+            if useShortFormat {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_WEEKS_SHORT_FORMAT",
+                    comment: "Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings"
+                )
+            } else {
+                formatString = OWSLocalizedString(
+                    "TIME_AMOUNT_WEEKS",
+                    comment: "{{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings"
+                )
+            }
+            formatReplacement = seconds / secondsPerWeek
+        }
+
+        return String(
+            format: formatString,
+            NumberFormatter.localizedString(from: NSNumber(value: formatReplacement), number: .none)
+        )
     }
 
     private static let dateHeaderRecentDateFormatter: DateFormatter = {

@@ -153,7 +153,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                         comment: "table cell label in conversation settings"
                     ),
                     accessoryText: self.disappearingMessagesConfiguration.isEnabled
-                        ? NSString.formatDurationSeconds(self.disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
+                        ? DateUtil.formatDuration(seconds: self.disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
                         : CommonStrings.switchOff,
                     accessoryType: .disclosureIndicator,
                     accessoryImage: nil,
