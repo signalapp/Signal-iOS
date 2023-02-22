@@ -359,7 +359,7 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
         authToken: String,
         _ tx: DBWriteTransaction
     ) {
-        manager.didRegister(
+        manager.didRegisterPrimary(
             withE164: accountIdentity.e164,
             aci: accountIdentity.aci,
             pni: accountIdentity.pni,

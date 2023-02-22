@@ -321,15 +321,17 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     // Allow the PNI to be nil.
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self didRegisterWithE164:phoneNumber aci:aci pni:pni authToken:authToken transaction:transaction];
+        [self storeLocalNumber:phoneNumber aci:aci pni:pni transaction:transaction];
     });
+
+    [self postRegistrationStateDidChangeNotification];
 }
 
-- (void)didRegisterWithE164:(NSString *)e164
-                        aci:(NSUUID *)aci
-                        pni:(nullable NSUUID *)pni
-                  authToken:(NSString *)authToken
-                transaction:(SDSAnyWriteTransaction *)transaction
+- (void)didRegisterPrimaryWithE164:(NSString *)e164
+                               aci:(NSUUID *)aci
+                               pni:(nullable NSUUID *)pni
+                         authToken:(NSString *)authToken
+                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self storeLocalNumber:e164 aci:aci pni:pni transaction:transaction];
     [self setStoredServerAuthToken:authToken deviceId:OWSDevicePrimaryDeviceId transaction:transaction];

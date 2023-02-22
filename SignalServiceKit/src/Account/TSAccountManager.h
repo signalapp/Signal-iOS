@@ -156,11 +156,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 // - uploaded pre-keys
 // - uploaded push tokens
 - (void)didRegister;
-- (void)didRegisterWithE164:(NSString *)e164
-                        aci:(NSUUID *)aci
-                        pni:(nullable NSUUID *)pni
-                  authToken:(NSString *)authToken
-                transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)didRegisterPrimaryWithE164:(NSString *)e164
+                               aci:(NSUUID *)aci
+                               pni:(nullable NSUUID *)pni
+                         authToken:(NSString *)authToken
+                       transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)recordUuidForLegacyUser:(NSUUID *)uuid NS_SWIFT_NAME(recordUuidForLegacyUser(_:));
 
 #pragma mark - De-Registration
