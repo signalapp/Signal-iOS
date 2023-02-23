@@ -484,6 +484,9 @@ public class MessageFetcherJob: NSObject {
             if let serverGuid: String = try params.optional(key: "guid") {
                 builder.setServerGuid(serverGuid)
             }
+            if let token = try params.optionalBase64EncodedData(key: "reportSpamToken") {
+                builder.setSpamReportingToken(token)
+            }
 
             return try builder.build()
         } catch {
