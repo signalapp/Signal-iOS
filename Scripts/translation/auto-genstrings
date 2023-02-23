@@ -6,14 +6,13 @@ BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_ROOT=$BIN_DIR/../..
 cd "$REPO_ROOT"
 
-SSK_DIR="./SignalServiceKit/src"
-SAE_DIR="./SignalShareExtension"
-SM_DIR="./SignalMessaging"
-SUI_DIR="./SignalUI"
-SCK_DIR="./Pods/SignalCoreKit"
-NSE_DIR="./SignalNSE"
+SSK_DIR="SignalServiceKit"
+SAE_DIR="SignalShareExtension"
+SM_DIR="SignalMessaging"
+SUI_DIR="SignalUI"
+NSE_DIR="SignalNSE"
 
-TARGETS=(Signal/src "${SSK_DIR}" "${SAE_DIR}" "${SM_DIR}" "${SCK_DIR}" "${NSE_DIR}" "${SUI_DIR}")
+TARGETS=(Signal/src "${SSK_DIR}" "${SAE_DIR}" "${SM_DIR}" "${NSE_DIR}" "${SUI_DIR}")
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
 
@@ -31,7 +30,23 @@ done
 
 # Search directories for .m & .h files and collect string definitions with genstrings.
 # Exclude the files that define OWSLocalizedString for Swift and ObjC, though.
-find "${TARGETS[@]}" '(' -name "*.m" -or -name "*.h" -or -name "*.swift" ')' -and -not '(' -name 'LocalizedStringAccess.swift' -or -name 'SignalCoreKit.h' ')' -exec genstrings -s OWSLocalizedString -o "$TMP" "{}" "+"
+find "${TARGETS[@]}" \
+	'(' \
+		-name 'test' -o \
+		-name 'tests' -o \
+		-name 'LocalizedStringAccess.swift' -o \
+		-name 'SignalCoreKit.h' \
+	')' \
+	-prune \
+	-o \
+	'(' \
+		-name "*.m" -or \
+		-name "*.h" -or \
+		-name "*.swift" \
+	')' \
+	-exec genstrings -s OWSLocalizedString -o "$TMP" "{}" "+"
+
+exit 0
 
 # We have to convert the new .strings files to UTF-8 in order to deal with them
 # STRINGFILE is already UTF-8.

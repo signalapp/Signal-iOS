@@ -77,10 +77,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: ./.github/actions/clone-everything
-        with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-
       - name: Run genstrings
         run: Scripts/translation/auto-genstrings
 
