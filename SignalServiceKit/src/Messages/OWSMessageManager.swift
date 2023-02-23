@@ -342,7 +342,38 @@ extension OWSMessageManager {
         }
         return "[" + splits.joined(separator: ", ") + "]"
     }
+
+    @objc
+    func checkForUnknownLinkedDevice(in envelope: SSKProtoEnvelope, transaction: SDSAnyWriteTransaction) {
+        guard let sourceAddress = envelope.sourceAddress, sourceAddress.isLocalAddress else {
+            return
+        }
+        let sourceDevice = envelope.sourceDevice
+
+        // Check if the SignalRecipient (used for sending messages) knows about
+        // this device.
+        let recipient = SignalRecipient.get(address: sourceAddress, mustHaveDevices: false, transaction: transaction)
+        if let recipient {
+            let deviceIds = recipient.deviceIds ?? []
+            if !deviceIds.contains(sourceDevice) {
+                Logger.info("Message received from unknown linked device; adding to local SignalRecipient: \(sourceDevice).")
+                recipient.updateWithDevices(toAdd: [NSNumber(value: sourceDevice)], devicesToRemove: [], transaction: transaction)
+            }
+        } else {
+            owsFailDebug("No local SignalRecipient.")
+        }
+
+        // Check if OWSDevice (ie the "Linked Devices" UI) knows about this device.
+        let hasDevice = OWSDevice.anyFetchAll(transaction: transaction).contains(where: { $0.deviceId == sourceDevice })
+        if !hasDevice {
+            Logger.info("Message received from unknown linked device; refreshing device list: \(sourceDevice).")
+            OWSDevicesService.refreshDevices()
+            profileManager.fetchLocalUsersProfile()
+        }
+    }
 }
+
+// MARK: -
 
 extension SSKProtoEnvelope {
     var isValid: Bool {

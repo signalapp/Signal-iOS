@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class LabeledPhoneNumber;
 @class PhoneNumber;
 @class SDSAnyReadTransaction;
-@class SignalRecipient;
 @class SignalServiceAddress;
 @class UIImage;
 

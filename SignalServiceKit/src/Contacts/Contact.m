@@ -6,7 +6,6 @@
 #import "Contact.h"
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"
-#import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/Cryptography.h>

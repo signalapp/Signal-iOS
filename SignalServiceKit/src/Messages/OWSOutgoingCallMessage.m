@@ -5,7 +5,6 @@
 
 #import "OWSOutgoingCallMessage.h"
 #import "ProtoUtils.h"
-#import "SignalRecipient.h"
 #import "TSContactThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

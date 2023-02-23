@@ -10,7 +10,6 @@
 #import "OWSOutgoingSyncMessage.h"
 #import "ProtoUtils.h"
 #import "SSKEnvironment.h"
-#import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"

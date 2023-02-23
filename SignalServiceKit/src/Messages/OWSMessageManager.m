@@ -27,7 +27,6 @@
 #import "OWSUnknownProtocolVersionMessage.h"
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
-#import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
@@ -236,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self checkForUnknownLinkedDevice:envelope transaction:transaction];
+    [self checkForUnknownLinkedDeviceIn:envelope transaction:transaction];
 
     switch (envelope.unwrappedType) {
         case SSKProtoEnvelopeTypeCiphertext:
@@ -2343,53 +2342,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         OWSFailDebug(@"Failed to fetch placeholders: %@", error);
-    }
-}
-
-#pragma mark -
-
-- (void)checkForUnknownLinkedDevice:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(envelope);
-    OWSAssertDebug(transaction);
-
-    if (!envelope.sourceAddress.isLocalAddress) {
-        return;
-    }
-
-    // Consult the device list cache we use for message sending
-    // whether or not we know about this linked device.
-    SignalRecipient *_Nullable recipient = [SignalRecipient getRecipientForAddress:envelope.sourceAddress
-                                                                   mustHaveDevices:NO
-                                                                       transaction:transaction];
-    if (!recipient) {
-        OWSFailDebug(@"No local SignalRecipient.");
-    } else {
-        BOOL isRecipientDevice = [recipient.devices containsObject:@(envelope.sourceDevice)];
-        if (!isRecipientDevice) {
-            OWSLogInfo(@"Message received from unknown linked device; adding to local SignalRecipient: %lu.",
-                       (unsigned long) envelope.sourceDevice);
-
-            [recipient updateWithDevicesToAdd:@[ @(envelope.sourceDevice) ]
-                              devicesToRemove:nil
-                                  transaction:transaction];
-        }
-    }
-
-    // Consult the device list cache we use for the "linked device" UI
-    // whether or not we know about this linked device.
-    NSMutableSet<NSNumber *> *deviceIdSet = [NSMutableSet new];
-    for (OWSDevice *device in [OWSDevice anyFetchAllWithTransaction:transaction]) {
-        [deviceIdSet addObject:@(device.deviceId)];
-    }
-    BOOL isInDeviceList = [deviceIdSet containsObject:@(envelope.sourceDevice)];
-    if (!isInDeviceList) {
-        OWSLogInfo(@"Message received from unknown linked device; refreshing device list: %lu.",
-                   (unsigned long) envelope.sourceDevice);
-
-        [OWSDevicesService refreshDevices];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-            ^{ [self.profileManager fetchLocalUsersProfile]; });
     }
 }
 

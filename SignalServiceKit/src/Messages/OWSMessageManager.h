@@ -45,10 +45,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
 
 - (BOOL)canProcessEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)checkForUnknownLinkedDevice:(SSKProtoEnvelope *)envelope
-                        transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(checkForUnknownLinkedDevice(inEnvelope:transaction:));
-
 - (void)finishProcessingEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (MessageManagerRequest *_Nullable)requestForEnvelope:(SSKProtoEnvelope *)envelope

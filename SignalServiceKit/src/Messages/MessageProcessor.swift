@@ -622,7 +622,7 @@ struct ProcessingRequestBuilder {
                 return ProcessingRequest(pendingEnvelope,
                                          state: .completed(error: nil))
             }
-            messageManager.checkForUnknownLinkedDevice(inEnvelope: result.envelope, transaction: transaction)
+            messageManager.checkForUnknownLinkedDevice(in: result.envelope, transaction: transaction)
             switch result.envelope.unwrappedType {
             case .ciphertext, .prekeyBundle, .unidentifiedSender, .senderkeyMessage, .plaintextContent:
                 if result.plaintextData == nil {

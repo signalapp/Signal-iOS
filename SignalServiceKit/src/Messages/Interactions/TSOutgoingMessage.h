@@ -66,7 +66,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @class SSKProtoAttachmentPointer;
 @class SSKProtoContentBuilder;
 @class SSKProtoDataMessageBuilder;
-@class SignalRecipient;
 @class SignalServiceAddress;
 @class TSOutgoingMessageBuilder;
 

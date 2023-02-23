@@ -262,6 +262,31 @@ public extension OWSUserProfile {
         }
         return value
     }
+
+    // MARK: - Indexing
+
+    /// Reindex associated models.
+    ///
+    /// The profile can affect how accounts, recipients, contact threads, and
+    /// group threads are indexed, so we need to re-index them whenever the
+    /// profile changes.
+    func reindexAssociatedModels(transaction: SDSAnyWriteTransaction) {
+        if let signalAccount = AnySignalAccountFinder().signalAccount(for: address, transaction: transaction) {
+            FullTextSearchFinder.modelWasUpdated(model: signalAccount, transaction: transaction)
+        }
+
+        if let signalRecipient = AnySignalRecipientFinder().signalRecipient(for: address, transaction: transaction) {
+            FullTextSearchFinder.modelWasUpdated(model: signalRecipient, transaction: transaction)
+        }
+
+        if let contactThread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
+            FullTextSearchFinder.modelWasUpdated(model: contactThread, transaction: transaction)
+        }
+
+        TSGroupMember.enumerateGroupMembers(for: address, transaction: transaction) { groupMember, _ in
+            FullTextSearchFinder.modelWasUpdated(model: groupMember, transaction: transaction)
+        }
+    }
 }
 
 // MARK: -

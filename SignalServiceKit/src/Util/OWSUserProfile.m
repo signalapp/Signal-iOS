@@ -822,7 +822,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
     if (shouldReindex) {
         OWSLogInfo(@"Reindexing because of profile change.");
-        [self reindexAssociatedModels:transaction];
+        [self reindexAssociatedModelsWithTransaction:transaction];
     }
 
     // Insert a profile change update in conversations, if necessary
@@ -1042,7 +1042,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [self reindexAssociatedModels:transaction];
+    [self reindexAssociatedModelsWithTransaction:transaction];
 
     [self.modelReadCaches.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
 }
@@ -1059,40 +1059,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.modelReadCaches.userProfileReadCache didRemoveUserProfile:self transaction:transaction];
-}
-
-/// Reindex associated models.
-///
-/// The profile can affect how accounts, recipients, contact threads, and group threads are indexed,
-/// so we need to re-index them whenever the profile changes.
-- (void)reindexAssociatedModels:(SDSAnyWriteTransaction *)transaction
-{
-    AnySignalAccountFinder *accountFinder = [AnySignalAccountFinder new];
-    SignalAccount *_Nullable signalAccount = [accountFinder signalAccountForAddress:self.address
-                                                                        transaction:transaction];
-    if (signalAccount != nil) {
-        [FullTextSearchFinder modelWasUpdated:signalAccount transaction:transaction];
-    }
-
-    AnySignalRecipientFinder *signalRecipientFinder = [AnySignalRecipientFinder new];
-    SignalRecipient *_Nullable signalRecipient = [signalRecipientFinder signalRecipientForAddress:self.address
-                                                                                      transaction:transaction];
-    if (signalRecipient != nil) {
-        [FullTextSearchFinder modelWasUpdated:signalRecipient transaction:transaction];
-    }
-
-    TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactAddress:self.address
-                                                                                transaction:transaction];
-    if (contactThread != nil) {
-        [FullTextSearchFinder modelWasUpdated:contactThread transaction:transaction];
-    }
-
-    [TSGroupMember enumerateGroupMembersForAddress:self.address
-                                   withTransaction:transaction
-                                             block:^(TSGroupMember *groupMember, BOOL *stop) {
-                                                 [FullTextSearchFinder modelWasUpdated:groupMember
-                                                                           transaction:transaction];
-                                             }];
 }
 
 + (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address
