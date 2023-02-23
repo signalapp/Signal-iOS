@@ -47,7 +47,8 @@ private let languageMap: [String: String] = [
     "vi": "vi",
     "zh-CN": "zh_CN",
     "zh-HK": "zh_HK",
-    "zh-TW": "zh_TW"
+    "zh-TW": "zh_TW",
+    "zh-YU": "yue"
 ]
 
 struct ResourceFile: TranslatableFile {

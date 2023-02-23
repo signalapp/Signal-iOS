@@ -3191,6 +3191,9 @@
 		503614D1282C5728008128B4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fi; path = translations/fi.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D2282C572F008128B4 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = id; path = translations/id.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D6282C7B76008128B4 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_CN; path = translations/zh_CN.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		503AECB829A6E6C900642F66 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = yue; path = translations/yue.lproj/Localizable.strings; sourceTree = "<group>"; };
+		503AECB929A6E6D500642F66 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = yue; path = translations/yue.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		503AECBA29A6E6DC00642F66 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = yue; path = translations/yue.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemContactsDataProviderTest.swift; sourceTree = "<group>"; };
 		503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactReminderTableViewCell.swift; sourceTree = "<group>"; };
 		503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLSessionEndpoint.swift; sourceTree = "<group>"; };
@@ -12316,6 +12319,7 @@
 				1466AB382817F87D003B3D9F /* uk */,
 				500049A82833011E006A7466 /* ur */,
 				500049AA28330122006A7466 /* vi */,
+				503AECBA29A6E6DC00642F66 /* yue */,
 				503614D6282C7B76008128B4 /* zh_CN */,
 				1466AB3B2817F89D003B3D9F /* zh_HK */,
 				1466AB392817F88A003B3D9F /* zh_TW */,
@@ -12373,6 +12377,7 @@
 				888A27EE24B3E97F0045D639 /* uk */,
 				88928A54263F0DEB009C9B30 /* ur */,
 				88928A56263F0DEB009C9B30 /* vi */,
+				503AECB929A6E6D500642F66 /* yue */,
 				888B6D4025AE7E2200E2A662 /* zh-HK */,
 				88928A4F263F0DEA009C9B30 /* zh_CN */,
 				888A27E824B3E97E0045D639 /* zh_TW */,
@@ -12422,6 +12427,7 @@
 				88A358262364020B009D6B9A /* uk */,
 				882159D023677E0500D17403 /* ur */,
 				88A3582723640240009D6B9A /* vi */,
+				503AECB829A6E6C900642F66 /* yue */,
 				B68CB7E61AA548870065AC3F /* zh_CN */,
 				88E1EACD26BB28A400AD0C2D /* zh_HK */,
 				3478505C1FD99A1F007B8332 /* zh_TW */,
