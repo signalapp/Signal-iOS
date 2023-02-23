@@ -154,7 +154,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164).value
         // Now it should ask for the PIN to confirm the user knows it.
-        XCTAssertEqual(nextStep, .pinEntry)
+        XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
         // Give it the pin code, which should make it try and register.
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
@@ -252,11 +252,11 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164).value
         // Now it should ask for the PIN to confirm the user knows it.
-        XCTAssertEqual(nextStep, .pinEntry)
+        XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
         // Give it the wrong PIN, it should reject and give us the same step again.
         nextStep = coordinator.submitPINCode(wrongPinCode).value
-        XCTAssertEqual(nextStep, .pinEntry)
+        XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(error: .wrongPin(wrongPin: wrongPinCode))))
 
         // Give it the right pin code, which should make it try and register.
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
@@ -351,7 +351,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164)
         // Now it should ask for the PIN to confirm the user knows it.
-        XCTAssertEqual(nextStep.value, .pinEntry)
+        XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
         // Now we want to control timing so we can verify things happened in the right order.
         scheduler.stop()
@@ -445,7 +445,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164)
         // Now it should ask for the PIN to confirm the user knows it.
-        XCTAssertEqual(nextStep.value, .pinEntry)
+        XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
         // Now we want to control timing so we can verify things happened in the right order.
         scheduler.stop()
@@ -541,7 +541,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164)
         // Now it should ask for the PIN to confirm the user knows it.
-        XCTAssertEqual(nextStep.value, .pinEntry)
+        XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
         // Now we want to control timing so we can verify things happened in the right order.
         scheduler.stop()
@@ -688,7 +688,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         // At this point, we should be asking for PIN entry so we can use the credential
         // to recover the KBS master key.
-        XCTAssertEqual(nextStep, .pinEntry)
+        XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForKBSAuthCredentialPath()))
         // We should have wipted the invalid and unknown credentials.
         let remainingCredentials = kbsAuthCredentialStore.dict
         XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.username])
@@ -942,8 +942,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.runUntilIdle()
         XCTAssertEqual(scheduler.currentTime, 9)
 
-        // Now we should ask for the PIN to recover our KBS data.
-        XCTAssertEqual(nextStep.value, .pinEntry)
+        // Now we should ask to create a PIN.
+        XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegCreate()))
+
+        // Confirm the pin first.
+        nextStep = coordinator.setPINCodeForConfirmation(.stub())
+        scheduler.runUntilIdle()
+        XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegConfirm()))
 
         scheduler.adjustTime(to: 0)
 
@@ -1851,6 +1856,18 @@ public class RegistrationCoordinatorTest: XCTestCase {
             return RegistrationPermissionsState(shouldRequestAccessToContacts: true)
         }
 
+        static func pinEntryStateForRegRecoveryPath(
+            error: RegistrationPinValidationError? = nil
+        ) -> RegistrationPinState {
+            return RegistrationPinState(operation: .enteringExistingPin(canSkip: true), error: error)
+        }
+
+        static func pinEntryStateForKBSAuthCredentialPath(
+            error: RegistrationPinValidationError? = nil
+        ) -> RegistrationPinState {
+            return RegistrationPinState(operation: .enteringExistingPin(canSkip: true), error: error)
+        }
+
         static func phoneNumberEntryState(
             previouslyEnteredE164: String? = nil,
             withValidationErrorFor response: Registration.BeginSessionResponse = .success(Stubs.session(hasSentVerificationCode: false))
@@ -1888,6 +1905,31 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 nextCallDate: nextCall.map { date.addingTimeInterval($0) },
                 nextVerificationAttemptDate: date.addingTimeInterval(nextVerificationAttempt),
                 validationError: validationError
+            )
+        }
+
+        static func pinEntryStateForSessionPathReglock(
+            error: RegistrationPinValidationError? = nil
+        ) -> RegistrationPinState {
+            return RegistrationPinState(operation: .enteringExistingPin(canSkip: false), error: error)
+        }
+
+        static func pinEntryStateForPostRegRestore(
+            error: RegistrationPinValidationError? = nil
+        ) -> RegistrationPinState {
+            return RegistrationPinState(operation: .enteringExistingPin(canSkip: true), error: error)
+        }
+
+        static func pinEntryStateForPostRegCreate() -> RegistrationPinState {
+            return RegistrationPinState(operation: .creatingNewPin, error: nil)
+        }
+
+        static func pinEntryStateForPostRegConfirm(
+            error: RegistrationPinValidationError? = nil
+        ) -> RegistrationPinState {
+            return RegistrationPinState(
+                operation: .confirmingNewPin(.stub()),
+                error: error
             )
         }
     }

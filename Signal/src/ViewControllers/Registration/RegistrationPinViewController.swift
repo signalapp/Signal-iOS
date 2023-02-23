@@ -8,24 +8,42 @@ import SafariServices
 import SignalUI
 import SignalMessaging
 
-enum RegistrationPinCharacterSet {
+public enum RegistrationPinCharacterSet {
     case digitsOnly
     case alphanumeric
 }
 
+/// A blob provided when confirming the PIN, which should be passed
+/// back in to the confirm step controller.
+/// Fields should not be inspected outside of this class.
+public struct RegistrationPinConfirmationBlob: Equatable {
+    fileprivate let characterSet: RegistrationPinCharacterSet
+    fileprivate let pinToConfirm: String
+
+    #if TESTABLE_BUILD
+    public static func stub() -> Self {
+        return RegistrationPinConfirmationBlob(characterSet: .digitsOnly, pinToConfirm: "1234")
+    }
+    #endif
+}
+
+public enum RegistrationPinValidationError: Equatable {
+    case wrongPin(wrongPin: String)
+    case exhaustedAllGuesses
+}
+
 // MARK: - RegistrationPinState
 
-struct RegistrationPinState {
-    enum RegistrationPinOperation {
+public struct RegistrationPinState: Equatable {
+    public enum RegistrationPinOperation: Equatable {
         case creatingNewPin
-        case confirmingNewPin(
-            pinCharacterSet: RegistrationPinCharacterSet,
-            pinToConfirm: String
-        )
+        case confirmingNewPin(RegistrationPinConfirmationBlob)
         case enteringExistingPin(canSkip: Bool)
     }
 
     let operation: RegistrationPinOperation
+    // TODO[Registration]: show error UI for this
+    let error: RegistrationPinValidationError?
 }
 
 // MARK: - RegistrationPinPresenter
@@ -33,10 +51,8 @@ struct RegistrationPinState {
 protocol RegistrationPinPresenter: AnyObject {
     func cancelPinConfirmation()
 
-    func askUserToConfirmPin(
-        pinCharacterSet: RegistrationPinCharacterSet,
-        pinToConfirm: String
-    )
+    /// Should ask for the pin confirmation next with the provided blob.
+    func askUserToConfirmPin(_ blob: RegistrationPinConfirmationBlob)
 
     func submitPinCode(_ code: String)
     func submitWithSkippedPin()
@@ -54,6 +70,15 @@ class RegistrationPinViewController: OWSViewController {
         self.state = state
         self.presenter = presenter
 
+        self.pinCharacterSet = {
+            switch state.operation {
+            case .creatingNewPin, .enteringExistingPin:
+                return .digitsOnly
+            case .confirmingNewPin(let blob):
+                return blob.characterSet
+            }
+        }()
+
         super.init()
     }
 
@@ -68,7 +93,7 @@ class RegistrationPinViewController: OWSViewController {
 
     private weak var presenter: RegistrationPinPresenter?
 
-    private var pinCharacterSet = RegistrationPinCharacterSet.digitsOnly {
+    private var pinCharacterSet: RegistrationPinCharacterSet {
         didSet { render() }
     }
 
@@ -400,14 +425,14 @@ class RegistrationPinViewController: OWSViewController {
             if OWS2FAManager.isWeakPin(pin) {
                 showWeakPinErrorUi()
             } else {
-                presenter?.askUserToConfirmPin(
-                    pinCharacterSet: pinCharacterSet,
+                presenter?.askUserToConfirmPin(RegistrationPinConfirmationBlob(
+                    characterSet: pinCharacterSet,
                     pinToConfirm: pin
-                )
+                ))
             }
-        case let .confirmingNewPin(_, pinToConfirm):
-            if pin == pinToConfirm {
-                presenter?.submitPinCode(pin)
+        case let .confirmingNewPin(blob):
+            if pin == blob.pinToConfirm {
+                presenter?.submitPinCode(blob.pinToConfirm)
             } else {
                 showMismatchedPinUi()
             }

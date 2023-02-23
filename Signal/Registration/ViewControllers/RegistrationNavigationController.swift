@@ -126,8 +126,17 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
-        case .pinEntry:
-            fatalError("Unimplemented")
+        case .pinEntry(let state):
+            return Controller(
+                type: RegistrationPinViewController.self,
+                make: { presenter in
+                    return RegistrationPinViewController(state: state, presenter: presenter)
+                },
+                // The state never changes here. In theory we would build
+                // state update support in the controller,
+                // but its overkill so we have not.
+                update: nil
+            )
         case .captchaChallenge:
             return Controller(
                 type: RegistrationCaptchaViewController.self,
@@ -157,6 +166,8 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
+        case .reglockTimeout:
+            fatalError("Unimplemented")
         case .showErrorSheet:
             fatalError("Unimplemented")
         case .appUpdateBanner:
@@ -223,6 +234,25 @@ extension RegistrationNavigationController: RegistrationVerificationPresenter {
 
     func submitVerificationCode(_ code: String) {
         pushNextController(coordinator.submitVerificationCode(code))
+    }
+}
+
+extension RegistrationNavigationController: RegistrationPinPresenter {
+
+    func cancelPinConfirmation() {
+        pushNextController(coordinator.resetUnconfirmedPINCode())
+    }
+
+    func askUserToConfirmPin(_ blob: RegistrationPinConfirmationBlob) {
+        pushNextController(coordinator.setPINCodeForConfirmation(blob))
+    }
+
+    func submitPinCode(_ code: String) {
+        pushNextController(coordinator.submitPINCode(code))
+    }
+
+    func submitWithSkippedPin() {
+        pushNextController(coordinator.skipPINCode())
     }
 }
 

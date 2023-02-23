@@ -34,13 +34,16 @@ public enum RegistrationStep: Equatable {
     /// re-registering and needing to confirm the pin.
     /// When doing first time setup, the pin must be confirmed; that is
     /// considered part of this same "step" and is just a UI detail.
-    /// TODO[Registration] Differentiate those cases via an associated value.
-    case pinEntry
+    case pinEntry(RegistrationPinState)
 
     /// At _any_ point during session-based registration, a captcha challenge may be
     /// requested.
-    /// TODO[Registration] define the view model to be passed here.
     case captchaChallenge
+
+    /// If we encounter reglock, fail to recover the kbs backups (probably because
+    /// PIN guesses got used up), we have no choice but to wait out the reglock.
+    /// TODO[Registration]: define the timeout state.
+    case reglockTimeout
 
     // MARK: - Post-Registration
 
@@ -64,6 +67,9 @@ public enum RegistrationStep: Equatable {
         /// or because they used up their verification code attempts.
         /// In either case, they need to send a new code to proceed.
         case verificationCodeSubmissionUnavailable
+        /// All PIN guesses have been exhausted, locking the user out
+        /// of their KBS backups.
+        case pinGuessesExhausted
         // TODO[Registration]: define other error types.
         case todo
     }

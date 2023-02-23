@@ -56,11 +56,24 @@ public protocol RegistrationCoordinator {
     /// step but with attached metadata giving more info on the rejection.
     func submitCaptcha(_ token: String) -> Guarantee<RegistrationStep>
 
+    /// Submit a PIN code, but require confirmation in a subsequent step to proceed.
+    /// That step will be provided the passed in blob, uninspected by this class.
+    func setPINCodeForConfirmation(_ blob: RegistrationPinConfirmationBlob) -> Guarantee<RegistrationStep>
+
+    /// Clear out an unconfirmed PIN code submitted via `setPINCodeForConfirmation`.
+    /// Typically, will return to the initial PIN code step.
+    func resetUnconfirmedPINCode() -> Guarantee<RegistrationStep>
+
     /// Set the PIN code, whether that be for the first time, to fetch from KBS, or
     /// to confirm the code we already know about locally.
     /// If the code is rejected for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the rejection.
     func submitPINCode(_ code: String) -> Guarantee<RegistrationStep>
+
+    /// Skip entering the PIN code when registering for an existing account.
+    /// This is only possible if reglock is disabled, and if done will wipe any KBS backups.
+    /// If not allowed, an error step may be returned.
+    func skipPINCode() -> Guarantee<RegistrationStep>
 
     /// When registering, the server will inform us (via an error code) if device transfer is
     /// possible from an existing device. In this case, the user must either transfer or explicitly

@@ -128,7 +128,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // we are submitting an e164.
             return self.startSession(e164: e164)
         case .registrationRecoveryPassword(let password):
-            return self.registerForRegRecoveryPwPath(regRecoveryPw: password, e164: e164)
+            return nextStepForRegRecoveryPasswordPath(regRecoveryPw: password)
         case .kbsAuthCredential:
             owsFailBeta("Shouldn't be submitting an e164 for a known valid kbs auth credential")
             return nextStep()
@@ -204,12 +204,67 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    public func setPINCodeForConfirmation(_ blob: RegistrationPinConfirmationBlob) -> Guarantee<RegistrationStep> {
+        inMemoryState.unconfirmedPinBlob = blob
+        return nextStep()
+    }
+
+    public func resetUnconfirmedPINCode() -> Guarantee<RegistrationStep> {
+        inMemoryState.unconfirmedPinBlob = nil
+        return nextStep()
+    }
+
     public func submitPINCode(_ code: String) -> Guarantee<RegistrationStep> {
-        // TODO[Registration]: should we reject the pin code right here and now if it differs
-        // from what we had on disk?
+        switch getPathway() {
+        case .registrationRecoveryPassword:
+            if
+                let pinFromDisk = inMemoryState.pinFromDisk,
+                pinFromDisk != code
+            {
+                var numberOfWrongGuesses = persistedState.numLocalPinGuesses + 1
+                db.write { tx in
+                    updatePersistedState(tx) {
+                        $0.numLocalPinGuesses = numberOfWrongGuesses
+                    }
+                }
+                if numberOfWrongGuesses >= Constants.maxLocalPINGuesses {
+                    // "Skip" PIN entry, which will make us stop trying to register via registration
+                    // recovery password.
+                    db.write { tx in
+                        updatePersistedState(tx) {
+                            $0.hasSkippedPinEntry = true
+                        }
+                        kbs.clearKeys(transaction: tx)
+                    }
+                    self.wipeInMemoryStateToPreventKBSPathAttempts()
+                    return .value(.showErrorSheet(.pinGuessesExhausted))
+                } else {
+                    return .value(.pinEntry(RegistrationPinState(
+                        operation: .enteringExistingPin(canSkip: true),
+                        error: .wrongPin(wrongPin: code)
+                    )))
+                }
+            }
+        case .opening, .kbsAuthCredential, .kbsAuthCredentialCandidates, .profileSetup, .session:
+            // We aren't checking against any local state, rely on the request.
+            break
+        }
         self.inMemoryState.pinFromUser = code
         // Individual pathway's steps should handle whatever needs to be done with the pin,
         // depending on the current pathway.
+        return nextStep()
+    }
+
+    public func skipPINCode() -> Guarantee<RegistrationStep> {
+        db.write { tx in
+            updatePersistedState(tx) {
+                $0.hasSkippedPinEntry = true
+            }
+            // Whenever we do this, wipe the keys we've got.
+            // We don't want to have them and use then implicitly later.
+            kbs.clearKeys(transaction: tx)
+        }
+        self.wipeInMemoryStateToPreventKBSPathAttempts()
         return nextStep()
     }
 
@@ -284,14 +339,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // A credential we know to be valid and useable for
         // the current e164.
         var kbsAuthCredential: KBSAuthCredential?
-        var skipUsingKBSAuthCredentialForRegistration = false
-
-        var kbsAuthCredentialForRegistration: KBSAuthCredential? {
-            return skipUsingKBSAuthCredentialForRegistration ? nil : kbsAuthCredential
-        }
-        var kbsAuthCredentialForPostRegRestoration: KBSAuthCredential? {
-            return kbsAuthCredential
-        }
 
         // We always require the user to enter the PIN
         // during the in memory app session even if we
@@ -299,6 +346,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // This is a way to double check they know the PIN.
         var pinFromUser: String?
         var pinFromDisk: String?
+        var unconfirmedPinBlob: RegistrationPinConfirmationBlob?
 
         // Wehn we try to register, if we get a response from the server
         // telling us device transfer is possible, we set this to true
@@ -375,6 +423,44 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// Initially the e164 in the UI may be pre-populated (e.g. in re-reg)
         /// but this value is not set until the user accepts it or enters their own value.
         var e164: String?
+
+        /// How many times the user has tried making guesses against the PIN
+        /// we have locally? This happens when we have a local KBS master key
+        /// and want to confirm the user knows their PIN before using it to register.
+        var numLocalPinGuesses = 0
+
+        /// There are a few times we ask for the PIN that are skippable:
+        ///
+        /// * Registration recovery password path: we have your KBS master key locally, ask for PIN,
+        ///   user skips, we stop trying to use the local master key and fall back to session-based
+        ///   registration.
+        ///
+        /// * KBS Auth Credential path(s): we try and recover the KBS master secret from backups,
+        ///   ask for PIN, user skips, we stop trying to recover the backup and fall back to
+        ///   session-based registration.
+        ///
+        /// * Post-registration, if reglock was not enabled but there are KBS backups, we try and
+        ///   recover them. If the user skips, we don't bother recovering.
+        ///
+        /// In a single flow, the user might hit more than one of these cases (and probably will;
+        /// if they have KBS backups and skip in favor of session-based reg, we will see that
+        /// they have backups post-registration). This skip applies to _all_ of these; if they
+        /// skipped the PIN early on, we won't ask for it again for recovery purposes later.
+        var hasSkippedPinEntry = false
+
+        enum ReglockState: Codable {
+            /// No reglock known of preventing registration.
+            case none
+            /// We tried to register and got reglocked; we have to
+            /// recover from KBS with the credential given.
+            case reglocked(credential: KBSAuthCredential, expirationDate: Date)
+            /// We couldn't recover credentials from KBS (probably
+            /// because PIN guesses were exhausted) and so waiting
+            /// out the reglock is the only option.
+            case waitingTimeout(expirationDate: Date)
+        }
+
+        var sessionFlowReglockState: ReglockState = .none
 
         /// Once we get an account identity response from the server
         /// for registering, re-registering, or changing phone number,
@@ -621,25 +707,30 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // That path may finish right away if we have nothing to set up.
             return .profileSetup(accountIdentity)
         }
-        if let password = inMemoryState.regRecoveryPw {
-            // If we have a reg recover password (but no session), try using that
-            // to register.
-            // Once again, to get off this path and fall back to session (if it fails)
-            // or proceed to profile setup (if it succeeds) we must wipe this state.
-            return .registrationRecoveryPassword(password: password)
-        }
-        if let credential = inMemoryState.kbsAuthCredentialForRegistration {
-            // If we have a validated kbs auth credential, try using that
-            // to recover the KBS master key to register.
-            // Once again, to get off this path and fall back to session (if it fails)
-            // or proceed to reg recovery pw (if it succeeds) we must wipe this state.
-            return .kbsAuthCredential(credential)
-        }
-        if let credentialCandidates = inMemoryState.kbsAuthCredentialCandidates,
-           credentialCandidates.isEmpty.negated {
-            // If we have un-vetted candidates, try checking those first
-            // and then going to the kbsAuthCredential path if one is valid.
-            return .kbsAuthCredentialCandidates(credentialCandidates)
+        // These paths are only available if the user knows their PIN.
+        // If they skipped because they don't know it (or exhausted their guesses),
+        // don't bother with them.
+        if !persistedState.hasSkippedPinEntry {
+            if let password = inMemoryState.regRecoveryPw {
+                // If we have a reg recover password (but no session), try using that
+                // to register.
+                // Once again, to get off this path and fall back to session (if it fails)
+                // or proceed to profile setup (if it succeeds) we must wipe this state.
+                return .registrationRecoveryPassword(password: password)
+            }
+            if let credential = inMemoryState.kbsAuthCredential {
+                // If we have a validated kbs auth credential, try using that
+                // to recover the KBS master key to register.
+                // Once again, to get off this path and fall back to session (if it fails)
+                // or proceed to reg recovery pw (if it succeeds) we must wipe this state.
+                return .kbsAuthCredential(credential)
+            }
+            if let credentialCandidates = inMemoryState.kbsAuthCredentialCandidates,
+               credentialCandidates.isEmpty.negated {
+                // If we have un-vetted candidates, try checking those first
+                // and then going to the kbsAuthCredential path if one is valid.
+                return .kbsAuthCredentialCandidates(credentialCandidates)
+            }
         }
 
         // If we have no state to pull from whatsoever, go to the opening.
@@ -698,17 +789,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )))
         }
 
-        if inMemoryState.pinFromUser == nil {
+        guard let pinFromUser = inMemoryState.pinFromUser else {
             // We need the user to confirm their pin.
-            return .value(.pinEntry)
-        } else if
+            return .value(.pinEntry(RegistrationPinState(
+                // We can skip which will stop trying to use reg recovery.
+                operation: .enteringExistingPin(canSkip: true),
+                error: nil
+            )))
+        }
+
+        if
             let pinFromDisk = inMemoryState.pinFromDisk,
-            pinFromDisk != inMemoryState.pinFromUser
+            pinFromDisk != pinFromUser
         {
-            Logger.warn("PIN mismatch; should be prevented by the view controller")
-            // TODO[Registration]: set state that tells the pin entry controller
-            // that it failed against what we have on disk.
-            return .value(.pinEntry)
+            Logger.warn("PIN mismatch; should be prevented at submission time.")
+            return .value(.pinEntry(RegistrationPinState(
+                operation: .enteringExistingPin(canSkip: true),
+                error: .wrongPin(wrongPin: pinFromUser)
+            )))
         }
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
@@ -718,22 +816,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // Attempt to register right away with the password.
         return registerForRegRecoveryPwPath(
             regRecoveryPw: regRecoveryPw,
-            e164: e164
+            e164: e164,
+            pinFromUser: pinFromUser
         )
     }
 
     private func registerForRegRecoveryPwPath(
         regRecoveryPw: String,
         e164: String,
+        pinFromUser: String,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        if inMemoryState.pinFromUser == nil {
-            // We need the user to confirm their pin.
-            // TODO[Registration]: set state that tells the pin entry controller
-            // that it should verify against what we have on disk.
-            return .value(.pinEntry)
-        }
-
         return self.makeRegisterOrChangeNumberRequest(
             .recoveryPassword(regRecoveryPw),
             e164: e164
@@ -742,6 +835,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 accountResponse,
                 regRecoveryPw: regRecoveryPw,
                 e164: e164,
+                pinFromUser: pinFromUser,
                 retriesLeft: retriesLeft
             ) ?? .value(.showErrorSheet(.todo))
         }
@@ -751,6 +845,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         _ response: AccountResponse,
         regRecoveryPw: String,
         e164: String,
+        pinFromUser: String,
         retriesLeft: Int
     ) -> Guarantee<RegistrationStep> {
         // TODO[Registration] handle error case for rejected e164.
@@ -797,7 +892,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             db.write { tx in
                 // We do want to clear out any credentials permanently; we know we
                 // have to use the session path so credentials aren't helpful.
-                kbsAuthCredentialStore.deleteInvalidCredentials([inMemoryState.kbsAuthCredentialForRegistration].compacted(), tx)
+                kbsAuthCredentialStore.deleteInvalidCredentials([inMemoryState.kbsAuthCredential].compacted(), tx)
             }
             // Wipe our in memory KBS state; its now useless.
             wipeInMemoryStateToPreventKBSPathAttempts()
@@ -815,7 +910,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         }
                         return self.registerForRegRecoveryPwPath(
                             regRecoveryPw: regRecoveryPw,
-                            e164: e164
+                            e164: e164,
+                            pinFromUser: pinFromUser
                         )
                     }
             }
@@ -831,6 +927,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return registerForRegRecoveryPwPath(
                     regRecoveryPw: regRecoveryPw,
                     e164: e164,
+                    pinFromUser: pinFromUser,
                     retriesLeft: retriesLeft - 1
                 )
             }
@@ -861,18 +958,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func nextStepForKBSAuthCredentialPath(
         kbsAuthCredential: KBSAuthCredential
     ) -> Guarantee<RegistrationStep> {
-        let pin: String
-        if let pinFromUser = inMemoryState.pinFromUser {
-            guard inMemoryState.pinFromDisk == nil || inMemoryState.pinFromDisk == pinFromUser else {
-                Logger.warn("Have user pin and disk pin that differ; this should be prevented in the view controller.")
-                return .value(.pinEntry)
-            }
-            pin = pinFromUser
-        } else if let pinFromUser = inMemoryState.pinFromUser {
-            pin = pinFromUser
-        } else {
+        guard let pin = inMemoryState.pinFromUser else {
             // We don't have a pin at all, ask the user for it.
-            return .value(.pinEntry)
+            return .value(.pinEntry(RegistrationPinState(
+                operation: .enteringExistingPin(canSkip: true),
+                error: nil
+            )))
         }
 
         return restoreKBSMasterSecretForAuthCredentialPath(
@@ -893,20 +984,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 switch result {
                 case .success:
-                    // We don't need to use the credential anymore for registration.
-                    self.inMemoryState.skipUsingKBSAuthCredentialForRegistration = true
                     // This step also backs up, no need to do that again later.
                     self.inMemoryState.hasBackedUpToKBS = true
                     self.db.read { self.loadLocalMasterKey($0) }
                     return self.nextStep()
                 case .invalidPin:
-                    // TODO[Registration] report the remaining attempts to the UI.
-                    return .value(.pinEntry)
+                    return .value(.pinEntry(RegistrationPinState(
+                        operation: .enteringExistingPin(canSkip: true),
+                        error: .wrongPin(wrongPin: pin)
+                    )))
                 case .backupMissing:
                     // If we are unable to talk to KBS, it got wiped and we can't
                     // recover. Give it all up and wipe our KBS info.
                     self.wipeInMemoryStateToPreventKBSPathAttempts()
-                    return self.nextStep()
+                    // "Skip" PIN entry, we can't use it anymore.
+                    self.db.write { tx in
+                        self.updatePersistedState(tx) {
+                            $0.hasSkippedPinEntry = true
+                        }
+                    }
+                    return .value(.showErrorSheet(.pinGuessesExhausted))
                 case .networkError:
                     if retriesLeft > 0 {
                         return self.restoreKBSMasterSecretForAuthCredentialPath(
@@ -1033,6 +1130,37 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if inMemoryState.needsToAskForDeviceTransfer {
             return .value(.transferSelection)
+        }
+
+        switch persistedState.sessionFlowReglockState {
+        case .none:
+            break
+        case let .reglocked(kbsAuthCredential, reglockExpirationDate):
+            if let pinFromUser = inMemoryState.pinFromUser {
+                return restoreKBSMasterSecretForSessionPathReglock(
+                    pin: pinFromUser,
+                    kbsAuthCredential: kbsAuthCredential,
+                    reglockExpirationDate: reglockExpirationDate
+                )
+            } else {
+                return .value(.pinEntry(RegistrationPinState(
+                    operation: .enteringExistingPin(canSkip: false),
+                    error: .none
+                )))
+            }
+        case .waitingTimeout(let reglockExpirationDate):
+            if dateProvider() >= reglockExpirationDate {
+                // We've passed the time needed and reglock should be expired.
+                // Wipe our state and proceed.
+                db.write { tx in
+                    self.updatePersistedState(tx) {
+                        $0.sessionFlowReglockState = .none
+                    }
+                }
+                return self.nextStep()
+            }
+            // TODO[Registration]: provide reglock timeout state.
+            return .value(.reglockTimeout)
         }
 
         if let pendingCodeTransport = inMemoryState.pendingCodeTransport {
@@ -1197,15 +1325,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nextStep()
         case .reglockFailure(let reglockFailure):
             // We need the user to enter their PIN so we can get through reglock.
-            // We might have it already! So we set up the state we need (the kbs credential)
+            // So we set up the state we need (the KBS credential)
             // and go to the next step which should look at the state and take us to the right place.
             db.write { tx in
                 kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                let reglockExpirationDate = self.dateProvider().addingTimeInterval(TimeInterval(reglockFailure.timeRemainingMs / 1000))
+                self.updatePersistedState(tx) {
+                    $0.sessionFlowReglockState = .reglocked(credential: reglockFailure.kbsAuthCredential, expirationDate: reglockExpirationDate)
+                }
             }
-            // Set the credential for our use, but don't try and register with it
-            // via the auth credential pathway.
-            self.inMemoryState.kbsAuthCredential = reglockFailure.kbsAuthCredential
-            self.inMemoryState.skipUsingKBSAuthCredentialForRegistration = true
             return nextStep()
 
         case .rejectedVerificationMethod:
@@ -1557,6 +1685,62 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    private func restoreKBSMasterSecretForSessionPathReglock(
+        pin: String,
+        kbsAuthCredential: KBSAuthCredential,
+        reglockExpirationDate: Date,
+        retriesLeft: Int = Constants.networkErrorRetries
+    ) -> Guarantee<RegistrationStep> {
+        return kbs.restoreKeysAndBackup(
+            pin: pin,
+            authMethod: .kbsAuth(kbsAuthCredential, backup: nil)
+        )
+            .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
+                guard let self else {
+                    return .value(.showErrorSheet(.todo))
+                }
+                switch result {
+                case .success:
+                    // This step also backs up, no need to do that again later.
+                    self.inMemoryState.hasBackedUpToKBS = true
+                    self.db.write { tx in
+                        self.loadLocalMasterKey(tx)
+                        self.updatePersistedState(tx) {
+                            // Now we have the state we need to get past reglock.
+                            $0.sessionFlowReglockState = .none
+                        }
+                    }
+                    return self.nextStep()
+                case .invalidPin:
+                    return .value(.pinEntry(RegistrationPinState(
+                        operation: .enteringExistingPin(canSkip: false),
+                        error: .wrongPin(wrongPin: pin)
+                    )))
+                case .backupMissing:
+                    // If we are unable to talk to KBS, it got wiped, probably
+                    // because we used up our guesses. We can't get past reglock.
+                    self.db.write { tx in
+                        self.updatePersistedState(tx) {
+                            $0.sessionFlowReglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
+                        }
+                    }
+                    return .value(.showErrorSheet(.pinGuessesExhausted))
+                case .networkError:
+                    if retriesLeft > 0 {
+                        return self.restoreKBSMasterSecretForSessionPathReglock(
+                            pin: pin,
+                            kbsAuthCredential: kbsAuthCredential,
+                            reglockExpirationDate: reglockExpirationDate,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    }
+                    return .value(.showErrorSheet(.todo))
+                case .genericError:
+                    return .value(.showErrorSheet(.todo))
+                }
+            }
+    }
+
     // MARK: - Profile Setup Pathway
 
     /// Returns the next step the user needs to go through _after_ the actual account
@@ -1567,33 +1751,42 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         if !persistedState.didSyncPushTokens {
             return syncPushTokens(accountIdentity)
         }
-        if inMemoryState.pinFromUser == nil {
-            // Need to enter the pin.
-            if inMemoryState.pinFromDisk == nil {
-                // TODO[Registration] this should specify that its first time
-                // pin entry
-                return .value(.pinEntry)
-            } else {
-                // TODO[Registration] this should specify that its just pin
-                // confirmation for a PIN we already know.
-                return .value(.pinEntry)
+        let isRestoringPinBackup = accountIdentity.response.hasPreviouslyUsedKBS
+
+        if !persistedState.hasSkippedPinEntry {
+            guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
+                if isRestoringPinBackup {
+                    return .value(.pinEntry(RegistrationPinState(
+                        operation: .enteringExistingPin(canSkip: true),
+                        error: nil
+                    )))
+                } else if let blob = inMemoryState.unconfirmedPinBlob {
+                    return .value(.pinEntry(RegistrationPinState(
+                        operation: .confirmingNewPin(blob),
+                        error: nil
+                    )))
+                } else {
+                    return .value(.pinEntry(RegistrationPinState(
+                        operation: .creatingNewPin,
+                        error: nil
+                    )))
+                }
+            }
+            if inMemoryState.shouldBackUpToKBS {
+                // If we have no kbs data, fetch it.
+                if isRestoringPinBackup, inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration {
+                    return restoreKBSBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
+                } else {
+                    // If we haven't backed up, do so now.
+                    return backupToKBS(pin: pin, accountIdentity: accountIdentity)
+                }
+            }
+
+            if inMemoryState.wasReglockEnabled && inMemoryState.hasSetReglock.negated {
+                return enableReglockIfNeeded()
             }
         }
-        if
-            let pin = inMemoryState.pinFromUser,
-            inMemoryState.shouldBackUpToKBS
-        {
-            // If we have no kbs data, fetch it.
-            if accountIdentity.response.hasPreviouslyUsedKBS, inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration {
-                return restoreKBSBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
-            } else {
-                // If we haven't backed up, do so now.
-                return backupToKBS(pin: pin, accountIdentity: accountIdentity)
-            }
-        }
-        if inMemoryState.wasReglockEnabled && inMemoryState.hasSetReglock.negated {
-            return enableReglockIfNeeded()
-        }
+
         if inMemoryState.shouldRestoreFromStorageService {
             return accountManager.performInitialStorageServiceRestore()
                 .map(on: schedulers.main) { [weak self] in
@@ -1677,7 +1870,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         let backupAuthMethod = KBS.AuthMethod.chatServerAuth(username: accountIdentity.authUsername, password: accountIdentity.authPassword)
         let authMethod: KBS.AuthMethod
-        if let kbsAuthCredential = inMemoryState.kbsAuthCredentialForPostRegRestoration {
+        if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
             authMethod = .kbsAuth(kbsAuthCredential, backup: backupAuthMethod)
         } else {
             authMethod = backupAuthMethod
@@ -1698,13 +1891,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.inMemoryState.hasBackedUpToKBS = true
                     return self.nextStep()
                 case .invalidPin:
-                    // TODO[Registration] report the remaining attempts to the UI.
-                    return .value(.pinEntry)
+                    return .value(.pinEntry(RegistrationPinState(
+                        operation: .enteringExistingPin(canSkip: true),
+                        error: .wrongPin(wrongPin: pin)
+                    )))
                 case .backupMissing:
                     // If we are unable to talk to KBS, it got wiped and we can't
                     // recover. Keep going like if nothing happened.
                     self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
-                    return self.nextStep()
+                    return .value(.showErrorSheet(.pinGuessesExhausted))
                 case .networkError:
                     if retriesLeft > 0 {
                         return self.restoreKBSBackupPostRegistration(
@@ -1730,7 +1925,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             username: accountIdentity.authUsername,
             password: accountIdentity.authPassword
         )
-        if let kbsAuthCredential = inMemoryState.kbsAuthCredentialForPostRegRestoration {
+        if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
             authMethod = .kbsAuth(kbsAuthCredential, backup: backupAuthMethod)
         } else {
             authMethod = backupAuthMethod
@@ -1989,5 +2184,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // threshold, we will auto-retry it.
         // (e.g. you try sending an sms code and the nextSMS is less than this.)
         static let autoRetryInterval: TimeInterval = 0.5
+
+        // If we have a PIN and KBS master key locally (only possible for re-registration)
+        // then we reuse it to register. We make the user guess the PIN before proceeding,
+        // though. This is how many tries they have before we wipe our local state and make
+        // them go through re-registration.
+        static let maxLocalPINGuesses = 10
     }
 }
