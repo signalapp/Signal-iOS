@@ -180,9 +180,12 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         lastViewedTimestamp: UInt64? = nil,
         transaction: SDSAnyWriteTransaction
     ) {
+        var didTouchStorageServiceProperty = false
+
         let block = { (record: StoryContextAssociatedData) in
             if let isHidden = isHidden {
                 record.isHidden = isHidden
+                didTouchStorageServiceProperty = true
             }
             if let lastReceivedTimestamp = lastReceivedTimestamp {
                 record.lastReceivedTimestamp = lastReceivedTimestamp
@@ -217,7 +220,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
             }
         }
 
-        if updateStorageService {
+        if updateStorageService, didTouchStorageServiceProperty {
             switch sourceContext {
             case .group(let groupId):
                 guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
