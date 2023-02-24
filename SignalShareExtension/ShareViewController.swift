@@ -20,6 +20,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         case unsupportedMedia
         case notRegistered
         case obsoleteShare
+        case screenLockEnabled
         case tooManyAttachments
     }
 
@@ -132,11 +133,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
     deinit {
         Logger.info("deinit")
-
-        // Share extensions reside in a process that may be reused between usages.
-        // That isn't safe; the codebase is full of statics (e.g. singletons) which
-        // we can't easily clean up.
-        ExitShareExtension()
     }
 
     @objc
@@ -146,13 +142,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.info("")
 
         if OWSScreenLock.shared.isScreenLockEnabled() {
-
             Logger.info("dismissing.")
-
-            self.dismiss(animated: false) { [weak self] in
-                AssertIsOnMainThread()
-                self?.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
-            }
+            dismissAndCompleteExtension(animated: false, error: ShareViewControllerError.screenLockEnabled)
         }
     }
 
@@ -398,15 +389,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.debug("")
 
         super.viewWillDisappear(animated)
-
-        Logger.flush()
-
-        // Share extensions reside in a process that may be reused between usages.
-        // That isn't safe; the codebase is full of statics (e.g. singletons) which
-        // we can't easily clean up.
-        //
-        // We do this here, because since iOS 13 `viewDidDisappear` is never called.
-        DispatchQueue.main.async { ExitShareExtension() }
     }
 
     @objc
@@ -446,31 +428,34 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
     public func shareViewWasCompleted() {
         Logger.info("")
-
-        self.dismiss(animated: true) { [weak self] in
-            AssertIsOnMainThread()
-            guard let strongSelf = self else { return }
-            strongSelf.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
-        }
+        dismissAndCompleteExtension(animated: true, error: nil)
     }
 
     public func shareViewWasCancelled() {
         Logger.info("")
-
-        self.dismiss(animated: true) { [weak self] in
-            AssertIsOnMainThread()
-            guard let strongSelf = self else { return }
-            strongSelf.extensionContext?.cancelRequest(withError: ShareViewControllerError.obsoleteShare)
-        }
+        dismissAndCompleteExtension(animated: true, error: ShareViewControllerError.obsoleteShare)
     }
 
     public func shareViewFailed(error: Error) {
         owsFailDebug("Error: \(error)")
+        dismissAndCompleteExtension(animated: true, error: error)
+    }
 
-        self.dismiss(animated: true) { [weak self] in
+    private func dismissAndCompleteExtension(animated: Bool, error: Error?) {
+        let extensionContext = self.extensionContext
+        dismiss(animated: animated) {
             AssertIsOnMainThread()
-            guard let strongSelf = self else { return }
-            strongSelf.extensionContext?.cancelRequest(withError: error)
+
+            if let error {
+                extensionContext?.cancelRequest(withError: error)
+            } else {
+                extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+            }
+
+            // Share extensions reside in a process that may be reused between usages.
+            // That isn't safe; the codebase is full of statics (e.g. singletons) which
+            // we can't easily clean up.
+            ExitShareExtension()
         }
     }
 

@@ -35,11 +35,7 @@ id<AppContext> CurrentAppContext(void)
 
 void SetCurrentAppContext(id<AppContext> appContext, BOOL isRunningTests)
 {
-    // The main app context should only be set once.
-    //
-    // App extensions may be opened multiple times in the same process,
-    // so statics will persist.
-    OWSCAssertDebug(!currentAppContext || !currentAppContext.isMainApp || isRunningTests);
+    OWSCAssert(!currentAppContext || isRunningTests);
 
     currentAppContext = appContext;
 }

@@ -243,13 +243,14 @@ NS_ASSUME_NONNULL_BEGIN
 
                     OWSAssertDebug(backgroundTask);
                     backgroundTask = nil;
+
+                    // Do this after we've finished running database migrations.
+                    if (SSKDebugFlags.internalLogging) {
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                            ^{ [SDSKeyValueStore logCollectionStatistics]; });
+                    }
                 }];
             });
-
-            // Do this after we've let the main thread know that storage setup is complete.
-            if (SSKDebugFlags.internalLogging) {
-                [SDSKeyValueStore logCollectionStatistics];
-            }
         });
     });
 }
