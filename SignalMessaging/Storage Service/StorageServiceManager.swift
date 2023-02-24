@@ -1205,7 +1205,10 @@ class StorageServiceOperation: OWSOperation {
     private func cleanUpRecordsWithUnknownFields(transaction: SDSAnyWriteTransaction) {
         var state = State.current(transaction: transaction)
 
-        var shouldSave = false
+        guard state.unknownFieldLastCheckedAppVersion != appVersion.currentAppVersion4 else {
+            return
+        }
+        state.unknownFieldLastCheckedAppVersion = appVersion.currentAppVersion4
 
         // For any cached records with unknown fields, optimistically try to merge
         // with our local data to see if we now understand those fields. Note: It's
@@ -1218,10 +1221,6 @@ class StorageServiceOperation: OWSOperation {
                 return
             }
 
-            // If we have records with unknown fields, we'll try to merge them. In that
-            // case, we should ensure we save the updated State object to disk.
-            shouldSave = true
-
             let debugDescription = "\(type(of: stateUpdater.recordUpdater))"
             for (localId, recordWithUnknownFields) in recordsWithUnknownFields {
                 guard let storageIdentifier = stateUpdater.storageIdentifier(for: localId, in: state) else {
@@ -1229,10 +1228,6 @@ class StorageServiceOperation: OWSOperation {
                     stateUpdater.setRecordWithUnknownFields(nil, for: localId, in: &state)
                     continue
                 }
-                // If we call `mergeRecord` for any record, we should save an updated copy
-                // of `state`. (We do this by setting `shouldSave` to true, above.) Even if
-                // we can't fully merge all the unknown fields, we might be able to merge
-                // *some* of the unknown fields.
                 mergeRecord(
                     recordWithUnknownFields,
                     identifier: storageIdentifier,
@@ -1254,10 +1249,8 @@ class StorageServiceOperation: OWSOperation {
         mergeRecordsWithUnknownFields(stateUpdater: buildGroupV2Updater())
         mergeRecordsWithUnknownFields(stateUpdater: buildStoryDistributionListUpdater())
 
-        if shouldSave {
-            Logger.info("Resolved unknown fields using manifest version \(state.manifestVersion)")
-            state.save(transaction: transaction)
-        }
+        Logger.info("Resolved unknown fields using manifest version \(state.manifestVersion)")
+        state.save(transaction: transaction)
     }
 
     private func cleanUpOrphanedAccounts(transaction: SDSAnyWriteTransaction) {
@@ -1465,6 +1458,11 @@ class StorageServiceOperation: OWSOperation {
             set { _invalidIdentifiers = newValue.isEmpty ? nil : newValue }
         }
         fileprivate var _invalidIdentifiers: Set<StorageService.StorageIdentifier>?
+
+        /// The app version from the last time we checked unknown fields. We can
+        /// only transition unknown fields to known fields via an update, so we only
+        /// need to check once per app version.
+        fileprivate var unknownFieldLastCheckedAppVersion: String?
 
         enum ChangeState: Int, Codable {
             case unchanged = 0
