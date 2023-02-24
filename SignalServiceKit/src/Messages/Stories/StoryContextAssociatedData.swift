@@ -134,44 +134,6 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         updateLastReadTimestampIfNeeded()
     }
 
-    /**
-     * Creates a new `StoryContextAssociatedData` with the provided parameters or defaults if none exists.
-     *
-     * If one already exists with the given sourceContext, updates the existing row with any provided fields,
-     * leaving them untouched if nil is provided.
-     */
-    @discardableResult
-    public static func createOrUpdate(
-        sourceContext: SourceContext,
-        isHidden: Bool? = nil,
-        lastReceivedTimestamp: UInt64? = nil,
-        lastReadTimestamp: UInt64? = nil,
-        lastViewedTimestamp: UInt64? = nil,
-        transaction: SDSAnyWriteTransaction
-    ) -> StoryContextAssociatedData {
-        if let existing = StoryFinder.getAssociatedData(forContext: sourceContext, transaction: transaction) {
-            // Update the existing entry.
-            existing.update(
-                isHidden: isHidden,
-                lastReceivedTimestamp: lastReceivedTimestamp,
-                lastReadTimestamp: lastReadTimestamp,
-                lastViewedTimestamp: lastViewedTimestamp,
-                transaction: transaction
-            )
-            return existing
-        } else {
-            let new = StoryContextAssociatedData(
-                sourceContext: sourceContext,
-                isHidden: isHidden ?? false,
-                lastReceivedTimestamp: lastReceivedTimestamp,
-                lastReadTimestamp: lastReadTimestamp,
-                lastViewedTimestamp: lastViewedTimestamp
-            )
-            new.anyInsert(transaction: transaction)
-            return new
-        }
-    }
-
     public func update(
         updateStorageService: Bool = true,
         isHidden: Bool? = nil,
