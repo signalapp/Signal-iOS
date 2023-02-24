@@ -1058,9 +1058,8 @@ class StorageServiceOperation: OWSOperation {
                 mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
 
                 if backupAfterSuccess { StorageServiceManager.shared.backupPendingChanges() }
-
-                self.reportSuccess()
             }
+            self.reportSuccess()
         }.catch { error in
             if let storageError = error as? StorageService.StorageError {
 
