@@ -29,11 +29,11 @@ public class ContentProxy: NSObject {
         return configuration
     }
 
-    public static let userAgent = "Signal iOS (+https://signal.org/download)"
-
     public class func configureProxiedRequest(request: inout URLRequest) -> Bool {
-        // Replace user-agent.
-        request.setValue(userAgent, forHTTPHeaderField: OWSHttpHeaders.userAgentHeaderKey)
+        request.setValue(
+            OWSURLSession.userAgentHeaderValueSignalIos,
+            forHTTPHeaderField: OWSHttpHeaders.userAgentHeaderKey
+        )
 
         padRequestSize(request: &request)
 
