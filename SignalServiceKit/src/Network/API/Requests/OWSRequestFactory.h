@@ -5,6 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ChatServiceAuth;
 @class DeviceMessage;
 @class ECKeyPair;
 @class OWSDevice;
@@ -40,13 +41,15 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)getUnversionedProfileRequestWithAddress:(SignalServiceAddress *)address
                                            udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-    NS_SWIFT_NAME(getUnversionedProfileRequest(address:udAccessKey:));
+                                                  auth:(ChatServiceAuth *)auth
+    NS_SWIFT_NAME(getUnversionedProfileRequest(address:udAccessKey:auth:));
 
 + (TSRequest *)getVersionedProfileRequestWithServiceId:(ServiceIdObjC *)serviceId
                                      profileKeyVersion:(nullable NSString *)profileKeyVersion
                                      credentialRequest:(nullable NSData *)credentialRequest
                                            udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-    NS_SWIFT_NAME(getVersionedProfileRequest(serviceId:profileKeyVersion:credentialRequest:udAccessKey:));
+                                                  auth:(ChatServiceAuth *)auth
+    NS_SWIFT_NAME(getVersionedProfileRequest(serviceId:profileKeyVersion:credentialRequest:udAccessKey:auth:));
 
 + (TSRequest *)turnServerInfoRequest;
 
@@ -123,11 +126,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)registerSignedPrekeyRequestForIdentity:(OWSIdentity)identity
                                          signedPreKey:(SignedPreKeyRecord *)signedPreKey;
 
-+ (TSRequest *)registerPrekeysRequestForIdentity:(OWSIdentity)identity
-                                     prekeyArray:(NSArray *)prekeys
-                                     identityKey:(NSData *)identityKeyPublic
-                                    signedPreKey:(SignedPreKeyRecord *)signedPreKey;
-
 #pragma mark - Storage Service
 
 + (TSRequest *)storageAuthRequest;
@@ -170,7 +168,8 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                    paymentAddress:(nullable ProfileValue *)paymentAddress
                                   visibleBadgeIds:(NSArray<NSString *> *)visibleBadgeIds
                                           version:(NSString *)version
-                                       commitment:(NSData *)commitment;
+                                       commitment:(NSData *)commitment
+                                             auth:(ChatServiceAuth *)auth;
 
 #pragma mark - Remote Config
 

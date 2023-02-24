@@ -415,13 +415,15 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         ModalActivityIndicatorViewController.present(fromViewController: self,
                                                      canCancel: false) { modalActivityIndicator in
             firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                OWSProfileManager.updateLocalProfilePromise(profileGivenName: normalizedGivenName,
-                                                            profileFamilyName: normalizedFamilyName,
-                                                            profileBio: normalizedBio,
-                                                            profileBioEmoji: normalizedBioEmoji,
-                                                            profileAvatarData: avatarData,
-                                                            visibleBadgeIds: visibleBadgeIds,
-                                                            userProfileWriter: .localUser)
+                OWSProfileManager.updateLocalProfilePromise(
+                    profileGivenName: normalizedGivenName,
+                    profileFamilyName: normalizedFamilyName,
+                    profileBio: normalizedBio,
+                    profileBioEmoji: normalizedBioEmoji,
+                    profileAvatarData: avatarData,
+                    visibleBadgeIds: visibleBadgeIds,
+                    userProfileWriter: .localUser
+                )
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 Self.databaseStorage.writePromise { transaction in
                     Self.subscriptionManager.setDisplayBadgesOnProfile(

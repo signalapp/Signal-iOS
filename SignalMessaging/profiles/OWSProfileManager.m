@@ -120,7 +120,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         if (TSAccountManager.shared.isRegistered) {
             [self rotateLocalProfileKeyIfNecessary];
-            [self updateProfileOnServiceIfNecessary];
+            [self updateProfileOnServiceIfNecessaryWithAuth:[ChatServiceAuth implicit]];
             [OWSProfileManager updateStorageServiceIfNecessary];
         }
     });
@@ -430,7 +430,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
 - (void)fetchProfileForAddress:(SignalServiceAddress *)address
 {
-    [ProfileFetcherJob fetchProfileWithAddress:address ignoreThrottling:YES];
+    [ProfileFetcherJob fetchProfileWithAddress:address ignoreThrottling:YES auth:[ChatServiceAuth implicit]];
 }
 
 - (AnyPromise *)fetchLocalUsersProfilePromise
@@ -439,14 +439,17 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     if (!localAddress.isValid) {
         return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing local address.")];
     }
-    return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:localAddress mainAppOnly:NO ignoreThrottling:YES];
+    return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:localAddress
+                                                     mainAppOnly:NO
+                                                ignoreThrottling:YES
+                                                            auth:[ChatServiceAuth implicit]];
 }
 
 - (void)reuploadLocalProfile
 {
-    [self reuploadLocalProfilePromise].done(^(id value) { OWSLogInfo(@"Done."); }).catch(^(NSError *error) {
-        OWSFailDebugUnlessNetworkFailure(error);
-    });
+    [self reuploadLocalProfilePromiseWithAuth:[ChatServiceAuth implicit]]
+        .done(^(id value) { OWSLogInfo(@"Done."); })
+        .catch(^(NSError *error) { OWSFailDebugUnlessNetworkFailure(error); });
 }
 
 #pragma mark - Profile Key Rotation
@@ -520,7 +523,8 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
         [self rotateProfileKeyWithIntersectingPhoneNumbers:victimPhoneNumbers
                                          intersectingUUIDs:victimUUIDs
-                                      intersectingGroupIds:victimGroupIds]
+                                      intersectingGroupIds:victimGroupIds
+                                                      auth:[ChatServiceAuth implicit]]
             .done(^(id value) { success(); })
             .catch(^(NSError *error) { failure(error); });
     });
@@ -1823,14 +1827,14 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
     // TODO: Sync if necessary.
 
-    [self updateProfileOnServiceIfNecessary];
+    [self updateProfileOnServiceIfNecessaryWithAuth:[ChatServiceAuth implicit]];
 }
 
 - (void)reachabilityChanged:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
-    [self updateProfileOnServiceIfNecessary];
+    [self updateProfileOnServiceIfNecessaryWithAuth:[ChatServiceAuth implicit]];
 }
 
 - (void)blockListDidChange:(NSNotification *)notification {

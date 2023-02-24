@@ -1349,8 +1349,8 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             switch backup {
             case .kbsAuth(let backupCredential, _):
                 backupAuthMethod = .kbsAuth(backupCredential.credential)
-            case let .chatServerAuth(username, password):
-                backupAuthMethod = .chatServer(authUsername: username, authPassword: password)
+            case let .chatServerAuth(chatAuth):
+                backupAuthMethod = .chatServer(chatAuth)
             case .none, .implicit:
                 if kbsAuth == cachedKbsAuth {
                     backupAuthMethod = .chatServerImplicitCredentials
@@ -1358,8 +1358,8 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                     backupAuthMethod = implicitAuthMethod
                 }
             }
-        case let .chatServerAuth(username, password):
-            authMethod = .chatServer(authUsername: username, authPassword: password)
+        case let .chatServerAuth(chatAuth):
+            authMethod = .chatServer(chatAuth)
         case .implicit:
             authMethod = implicitAuthMethod
         }

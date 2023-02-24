@@ -172,11 +172,18 @@ static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransactio
 
 + (void)createPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler
 {
+    [self createPreKeysWithAuth:[ChatServiceAuth implicit] success:successHandler failure:failureHandler];
+}
+
++ (void)createPreKeysWithAuth:(ChatServiceAuth *)auth
+                      success:(void (^)(void))successHandler
+                      failure:(void (^)(NSError *error))failureHandler
+{
     OWSAssertDebug(!self.tsAccountManager.isRegisteredAndReady);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        SSKCreatePreKeysOperation *aciOp = [[SSKCreatePreKeysOperation alloc] initForIdentity:OWSIdentityACI];
-        SSKCreatePreKeysOperation *pniOp = [[SSKCreatePreKeysOperation alloc] initForIdentity:OWSIdentityPNI];
+        SSKCreatePreKeysOperation *aciOp = [[SSKCreatePreKeysOperation alloc] initForIdentity:OWSIdentityACI auth:auth];
+        SSKCreatePreKeysOperation *pniOp = [[SSKCreatePreKeysOperation alloc] initForIdentity:OWSIdentityPNI auth:auth];
         [self.operationQueue addOperations:@[ aciOp, pniOp ] waitUntilFinished:YES];
 
         NSError *_Nullable error = aciOp.failingError ?: pniOp.failingError;
@@ -199,7 +206,8 @@ static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransactio
     OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        SSKCreatePreKeysOperation *op = [[SSKCreatePreKeysOperation alloc] initForIdentity:identity];
+        SSKCreatePreKeysOperation *op = [[SSKCreatePreKeysOperation alloc] initForIdentity:identity
+                                                                                      auth:[ChatServiceAuth implicit]];
         [self.operationQueue addOperations:@[ op ] waitUntilFinished:YES];
 
         NSError *_Nullable error = op.failingError;

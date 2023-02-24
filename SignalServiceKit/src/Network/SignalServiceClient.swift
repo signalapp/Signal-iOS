@@ -17,7 +17,16 @@ public protocol SignalServiceClient {
     func deprecated_requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
     func verifySecondaryDevice(verificationCode: String, phoneNumber: String, authKey: String, encryptedDeviceName: Data) -> Promise<VerifySecondaryDeviceResponse>
     func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<Int>
-    func registerPreKeys(for identity: OWSIdentity, identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
+    /// If a username and password are both provided, those are used for the request's
+    /// Authentication header. Otherwise, the default header is used (whatever's on
+    /// TSAccountManager).
+    func registerPreKeys(
+        for identity: OWSIdentity,
+        identityKey: IdentityKey,
+        signedPreKeyRecord: SignedPreKeyRecord,
+        preKeyRecords: [PreKeyRecord],
+        auth: ChatServiceAuth
+    ) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void>
     func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data>
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
@@ -85,16 +94,22 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }
     }
 
-    public func registerPreKeys(for identity: OWSIdentity,
-                                identityKey: IdentityKey,
-                                signedPreKeyRecord: SignedPreKeyRecord,
-                                preKeyRecords: [PreKeyRecord]) -> Promise<Void> {
+    public func registerPreKeys(
+        for identity: OWSIdentity,
+        identityKey: IdentityKey,
+        signedPreKeyRecord: SignedPreKeyRecord,
+        preKeyRecords: [PreKeyRecord],
+        auth: ChatServiceAuth
+    ) -> Promise<Void> {
         Logger.debug("")
 
-        let request = OWSRequestFactory.registerPrekeysRequest(for: identity,
-                                                               prekeyArray: preKeyRecords,
-                                                               identityKey: identityKey,
-                                                               signedPreKey: signedPreKeyRecord)
+        let request = OWSRequestFactory.registerPrekeysRequest(
+            identity: identity,
+            identityKey: identityKey,
+            signedPreKeyRecord: signedPreKeyRecord,
+            prekeyRecords: preKeyRecords,
+            auth: auth
+        )
         return networkManager.makePromise(request: request).asVoid()
     }
 

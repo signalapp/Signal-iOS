@@ -22,16 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
-static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
-{
-    switch (identity) {
-        case OWSIdentityACI:
-            return nil;
-        case OWSIdentityPNI:
-            return @"identity=pni";
-    }
-}
-
 @implementation OWSRequestFactory
 
 + (TSRequest *)disable2FARequest
@@ -73,6 +63,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
 + (TSRequest *)getUnversionedProfileRequestWithAddress:(SignalServiceAddress *)address
                                            udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+                                                  auth:(ChatServiceAuth *)auth
 {
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(address.uuid != nil);
@@ -81,6 +72,8 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
         [self useUDAuthWithRequest:request accessKey:udAccessKey];
+    } else {
+        [request setAuth:auth];
     }
     return request;
 }
@@ -89,6 +82,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                      profileKeyVersion:(nullable NSString *)profileKeyVersion
                                      credentialRequest:(nullable NSData *)credentialRequest
                                            udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+                                                  auth:(ChatServiceAuth *)auth
 {
     NSString *uuidParam = serviceId.uuidValue.UUIDString.lowercaseString;
     NSString *_Nullable profileKeyVersionParam = profileKeyVersion.lowercaseString;
@@ -110,6 +104,8 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
         [self useUDAuthWithRequest:request accessKey:udAccessKey];
+    } else {
+        [request setAuth:auth];
     }
     return request;
 }
@@ -132,7 +128,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 + (TSRequest *)availablePreKeysCountRequestForIdentity:(OWSIdentity)identity
 {
     NSString *path = self.textSecureKeysAPI;
-    NSString *queryParam = queryParamForIdentity(identity);
+    NSString *queryParam = [OWSRequestFactory queryParamFor:identity];
     if (queryParam != nil) {
         path = [path stringByAppendingFormat:@"?%@", queryParam];
     }
@@ -542,42 +538,13 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     OWSAssertDebug(signedPreKey);
 
     NSString *path = self.textSecureSignedKeysAPI;
-    NSString *queryParam = queryParamForIdentity(identity);
+    NSString *queryParam = [OWSRequestFactory queryParamFor:identity];
     if (queryParam != nil) {
         path = [path stringByAppendingFormat:@"?%@", queryParam];
     }
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
                               method:@"PUT"
                           parameters:[self signedPreKeyRequestParameters:signedPreKey]];
-}
-
-+ (TSRequest *)registerPrekeysRequestForIdentity:(OWSIdentity)identity
-                                     prekeyArray:(NSArray *)prekeys
-                                     identityKey:(NSData *)identityKeyPublic
-                                    signedPreKey:(SignedPreKeyRecord *)signedPreKey
-{
-    OWSAssertDebug(prekeys.count > 0);
-    OWSAssertDebug(identityKeyPublic.length > 0);
-    OWSAssertDebug(signedPreKey);
-
-    NSString *path = self.textSecureKeysAPI;
-    NSString *queryParam = queryParamForIdentity(identity);
-    if (queryParam != nil) {
-        path = [path stringByAppendingFormat:@"?%@", queryParam];
-    }
-
-    NSString *publicIdentityKey = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];
-    NSMutableArray *serializedPrekeyList = [NSMutableArray array];
-    for (PreKeyRecord *preKey in prekeys) {
-        [serializedPrekeyList addObject:[self preKeyRequestParameters:preKey]];
-    }
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                              method:@"PUT"
-                          parameters:@{
-                              @"preKeys" : serializedPrekeyList,
-                              @"signedPreKey" : [self signedPreKeyRequestParameters:signedPreKey],
-                              @"identityKey" : publicIdentityKey
-                          }];
 }
 
 #pragma mark - Storage Service
@@ -718,6 +685,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                   visibleBadgeIds:(NSArray<NSString *> *)visibleBadgeIds
                                           version:(NSString *)version
                                        commitment:(NSData *)commitment
+                                             auth:(ChatServiceAuth *)auth
 {
     OWSAssertDebug(version.length > 0);
     OWSAssertDebug(commitment.length > 0);
@@ -749,9 +717,9 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     parameters[@"badgeIds"] = [visibleBadgeIds copy];
 
     NSURL *url = [NSURL URLWithString:self.textSecureVersionedProfileAPI];
-    return [TSRequest requestWithUrl:url
-                              method:@"PUT"
-                          parameters:parameters];
+    TSRequest *request = [TSRequest requestWithUrl:url method:@"PUT" parameters:parameters];
+    [request setAuth:auth];
+    return request;
 }
 
 #pragma mark - Remote Config

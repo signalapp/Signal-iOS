@@ -53,15 +53,20 @@ private struct ProfileFetchOptions {
     let ignoreThrottling: Bool
     let shouldUpdateStore: Bool
     let fetchType: ProfileFetchType
+    let auth: ChatServiceAuth
 
-    init(mainAppOnly: Bool = true,
-         ignoreThrottling: Bool = false,
-         shouldUpdateStore: Bool = true,
-         fetchType: ProfileFetchType = .default) {
+    init(
+        mainAppOnly: Bool = true,
+        ignoreThrottling: Bool = false,
+        shouldUpdateStore: Bool = true,
+        fetchType: ProfileFetchType = .default,
+        auth: ChatServiceAuth
+    ) {
         self.mainAppOnly = mainAppOnly
         self.ignoreThrottling = ignoreThrottling || DebugFlags.aggressiveProfileFetching.get()
         self.shouldUpdateStore = shouldUpdateStore
         self.fetchType = fetchType
+        self.auth = auth
     }
 }
 
@@ -81,29 +86,41 @@ public class ProfileFetcherJob: NSObject {
     private var backgroundTask: OWSBackgroundTask?
 
     @objc
-    public class func fetchProfilePromiseObjc(address: SignalServiceAddress,
-                                              mainAppOnly: Bool,
-                                              ignoreThrottling: Bool) -> AnyPromise {
-        return AnyPromise(fetchProfilePromise(address: address,
-                                              mainAppOnly: mainAppOnly,
-                                              ignoreThrottling: ignoreThrottling))
+    public class func fetchProfilePromiseObjc(
+        address: SignalServiceAddress,
+        mainAppOnly: Bool,
+        ignoreThrottling: Bool,
+        auth: ChatServiceAuth = .implicit()
+    ) -> AnyPromise {
+        return AnyPromise(fetchProfilePromise(
+            address: address,
+            mainAppOnly: mainAppOnly,
+            ignoreThrottling: ignoreThrottling,
+            auth: auth
+        ))
     }
 
-    public class func fetchProfilePromise(address: SignalServiceAddress,
-                                          mainAppOnly: Bool = true,
-                                          ignoreThrottling: Bool = false,
-                                          shouldUpdateStore: Bool = true,
-                                          fetchType: ProfileFetchType = .default) -> Promise<FetchedProfile> {
-        let options = ProfileFetchOptions(mainAppOnly: mainAppOnly,
-                                          ignoreThrottling: ignoreThrottling,
-                                          shouldUpdateStore: shouldUpdateStore,
-                                          fetchType: fetchType)
+    public class func fetchProfilePromise(
+        address: SignalServiceAddress,
+        mainAppOnly: Bool = true,
+        ignoreThrottling: Bool = false,
+        shouldUpdateStore: Bool = true,
+        fetchType: ProfileFetchType = .default,
+        auth: ChatServiceAuth = .implicit()
+    ) -> Promise<FetchedProfile> {
+        let options = ProfileFetchOptions(
+            mainAppOnly: mainAppOnly,
+            ignoreThrottling: ignoreThrottling,
+            shouldUpdateStore: shouldUpdateStore,
+            fetchType: fetchType,
+            auth: auth
+        )
         return ProfileFetcherJob(subject: address, options: options).runAsPromise()
     }
 
     @objc
-    public class func fetchProfile(address: SignalServiceAddress, ignoreThrottling: Bool) {
-        let options = ProfileFetchOptions(ignoreThrottling: ignoreThrottling)
+    public class func fetchProfile(address: SignalServiceAddress, ignoreThrottling: Bool, auth: ChatServiceAuth = .implicit()) {
+        let options = ProfileFetchOptions(ignoreThrottling: ignoreThrottling, auth: auth)
         firstly {
             ProfileFetcherJob(subject: address, options: options).runAsPromise()
         }.catch { error in
@@ -287,7 +304,8 @@ public class ProfileFetcherJob: NSObject {
                     do {
                         let request = try self.versionedProfilesSwift.versionedProfileRequest(
                             for: serviceId,
-                            udAccessKey: udAccessKeyForRequest
+                            udAccessKey: udAccessKeyForRequest,
+                            auth: self.options.auth
                         )
                         currentVersionedProfileRequest = request
                         return request.request
@@ -297,7 +315,11 @@ public class ProfileFetcherJob: NSObject {
                     }
                 } else {
                     Logger.info("Unversioned profile fetch.")
-                    return OWSRequestFactory.getUnversionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+                    return OWSRequestFactory.getUnversionedProfileRequest(
+                        address: address,
+                        udAccessKey: udAccessKeyForRequest,
+                        auth: self.options.auth
+                    )
                 }
             },
             udAuthFailureBlock: {

@@ -83,6 +83,7 @@ extension SignalApp {
             kbsAuthCredentialStore: DependenciesBridge.shared.kbsCredentialStorage,
             keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
             ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(Self.ows2FAManager),
+            preKeyManager: RegistrationCoordinatorImpl.Wrappers.PreKeyManager(),
             profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(Self.profileManager),
             pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(Self.pushRegistrationManager),
             receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(Self.receiptManager),

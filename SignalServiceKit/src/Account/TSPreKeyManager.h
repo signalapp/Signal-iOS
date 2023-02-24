@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ChatServiceAuth;
 @class SDSAnyWriteTransaction;
 
 typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity);
@@ -24,6 +25,10 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity);
 
 + (void)rotateSignedPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
 
++ (void)createPreKeysWithAuth:(ChatServiceAuth *)auth
+                      success:(void (^)(void))successHandler
+                      failure:(void (^)(NSError *error))failureHandler;
+/// Uses implicit auth.
 + (void)createPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
 
 + (void)createPreKeysForIdentity:(OWSIdentity)identity

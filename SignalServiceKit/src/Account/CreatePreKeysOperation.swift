@@ -8,10 +8,15 @@ import Foundation
 @objc(SSKCreatePreKeysOperation)
 public class CreatePreKeysOperation: OWSOperation {
     private let identity: OWSIdentity
+    private let auth: ChatServiceAuth
 
-    @objc(initForIdentity:)
-    public init(for identity: OWSIdentity) {
+    @objc(initForIdentity:auth:)
+    public init(
+        for identity: OWSIdentity,
+        auth: ChatServiceAuth
+    ) {
         self.identity = identity
+        self.auth = auth
     }
 
     public override func run() {
@@ -50,10 +55,13 @@ public class CreatePreKeysOperation: OWSOperation {
             }
             return self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-            self.accountServiceClient.setPreKeys(for: self.identity,
-                                                 identityKey: identityKey,
-                                                 signedPreKeyRecord: signedPreKeyRecord,
-                                                 preKeyRecords: preKeyRecords)
+            self.accountServiceClient.setPreKeys(
+                for: self.identity,
+                identityKey: identityKey,
+                signedPreKeyRecord: signedPreKeyRecord,
+                preKeyRecords: preKeyRecords,
+                auth: self.auth
+            )
         }.done {
             signedPreKeyRecord.markAsAcceptedByService()
             self.databaseStorage.write { transaction in

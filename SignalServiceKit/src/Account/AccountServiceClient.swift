@@ -38,14 +38,20 @@ public class AccountServiceClient: NSObject {
         return serviceClient.getAvailablePreKeys(for: identity)
     }
 
-    public func setPreKeys(for identity: OWSIdentity,
-                           identityKey: IdentityKey,
-                           signedPreKeyRecord: SignedPreKeyRecord,
-                           preKeyRecords: [PreKeyRecord]) -> Promise<Void> {
-        return serviceClient.registerPreKeys(for: identity,
-                                             identityKey: identityKey,
-                                             signedPreKeyRecord: signedPreKeyRecord,
-                                             preKeyRecords: preKeyRecords)
+    public func setPreKeys(
+        for identity: OWSIdentity,
+        identityKey: IdentityKey,
+        signedPreKeyRecord: SignedPreKeyRecord,
+        preKeyRecords: [PreKeyRecord],
+        auth: ChatServiceAuth
+    ) -> Promise<Void> {
+        return serviceClient.registerPreKeys(
+            for: identity,
+            identityKey: identityKey,
+            signedPreKeyRecord: signedPreKeyRecord,
+            preKeyRecords: preKeyRecords,
+            auth: auth
+        )
     }
 
     public func setSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {

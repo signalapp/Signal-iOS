@@ -26,6 +26,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private var kbsAuthCredentialStore: KBSAuthCredentialStorageMock!
     private var mockURLSession: TSRequestOWSURLSessionMock!
     private var ows2FAManagerMock: RegistrationCoordinatorImpl.TestMocks.OWS2FAManager!
+    private var preKeyManagerMock: RegistrationCoordinatorImpl.TestMocks.PreKeyManager!
     private var profileManagerMock: RegistrationCoordinatorImpl.TestMocks.ProfileManager!
     private var pushRegistrationManagerMock: RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager!
     private var receiptManagerMock: RegistrationCoordinatorImpl.TestMocks.ReceiptManager!
@@ -44,6 +45,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         kbs = KeyBackupServiceMock()
         kbsAuthCredentialStore = KBSAuthCredentialStorageMock()
         ows2FAManagerMock = RegistrationCoordinatorImpl.TestMocks.OWS2FAManager()
+        preKeyManagerMock = RegistrationCoordinatorImpl.TestMocks.PreKeyManager()
         profileManagerMock = RegistrationCoordinatorImpl.TestMocks.ProfileManager()
         pushRegistrationManagerMock = RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager()
         receiptManagerMock = RegistrationCoordinatorImpl.TestMocks.ReceiptManager()
@@ -70,6 +72,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             kbsAuthCredentialStore: kbsAuthCredentialStore,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
             ows2FAManager: ows2FAManagerMock,
+            preKeyManager: preKeyManagerMock,
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,
             receiptManager: receiptManagerMock,
@@ -164,7 +167,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
             skipDeviceTransfer: true
         )
         let identityResponse = Stubs.accountIdentityResponse()
-        let authUsername = identityResponse.aci.uuidString
         var authPassword: String!
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             matcher: { request in
@@ -178,25 +180,35 @@ public class RegistrationCoordinatorTest: XCTestCase {
             bodyData: try JSONEncoder().encode(identityResponse)
         ))
 
+        func expectedAuth() -> ChatServiceAuth {
+            return .explicit(aci: identityResponse.aci, password: authPassword)
+        }
+
         // When registered, it should try and sync push tokens.
-        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { username, password in
-            XCTAssertEqual(username, authUsername)
-            XCTAssertEqual(password, authPassword)
+        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
+            XCTAssertEqual(auth, expectedAuth())
             return .value(.success)
+        }
+
+        // When registered, we should create pre-keys.
+        preKeyManagerMock.createPreKeysMock = { auth in
+            XCTAssertEqual(auth, expectedAuth())
+            return .value(())
         }
 
         // We haven't done a kbs backup; that should happen now.
         kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
             XCTAssertEqual(pin, Stubs.pinCode)
             // We don't have a kbs auth credential, it should use chat server creds.
-            XCTAssertEqual(authMethod, .chatServerAuth(username: authUsername, password: authPassword))
+            XCTAssertEqual(authMethod, .chatServerAuth(expectedAuth()))
             XCTAssertFalse(rotateMasterKey)
             self.kbs.hasMasterKey = true
             return .value(())
         }
 
         // Once we sync push tokens, we should restore from storage service.
-        accountManagerMock.performInitialStorageServiceRestoreMock = {
+        accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+            XCTAssertEqual(auth, expectedAuth())
             return .value(())
         }
 
@@ -204,8 +216,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(),
-            authUsername: "", // doesn't matter for url matching
-            authPassword: "" // doesn't matter for url matching
+            auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
             matcher: { request in
@@ -267,7 +278,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
         )
 
         let identityResponse = Stubs.accountIdentityResponse()
-        let authUsername = identityResponse.aci.uuidString
         var authPassword: String!
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             matcher: { request in
@@ -278,25 +288,35 @@ public class RegistrationCoordinatorTest: XCTestCase {
             bodyData: try JSONEncoder().encode(identityResponse)
         ))
 
+        func expectedAuth() -> ChatServiceAuth {
+            return .explicit(aci: identityResponse.aci, password: authPassword)
+        }
+
         // When registered, it should try and sync push tokens.
-        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { username, password in
-            XCTAssertEqual(username, authUsername)
-            XCTAssertEqual(password, authPassword)
+        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
+            XCTAssertEqual(auth, expectedAuth())
             return .value(.success)
+        }
+
+        // When registered, we should create pre-keys.
+        preKeyManagerMock.createPreKeysMock = { auth in
+            XCTAssertEqual(auth, expectedAuth())
+            return .value(())
         }
 
         // We haven't done a kbs backup; that should happen now.
         kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
             XCTAssertEqual(pin, Stubs.pinCode)
             // We don't have a kbs auth credential, it should use chat server creds.
-            XCTAssertEqual(authMethod, .chatServerAuth(username: authUsername, password: authPassword))
+            XCTAssertEqual(authMethod, .chatServerAuth(expectedAuth()))
             XCTAssertFalse(rotateMasterKey)
             self.kbs.hasMasterKey = true
             return .value(())
         }
 
         // Once we sync push tokens, we should restore from storage service.
-        accountManagerMock.performInitialStorageServiceRestoreMock = {
+        accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+            XCTAssertEqual(auth, expectedAuth())
             return .value(())
         }
 
@@ -304,8 +324,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(),
-            authUsername: "", // doesn't matter for url matching
-            authPassword: "" // doesn't matter for url matching
+            auth: .implicit() // // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
             matcher: { request in
@@ -562,7 +581,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
         mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
 
         let identityResponse = Stubs.accountIdentityResponse()
-        let authUsername = identityResponse.aci.uuidString
         var authPassword: String!
 
         // Once the first request fails, at t=2, it should retry.
@@ -592,12 +610,21 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
         }
 
+        func expectedAuth() -> ChatServiceAuth {
+            return .explicit(aci: identityResponse.aci, password: authPassword)
+        }
+
         // When registered at t=3, it should try and sync push tokens. Succeed at t=4
-        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { username, password in
+        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
             XCTAssertEqual(self.scheduler.currentTime, 3)
-            XCTAssertEqual(username, authUsername)
-            XCTAssertEqual(password, authPassword)
+            XCTAssertEqual(auth, expectedAuth())
             return self.scheduler.guarantee(resolvingWith: .success, atTime: 4)
+        }
+
+        // When registered, we should create pre-keys.
+        preKeyManagerMock.createPreKeysMock = { auth in
+            XCTAssertEqual(auth, expectedAuth())
+            return .value(())
         }
 
         // We haven't done a kbs backup; that should happen at t=4. Succeed at t=5.
@@ -605,7 +632,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(self.scheduler.currentTime, 4)
             XCTAssertEqual(pin, Stubs.pinCode)
             // We don't have a kbs auth credential, it should use chat server creds.
-            XCTAssertEqual(authMethod, .chatServerAuth(username: authUsername, password: authPassword))
+            XCTAssertEqual(authMethod, .chatServerAuth(expectedAuth()))
             XCTAssertFalse(rotateMasterKey)
             self.kbs.hasMasterKey = true
             return self.scheduler.promise(resolvingWith: (), atTime: 5)
@@ -613,8 +640,9 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         // Once we sync push tokens at t=5, we should restore from storage service.
         // Succeed at t=6.
-        accountManagerMock.performInitialStorageServiceRestoreMock = {
+        accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
             XCTAssertEqual(self.scheduler.currentTime, 5)
+            XCTAssertEqual(auth, expectedAuth())
             return self.scheduler.promise(resolvingWith: (), atTime: 6)
         }
 
@@ -622,8 +650,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(),
-            authUsername: "", // doesn't matter for url matching
-            authPassword: "" // doesn't matter for url matching
+            auth: .implicit() // // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
@@ -727,7 +754,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         // Now still at t=1 it should make a reg recovery pw request, resolve it at t=2.
         let accountIdentityResponse = Stubs.accountIdentityResponse()
-        let authUsername = accountIdentityResponse.aci.uuidString
         var authPassword: String!
         let expectedRegRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
@@ -749,18 +775,28 @@ public class RegistrationCoordinatorTest: XCTestCase {
             on: self.scheduler
         )
 
+        func expectedAuth() -> ChatServiceAuth {
+            return .explicit(aci: accountIdentityResponse.aci, password: authPassword)
+        }
+
         // When registered at t=2, it should try and sync push tokens.
         // Resolve at t=3.
-        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { username, password in
+        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
             XCTAssertEqual(self.scheduler.currentTime, 2)
-            XCTAssertEqual(username, authUsername)
-            XCTAssertEqual(password, authPassword)
+            XCTAssertEqual(auth, expectedAuth())
             return self.scheduler.guarantee(resolvingWith: .success, atTime: 3)
         }
 
+        // When registered, we should create pre-keys.
+        preKeyManagerMock.createPreKeysMock = { auth in
+            XCTAssertEqual(auth, expectedAuth())
+            return .value(())
+        }
+
         // At t=3 once we sync push tokens, we should restore from storage service.
-        accountManagerMock.performInitialStorageServiceRestoreMock = {
+        accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
             XCTAssertEqual(self.scheduler.currentTime, 3)
+            XCTAssertEqual(auth, expectedAuth())
             return self.scheduler.promise(resolvingWith: (), atTime: 4)
         }
 
@@ -768,8 +804,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(),
-            authUsername: "", // doesn't matter for url matching
-            authPassword: "" // doesn't matter for url matching
+            auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
             matcher: { request in
@@ -903,7 +938,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
         )
 
         let accountIdentityResponse = Stubs.accountIdentityResponse()
-        let authUsername = accountIdentityResponse.aci.uuidString
         var authPassword: String!
 
         // That means at t=7 it should try and register with the verified
@@ -930,13 +964,23 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
         }
 
+        func expectedAuth() -> ChatServiceAuth {
+            return .explicit(aci: accountIdentityResponse.aci, password: authPassword)
+        }
+
         // Once we are registered at t=8, we should try and sync push tokens
         // with the credentials we got in the identity response.
-        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { username, password in
+        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
             XCTAssertEqual(self.scheduler.currentTime, 8)
-            XCTAssertEqual(username, authUsername)
-            XCTAssertEqual(password, authPassword)
+            XCTAssertEqual(auth, expectedAuth())
             return self.scheduler.guarantee(resolvingWith: .success, atTime: 9)
+        }
+
+        // When registered, we should create pre-keys.
+        preKeyManagerMock.createPreKeysMock = { auth in
+            XCTAssertEqual(self.scheduler.currentTime, 9)
+            XCTAssertEqual(auth, expectedAuth())
+            return .value(())
         }
 
         scheduler.runUntilIdle()
@@ -959,23 +1003,29 @@ public class RegistrationCoordinatorTest: XCTestCase {
         kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
             XCTAssertEqual(self.scheduler.currentTime, 0)
             XCTAssertEqual(pin, Stubs.pinCode)
-            XCTAssertEqual(authMethod, .chatServerAuth(username: authUsername, password: authPassword))
+            XCTAssertEqual(authMethod, .chatServerAuth(expectedAuth()))
             XCTAssertFalse(rotateMasterKey)
             return self.scheduler.promise(resolvingWith: (), atTime: 1)
         }
 
         // At t=1 once we sync push tokens, we should restore from storage service.
-        accountManagerMock.performInitialStorageServiceRestoreMock = {
+        accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
             XCTAssertEqual(self.scheduler.currentTime, 1)
+            XCTAssertEqual(auth, expectedAuth())
             return self.scheduler.promise(resolvingWith: (), atTime: 2)
+        }
+
+        // When registered, we should create pre-keys.
+        preKeyManagerMock.createPreKeysMock = { auth in
+            XCTAssertEqual(auth, expectedAuth())
+            return .value(())
         }
 
         // And at t=2 once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(),
-            authUsername: authUsername,
-            authPassword: authPassword
+            auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
             matcher: { request in
@@ -1781,7 +1831,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private static func attributesFromCreateAccountRequest(
         _ request: TSRequest
     ) -> RegistrationRequestFactory.AccountAttributes {
-        return request.parameters["accountAttributes"] as! RegistrationRequestFactory.AccountAttributes
+        let accountAttributesData = try! JSONSerialization.data(
+            withJSONObject: request.parameters["accountAttributes"]!,
+            options: .fragmentsAllowed
+        )
+        return try! JSONDecoder().decode(
+            RegistrationRequestFactory.AccountAttributes.self,
+            from: accountAttributesData
+        )
     }
 
     // MARK: - Stubs

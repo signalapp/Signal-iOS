@@ -198,7 +198,7 @@ public enum RegistrationRequestFactory {
     // TODO: Share this well-defined struct with the other endpoints that use it.
     // Previously it was defined in code that constructs the dictionary, not as an
     // explicit struct, and used in more than one request.
-    public struct AccountAttributes: Encodable {
+    public struct AccountAttributes: Codable {
         /// This is a hex-encoded random sequence of 16 bytes we generate locally,
         /// include in the register or provision request as both the auth header password
         /// and in these account attributes.
@@ -285,7 +285,7 @@ public enum RegistrationRequestFactory {
             self.capabilities = Capabilities(canReceiveGiftBadges: canReceiveGiftBadges)
         }
 
-        public struct Capabilities: Encodable {
+        public struct Capabilities: Codable {
             public let gv2 = true
             public let gv2_2 = true
             public let gv2_3 = true
@@ -339,8 +339,11 @@ public enum RegistrationRequestFactory {
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
         let url = urlComponents.url!
 
+        let accountAttributesData = try! JSONEncoder().encode(accountAttributes)
+        let accountAttributesDict = try! JSONSerialization.jsonObject(with: accountAttributesData, options: .fragmentsAllowed) as! [String: Any]
+
         var parameters: [String: Any] = [
-            "accountAttributes": accountAttributes,
+            "accountAttributes": accountAttributesDict,
             "skipDeviceTransfer": skipDeviceTransfer
         ]
         switch verificationMethod {
@@ -404,8 +407,7 @@ public enum RegistrationRequestFactory {
 
     public static func updatePrimaryDeviceAccountAttributesRequest(
         _ accountAttributes: AccountAttributes,
-        authUsername: String,
-        authPassword: String
+        auth: ChatServiceAuth
     ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
             ["v1", "accounts", "attributes"]
@@ -421,8 +423,7 @@ public enum RegistrationRequestFactory {
 
         let result = TSRequest(url: url, method: "PUT", parameters: parameters)
         result.shouldHaveAuthorizationHeaders = true
-        result.authUsername = authUsername
-        result.authPassword = authPassword
+        result.setAuth(auth)
         return result
     }
 }

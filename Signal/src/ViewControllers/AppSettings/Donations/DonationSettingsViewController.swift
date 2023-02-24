@@ -599,7 +599,8 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
                     profileBioEmoji: snapshot.bioEmoji,
                     profileAvatarData: snapshot.avatarData,
                     visibleBadgeIds: newVisibleBadgeIds,
-                    userProfileWriter: .localUser)
+                    userProfileWriter: .localUser
+                )
             } else {
                 return Promise.value(())
             }

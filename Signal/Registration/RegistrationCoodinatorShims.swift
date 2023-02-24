@@ -14,6 +14,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreShim
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerShim
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerShim
+        public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerShim
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
@@ -26,6 +27,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerWrapper
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerWrapper
+        public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerWrapper
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
@@ -39,7 +41,7 @@ extension RegistrationCoordinatorImpl {
 
 public protocol _RegistrationCoordinator_AccountManagerShim {
 
-    func performInitialStorageServiceRestore() -> Promise<Void>
+    func performInitialStorageServiceRestore(auth: ChatServiceAuth) -> Promise<Void>
 }
 
 public class _RegistrationCoordinator_AccountManagerWrapper: _RegistrationCoordinator_AccountManagerShim {
@@ -47,8 +49,8 @@ public class _RegistrationCoordinator_AccountManagerWrapper: _RegistrationCoordi
     private let manager: AccountManager
     public init(_ manager: AccountManager) { self.manager = manager }
 
-    public func performInitialStorageServiceRestore() -> Promise<Void> {
-        return manager.performInitialStorageServiceRestore()
+    public func performInitialStorageServiceRestore(auth: ChatServiceAuth) -> Promise<Void> {
+        return manager.performInitialStorageServiceRestore(auth: auth)
     }
 }
 
@@ -142,6 +144,32 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
     }
 }
 
+// MARK: - PreKeyManager
+
+public protocol _RegistrationCoordinator_PreKeyManagerShim {
+
+    func createPreKeys(
+        auth: ChatServiceAuth
+    ) -> Promise<Void>
+}
+
+public class _RegistrationCoordinator_PreKeyManagerWrapper: _RegistrationCoordinator_PreKeyManagerShim {
+
+    public init() {}
+
+    public func createPreKeys(
+        auth: ChatServiceAuth
+    ) -> Promise<Void> {
+        let (promise, future) = Promise<Void>.pending()
+        TSPreKeyManager.createPreKeys(
+            with: auth,
+            success: future.resolve,
+            failure: future.reject
+        )
+        return promise
+    }
+}
+
 // MARK: - ProfileManager
 
 public protocol _RegistrationCoordinator_ProfileManagerShim {
@@ -155,7 +183,8 @@ public protocol _RegistrationCoordinator_ProfileManagerShim {
     func updateLocalProfile(
         givenName: String,
         familyName: String?,
-        avatarData: Data?
+        avatarData: Data?,
+        auth: ChatServiceAuth
     ) -> Promise<Void>
 }
 
@@ -171,7 +200,8 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
     public func updateLocalProfile(
         givenName: String,
         familyName: String?,
-        avatarData: Data?
+        avatarData: Data?,
+        auth: ChatServiceAuth
     ) -> Promise<Void> {
         return OWSProfileManager.updateLocalProfilePromise(
             profileGivenName: givenName,
@@ -180,7 +210,8 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
             profileBioEmoji: nil,
             profileAvatarData: avatarData,
             visibleBadgeIds: [],
-            userProfileWriter: .registration
+            userProfileWriter: .registration,
+            auth: auth
         )
     }
 }
@@ -205,8 +236,7 @@ public protocol _RegistrationCoordinator_PushRegistrationManagerShim {
     func requestPushToken() -> Guarantee<String?>
 
     func syncPushTokensForcingUpload(
-        authUsername: String,
-        authPassword: String
+        auth: ChatServiceAuth
     ) -> Guarantee<Registration.SyncPushTokensResult>
 }
 
@@ -230,12 +260,9 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
     }
 
     public func syncPushTokensForcingUpload(
-        authUsername: String,
-        authPassword: String
+        auth: ChatServiceAuth
     ) -> Guarantee<Registration.SyncPushTokensResult> {
-        let job = SyncPushTokensJob(mode: .forceUpload)
-        job.authUsername = authUsername
-        job.authPassword = authPassword
+        let job = SyncPushTokensJob(mode: .forceUpload, auth: auth)
         return job.run()
             .map(on: SyncScheduler()) { return .success }
             .recover(on: SyncScheduler()) { error -> Guarantee<Registration.SyncPushTokensResult> in
@@ -311,6 +338,8 @@ public protocol _RegistrationCoordinator_TSAccountManagerShim {
         authToken: String,
         _ tx: DBWriteTransaction
     )
+
+    func setIsOnboarded(_ tx: DBWriteTransaction)
 }
 
 public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoordinator_TSAccountManagerShim {
@@ -366,6 +395,10 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
             authToken: authToken,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
+    }
+
+    public func setIsOnboarded(_ tx: DBWriteTransaction) {
+        manager.setIsOnboarded(true, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

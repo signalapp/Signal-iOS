@@ -116,9 +116,12 @@ extension OWSIdentityManager {
             let privateKey = try PrivateKey(privateKeyData)
             let keyPair = ECKeyPair(IdentityKeyPair(publicKey: publicKey, privateKey: privateKey))
             storeIdentityKeyPair(keyPair, for: .pni, transaction: transaction)
-            TSPreKeyManager.createPreKeys(for: .pni, success: {}, failure: { error in
-                owsFailDebug("Failed to create PNI pre-keys after receiving PniIdentity sync message: \(error)")
-            })
+            TSPreKeyManager.createPreKeys(
+                success: {},
+                failure: { error in
+                    owsFailDebug("Failed to create PNI pre-keys after receiving PniIdentity sync message: \(error)")
+                }
+            )
         } catch {
             owsFailDebug("Invalid PNI identity data: \(error)")
         }

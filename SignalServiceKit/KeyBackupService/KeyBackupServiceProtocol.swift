@@ -75,7 +75,7 @@ public enum KBS {
         case kbsAuth(KBSAuthCredential, backup: AuthMethod?)
         /// Get a KBS auth credential from the chat server first with the
         /// provided credentials, then user it to talk to the KBS server.
-        case chatServerAuth(username: String, password: String)
+        case chatServerAuth(ChatServiceAuth)
         /// Use whatever KBS auth credential we have cached; if unavailable or
         /// if invalid, falls back to getting a KBS auth credential from the chat server
         /// with the chat server auth credentials we have cached.

@@ -120,16 +120,22 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     // MARK: - Update
 
-    public func updateProfilePromise(profileGivenName: String?,
-                                     profileFamilyName: String?,
-                                     profileBio: String?,
-                                     profileBioEmoji: String?,
-                                     profileAvatarData: Data?,
-                                     visibleBadgeIds: [String],
-                                     unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate> {
+    public func updateProfilePromise(
+        profileGivenName: String?,
+        profileFamilyName: String?,
+        profileBio: String?,
+        profileBioEmoji: String?,
+        profileAvatarData: Data?,
+        visibleBadgeIds: [String],
+        unsavedRotatedProfileKey: OWSAES256Key?,
+        auth: ChatServiceAuth
+    ) -> Promise<VersionedProfileUpdate> {
 
         let profileKeyToUse = unsavedRotatedProfileKey ?? self.profileManager.localProfileKey()
         return firstly(on: DispatchQueue.global()) {
+            if let localUuid = auth.aci {
+                return localUuid
+            }
             guard let localUuid = self.tsAccountManager.localUuid else {
                 throw OWSAssertionError("Missing localUuid.")
             }
@@ -225,14 +231,17 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
             let profileKeyVersion = try localProfileKey.getProfileKeyVersion(uuid: localUuid)
             let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
-            let request = OWSRequestFactory.versionedProfileSetRequest(withName: nameValue,
-                                                                       bio: bioValue,
-                                                                       bioEmoji: bioEmojiValue,
-                                                                       hasAvatar: hasAvatar,
-                                                                       paymentAddress: paymentAddressValue,
-                                                                       visibleBadgeIds: visibleBadgeIds,
-                                                                       version: profileKeyVersionString,
-                                                                       commitment: commitmentData)
+            let request = OWSRequestFactory.versionedProfileSetRequest(
+                withName: nameValue,
+                bio: bioValue,
+                bioEmoji: bioEmojiValue,
+                hasAvatar: hasAvatar,
+                paymentAddress: paymentAddressValue,
+                visibleBadgeIds: visibleBadgeIds,
+                version: profileKeyVersionString,
+                commitment: commitmentData,
+                auth: auth
+            )
             return self.networkManager.makePromise(request: request)
         }.then(on: DispatchQueue.global()) { response -> Promise<VersionedProfileUpdate> in
             if let profileAvatarData = profileAvatarData {
@@ -269,7 +278,11 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     // MARK: - Get
 
-    public func versionedProfileRequest(for serviceId: ServiceId, udAccessKey: SMKUDAccessKey?) throws -> VersionedProfileRequest {
+    public func versionedProfileRequest(
+        for serviceId: ServiceId,
+        udAccessKey: SMKUDAccessKey?,
+        auth: ChatServiceAuth
+    ) throws -> VersionedProfileRequest {
         var requestContext: ProfileKeyCredentialRequestContext?
         var profileKeyVersionArg: String?
         var credentialRequestArg: Data?
@@ -304,7 +317,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             serviceId: ServiceIdObjC(serviceId),
             profileKeyVersion: profileKeyVersionArg,
             credentialRequest: credentialRequestArg,
-            udAccessKey: udAccessKey
+            udAccessKey: udAccessKey,
+            auth: auth
         )
 
         return VersionedProfileRequestImpl(request: request, requestContext: requestContext, profileKey: profileKeyForRequest)

@@ -46,17 +46,22 @@ public protocol VersionedProfiles: AnyObject {
 // MARK: -
 
 public protocol VersionedProfilesSwift: VersionedProfiles {
-    func updateProfilePromise(profileGivenName: String?,
-                              profileFamilyName: String?,
-                              profileBio: String?,
-                              profileBioEmoji: String?,
-                              profileAvatarData: Data?,
-                              visibleBadgeIds: [String],
-                              unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate>
+
+    func updateProfilePromise(
+        profileGivenName: String?,
+        profileFamilyName: String?,
+        profileBio: String?,
+        profileBioEmoji: String?,
+        profileAvatarData: Data?,
+        visibleBadgeIds: [String],
+        unsavedRotatedProfileKey: OWSAES256Key?,
+        auth: ChatServiceAuth
+    ) -> Promise<VersionedProfileUpdate>
 
     func versionedProfileRequest(
         for serviceId: ServiceId,
-        udAccessKey: SMKUDAccessKey?
+        udAccessKey: SMKUDAccessKey?,
+        auth: ChatServiceAuth
     ) throws -> VersionedProfileRequest
 
     func validProfileKeyCredential(
@@ -76,7 +81,8 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
 
     public func versionedProfileRequest(
         for serviceId: ServiceId,
-        udAccessKey: SMKUDAccessKey?
+        udAccessKey: SMKUDAccessKey?,
+        auth: ChatServiceAuth
     ) throws -> VersionedProfileRequest {
         owsFail("Not implemented.")
     }
@@ -84,13 +90,16 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
     public func didFetchProfile(profile: SignalServiceProfile,
                                 profileRequest: VersionedProfileRequest) {}
 
-    public func updateProfilePromise(profileGivenName: String?,
-                                     profileFamilyName: String?,
-                                     profileBio: String?,
-                                     profileBioEmoji: String?,
-                                     profileAvatarData: Data?,
-                                     visibleBadgeIds: [String],
-                                     unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate> {
+    public func updateProfilePromise(
+        profileGivenName: String?,
+        profileFamilyName: String?,
+        profileBio: String?,
+        profileBioEmoji: String?,
+        profileAvatarData: Data?,
+        visibleBadgeIds: [String],
+        unsavedRotatedProfileKey: OWSAES256Key?,
+        auth: ChatServiceAuth
+    ) -> Promise<VersionedProfileUpdate> {
         owsFail("Not implemented.")
     }
 

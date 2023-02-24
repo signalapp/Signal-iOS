@@ -21,13 +21,11 @@ class SyncPushTokensJob: NSObject {
 
     private let mode: Mode
 
-    // If these are set, they will be set on the request
-    // to the signal server. Otherwise gloabl values will be used.
-    public var authUsername: String?
-    public var authPassword: String?
+    public let auth: ChatServiceAuth
 
-    required init(mode: Mode) {
+    required init(mode: Mode, auth: ChatServiceAuth = .implicit()) {
         self.mode = mode
+        self.auth = auth
     }
 
     private static let hasUploadedTokensOnce = AtomicBool(false)
@@ -98,14 +96,14 @@ class SyncPushTokensJob: NSObject {
 
             Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
             return firstly {
-                if let authUsername = self.authUsername, let authPassword = self.authPassword {
+                switch self.auth.mode {
+                case .implicit:
+                    return self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken)
+                case .explicit:
                     let request = OWSRequestFactory.registerForPushRequest(withPushIdentifier: pushToken, voipIdentifier: voipToken)
                     request.shouldHaveAuthorizationHeaders = true
-                    request.authUsername = authUsername
-                    request.authPassword = authPassword
+                    request.setAuth(self.auth)
                     return self.accountManager.updatePushTokens(request: request)
-                } else {
-                    return self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken)
                 }
             }.done(on: DispatchQueue.global()) { _ in
                 self.recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)

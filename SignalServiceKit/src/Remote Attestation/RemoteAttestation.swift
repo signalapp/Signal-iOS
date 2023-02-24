@@ -22,7 +22,7 @@ public extension RemoteAttestation {
         /// Uses a pre-existing KBS auth credential.
         case kbsAuth(Auth)
         /// Hits the chat server for auth credentials using the provided chat server (not kbs) credentials.
-        case chatServer(authUsername: String, authPassword: String)
+        case chatServer(ChatServiceAuth)
         /// Hits the chat server for auth credentials using the chat server credentials on TSAccountManager.
         case chatServerImplicitCredentials
     }
@@ -32,14 +32,12 @@ public extension RemoteAttestation {
         enclave: KeyBackupEnclave
     ) -> Promise<RemoteAttestation> {
         var kbsAuth: Auth?
-        var chatServerAuthUsername: String?
-        var chatServerAuthPassword: String?
+        var chatServiceAuth: ChatServiceAuth = .implicit()
         switch authMethod {
         case .kbsAuth(let auth):
             kbsAuth = auth
-        case let .chatServer(authUsername, authPassword):
-            chatServerAuthUsername = authUsername
-            chatServerAuthPassword = authPassword
+        case let .chatServer(auth):
+            chatServiceAuth = auth
         case .chatServerImplicitCredentials:
             // Don't set anything; the request will implicitly pull credentials.
             break
@@ -47,8 +45,7 @@ public extension RemoteAttestation {
         return performAttestation(
             for: .keyBackup,
             auth: kbsAuth,
-            chatServerAuthUsername: chatServerAuthUsername,
-            chatServerAuthPassword: chatServerAuthPassword,
+            chatServiceAuth: chatServiceAuth,
             config: EnclaveConfig(
                 enclaveName: enclave.name,
                 mrenclave: enclave.mrenclave,
@@ -72,7 +69,7 @@ public extension RemoteAttestation {
 
 extension RemoteAttestation {
     static func authForCDSI() -> Promise<Auth> {
-        return Auth.fetch(forService: .cdsi, authUsername: nil, authPassword: nil)
+        return Auth.fetch(forService: .cdsi, auth: .implicit())
     }
 }
 
@@ -137,8 +134,7 @@ fileprivate extension RemoteAttestation.Auth {
     ///   If either authUsername or authPassword is missing, uses auth information from TSAccountManager.
     static func fetch(
         forService service: RemoteAttestation.Service,
-        authUsername: String?,
-        authPassword: String?
+        auth: ChatServiceAuth
     ) -> Promise<RemoteAttestation.Auth> {
         if DebugFlags.internalLogging {
             Logger.info("service: \(service)")
@@ -146,7 +142,7 @@ fileprivate extension RemoteAttestation.Auth {
 
         let request = service.authRequest()
 
-        if let authUsername, let authPassword {
+        if let authUsername = auth.username, let authPassword = auth.password {
             request.shouldHaveAuthorizationHeaders = true
             request.authUsername = authUsername
             request.authPassword = authPassword
@@ -274,15 +270,14 @@ fileprivate extension RemoteAttestation {
     static func performAttestation(
         for service: Service,
         auth: Auth? = nil,
-        chatServerAuthUsername: String? = nil,
-        chatServerAuthPassword: String? = nil,
+        chatServiceAuth: ChatServiceAuth = .implicit(),
         config: EnclaveConfig
     ) -> Promise<AttestationResponse> {
         firstly(on: DispatchQueue.global()) { () -> Promise<Auth> in
             if let auth = auth {
                 return Promise.value(auth)
             } else {
-                return Auth.fetch(forService: service, authUsername: chatServerAuthUsername, authPassword: chatServerAuthPassword)
+                return Auth.fetch(forService: service, auth: chatServiceAuth)
             }
         }.then(on: DispatchQueue.global()) { (auth: Auth) -> Promise<AttestationResponse> in
             let clientEphemeralKeyPair = Curve25519.generateKeyPair()

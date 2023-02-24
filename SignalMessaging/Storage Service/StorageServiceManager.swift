@@ -344,6 +344,12 @@ class StorageServiceOperation: OWSOperation {
             return reportSuccess()
         }
 
+        // Under the new reg flow, we will sync kbs keys before being fully ready with
+        // ts account manager auth set up. skip if so.
+        if FeatureFlags.useNewRegistrationFlow, !tsAccountManager.isRegisteredAndReady {
+            return reportSuccess()
+        }
+
         switch mode {
         case .backup:
             backupPendingChanges()

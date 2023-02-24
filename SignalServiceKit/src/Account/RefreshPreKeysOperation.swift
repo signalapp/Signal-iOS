@@ -59,10 +59,13 @@ public class RefreshPreKeysOperation: OWSOperation {
             }
 
             return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                self.accountServiceClient.setPreKeys(for: self.identity,
-                                                     identityKey: identityKeyPair.publicKey,
-                                                     signedPreKeyRecord: signedPreKeyRecord,
-                                                     preKeyRecords: preKeyRecords)
+                self.serviceClient.registerPreKeys(
+                    for: self.identity,
+                    identityKey: identityKeyPair.publicKey,
+                    signedPreKeyRecord: signedPreKeyRecord,
+                    preKeyRecords: preKeyRecords,
+                    auth: .implicit()
+                )
             }.done(on: DispatchQueue.global()) { () in
                 signedPreKeyRecord.markAsAcceptedByService()
 

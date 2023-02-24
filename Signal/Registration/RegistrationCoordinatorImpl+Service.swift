@@ -279,20 +279,18 @@ extension RegistrationCoordinatorImpl {
         /// Returns nil error if success.
         public static func makeUpdateAccountAttributesRequest(
             _ attributes: RegistrationRequestFactory.AccountAttributes,
-            authUsername: String,
-            authPassword: String,
+            auth: ChatServiceAuth,
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) -> Guarantee<Error?> {
             let request = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
                 attributes,
-                authUsername: authUsername,
-                authPassword: authPassword
+                auth: auth
             )
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
                 .map(on: schedulers.sync) { response in
-                    guard response.responseStatusCode == 200 else {
+                    guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
                         // TODO[Registration]: what other error codes can come up here?
                         return OWSAssertionError("Got unexpected response code from update attributes request.")
                     }
@@ -302,8 +300,7 @@ extension RegistrationCoordinatorImpl {
                     if error.isNetworkConnectivityFailure, retriesLeft > 0 {
                         return makeUpdateAccountAttributesRequest(
                             attributes,
-                            authUsername: authUsername,
-                            authPassword: authPassword,
+                            auth: auth,
                             signalService: signalService,
                             schedulers: schedulers,
                             retriesLeft: retriesLeft - 1

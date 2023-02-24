@@ -330,7 +330,8 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
                 profileBioEmoji: nil,
                 profileAvatarData: avatarData,
                 visibleBadgeIds: [],
-                userProfileWriter: .registration)
+                userProfileWriter: .registration
+            )
         }.done {
             self.profileCompleted()
             UIView.animate(withDuration: 0.15) {

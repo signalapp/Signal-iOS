@@ -17,6 +17,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private let kbsAuthCredentialStore: KBSAuthCredentialStorage
     private let kvStore: KeyValueStoreProtocol
     private let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
+    private let preKeyManager: RegistrationCoordinatorImpl.Shims.PreKeyManager
     private let profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager
     private let pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager
     private let receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager
@@ -38,6 +39,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         kbsAuthCredentialStore: KBSAuthCredentialStorage,
         keyValueStoreFactory: KeyValueStoreFactory,
         ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager,
+        preKeyManager: RegistrationCoordinatorImpl.Shims.PreKeyManager,
         profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager,
         pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager,
         receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager,
@@ -58,6 +60,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.kbsAuthCredentialStore = kbsAuthCredentialStore
         self.kvStore = keyValueStoreFactory.keyValueStore(collection: "RegistrationCoordinator")
         self.ows2FAManager = ows2FAManager
+        self.preKeyManager = preKeyManager
         self.profileManager = profileManager
         self.pushRegistrationManager = pushRegistrationManager
         self.receiptManager = receiptManager
@@ -289,22 +292,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func setProfileInfo(givenName: String, familyName: String?, avatarData: Data?) -> Guarantee<RegistrationStep> {
-        return profileManager.updateLocalProfile(givenName: givenName, familyName: familyName, avatarData: avatarData)
-            .map(on: schedulers.sync) { return nil }
-            .recover(on: schedulers.sync) { (error) -> Guarantee<Error?> in
-                return .value(error)
-            }
-            .then(on: schedulers.main) { [weak self] (error) -> Guarantee<RegistrationStep> in
-                guard let self else {
-                    return .value(.showErrorSheet(.todo))
-                }
-                guard error == nil else {
-                    // TODO[Registration]: should we differentiate errors?
-                    return .value(.showErrorSheet(.todo))
-                }
-                self.inMemoryState.hasProfileName = true
-                return self.nextStep()
-            }
+        inMemoryState.pendingProfileInfo = (givenName: givenName, familyName: familyName, avatarData: avatarData)
+        return self.nextStep()
     }
 
     // MARK: - Internal
@@ -374,6 +363,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // reglock was enabled, we should enable it again when done.
         var wasReglockEnabled = false
         var hasSetReglock = false
+
+        var pendingProfileInfo: (givenName: String, familyName: String?, avatarData: Data?)?
 
         // TSAccountManager state
         var registrationId: UInt32!
@@ -472,6 +463,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// the server. This might fail non-transiently because the device
         /// doesn't support push. We'd mark this as true and move on.
         var didSyncPushTokens: Bool = false
+
+        /// Once per registration we sync prekeys (and the signed prekey)
+        /// up to the server. We can't proceed until this succeeds.
+        var didSyncPrekeys: Bool = false
 
         /// When we try and register, the server gives us an error if its possible
         /// to execute a device-to-device transfer. The user can decline; if they
@@ -613,6 +608,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // TODO[Registration]: should this happen after updating account attributes,
             // since that can fail?
             tsAccountManager.didRegister(accountIdentity.response, authToken: accountIdentity.authToken, tx)
+            tsAccountManager.setIsOnboarded(tx)
         }
 
         // Update the account attributes once, now, at the end.
@@ -623,14 +619,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        return Service
-            .makeUpdateAccountAttributesRequest(
-                makeAccountAttributes(authToken: accountIdentity.authToken),
-                authUsername: accountIdentity.authUsername,
-                authPassword: accountIdentity.authPassword,
-                signalService: signalService,
-                schedulers: schedulers
-            )
+        updateAccountAttributes(accountIdentity)
             .then(on: schedulers.main) { [weak self] error -> Guarantee<RegistrationStep> in
                 guard let self else {
                     return .value(.showErrorSheet(.todo))
@@ -1748,9 +1737,35 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func nextStepForProfileSetup(
         _ accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
+        // We _must_ do these steps first. The created account starts out
+        // disabled and other endpoints won't work until we:
+        // 1. sync push tokens OR set isManualMessageFetchEnabled=true and sync account attributes
+        // 2. create prekeys and register them with the server
+        // then we can do other stuff (fetch kbs backups, set profile info, etc)
         if !persistedState.didSyncPushTokens {
             return syncPushTokens(accountIdentity)
         }
+
+        if !persistedState.didSyncPrekeys {
+            return preKeyManager
+                .createPreKeys(auth: accountIdentity.chatServiceAuth)
+                .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
+                    guard let self else {
+                        return .value(.showErrorSheet(.todo))
+                    }
+                    self.db.write { tx in
+                        self.updatePersistedState(tx) {
+                            $0.didSyncPrekeys = true
+                        }
+                    }
+                    return self.nextStep()
+                }
+                .recover(on: schedulers.main) { _ -> Guarantee<RegistrationStep> in
+                    // TODO[Registration]: things just fail here? What do we do?
+                    return .value(.showErrorSheet(.todo))
+                }
+        }
+
         let isRestoringPinBackup = accountIdentity.response.hasPreviouslyUsedKBS
 
         if !persistedState.hasSkippedPinEntry {
@@ -1788,7 +1803,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.shouldRestoreFromStorageService {
-            return accountManager.performInitialStorageServiceRestore()
+            return accountManager.performInitialStorageServiceRestore(auth: accountIdentity.chatServiceAuth)
                 .map(on: schedulers.main) { [weak self] in
                     self?.inMemoryState.hasRestoredFromStorageService = true
                     return ()
@@ -1802,6 +1817,36 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return self?.nextStep() ?? .value(.showErrorSheet(.todo))
                 }
         }
+
+        if !inMemoryState.hasProfileName {
+            if let profileInfo = inMemoryState.pendingProfileInfo {
+                return profileManager.updateLocalProfile(
+                    givenName: profileInfo.givenName,
+                    familyName: profileInfo.familyName,
+                    avatarData: profileInfo.avatarData,
+                    auth: accountIdentity.chatServiceAuth
+                )
+                    .map(on: schedulers.sync) { return nil }
+                    .recover(on: schedulers.sync) { (error) -> Guarantee<Error?> in
+                        return .value(error)
+                    }
+                    .then(on: schedulers.main) { [weak self] (error) -> Guarantee<RegistrationStep> in
+                        guard let self else {
+                            return .value(.showErrorSheet(.todo))
+                        }
+                        guard error == nil else {
+                            // TODO[Registration]: should we differentiate errors?
+                            return .value(.showErrorSheet(.todo))
+                        }
+                        self.inMemoryState.hasProfileName = true
+                        self.inMemoryState.pendingProfileInfo = nil
+                        return self.nextStep()
+                    }
+            }
+
+            return .value(.setupProfile)
+        }
+
         if !inMemoryState.hasDefinedIsDiscoverableByPhoneNumber {
             return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(e164: accountIdentity.response.e164)))
         }
@@ -1820,38 +1865,46 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         pushRegistrationManager
             .syncPushTokensForcingUpload(
-                authUsername: accountIdentity.authUsername,
-                authPassword: accountIdentity.authPassword
+                auth: accountIdentity.chatServiceAuth
             )
             .then(on: schedulers.main) { [weak self] result in
-                guard let self else {
+                guard let strongSelf = self else {
                     return .value(.showErrorSheet(.todo))
                 }
                 switch result {
                 case .success:
-                    self.db.write { tx in
-                        self.updatePersistedState(tx) {
+                    strongSelf.db.write { tx in
+                        strongSelf.updatePersistedState(tx) {
                             $0.didSyncPushTokens = true
                         }
                     }
-                    return self.nextStep()
+                    return strongSelf.nextStep()
                 case .pushUnsupported(let description):
                     // This can happen with:
                     // - simulators, none of which support receiving push notifications
                     // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
-                    // In these cases, mark the sync as done, but enable manual message fetch.
+                    // In these cases, mark the sync as done, but enable manual message fetch and sync that state to the server.
+                    // If we don't, the account will be in a "disabled" state and future requests won't work.
                      Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
-                    self.inMemoryState.isManualMessageFetchEnabled = true
-                    self.db.write { tx in
-                        self.tsAccountManager.setIsManualMessageFetchEnabled(true, tx)
-                        self.updatePersistedState(tx) {
-                            $0.didSyncPushTokens = true
+                    strongSelf.inMemoryState.isManualMessageFetchEnabled = true
+                    return strongSelf.updateAccountAttributes(accountIdentity)
+                        .then(on: strongSelf.schedulers.main) { [weak self] maybeError -> Guarantee<RegistrationStep> in
+                            guard let strongSelf = self, maybeError == nil else {
+                                Logger.error("Unable to update account attributes for manual message fetch with error: \(String(describing: maybeError))")
+                                return .value(.showErrorSheet(.todo))
+                            }
+                            strongSelf.db.write { tx in
+                                strongSelf.tsAccountManager.setIsManualMessageFetchEnabled(true, tx)
+                                strongSelf.updatePersistedState(tx) {
+                                    // Say that we synced push tokens so that we skip this step hereafter.
+                                    $0.didSyncPushTokens = true
+                                }
+                            }
+                            return strongSelf.nextStep()
                         }
-                    }
-                    return self.nextStep()
                 case .networkError:
                     if retriesLeft > 0 {
-                        return self.syncPushTokens(
+                        return strongSelf.syncPushTokens(
                             accountIdentity,
                             retriesLeft: retriesLeft - 1
                         )
@@ -1868,7 +1921,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(username: accountIdentity.authUsername, password: accountIdentity.authPassword)
+        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(accountIdentity.chatServiceAuth)
         let authMethod: KBS.AuthMethod
         if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
             authMethod = .kbsAuth(kbsAuthCredential, backup: backupAuthMethod)
@@ -1921,10 +1974,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         let authMethod: KBS.AuthMethod
-        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(
-            username: accountIdentity.authUsername,
-            password: accountIdentity.authPassword
-        )
+        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(accountIdentity.chatServiceAuth)
         if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
             authMethod = .kbsAuth(kbsAuthCredential, backup: backupAuthMethod)
         } else {
@@ -1944,7 +1994,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 strongSelf.db.write { tx in
                     strongSelf.ows2FAManager.markPinEnabled(pin, tx)
                 }
-                return strongSelf.accountManager.performInitialStorageServiceRestore()
+                return strongSelf.accountManager.performInitialStorageServiceRestore(auth: accountIdentity.chatServiceAuth)
                     .map(on: strongSelf.schedulers.main) { [weak self] in
                         self?.inMemoryState.hasRestoredFromStorageService = true
                     }
@@ -2036,6 +2086,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         inMemoryState.udAccessKey = udAccessKey
         inMemoryState.hasProfileName = profileManager.hasProfileName
+    }
+
+    private func updateAccountAttributes(_ accountIdentity: AccountIdentity) -> Guarantee<Error?> {
+        return Service
+            .makeUpdateAccountAttributesRequest(
+                makeAccountAttributes(authToken: accountIdentity.authToken),
+                auth: accountIdentity.chatServiceAuth,
+                signalService: signalService,
+                schedulers: schedulers
+            )
     }
 
     // MARK: Device Transfer
@@ -2130,6 +2190,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         var authPassword: String {
             return authToken
+        }
+
+        var chatServiceAuth: ChatServiceAuth {
+            return ChatServiceAuth.explicit(aci: response.aci, password: authPassword)
         }
     }
 

@@ -188,4 +188,51 @@ extension OWSRequestFactory {
             "signature": signedPreKeyRecord.signature.base64EncodedString()
         ]
     }
+
+    /// If a username and password are both provided, those are used for the request's
+    /// Authentication header. Otherwise, the default header is used (whatever's on
+    /// TSAccountManager).
+    @objc
+    static func registerPrekeysRequest(
+        identity: OWSIdentity,
+        identityKey: IdentityKey,
+        signedPreKeyRecord: SignedPreKeyRecord,
+        prekeyRecords: [PreKeyRecord],
+        auth: ChatServiceAuth
+    ) -> TSRequest {
+        owsAssertDebug(prekeyRecords.count > 0)
+        owsAssertDebug(identityKey.count > 0)
+
+        var path = textSecureKeysAPI
+        if let queryParam = queryParam(for: identity) {
+            path = path.appending("?\(queryParam)")
+        }
+
+        let publicIdentityKey = identityKey.prependKeyType().base64EncodedString()
+        let serializedPrekeys = prekeyRecords.map { self.preKeyRequestParameters($0) }
+        let request = TSRequest(
+            url: URL(string: path)!,
+            method: "PUT",
+            parameters: [
+                "preKeys": serializedPrekeys,
+                "signedPreKey": signedPreKeyRequestParameters(signedPreKeyRecord),
+                "identityKey": publicIdentityKey
+            ]
+        )
+        request.setAuth(auth)
+        return request
+    }
+
+    @objc
+    static func queryParam(for identity: OWSIdentity) -> String? {
+        switch identity {
+        case .aci:
+            return nil
+        case .pni:
+            return "identity=pni"
+        @unknown default:
+            owsFailDebug("Unrecognized identity type")
+            return nil
+        }
+    }
 }

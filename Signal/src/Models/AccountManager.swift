@@ -233,7 +233,7 @@ public class AccountManager: NSObject {
         }
     }
 
-    func performInitialStorageServiceRestore() -> Promise<Void> {
+    func performInitialStorageServiceRestore(auth: ChatServiceAuth = .implicit()) -> Promise<Void> {
         BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
         return firstly {
             self.storageServiceManager.restoreOrCreateManifestIfNecessary().asVoid()
@@ -251,7 +251,7 @@ public class AccountManager: NSObject {
                 // Note we *don't* return this promise. There's no need to block registration on
                 // it completing, and if there are any errors, it's durable.
                 firstly {
-                    self.profileManagerImpl.reuploadLocalProfilePromise()
+                    self.profileManagerImpl.reuploadLocalProfilePromise(auth: auth)
                 }.catch { error in
                     Logger.error("error: \(error)")
                 }

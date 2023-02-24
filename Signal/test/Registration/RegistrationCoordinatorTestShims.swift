@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import SignalCoreKit
+import SignalServiceKit
 @testable import Signal
 
 extension RegistrationCoordinatorImpl {
@@ -13,6 +15,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreMock
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerMock
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerMock
+        public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerMock
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerMock
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
@@ -28,10 +31,10 @@ public class _RegistrationCoordinator_AccountManagerMock: _RegistrationCoordinat
 
     public init() {}
 
-    public var performInitialStorageServiceRestoreMock: (() -> Promise<Void>)?
+    public var performInitialStorageServiceRestoreMock: ((ChatServiceAuth) -> Promise<Void>)?
 
-    public func performInitialStorageServiceRestore() -> Promise<Void> {
-        return performInitialStorageServiceRestoreMock!()
+    public func performInitialStorageServiceRestore(auth: ChatServiceAuth) -> Promise<Void> {
+        return performInitialStorageServiceRestoreMock!(auth)
     }
 }
 
@@ -105,6 +108,16 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
     }
 }
 
+// MARK: - PreKeyManager
+
+public class _RegistrationCoordinator_PreKeyManagerMock: _RegistrationCoordinator_PreKeyManagerShim {
+    public var createPreKeysMock: ((ChatServiceAuth) -> Promise<Void>)?
+
+    public func createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
+        return createPreKeysMock!(auth)
+    }
+}
+
 // MARK: - ProfileManager
 
 public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinator_ProfileManagerShim {
@@ -119,11 +132,23 @@ public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinat
 
     public var localProfileKey: OWSAES256Key { return localProfileKeyMock() }
 
-    public var updateLocalProfileMock: ((_ givenName: String, _ familyName: String?, _ avatarData: Data?) -> Promise<Void>)?
+    public var updateLocalProfileMock: ((
+        _ givenName: String,
+        _ familyName: String?,
+        _ avatarData: Data?,
+        _ auth: ChatServiceAuth
+    ) -> Promise<Void>)?
 
-    public func updateLocalProfile(givenName: String, familyName: String?, avatarData: Data?) -> Promise<Void> {
-        return updateLocalProfileMock!(givenName, familyName, avatarData)
+    public func updateLocalProfile(
+        givenName: String,
+        familyName: String?,
+        avatarData: Data?,
+        auth: ChatServiceAuth
+    ) -> Promise<Void> {
+        return updateLocalProfileMock!(givenName, familyName, avatarData, auth)
     }
+
+    func setIsOnboarded(_ tx: DBWriteTransaction) {}
 }
 
 // MARK: - PushRegistrationManager
@@ -149,13 +174,14 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
         return requestPushTokenMock!()
     }
 
-    public var syncPushTokensForcingUploadMock: ((_ authUsername: String, _ authPassword: String) -> Guarantee<Registration.SyncPushTokensResult>)?
+    public var syncPushTokensForcingUploadMock: ((
+        _ auth: ChatServiceAuth
+    ) -> Guarantee<Registration.SyncPushTokensResult>)?
 
     public func syncPushTokensForcingUpload(
-        authUsername: String,
-        authPassword: String
+        auth: ChatServiceAuth
     ) -> Guarantee<Registration.SyncPushTokensResult> {
-        return syncPushTokensForcingUploadMock!(authUsername, authPassword)
+        return syncPushTokensForcingUploadMock!(auth)
     }
 }
 
@@ -244,6 +270,8 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
     public func getOrGeneratePniRegistrationId(_ transaction: DBWriteTransaction) -> UInt32 {
         return pniRegistrationIdMock()
     }
+
+    public func setIsOnboarded(_ tx: SignalServiceKit.DBWriteTransaction) {}
 }
 
 // MARK: UDManager
