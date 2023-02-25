@@ -16,7 +16,7 @@ protocol RegistrationProfilePresenter: AnyObject {
 // MARK: - RegistrationProfileViewController
 
 class RegistrationProfileViewController: OWSViewController {
-    private var profilesFAQURL = URL(string: "https://support.signal.org/hc/articles/360007459591")!
+    private var profilesFAQURL: URL { URL(string: "https://support.signal.org/hc/articles/360007459591")! }
 
     public init(presenter: RegistrationProfilePresenter) {
         self.presenter = presenter
