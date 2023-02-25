@@ -1918,7 +1918,6 @@
 		F9C5CD76289453B300548EEE /* OWSSendGiftBadgeJobRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA9A289453B100548EEE /* OWSSendGiftBadgeJobRecord.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD77289453B300548EEE /* BaseModel.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA9B289453B100548EEE /* BaseModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD78289453B300548EEE /* PendingReadReceiptRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA9C289453B100548EEE /* PendingReadReceiptRecord.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CD79289453B300548EEE /* Explain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA9E289453B100548EEE /* Explain.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD7A289453B300548EEE /* PaymentsEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAA0289453B200548EEE /* PaymentsEvents.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAA1289453B200548EEE /* MobileCoinHelper.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD7C289453B300548EEE /* TSPaymentModel.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAA2289453B200548EEE /* TSPaymentModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -4435,7 +4434,6 @@
 		F9C5CA9A289453B100548EEE /* OWSSendGiftBadgeJobRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSendGiftBadgeJobRecord.m; sourceTree = "<group>"; };
 		F9C5CA9B289453B100548EEE /* BaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseModel.h; sourceTree = "<group>"; };
 		F9C5CA9C289453B100548EEE /* PendingReadReceiptRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingReadReceiptRecord.swift; sourceTree = "<group>"; };
-		F9C5CA9E289453B100548EEE /* Explain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Explain.swift; sourceTree = "<group>"; };
 		F9C5CAA0289453B200548EEE /* PaymentsEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsEvents.swift; sourceTree = "<group>"; };
 		F9C5CAA1289453B200548EEE /* MobileCoinHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinHelper.swift; sourceTree = "<group>"; };
 		F9C5CAA2289453B200548EEE /* TSPaymentModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSPaymentModel.h; sourceTree = "<group>"; };
@@ -8535,7 +8533,6 @@
 			children = (
 				F9C5CA52289453B100548EEE /* AxolotlStore */,
 				F9C5CA31289453B100548EEE /* Database */,
-				F9C5CA9D289453B100548EEE /* Debug */,
 				F9C5CA85289453B100548EEE /* Jobs */,
 				F9C5CA82289453B100548EEE /* AccountIdFinder.swift */,
 				F9C5CA9B289453B100548EEE /* BaseModel.h */,
@@ -8690,14 +8687,6 @@
 				F9C5CA95289453B100548EEE /* SSKJobRecord.m */,
 			);
 			path = Jobs;
-			sourceTree = "<group>";
-		};
-		F9C5CA9D289453B100548EEE /* Debug */ = {
-			isa = PBXGroup;
-			children = (
-				F9C5CA9E289453B100548EEE /* Explain.swift */,
-			);
-			path = Debug;
 			sourceTree = "<group>";
 		};
 		F9C5CA9F289453B200548EEE /* Payments */ = {
@@ -11523,7 +11512,6 @@
 				D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */,
 				F9C5CE2D289453B400548EEE /* ExperienceUpgradeFinder.swift in Sources */,
 				D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */,
-				F9C5CD79289453B300548EEE /* Explain.swift in Sources */,
 				F9C5CE57289453B400548EEE /* Factories.swift in Sources */,
 				F9C5CC86289453B300548EEE /* FailedAttachmentDownloadsJob.swift in Sources */,
 				F9C5CC1D289453B300548EEE /* FailedMessagesJob.swift in Sources */,
