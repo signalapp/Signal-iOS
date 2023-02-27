@@ -72,6 +72,8 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         case tooShort
         /// The username is too long.
         case tooLong
+        /// The username's first character is a digit.
+        case cannotStartWithDigit
         /// The username contains invalid characters.
         case invalidCharacters
     }
@@ -120,11 +122,6 @@ class UsernameSelectionViewController: OWSTableViewController2 {
 
     /// Injected dependencies.
     private let context: Context
-
-    private let nicknameValidator: Usernames.NicknameValidator = .init(
-        minCodepoints: Constants.minNicknameCodepointLength,
-        maxCodepoints: Constants.maxNicknameCodepointLength
-    )
 
     private lazy var apiManager: Usernames.API = {
         .init(networkManager: context.networkManager)
@@ -235,6 +232,11 @@ class UsernameSelectionViewController: OWSTableViewController2 {
                 )
             case .tooLong:
                 owsFail("This should be impossible from the UI, as we limit the text field length.")
+            case .cannotStartWithDigit:
+                return OWSLocalizedString(
+                    "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE",
+                    comment: "An error message shown when the user has typed a username that starts with a digit, which is invalid."
+                )
             case .invalidCharacters:
                 return OWSLocalizedString(
                     "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE",
@@ -368,6 +370,7 @@ private extension UsernameSelectionViewController {
                     .reservationFailed,
                     .tooShort,
                     .tooLong,
+                    .cannotStartWithDigit,
                     .invalidCharacters:
                 return false
             }
@@ -398,6 +401,7 @@ private extension UsernameSelectionViewController {
                     .reservationFailed,
                     .tooShort,
                     .tooLong,
+                    .cannotStartWithDigit,
                     .invalidCharacters:
                 return nil
             }
@@ -423,6 +427,7 @@ private extension UsernameSelectionViewController {
                 .reservationFailed,
                 .tooShort,
                 .tooLong,
+                .cannotStartWithDigit,
                 .invalidCharacters:
             self.usernameTextField.configureForError()
         }
@@ -552,6 +557,7 @@ private extension UsernameSelectionViewController {
                 .reservationFailed,
                 .tooShort,
                 .tooLong,
+                .cannotStartWithDigit,
                 .invalidCharacters:
             owsFail("Unexpected username state: \(usernameState). Should be impossible from the UI!")
         }
@@ -662,18 +668,31 @@ private extension UsernameSelectionViewController {
         if existingUsername?.nickname == nicknameFromTextField {
             currentUsernameState = .noChangesToExisting
         } else if let desiredNickname = nicknameFromTextField {
-            // We have an entered nickname
-            switch nicknameValidator.validate(desiredNickname: desiredNickname) {
-            case .success:
-                attemptReservationAndUpdateValidationState(
-                    forDesiredNickname: desiredNickname
+            typealias CandidateError = Usernames.HashedUsername.CandidateGenerationError
+
+            do {
+                let usernameCandidates = try Usernames.HashedUsername.generateCandidates(
+                    forNickname: desiredNickname,
+                    minNicknameLength: Constants.minNicknameCodepointLength,
+                    maxNicknameLength: Constants.maxNicknameCodepointLength
                 )
-            case .invalidCharacters:
+
+                attemptReservationAndUpdateValidationState(
+                    forUsernameCandidates: usernameCandidates
+                )
+            } catch CandidateError.nicknameCannotStartWithDigit {
+                currentUsernameState = .cannotStartWithDigit
+            } catch CandidateError.nicknameContainsInvalidCharacters {
                 currentUsernameState = .invalidCharacters
-            case .tooLong:
+            } catch CandidateError.nicknameTooLong {
                 currentUsernameState = .tooLong
-            case .tooShort:
+            } catch CandidateError.nicknameTooShort {
                 currentUsernameState = .tooShort
+            } catch CandidateError.nicknameCannotBeEmpty {
+                owsFail("We should never get here with an empty username string. Did something upstream break?")
+            } catch let error {
+                owsFailBeta("Unexpected error while generating candidate usernames! Did something upstream change? \(error)")
+                currentUsernameState = .reservationFailed
             }
         } else {
             // We have an existing username, but no entered nickname.
@@ -691,7 +710,7 @@ private extension UsernameSelectionViewController {
     /// not match the ID with which the reservation was initiated, we discard
     /// the result (as we have moved on to another desired nickname).
     private func attemptReservationAndUpdateValidationState(
-        forDesiredNickname desiredNickname: String
+        forUsernameCandidates usernameCandidates: Usernames.HashedUsername.GeneratedCandidates
     ) {
         AssertIsOnMainThread()
 
@@ -722,9 +741,7 @@ private extension UsernameSelectionViewController {
             UsernameLogger.shared.info("Attempting to reserve username. Attempt ID: \(thisAttemptId)")
 
             return self.apiManager.attemptToReserve(
-                desiredNickname: desiredNickname,
-                minNicknameLength: Constants.minNicknameCodepointLength,
-                maxNicknameLength: Constants.maxNicknameCodepointLength,
+                fromUsernameCandidates: usernameCandidates,
                 attemptId: thisAttemptId
             )
         }.done(on: DispatchQueue.main) { [weak self] reservationResult -> Void in

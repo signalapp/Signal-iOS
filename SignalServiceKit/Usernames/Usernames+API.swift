@@ -65,28 +65,15 @@ public extension Usernames.API {
     /// An ID for this attempt, to later disambiguate between multiple
     /// potentially-overlapping attempts.
     func attemptToReserve(
-        desiredNickname: String,
-        minNicknameLength: UInt32,
-        maxNicknameLength: UInt32,
+        fromUsernameCandidates usernameCandidates: Usernames.HashedUsername.GeneratedCandidates,
         attemptId: UUID
     ) -> Promise<ReservationResult> {
         func makeReservationError(from error: Error) -> ReservationError {
             .init(attemptId: attemptId, underlying: error)
         }
 
-        let usernameCandidates: [Usernames.HashedUsername]
-        do {
-            usernameCandidates = try Usernames.HashedUsername.generateCandidates(
-                forNickname: desiredNickname,
-                minNicknameLength: minNicknameLength,
-                maxNicknameLength: maxNicknameLength
-            )
-        } catch let error {
-            return .init(error: makeReservationError(from: error))
-        }
-
         let request = OWSRequestFactory.reserveUsernameRequest(
-            usernameHashes: usernameCandidates.map { $0.hashString }
+            usernameHashes: usernameCandidates.candidateHashes
         )
 
         func onRequestSuccess(response: HTTPResponse) throws -> ReservationResult {
@@ -104,9 +91,7 @@ public extension Usernames.API {
 
             let usernameHash: String = try parser.required(key: "usernameHash")
 
-            guard let acceptedCandidate = usernameCandidates.first(where: { candidate in
-                candidate.hashString == usernameHash
-            }) else {
+            guard let acceptedCandidate = usernameCandidates.candidate(matchingHash: usernameHash) else {
                 throw makeReservationError(from: OWSAssertionError(
                     "Accepted username hash did not match any candidates!"
                 ))

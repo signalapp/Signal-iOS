@@ -24,15 +24,18 @@ extension Usernames {
 
         // MARK: Getters
 
+        /// The raw username.
         public var usernameString: String {
             libSignalUsername.value
         }
 
-        public lazy var hashString: String = {
+        /// The hash of this username.
+        lazy var hashString: String = {
             Data(libSignalUsername.hash).asBase64Url
         }()
 
-        public lazy var proofString: String = {
+        /// The ZKProof string for this username's hash.
+        lazy var proofString: String = {
             Data(libSignalUsername.generateProof()).asBase64Url
         }()
     }
@@ -40,17 +43,75 @@ extension Usernames {
 
 // MARK: - Generate candidates
 
-extension Usernames.HashedUsername {
+public extension Usernames.HashedUsername {
+    struct GeneratedCandidates {
+        private let candidates: [Usernames.HashedUsername]
+
+        fileprivate init(candidates: [Usernames.HashedUsername]) {
+            self.candidates = candidates
+        }
+
+        var candidateHashes: [String] {
+            candidates.map { $0.hashString }
+        }
+
+        func candidate(matchingHash hashString: String) -> Usernames.HashedUsername? {
+            candidates.first(where: { candidate in
+                candidate.hashString == hashString
+            })
+        }
+    }
+
+    enum CandidateGenerationError: Error {
+        case nicknameCannotBeEmpty
+        case nicknameCannotStartWithDigit
+        case nicknameContainsInvalidCharacters
+        case nicknameTooShort
+        case nicknameTooLong
+
+        fileprivate init?(fromSignalError signalError: LibSignalClient.SignalError?) {
+            guard let signalError else { return nil }
+
+            switch signalError {
+            case .cannotBeEmpty:
+                self = .nicknameCannotBeEmpty
+            case .cannotStartWithDigit:
+                self = .nicknameCannotStartWithDigit
+            case .badNicknameCharacter:
+                self = .nicknameContainsInvalidCharacters
+            case .nicknameTooShort:
+                self = .nicknameTooShort
+            case .nicknameTooLong:
+                self = .nicknameTooLong
+            default:
+                return nil
+            }
+        }
+    }
+
     static func generateCandidates(
         forNickname nickname: String,
         minNicknameLength: UInt32,
         maxNicknameLength: UInt32
-    ) throws -> [Usernames.HashedUsername] {
-        return try LibSignalUsername.candidates(
-            from: nickname,
-            withValidLengthWithin: minNicknameLength...maxNicknameLength
-        ).map { candidate -> Usernames.HashedUsername in
-            return .init(libSignalUsername: candidate)
+    ) throws -> GeneratedCandidates {
+        do {
+            let candidates: [Usernames.HashedUsername] = try LibSignalUsername.candidates(
+                from: nickname,
+                withValidLengthWithin: minNicknameLength...maxNicknameLength
+            ).map { candidate -> Usernames.HashedUsername in
+                return .init(libSignalUsername: candidate)
+            }
+
+            return GeneratedCandidates(candidates: candidates)
+        } catch let error {
+            if
+                let libSignalError = error as? SignalError,
+                let generationError = CandidateGenerationError(fromSignalError: libSignalError)
+            {
+                throw generationError
+            }
+
+            throw error
         }
     }
 }

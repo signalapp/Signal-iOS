@@ -1203,7 +1203,6 @@
 		D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
 		D925F562298D8F9400158EE4 /* Usernames+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C5297A0F9500F7ED6D /* Usernames+API.swift */; };
 		D925F563298D8F9400158EE4 /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
-		D925F564298D8F9400158EE4 /* Usernames+NicknameValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BC297A04DA00F7ED6D /* Usernames+NicknameValidator.swift */; };
 		D925F56A298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
 		D925F56B298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
 		D925F570298DF41B00158EE4 /* UsernameLookupRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */; };
@@ -1228,7 +1227,6 @@
 		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
 		D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */; };
 		D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */; };
-		D99840B829775A8300F7ED6D /* Usernames+NicknameValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B629775A0400F7ED6D /* Usernames+NicknameValidatorTests.swift */; };
 		D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */; };
 		D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
@@ -3737,8 +3735,6 @@
 		D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneModel.swift; sourceTree = "<group>"; };
 		D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMegaphone.swift; sourceTree = "<group>"; };
 		D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+UsernameTextField.swift"; sourceTree = "<group>"; };
-		D99840B629775A0400F7ED6D /* Usernames+NicknameValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+NicknameValidatorTests.swift"; sourceTree = "<group>"; };
-		D99840BC297A04DA00F7ED6D /* Usernames+NicknameValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+NicknameValidator.swift"; sourceTree = "<group>"; };
 		D99840BE297A04EB00F7ED6D /* Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Usernames.swift; sourceTree = "<group>"; };
 		D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ParsedUsername.swift"; sourceTree = "<group>"; };
 		D99840C5297A0F9500F7ED6D /* Usernames+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+API.swift"; sourceTree = "<group>"; };
@@ -7458,7 +7454,6 @@
 				D925F557298B39D800158EE4 /* UsernameLookupRecord.swift */,
 				D99840C5297A0F9500F7ED6D /* Usernames+API.swift */,
 				D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */,
-				D99840BC297A04DA00F7ED6D /* Usernames+NicknameValidator.swift */,
 				D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */,
 				D925F552298349EF00158EE4 /* Usernames+ShareableUsername.swift */,
 				D99840BE297A04EB00F7ED6D /* Usernames.swift */,
@@ -7517,7 +7512,6 @@
 			isa = PBXGroup;
 			children = (
 				D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */,
-				D99840B629775A0400F7ED6D /* Usernames+NicknameValidatorTests.swift */,
 				D925F55429834BC900158EE4 /* Usernames+ShareableUsernameTests.swift */,
 			);
 			path = Usernames;
@@ -11431,7 +11425,6 @@
 				E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */,
 				503BDDB4296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift in Sources */,
 				D925F570298DF41B00158EE4 /* UsernameLookupRecordTest.swift in Sources */,
-				D99840B829775A8300F7ED6D /* Usernames+NicknameValidatorTests.swift in Sources */,
 				D925F55629834FAC00158EE4 /* Usernames+ShareableUsernameTests.swift in Sources */,
 				45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
@@ -12062,7 +12055,6 @@
 				D925F55D298C6A7D00158EE4 /* UsernameLookupRecord.swift in Sources */,
 				D925F562298D8F9400158EE4 /* Usernames+API.swift in Sources */,
 				D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */,
-				D925F564298D8F9400158EE4 /* Usernames+NicknameValidator.swift in Sources */,
 				D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */,
 				D925F560298D8F9400158EE4 /* Usernames+ShareableUsername.swift in Sources */,
 				D925F563298D8F9400158EE4 /* Usernames.swift in Sources */,

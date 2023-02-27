@@ -7156,6 +7156,9 @@
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
+/* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Username cannot begin with a number.";
+
 /* The title of an action sheet button that will delete a user's username. */
 "USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
 
