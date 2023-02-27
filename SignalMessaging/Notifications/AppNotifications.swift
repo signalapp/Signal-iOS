@@ -1031,7 +1031,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     // MARK: - Serialization
 
-    private static let serialQueue = DispatchQueue(label: "org.signal.notificationActions")
+    private static let serialQueue = DispatchQueue(label: "org.signal.notifications.action")
     private static var notificationQueue: DispatchQueue {
         // The NSE can safely post notifications off the main thread, but the
         // main app cannot.

@@ -51,7 +51,7 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
 
     let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "SendGiftBadge.OperationQueue"
+        operationQueue.name = "SendGiftBadgeJobQueue"
         return operationQueue
     }()
 

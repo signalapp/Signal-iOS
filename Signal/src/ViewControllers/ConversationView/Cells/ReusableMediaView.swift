@@ -124,7 +124,7 @@ public class ReusableMediaView: NSObject {
     }
 
     // TODO: It would be preferable to figure out some way to use ReverseDispatchQueue.
-    private static let serialQueue = DispatchQueue(label: "org.signal.reusableMediaView")
+    private static let serialQueue = DispatchQueue(label: "org.signal.reusable-media-view")
 
     private func tryToLoadMedia() {
         AssertIsOnMainThread()

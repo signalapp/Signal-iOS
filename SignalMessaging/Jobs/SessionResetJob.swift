@@ -51,7 +51,7 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     let operationQueue: OperationQueue = {
         // no need to serialize the operation queuing, since sending will ultimately be serialized by MessageSender
         let operationQueue = OperationQueue()
-        operationQueue.name = "SessionReset.OperationQueue"
+        operationQueue.name = "SessionResetJobQueue"
         return operationQueue
     }()
 

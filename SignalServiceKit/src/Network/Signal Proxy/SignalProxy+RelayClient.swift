@@ -17,7 +17,7 @@ extension SignalProxy {
 
         private let connection: NWConnection
         private lazy var proxyClient = ProxyClient(relayClient: self)
-        private lazy var queue = DispatchQueue(label: "SignalProxy.RelayClient<\(id)>", attributes: .concurrent)
+        private lazy var queue = DispatchQueue(label: "org.signal.proxy.relay-client", attributes: .concurrent)
 
         init(connection: NWConnection) {
             self.connection = connection

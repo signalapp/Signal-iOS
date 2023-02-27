@@ -12,13 +12,13 @@ public class CVUtils {
     private init() {}
 
     private static let workQueue_userInitiated: DispatchQueue = {
-        DispatchQueue(label: OWSDispatch.createLabel("conversationView.workQueue_userInitiated"),
+        DispatchQueue(label: "org.signal.conversation-view.user-initiated",
                       qos: .userInitiated,
                       autoreleaseFrequency: .workItem)
     }()
 
     private static let workQueue_userInteractive: DispatchQueue = {
-        DispatchQueue(label: OWSDispatch.createLabel("conversationView.workQueue_userInteractive"),
+        DispatchQueue(label: "org.signal.conversation-view.user-interactive",
                       qos: .userInteractive,
                       autoreleaseFrequency: .workItem)
     }()
@@ -28,7 +28,7 @@ public class CVUtils {
     }
 
     public static let landingQueue: DispatchQueue = {
-        DispatchQueue(label: OWSDispatch.createLabel("conversationView.landingQueue"),
+        DispatchQueue(label: "org.signal.conversation-view.landing",
                       qos: .userInitiated,
                       autoreleaseFrequency: .workItem)
     }()

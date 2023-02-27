@@ -41,7 +41,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         operationQueue = [NSOperationQueue new];
-        operationQueue.name = @"Uploads";
+        operationQueue.name = @"OWSUpload";
 
         // TODO: Tune this limit.
         operationQueue.maxConcurrentOperationCount = CurrentAppContext().isNSE ? 2 : 8;

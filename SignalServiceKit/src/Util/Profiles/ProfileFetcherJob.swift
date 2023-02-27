@@ -75,7 +75,7 @@ private struct ProfileFetchOptions {
 @objc
 public class ProfileFetcherJob: NSObject {
 
-    private static let queueCluster = GCDQueueCluster(label: "org.signal.profileFetcherJob",
+    private static let queueCluster = GCDQueueCluster(label: "org.signal.profile-fetch",
                                                       concurrency: 5)
 
     private static var fetchDateMap = LRUCache<SignalServiceAddress, Date>(maxSize: 256)

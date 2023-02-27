@@ -69,7 +69,7 @@ class CameraCaptureSession: NSObject {
     lazy var previewView = CapturePreviewView(session: avCaptureSession)
 
     let avCaptureSession = AVCaptureSession()
-    private static let sessionQueue = DispatchQueue(label: "CameraCaptureSession")
+    private static let sessionQueue = DispatchQueue(label: "org.signal.capture.camera")
     private var sessionQueue: DispatchQueue { CameraCaptureSession.sessionQueue }
 
     // Separate session for capturing audio is necessary to eliminate
@@ -1138,13 +1138,13 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     let videoDataOutput = AVCaptureVideoDataOutput()
     let audioDataOutput = AVCaptureAudioDataOutput()
 
-    private static let videoCaptureQueue = DispatchQueue(label: "VideoCapture.video", qos: .userInteractive)
+    private static let videoCaptureQueue = DispatchQueue(label: "org.signal.capture.video", qos: .userInteractive)
     private var videoCaptureQueue: DispatchQueue { VideoCapture.videoCaptureQueue }
 
-    private static let audioCaptureQueue = DispatchQueue(label: "VideoCapture.audio", qos: .userInteractive)
+    private static let audioCaptureQueue = DispatchQueue(label: "org.signal.capture.audio", qos: .userInteractive)
     private var audioCaptureQueue: DispatchQueue { VideoCapture.audioCaptureQueue }
 
-    private let recordingQueue = DispatchQueue(label: "VideoCapture.recording", qos: .userInteractive)
+    private let recordingQueue = DispatchQueue(label: "org.signal.capture.recording", qos: .userInteractive)
 
     private var assetWriter: AVAssetWriter?
     private var videoWriterInput: AVAssetWriterInput?

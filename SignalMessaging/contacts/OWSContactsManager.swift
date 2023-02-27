@@ -638,7 +638,7 @@ extension OWSContactsManager {
 extension OWSContactsManager {
     // TODO: It would be preferable to figure out some way to use ReverseDispatchQueue.
     @objc
-    static let intersectionQueue = DispatchQueue(label: OWSDispatch.createLabel("contacts.intersectionQueue"))
+    static let intersectionQueue = DispatchQueue(label: "org.signal.contacts.intersection")
     @objc
     var intersectionQueue: DispatchQueue { Self.intersectionQueue }
 

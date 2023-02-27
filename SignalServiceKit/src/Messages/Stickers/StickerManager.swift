@@ -280,7 +280,7 @@ public class StickerManager: NSObject {
 
     private let packOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "org.signal.StickerManager.packs"
+        operationQueue.name = "StickerManager-Pack"
         operationQueue.maxConcurrentOperationCount = 3
         return operationQueue
     }()
@@ -770,12 +770,12 @@ public class StickerManager: NSObject {
             self.future = future
         }
     }
-    private let stickerDownloadQueue = DispatchQueue(label: "stickerManager.stickerDownloadQueue")
+    private let stickerDownloadQueue = DispatchQueue(label: "org.signal.sticker-manager.download")
     // This property should only be accessed on stickerDownloadQueue.
     private var stickerDownloadMap = [String: StickerDownload]()
     private let stickerOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "org.signal.StickerManager.stickers"
+        operationQueue.name = "StickerManager"
         operationQueue.maxConcurrentOperationCount = 4
         return operationQueue
     }()
@@ -872,7 +872,7 @@ public class StickerManager: NSObject {
         shared.clearSuggestedStickersCache()
     }
 
-    private static let cacheQueue = DispatchQueue(label: "stickerManager.cacheQueue")
+    private static let cacheQueue = DispatchQueue(label: "org.signal.sticker-manager.cache")
     // This cache should only be accessed on cacheQueue.
     private var suggestedStickersCache = LRUCache<String, [InstalledSticker]>(maxSize: 5)
 

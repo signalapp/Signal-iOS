@@ -6,7 +6,7 @@
 @objc
 public class BulkProfileFetch: NSObject {
 
-    private static let serialQueue = DispatchQueue(label: "BulkProfileFetch")
+    private static let serialQueue = DispatchQueue(label: "org.signal.profile-fetch.bulk")
     private var serialQueue: DispatchQueue { Self.serialQueue }
 
     // This property should only be accessed on serialQueue.

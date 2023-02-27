@@ -182,7 +182,7 @@ open class CDNDownloadOperation: OWSOperation {
     // We track corrupt downloads, to avoid retrying them more than once per launch.
     //
     // TODO: We could persist this state.
-    private static let serialQueue = DispatchQueue(label: "org.signal.cdnDownloadOperation")
+    private static let serialQueue = DispatchQueue(label: "org.signal.cdn-download")
     private static var corruptDataKeys = Set<String>()
 
     func markUrlPathAsCorrupt(_ urlPath: String) {

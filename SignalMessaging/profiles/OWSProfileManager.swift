@@ -901,7 +901,7 @@ public extension OWSProfileManager {
         let profileKey: Data
     }
 
-    private static let serialQueue = DispatchQueue(label: "ProfileManager.serialQueue")
+    private static let serialQueue = DispatchQueue(label: "org.signal.profile-manager")
 
     private static var avatarDownloadCache = [CacheKey: Promise<Data>]()
 

@@ -353,7 +353,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             sendingQueue = [NSOperationQueue new];
             sendingQueue.qualityOfService = NSOperationQualityOfServiceUserInitiated;
             sendingQueue.maxConcurrentOperationCount = 1;
-            sendingQueue.name = [NSString stringWithFormat:@"%@:%@", self.logTag, queueKey];
+            sendingQueue.name = @"MessageSender-Chat";
             self.sendingQueueMap[queueKey] = sendingQueue;
         }
 
@@ -369,7 +369,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     dispatch_once(&onceToken, ^{
         operationQueue = [NSOperationQueue new];
         operationQueue.qualityOfService = NSOperationQualityOfServiceUserInitiated;
-        operationQueue.name = @"MessageSender.global";
+        operationQueue.name = @"MessageSender-Global";
         operationQueue.maxConcurrentOperationCount = 5;
     });
     return operationQueue;
@@ -965,7 +965,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     dispatch_once(&onceToken, ^{
         operationQueue = [NSOperationQueue new];
         operationQueue.qualityOfService = NSOperationQualityOfServiceUserInitiated;
-        operationQueue.name = @"MessageSender.sendMessageToRecipient";
+        operationQueue.name = @"MessageSender-Recipient";
         operationQueue.maxConcurrentOperationCount = 6;
     });
     [operationQueue addOperationWithBlock:^{ [self _sendMessageToRecipient:messageSend]; }];

@@ -18,7 +18,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
         }
 
         let workQueue = DispatchQueue(
-            label: "contact-discovery-task",
+            label: "org.signal.contact-discovery-task",
             qos: .userInitiated,
             autoreleaseFrequency: .workItem,
             target: .sharedUserInitiated

@@ -17,7 +17,7 @@ extension SignalProxy {
 
         private weak var relayClient: RelayClient?
         private var connection: NWConnection?
-        private lazy var queue = DispatchQueue(label: "SignalProxy.ProxyClient<\(id)>", attributes: .concurrent)
+        private lazy var queue = DispatchQueue(label: "org.signal.proxy.client", attributes: .concurrent)
 
         init(relayClient: RelayClient) {
             self.id = relayClient.id

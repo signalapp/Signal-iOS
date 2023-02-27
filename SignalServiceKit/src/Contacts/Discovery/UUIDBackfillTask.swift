@@ -22,7 +22,7 @@ public class UUIDBackfillTask {
         self.contactDiscoveryManager = contactDiscoveryManager
         self.databaseStorage = databaseStorage
 
-        self.queue = DispatchQueue(label: "uuid-backfill-task", target: .sharedUserInitiated)
+        self.queue = DispatchQueue(label: "org.signal.uuid-backfill-task", target: .sharedUserInitiated)
     }
 
     // MARK: - Public

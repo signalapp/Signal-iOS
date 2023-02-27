@@ -28,7 +28,7 @@ public class OWSUpload: NSObject {
 
     @objc
     public static let serialQueue: DispatchQueue = {
-        return DispatchQueue(label: OWSDispatch.createLabel("upload"),
+        return DispatchQueue(label: "org.signal.upload",
                              qos: .utility,
                              autoreleaseFrequency: .workItem)
     }()

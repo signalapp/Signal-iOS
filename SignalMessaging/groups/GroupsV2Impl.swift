@@ -1009,7 +1009,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     let avatarDownloadQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "avatarDownloadQueue"
+        operationQueue.name = "AvatarDownload"
         operationQueue.maxConcurrentOperationCount = 3
         return operationQueue
     }()

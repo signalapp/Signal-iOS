@@ -85,10 +85,7 @@ void AssertIsOnDisappearingMessagesQueue()
     static dispatch_queue_t queue = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NS_VALID_UNTIL_END_OF_SCOPE NSString *label = [OWSDispatch createLabel:@"disappearingMessages"];
-        const char *cStringLabel = [label cStringUsingEncoding:NSUTF8StringEncoding];
-
-        queue = dispatch_queue_create(cStringLabel, DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        queue = dispatch_queue_create("org.signal.disappearing-messages", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
     });
     return queue;
 }

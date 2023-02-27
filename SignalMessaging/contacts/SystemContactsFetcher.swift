@@ -165,7 +165,7 @@ public protocol SystemContactsFetcherDelegate: AnyObject {
 @objc
 public class SystemContactsFetcher: NSObject {
 
-    private let serialQueue = DispatchQueue(label: "SystemContactsFetcherQueue")
+    private let serialQueue = DispatchQueue(label: "org.signal.contacts.system-fetcher")
 
     var lastContactUpdateHash: Int?
     var lastDelegateNotificationDate: Date?

@@ -384,7 +384,7 @@ private class AudioWaveformSamplingOperation: Operation {
 
     static let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "org.signal.AudioWaveformSampling"
+        operationQueue.name = "AudioWaveformSampling"
         operationQueue.maxConcurrentOperationCount = 1
         operationQueue.qualityOfService = .utility
         return operationQueue

@@ -1399,7 +1399,7 @@ public extension OWSAttachmentDownloads {
 
     @objc
     static let serialQueue: DispatchQueue = {
-        return DispatchQueue(label: OWSDispatch.createLabel("download"),
+        return DispatchQueue(label: "org.signal.attachment.download",
                              qos: .utility,
                              autoreleaseFrequency: .workItem)
     }()

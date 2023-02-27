@@ -364,7 +364,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // so the most recently enqueued avatars are most likely to be
     // visible. To put it another way, we don't cancel loads so
     // the oldest loads are most likely to be unnecessary.
-    private static let serialQueue = ReverseDispatchQueue(label: "org.signal.ConversationAvatarView",
+    private static let serialQueue = ReverseDispatchQueue(label: "org.signal.conversation-avatar.loading",
                                                           qos: .userInitiated, autoreleaseFrequency: .workItem)
 
     private func enqueueAsyncModelUpdate() {

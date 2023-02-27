@@ -155,7 +155,7 @@ fileprivate extension GroupsV2Migration {
 
     private static let migrationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "GroupsV2MigrationQueue"
+        operationQueue.name = "GroupsV2Migration"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()

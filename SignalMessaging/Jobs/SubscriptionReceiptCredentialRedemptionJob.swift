@@ -99,7 +99,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
 
     let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "SubscriptionReceiptCredential.OperationQueue"
+        operationQueue.name = "SubscriptionReceiptCredentialJobQueue"
         return operationQueue
     }()
 

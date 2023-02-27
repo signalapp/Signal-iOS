@@ -55,7 +55,7 @@ public class OWSWebSocket: NSObject {
     fileprivate var serialQueue: DispatchQueue { Self.serialQueue }
 
     // TODO: Should we use a higher-priority queue?
-    fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.websocket.messageProcessingQueue")
+    fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.websocket.message-processing")
     fileprivate var messageProcessingQueue: DispatchQueue { Self.messageProcessingQueue }
 
     @objc

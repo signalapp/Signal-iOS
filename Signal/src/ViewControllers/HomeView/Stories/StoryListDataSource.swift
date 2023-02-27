@@ -17,7 +17,7 @@ protocol StoryListDataSourceDelegate: AnyObject {
 
 class StoryListDataSource: NSObject, Dependencies {
 
-    private let loadingQueue = DispatchQueue(label: "StoryListDataSource.loadingQueue", qos: .userInitiated)
+    private let loadingQueue = DispatchQueue(label: "org.signal.story-list.loading", qos: .userInitiated)
 
     private lazy var syncingModels = SyncingStoryListViewModel(loadingQueue: loadingQueue)
 

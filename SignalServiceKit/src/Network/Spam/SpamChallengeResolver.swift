@@ -10,7 +10,7 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
     // All work should be done on this queue
     var workQueue: DispatchQueue { Self.workQueue }
     private static let workQueue = DispatchQueue(
-        label: "org.signal.SpamChallengeResolver",
+        label: "org.signal.spam-challenge-resolver",
         target: .sharedUtility)
 
     public var isPausingMessages: Bool {

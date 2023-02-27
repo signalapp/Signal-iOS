@@ -606,7 +606,7 @@ private class QRCodeScanner {
 
     lazy private(set) var previewView = QRCodeScanPreviewView(session: session)
 
-    private let sessionQueue = DispatchQueue(label: "QRCodeScanner.sessionQueue")
+    private let sessionQueue = DispatchQueue(label: "org.signal.qrcode-scanner")
 
     private let session = AVCaptureSession()
     private let output: QRCodeScanOutput

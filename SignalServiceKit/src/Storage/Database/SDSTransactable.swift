@@ -9,7 +9,7 @@ import GRDB
 // A base class for SDSDatabaseStorage and SDSAnyDatabaseQueue.
 @objc
 public class SDSTransactable: NSObject {
-    fileprivate let asyncWriteQueue = DispatchQueue(label: "org.signal.asyncWrite")
+    fileprivate let asyncWriteQueue = DispatchQueue(label: "org.signal.database.write-async")
 
     public func read(file: String = #file,
                      function: String = #function,

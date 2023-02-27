@@ -14,10 +14,7 @@ dispatch_queue_t NetworkManagerQueue(void)
     static dispatch_queue_t serialQueue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NS_VALID_UNTIL_END_OF_SCOPE NSString *label = [OWSDispatch createLabel:@"networkManager"];
-        const char *cStringLabel = [label cStringUsingEncoding:NSUTF8StringEncoding];
-
-        serialQueue = dispatch_queue_create(cStringLabel, DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        serialQueue = dispatch_queue_create("org.signal.network-manager", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
     });
     return serialQueue;
 }

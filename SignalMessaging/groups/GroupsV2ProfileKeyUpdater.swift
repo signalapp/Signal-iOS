@@ -115,7 +115,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
         tryToUpdateNext()
     }
 
-    private let serialQueue = DispatchQueue(label: "GroupsV2ProfileKeyUpdater", qos: .background)
+    private let serialQueue = DispatchQueue(label: "org.signal.groups.profile-key-updater", qos: .background)
 
     // This property should only be accessed on serialQueue.
     private var isUpdating = false

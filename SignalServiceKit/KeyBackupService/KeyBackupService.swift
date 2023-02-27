@@ -673,7 +673,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     private static let hasPendingRestorationIdentifier = "hasPendingRestoration"
     private static let isMasterKeyBackedUpIdentifer = "isMasterKeyBackedUp"
     private static let enclaveNameIdentifier = "enclaveName"
-    private let cacheQueue = DispatchQueue(label: "org.signal.KeyBackupService")
+    private let cacheQueue = DispatchQueue(label: "org.signal.key-backup-service")
 
     private var cachedState: State?
     private struct State {

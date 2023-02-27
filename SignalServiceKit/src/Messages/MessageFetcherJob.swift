@@ -58,7 +58,7 @@ public class MessageFetcherJob: NSObject {
     // running at a given time.
     private let fetchOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "MessageFetcherJob.fetchOperationQueue"
+        operationQueue.name = "MessageFetcherJob-Fetch"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()
@@ -69,7 +69,7 @@ public class MessageFetcherJob: NSObject {
 
     private let unfairLock = UnfairLock()
 
-    private let completionQueue = DispatchQueue(label: "org.signal.messageFetcherJob.completionQueue")
+    private let completionQueue = DispatchQueue(label: "org.signal.message-fetcher.completion")
 
     // This property should only be accessed with unfairLock acquired.
     private var activeFetchCycles = Set<UUID>()
@@ -258,7 +258,7 @@ public class MessageFetcherJob: NSObject {
     // We want to have multiple ACKs in flight at a time.
     private let ackOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "MessageFetcherJob.ackOperationQueue"
+        operationQueue.name = "MessageFetcherJob-ACKs"
         operationQueue.maxConcurrentOperationCount = 5
         return operationQueue
     }()

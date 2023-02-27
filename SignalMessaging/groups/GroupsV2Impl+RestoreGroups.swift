@@ -30,7 +30,7 @@ public extension GroupsV2Impl {
     private static let restoreGroupsOperationQueue: OperationQueue = {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
-        queue.name = "restoreGroupsOperationQueue"
+        queue.name = "GroupsV2-Restore"
         return queue
     }()
 

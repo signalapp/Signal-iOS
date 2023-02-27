@@ -61,14 +61,14 @@ public class PaymentsProcessor: NSObject {
     // This ensures that they are processed serially.
     let processingQueue_outgoing: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "PaymentsProcessor.outgoing"
+        operationQueue.name = "PaymentsProcessor-Outgoing"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()
     // We use another queue for all other processing.
     let processingQueue_default: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "PaymentsProcessor.default"
+        operationQueue.name = "PaymentsProcessor-Default"
         // We want a concurrency level high enough to ensure that
         // high-priority operations are processed in a timely manner.
         operationQueue.maxConcurrentOperationCount = 3

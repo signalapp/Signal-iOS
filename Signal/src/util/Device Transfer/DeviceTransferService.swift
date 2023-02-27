@@ -81,7 +81,7 @@ class DeviceTransferService: NSObject {
     // This must also be updated in the info.plist
     private static let newDeviceServiceIdentifier = "sgnl-new-device"
 
-    private let serialQueue = DispatchQueue(label: "DeviceTransferService")
+    private let serialQueue = DispatchQueue(label: "org.signal.device-transfer")
     private var _transferState: TransferState = .idle
     var transferState: TransferState {
         get { serialQueue.sync { _transferState } }

@@ -865,7 +865,7 @@ extension CLVTableDataSource {
     }
 
     // TODO: It would be preferable to figure out some way to use ReverseDispatchQueue.
-    private static let preloadSerialQueue = DispatchQueue(label: "CLVTableDataSource.preloadSerialQueue")
+    private static let preloadSerialQueue = DispatchQueue(label: "org.signal.chat-list.preload")
 
     fileprivate func preloadCellIfNecessaryAsync(indexPath: IndexPath) {
         AssertIsOnMainThread()

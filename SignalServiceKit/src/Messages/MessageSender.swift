@@ -369,7 +369,7 @@ public extension MessageSender {
 
 fileprivate extension MessageSender {
 
-    static let cacheQueue = DispatchQueue(label: "MessageSender.cacheQueue")
+    static let cacheQueue = DispatchQueue(label: "org.signal.message-sender.cache")
 
     private struct StaleIdentity {
         let currentIdentityKey: Data
@@ -765,7 +765,7 @@ public extension TSMessage {
 extension MessageSender {
 
     private static let completionQueue: DispatchQueue = {
-        return DispatchQueue(label: OWSDispatch.createLabel("messageSendCompletion"),
+        return DispatchQueue(label: "org.signal.message-sender.completion",
                              qos: .utility,
                              autoreleaseFrequency: .workItem)
     }()

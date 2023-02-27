@@ -17,7 +17,7 @@ extension GroupManager {
         }
 
         let newQueue = OperationQueue()
-        newQueue.name = "GroupManager.updateQueueForGroup.\(UUID().uuidString)"
+        newQueue.name = "GroupManager-Update"
         newQueue.maxConcurrentOperationCount = 1
 
         groupUpdateOperationQueues[groupModel.groupId] = newQueue

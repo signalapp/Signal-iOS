@@ -928,7 +928,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     static NSOperationQueue *operationQueue;
     dispatch_once(&onceToken, ^{
         operationQueue = [NSOperationQueue new];
-        operationQueue.name = @"thumbnailLoadingOperationQueue";
+        operationQueue.name = @"ThumbnailLoading";
         operationQueue.maxConcurrentOperationCount = 4;
     });
     return operationQueue;

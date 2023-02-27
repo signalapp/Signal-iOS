@@ -228,7 +228,7 @@ public class MessageProcessor: NSObject {
 
     private static let maxEnvelopeByteCount = 250 * 1024
     public static let largeEnvelopeWarningByteCount = 25 * 1024
-    private let serialQueue = DispatchQueue(label: "MessageProcessor.processingQueue",
+    private let serialQueue = DispatchQueue(label: "org.signal.message-processor",
                                             autoreleaseFrequency: .workItem)
 
     private var pendingEnvelopes = PendingEnvelopes()

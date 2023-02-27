@@ -22,7 +22,7 @@ public class DeviceSleepManager: NSObject {
     @objc
     public static let shared = DeviceSleepManager()
 
-    let serialQueue = DispatchQueue(label: "DeviceSleepManager")
+    let serialQueue = DispatchQueue(label: "org.signal.device-sleep")
 
     private class SleepBlock: CustomDebugStringConvertible {
         weak var blockObject: NSObject?

@@ -19,14 +19,14 @@ public class GroupV2UpdatesImpl: NSObject {
 
     let immediateOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "GroupV2UpdatesImpl.immediateOperationQueue"
+        operationQueue.name = "GroupV2Updates-Immediate"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()
 
     let afterMessageProcessingOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "GroupV2UpdatesImpl.afterMessageProcessingOperationQueue"
+        operationQueue.name = "GroupV2Updates-AfterMessageProcessing"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()

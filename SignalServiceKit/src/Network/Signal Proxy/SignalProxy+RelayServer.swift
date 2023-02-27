@@ -41,7 +41,7 @@ extension SignalProxy {
         @Atomic
         private var backgroundTask: OWSBackgroundTask?
 
-        private let queue = DispatchQueue(label: "SignalProxy.RelayServer", attributes: .concurrent)
+        private let queue = DispatchQueue(label: "org.signal.proxy.relay-server", attributes: .concurrent)
 
         func start() {
             guard !isStarted else { return }
