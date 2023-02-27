@@ -2040,7 +2040,6 @@
 		F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB25289453B200548EEE /* Atomics.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF8289453B400548EEE /* ReverseDispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF9289453B400548EEE /* OWSAnalytics.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB27289453B200548EEE /* OWSAnalytics.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CDFA289453B400548EEE /* OWSDispatch.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB28289453B200548EEE /* OWSDispatch.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDFB289453B400548EEE /* WeakTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB29289453B200548EEE /* WeakTimer.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB2A289453B200548EEE /* Collection+OWS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDFD289453B400548EEE /* Dependencies+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB2B289453B200548EEE /* Dependencies+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2093,7 +2092,6 @@
 		F9C5CE2E289453B400548EEE /* DataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB5C289453B200548EEE /* DataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE30289453B400548EEE /* MIMETypeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5E289453B200548EEE /* MIMETypeUtil.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE31289453B400548EEE /* OWSDispatch.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB5F289453B200548EEE /* OWSDispatch.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE32289453B400548EEE /* OWSAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB60289453B200548EEE /* OWSAnalytics.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB61289453B200548EEE /* LocalDevice.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB62289453B200548EEE /* AudioWaveform.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4559,7 +4557,6 @@
 		F9C5CB25289453B200548EEE /* Atomics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomics.swift; sourceTree = "<group>"; };
 		F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReverseDispatchQueue.swift; sourceTree = "<group>"; };
 		F9C5CB27289453B200548EEE /* OWSAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAnalytics.h; sourceTree = "<group>"; };
-		F9C5CB28289453B200548EEE /* OWSDispatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDispatch.m; sourceTree = "<group>"; };
 		F9C5CB29289453B200548EEE /* WeakTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakTimer.swift; sourceTree = "<group>"; };
 		F9C5CB2A289453B200548EEE /* Collection+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collection+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB2B289453B200548EEE /* Dependencies+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+SSK.swift"; sourceTree = "<group>"; };
@@ -4612,7 +4609,6 @@
 		F9C5CB5C289453B200548EEE /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSingletons.swift; sourceTree = "<group>"; };
 		F9C5CB5E289453B200548EEE /* MIMETypeUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIMETypeUtil.m; sourceTree = "<group>"; };
-		F9C5CB5F289453B200548EEE /* OWSDispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDispatch.h; sourceTree = "<group>"; };
 		F9C5CB60289453B200548EEE /* OWSAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAnalytics.m; sourceTree = "<group>"; };
 		F9C5CB61289453B200548EEE /* LocalDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalDevice.swift; sourceTree = "<group>"; };
 		F9C5CB62289453B200548EEE /* AudioWaveform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioWaveform.swift; sourceTree = "<group>"; };
@@ -8949,8 +8945,6 @@
 				F9C5CB23289453B200548EEE /* OWSBackupFragment+SDS.swift */,
 				F9C5CB7A289453B200548EEE /* OWSBackupFragment.h */,
 				F9C5CB31289453B200548EEE /* OWSBackupFragment.m */,
-				F9C5CB5F289453B200548EEE /* OWSDispatch.h */,
-				F9C5CB28289453B200548EEE /* OWSDispatch.m */,
 				F9C5CB2F289453B200548EEE /* OWSError.h */,
 				F9C5CB80289453B200548EEE /* OWSError.m */,
 				F9C5CB78289453B200548EEE /* OWSError.swift */,
@@ -9230,7 +9224,6 @@
 				F9C5CCB9289453B300548EEE /* OWSDisappearingMessagesConfiguration.h in Headers */,
 				F9C5CBCE289453B300548EEE /* OWSDisappearingMessagesConfigurationMessage.h in Headers */,
 				F9C5CC2E289453B300548EEE /* OWSDisappearingMessagesJob.h in Headers */,
-				F9C5CE31289453B400548EEE /* OWSDispatch.h in Headers */,
 				F9C5CBE6289453B300548EEE /* OWSDynamicOutgoingMessage.h in Headers */,
 				F9C5CBFF289453B300548EEE /* OWSEndSessionMessage.h in Headers */,
 				F9C5CE01289453B400548EEE /* OWSError.h in Headers */,
@@ -11689,7 +11682,6 @@
 				F9C5CCDA289453B300548EEE /* OWSDisappearingMessagesConfiguration.swift in Sources */,
 				F9C5CBEF289453B300548EEE /* OWSDisappearingMessagesConfigurationMessage.m in Sources */,
 				F9C5CC5E289453B300548EEE /* OWSDisappearingMessagesJob.m in Sources */,
-				F9C5CDFA289453B400548EEE /* OWSDispatch.m in Sources */,
 				F9C5CC01289453B300548EEE /* OWSDynamicOutgoingMessage.m in Sources */,
 				F9C5CBE8289453B300548EEE /* OWSEndSessionMessage.m in Sources */,
 				F9C5CE51289453B400548EEE /* OWSError.m in Sources */,

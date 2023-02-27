@@ -6,7 +6,6 @@
 #import "OWSUploadOperation.h"
 #import "HTTPUtils.h"
 #import "MIMETypeUtil.h"
-#import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSOperation.h"
 #import "OWSUpload.h"

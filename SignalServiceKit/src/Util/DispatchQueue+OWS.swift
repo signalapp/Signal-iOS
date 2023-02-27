@@ -79,13 +79,3 @@ internal extension DispatchQoS.QoSClass {
         }
     }
 }
-
-@objc
-extension OWSDispatch {
-    /// Returns the shared serial queue appropriate for the provided QoS
-    public static func sharedQueue(at rawQoS: qos_class_t) -> DispatchQueue {
-        let qosClass = DispatchQoS.QoSClass(flooring: rawQoS)
-        let qos = DispatchQoS(qosClass: qosClass, relativePriority: 0)
-        return DispatchQueue.sharedQueue(at: qos)
-    }
-}
