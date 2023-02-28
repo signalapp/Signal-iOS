@@ -268,8 +268,6 @@
 		34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */; };
 		34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4D1FD0A7A300BC14EF /* DebugLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B4E1FD0A7A300BC14EF /* DebugLogger.m */; };
-		34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */; };
 		34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */; };
 		344A761124B366F4009D69A5 /* FlagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344A761024B366F4009D69A5 /* FlagsViewController.swift */; };
 		344A761324B36C8C009D69A5 /* TestingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344A761224B36C8C009D69A5 /* TestingViewController.swift */; };
@@ -1394,6 +1392,7 @@
 		F9613CDE2981F15700894B55 /* SqliteUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */; };
 		F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962B389293F9F1F00765BD8 /* CRC32.swift */; };
 		F962B38C293F9F9F00765BD8 /* CRC32Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962B38B293F9F9F00765BD8 /* CRC32Test.swift */; };
+		F962FF4929AD0C7C00AFA397 /* OWSScrubbingLogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962FF4829AD0C7C00AFA397 /* OWSScrubbingLogFormatter.swift */; };
 		F963164B291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */; };
 		F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */; };
 		F963F818292D7E53007DBBBD /* FormattedNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F817292D7E53007DBBBD /* FormattedNumberField.swift */; };
@@ -2525,8 +2524,6 @@
 		34480B381FD092E300BC14EF /* SignalShareExtension-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalShareExtension-Prefix.pch"; sourceTree = "<group>"; };
 		34480B4D1FD0A7A300BC14EF /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
 		34480B4E1FD0A7A300BC14EF /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
-		34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSScrubbingLogFormatter.h; sourceTree = "<group>"; };
-		34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSScrubbingLogFormatter.m; sourceTree = "<group>"; };
 		34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalMessaging-Prefix.pch"; sourceTree = "<group>"; };
 		344A761024B366F4009D69A5 /* FlagsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlagsViewController.swift; sourceTree = "<group>"; };
 		344A761224B36C8C009D69A5 /* TestingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestingViewController.swift; sourceTree = "<group>"; };
@@ -3910,6 +3907,7 @@
 		F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteUtilTest.swift; sourceTree = "<group>"; };
 		F962B389293F9F1F00765BD8 /* CRC32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32.swift; sourceTree = "<group>"; };
 		F962B38B293F9F9F00765BD8 /* CRC32Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32Test.swift; sourceTree = "<group>"; };
+		F962FF4829AD0C7C00AFA397 /* OWSScrubbingLogFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSScrubbingLogFormatter.swift; sourceTree = "<group>"; };
 		F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSScrubbingLogFormatterTest.swift; sourceTree = "<group>"; };
 		F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+SignalUI.swift"; sourceTree = "<group>"; };
 		F963F817292D7E53007DBBBD /* FormattedNumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattedNumberField.swift; sourceTree = "<group>"; };
@@ -5138,8 +5136,7 @@
 				346129371FD1B47200532771 /* OWSPreferences.h */,
 				346129381FD1B47200532771 /* OWSPreferences.m */,
 				34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */,
-				34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */,
-				34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */,
+				F962FF4829AD0C7C00AFA397 /* OWSScrubbingLogFormatter.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
 				45360B8C1F9521F800FA666C /* Searcher.swift */,
@@ -9143,7 +9140,6 @@
 				3464450E22B7F93600A957B1 /* OWSOrphanDataCleaner.h in Headers */,
 				346129391FD1B47300532771 /* OWSPreferences.h in Headers */,
 				346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */,
-				34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */,
 				34074F62203D0CBE004596AE /* OWSSounds.h in Headers */,
 				34612A061FD7238600532771 /* OWSSyncManager.h in Headers */,
 				34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */,
@@ -10683,7 +10679,7 @@
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */,
 				34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */,
-				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
+				F962FF4929AD0C7C00AFA397 /* OWSScrubbingLogFormatter.swift in Sources */,
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
 				34612A071FD7238600532771 /* OWSSyncManager.m in Sources */,
 				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,

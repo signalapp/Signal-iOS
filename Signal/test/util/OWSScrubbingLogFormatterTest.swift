@@ -5,7 +5,9 @@
 
 import XCTest
 import CocoaLumberjack
-import Signal
+import SignalCoreKit
+import SignalServiceKit
+@testable import SignalMessaging
 
 final class OWSScrubbingLogFormatterTest: XCTestCase {
     private var formatter: OWSScrubbingLogFormatter { OWSScrubbingLogFormatter() }
@@ -36,6 +38,18 @@ final class OWSScrubbingLogFormatterTest: XCTestCase {
 
     private func stripDate(fromRawMessage rawMessage: String) -> String {
         rawMessage.substring(from: datePrefixLength)
+    }
+
+    func testAttachmentPathScrubbed() {
+        let testCases: [String] = [
+            "/Attachments/",
+            "/foo/bar/Attachments/abc123.txt",
+            "Something /foo/bar/Attachments/abc123.txt Something"
+        ]
+
+        for testCase in testCases {
+            XCTAssertEqual(format(testCase), "[ REDACTED_CONTAINS_USER_PATH ]")
+        }
     }
 
     func testDataScrubbed_preformatted() {
@@ -156,6 +170,51 @@ final class OWSScrubbingLogFormatterTest: XCTestCase {
         }
     }
 
+    func testGroupIdScrubbed() {
+        for _ in 1...100 {
+            let groupIdCount = Bool.random() ? kGroupIdLengthV1 : kGroupIdLengthV2
+            let groupId = Randomness.generateRandomBytes(groupIdCount)
+            let groupIdString = TSGroupThread.defaultThreadId(forGroupId: groupId)
+
+            let expectedOutput = "Hello [ REDACTED_GROUP_ID:...\(groupIdString.suffix(2)) ]!"
+
+            let result = format("Hello \(groupIdString)!")
+
+            XCTAssertTrue(
+                result.contains(expectedOutput),
+                "Failed to redact group ID: \(groupIdString). Result was \(result)"
+            )
+        }
+    }
+
+    func testThingsThatLookLikeGroupIdNotScrubbed() {
+        let forbiddenBase64Lengths = Set([
+            kGroupIdLengthV1.base64Length,
+            kGroupIdLengthV2.base64Length
+        ])
+
+        for _ in 1...100 {
+            let fakeGroupIdCount: Int32 = {
+                while true {
+                    let result = Int32.random(in: 1...(kGroupIdLengthV2 * 2))
+                    if !forbiddenBase64Lengths.contains(result.base64Length) {
+                        return result
+                    }
+                }
+            }()
+            let fakeGroupId = Randomness.generateRandomBytes(fakeGroupIdCount)
+            let fakeGroupIdString = TSGroupThread.defaultThreadId(forGroupId: fakeGroupId)
+            let input = "Hello \(fakeGroupIdString)!"
+
+            let result = format(input)
+            XCTAssertEqual(
+                stripDate(fromRawMessage: result),
+                input,
+                "Should not be affected"
+            )
+        }
+    }
+
     func testNotScrubbed() {
         let input = "Some unfiltered string"
         let result = format(input)
@@ -264,4 +323,8 @@ final class OWSScrubbingLogFormatterTest: XCTestCase {
             )
         }
     }
+}
+
+private extension Int32 {
+    var base64Length: Int32 { Int32(4 * ceil(Double(self) / 3)) }
 }

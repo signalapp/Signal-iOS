@@ -5,10 +5,10 @@
 
 #import "DebugLogger.h"
 #import "OWSPreferences.h"
-#import "OWSScrubbingLogFormatter.h"
 #import <AudioToolbox/AudioServices.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/OWSFileSystem.h>

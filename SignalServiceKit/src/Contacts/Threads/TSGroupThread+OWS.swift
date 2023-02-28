@@ -38,7 +38,7 @@ public extension TSGroupThread {
         groupMembership.isLocalUserFullMemberAndAdministrator
     }
 
-    private static let groupThreadUniqueIdPrefix = "g"
+    public static let groupThreadUniqueIdPrefix = "g"
 
     private static let uniqueIdMappingStore = SDSKeyValueStore(collection: "TSGroupThread.uniqueIdMappingStore")
 
