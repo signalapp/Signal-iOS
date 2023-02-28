@@ -107,6 +107,59 @@ final class APNSRotationStoreTest: SignalBaseTest {
         }
     }
 
+    func testHasWorkingPushTokenFromLongAgo() {
+        let now = Date().ows_millisecondsSince1970
+
+        // Make sure we are otherwise eligible to rotate, so
+        // that we know the determining factor is the APNS token.
+
+        // Set an APNS token.
+        preferences.setPushToken("123")
+
+        write { transaction in
+            // Mark as checked in the past so that we'd be eligible after an app update.
+            APNSRotationStore.nowMs = {
+                return now
+                    - APNSRotationStore.Constants.appVersionBakeTimeMs
+                    - 1
+            }
+            APNSRotationStore.setAppVersionTimeForAPNSRotationIfNeeded(transaction: transaction)
+        }
+
+        read {
+            APNSRotationStore.nowMs = { now }
+            // Make sure we need to rotate before marking the token as good.
+            XCTAssert(APNSRotationStore.canRotateAPNSToken(transaction: $0))
+        }
+
+        // Now mark receiving a push (marking the token as working)
+        write {
+            APNSRotationStore.didReceiveAPNSPush(transaction: $0)
+        }
+
+        read {
+            // The token should now be marked as good and not needing rotation.
+            XCTAssertFalse(APNSRotationStore.canRotateAPNSToken(transaction: $0))
+        }
+
+        // Let some time pass, but not too long.
+        APNSRotationStore.nowMs = { now + APNSRotationStore.Constants.lastKnownWorkingAPNSTokenExpirationTimeMs - 1 }
+
+        read {
+            // Still no need to rotate, it was marked good a short time ago.
+            XCTAssertFalse(APNSRotationStore.canRotateAPNSToken(transaction: $0))
+        }
+
+        // Now move the time far up, long since we marked the token as good,
+        // so it can now be rotated.
+        APNSRotationStore.nowMs = { now + APNSRotationStore.Constants.lastKnownWorkingAPNSTokenExpirationTimeMs + 1 }
+
+        read {
+            // Now we need to rotate because it was marked good too long ago.
+            XCTAssert(APNSRotationStore.canRotateAPNSToken(transaction: $0))
+        }
+    }
+
     func testHasUpdatedRecently() {
         // Make sure we have an APNS Token
         preferences.setPushToken("123")

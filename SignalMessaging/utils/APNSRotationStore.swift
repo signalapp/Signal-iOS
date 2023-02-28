@@ -37,6 +37,11 @@ public final class APNSRotationStore: NSObject {
             key: Constants.lastKnownWorkingAPNSTokenKey,
             transaction: transaction
         )
+        kvStore.setUInt64(
+            nowMs(),
+            key: Constants.lastKnownWorkingAPNSTokenTimestampKey,
+            transaction: transaction
+        )
     }
 
     public static func didRotateAPNSToken(transaction: SDSAnyWriteTransaction) {
@@ -47,6 +52,10 @@ public final class APNSRotationStore: NSObject {
         )
         kvStore.removeValue(
             forKey: Constants.lastKnownWorkingAPNSTokenKey,
+            transaction: transaction
+        )
+        kvStore.removeValue(
+            forKey: Constants.lastKnownWorkingAPNSTokenTimestampKey,
             transaction: transaction
         )
     }
@@ -60,23 +69,33 @@ public final class APNSRotationStore: NSObject {
         // Structuring as efficiently as possible: in a single read we check if we
         // are eligible to rotate, if not whether we need to open an expensive write transaction
         // to write the app version to (which we should only ever do once),
+        // if we need to write the "known good" token timestamp (only need to do this once
+        // to catch app versions from after we started rotating but before we wrote timestamps),
         // and if we are eligible to rotate fetch the latest message for later comparison.
         // Presence of a latestMessageTimestamp implies we should attempt a rotation after message processing.
-        let (needsAppVersionWrite, latestMessageTimestamp) = databaseStorage.read { transaction -> (Bool, UInt64?) in
-            if APNSRotationStore.needsAppVersionWrite(transaction: transaction) {
-                // We need to do a write to set the app version check.
-                // No need to actually check if we need a rotation, we definitely don't
-                // if we haven't written the app version time.
-                return (true, nil)
-            }
+        let (needsAppVersionWrite, needsKnownWorkingWrite, latestMessageTimestamp) =
+            databaseStorage.read { transaction -> (Bool, Bool, UInt64?) in
+                let needsKnownWorkingWrite = APNSRotationStore.kvStore.hasValue(
+                    forKey: Constants.lastKnownWorkingAPNSTokenKey,
+                    transaction: transaction
+                ) && !APNSRotationStore.kvStore.hasValue(
+                    forKey: Constants.lastKnownWorkingAPNSTokenTimestampKey,
+                    transaction: transaction
+                )
+                if APNSRotationStore.needsAppVersionWrite(transaction: transaction) {
+                    // We need to do a write to set the app version check.
+                    // No need to actually check if we need a rotation, we definitely don't
+                    // if we haven't written the app version time.
+                    return (true, needsKnownWorkingWrite, nil)
+                }
 
-            let canRotate = APNSRotationStore.canRotateAPNSToken(transaction: transaction)
-            if canRotate {
-                return (false, InteractionFinder.lastInsertedIncomingMessage(transaction: transaction)?.timestamp)
-            } else {
-                return (false, nil)
+                let canRotate = APNSRotationStore.canRotateAPNSToken(transaction: transaction)
+                if canRotate {
+                    return (false, needsKnownWorkingWrite, InteractionFinder.lastInsertedIncomingMessage(transaction: transaction)?.timestamp)
+                } else {
+                    return (false, needsKnownWorkingWrite, nil)
+                }
             }
-        }
 
         if let latestMessageTimestampBeforeProcessing = latestMessageTimestamp {
             // We are eligible to rotate the APNS token. Wait for fetching and processing to finish,
@@ -93,9 +112,18 @@ public final class APNSRotationStore: NSObject {
                     return
                 }
             }
-        } else if needsAppVersionWrite {
+        } else if needsAppVersionWrite || needsKnownWorkingWrite {
             databaseStorage.asyncWrite { transaction in
-                APNSRotationStore.setAppVersionTimeForAPNSRotationIfNeeded(transaction: transaction)
+                if needsAppVersionWrite {
+                    APNSRotationStore.setAppVersionTimeForAPNSRotationIfNeeded(transaction: transaction)
+                }
+                if needsKnownWorkingWrite {
+                    APNSRotationStore.kvStore.setUInt64(
+                        APNSRotationStore.nowMs(),
+                        key: Constants.lastKnownWorkingAPNSTokenTimestampKey,
+                        transaction: transaction
+                    )
+                }
             }
             return nil
         } else {
@@ -129,11 +157,27 @@ public final class APNSRotationStore: NSObject {
             Constants.lastKnownWorkingAPNSTokenKey,
             transaction: transaction
         )
+        let now = nowMs()
+        // Default to now; the initial release of this code didn't track
+        // this date, so it may be nil even if the known-good token is not.
+        let knownGoodTokenTimestamp = self.kvStore.getUInt64(
+            Constants.lastKnownWorkingAPNSTokenTimestampKey,
+            transaction: transaction
+        ) ?? now
         let isUsingKnownGoodToken = currentToken == knownGoodToken
         if isUsingKnownGoodToken {
-            // Our current token is a known working one, don't rotate.
-            Logger.warn("Has known-good APNS token, skipping rotation.")
-            return false
+            if
+                now > knownGoodTokenTimestamp,
+                now - knownGoodTokenTimestamp > Constants.lastKnownWorkingAPNSTokenExpirationTimeMs
+            {
+                // Too long ago, eligible to rotate.
+                Logger.info("APNS token was known-good long ago, rotating.")
+                return true
+            } else {
+                // Our current token is a known working one, don't rotate.
+                Logger.warn("Has known-good APNS token, skipping rotation.")
+                return false
+            }
         }
         return true
     }
@@ -209,6 +253,10 @@ public final class APNSRotationStore: NSObject {
         /// When we get an APNS push, we store the current token under this key
         /// since we know it is working.
         fileprivate static let lastKnownWorkingAPNSTokenKey = "lastKnownWorkingAPNSTokenKey"
+        /// We also store the date at which the token last worked,
+        /// if it was too long ago we might be eligible to rotate.
+        fileprivate static let lastKnownWorkingAPNSTokenTimestampKey = "lastKnownWorkingAPNSTokenTimestampKey"
+        internal static let lastKnownWorkingAPNSTokenExpirationTimeMs: UInt64 = 60 /*days*/ * kDayInMs
 
         /// See comments on `setAppVersionTimeForAPNSRotationIfNeeded`.
         /// Time we wait after the app first updates to a version with this code before we issue
