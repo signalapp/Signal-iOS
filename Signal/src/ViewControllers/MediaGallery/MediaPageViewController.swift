@@ -139,6 +139,21 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     // MARK: UIViewController overrides
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
+        let useDarkContentStatusBar: Bool
+        if mediaInteractiveDismiss.interactionInProgress {
+            useDarkContentStatusBar = true
+        } else if isBeingDismissed, let transitionCoordinator {
+            useDarkContentStatusBar = !transitionCoordinator.isCancelled
+        } else {
+            useDarkContentStatusBar = false
+        }
+
+        if useDarkContentStatusBar {
+            if #available(iOS 13, *) {
+                return .darkContent
+            }
+            return .default
+        }
         return .lightContent
     }
 

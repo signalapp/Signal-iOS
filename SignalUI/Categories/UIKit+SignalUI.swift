@@ -10,7 +10,8 @@ public extension UIViewPropertyAnimator {
     convenience init (
         duration: TimeInterval,
         springDamping: CGFloat,
-        springResponse: CGFloat
+        springResponse: CGFloat,
+        initialVelocity velocity: CGVector = .zero
     ) {
         let stiffness = pow(2 * .pi / springResponse, 2)
         let damping = 4 * .pi * springDamping / springResponse
@@ -18,7 +19,7 @@ public extension UIViewPropertyAnimator {
             mass: 1,
             stiffness: stiffness,
             damping: damping,
-            initialVelocity: .zero
+            initialVelocity: velocity
         )
         self.init(duration: duration, timingParameters: timingParameters)
         isUserInteractionEnabled = true
