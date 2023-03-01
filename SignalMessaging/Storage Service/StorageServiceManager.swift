@@ -687,7 +687,15 @@ class StorageServiceOperation: OWSOperation {
             return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
 
-        Logger.info("Backing up pending changes with manifest version: \(state.manifestVersion) (New: \(updatedItems.count), Deleted: \(deletedIdentifiers.count), Invalid: \(invalidIdentifiers.count), Total: \(state.allIdentifiers.count))")
+        Logger.info(
+            """
+            Backing up pending changes with proposed manifest version \(state.manifestVersion) (\
+            New: \(updatedItems.count), \
+            Deleted: \(deletedIdentifiers.count), \
+            Invalid/Missing: \(invalidIdentifiers.count), \
+            Total: \(state.allIdentifiers.count))
+            """
+        )
 
         StorageService.updateManifest(
             manifest,
@@ -936,7 +944,14 @@ class StorageServiceOperation: OWSOperation {
 
         let localKeysCount = state.allIdentifiers.count
 
-        Logger.info("Merging with newer remote manifest version: \(manifest.version). \(newOrUpdatedItems.count) new or updated items. Remote key count: \(allManifestItems.count). Local key count: \(localKeysCount).")
+        Logger.info(
+            """
+            Merging with newer remote manifest version \(manifest.version) (\
+            New: \(newOrUpdatedItems.count); \
+            Remote: \(allManifestItems.count); \
+            Local: \(localKeysCount))
+            """
+        )
 
         firstly { () -> Promise<Void> in
             // First, fetch the local account record if it has been updated. We give this record
@@ -1020,7 +1035,7 @@ class StorageServiceOperation: OWSOperation {
                 // when we remove them. Instead, we simply keep track of them so that we
                 // can delete them during our next mutation.
                 //
-                // We may have invalid identifiers for two reasons:
+                // We may have invalid identifiers for three reasons:
                 //
                 // (1) We got back an .invalid merge result, meaning we didn't process a
                 // storage item. As a result, our local state won't reference it.
@@ -1028,6 +1043,15 @@ class StorageServiceOperation: OWSOperation {
                 // (2) There are two storage items (with different storage identifiers)
                 // whose contents refer to the same thing (eg, group, story). In this case,
                 // the latter will replace the former, and the former will be orphaned.
+                //
+                // (3) The identifier is present in the manifest, but the corresponding
+                // item can't be fetched. When this happens, the most likely explanation is
+                // that our manifest is out of date. The next time we try to write, we'll
+                // get a conflict, merge the latest manifest, see that it no longer
+                // references this identifier, and remove it from `invalidIdentifiers`. (In
+                // the less common case where the latest manifest does refer to a
+                // non-existent identifier, this device will take care of fixing up the
+                // manifest to remove the reference.)
 
                 mutableState.invalidIdentifiers = allManifestItems.subtracting(mutableState.allIdentifiers)
                 let invalidIdentifierCount = mutableState.invalidIdentifiers.count
@@ -1068,9 +1092,24 @@ class StorageServiceOperation: OWSOperation {
                     orphanedAccountCount += 1
                 }
 
-                let pendingChangesCount = mutableState.accountIdChangeMap.count + mutableState.groupV1ChangeMap.count + mutableState.groupV2ChangeMap.count + mutableState.storyDistributionListChangeMap.count
+                let pendingChangesCount = (
+                    mutableState.accountIdChangeMap.count
+                    + mutableState.groupV1ChangeMap.count
+                    + mutableState.groupV2ChangeMap.count
+                    + mutableState.storyDistributionListChangeMap.count
+                )
 
-                Logger.info("Successfully merged remote manifest \(manifest.version) (Pending Updates: \(pendingChangesCount); Invalid IDs: \(invalidIdentifierCount); Orphaned Accounts: \(orphanedAccountCount); Orphaned GV1: \(orphanedGroupV1Count); Orphaned GV2: \(orphanedGroupV2Count); Orphaned DLists: \(orphanedStoryDistributionListCount))")
+                Logger.info(
+                    """
+                    Successfully merged remote manifest \(manifest.version) (\
+                    Pending Updates: \(pendingChangesCount); \
+                    Invalid/Missing IDs: \(invalidIdentifierCount); \
+                    Orphaned Accounts: \(orphanedAccountCount); \
+                    Orphaned GV1: \(orphanedGroupV1Count); \
+                    Orphaned GV2: \(orphanedGroupV2Count); \
+                    Orphaned DLists: \(orphanedStoryDistributionListCount))
+                    """
+                )
 
                 mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
 
@@ -1118,9 +1157,9 @@ class StorageServiceOperation: OWSOperation {
         var remainingItems = identifiers.count
         var mutableState = state
         var promise = Promise.value(())
-        for batch in identifiers.chunked(by: Self.itemsBatchSize) {
+        for identifierBatch in identifiers.chunked(by: Self.itemsBatchSize) {
             promise = promise.then(on: DispatchQueue.global()) {
-                StorageService.fetchItems(for: Array(batch))
+                StorageService.fetchItems(for: Array(identifierBatch))
             }.done(on: DispatchQueue.global()) { items in
                 self.databaseStorage.write { transaction in
                     let contactUpdater = self.buildContactUpdater()
@@ -1161,9 +1200,17 @@ class StorageServiceOperation: OWSOperation {
                         }
                     }
 
-                    remainingItems -= batch.count
+                    remainingItems -= identifierBatch.count
 
-                    Logger.info("Successfully merged \(batch.count) items from remote manifest version: \(manifest.version) with source device \(manifest.hasSourceDevice ? String(manifest.sourceDevice) : "(unspecified)"). \(remainingItems) items remaining to merge.")
+                    Logger.info(
+                        """
+                        Successfully merged remote manifest version \(manifest.version) \
+                        from device \(manifest.hasSourceDevice ? String(manifest.sourceDevice) : "(unspecified") (\
+                        Identifiers: \(identifierBatch.count); \
+                        Items: \(items.count); \
+                        Remaining: \(remainingItems))
+                        """
+                    )
 
                     // Saving here records the new storage identifiers with the *old* manifest version. This allows us to
                     // incrementally work through changes in a manifest, even if we fail part way through the update we'll
