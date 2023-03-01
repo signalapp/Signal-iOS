@@ -7,29 +7,7 @@ import SignalMessaging
 import SignalUI
 import UIKit
 
-// Objc wrapper for the MediaGalleryItem struct
-@objc
-class GalleryItemBox: NSObject {
-    let value: MediaGalleryItem
-
-    init(_ value: MediaGalleryItem) {
-        self.value = value
-    }
-
-    @objc
-    public var attachmentStream: TSAttachmentStream {
-        return value.attachmentStream
-    }
-}
-
-fileprivate extension MediaDetailViewController {
-    var galleryItem: MediaGalleryItem {
-        return self.galleryItemBox.value
-    }
-}
-
 class MediaPageViewController: UIPageViewController {
-
     private lazy var mediaInteractiveDismiss = MediaInteractiveDismiss(targetViewController: self)
 
     private let isShowingSingleMessage: Bool
@@ -240,16 +218,16 @@ class MediaPageViewController: UIPageViewController {
 
     // MARK: Paging
 
-    private var cachedPages: [MediaGalleryItem: MediaDetailViewController] = [:]
+    private var cachedPages: [MediaGalleryItem: MediaItemViewController] = [:]
 
-    private var currentViewController: MediaDetailViewController? {
-        let viewController = viewControllers?.first as? MediaDetailViewController
+    private var currentViewController: MediaItemViewController? {
+        let viewController = viewControllers?.first as? MediaItemViewController
         owsAssertBeta(viewController != nil)
         return viewController
     }
 
     private var currentItem: MediaGalleryItem! {
-        return currentViewController?.galleryItemBox.value
+        return currentViewController?.galleryItem
     }
 
     private func setCurrentItem(
@@ -419,7 +397,7 @@ class MediaPageViewController: UIPageViewController {
 
         // Swapping mediaView for presentationView will be perceptible if we're not zoomed out all the way.
         currentViewController.zoomOut(animated: true)
-        currentViewController.stopAnyVideo()
+        currentViewController.stopVideoIfPlaying()
 
         navigationController?.setNavigationBarHidden(false, animated: false)
 
@@ -479,12 +457,12 @@ class MediaPageViewController: UIPageViewController {
 
     @objc
     private func didPressPlayBarButton(_ sender: Any) {
-        currentViewController?.didPressPlayBarButton(sender)
+        currentViewController?.playVideo()
     }
 
     @objc
     private func didPressPauseBarButton(_ sender: Any) {
-        currentViewController?.didPressPauseBarButton(sender)
+        currentViewController?.pauseVideo()
     }
 
     // MARK: Dynamic Header
@@ -578,7 +556,7 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
         Logger.debug("")
 
         owsAssert(pendingViewControllers.count == 1)
-        guard let pendingViewController = pendingViewControllers.first as? MediaDetailViewController else {
+        guard let pendingViewController = pendingViewControllers.first as? MediaItemViewController else {
             owsFailDebug("unexpected transition to: \(pendingViewControllers)")
             return
         }
@@ -598,7 +576,7 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
         Logger.debug("")
 
         owsAssert(previousViewControllers.count == 1)
-        guard let previousPage = previousViewControllers.first as? MediaDetailViewController else {
+        guard let previousPage = previousViewControllers.first as? MediaItemViewController else {
             owsFailDebug("unexpected transition from: \(previousViewControllers)")
             return
         }
@@ -614,7 +592,7 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
             updateTitle()
             updateMediaRail()
             previousPage.zoomOut(animated: false)
-            previousPage.stopAnyVideo()
+            previousPage.stopVideoIfPlaying()
             updateFooterBarButtonItems(isPlayingVideo: false)
         } else {
             captionContainerView.pendingText = nil
@@ -632,7 +610,7 @@ extension MediaPageViewController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         Logger.debug("")
 
-        guard let currentPage = viewController as? MediaDetailViewController else {
+        guard let currentPage = viewController as? MediaItemViewController else {
             owsFailDebug("unexpected viewController: \(viewController)")
             return nil
         }
@@ -651,7 +629,7 @@ extension MediaPageViewController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         Logger.debug("")
 
-        guard let currentPage = viewController as? MediaDetailViewController else {
+        guard let currentPage = viewController as? MediaItemViewController else {
             owsFailDebug("unexpected viewController: \(viewController)")
             return nil
         }
@@ -668,7 +646,7 @@ extension MediaPageViewController: UIPageViewControllerDataSource {
         return nextPage
     }
 
-    private func buildGalleryPage(galleryItem: MediaGalleryItem, shouldAutoPlayVideo: Bool = false) -> MediaDetailViewController? {
+    private func buildGalleryPage(galleryItem: MediaGalleryItem, shouldAutoPlayVideo: Bool = false) -> MediaItemViewController? {
         if let cachedPage = cachedPages[galleryItem] {
             Logger.debug("cache hit.")
             return cachedPage
@@ -676,10 +654,7 @@ extension MediaPageViewController: UIPageViewControllerDataSource {
 
         Logger.debug("cache miss.")
 
-        let viewController = MediaDetailViewController(
-            galleryItemBox: GalleryItemBox(galleryItem),
-            shouldAutoPlayVideo: shouldAutoPlayVideo
-        )
+        let viewController = MediaItemViewController(galleryItem: galleryItem, shouldAutoPlayVideo: shouldAutoPlayVideo)
         viewController.delegate = self
 
         cachedPages[galleryItem] = viewController
@@ -748,21 +723,20 @@ extension MediaPageViewController: MediaGalleryDelegate {
     }
 }
 
-extension MediaPageViewController: MediaDetailViewControllerDelegate {
-    func mediaDetailViewControllerDidTapMedia(_ mediaDetailViewController: MediaDetailViewController) {
+extension MediaPageViewController: MediaItemViewControllerDelegate {
+    func mediaItemViewControllerDidTapMedia(_ viewController: MediaItemViewController) {
         Logger.debug("")
 
         shouldHideToolbars = !shouldHideToolbars
     }
 
-    func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {
-        guard mediaDetailViewController == currentViewController else {
+    func mediaItemViewController(_ viewController: MediaItemViewController, videoPlaybackStatusDidChange isPlaying: Bool) {
+        guard viewController == currentViewController else {
             Logger.verbose("ignoring stale delegate.")
             return
         }
-
-        shouldHideToolbars = isPlayingVideo
-        updateFooterBarButtonItems(isPlayingVideo: isPlayingVideo)
+        shouldHideToolbars = isPlaying
+        updateFooterBarButtonItems(isPlayingVideo: isPlaying)
     }
 }
 
@@ -823,7 +797,7 @@ extension MediaPageViewController: MediaPresentationContextProvider {
             return nil
         }
 
-        return MediaPresentationContext(mediaView: mediaView, presentationFrame: mediaView.frame, roundedCorners: .none)
+        return MediaPresentationContext(mediaView: mediaView, presentationFrame: mediaView.frame, cornerRadius: 0)
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
