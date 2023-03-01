@@ -712,10 +712,11 @@ extension MessageDetailViewController: MediaPresentationContextProvider {
 
         let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
 
-        // TODO better corner rounding.
-        return MediaPresentationContext(mediaView: mediaView,
-                                        presentationFrame: presentationFrame,
-                                        cornerRadius: CVComponentMessage.bubbleSharpCornerRadius * 2)
+        return MediaPresentationContext(
+            mediaView: mediaView,
+            presentationFrame: presentationFrame,
+            roundedCorners: .all(CVComponentMessage.bubbleWideCornerRadius)
+        )
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {

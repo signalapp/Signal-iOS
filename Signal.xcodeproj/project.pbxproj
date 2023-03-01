@@ -902,6 +902,7 @@
 		76A2EB1228B57AEE00A29C24 /* ColorPickerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */; };
+		76DFBF8C29AE6B80004A771D /* MediaTransitionImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76DFBF8B29AE6B80004A771D /* MediaTransitionImageView.swift */; };
 		76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76ECBA922915B5BB00676507 /* ConversationScrollButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */; };
@@ -3336,6 +3337,7 @@
 		76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerBar.swift; sourceTree = "<group>"; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewAttachmentViewController.swift; sourceTree = "<group>"; };
+		76DFBF8B29AE6B80004A771D /* MediaTransitionImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTransitionImageView.swift; sourceTree = "<group>"; };
 		76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+TextStyle.swift"; sourceTree = "<group>"; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -6265,6 +6267,7 @@
 				4CD675BD22E7BE35008010D2 /* MediaDismissAnimationController.swift */,
 				4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */,
 				4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */,
+				76DFBF8B29AE6B80004A771D /* MediaTransitionImageView.swift */,
 				4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */,
 			);
 			path = Transitions;
@@ -11144,6 +11147,7 @@
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
 				45CADA8B298DD2B4009EBDF5 /* MediaTileScrollFlag.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
+				76DFBF8C29AE6B80004A771D /* MediaTransitionImageView.swift in Sources */,
 				4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */,
 				8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */,
 				88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */,

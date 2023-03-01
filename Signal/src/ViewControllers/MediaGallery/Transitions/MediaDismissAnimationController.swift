@@ -28,7 +28,7 @@ class MediaDismissAnimationController: NSObject {
 
 extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.25
+        return kIsDebuggingMediaPresentationAnimations ? 2.5 : 0.25
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -141,13 +141,13 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
         self.transitionView = transitionView
         containerView.addSubview(transitionView)
 
-        let imageView = UIImageView(image: presentationImage)
+        let imageView = MediaTransitionImageView(image: presentationImage)
         imageView.contentMode = .scaleAspectFill
         imageView.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
         imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = fromMediaContext.cornerRadius
-        transitionView.addSubview(imageView)
+        imageView.roundedCorners = fromMediaContext.roundedCorners
         imageView.frame = transitionView.bounds
+        transitionView.addSubview(imageView)
 
         let fromTransitionalOverlayView: UIView?
         if let (overlayView, overlayViewFrame) = fromContextProvider.snapshotOverlayView(in: containerView) {
@@ -170,20 +170,20 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         let completion = {
             let destinationFrame: CGRect
-            let destinationCornerRadius: CGFloat
+            let destinationRoundedCorners: RoundedCorners
             if transitionContext.transitionWasCancelled {
                 destinationFrame = fromMediaContext.presentationFrame
-                destinationCornerRadius = fromMediaContext.cornerRadius
+                destinationRoundedCorners = fromMediaContext.roundedCorners
             } else if let toMediaContext {
                 destinationFrame = toMediaContext.presentationFrame
-                destinationCornerRadius = toMediaContext.cornerRadius
+                destinationRoundedCorners = toMediaContext.roundedCorners
             } else {
                 // `toMediaContext` can be nil if the target item is scrolled off of the
                 // contextProvider's screen, so we synthesize a context to dismiss the item
                 // off screen
                 let offscreenFrame = fromMediaContext.presentationFrame.offsetBy(dx: 0, dy: fromMediaContext.presentationFrame.height)
                 destinationFrame = offscreenFrame
-                destinationCornerRadius = fromMediaContext.cornerRadius
+                destinationRoundedCorners = fromMediaContext.roundedCorners
             }
 
             let animator = UIViewPropertyAnimator(duration: duration, springDamping: 0.77, springResponse: 0.3)
@@ -194,11 +194,11 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                     dimmerView.alpha = 0
                 }
 
+                imageView.roundedCorners = destinationRoundedCorners
                 transitionView.transform = .identity
                 transitionView.bounds.size = destinationFrame.size
                 transitionView.center = destinationFrame.center
                 transitionView.layer.shadowOpacity = 0
-                imageView.layer.cornerRadius = destinationCornerRadius
             }
             animator.addCompletion { _ in
                 fromTransitionalOverlayView?.removeFromSuperview()

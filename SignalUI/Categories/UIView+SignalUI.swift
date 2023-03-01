@@ -924,8 +924,6 @@ public extension UIBezierPath {
 
         assert(sharpCorners.isDisjoint(with: wideCorners))
 
-        let bezierPath = UIBezierPath()
-
         func cornerRounding(forCorner corner: UIRectCorner) -> CGFloat {
             if sharpCorners.contains(corner) {
                 return sharpCornerRadius
@@ -935,10 +933,23 @@ public extension UIBezierPath {
             }
             return 0
         }
-        let topLeftRounding = cornerRounding(forCorner: .topLeft)
-        let topRightRounding = cornerRounding(forCorner: .topRight)
-        let bottomRightRounding = cornerRounding(forCorner: .bottomRight)
-        let bottomLeftRounding = cornerRounding(forCorner: .bottomLeft)
+
+        return UIBezierPath.roundedRect(
+            rect,
+            topLeftRounding: cornerRounding(forCorner: .topLeft),
+            topRightRounding: cornerRounding(forCorner: .topRight),
+            bottomRightRounding: cornerRounding(forCorner: .bottomRight),
+            bottomLeftRounding: cornerRounding(forCorner: .bottomLeft)
+        )
+    }
+
+    static func roundedRect(
+        _ rect: CGRect,
+        topLeftRounding: CGFloat,
+        topRightRounding: CGFloat,
+        bottomRightRounding: CGFloat,
+        bottomLeftRounding: CGFloat
+    ) -> UIBezierPath {
 
         let topAngle = CGFloat.halfPi * 3
         let rightAngle = CGFloat.halfPi * 0
@@ -949,6 +960,8 @@ public extension UIBezierPath {
         let bubbleTop = rect.minY
         let bubbleRight = rect.maxX
         let bubbleBottom = rect.maxY
+
+        let bezierPath = UIBezierPath()
 
         // starting just to the right of the top left corner and working clockwise
         bezierPath.move(to: CGPoint(x: bubbleLeft + topLeftRounding, y: bubbleTop))

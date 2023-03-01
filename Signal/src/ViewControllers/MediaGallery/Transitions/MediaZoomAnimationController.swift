@@ -20,7 +20,7 @@ class MediaZoomAnimationController: NSObject {
 
 extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.25
+        return kIsDebuggingMediaPresentationAnimations ? 2.5 : 0.25
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -104,13 +104,12 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             return
         }
 
-        let transitionView = UIImageView(image: presentationImage)
+        let transitionView = MediaTransitionImageView(image: presentationImage)
         transitionView.contentMode = .scaleAspectFill
         transitionView.layer.masksToBounds = true
-        transitionView.layer.cornerRadius = fromMediaContext.cornerRadius
-
-        containerView.addSubview(transitionView)
+        transitionView.roundedCorners = fromMediaContext.roundedCorners
         transitionView.frame = fromMediaContext.presentationFrame
+        containerView.addSubview(transitionView)
 
         let fromTransitionalOverlayView: UIView?
         if let (overlayView, overlayViewFrame) = fromContextProvider.snapshotOverlayView(in: containerView) {
@@ -147,8 +146,8 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             fromTransitionalOverlayView?.alpha = 0.0
             toView.alpha = 1.0
             toTransitionalOverlayView?.alpha = 1.0
+            transitionView.roundedCorners = toMediaContext.roundedCorners
             transitionView.frame = toMediaContext.presentationFrame
-            transitionView.layer.cornerRadius = toMediaContext.cornerRadius
         }
         animator.addCompletion { _ in
             fromContextProvider.mediaDidPresent(fromContext: fromMediaContext)

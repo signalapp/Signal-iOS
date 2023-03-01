@@ -157,7 +157,11 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
 extension AvatarViewController: MediaPresentationContextProvider {
     func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
-        return MediaPresentationContext(mediaView: circleView, presentationFrame: circleView.frame, cornerRadius: circleView.layer.cornerRadius)
+        return MediaPresentationContext(
+            mediaView: circleView,
+            presentationFrame: circleView.frame,
+            roundedCorners: .all(circleView.layer.cornerRadius)
+        )
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {

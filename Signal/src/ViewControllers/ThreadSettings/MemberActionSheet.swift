@@ -357,7 +357,7 @@ extension MemberActionSheet: MediaPresentationContextProvider {
         return MediaPresentationContext(
             mediaView: mediaView,
             presentationFrame: presentationFrame,
-            cornerRadius: cornerRadius
+            roundedCorners: .all(cornerRadius)
         )
     }
 

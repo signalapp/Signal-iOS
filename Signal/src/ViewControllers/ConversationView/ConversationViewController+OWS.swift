@@ -353,10 +353,54 @@ extension ConversationViewController: MediaPresentationContextProvider {
 
         let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
 
-        // TODO exactly match corner radius for collapsed cells - maybe requires passing a masking view?
-        return MediaPresentationContext(mediaView: mediaView,
-                                        presentationFrame: presentationFrame,
-                                        cornerRadius: CVComponentMessage.bubbleSharpCornerRadius * 2)
+        var roundedCorners = RoundedCorners.all(CVComponentMessage.bubbleWideCornerRadius)
+        let mediaViewFrame = mediaView.convert(mediaView.bounds, to: messageCell)
+        var sharpBubbleCorners: UIRectCorner = []
+        if let componentMessage = messageCell.rootComponent as? CVComponentMessage {
+            sharpBubbleCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: componentMessage.sharpCorners)
+        }
+        if mediaViewFrame.minY > messageCell.bounds.minY {
+            // Media isn't aligned to cell's top edge - both top corners are square.
+            roundedCorners.topLeft = 0
+            roundedCorners.topRight = 0
+        } else {
+            // If media isn't pinned to cell's left edge it's left corners would be square.
+            if mediaView.frame.minX > mediaSuperview.bounds.minX {
+                roundedCorners.topLeft = 0
+            } else if sharpBubbleCorners.contains(.topLeft) {
+                roundedCorners.topLeft = CVComponentMessage.bubbleSharpCornerRadius
+            }
+            // If media isn't pinned to cell's right edge it's right corners would be square.
+            if mediaView.frame.maxX < mediaSuperview.bounds.maxX {
+                roundedCorners.topRight = 0
+            } else if sharpBubbleCorners.contains(.topRight) {
+                roundedCorners.topRight = CVComponentMessage.bubbleSharpCornerRadius
+            }
+        }
+        if mediaViewFrame.maxY < messageCell.bounds.maxY {
+            // Media isn't aligned to cell's bottom edge - both bottom corners are square.
+            roundedCorners.bottomLeft = 0
+            roundedCorners.bottomRight = 0
+        } else {
+            // If media isn't pinned to cell's left edge it's left corners would be square.
+            if mediaView.frame.minX > mediaSuperview.bounds.minX {
+                roundedCorners.bottomLeft = 0
+            } else if sharpBubbleCorners.contains(.bottomLeft) {
+                roundedCorners.bottomLeft = CVComponentMessage.bubbleSharpCornerRadius
+            }
+            // If media isn't pinned to cell's right edge it's right corners would be square.
+            if mediaView.frame.maxX < mediaSuperview.bounds.maxX {
+                roundedCorners.bottomRight = 0
+            } else if sharpBubbleCorners.contains(.bottomRight) {
+                roundedCorners.bottomRight = CVComponentMessage.bubbleSharpCornerRadius
+            }
+        }
+
+        return MediaPresentationContext(
+            mediaView: mediaView,
+            presentationFrame: presentationFrame,
+            roundedCorners: roundedCorners
+        )
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {

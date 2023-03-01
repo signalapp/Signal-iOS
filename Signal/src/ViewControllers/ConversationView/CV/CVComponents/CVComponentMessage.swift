@@ -71,7 +71,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         buildComponentStates()
     }
 
-    private var sharpCorners: OWSDirectionalRectCorner {
+    var sharpCorners: OWSDirectionalRectCorner {
         var result: OWSDirectionalRectCorner = []
 
         if !itemViewState.isFirstInCluster {

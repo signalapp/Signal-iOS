@@ -22,10 +22,23 @@ enum Media {
     }
 }
 
+struct RoundedCorners: Equatable {
+    var topLeft: CGFloat
+    var topRight: CGFloat
+    var bottomRight: CGFloat
+    var bottomLeft: CGFloat
+
+    static var none: RoundedCorners { RoundedCorners.all(0) }
+
+    static func all(_ radius: CGFloat) -> RoundedCorners {
+        return RoundedCorners(topLeft: radius, topRight: radius, bottomRight: radius, bottomLeft: radius)
+    }
+}
+
 struct MediaPresentationContext {
     let mediaView: UIView
     let presentationFrame: CGRect
-    let cornerRadius: CGFloat
+    let roundedCorners: RoundedCorners
 }
 
 // There are two kinds of AnimationControllers that interact with the media detail view. Both
