@@ -4,12 +4,13 @@
 //
 
 import SignalMessaging
+import SignalUI
 import UIKit
 
 // Objc wrapper for the MediaGalleryItem struct
 @objc
-public class GalleryItemBox: NSObject {
-    public let value: MediaGalleryItem
+class GalleryItemBox: NSObject {
+    let value: MediaGalleryItem
 
     init(_ value: MediaGalleryItem) {
         self.value = value
@@ -27,64 +28,30 @@ fileprivate extension MediaDetailViewController {
     }
 }
 
-class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, MediaDetailViewControllerDelegate, MediaGalleryDelegate, InteractivelyDismissableViewController {
+class MediaPageViewController: UIPageViewController {
 
-    var mediaInteractiveDismiss: MediaInteractiveDismiss!
+    private lazy var mediaInteractiveDismiss = MediaInteractiveDismiss(targetViewController: self)
 
-    private var cachedPages: [MediaGalleryItem: MediaDetailViewController] = [:]
-    private var initialPage: MediaDetailViewController!
-
-    public var currentViewController: MediaDetailViewController {
-        return viewControllers!.first as! MediaDetailViewController
-    }
-
-    public var currentItem: MediaGalleryItem {
-        return currentViewController.galleryItemBox.value
-    }
-
-    public func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewController.NavigationDirection, animated isAnimated: Bool) {
-        guard let galleryPage = self.buildGalleryPage(galleryItem: item) else {
-            owsFailDebug("unexpectedly unable to build new gallery page")
-            return
-        }
-
-        updateTitle(item: item)
-        updateCaption(item: item)
-        setViewControllers([galleryPage], direction: direction, animated: isAnimated)
-        updateFooterBarButtonItems(isPlayingVideo: false)
-        updateMediaRail()
-    }
-
-    private var mostRecentAlbum: MediaGalleryAlbum?
-
-    private let showingSingleMessage: Bool
+    private let isShowingSingleMessage: Bool
     let mediaGallery: MediaGallery
 
-    @objc
-    convenience init(initialMediaAttachment: TSAttachment, thread: TSThread) {
-        self.init(initialMediaAttachment: initialMediaAttachment,
-                  thread: thread,
-                  showingSingleMessage: false)
-    }
-
-    convenience init(initialMediaAttachment: TSAttachment,
-                     thread: TSThread,
-                     showingSingleMessage: Bool = false) {
-        self.init(initialMediaAttachment: initialMediaAttachment,
-                  mediaGallery: MediaGallery(thread: thread),
-                  showingSingleMessage: showingSingleMessage)
+    convenience init(initialMediaAttachment: TSAttachment, thread: TSThread, showingSingleMessage: Bool = false) {
+        self.init(
+            initialMediaAttachment: initialMediaAttachment,
+            mediaGallery: MediaGallery(thread: thread),
+            showingSingleMessage: showingSingleMessage
+        )
     }
 
     init(initialMediaAttachment: TSAttachment, mediaGallery: MediaGallery, showingSingleMessage: Bool = false) {
         self.mediaGallery = mediaGallery
-        self.showingSingleMessage = showingSingleMessage
+        self.isShowingSingleMessage = showingSingleMessage
 
-        let kSpacingBetweenItems: CGFloat = 20
-
-        let pageViewOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
-        super.init(transitionStyle: .scroll,
-                   navigationOrientation: .horizontal,
-                   options: pageViewOptions)
+        super.init(
+            transitionStyle: .scroll,
+            navigationOrientation: .horizontal,
+            options: [.interPageSpacing: 20]
+        )
 
         modalPresentationStyle = .overFullScreen
         modalPresentationCapturesStatusBarAppearance = true
@@ -93,23 +60,19 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         transitioningDelegate = self
 
         Logger.info("will ensureLoadedForDetailView")
-        let galleryItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: initialMediaAttachment)
-        Logger.info("ensureLoadedForDetailView done")
-
-        guard let initialItem = galleryItem else {
+        guard let initialItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: initialMediaAttachment) else {
             owsFailDebug("unexpectedly failed to build initialDetailItem.")
             return
         }
+        Logger.info("ensureLoadedForDetailView done")
 
         mediaGallery.addDelegate(self)
 
-        guard let initialPage = buildGalleryPage(galleryItem: initialItem,
-                                                 shouldAutoPlayVideo: true) else {
-            owsFailDebug("unexpectedly unable to build initial gallery item")
+        guard let initialPage = buildGalleryPage(galleryItem: initialItem, shouldAutoPlayVideo: true) else {
+            owsFailBeta("unexpectedly unable to build initial gallery item")
             return
         }
-        self.initialPage = initialPage
-        self.setViewControllers([initialPage], direction: .forward, animated: false, completion: nil)
+        setViewControllers([initialPage], direction: .forward, animated: false, completion: nil)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -123,20 +86,18 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: - Subview
 
-    // MARK: Top Bar
-    lazy var topContainer = UIView()
+    // Top Bar
+    private lazy var topContainer = UIView()
     // See `viewSafeAreaInsetsDidChange` why this is needed.
     private var navigationBarTopLayoutConstraint: NSLayoutConstraint?
 
-    // MARK: Bottom Bar
-    lazy var bottomContainer = UIView()
-    lazy var footerBar = UIToolbar.clear()
-    let captionContainerView: CaptionContainerView = CaptionContainerView()
-    var galleryRailView: GalleryRailView = GalleryRailView()
+    // Bottom Bar
+    private lazy var bottomContainer = UIView()
+    private lazy var footerBar = UIToolbar.clear()
+    private lazy var captionContainerView = CaptionContainerView()
+    private lazy var galleryRailView = GalleryRailView()
 
-    var pagerScrollView: UIScrollView!
-
-    // MARK: UIViewController overrides
+    // MARK: UIViewController
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         let useDarkContentStatusBar: Bool
@@ -168,33 +129,27 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Navigation
+        view.backgroundColor = Theme.darkThemeBackgroundColor
 
-        mediaInteractiveDismiss = MediaInteractiveDismiss(targetViewController: self)
         mediaInteractiveDismiss.addGestureRecognizer(to: view)
 
         // Even though bars are opaque, we want content to be laid out behind them.
         // The bars might obscure part of the content, but they can easily be hidden by tapping
         // The alternative would be that content would shift when the navbars hide.
-        self.extendedLayoutIncludesOpaqueBars = true
+        extendedLayoutIncludesOpaqueBars = true
 
-        // Get reference to paged content which lives in a scrollView created by the superclass
-        // We show/hide this content during presentation
-        for view in self.view.subviews {
-            if let pagerScrollView = view as? UIScrollView {
-                self.pagerScrollView = pagerScrollView
+        // Get reference to paged content which lives in a scrollView created by the superclass.
+        // Track scrolling position and show/hide caption as necessary.
+        if let pagerScrollView = view.subviews.last(where: { $0 is UIScrollView }) as? UIScrollView {
+            pagerScrollViewContentOffsetObservation = pagerScrollView.observe(\.contentOffset, options: [.new]) { [weak self] _, change in
+                guard let self else { return }
+                self.pagerScrollView(pagerScrollView, contentOffsetDidChange: change)
             }
+        } else {
+            owsFail("pagerScrollView == nil")
         }
 
-        pagerScrollViewContentOffsetObservation = pagerScrollView.observe(\.contentOffset, options: [.new]) { [weak self] _, change in
-            guard let strongSelf = self else { return }
-            strongSelf.pagerScrollView(strongSelf.pagerScrollView, contentOffsetDidChange: change)
-        }
-
-        // Views
-
-        view.backgroundColor = Theme.darkThemeBackgroundColor
-
+        // Top bar
         captionContainerView.delegate = self
         updateCaptionContainerVisibility()
 
@@ -230,6 +185,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         headerView.autoAlignAxis(.vertical, toSameAxisOf: navigationBar)
         headerView.autoAlignAxis(.horizontal, toSameAxisOf: navigationBar)
 
+        // Bottom bar
         footerBar.tintColor = Theme.darkThemePrimaryColor
         bottomContainer.backgroundColor = .ows_blackAlpha40
 
@@ -238,7 +194,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         bottomContainer.addSubview(bottomStack)
         bottomStack.autoPinEdgesToSuperviewEdges()
 
-        self.view.addSubview(bottomContainer)
+        view.addSubview(bottomContainer)
         bottomContainer.autoPinWidthToSuperview()
         bottomContainer.autoPinEdge(toSuperviewEdge: .bottom)
         footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
@@ -279,14 +235,46 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     override func didReceiveMemoryWarning() {
         Logger.info("")
         super.didReceiveMemoryWarning()
-
-        self.cachedPages = [:]
+        cachedPages.removeAll()
     }
+
+    // MARK: Paging
+
+    private var cachedPages: [MediaGalleryItem: MediaDetailViewController] = [:]
+
+    private var currentViewController: MediaDetailViewController? {
+        let viewController = viewControllers?.first as? MediaDetailViewController
+        owsAssertBeta(viewController != nil)
+        return viewController
+    }
+
+    private var currentItem: MediaGalleryItem! {
+        return currentViewController?.galleryItemBox.value
+    }
+
+    private func setCurrentItem(
+        _ item: MediaGalleryItem,
+        direction: UIPageViewController.NavigationDirection,
+        animated isAnimated: Bool
+    ) {
+        guard let galleryPage = self.buildGalleryPage(galleryItem: item) else {
+            owsFailDebug("unexpectedly unable to build new gallery page")
+            return
+        }
+
+        updateTitle(item: item)
+        updateCaption(item: item)
+        setViewControllers([galleryPage], direction: direction, animated: isAnimated)
+        updateFooterBarButtonItems(isPlayingVideo: false)
+        updateMediaRail()
+    }
+
+    private var mostRecentAlbum: MediaGalleryAlbum?
 
     // MARK: KVO
 
-    var pagerScrollViewContentOffsetObservation: NSKeyValueObservation?
-    func pagerScrollView(_ pagerScrollView: UIScrollView, contentOffsetDidChange change: NSKeyValueObservedChange<CGPoint>) {
+    private var pagerScrollViewContentOffsetObservation: NSKeyValueObservation?
+    private func pagerScrollView(_ pagerScrollView: UIScrollView, contentOffsetDidChange change: NSKeyValueObservedChange<CGPoint>) {
         guard let newValue = change.newValue else {
             owsFailDebug("newValue was unexpectedly nil")
             return
@@ -302,12 +290,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: View Helpers
 
-    public func willBePresentedAgain() {
+    func willBePresentedAgain() {
         updateFooterBarButtonItems(isPlayingVideo: false)
     }
 
-    public func wasPresented() {
-        let currentViewController = self.currentViewController
+    func wasPresented() {
+        guard let currentViewController else { return }
 
         if currentViewController.galleryItem.isVideo {
             currentViewController.playVideo()
@@ -320,7 +308,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
             setNeedsStatusBarAppearanceUpdate()
 
-            currentViewController.setShouldHideToolbars(shouldHideToolbars)
+            currentViewController?.setShouldHideToolbars(shouldHideToolbars)
             bottomContainer.isHidden = shouldHideToolbars
             topContainer.isHidden = shouldHideToolbars
         }
@@ -329,48 +317,44 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private var shouldHideStatusBar: Bool {
         guard !UIDevice.current.isIPad else { return shouldHideToolbars }
 
-        return shouldHideToolbars || CurrentAppContext().interfaceOrientation.isLandscape
+        return shouldHideToolbars || traitCollection.verticalSizeClass == .compact
     }
 
     // MARK: Bar Buttons
 
-    lazy var shareBarButton: UIBarButtonItem = {
-        let image = #imageLiteral(resourceName: "share-outline-24")
+    private lazy var shareBarButton: UIBarButtonItem = {
+        let image = UIImage(imageLiteralResourceName: "share-outline-24")
         let shareBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didPressShare))
         shareBarButton.tintColor = Theme.darkThemePrimaryColor
         return shareBarButton
     }()
 
-    lazy var forwardBarButton: UIBarButtonItem = {
-        let image = #imageLiteral(resourceName: "forward-solid-24")
+    private lazy var forwardBarButton: UIBarButtonItem = {
+        let image = UIImage(imageLiteralResourceName: "forward-solid-24")
         let forwardBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didPressForward))
         forwardBarButton.tintColor = Theme.darkThemePrimaryColor
         return forwardBarButton
     }()
 
-    lazy var deleteBarButton: UIBarButtonItem = {
-        let image = #imageLiteral(resourceName: "trash-solid-24")
-        let deleteBarButton = UIBarButtonItem(image: image,
-                                              style: .plain,
-                                              target: self,
-                                              action: #selector(didPressDelete))
+    private lazy var deleteBarButton: UIBarButtonItem = {
+        let image = UIImage(imageLiteralResourceName: "trash-solid-24")
+        let deleteBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didPressDelete))
         deleteBarButton.tintColor = Theme.darkThemePrimaryColor
         return deleteBarButton
     }()
 
-    func buildFlexibleSpace() -> UIBarButtonItem {
+    private func buildFlexibleSpace() -> UIBarButtonItem {
         return UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     }
 
-    lazy var videoPlayBarButton: UIBarButtonItem = {
+    private lazy var videoPlayBarButton: UIBarButtonItem = {
         let videoPlayBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(didPressPlayBarButton))
         videoPlayBarButton.tintColor = Theme.darkThemePrimaryColor
         return videoPlayBarButton
     }()
 
-    lazy var videoPauseBarButton: UIBarButtonItem = {
-        let videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action:
-                                                    #selector(didPressPauseBarButton))
+    private lazy var videoPauseBarButton: UIBarButtonItem = {
+        let videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action: #selector(didPressPauseBarButton))
         videoPauseBarButton.tintColor = Theme.darkThemePrimaryColor
         return videoPauseBarButton
     }()
@@ -383,19 +367,19 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             buildFlexibleSpace()
         ]
 
-        if self.currentItem.isVideo {
+        if currentItem.isVideo {
             toolbarItems += [
-                isPlayingVideo ? self.videoPauseBarButton : self.videoPlayBarButton,
+                isPlayingVideo ? videoPauseBarButton : videoPlayBarButton,
                 buildFlexibleSpace()
             ]
         }
 
         toolbarItems.append(deleteBarButton)
 
-        self.footerBar.setItems(toolbarItems, animated: false)
+        footerBar.setItems(toolbarItems, animated: false)
     }
 
-    func updateMediaRail() {
+    private func updateMediaRail() {
         if mostRecentAlbum?.items.contains(currentItem) != true {
             mostRecentAlbum = mediaGallery.album(for: currentItem)
         }
@@ -405,271 +389,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                                            cellViewBuilder: { _ in return GalleryRailCellView() })
     }
 
-    // MARK: Actions
-
-    @objc
-    public func didSwipeView(sender: Any) {
-        Logger.debug("")
-
-        self.dismissSelf(animated: true)
-    }
-
-    @objc
-    public func performInteractiveDismissal(animated: Bool) {
-        dismissSelf(animated: true)
-    }
-
-    @objc
-    public func didPressShare(_ sender: UIBarButtonItem) {
-        guard let currentViewController = self.viewControllers?[0] as? MediaDetailViewController else {
-            owsFailDebug("currentViewController was unexpectedly nil")
-            return
-        }
-
-        let attachmentStream = currentViewController.galleryItem.attachmentStream
-
-        AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: sender)
-    }
-
-    @objc
-    public func didPressForward(_ sender: Any) {
-        let galleryItem: MediaGalleryItem = currentItem
-
-        guard let renderItem = buildRenderItem(forGalleryItem: galleryItem) else {
-            owsFailDebug("viewItem was unexpectedly nil")
-            return
-        }
-
-        // Only forward media.
-        let selectionType: CVSelectionType = .primaryContent
-        let selectionItem = CVSelectionItem(interactionId: renderItem.interaction.uniqueId,
-                                            interactionType: renderItem.interaction.interactionType,
-                                            isForwardable: true,
-                                            selectionType: selectionType)
-        ForwardMessageViewController.present(forSelectionItems: [selectionItem],
-                                             from: self,
-                                             delegate: self)
-    }
-
-    @objc
-    public func didPressDelete(_ sender: Any) {
-        guard let currentViewController = self.viewControllers?[0] as? MediaDetailViewController else {
-            owsFailDebug("currentViewController was unexpectedly nil")
-            return
-        }
-
-        let actionSheet = ActionSheetController(title: nil, message: nil)
-        let deleteAction = ActionSheetAction(title: CommonStrings.deleteButton,
-                                             style: .destructive) { _ in
-            let deletedItem = currentViewController.galleryItem
-            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self)
-        }
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-        actionSheet.addAction(deleteAction)
-
-        self.presentActionSheet(actionSheet)
-    }
-
-    // MARK: MediaGalleryDelegate
-
-    func mediaGallery(_ mediaGallery: MediaGallery, applyUpdate update: MediaGallery.Update) {
-        Logger.debug("")
-    }
-
-    func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
-        Logger.debug("")
-
-        guard items.contains(currentItem) else {
-            Logger.debug("irrelevant item")
-            return
-        }
-
-        // If we setCurrentItem with (animated: true) while this VC is in the background, then
-        // the next/previous cache isn't expired, and we're able to swipe back to the just-deleted vc.
-        // So to get the correct behavior, we should only animate these transitions when this
-        // vc is in the foreground
-        let isAnimated = initiatedBy === self
-
-        if showingSingleMessage {
-            // In message details, which doesn't use the slider, so don't swap pages.
-        } else if let nextItem = mediaGallery.galleryItem(after: currentItem) {
-            self.setCurrentItem(nextItem, direction: .forward, animated: isAnimated)
-        } else if let previousItem = mediaGallery.galleryItem(before: currentItem) {
-            self.setCurrentItem(previousItem, direction: .reverse, animated: isAnimated)
-        } else {
-            // else we deleted the last piece of media, return to the conversation view
-            self.dismissSelf(animated: true)
-        }
-    }
-
-    func itemIsAllowed(_ item: MediaGalleryItem) -> Bool {
-        // Normally, we can show any media item, but if we're limited
-        // to showing a single message, don't page beyond that message
-        return !showingSingleMessage || currentItem.message == item.message
-    }
-
-    func mediaGalleryDidDeleteItem(_ mediaGallery: MediaGallery) {
-        // Either this is an internal deletion, in which case willDelete would have been called already,
-        // or it's an external deletion, in which case mediaGalleryDidReloadItems would have been called already.
-    }
-
-    func mediaGalleryDidReloadItems(_ mediaGallery: MediaGallery) {
-        self.didReloadAllSectionsInMediaGallery(mediaGallery)
-    }
-
-    func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery) {
-        // Does not affect the current item.
-    }
-
-    func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
-        let attachment = self.currentItem.attachmentStream
-        guard let reloadedItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: attachment) else {
-            // Assume the item was deleted.
-            self.dismissSelf(animated: true)
-            return
-        }
-        self.setCurrentItem(reloadedItem, direction: .forward, animated: false)
-    }
-
-    @objc
-    public func didPressPlayBarButton(_ sender: Any) {
-        guard let currentViewController = self.viewControllers?[0] as? MediaDetailViewController else {
-            owsFailDebug("currentViewController was unexpectedly nil")
-            return
-        }
-        currentViewController.didPressPlayBarButton(sender)
-    }
-
-    @objc
-    public func didPressPauseBarButton(_ sender: Any) {
-        guard let currentViewController = self.viewControllers?[0] as? MediaDetailViewController else {
-            owsFailDebug("currentViewController was unexpectedly nil")
-            return
-        }
-        currentViewController.didPressPauseBarButton(sender)
-    }
-
-    // MARK: UIPageViewControllerDelegate
-
-    var pendingViewController: MediaDetailViewController?
-    public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
-        Logger.debug("")
-
-        assert(pendingViewControllers.count == 1)
-        pendingViewControllers.forEach { viewController in
-            guard let pendingViewController = viewController as? MediaDetailViewController else {
-                owsFailDebug("unexpected mediaDetailViewController: \(viewController)")
-                return
-            }
-            self.pendingViewController = pendingViewController
-
-            if
-                let pendingCaptionText = pendingViewController.galleryItem.captionForDisplay,
-                !pendingCaptionText.isEmpty {
-                self.captionContainerView.pendingText = pendingCaptionText
-            } else {
-                self.captionContainerView.pendingText = nil
-            }
-
-            // Ensure upcoming page respects current toolbar status
-            pendingViewController.setShouldHideToolbars(self.shouldHideToolbars)
-        }
-    }
-
-    public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted: Bool) {
-        Logger.debug("")
-
-        assert(previousViewControllers.count == 1)
-        previousViewControllers.forEach { viewController in
-            guard let previousPage = viewController as? MediaDetailViewController else {
-                owsFailDebug("unexpected mediaDetailViewController: \(viewController)")
-                return
-            }
-
-            // Do any cleanup for the no-longer visible view controller
-            if transitionCompleted {
-                pendingViewController = nil
-
-                // This can happen when trying to page past the last (or first) view controller
-                // In that case, we don't want to change the captionView.
-                if previousPage != currentViewController {
-                    captionContainerView.completePagerTransition()
-                }
-
-                updateTitle()
-                updateMediaRail()
-                previousPage.zoomOut(animated: false)
-                previousPage.stopAnyVideo()
-                updateFooterBarButtonItems(isPlayingVideo: false)
-            } else {
-                captionContainerView.pendingText = nil
-            }
-        }
-    }
-
-    // MARK: UIPageViewControllerDataSource
-
-    public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        Logger.debug("")
-
-        guard let previousDetailViewController = viewController as? MediaDetailViewController else {
-            owsFailDebug("unexpected viewController: \(viewController)")
-            return nil
-        }
-
-        let previousItem = previousDetailViewController.galleryItem
-        guard let nextItem: MediaGalleryItem = mediaGallery.galleryItem(before: previousItem), itemIsAllowed(nextItem) else {
-            return nil
-        }
-
-        guard let nextPage: MediaDetailViewController = buildGalleryPage(galleryItem: nextItem) else {
-            return nil
-        }
-
-        return nextPage
-    }
-
-    public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        Logger.debug("")
-
-        guard let previousDetailViewController = viewController as? MediaDetailViewController else {
-            owsFailDebug("unexpected viewController: \(viewController)")
-            return nil
-        }
-
-        let previousItem = previousDetailViewController.galleryItem
-        guard let nextItem = mediaGallery.galleryItem(after: previousItem), itemIsAllowed(nextItem) else {
-            // no more pages
-            return nil
-        }
-
-        guard let nextPage: MediaDetailViewController = buildGalleryPage(galleryItem: nextItem) else {
-            return nil
-        }
-
-        return nextPage
-    }
-
-    private func buildGalleryPage(galleryItem: MediaGalleryItem,
-                                  shouldAutoPlayVideo: Bool = false) -> MediaDetailViewController? {
-
-        if let cachedPage = cachedPages[galleryItem] {
-            Logger.debug("cache hit.")
-            return cachedPage
-        }
-
-        Logger.debug("cache miss.")
-
-        let viewController = MediaDetailViewController(galleryItemBox: GalleryItemBox(galleryItem),
-                                                       shouldAutoPlayVideo: shouldAutoPlayVideo)
-        viewController.delegate = self
-
-        cachedPages[galleryItem] = viewController
-        return viewController
-    }
+    // MARK: Helpers
 
     private func buildRenderItem(forGalleryItem galleryItem: MediaGalleryItem) -> CVRenderItem? {
-
         return databaseStorage.read { transaction in
             let interactionId = galleryItem.message.uniqueId
             guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
@@ -692,33 +414,77 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
     }
 
-    public func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
+    private func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
+        guard let currentViewController else { return }
+
         // Swapping mediaView for presentationView will be perceptible if we're not zoomed out all the way.
         currentViewController.zoomOut(animated: true)
-
         currentViewController.stopAnyVideo()
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
+
+        navigationController?.setNavigationBarHidden(false, animated: false)
 
         dismiss(animated: isAnimated, completion: completion)
     }
 
-    // MARK: MediaDetailViewControllerDelegate
+    // MARK: Actions
 
     @objc
-    public func mediaDetailViewControllerDidTapMedia(_ mediaDetailViewController: MediaDetailViewController) {
+    private func didSwipeView(sender: Any) {
         Logger.debug("")
-
-        self.shouldHideToolbars = !self.shouldHideToolbars
+        dismissSelf(animated: true)
     }
 
-    public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {
-        guard mediaDetailViewController == currentViewController else {
-            Logger.verbose("ignoring stale delegate.")
+    @objc
+    private func didPressShare(_ sender: UIBarButtonItem) {
+        guard let currentViewController else { return }
+        let attachmentStream = currentViewController.galleryItem.attachmentStream
+        AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: sender)
+    }
+
+    @objc
+    private func didPressForward(_ sender: Any) {
+        let galleryItem: MediaGalleryItem = currentItem
+
+        guard let renderItem = buildRenderItem(forGalleryItem: galleryItem) else {
+            owsFailDebug("viewItem was unexpectedly nil")
             return
         }
 
-        self.shouldHideToolbars = isPlayingVideo
-        self.updateFooterBarButtonItems(isPlayingVideo: isPlayingVideo)
+        // Only forward media.
+        let selectionType: CVSelectionType = .primaryContent
+        let selectionItem = CVSelectionItem(interactionId: renderItem.interaction.uniqueId,
+                                            interactionType: renderItem.interaction.interactionType,
+                                            isForwardable: true,
+                                            selectionType: selectionType)
+        ForwardMessageViewController.present(forSelectionItems: [selectionItem],
+                                             from: self,
+                                             delegate: self)
+    }
+
+    @objc
+    private func didPressDelete(_ sender: Any) {
+        guard let currentViewController else { return }
+
+        let actionSheet = ActionSheetController(title: nil, message: nil)
+        let deleteAction = ActionSheetAction(title: CommonStrings.deleteButton,
+                                             style: .destructive) { _ in
+            let deletedItem = currentViewController.galleryItem
+            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self)
+        }
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        actionSheet.addAction(deleteAction)
+
+        presentActionSheet(actionSheet)
+    }
+
+    @objc
+    private func didPressPlayBarButton(_ sender: Any) {
+        currentViewController?.didPressPlayBarButton(sender)
+    }
+
+    @objc
+    private func didPressPauseBarButton(_ sender: Any) {
+        currentViewController?.didPressPauseBarButton(sender)
     }
 
     // MARK: Dynamic Header
@@ -743,7 +509,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return formatter
     }()
 
-    lazy private var headerNameLabel: UILabel = {
+    private lazy var headerNameLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.ows_regularFont(withSize: 17)
@@ -754,7 +520,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return label
     }()
 
-    lazy private var headerDateLabel: UILabel = {
+    private lazy var headerDateLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.ows_regularFont(withSize: 12)
@@ -807,16 +573,205 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 }
 
+extension MediaPageViewController: UIPageViewControllerDelegate {
+    func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        Logger.debug("")
+
+        owsAssert(pendingViewControllers.count == 1)
+        guard let pendingViewController = pendingViewControllers.first as? MediaDetailViewController else {
+            owsFailDebug("unexpected transition to: \(pendingViewControllers)")
+            return
+        }
+
+        captionContainerView.pendingText = pendingViewController.galleryItem.captionForDisplay?.nilIfEmpty
+
+        // Ensure upcoming page respects current toolbar status
+        pendingViewController.setShouldHideToolbars(shouldHideToolbars)
+    }
+
+    func pageViewController(
+        _ pageViewController: UIPageViewController,
+        didFinishAnimating finished: Bool,
+        previousViewControllers: [UIViewController],
+        transitionCompleted: Bool
+    ) {
+        Logger.debug("")
+
+        owsAssert(previousViewControllers.count == 1)
+        guard let previousPage = previousViewControllers.first as? MediaDetailViewController else {
+            owsFailDebug("unexpected transition from: \(previousViewControllers)")
+            return
+        }
+
+        // Do any cleanup for the no-longer visible view controller
+        if transitionCompleted {
+            // This can happen when trying to page past the last (or first) view controller
+            // In that case, we don't want to change the captionView.
+            if previousPage != currentViewController {
+                captionContainerView.completePagerTransition()
+            }
+
+            updateTitle()
+            updateMediaRail()
+            previousPage.zoomOut(animated: false)
+            previousPage.stopAnyVideo()
+            updateFooterBarButtonItems(isPlayingVideo: false)
+        } else {
+            captionContainerView.pendingText = nil
+        }
+    }
+}
+
+extension MediaPageViewController: UIPageViewControllerDataSource {
+    private func itemIsAllowed(_ item: MediaGalleryItem) -> Bool {
+        // Normally, we can show any media item, but if we're limited
+        // to showing a single message, don't page beyond that message
+        return !isShowingSingleMessage || currentItem.message == item.message
+    }
+
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        Logger.debug("")
+
+        guard let currentPage = viewController as? MediaDetailViewController else {
+            owsFailDebug("unexpected viewController: \(viewController)")
+            return nil
+        }
+
+        guard let precedingItem = mediaGallery.galleryItem(before: currentPage.galleryItem), itemIsAllowed(precedingItem) else {
+            return nil
+        }
+
+        guard let precedingPage = buildGalleryPage(galleryItem: precedingItem) else {
+            return nil
+        }
+
+        return precedingPage
+    }
+
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        Logger.debug("")
+
+        guard let currentPage = viewController as? MediaDetailViewController else {
+            owsFailDebug("unexpected viewController: \(viewController)")
+            return nil
+        }
+
+        guard let nextItem = mediaGallery.galleryItem(after: currentPage.galleryItem), itemIsAllowed(nextItem) else {
+            // no more pages
+            return nil
+        }
+
+        guard let nextPage = buildGalleryPage(galleryItem: nextItem) else {
+            return nil
+        }
+
+        return nextPage
+    }
+
+    private func buildGalleryPage(galleryItem: MediaGalleryItem, shouldAutoPlayVideo: Bool = false) -> MediaDetailViewController? {
+        if let cachedPage = cachedPages[galleryItem] {
+            Logger.debug("cache hit.")
+            return cachedPage
+        }
+
+        Logger.debug("cache miss.")
+
+        let viewController = MediaDetailViewController(
+            galleryItemBox: GalleryItemBox(galleryItem),
+            shouldAutoPlayVideo: shouldAutoPlayVideo
+        )
+        viewController.delegate = self
+
+        cachedPages[galleryItem] = viewController
+        return viewController
+    }
+}
+
+extension MediaPageViewController: InteractivelyDismissableViewController {
+    func performInteractiveDismissal(animated: Bool) {
+        dismissSelf(animated: true)
+    }
+}
+
+extension MediaPageViewController: MediaGalleryDelegate {
+    func mediaGallery(_ mediaGallery: MediaGallery, applyUpdate update: MediaGallery.Update) {
+        Logger.debug("")
+    }
+
+    func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
+        Logger.debug("")
+
+        guard items.contains(currentItem) else {
+            Logger.debug("irrelevant item")
+            return
+        }
+
+        // If we setCurrentItem with (animated: true) while this VC is in the background, then
+        // the next/previous cache isn't expired, and we're able to swipe back to the just-deleted vc.
+        // So to get the correct behavior, we should only animate these transitions when this
+        // vc is in the foreground
+        let isAnimated = initiatedBy === self
+
+        if isShowingSingleMessage {
+            // In message details, which doesn't use the slider, so don't swap pages.
+        } else if let nextItem = mediaGallery.galleryItem(after: currentItem) {
+            setCurrentItem(nextItem, direction: .forward, animated: isAnimated)
+        } else if let previousItem = mediaGallery.galleryItem(before: currentItem) {
+            setCurrentItem(previousItem, direction: .reverse, animated: isAnimated)
+        } else {
+            // else we deleted the last piece of media, return to the conversation view
+            dismissSelf(animated: true)
+        }
+    }
+
+    func mediaGalleryDidDeleteItem(_ mediaGallery: MediaGallery) {
+        // Either this is an internal deletion, in which case willDelete would have been called already,
+        // or it's an external deletion, in which case mediaGalleryDidReloadItems would have been called already.
+    }
+
+    func mediaGalleryDidReloadItems(_ mediaGallery: MediaGallery) {
+        didReloadAllSectionsInMediaGallery(mediaGallery)
+    }
+
+    func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery) {
+        // Does not affect the current item.
+    }
+
+    func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
+        let attachment = currentItem.attachmentStream
+        guard let reloadedItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: attachment) else {
+            // Assume the item was deleted.
+            dismissSelf(animated: true)
+            return
+        }
+        setCurrentItem(reloadedItem, direction: .forward, animated: false)
+    }
+}
+
+extension MediaPageViewController: MediaDetailViewControllerDelegate {
+    func mediaDetailViewControllerDidTapMedia(_ mediaDetailViewController: MediaDetailViewController) {
+        Logger.debug("")
+
+        shouldHideToolbars = !shouldHideToolbars
+    }
+
+    func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {
+        guard mediaDetailViewController == currentViewController else {
+            Logger.verbose("ignoring stale delegate.")
+            return
+        }
+
+        shouldHideToolbars = isPlayingVideo
+        updateFooterBarButtonItems(isPlayingVideo: isPlayingVideo)
+    }
+}
+
 extension MediaGalleryItem: GalleryRailItem {
     public func buildRailItemView() -> UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.image = getRailImage()
+        imageView.image = thumbnailImageSync()
         return imageView
-    }
-
-    public func getRailImage() -> UIImage? {
-        return self.thumbnailImageSync()
     }
 }
 
@@ -835,20 +790,16 @@ extension MediaPageViewController: GalleryRailViewDelegate {
 
         let direction: UIPageViewController.NavigationDirection
         direction = currentItem.albumIndex < targetItem.albumIndex ? .forward : .reverse
-
-        self.setCurrentItem(targetItem, direction: direction, animated: true)
+        setCurrentItem(targetItem, direction: direction, animated: true)
     }
 }
 
 extension MediaPageViewController: CaptionContainerViewDelegate {
-
     func captionContainerViewDidUpdateText(_ captionContainerView: CaptionContainerView) {
         updateCaptionContainerVisibility()
     }
 
-    // MARK: Helpers
-
-    func updateCaptionContainerVisibility() {
+    fileprivate func updateCaptionContainerVisibility() {
         if let currentText = captionContainerView.currentText, !currentText.isEmpty {
             captionContainerView.isHidden = false
             return
@@ -865,7 +816,7 @@ extension MediaPageViewController: CaptionContainerViewDelegate {
 
 extension MediaPageViewController: MediaPresentationContextProvider {
     func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
-        let mediaView = currentViewController.mediaView
+        guard let mediaView = currentViewController?.mediaView else { return nil }
 
         guard nil != mediaView.superview else {
             owsFailDebug("superview was unexpectedly nil")
@@ -895,18 +846,17 @@ extension MediaPageViewController: MediaPresentationContextProvider {
         snapshot.addSubview(bottomSnapshot)
         bottomSnapshot.frame = bottomContainer.frame
 
-        let presentationFrame = coordinateSpace.convert(snapshot.frame,
-                                                        from: view.superview!)
+        let presentationFrame = coordinateSpace.convert(snapshot.frame, from: view.superview!)
 
         return (snapshot, presentationFrame)
     }
 }
 
 extension MediaPageViewController: UIViewControllerTransitioningDelegate {
-    public func animationController(forPresented presented: UIViewController,
-                                    presenting: UIViewController,
-                                    source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-
+    public func animationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController,
+        source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         guard self == presented else {
             owsFailDebug("unexpected presented: \(presented)")
             return nil
@@ -917,42 +867,37 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
 
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         guard self == dismissed else {
-            owsFailDebug("unexpected presented: \(dismissed)")
+            owsFailDebug("unexpected dismissed: \(dismissed)")
             return nil
         }
 
-        guard let mediaInteractiveDismiss = mediaInteractiveDismiss else {
-            // We can't do a media dismiss (probably the item was externally deleted).
-            return nil
-        }
-
-        let animationController = MediaDismissAnimationController(galleryItem: currentItem,
-                                                                  interactionController: mediaInteractiveDismiss)
+        let animationController = MediaDismissAnimationController(
+            galleryItem: currentItem,
+            interactionController: mediaInteractiveDismiss
+        )
         mediaInteractiveDismiss.interactiveDismissDelegate = animationController
 
         return animationController
     }
 
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        guard let animator = animator as? MediaDismissAnimationController,
-              let interactionController = animator.interactionController,
-              interactionController.interactionInProgress
+        guard let animationController = animator as? MediaDismissAnimationController,
+              animationController.interactionController.interactionInProgress
         else {
             return nil
         }
-        return interactionController
+        return animationController.interactionController
     }
 }
 
-// MARK: -
-
 extension MediaPageViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
-                                              recipientThreads: [TSThread]) {
+    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem], recipientThreads: [TSThread]) {
         dismiss(animated: true) {
-            ForwardMessageViewController.finalizeForward(items: items,
-                                                         recipientThreads: recipientThreads,
-                                                         fromViewController: self)
+            ForwardMessageViewController.finalizeForward(
+                items: items,
+                recipientThreads: recipientThreads,
+                fromViewController: self
+            )
         }
     }
 

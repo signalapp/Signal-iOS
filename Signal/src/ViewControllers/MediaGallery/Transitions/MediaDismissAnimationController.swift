@@ -9,18 +9,18 @@ import UIKit
 
 class MediaDismissAnimationController: NSObject {
     private let item: Media
-    public let interactionController: MediaInteractiveDismiss?
+    let interactionController: MediaInteractiveDismiss
 
     var transitionView: UIView?
     var fromMediaFrame: CGRect?
     var pendingCompletion: ((CGVector?) -> Void)?
 
-    init(galleryItem: MediaGalleryItem, interactionController: MediaInteractiveDismiss? = nil) {
+    init(galleryItem: MediaGalleryItem, interactionController: MediaInteractiveDismiss) {
         self.item = .gallery(galleryItem)
         self.interactionController = interactionController
     }
 
-    init(image: UIImage, interactionController: MediaInteractiveDismiss? = nil) {
+    init(image: UIImage, interactionController: MediaInteractiveDismiss) {
         self.item = .image(image)
         self.interactionController = interactionController
     }
@@ -274,8 +274,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 }
 
 extension MediaDismissAnimationController: InteractiveDismissDelegate {
-    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-    }
+    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) { }
 
     func interactiveDismiss(
         _ interactiveDismiss: UIPercentDrivenInteractiveTransition,
@@ -295,8 +294,10 @@ extension MediaDismissAnimationController: InteractiveDismissDelegate {
         transitionView.center = fromMediaFrame.offsetBy(dx: offset.x, dy: offset.y).center
     }
 
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition,
-                            didFinishWithVelocity velocity: CGVector?) {
+    func interactiveDismiss(
+        _ interactiveDismiss: UIPercentDrivenInteractiveTransition,
+        didFinishWithVelocity velocity: CGVector?
+    ) {
         if let pendingCompletion {
             Logger.verbose("interactive gesture started pendingCompletion during fadeout")
             self.pendingCompletion = nil
@@ -304,6 +305,5 @@ extension MediaDismissAnimationController: InteractiveDismissDelegate {
         }
     }
 
-    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-    }
+    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) { }
 }

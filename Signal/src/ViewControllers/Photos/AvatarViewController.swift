@@ -9,7 +9,7 @@ import SignalUI
 import UIKit
 
 class AvatarViewController: UIViewController, InteractivelyDismissableViewController {
-    private var interactiveDismissal: MediaInteractiveDismiss?
+    private lazy var interactiveDismissal = MediaInteractiveDismiss(targetViewController: self)
     let avatarImage: UIImage
 
     var maxAvatarPointSize: CGSize {
@@ -122,8 +122,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
             accessibilityIdentifier: "close")
         navigationBar.setItems([navigationItem], animated: false)
 
-        interactiveDismissal = MediaInteractiveDismiss(targetViewController: self)
-        interactiveDismissal?.addGestureRecognizer(to: view)
+        interactiveDismissal.addGestureRecognizer(to: view)
     }
 
     override func viewSafeAreaInsetsDidChange() {
@@ -174,7 +173,6 @@ extension AvatarViewController: UIViewControllerTransitioningDelegate {
         forPresented presented: UIViewController,
         presenting: UIViewController,
         source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-
         return MediaZoomAnimationController(image: avatarImage)
     }
 
@@ -183,18 +181,17 @@ extension AvatarViewController: UIViewControllerTransitioningDelegate {
             image: avatarImage,
             interactionController: interactiveDismissal
         )
-        interactiveDismissal?.interactiveDismissDelegate = animationController
+        interactiveDismissal.interactiveDismissDelegate = animationController
         return animationController
     }
 
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         guard
-            let animator = animator as? MediaDismissAnimationController,
-            let interactionController = animator.interactionController,
-            interactionController.interactionInProgress
+            let animationController = animator as? MediaDismissAnimationController,
+            animationController.interactionController.interactionInProgress
         else {
             return nil
         }
-        return interactionController
+        return animationController.interactionController
     }
 }
