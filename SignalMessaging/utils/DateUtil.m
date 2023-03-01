@@ -191,27 +191,6 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return dateTimeString;
 }
 
-+ (NSString *)formatTimestampAsDate:(uint64_t)timestamp
-{
-    return [self formatDateAsDate:[NSDate ows_dateWithMillisecondsSince1970:timestamp]];
-}
-
-+ (NSString *)formatDateAsDate:(NSDate *)date
-{
-    OWSAssertDebug(date);
-
-    NSString *dateTimeString;
-
-    NSInteger yearsDiff = [self yearsFromFirstDate:date toSecondDate:[NSDate new]];
-    if (yearsDiff > 0) {
-        dateTimeString = [[DateUtil otherYearMessageFormatter] stringFromDate:date];
-    } else {
-        dateTimeString = [[DateUtil thisYearMessageFormatter] stringFromDate:date];
-    }
-
-    return dateTimeString;
-}
-
 + (NSDateFormatter *)otherYearMessageFormatter
 {
     static NSDateFormatter *formatter;
@@ -258,19 +237,6 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         [formatter setDateFormat:@"EEEE"];
     });
     return formatter;
-}
-
-+ (BOOL)isTimestampFromLastHour:(uint64_t)timestamp
-{
-    NSDate *date = [NSDate ows_dateWithMillisecondsSince1970:timestamp];
-    uint64_t nowTimestamp = [NSDate ows_millisecondTimeStamp];
-    NSDate *nowDate = [NSDate ows_dateWithMillisecondsSince1970:nowTimestamp];
-
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-
-    NSInteger hoursDiff
-        = MAX(0, [[calendar components:NSCalendarUnitHour fromDate:date toDate:nowDate options:0] hour]);
-    return hoursDiff < 1;
 }
 
 @end

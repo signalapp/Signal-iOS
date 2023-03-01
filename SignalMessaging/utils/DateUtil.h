@@ -9,7 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDateFormatter *)dateFormatter;
 + (NSDateFormatter *)monthAndDayFormatter;
-+ (NSDateFormatter *)shortDayOfWeekFormatter;
 + (NSDateFormatter *)weekdayFormatter;
 
 + (BOOL)dateIsOlderThanToday:(NSDate *)date;
@@ -26,11 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)formatTimestampAsTime:(uint64_t)timestamp NS_SWIFT_NAME(formatTimestampAsTime(_:));
 + (NSString *)formatDateAsTime:(NSDate *)date NS_SWIFT_NAME(formatDateAsTime(_:));
-
-+ (NSString *)formatTimestampAsDate:(uint64_t)timestamp NS_SWIFT_NAME(formatTimestampAsDate(_:));
-+ (NSString *)formatDateAsDate:(NSDate *)date NS_SWIFT_NAME(formatDateAsDate(_:));
-
-+ (BOOL)isTimestampFromLastHour:(uint64_t)timestamp NS_SWIFT_NAME(isTimestampFromLastHour(_:));
 
 + (BOOL)dateIsOlderThanYesterday:(NSDate *)date;
 
