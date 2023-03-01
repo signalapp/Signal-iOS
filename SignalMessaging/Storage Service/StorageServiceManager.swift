@@ -15,6 +15,13 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     @objc
     public static let shared = StorageServiceManager()
 
+    private let operationQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 1
+        queue.name = logTag()
+        return queue
+    }()
+
     override init() {
         super.init()
 
@@ -58,132 +65,140 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     // MARK: -
 
-    @objc
-    public func recordPendingDeletions(deletedAccountIds: [AccountId]) {
-        if deletedAccountIds.isEmpty {
-            return
-        }
+    private struct ManagerState {
+        var hasPendingCleanup = false
+        var hasPendingBackup = false
+        var pendingBackupTimer: Timer?
+        var pendingRestoreFutures = [Future<Void>]()
+        var pendingMutations = PendingMutations()
 
-        Logger.info("Recording pending deletions for account IDs: \(deletedAccountIds)")
-
-        let operation = StorageServiceOperation.recordPendingDeletions(deletedAccountIds: deletedAccountIds)
-        StorageServiceOperation.operationQueue.addOperation(operation)
-
-        scheduleBackupIfNecessary()
+        var isRunningOperation = false
     }
 
-    @objc
-    public func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) {
-        if deletedAddresses.isEmpty {
-            return
+    private let managerState = AtomicValue(ManagerState(), lock: .init())
+
+    private func updateManagerState(block: (inout ManagerState) -> Void) {
+        managerState.map {
+            var mutableValue = $0
+            block(&mutableValue)
+            startNextOperationIfNeeded(&mutableValue)
+            return mutableValue
         }
-
-        Logger.info("Recording pending deletions for addresses: \(deletedAddresses)")
-
-        let operation = StorageServiceOperation.recordPendingDeletions(deletedAddresses: deletedAddresses)
-        StorageServiceOperation.operationQueue.addOperation(operation)
-
-        scheduleBackupIfNecessary()
     }
 
-    @objc
-    public func recordPendingDeletions(deletedGroupV1Ids: [Data]) {
-        if deletedGroupV1Ids.isEmpty {
+    private func startNextOperationIfNeeded(_ managerState: inout ManagerState) {
+        guard !managerState.isRunningOperation else {
+            // Already running an operation -- we'll start the next when it finishes.
             return
         }
+        guard let nextOperation = popNextOperation(&managerState) else {
+            // There's nothing we need to do, so don't start any operation.
+            return
+        }
+        // Run the operation & check again when it's done.
+        managerState.isRunningOperation = true
 
-        let operation = StorageServiceOperation.recordPendingDeletions(deletedGroupV1Ids: deletedGroupV1Ids)
-        StorageServiceOperation.operationQueue.addOperation(operation)
-
-        scheduleBackupIfNecessary()
+        let completionOperation = BlockOperation { self.finishOperation() }
+        completionOperation.addDependency(nextOperation)
+        operationQueue.addOperations([nextOperation, completionOperation], waitUntilFinished: false)
     }
 
-    @objc
-    public func recordPendingDeletions(deletedGroupV2MasterKeys: [Data]) {
-        if deletedGroupV2MasterKeys.isEmpty {
-            return
+    private func popNextOperation(_ managerState: inout ManagerState) -> Operation? {
+        if managerState.hasPendingCleanup {
+            managerState.hasPendingCleanup = false
+
+            return StorageServiceOperation(mode: .cleanUpUnknownData)
         }
 
-        let operation = StorageServiceOperation.recordPendingDeletions(deletedGroupV2MasterKeys: deletedGroupV2MasterKeys)
-        StorageServiceOperation.operationQueue.addOperation(operation)
+        if managerState.pendingMutations.hasChanges {
+            let pendingMutations = managerState.pendingMutations
+            managerState.pendingMutations = PendingMutations()
 
-        scheduleBackupIfNecessary()
+            return StorageServiceOperation.recordPendingMutations(pendingMutations)
+        }
+
+        if !managerState.pendingRestoreFutures.isEmpty {
+            let pendingRestorePromises = managerState.pendingRestoreFutures
+            managerState.pendingRestoreFutures = []
+
+            Logger.debug("Fetching with \(pendingRestorePromises.count) coalesced request(s).")
+
+            let restoreOperation = StorageServiceOperation(mode: .restoreOrCreate)
+            pendingRestorePromises.forEach {
+                $0.resolve(on: SyncScheduler(), with: restoreOperation.promise)
+            }
+            return restoreOperation
+        }
+
+        if managerState.hasPendingBackup {
+            managerState.hasPendingBackup = false
+
+            return StorageServiceOperation(mode: .backup)
+        }
+
+        return nil
     }
 
-    @objc
-    public func recordPendingDeletions(deletedStoryDistributionListIds: [Data]) {
-        if deletedStoryDistributionListIds.isEmpty {
-            return
+    private func finishOperation() {
+        updateManagerState { managerState in
+            managerState.isRunningOperation = false
         }
+    }
 
-        let operation = StorageServiceOperation.recordPendingDeletions(deletedStoryDistributionListIds: deletedStoryDistributionListIds)
-        StorageServiceOperation.operationQueue.addOperation(operation)
+    // MARK: - Pending Mutations
 
-        scheduleBackupIfNecessary()
+    private func updatePendingMutations(block: (inout PendingMutations) -> Void) {
+        updateManagerState { managerState in
+            block(&managerState.pendingMutations)
+
+            // If we've made any changes, schedule a backup for the near future. This
+            // provides an interval during which pending mutations can be coalesced.
+            if managerState.pendingMutations.hasChanges, managerState.pendingBackupTimer == nil {
+                managerState.pendingBackupTimer = startBackupTimer()
+            }
+        }
     }
 
     @objc
     public func recordPendingUpdates(updatedAccountIds: [AccountId]) {
-        if updatedAccountIds.isEmpty {
-            return
-        }
-
         Logger.info("Recording pending update for account IDs: \(updatedAccountIds)")
 
-        let operation = StorageServiceOperation.recordPendingUpdates(updatedAccountIds: updatedAccountIds)
-        StorageServiceOperation.operationQueue.addOperation(operation)
-
-        scheduleBackupIfNecessary()
+        updatePendingMutations { $0.updatedAccountIds.formUnion(updatedAccountIds) }
     }
 
     @objc
     public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {
-        if updatedAddresses.isEmpty {
-            return
-        }
-
         Logger.info("Recording pending update for addresses: \(updatedAddresses)")
 
-        let operation = StorageServiceOperation.recordPendingUpdates(updatedAddresses: updatedAddresses)
-        StorageServiceOperation.operationQueue.addOperation(operation)
-
-        scheduleBackupIfNecessary()
+        updatePendingMutations { $0.updatedAddresses.formUnion(updatedAddresses) }
     }
 
     @objc
     public func recordPendingUpdates(updatedGroupV1Ids: [Data]) {
-        if updatedGroupV1Ids.isEmpty {
-            return
+        updatePendingMutations { pendingMutations in
+            updatedGroupV1Ids.forEach { groupV1Id in
+                pendingMutations.mutatedGroupV1Ids[groupV1Id] = .updated
+            }
         }
+    }
 
-        let operation = StorageServiceOperation.recordPendingUpdates(updatedGroupV1Ids: updatedGroupV1Ids)
-        StorageServiceOperation.operationQueue.addOperation(operation)
-
-        scheduleBackupIfNecessary()
+    @objc
+    public func recordPendingDeletions(deletedGroupV1Ids: [Data]) {
+        updatePendingMutations { pendingMutations in
+            deletedGroupV1Ids.forEach { groupV1Id in
+                pendingMutations.mutatedGroupV1Ids[groupV1Id] = .deleted
+            }
+        }
     }
 
     @objc
     public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {
-        if updatedGroupV2MasterKeys.isEmpty {
-            return
-        }
-
-        let operation = StorageServiceOperation.recordPendingUpdates(updatedGroupV2MasterKeys: updatedGroupV2MasterKeys)
-        StorageServiceOperation.operationQueue.addOperation(operation)
-
-        scheduleBackupIfNecessary()
+        updatePendingMutations { $0.updatedGroupV2MasterKeys.formUnion(updatedGroupV2MasterKeys) }
     }
 
     @objc
     public func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {
-        if updatedStoryDistributionListIds.isEmpty {
-            return
-        }
-
-        let operation = StorageServiceOperation.recordPendingUpdates(updatedStoryDistributionListIds: updatedStoryDistributionListIds)
-        StorageServiceOperation.operationQueue.addOperation(operation)
-
-        scheduleBackupIfNecessary()
+        updatePendingMutations { $0.updatedStoryDistributionListIds.formUnion(updatedStoryDistributionListIds) }
     }
 
     @objc
@@ -210,24 +225,29 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     public func recordPendingLocalAccountUpdates() {
         Logger.info("Recording pending local account updates")
 
-        let operation = StorageServiceOperation.recordPendingLocalAccountUpdates()
-        StorageServiceOperation.operationQueue.addOperation(operation)
-
-        scheduleBackupIfNecessary()
-    }
-
-    @objc
-    public func backupPendingChanges() {
-        let operation = StorageServiceOperation(mode: .backup)
-        StorageServiceOperation.operationQueue.addOperation(operation)
+        updatePendingMutations { $0.updatedLocalAccount = true }
     }
 
     @objc
     @discardableResult
     public func restoreOrCreateManifestIfNecessary() -> AnyPromise {
-        let operation = StorageServiceOperation(mode: .restoreOrCreate)
-        StorageServiceOperation.operationQueue.addOperation(operation)
-        return AnyPromise(operation.promise)
+        let (promise, future) = Promise<Void>.pending()
+        updateManagerState { managerState in
+            managerState.pendingRestoreFutures.append(future)
+        }
+        return AnyPromise(promise)
+    }
+
+    @objc
+    public func backupPendingChanges() {
+        updateManagerState { managerState in
+            managerState.hasPendingBackup = true
+
+            if let pendingBackupTimer = managerState.pendingBackupTimer {
+                DispatchQueue.main.async { pendingBackupTimer.invalidate() }
+                managerState.pendingBackupTimer = nil
+            }
+        }
     }
 
     @objc
@@ -237,44 +257,63 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     private func cleanUpUnknownData() {
-        let operation = StorageServiceOperation(mode: .cleanUpUnknownData)
-        StorageServiceOperation.operationQueue.addOperation(operation)
+        updateManagerState { managerState in
+            managerState.hasPendingCleanup = true
+        }
     }
 
     // MARK: - Backup Scheduling
 
     private static var backupDebounceInterval: TimeInterval = 0.2
-    private var backupTimer: Timer?
 
-    // Schedule a one time backup. By default, this will happen `backupDebounceInterval`
+    // Schedule a one-time backup. By default, this will happen `backupDebounceInterval`
     // seconds after the first pending change is recorded.
-    private func scheduleBackupIfNecessary() {
+    private func startBackupTimer() -> Timer {
+        Logger.info("")
+
+        let timer = Timer(
+            timeInterval: StorageServiceManager.backupDebounceInterval,
+            target: self,
+            selector: #selector(self.backupTimerFired(_:)),
+            userInfo: nil,
+            repeats: false
+        )
         DispatchQueue.main.async {
-            // If we already have a backup scheduled, do nothing
-            guard self.backupTimer == nil else { return }
-
-            Logger.info("")
-
-            self.backupTimer = Timer.scheduledTimer(
-                timeInterval: StorageServiceManager.backupDebounceInterval,
-                target: self,
-                selector: #selector(self.backupTimerFired),
-                userInfo: nil,
-                repeats: false
-            )
+            RunLoop.current.add(timer, forMode: .default)
         }
+        return timer
     }
 
     @objc
-    func backupTimerFired(_ timer: Timer) {
+    private func backupTimerFired(_ timer: Timer) {
         AssertIsOnMainThread()
 
         Logger.info("")
 
-        backupTimer?.invalidate()
-        backupTimer = nil
-
         backupPendingChanges()
+    }
+}
+
+// MARK: - PendingMutations
+
+private struct PendingMutations {
+    var updatedAccountIds = Set<AccountId>()
+    var updatedAddresses = Set<SignalServiceAddress>()
+    var updatedGroupV2MasterKeys = Set<Data>()
+    var updatedStoryDistributionListIds = Set<Data>()
+    var updatedLocalAccount = false
+
+    var mutatedGroupV1Ids = [Data: StorageServiceOperation.State.ChangeState]()
+
+    var hasChanges: Bool {
+        return (
+            updatedLocalAccount
+            || !updatedAccountIds.isEmpty
+            || !updatedAddresses.isEmpty
+            || !updatedGroupV2MasterKeys.isEmpty
+            || !updatedStoryDistributionListIds.isEmpty
+            || !mutatedGroupV1Ids.isEmpty
+        )
     }
 }
 
@@ -292,18 +331,6 @@ class StorageServiceOperation: OWSOperation {
     }
 
     // MARK: -
-
-    // We only ever want to be doing one storage operation at a time.
-    // Pending updates queued up after a backup operation will not get
-    // applied until the following backup. This allows us to be certain
-    // when we do things like resolve conflicts that we're not going to
-    // blow away any pending updates / deletions.
-    fileprivate static let operationQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
-        queue.name = logTag()
-        return queue
-    }()
 
     fileprivate enum Mode {
         case backup
@@ -360,217 +387,69 @@ class StorageServiceOperation: OWSOperation {
         }
     }
 
-    // MARK: - Mark Pending Changes: Accounts
+    // MARK: - Mark Pending Changes
 
-    fileprivate static func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                let updatedAccountIds = updatedAddresses.map { address in
-                    OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
-                }
-
-                recordPendingUpdates(updatedAccountIds: updatedAccountIds, transaction: transaction)
-            }
-        }
+    fileprivate static func recordPendingMutations(_ pendingMutations: PendingMutations) -> Operation {
+        return BlockOperation { databaseStorage.write { recordPendingMutations(pendingMutations, transaction: $0) } }
     }
 
-    fileprivate static func recordPendingUpdates(updatedAccountIds: [AccountId]) -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                recordPendingUpdates(updatedAccountIds: updatedAccountIds, transaction: transaction)
-            }
-        }
-    }
+    private static func recordPendingMutations(_ pendingMutations: PendingMutations, transaction: SDSAnyWriteTransaction) {
+        let localAccountId = tsAccountManager.localAccountId(transaction: transaction)
 
-    private static func recordPendingUpdates(updatedAccountIds: [AccountId], transaction: SDSAnyWriteTransaction) {
-        Logger.info("")
+        // Coalesce addresses to account IDs. There may be duplicates among the
+        // addresses and account IDs.
+
+        var allAccountIds = Set<AccountId>()
+
+        allAccountIds.formUnion(pendingMutations.updatedAccountIds)
+
+        allAccountIds.formUnion(pendingMutations.updatedAddresses.lazy.map {
+            OWSAccountIdFinder.ensureAccountId(forAddress: $0, transaction: transaction)
+        })
+
+        // Check if we're updating the local account. If so, remove it so that we
+        // don't try to create a contact record for it, but make sure we'll update
+        // the account record.
+
+        var updatedLocalAccount = pendingMutations.updatedLocalAccount
+
+        if let localAccountId, allAccountIds.remove(localAccountId) != nil {
+            updatedLocalAccount = true
+        }
+
+        // Then, update State with all these pending mutations.
 
         var state = State.current(transaction: transaction)
 
-        let localAccountId = TSAccountManager.shared.localAccountId(transaction: transaction)
+        Logger.info(
+            """
+            Recording pending mutations (\
+            Account: \(updatedLocalAccount); \
+            Contacts: \(allAccountIds.count); \
+            GV1: \(pendingMutations.mutatedGroupV1Ids.count); \
+            GV2: \(pendingMutations.updatedGroupV2MasterKeys.count); \
+            DLists: \(pendingMutations.updatedStoryDistributionListIds.count))
+            """
+        )
 
-        for accountId in updatedAccountIds {
-            if accountId == localAccountId {
-                state.localAccountChangeState = .updated
-                continue
-            }
-
-            state.accountIdChangeMap[accountId] = .updated
+        if updatedLocalAccount {
+            state.localAccountChangeState = .updated
         }
 
-        state.save(transaction: transaction)
-    }
-
-    fileprivate static func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                let deletedAccountIds = deletedAddresses.map { address in
-                    OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
-                }
-
-                recordPendingDeletions(deletedAccountIds: deletedAccountIds, transaction: transaction)
-            }
-        }
-    }
-
-    fileprivate static func recordPendingDeletions(deletedAccountIds: [AccountId]) -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                recordPendingDeletions(deletedAccountIds: deletedAccountIds, transaction: transaction)
-            }
-        }
-    }
-
-    private static func recordPendingDeletions(deletedAccountIds: [AccountId], transaction: SDSAnyWriteTransaction) {
-        Logger.info("")
-
-        var state = State.current(transaction: transaction)
-
-        let localAccountId = TSAccountManager.shared.localAccountId(transaction: transaction)
-
-        for accountId in deletedAccountIds {
-            if accountId == localAccountId {
-                owsFailDebug("the local account should never be flagged for deletion")
-                continue
-            }
-
-            state.accountIdChangeMap[accountId] = .deleted
+        allAccountIds.forEach {
+            state.accountIdChangeMap[$0] = .updated
         }
 
-        state.save(transaction: transaction)
-    }
-
-    fileprivate static func recordPendingLocalAccountUpdates() -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                var state = State.current(transaction: transaction)
-                state.localAccountChangeState = .updated
-                state.save(transaction: transaction)
-            }
-        }
-    }
-
-    // MARK: - Mark Pending Changes: v1 Groups
-
-    fileprivate static func recordPendingUpdates(updatedGroupV1Ids: [Data]) -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                recordPendingUpdates(updatedGroupV1Ids: updatedGroupV1Ids, transaction: transaction)
-            }
-        }
-    }
-
-    private static func recordPendingUpdates(updatedGroupV1Ids: [Data], transaction: SDSAnyWriteTransaction) {
-        Logger.info("")
-
-        var state = State.current(transaction: transaction)
-
-        for groupId in updatedGroupV1Ids {
-            state.groupV1ChangeMap[groupId] = .updated
+        pendingMutations.mutatedGroupV1Ids.forEach {
+            state.groupV1ChangeMap[$0] = $1
         }
 
-        state.save(transaction: transaction)
-    }
-
-    fileprivate static func recordPendingDeletions(deletedGroupV1Ids: [Data]) -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                recordPendingDeletions(deletedGroupV1Ids: deletedGroupV1Ids, transaction: transaction)
-            }
-        }
-    }
-
-    private static func recordPendingDeletions(deletedGroupV1Ids: [Data], transaction: SDSAnyWriteTransaction) {
-        Logger.info("")
-
-        var state = State.current(transaction: transaction)
-
-        for groupId in deletedGroupV1Ids {
-            state.groupV1ChangeMap[groupId] = .deleted
+        pendingMutations.updatedGroupV2MasterKeys.forEach {
+            state.groupV2ChangeMap[$0] = .updated
         }
 
-        state.save(transaction: transaction)
-    }
-
-    // MARK: - Mark Pending Changes: v2 Groups
-
-    fileprivate static func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                recordPendingUpdates(updatedGroupV2MasterKeys: updatedGroupV2MasterKeys, transaction: transaction)
-            }
-        }
-    }
-
-    private static func recordPendingUpdates(updatedGroupV2MasterKeys: [Data], transaction: SDSAnyWriteTransaction) {
-        Logger.info("")
-
-        var state = State.current(transaction: transaction)
-
-        for masterKey in updatedGroupV2MasterKeys {
-            state.groupV2ChangeMap[masterKey] = .updated
-        }
-
-        state.save(transaction: transaction)
-    }
-
-    fileprivate static func recordPendingDeletions(deletedGroupV2MasterKeys: [Data]) -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                recordPendingDeletions(deletedGroupV2MasterKeys: deletedGroupV2MasterKeys, transaction: transaction)
-            }
-        }
-    }
-
-    private static func recordPendingDeletions(deletedGroupV2MasterKeys: [Data], transaction: SDSAnyWriteTransaction) {
-        Logger.info("")
-
-        var state = State.current(transaction: transaction)
-
-        for masterKey in deletedGroupV2MasterKeys {
-            state.groupV2ChangeMap[masterKey] = .deleted
-        }
-
-        state.save(transaction: transaction)
-    }
-
-    // MARK: - Mark Pending Changes: Private Stories
-
-    fileprivate static func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                recordPendingUpdates(updatedStoryDistributionListIds: updatedStoryDistributionListIds, transaction: transaction)
-            }
-        }
-    }
-
-    private static func recordPendingUpdates(updatedStoryDistributionListIds: [Data], transaction: SDSAnyWriteTransaction) {
-        Logger.info("")
-
-        var state = State.current(transaction: transaction)
-
-        for identifier in updatedStoryDistributionListIds {
-            state.storyDistributionListChangeMap[identifier] = .updated
-        }
-
-        state.save(transaction: transaction)
-    }
-
-    fileprivate static func recordPendingDeletions(deletedStoryDistributionListIds: [Data]) -> Operation {
-        return BlockOperation {
-            databaseStorage.write { transaction in
-                recordPendingDeletions(deletedStoryDistributionListIds: deletedStoryDistributionListIds, transaction: transaction)
-            }
-        }
-    }
-
-    private static func recordPendingDeletions(deletedStoryDistributionListIds: [Data], transaction: SDSAnyWriteTransaction) {
-        Logger.info("")
-
-        var state = State.current(transaction: transaction)
-
-        for identifier in deletedStoryDistributionListIds {
-            state.storyDistributionListChangeMap[identifier] = .deleted
+        pendingMutations.updatedStoryDistributionListIds.forEach {
+            state.storyDistributionListChangeMap[$0] = .updated
         }
 
         state.save(transaction: transaction)
@@ -1353,10 +1232,9 @@ class StorageServiceOperation: OWSOperation {
 
         Logger.info("Marking \(orphanedAccountIds.count) orphaned account(s) for deletion.")
 
-        StorageServiceOperation.recordPendingDeletions(
-            deletedAccountIds: orphanedAccountIds,
-            transaction: transaction
-        )
+        var pendingMutations = PendingMutations()
+        pendingMutations.updatedAccountIds.formUnion(orphanedAccountIds)
+        Self.recordPendingMutations(pendingMutations, transaction: transaction)
     }
 
     // MARK: - Record Merge
@@ -1543,6 +1421,10 @@ class StorageServiceOperation: OWSOperation {
         enum ChangeState: Int, Codable {
             case unchanged = 0
             case updated = 1
+
+            /// This is mostly vestigial, but even when we no longer assign this status
+            /// in new versions of the application, we'll still need to support reading
+            /// it (for times when it was written by prior versions of the application).
             case deleted = 2
         }
 

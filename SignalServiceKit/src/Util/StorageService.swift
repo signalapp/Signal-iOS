@@ -7,11 +7,7 @@ import Foundation
 
 @objc
 public protocol StorageServiceManagerProtocol {
-    func recordPendingDeletions(deletedAccountIds: [AccountId])
-    func recordPendingDeletions(deletedAddresses: [SignalServiceAddress])
     func recordPendingDeletions(deletedGroupV1Ids: [Data])
-    func recordPendingDeletions(deletedGroupV2MasterKeys: [Data])
-    func recordPendingDeletions(deletedStoryDistributionListIds: [Data])
 
     func recordPendingUpdates(updatedAccountIds: [AccountId])
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])

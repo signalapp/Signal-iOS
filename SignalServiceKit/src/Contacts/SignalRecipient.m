@@ -349,7 +349,7 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.modelReadCaches.signalRecipientReadCache didRemoveSignalRecipient:self transaction:transaction];
-    [self.storageServiceManager recordPendingDeletionsWithDeletedAccountIds:@[ self.accountId ]];
+    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
 }
 
 + (TSFTSIndexMode)FTSIndexMode

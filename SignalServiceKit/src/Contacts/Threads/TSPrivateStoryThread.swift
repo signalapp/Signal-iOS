@@ -81,7 +81,7 @@ public extension TSPrivateStoryThread {
 
             UUID(uuidString: identifier).map { deletedIdentifiers.append($0.data) }
         }
-        Self.storageServiceManager.recordPendingDeletions(deletedStoryDistributionListIds: deletedIdentifiers)
+        Self.storageServiceManager.recordPendingUpdates(updatedStoryDistributionListIds: deletedIdentifiers)
     }
 
     override func updateWithShouldThreadBeVisible(_ shouldThreadBeVisible: Bool, transaction: SDSAnyWriteTransaction) {
