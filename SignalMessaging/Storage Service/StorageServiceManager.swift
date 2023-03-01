@@ -72,6 +72,12 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         var pendingRestoreFutures = [Future<Void>]()
         var pendingMutations = PendingMutations()
 
+        /// If set, contains the Error from the most recent restore request. If
+        /// it's nil, we've either (a) not yet attempted a restore in this
+        /// process; or (b) completed the most recent restore successfully.
+        var mostRecentRestoreError: Error?
+        var pendingRestoreCompletionFutures = [Future<Void>]()
+
         var isRunningOperation = false
     }
 
@@ -91,30 +97,30 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
             // Already running an operation -- we'll start the next when it finishes.
             return
         }
-        guard let nextOperation = popNextOperation(&managerState) else {
+        guard let (nextOperation, cleanupBlock) = popNextOperation(&managerState) else {
             // There's nothing we need to do, so don't start any operation.
             return
         }
         // Run the operation & check again when it's done.
         managerState.isRunningOperation = true
 
-        let completionOperation = BlockOperation { self.finishOperation() }
+        let completionOperation = BlockOperation { self.finishOperation(cleanupBlock: cleanupBlock) }
         completionOperation.addDependency(nextOperation)
         operationQueue.addOperations([nextOperation, completionOperation], waitUntilFinished: false)
     }
 
-    private func popNextOperation(_ managerState: inout ManagerState) -> Operation? {
+    private func popNextOperation(_ managerState: inout ManagerState) -> (Operation, ((inout ManagerState) -> Void)?)? {
         if managerState.hasPendingCleanup {
             managerState.hasPendingCleanup = false
 
-            return StorageServiceOperation(mode: .cleanUpUnknownData)
+            return (StorageServiceOperation(mode: .cleanUpUnknownData), nil)
         }
 
         if managerState.pendingMutations.hasChanges {
             let pendingMutations = managerState.pendingMutations
             managerState.pendingMutations = PendingMutations()
 
-            return StorageServiceOperation.recordPendingMutations(pendingMutations)
+            return (StorageServiceOperation.recordPendingMutations(pendingMutations), nil)
         }
 
         if !managerState.pendingRestoreFutures.isEmpty {
@@ -127,20 +133,38 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
             pendingRestorePromises.forEach {
                 $0.resolve(on: SyncScheduler(), with: restoreOperation.promise)
             }
-            return restoreOperation
+            return (restoreOperation, { $0.mostRecentRestoreError = restoreOperation.failingError })
+        }
+
+        if !managerState.pendingRestoreCompletionFutures.isEmpty {
+            let pendingRestoreCompletionFutures = managerState.pendingRestoreCompletionFutures
+            managerState.pendingRestoreCompletionFutures = []
+
+            let mostRecentRestoreError = managerState.mostRecentRestoreError
+
+            return (BlockOperation {
+                pendingRestoreCompletionFutures.forEach {
+                    if let mostRecentRestoreError {
+                        $0.reject(mostRecentRestoreError)
+                    } else {
+                        $0.resolve(())
+                    }
+                }
+            }, nil)
         }
 
         if managerState.hasPendingBackup {
             managerState.hasPendingBackup = false
 
-            return StorageServiceOperation(mode: .backup)
+            return (StorageServiceOperation(mode: .backup), nil)
         }
 
         return nil
     }
 
-    private func finishOperation() {
+    private func finishOperation(cleanupBlock: ((inout ManagerState) -> Void)?) {
         updateManagerState { managerState in
+            cleanupBlock?(&managerState)
             managerState.isRunningOperation = false
         }
     }
@@ -228,6 +252,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         updatePendingMutations { $0.updatedLocalAccount = true }
     }
 
+    // MARK: - Actions
+
     @objc
     @discardableResult
     public func restoreOrCreateManifestIfNecessary() -> AnyPromise {
@@ -248,6 +274,19 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
                 managerState.pendingBackupTimer = nil
             }
         }
+    }
+
+    @objc
+    public func waitForPendingRestores() -> AnyPromise {
+        return AnyPromise(_waitForPendingRestores())
+    }
+
+    private func _waitForPendingRestores() -> Promise<Void> {
+        let (promise, future) = Promise<Void>.pending()
+        updateManagerState { managerState in
+            managerState.pendingRestoreCompletionFutures.append(future)
+        }
+        return promise
     }
 
     @objc

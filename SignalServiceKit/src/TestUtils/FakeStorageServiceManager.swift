@@ -20,5 +20,7 @@ public class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol 
     public func backupPendingChanges() {}
     public func restoreOrCreateManifestIfNecessary() -> AnyPromise { AnyPromise(Promise.value(())) }
 
+    public func waitForPendingRestores() -> AnyPromise { AnyPromise(Promise.value(())) }
+
     public func resetLocalData(transaction: SDSAnyWriteTransaction) {}
 }

@@ -26,6 +26,25 @@ public protocol StorageServiceManagerProtocol {
     @discardableResult
     func restoreOrCreateManifestIfNecessary() -> AnyPromise
 
+    /// Waits for pending restores to finish.
+    ///
+    /// When this is resolved, it means the current device has the latest state
+    /// available on storage service.
+    ///
+    /// If this device believes there's new state available on storage service
+    /// but the request to fetch it has failed, this Promise will be rejected.
+    ///
+    /// If the local device doesn't believe storage service has new state, this
+    /// will resolve without performing any network requests.
+    ///
+    /// Due to the asynchronous nature of network requests, it's possible for
+    /// another device to write to storage service at the same time the returned
+    /// Promise resolves. Therefore, the precise behavior of this method is best
+    /// described as: "if this device has knowledge that storage service has new
+    /// state at the time this method is invoked, the returned Promise will be
+    /// resolved after that state has been fetched".
+    func waitForPendingRestores() -> AnyPromise
+
     func resetLocalData(transaction: SDSAnyWriteTransaction)
 }
 
