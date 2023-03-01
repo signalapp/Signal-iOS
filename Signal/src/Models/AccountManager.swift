@@ -80,8 +80,7 @@ public class AccountManager: NSObject {
         return firstly {
             return self.pushRegistrationManager.requestPushTokens(forceRotation: false)
         }.then { (vanillaToken: String, voipToken: String?) -> Promise<String?> in
-            let (pushPromise, pushFuture) = Promise<String>.pending()
-            self.pushRegistrationManager.preauthChallengeFuture = pushFuture
+            let pushPromise = self.pushRegistrationManager.receiveNextPreAuthChallengeToken()
 
             return self.accountServiceClient.deprecated_requestPreauthChallenge(
                 e164: e164,

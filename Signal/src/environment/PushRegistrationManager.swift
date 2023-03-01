@@ -21,6 +21,8 @@ public enum PushRegistrationError: Error {
 public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     override init() {
+        (preauthChallengeGuarantee, preauthChallengeFuture) = Guarantee<String>.pending()
+
         super.init()
 
         SwiftSingletons.register(self)
@@ -45,7 +47,8 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     private var voipTokenPromise: Promise<Data?>?
     private var voipTokenFuture: Future<Data?>?
 
-    public var preauthChallengeFuture: Future<String>?
+    private var preauthChallengeGuarantee: Guarantee<String>
+    private var preauthChallengeFuture: GuaranteeFuture<String>
 
     // MARK: Public interface
 
@@ -90,15 +93,27 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // MARK: Vanilla push token
 
+    /// Receives the next pre-auth challenge token.
+    ///
+    /// Notably, this method is not responsible for requesting these tokens—that must be
+    /// managed elsewhere. Before you request one, you should call this method.
+    ///
+    /// The result will be "reset" when a token is received. For example, if you call this
+    /// method twice in rapid succession, you'll get the same result. But if you call it,
+    /// receive a token, and then call it again, you'll get two different results.
+    public func receiveNextPreAuthChallengeToken() -> Guarantee<String> {
+        if preauthChallengeGuarantee.isSealed {
+            (preauthChallengeGuarantee, preauthChallengeFuture) = Guarantee<String>.pending()
+        }
+        return preauthChallengeGuarantee
+    }
+
     @objc
     public func didReceiveVanillaPreAuthChallengeToken(_ challenge: String) {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             AssertIsOnMainThread()
-            if let preauthChallengeFuture = self.preauthChallengeFuture {
-                Logger.info("received vanilla preauth challenge")
-                preauthChallengeFuture.resolve(challenge)
-                self.preauthChallengeFuture = nil
-            }
+            Logger.info("received vanilla preauth challenge")
+            self.preauthChallengeFuture.resolve(challenge)
         }
     }
 
@@ -155,11 +170,9 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
                 AssertIsOnMainThread()
                 if let callRelayPayload = callRelayPayload {
                     CallMessageRelay.handleVoipPayload(callRelayPayload)
-                } else if let preauthChallengeFuture = self.preauthChallengeFuture,
-                    let challenge = payload.dictionaryPayload["challenge"] as? String {
+                } else if let challenge = payload.dictionaryPayload["challenge"] as? String {
                     Logger.info("received preauth challenge")
-                    preauthChallengeFuture.resolve(challenge)
-                    self.preauthChallengeFuture = nil
+                    self.preauthChallengeFuture.resolve(challenge)
                 } else {
                     owsAssertDebug(!FeatureFlags.notificationServiceExtension)
                     Logger.info("Fetching messages.")
