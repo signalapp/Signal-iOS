@@ -235,7 +235,7 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     }
 }
 
-static NSString *const kFirstValidLogVersion = @"5.35.1";
+static NSString *const kFirstValidLogVersion = @"6.15.0.6";
 - (void)postLaunchLogCleanup
 {
     NSString *lastCompletedAppLaunch = AppVersion.shared.lastCompletedLaunchMainAppVersion;
