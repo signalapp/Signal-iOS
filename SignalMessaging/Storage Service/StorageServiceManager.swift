@@ -903,9 +903,9 @@ class StorageServiceOperation: OWSOperation {
             return state
         }
 
-        // If we've tried many times in a row to resolve conflicts, something weird is happening
-        // (potentially a bug on the service or a race with another app). Give up and wait until
-        // the next backup runs.
+        // If we've tried many times in a row to resolve conflicts, something weird
+        // is happening (potentially a bug on the service or a race with another
+        // app). Give up and wait until the next backup runs.
         guard state.consecutiveConflicts <= StorageServiceOperation.maxConsecutiveConflicts else {
             owsFailDebug("unexpectedly have had numerous repeated conflicts")
 
@@ -917,13 +917,22 @@ class StorageServiceOperation: OWSOperation {
             return reportError(OWSAssertionError("exceeded max consecutive conflicts, creating a new manifest"))
         }
 
-        // Calculate new or updated items by looking up the ids
-        // of any items we don't know about locally. Since a new
-        // id is always generated after a change, this should always
-        // reflect the only items we need to fetch from the service.
-        let allManifestItems: Set<StorageService.StorageIdentifier> = Set(manifest.keys.lazy.map { .init(data: $0.data, type: $0.type) })
+        let allManifestItems: Set<StorageService.StorageIdentifier> = Set(manifest.keys.lazy.map {
+            .init(data: $0.data, type: $0.type)
+        })
 
+        // Calculate new or updated items by looking up the ids of any items we
+        // don't know about locally. Since a new id is always generated after a
+        // change, this reflects changes made since the last manifest version.
         var newOrUpdatedItems = Array(allManifestItems.subtracting(state.allIdentifiers))
+
+        // We also want to refetch any identifiers that we didn't know how to parse
+        // before but now do know how to parse. These might not have gotten
+        // updated, so we need to add them explicitly.
+        for (keyType, unknownIdentifiers) in state.unknownIdentifiersTypeMap {
+            guard Self.isKnownKeyType(keyType) else { continue }
+            newOrUpdatedItems.append(contentsOf: unknownIdentifiers)
+        }
 
         let localKeysCount = state.allIdentifiers.count
 
@@ -981,9 +990,12 @@ class StorageServiceOperation: OWSOperation {
                 newOrUpdatedItems.removeAll { localAccountIdentifiers.contains($0) }
             }
         }.then(on: DispatchQueue.global()) { () -> Promise<State> in
-            // Cleanup our unknown identifiers type map to only reflect
-            // identifiers that still exist in the manifest.
-            state.unknownIdentifiersTypeMap = state.unknownIdentifiersTypeMap.mapValues { Array(allManifestItems.intersection($0)) }
+            // Clean up our unknown identifiers type map to only reflect identifiers
+            // that still exist in the manifest. If we find more unknown identifiers in
+            // any batch, we'll add them in `fetchAndMergeItemsInBatches`.
+            state.unknownIdentifiersTypeMap = state.unknownIdentifiersTypeMap
+                .mapValues { unknownIdentifiers in Array(allManifestItems.intersection(unknownIdentifiers)) }
+                .filter { (recordType, unknownIdentifiers) in !unknownIdentifiers.isEmpty }
 
             // Then, fetch the remaining items in the manifest and resolve any conflicts as appropriate.
             return self.fetchAndMergeItemsInBatches(identifiers: newOrUpdatedItems, manifest: manifest, state: state)
@@ -995,6 +1007,11 @@ class StorageServiceOperation: OWSOperation {
 
                 // We just did a successful manifest fetch and restore, so we no longer need to refetch it
                 mutableState.refetchLatestManifest = false
+
+                // We fetched all the previously unknown identifiers, so we don't need to
+                // fetch them again in the future unless they're updated.
+                mutableState.unknownIdentifiersTypeMap = mutableState.unknownIdentifiersTypeMap
+                    .filter { (keyType, _) in !Self.isKnownKeyType(keyType) }
 
                 // Save invalid identifiers to remove during the write operation.
                 //
@@ -1171,32 +1188,44 @@ class StorageServiceOperation: OWSOperation {
         return self.reportSuccess()
     }
 
-    private func cleanUpUnknownIdentifiers(transaction: SDSAnyWriteTransaction) {
-        // We may have learned of new record types; if so we should
-        // cull them from the unknownIdentifiersTypeMap on launch.
-        let knownTypes: [StorageServiceProtoManifestRecordKeyType] = [
-            .contact,
-            .groupv1,
-            .groupv2,
-            .account,
-            .storyDistributionList
-        ]
+    private static func isKnownKeyType(_ keyType: StorageServiceProtoManifestRecordKeyType?) -> Bool {
+        switch keyType {
+        case .contact:
+            return true
+        case .groupv1:
+            return true
+        case .groupv2:
+            return true
+        case .account:
+            return true
+        case .storyDistributionList:
+            return true
+        case .unknown, .UNRECOGNIZED, nil:
+            return false
+        }
+    }
 
+    private func cleanUpUnknownIdentifiers(transaction: SDSAnyWriteTransaction) {
         var state = State.current(transaction: transaction)
 
-        let oldUnknownIdentifiersTypeMap = state.unknownIdentifiersTypeMap
-        var newUnknownIdentifiersTypeMap = oldUnknownIdentifiersTypeMap
-        knownTypes.forEach { newUnknownIdentifiersTypeMap[$0] = nil }
-        guard oldUnknownIdentifiersTypeMap.count != newUnknownIdentifiersTypeMap.count else {
-            // No change to record.
+        let canParseAnyUnknownIdentifier = state.unknownIdentifiersTypeMap.contains { keyType, unknownIdentifiers in
+            guard Self.isKnownKeyType(keyType) else {
+                // We don't know this type, so it's not parseable.
+                return false
+            }
+            guard !unknownIdentifiers.isEmpty else {
+                // There's no identifiers of this type, so there's nothing to parse.
+                return false
+            }
+            return true
+        }
+
+        guard canParseAnyUnknownIdentifier else {
             return
         }
 
-        state.unknownIdentifiersTypeMap = newUnknownIdentifiersTypeMap
-
-        // If we cleaned up some unknown identifiers, we want to re-fetch
-        // the latest manifest even if we've already fetched it, so we
-        // can parse the unknown values.
+        // We may have learned of new record types. If so, we should refetch the
+        // latest manifest so that we can merge these items.
         state.refetchLatestManifest = true
 
         state.save(transaction: transaction)
