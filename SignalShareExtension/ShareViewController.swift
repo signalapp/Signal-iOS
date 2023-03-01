@@ -642,6 +642,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     return UnloadedItem(itemProvider: itemProvider, itemType: .contact)
                 }
 
+                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeRTF as String) {
+                    return UnloadedItem(itemProvider: itemProvider, itemType: .richText)
+                }
+
                 if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeText as String) {
                     return UnloadedItem(itemProvider: itemProvider, itemType: .text)
                 }
@@ -687,6 +691,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             case inMemoryImage(_ image: UIImage)
             case webUrl(_ webUrl: URL)
             case contact(_ contactData: Data)
+            case richText(_ richText: NSAttributedString)
             case text(_ text: String)
             case pdf(_ data: Data)
             case pkPass(_ data: Data)
@@ -701,6 +706,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     return "webUrl"
                 case .contact:
                     return "contact"
+                case .richText:
+                    return "richText"
                 case .text:
                     return "text"
                 case .pdf:
@@ -739,6 +746,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             case webUrl
             case fileUrl
             case contact
+            case richText
             case text
             case pdf
             case pkPass
@@ -817,6 +825,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 LoadedItem(itemProvider: unloadedItem.itemProvider,
                            payload: .contact(contactData))
             }
+        case .richText:
+            return itemProvider.loadAttributedText(forTypeIdentifier: kUTTypeRTF as String, options: nil).map { richText in
+                LoadedItem(itemProvider: unloadedItem.itemProvider,
+                           payload: .richText(richText))
+            }
         case .text:
             return itemProvider.loadText(forTypeIdentifier: kUTTypeText as String, options: nil).map { text in
                 LoadedItem(itemProvider: unloadedItem.itemProvider,
@@ -865,6 +878,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let dataSource = DataSourceValue.dataSource(with: contactData, utiType: kUTTypeContact as String)
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeContact as String)
             attachment.isConvertibleToContactShare = true
+            return Promise.value(attachment)
+        case .richText(let richText):
+            let dataSource = DataSourceValue.dataSource(withOversizeText: richText.string)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeText as String)
+            attachment.isConvertibleToTextMessage = true
             return Promise.value(attachment)
         case .text(let text):
             let dataSource = DataSourceValue.dataSource(withOversizeText: text)

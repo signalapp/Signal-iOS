@@ -60,6 +60,24 @@ extension NSItemProvider {
         }
     }
 
+    func loadAttributedText(forTypeIdentifier typeIdentifier: String, options: [AnyHashable: Any]?) -> Promise<NSAttributedString> {
+        return Promise { future in
+            self.ows_loadAttributedText(forTypeIdentifier: typeIdentifier, options: options) { attributedText, error in
+                if let error = error {
+                    future.reject(error)
+                    return
+                }
+
+                guard let attributedText else {
+                    future.reject(OWSAssertionError("data was unexpectedly nil"))
+                    return
+                }
+
+                future.resolve(attributedText)
+            }
+        }
+    }
+
     func loadImage(forTypeIdentifier typeIdentifier: String, options: [AnyHashable: Any]?) -> Promise<UIImage> {
         return Promise { future in
             self.ows_loadImage(forTypeIdentifier: typeIdentifier, options: options) { image, error in
