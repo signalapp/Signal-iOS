@@ -41,16 +41,26 @@ Open the `Signal.xcworkspace` in Xcode.
 open Signal.xcworkspace
 ```
 
-In the TARGETS area of the General tab, change the Team drop down to
-your own. You will need to do that for all the listed targets, for ex. 
-Signal, SignalShareExtension, and SignalMessaging. You will need an Apple
-Developer account for this. 
+In the TARGETS area of the General tab, change the Team drop down to your own
+when it reads 'Unknown Team'. At a minimum, set your team in the following
+targets:
 
-On the Capabilities tab, turn off Push Notifications, Apple Pay,
-Communication Notifications, and Data Protection, while keeping Background Modes
-on. The App Groups capability will need to remain on in order to access the
-shared data storage. The best way to change the bundle ID for the app groups is
-setting `SIGNAL_BUNDLEID_PREFIX` in the project's settings.
+- Signal
+- SignalShareExtension
+- SignalNSE
+
+You will need an Apple Developer account for this.
+
+On the Capabilities tab, turn off Push Notifications, Apple Pay, Communication
+Notifications, and Data Protection, while keeping Background Modes on. The App
+Groups capability will need to remain on in order to access the shared data
+storage.
+
+The best way to change the bundle ID for the app groups is setting
+`SIGNAL_BUNDLEID_PREFIX` in the project's settings. Be sure you have selected
+Signal under PROJECT in the sidebar, not TARGET. Otherwise, all the targets will
+not receive an update as needed. If you succeeded in setting the prefix
+globally, the app groups should not require further changes.
 
 If you wish to test the Documents API, the iCloud capability will need to
 be on with the iCloud Documents option selected.
