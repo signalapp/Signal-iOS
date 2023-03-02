@@ -3187,6 +3187,9 @@
 		503AECB829A6E6C900642F66 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = yue; path = translations/yue.lproj/Localizable.strings; sourceTree = "<group>"; };
 		503AECB929A6E6D500642F66 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = yue; path = translations/yue.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		503AECBA29A6E6DC00642F66 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = yue; path = translations/yue.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		503AECC129B1538300642F66 /* ug */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ug; path = translations/ug.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		503AECC229B1538400642F66 /* ug */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ug; path = translations/ug.lproj/Localizable.strings; sourceTree = "<group>"; };
+		503AECC329B1538400642F66 /* ug */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ug; path = translations/ug.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemContactsDataProviderTest.swift; sourceTree = "<group>"; };
 		503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactReminderTableViewCell.swift; sourceTree = "<group>"; };
 		503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLSessionEndpoint.swift; sourceTree = "<group>"; };
@@ -9709,6 +9712,7 @@
 				sv,
 				th,
 				tr,
+				ug,
 				uk,
 				ur,
 				vi,
@@ -12310,6 +12314,7 @@
 				500049A328330114006A7466 /* sv */,
 				500049A62833011A006A7466 /* th */,
 				500049A72833011C006A7466 /* tr */,
+				503AECC329B1538400642F66 /* ug */,
 				1466AB382817F87D003B3D9F /* uk */,
 				500049A82833011E006A7466 /* ur */,
 				500049AA28330122006A7466 /* vi */,
@@ -12368,6 +12373,7 @@
 				888A27E624B3E97E0045D639 /* sv */,
 				88928A55263F0DEB009C9B30 /* th */,
 				88928A4E263F0DEA009C9B30 /* tr */,
+				503AECC129B1538300642F66 /* ug */,
 				888A27EE24B3E97F0045D639 /* uk */,
 				88928A54263F0DEB009C9B30 /* ur */,
 				88928A56263F0DEB009C9B30 /* vi */,
@@ -12418,6 +12424,7 @@
 				4C1D2339218B6C6D00A0598F /* sv */,
 				4C1D233A218B6CDB00A0598F /* th */,
 				4C1D233B218B6D3100A0598F /* tr */,
+				503AECC229B1538400642F66 /* ug */,
 				88A358262364020B009D6B9A /* uk */,
 				882159D023677E0500D17403 /* ur */,
 				88A3582723640240009D6B9A /* vi */,

@@ -42,6 +42,7 @@ private let languageMap: [String: String] = [
     "sv": "sv",
     "th": "th",
     "tr": "tr",
+    "ug": "ug",
     "uk-UA": "uk",
     "ur": "ur",
     "vi": "vi",
