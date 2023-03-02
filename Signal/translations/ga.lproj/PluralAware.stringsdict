@@ -1086,15 +1086,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Chuir tú Bac ar %1$d Bhall den Ghrúpa Seo</string>
+			<string>Chuir tú bac ar %1$d bhall den ghrúpa seo</string>
 			<key>two</key>
-			<string>Chuir tú Bac ar %1$d Bhall den Ghrúpa Seo</string>
+			<string>Chuir tú bac ar %1$d bhall den ghrúpa seo</string>
 			<key>few</key>
-			<string>Chuir tú Bac ar %1$d Bhall den Ghrúpa Seo</string>
+			<string>Chuir tú bac ar %1$d bhall den ghrúpa seo</string>
 			<key>many</key>
-			<string>Chuir tú Bac ar %1$d mBall den Ghrúpa Seo</string>
+			<string>Chuir tú bac ar %1$d mball den ghrúpa seo</string>
 			<key>other</key>
-			<string>Chuir tú Bac ar %1$d Ball den Ghrúpa Seo</string>
+			<string>Chuir tú bac ar %1$d ball den ghrúpa seo</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
