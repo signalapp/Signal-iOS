@@ -1,2 +1,5 @@
-• New animation improvements in the media and avatar viewers let you smoothly step back and see the big picture.
-• We fixed a couple of layout bugs that would sometimes cause buttons to show up in the wrong place on new iPhones, like invisible castaways marooned underneath Apple's Dynamic Island.
+• Les nouvelles améliorations d’animation de la visionneuse de contenus et d’avatars vous permettent de prendre du recul et voir les choses en grand.
+• Share more things from more places. The share extension now has better support for the text format that various popular news apps share by default. We also squashed a bug that sometimes caused your first attempt to share something to fail.
+• Speaking of sharing, another bug was making it difficult to share text content from other apps (like Apple Notes) as Signal Stories. Text has arguably been an important component of some of the best stories throughout history, so we're excited to close the chapter on this particular problem.
+• We fixed a couple of layout issues that could cause buttons to show up in the wrong place on new iPhones, like invisible castaways marooned underneath Apple's Dynamic Island.
+• This update also includes support for Cantonese.
