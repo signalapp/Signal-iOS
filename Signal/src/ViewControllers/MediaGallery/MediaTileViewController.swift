@@ -51,9 +51,11 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
         if numberOfSectionsBefore == 0 && numberOfSectionsAfter > 0 {
             // Adding a "load newer" section. It goes at the end.
             collectionView?.insertSections(IndexSet(integer: numberOfSectionsAfter + 1))
+            updateFooterBarState()
         } else if numberOfSectionsBefore > 0 && numberOfSectionsAfter == 0 {
             // Remove "load newer" section from the end.
             collectionView?.deleteSections(IndexSet(integer: 1))
+            updateFooterBarState()
         }
     }
 
@@ -88,13 +90,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     lazy var footerBar: UIToolbar = {
         let footerBar = UIToolbar()
-        let footerItems = [
-            shareButton,
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            deleteButton
-        ]
-        footerBar.setItems(footerItems, animated: false)
-
         return footerBar
     }()
 
@@ -114,6 +109,164 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                                           accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share_button"))
         return shareButton
     }()
+
+    lazy var filterButton: UIBarButtonItem? = {
+        if #available(iOS 14, *) {
+            return modernFilterButton()
+        }
+        return legacyFilterButton()
+    }()
+
+    lazy var selectedFilterButton: UIBarButtonItem? = {
+        return UIBarButtonItem(image: selectedAllMediaFilterIcon,
+                               style: .plain,
+                               target: self,
+                               action: #selector(disableFiltering))
+    }()
+
+    private struct MenuAction {
+        var title: String
+        var icon: UIImage?
+        var handler: () -> Void
+
+        @available(iOS 13, *)
+        var uiAction: UIAction {
+            return UIAction(title: title, image: icon) { _ in handler() }
+        }
+
+        @available(iOS, deprecated: 14.0)
+        var uiAlertAction: UIAlertAction {
+            return UIAlertAction(title: title, style: .default) { _ in handler() }
+        }
+    }
+
+    private lazy var filterMenuActions: [MenuAction] = {
+        let batchSize = kLoadBatchSize
+        return [
+            MenuAction(
+                title:
+                    OWSLocalizedString(
+                        "ALL_MEDIA_FILTER_PHOTOS",
+                        comment: "Menu option to limit All Media view to displaying only photos"),
+                icon: UIImage(named: "all-media-filter-photos"),
+                handler: { [weak self] in
+                    self?.filter(.photos)
+                }),
+            MenuAction(
+                title:
+                    OWSLocalizedString(
+                        "ALL_MEDIA_FILTER_VIDEOS",
+                        comment: "Menu option to limit All Media view to displaying only videos"),
+                icon: UIImage(named: "all-media-filter-videos"),
+                handler: { [weak self] in
+                    self?.filter(.videos)
+                }),
+            MenuAction(
+                title:
+                    OWSLocalizedString(
+                        "ALL_MEDIA_FILTER_GIFS",
+                        comment: "Menu option to limit All Media view to displaying only GIFs"),
+                icon: UIImage(named: "all-media-filter-gifs"),
+                handler: { [weak self] in
+                    self?.filter(.gifs)
+                })
+        ]
+    }()
+
+    private var indexPathsOfVisibleRealItems: [IndexPath] {
+        let numberOfDates = mediaGallery.galleryDates.count
+        return reallyVisibleIndexPaths.filter { path in
+            path.section > 0 && path.section <= numberOfDates
+        }.sorted { lhs, rhs in
+            lhs < rhs
+        }
+    }
+
+    private var oldestVisibleIndexPath: IndexPath? {
+        return indexPathsOfVisibleRealItems.min { lhs, rhs in
+            lhs.section < rhs.section
+        }
+    }
+
+    private func filter(_ mediaType: MediaGallery.MediaType) {
+        let maybeDate = oldestVisibleIndexPath.map { mediaGallery.galleryDates[$0.section - 1] }
+        let indexPathToScrollTo = mediaGallery.setAllowedMediaType(mediaType,
+                                                                   loadUntil: maybeDate ?? GalleryDate(date: Date.distantPast),
+                                                                   batchSize: kLoadBatchSize,
+                                                                   firstVisibleIndexPath: oldestVisibleIndexPath?.shiftingSection(by: -1))
+        footerBarState = .filtering
+        if let indexPath = indexPathToScrollTo {
+            // Scroll to approximately where you were before.
+            collectionView.scrollToItem(at: indexPath.shiftingSection(by: 1),
+                                        at: .top,
+                                        animated: false)
+        }
+        eagerLoadingDidComplete = false
+        eagerlyLoadMoreIfPossible()
+    }
+
+    private lazy var allMediaFilterIcon: UIImage = {
+        UIImage(named: "all-media-filter")!
+    }()
+
+    private lazy var selectedAllMediaFilterIcon: UIImage = {
+        UIImage(named: "all-media-filter-selected")!
+    }()
+
+    private func legacyFilterButton() -> UIBarButtonItem {
+        return UIBarButtonItem(image: allMediaFilterIcon,
+                               style: .plain,
+                               target: self,
+                               action: #selector(showFilterMenu))
+    }
+
+    @available(iOS, deprecated: 14.0)
+    @objc
+    func showFilterMenu(_ sender: Any) {
+        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        for action in filterMenuActions.map({ $0.uiAlertAction}) {
+            menu.addAction(action)
+        }
+        present(menu, animated: true, completion: nil)
+    }
+
+    @objc
+    func disableFiltering(_ sender: Any) {
+        let date: GalleryDate?
+        if let indexPath = oldestVisibleIndexPath?.shiftingSection(by: -1) {
+            date = mediaGallery.galleryDates[indexPath.section]
+        } else {
+            date = nil
+        }
+        let indexPathToScrollTo = mediaGallery.setAllowedMediaType(
+            nil,
+            loadUntil: date ?? GalleryDate(date: .distantFuture),
+            batchSize: kLoadBatchSize,
+            firstVisibleIndexPath: oldestVisibleIndexPath?.shiftingSection(by: -1))
+        updateFooterBarState()
+
+        if date == nil {
+            if mediaGallery.galleryDates.isEmpty {
+                _ = self.mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize)
+            }
+            if eagerLoadingDidComplete {
+                // Filtering removed everything so we must restart eager loading.
+                eagerLoadingDidComplete = false
+                eagerlyLoadMoreIfPossible()
+            }
+        }
+        if let indexPath = indexPathToScrollTo {
+            collectionView.scrollToItem(at: indexPath.shiftingSection(by: 1),
+                                        at: .top,
+                                        animated: false)
+        }
+    }
+
+    @available(iOS 14, *)
+    private func modernFilterButton() -> UIBarButtonItem {
+        let menu = UIMenu(title: "", children: filterMenuActions.map { $0.uiAction })
+        return UIBarButtonItem(image: allMediaFilterIcon, menu: menu)
+    }
 
     // MARK: View Lifecycle Overrides
 
@@ -279,9 +432,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return
         }
         guard mediaGallery.galleryDates.count > 0,
-              let indexPath = reallyVisibleIndexPaths.min(by: { lhs, rhs in
-                  return lhs.section < rhs.section
-              }) else {
+              let indexPath = reallyVisibleIndexPaths.min() else {
             scrollFlag.alpha = 0.0
             return
         }
@@ -304,10 +455,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         let scrollbarInsets = {
             // This code is cursed and I'm sorry.
-            let hasNotch = (UIApplication.shared.keyWindow?.safeAreaInsets.bottom) ?? 0 > 0
-            if !hasNotch {
-                return UIEdgeInsets.zero
-            }
             switch UIApplication.shared.statusBarOrientation {
             case .portrait, .portraitUpsideDown, .unknown, .landscapeRight:
                 // Note that adjustedContentInset is used because it seems to include the
@@ -317,6 +464,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                     result.bottom = 8.0
                 }
                 result.right = 0
+                if collectionView.scrollIndicatorInsets.bottom > 0 {
+                    // Footer height takes precedence over adjustedContentInset, which is not terribly accurate.
+                    result.bottom = collectionView.scrollIndicatorInsets.bottom
+                }
                 return result
             case .landscapeLeft:
                 // In landscape the horizontal line to indicate swipe direction makes the bottom inset
@@ -327,6 +478,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                 // In landscape left the scroll indicator is shifted way in, but its adjusted
                 // content inset is 0.
                 result.right = collectionView.safeAreaInsets.right
+                if collectionView.scrollIndicatorInsets.bottom > 0 {
+                    // Footer height takes precedence over adjustedContentInset, which is not terribly accurate.
+                    result.bottom = collectionView.scrollIndicatorInsets.bottom
+                }
                 return result
             @unknown default:
                 return collectionView.adjustedContentInset
@@ -773,12 +928,18 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     func didTapSelect(_ sender: Any) {
         isInBatchSelectMode = true
 
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
+        footerBarState = mediaGallery.allowedMediaType != nil ? .selectionFiltering : .selection
 
-        // show toolbar
+        // Disabled until at least one item is selected.
+        self.deleteButton.isEnabled = false
+        self.shareButton.isEnabled = false
+
+        // Don't allow the user to leave mid-selection, so they realized they have
+        // to cancel (lose) their selection if they leave.
+        self.navigationItem.hidesBackButton = true
+    }
+
+    private func showToolbar() {
         UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
             NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
             self.footerBarBottomConstraint = self.footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
@@ -786,16 +947,21 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             self.footerBar.superview?.layoutIfNeeded()
 
             // ensure toolbar doesn't cover bottom row.
-            collectionView.contentInset.bottom += self.kFooterBarHeight
+            self.collectionView.contentInset.bottom += self.kFooterBarHeight
+            self.collectionView.scrollIndicatorInsets.bottom += self.kFooterBarHeight
         }, completion: nil)
+    }
 
-        // disabled until at least one item is selected
-        self.deleteButton.isEnabled = false
-        self.shareButton.isEnabled = false
+    private func hideToolbar() {
+        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
+            NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
+            self.footerBarBottomConstraint = self.footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -self.kFooterBarHeight)
+            self.footerBar.superview?.layoutIfNeeded()
 
-        // Don't allow the user to leave mid-selection, so they realized they have
-        // to cancel (lose) their selection if they leave.
-        self.navigationItem.hidesBackButton = true
+            // Undo "ensure toolbar doesn't cover bottom row.".
+            self.collectionView.contentInset.bottom -= self.kFooterBarHeight
+            self.collectionView.scrollIndicatorInsets.bottom -= self.kFooterBarHeight
+        }, completion: nil)
     }
 
     @objc
@@ -812,14 +978,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }
 
         // hide toolbar
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
-            NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
-            self.footerBarBottomConstraint = self.footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -self.kFooterBarHeight)
-            self.footerBar.superview?.layoutIfNeeded()
-
-            // undo "ensure toolbar doesn't cover bottom row."
-            collectionView.contentInset.bottom -= self.kFooterBarHeight
-        }, completion: nil)
+        updateFooterBarState()
 
         self.navigationItem.hidesBackButton = false
 
@@ -889,6 +1048,85 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     var footerBarBottomConstraint: NSLayoutConstraint!
     let kFooterBarHeight: CGFloat = 40
+
+    enum FooterBarState {
+        // No footer bar.
+        case hidden
+
+        // Filter and other features when not in selection mode.
+        case regular
+
+        // Highlighted filter button shown, indicating highlighting is active.
+        case filtering
+
+        // In selection mode but not filtering.
+        case selection
+
+        // In selection mode and filtering.
+        case selectionFiltering
+    }
+
+    var footerBarState = FooterBarState.hidden {
+        willSet {
+            let wasHidden = footerBarState == .hidden
+            let willBeHidden = newValue == .hidden
+            if wasHidden && !willBeHidden {
+                showToolbar()
+            } else if !wasHidden && willBeHidden {
+                hideToolbar()
+            }
+            switch newValue {
+            case .hidden:
+                break
+            case .selection, .selectionFiltering:
+                let footerItems = [
+                    shareButton,
+                    UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                    deleteButton
+                ]
+                footerBar.setItems(footerItems, animated: false)
+            case .regular:
+                let footerItems = [
+                    filterButton!,
+                    UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                    deleteButton
+                ]
+                footerBar.setItems(footerItems, animated: false)
+            case .filtering:
+                let footerItems = [
+                    selectedFilterButton!,
+                    UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                    deleteButton
+                ]
+                footerBar.setItems(footerItems, animated: false)
+            }
+        }
+    }
+
+    private func updateFooterBarState() {
+        footerBarState = {
+            if isInBatchSelectMode {
+                if mediaGallery.allowedMediaType != nil {
+                    return .selectionFiltering
+                }
+                return .selection
+            }
+            if mediaGallery.allowedMediaType != nil {
+                return .filtering
+            }
+            if mediaGallery.galleryDates.isEmpty {
+                return .hidden
+            }
+            let allowed = FeatureFlags.isPrerelease
+            guard allowed else {
+                return .hidden
+            }
+            if #unavailable(iOS 13) {
+                return .hidden
+            }
+            return .regular
+        }()
+    }
 
     // MARK: Update
 

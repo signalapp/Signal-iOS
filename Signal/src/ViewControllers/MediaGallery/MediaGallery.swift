@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 public enum GalleryDirection {
     case before, after, around
@@ -216,6 +217,10 @@ class MediaGallery: Dependencies {
     typealias Sections = MediaGallerySections<Loader, MediaGalleryUpdateUserData>
     typealias Update = Sections.Update
     typealias Journal = [JournalingOrderedDictionaryChange<Sections.ItemChange>]
+    typealias MediaType = MediaGalleryFinder.MediaType
+
+    // Used for filtering.
+    private(set) var allowedMediaType: MediaType?
 
     private var deletedAttachmentIds: Set<String> = Set() {
         didSet {
@@ -228,7 +233,7 @@ class MediaGallery: Dependencies {
         }
     }
 
-    private let mediaGalleryFinder: MediaGalleryFinder
+    private var mediaGalleryFinder: MediaGalleryFinder
     private var sections: Sections!
 
     deinit {
@@ -237,8 +242,9 @@ class MediaGallery: Dependencies {
 
     @objc
     init(thread: TSThread) {
-        self.mediaGalleryFinder = MediaGalleryFinder(thread: thread)
-        self.sections = MediaGallerySections(loader: Loader(mediaGallery: self))
+        let finder = MediaGalleryFinder(thread: thread, allowedMediaType: nil)
+        self.mediaGalleryFinder = finder
+        self.sections = MediaGallerySections(loader: Loader(mediaGallery: self, finder: finder))
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(Self.newAttachmentsAvailable(_:)),
                                                name: MediaGalleryManager.newAttachmentsAvailableNotification,
@@ -678,6 +684,29 @@ class MediaGallery: Dependencies {
         return sections.loadedItem(at: path)
     }
 
+    internal func galleryItemWithoutLoading(at path: IndexPath) -> MediaGalleryItem? {
+        return sections.itemsBySection[path.section].value[path.item].item
+    }
+
+    /// Change what media is filtered out.
+    ///
+    /// - Parameters:
+    ///   - allowedMediaType: If `nil`, do not filter results. Otherwise, show only media of this type.
+    ///   - loadUntil: Load sections from the latest until this date, inclusive.
+    ///   - batchSize: Number of items to load at once.
+    func setAllowedMediaType(_ allowedMediaType: MediaType?, loadUntil: GalleryDate, batchSize: Int, firstVisibleIndexPath: IndexPath?) -> IndexPath? {
+        self.allowedMediaType = allowedMediaType
+        return mutate { sections in
+            mediaGalleryFinder = MediaGalleryFinder(thread: mediaGalleryFinder.thread,
+                                                    allowedMediaType: allowedMediaType)
+            let newLoader = Loader(mediaGallery: self, finder: mediaGalleryFinder)
+            return sections.replaceLoader(loader: newLoader,
+                                          batchSize: batchSize,
+                                          loadUntil: loadUntil,
+                                          searchFor: firstVisibleIndexPath)
+        }
+    }
+
     private let kGallerySwipeLoadBatchSize: Int = 5
 
     internal func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem? {
@@ -756,19 +785,20 @@ extension MediaGallery {
         typealias Item = MediaGalleryItem
 
         fileprivate weak var mediaGallery: MediaGallery?
+        fileprivate let finder: MediaGalleryFinder
 
-        func rowIdsOfItemsInSection(for date: GalleryDate,
-                                    offset: Int,
-                                    ascending: Bool,
-                                    transaction: SDSAnyReadTransaction) -> [Int64] {
+        func rowIdsAndDatesOfItemsInSection(for date: GalleryDate,
+                                            offset: Int,
+                                            ascending: Bool,
+                                            transaction: SDSAnyReadTransaction) -> [RowIdAndDate] {
             guard let mediaGallery else {
                 return []
             }
-            return mediaGallery.mediaGalleryFinder.rowIds(in: date.interval,
-                                                          excluding: mediaGallery.deletedAttachmentIds,
-                                                          offset: offset,
-                                                          ascending: ascending,
-                                                          transaction: transaction.unwrapGrdbRead)
+            return finder.rowIdsAndDates(in: date.interval,
+                                         excluding: mediaGallery.deletedAttachmentIds,
+                                         offset: offset,
+                                         ascending: ascending,
+                                         transaction: transaction.unwrapGrdbRead)
         }
 
         func enumerateTimestamps(before date: Date,
@@ -778,11 +808,11 @@ extension MediaGallery {
             guard let mediaGallery else {
                 return .reachedEnd
             }
-            return mediaGallery.mediaGalleryFinder.enumerateTimestamps(before: date,
-                                                                       excluding: mediaGallery.deletedAttachmentIds,
-                                                                       count: count,
-                                                                       transaction: transaction.unwrapGrdbRead,
-                                                                       block: block)
+            return finder.enumerateTimestamps(before: date,
+                                              excluding: mediaGallery.deletedAttachmentIds,
+                                              count: count,
+                                              transaction: transaction.unwrapGrdbRead,
+                                              block: block)
         }
 
         func enumerateTimestamps(after date: Date,
@@ -792,11 +822,11 @@ extension MediaGallery {
             guard let mediaGallery else {
                 return .reachedEnd
             }
-            return mediaGallery.mediaGalleryFinder.enumerateTimestamps(after: date,
-                                                                       excluding: mediaGallery.deletedAttachmentIds,
-                                                                       count: count,
-                                                                       transaction: transaction.unwrapGrdbRead,
-                                                                       block: block)
+            return finder.enumerateTimestamps(after: date,
+                                              excluding: mediaGallery.deletedAttachmentIds,
+                                              count: count,
+                                              transaction: transaction.unwrapGrdbRead,
+                                              block: block)
         }
 
         func enumerateItems(in interval: DateInterval,
@@ -806,7 +836,7 @@ extension MediaGallery {
             guard let mediaGallery else {
                 return
             }
-            mediaGallery.mediaGalleryFinder.enumerateMediaAttachments(
+            finder.enumerateMediaAttachments(
                 in: interval,
                 excluding: mediaGallery.deletedAttachmentIds,
                 range: NSRange(range),

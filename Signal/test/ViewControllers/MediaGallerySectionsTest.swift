@@ -76,15 +76,18 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
 
 /// Takes the place of the database for MediaGallerySection tests.
 private final class FakeGalleryStore: MediaGallerySectionLoader {
-    func rowIdsOfItemsInSection(for date: GalleryDate,
-                                offset: Int,
-                                ascending: Bool,
-                                transaction: SignalServiceKit.SDSAnyReadTransaction) -> [Int64] {
+    func rowIdsAndDatesOfItemsInSection(for date: GalleryDate,
+                                        offset: Int,
+                                        ascending: Bool,
+                                        transaction: SignalServiceKit.SDSAnyReadTransaction) -> [SignalServiceKit.RowIdAndDate] {
         guard let items = itemsBySection[date] else {
             return []
         }
         let sortedItems = ascending ? items : items.reversed()
-        return sortedItems[offset...].map { $0.rowid }
+        return sortedItems[offset...].map {
+            RowIdAndDate(rowid: $0.rowid,
+                         receivedAtTimestamp: $0.timestamp.ows_millisecondsSince1970)
+        }
     }
 
     typealias Item = FakeItem
@@ -199,10 +202,30 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
         let store = standardFakeStore
 
         databaseStorage.read { transaction in
-            XCTAssertEqual(3, store.rowIdsOfItemsInSection(for: GalleryDate(2021_01_01), offset: 0, ascending: true, transaction: transaction).count)
-            XCTAssertEqual(0, store.rowIdsOfItemsInSection(for: GalleryDate(2021_02_01), offset: 0, ascending: true, transaction: transaction).count)
-            XCTAssertEqual(2, store.rowIdsOfItemsInSection(for: GalleryDate(2021_04_01), offset: 0, ascending: true, transaction: transaction).count)
-            XCTAssertEqual(5, store.rowIdsOfItemsInSection(for: GalleryDate(2021_09_01), offset: 0, ascending: true, transaction: transaction).count)
+            XCTAssertEqual(3,
+                           store.rowIdsAndDatesOfItemsInSection(
+                            for: GalleryDate(2021_01_01),
+                            offset: 0,
+                            ascending: true,
+                            transaction: transaction).count)
+            XCTAssertEqual(0,
+                           store.rowIdsAndDatesOfItemsInSection(
+                            for: GalleryDate(2021_02_01),
+                            offset: 0,
+                            ascending: true,
+                            transaction: transaction).count)
+            XCTAssertEqual(2,
+                           store.rowIdsAndDatesOfItemsInSection(
+                            for: GalleryDate(2021_04_01),
+                            offset: 0,
+                            ascending: true,
+                            transaction: transaction).count)
+            XCTAssertEqual(5,
+                           store.rowIdsAndDatesOfItemsInSection(
+                            for: GalleryDate(2021_09_01),
+                            offset: 0,
+                            ascending: true,
+                            transaction: transaction).count)
         }
     }
 

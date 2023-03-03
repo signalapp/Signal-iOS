@@ -869,7 +869,9 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     private(set) var recentMedia = OrderedDictionary<String, (attachment: TSAttachmentStream, imageView: UIImageView)>() {
         didSet { AssertIsOnMainThread() }
     }
-    private lazy var mediaGalleryFinder = MediaGalleryFinder(thread: thread)
+
+    private lazy var mediaGalleryFinder = MediaGalleryFinder(thread: thread, allowedMediaType: nil)
+
     func updateRecentAttachments() {
         let recentAttachments = databaseStorage.read { transaction in
             mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, transaction: transaction.unwrapGrdbRead)

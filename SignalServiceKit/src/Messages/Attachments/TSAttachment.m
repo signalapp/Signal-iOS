@@ -411,7 +411,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (BOOL)isVideo
 {
-    return [MIMETypeUtil isVideo:self.contentType];
+    return [OWSVideoAttachmentDetection.sharedInstance attachmentIsVideo:self];
 }
 
 - (BOOL)isAudio
@@ -442,7 +442,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (BOOL)isLoopingVideo
 {
-    return self.attachmentType == TSAttachmentTypeGIF && self.isVideo;
+    return [OWSVideoAttachmentDetection.sharedInstance attachmentIsLoopingVideo:self];
 }
 
 - (BOOL)isVisualMedia

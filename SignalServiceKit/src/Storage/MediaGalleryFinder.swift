@@ -6,6 +6,20 @@
 import Foundation
 import GRDB
 
+public struct RowIdAndDate: Codable, FetchableRecord {
+    public var rowid: Int64
+    public var receivedAtTimestamp: UInt64 // timestamp in milliseconds
+
+    public var date: Date {
+        return Date(millisecondsSince1970: receivedAtTimestamp)
+    }
+
+    public init(rowid: Int64, receivedAtTimestamp: UInt64) {
+        self.rowid = rowid
+        self.receivedAtTimestamp = receivedAtTimestamp
+    }
+}
+
 @objc
 public final class MediaGalleryManager: NSObject {
     public static func setup(database: GRDB.Database) {
@@ -244,9 +258,19 @@ public final class MediaGalleryManager: NSObject {
 public struct MediaGalleryFinder {
 
     public let thread: TSThread
-    public init(thread: TSThread) {
+
+    public enum MediaType {
+        case gifs
+        case videos
+        case photos
+    }
+    /// If non-nil, media will be restricted to this type. Otherwise there is no filtering.
+    public var allowedMediaType: MediaType?
+
+    public init(thread: TSThread, allowedMediaType: MediaType?) {
         owsAssertDebug(thread.grdbId != 0, "only supports GRDB")
         self.thread = thread
+        self.allowedMediaType = allowedMediaType
     }
 
     // MARK: - 
@@ -293,7 +317,8 @@ extension MediaGalleryFinder {
              excluding deletedAttachmentIds: Set<String>,
              order: Order = .ascending,
              limit: Int? = nil,
-             offset: Int? = nil) {
+             offset: Int? = nil,
+             allowedMediaType: MediaGalleryFinder.MediaType?) {
 
             let whereCondition: String = dateInterval.map {
                 let startMillis = $0.start.ows_millisecondsSince1970
@@ -301,7 +326,24 @@ extension MediaGalleryFinder {
                 // at the boundaries, leading to the first millisecond of a month being considered part of the previous
                 // month as well. Subtract 1ms from the end timestamp to avoid this.
                 let endMillis = $0.end.ows_millisecondsSince1970 - 1
-                return "AND \(interactionColumn: .receivedAtTimestamp) BETWEEN \(startMillis) AND \(endMillis)"
+                var clauses = ["AND \(interactionColumn: .receivedAtTimestamp) BETWEEN \(startMillis) AND \(endMillis)"]
+                switch allowedMediaType {
+                case .none:
+                    break
+                case .gifs:
+                    // Note that this isn't quite the same as -[TSAttachmentStream
+                    // hasAnimatedImageContent], which is used to label thumbnails as "GIF", because
+                    // we don't try to test if the attachment is an animated sticker. Stickers are
+                    // not supported. If we are unfortunate then image/webp and image/png are also
+                    // *possibly* animated GIFs but you need to open the file to check.
+                    // This code assumes that check is only needed for stickers.
+                    clauses.append("AND (" + VideoAttachmentDetection.shared.attachmentStreamIsGIFOrLoopingVideoSQL + ") ")
+                case .photos:
+                    clauses.append("AND (" + VideoAttachmentDetection.shared.attachmentIsNonGIFImageSQL + ") ")
+                case .videos:
+                    clauses.append("AND (" + VideoAttachmentDetection.shared.attachmentIsNonLoopingVideoSQL + ") ")
+                }
+                return clauses.joined(separator: " ")
             } ?? ""
 
             let deletedAttachmentIdList = "(\"\(deletedAttachmentIds.joined(separator: "\",\""))\")"
@@ -354,12 +396,14 @@ extension MediaGalleryFinder {
                                    excluding deletedAttachmentIds: Set<String> = Set(),
                                    order: Order = .ascending,
                                    limit: Int? = nil,
-                                   offset: Int? = nil) -> String {
+                                   offset: Int? = nil,
+                                   allowedMediaType: MediaGalleryFinder.MediaType?) -> String {
         let queryParts = QueryParts(in: dateInterval,
                                     excluding: deletedAttachmentIds,
                                     order: order,
                                     limit: limit,
-                                    offset: offset)
+                                    offset: offset,
+                                    allowedMediaType: allowedMediaType)
         return queryParts.select(result)
     }
 
@@ -374,12 +418,29 @@ extension MediaGalleryFinder {
                                   in: interval,
                                   excluding: deletedAttachmentIds,
                                   order: ascending ? .ascending : .descending,
-                                  offset: offset)
+                                  offset: offset,
+                                  allowedMediaType: allowedMediaType)
         return try! Int64.fetchAll(transaction.database, sql: sql, arguments: [threadId])
     }
 
+    public func rowIdsAndDates(in givenInterval: DateInterval? = nil,
+                               excluding deletedAttachmentIds: Set<String>,
+                               offset: Int,
+                               ascending: Bool,
+                               transaction: GRDBReadTransaction) -> [RowIdAndDate] {
+        let interval = givenInterval ?? DateInterval.init(start: Date(timeIntervalSince1970: 0),
+                                                          end: .distantFutureForMillisecondTimestamp)
+        let sql = Self.itemsQuery(result: "media_gallery_items.rowid, \(interactionColumnFullyQualified: .receivedAtTimestamp)",
+                                  in: interval,
+                                  excluding: deletedAttachmentIds,
+                                  order: ascending ? .ascending : .descending,
+                                  offset: offset,
+                                  allowedMediaType: allowedMediaType)
+        return try! RowIdAndDate.fetchAll(transaction.database, sql: sql, arguments: [threadId])
+    }
+
     public func recentMediaAttachments(limit: Int, transaction: GRDBReadTransaction) -> [TSAttachment] {
-        let sql = Self.itemsQuery(order: .descending, limit: limit)
+        let sql = Self.itemsQuery(order: .descending, limit: limit, allowedMediaType: allowedMediaType)
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         var attachments = [TSAttachment]()
         while let next = try! cursor.next() {
@@ -396,7 +457,8 @@ extension MediaGalleryFinder {
         let sql = Self.itemsQuery(in: dateInterval,
                                   excluding: deletedAttachmentIds,
                                   limit: range.length,
-                                  offset: range.lowerBound)
+                                  offset: range.lowerBound,
+                                  allowedMediaType: allowedMediaType)
 
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         var index = range.lowerBound
@@ -417,7 +479,8 @@ extension MediaGalleryFinder {
                                   in: interval,
                                   excluding: deletedAttachmentIds,
                                   order: order,
-                                  limit: count)
+                                  limit: count,
+                                  allowedMediaType: allowedMediaType)
 
         struct RowIDAndTimestamp: FetchableRecord {
             var rowid: Int64
@@ -467,6 +530,7 @@ extension MediaGalleryFinder {
                                    block: block)
     }
 
+    // Disregards allowedMediaType.
     public func rowid(of attachment: TSAttachmentStream,
                       in interval: DateInterval,
                       excluding deletedAttachmentIds: Set<String>,
@@ -476,7 +540,7 @@ extension MediaGalleryFinder {
             return nil
         }
 
-        let queryParts = QueryParts(in: interval, excluding: deletedAttachmentIds)
+        let queryParts = QueryParts(in: interval, excluding: deletedAttachmentIds, allowedMediaType: nil)
         let sql = """
             SELECT
                 media_gallery_items.rowid
@@ -487,7 +551,7 @@ extension MediaGalleryFinder {
         return try! Int64.fetchOne(transaction.database, sql: sql, arguments: [threadId, attachmentRowId])
     }
 
-    /// Returns the number of attachments attached to `interaction`, whether or not they are media attachments.
+    /// Returns the number of attachments attached to `interaction`, whether or not they are media attachments. Disregards allowedMediaType.
     public func countAllAttachments(of interaction: TSInteraction, transaction: GRDBReadTransaction) throws -> UInt {
         let sql = """
             SELECT COUNT(*)
