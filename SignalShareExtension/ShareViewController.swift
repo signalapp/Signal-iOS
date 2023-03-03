@@ -510,9 +510,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             DispatchQueue.main.async { [weak self] in
                 self?.conversationPicker.areAttachmentStoriesCompatPrecheck = result.allSatisfy { item in
                     switch item.itemType {
-                    case .movie, .image, .webUrl, .text:
+                    case .movie, .image, .webUrl, .text, .richText:
                         return true
-                    default:
+                    case .fileUrl, .contact, .pdf, .pkPass, .other:
                         return false
                     }
                 }
