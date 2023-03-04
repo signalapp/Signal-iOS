@@ -39,6 +39,19 @@ struct MediaPresentationContext {
     let mediaView: UIView
     let presentationFrame: CGRect
     let roundedCorners: RoundedCorners
+    let clippingAreaInsets: UIEdgeInsets?
+
+    init(
+        mediaView: UIView,
+        presentationFrame: CGRect,
+        roundedCorners: RoundedCorners = .none,
+        clippingAreaInsets: UIEdgeInsets? = nil
+    ) {
+        self.mediaView = mediaView
+        self.presentationFrame = presentationFrame
+        self.roundedCorners = roundedCorners
+        self.clippingAreaInsets = clippingAreaInsets
+    }
 }
 
 // There are two kinds of AnimationControllers that interact with the media detail view. Both

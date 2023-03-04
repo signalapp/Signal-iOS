@@ -33,6 +33,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         let containerView = transitionContext.containerView
+        let isTransitionInteractive = transitionContext.isInteractive
 
         guard let fromVC = transitionContext.viewController(forKey: .from) else {
             owsFailDebug("fromVC was unexpectedly nil")
@@ -126,10 +127,26 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
         }
 
         // Dims content underneath the media view while user is gragging the media around.
-        let dimmerView = UIView(frame: containerView.bounds)
-        dimmerView.alpha = 0
-        dimmerView.backgroundColor = .ows_blackAlpha40
-        containerView.addSubview(dimmerView)
+        let dimmerView: UIView?
+        if isTransitionInteractive {
+            let view = UIView(frame: containerView.bounds)
+            view.alpha = 0
+            view.backgroundColor = .ows_blackAlpha40
+            containerView.addSubview(view)
+            dimmerView = view
+        } else {
+            dimmerView = nil
+        }
+
+        let clippingView = UIView(frame: containerView.bounds)
+        clippingView.clipsToBounds = true
+        if let clippingAreaInsets = fromMediaContext.clippingAreaInsets, clippingAreaInsets.isNonEmpty {
+            let maskLayer = CALayer()
+            maskLayer.frame = clippingView.layer.bounds.inset(by: clippingAreaInsets)
+            maskLayer.backgroundColor = UIColor.black.cgColor
+            clippingView.layer.mask = maskLayer
+        }
+        containerView.addSubview(clippingView)
 
         // Can't do rounded corners and drop shadow at the same time,
         // so put image into a container view.
@@ -139,7 +156,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
         transitionView.layer.shadowRadius = 48
         transitionView.layer.shadowOpacity = 0
         self.transitionView = transitionView
-        containerView.addSubview(transitionView)
+        clippingView.addSubview(transitionView)
 
         let imageView = MediaTransitionImageView(image: presentationImage)
         imageView.contentMode = .scaleAspectFill
@@ -166,7 +183,6 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
         toMediaContext?.mediaView.alpha = 0
 
         let duration = transitionDuration(using: transitionContext)
-        let isTransitionInteractive = transitionContext.isInteractive
 
         let completion: (CGVector?) -> Void = { velocity in
             let destinationFrame: CGRect
@@ -186,6 +202,13 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 destinationRoundedCorners = fromMediaContext.roundedCorners
             }
 
+            if let clippingAreaInsets = toMediaContext?.clippingAreaInsets, clippingAreaInsets.isNonEmpty {
+                let maskLayer = CALayer()
+                maskLayer.frame = clippingView.layer.bounds.inset(by: clippingAreaInsets)
+                maskLayer.backgroundColor = UIColor.black.cgColor
+                clippingView.layer.mask = maskLayer
+            }
+
             let animator = UIViewPropertyAnimator(
                 duration: duration,
                 springDamping: 0.77,
@@ -196,7 +219,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 if !transitionContext.transitionWasCancelled {
                     fromTransitionalOverlayView?.alpha = 0
                     fromView.alpha = 0
-                    dimmerView.alpha = 0
+                    dimmerView?.alpha = 0
                 }
 
                 imageView.roundedCorners = destinationRoundedCorners
@@ -207,8 +230,8 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
             }
             animator.addCompletion { _ in
                 fromTransitionalOverlayView?.removeFromSuperview()
-                transitionView.removeFromSuperview()
-                dimmerView.removeFromSuperview()
+                clippingView.removeFromSuperview()
+                dimmerView?.removeFromSuperview()
 
                 fromMediaContext.mediaView.alpha = 1
                 toMediaContext?.mediaView.alpha = 1
@@ -250,7 +273,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 animations: {
                     fromTransitionalOverlayView?.alpha = 0
                     fromView.alpha = 0
-                    dimmerView.alpha = 1
+                    dimmerView?.alpha = 1
 
                     transitionView.transform = .scale(0.8)
                     transitionView.layer.shadowOpacity = 1

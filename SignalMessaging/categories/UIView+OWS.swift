@@ -348,6 +348,10 @@ public extension UIEdgeInsets {
             }
         }
     }
+
+    var isNonEmpty: Bool {
+        left != 0 || right != 0 || top != 0 || bottom != 0
+    }
 }
 
 // MARK: -

@@ -399,7 +399,8 @@ extension ConversationViewController: MediaPresentationContextProvider {
         return MediaPresentationContext(
             mediaView: mediaView,
             presentationFrame: presentationFrame,
-            roundedCorners: roundedCorners
+            roundedCorners: roundedCorners,
+            clippingAreaInsets: collectionView.adjustedContentInset
         )
     }
 

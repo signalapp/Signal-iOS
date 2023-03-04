@@ -797,7 +797,10 @@ extension MediaPageViewController: MediaPresentationContextProvider {
             return nil
         }
 
-        return MediaPresentationContext(mediaView: mediaView, presentationFrame: mediaView.frame, roundedCorners: .none)
+        return MediaPresentationContext(
+            mediaView: mediaView,
+            presentationFrame: mediaView.frame
+        )
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {

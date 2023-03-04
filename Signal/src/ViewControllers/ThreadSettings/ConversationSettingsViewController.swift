@@ -1100,11 +1100,13 @@ extension ConversationSettingsViewController: MediaPresentationContextProvider {
         }
 
         let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
+        let clippingAreaInsets = UIEdgeInsets(top: tableView.adjustedContentInset.top, leading: 0, bottom: 0, trailing: 0)
 
         return MediaPresentationContext(
             mediaView: mediaView,
             presentationFrame: presentationFrame,
-            roundedCorners: .all(cornerRadius)
+            roundedCorners: .all(cornerRadius),
+            clippingAreaInsets: clippingAreaInsets
         )
     }
 

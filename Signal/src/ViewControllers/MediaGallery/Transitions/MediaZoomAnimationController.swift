@@ -104,12 +104,22 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             return
         }
 
+        let clippingView = UIView(frame: containerView.bounds)
+        clippingView.clipsToBounds = true
+        if let clippingAreaInsets = fromMediaContext.clippingAreaInsets, clippingAreaInsets.isNonEmpty {
+            let maskLayer = CALayer()
+            maskLayer.frame = clippingView.layer.bounds.inset(by: clippingAreaInsets)
+            maskLayer.backgroundColor = UIColor.black.cgColor
+            clippingView.layer.mask = maskLayer
+        }
+        containerView.addSubview(clippingView)
+
         let transitionView = MediaTransitionImageView(image: presentationImage)
         transitionView.contentMode = .scaleAspectFill
         transitionView.layer.masksToBounds = true
         transitionView.roundedCorners = fromMediaContext.roundedCorners
         transitionView.frame = fromMediaContext.presentationFrame
-        containerView.addSubview(transitionView)
+        clippingView.addSubview(transitionView)
 
         let fromTransitionalOverlayView: UIView?
         if let (overlayView, overlayViewFrame) = fromContextProvider.snapshotOverlayView(in: containerView) {
@@ -148,11 +158,19 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             toTransitionalOverlayView?.alpha = 1.0
             transitionView.roundedCorners = toMediaContext.roundedCorners
             transitionView.frame = toMediaContext.presentationFrame
+
+            if let clippingAreaInsets = toMediaContext.clippingAreaInsets, clippingAreaInsets.isNonEmpty {
+                let maskLayer = CALayer()
+                maskLayer.frame = clippingView.layer.bounds.inset(by: clippingAreaInsets)
+                maskLayer.backgroundColor = UIColor.black.cgColor
+                clippingView.layer.mask = maskLayer
+            }
         }
         animator.addCompletion { _ in
             fromContextProvider.mediaDidPresent(fromContext: fromMediaContext)
             toContextProvider.mediaDidPresent(toContext: toMediaContext)
-            transitionView.removeFromSuperview()
+
+            clippingView.removeFromSuperview()
             fromTransitionalOverlayView?.removeFromSuperview()
             toTransitionalOverlayView?.removeFromSuperview()
 

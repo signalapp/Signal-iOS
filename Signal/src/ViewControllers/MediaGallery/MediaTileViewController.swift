@@ -61,7 +61,6 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
 
 }
 
-@objc
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
     private let thread: TSThread
     private lazy var mediaGallery: MediaGallery = {
@@ -74,7 +73,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     /// This is used to avoid running two animations concurrently. It doesn't look good on iOS 16 (and probably all other versions).
     private var activeAnimationCount = 0
 
-    @objc
     public init(thread: TSThread) {
         self.thread = thread
         let layout: MediaTileViewLayout = type(of: self).buildLayout()
@@ -1324,8 +1322,13 @@ extension MediaTileViewController: MediaPresentationContextProvider {
         }
 
         let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
+        let clippingAreaInsets = UIEdgeInsets(top: collectionView.adjustedContentInset.top, leading: 0, bottom: 0, trailing: 0)
 
-        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, roundedCorners: .none)
+        return MediaPresentationContext(
+            mediaView: mediaView,
+            presentationFrame: presentationFrame,
+            clippingAreaInsets: clippingAreaInsets
+        )
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
