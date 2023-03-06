@@ -21,28 +21,32 @@ private extension IndexPath {
 }
 
 extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
-    func updaterDeleteSections(_ sections: IndexSet) {
-        collectionView?.deleteSections(sections.shifted(by: 1))
+    func indexSet(_ mediaGallerySectionIndexSet: MediaGallerySectionIndexSet) -> IndexSet {
+        return mediaGallerySectionIndexSet.indexSet.shifted(by: 1)
     }
 
-    func updaterDeleteItems(at indexPaths: [IndexPath]) {
+    func updaterDeleteSections(_ sections: MediaGallerySectionIndexSet) {
+        collectionView?.deleteSections(self.indexSet(sections))
+    }
+
+    func updaterDeleteItems(at indexPaths: [MediaGalleryIndexPath]) {
         collectionView?.deleteItems(at: indexPaths.map {
-            $0.shiftingSection(by: 1)
+            self.indexPath($0)
         })
     }
 
-    func updaterInsertSections(_ sections: IndexSet) {
-        collectionView?.insertSections(sections.shifted(by: 1))
+    func updaterInsertSections(_ sections: MediaGallerySectionIndexSet) {
+        collectionView?.insertSections(self.indexSet(sections))
     }
 
-    func updaterReloadItems(at indexPaths: [IndexPath]) {
+    func updaterReloadItems(at indexPaths: [MediaGalleryIndexPath]) {
         collectionView?.reloadItems(at: indexPaths.map {
-            $0.shiftingSection(by: 1)
+            self.indexPath($0)
         })
     }
 
-    func updaterReloadSections(_ sections: IndexSet) {
-        collectionView?.reloadSections(sections.shifted(by: 1))
+    func updaterReloadSections(_ sections: MediaGallerySectionIndexSet) {
+        collectionView?.reloadSections(self.indexSet(sections))
     }
 
     func updaterDidFinish(numberOfSectionsBefore: Int, numberOfSectionsAfter: Int) {
@@ -50,7 +54,7 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
         owsAssert(numberOfSectionsAfter == mediaGallery.galleryDates.count)
         if numberOfSectionsBefore == 0 && numberOfSectionsAfter > 0 {
             // Adding a "load newer" section. It goes at the end.
-            collectionView?.insertSections(IndexSet(integer: numberOfSectionsAfter + 1))
+            collectionView?.insertSections(IndexSet(integer: localSection(numberOfSectionsAfter)))
             updateFooterBarState()
         } else if numberOfSectionsBefore > 0 && numberOfSectionsAfter == 0 {
             // Remove "load newer" section from the end.
@@ -58,7 +62,6 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
             updateFooterBarState()
         }
     }
-
 }
 
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
@@ -171,6 +174,30 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         ]
     }()
 
+    // CV section index to MG section index
+    private func mediaGallerySection(_ section: Int) -> Int {
+        return section - 1
+    }
+
+    // MG section index to CV section index
+    private func localSection(_ section: Int) -> Int {
+        return section + 1
+    }
+
+    // CV index path to MG
+    private func mediaGalleryIndexPath(_ indexPath: IndexPath) -> MediaGalleryIndexPath {
+        var temp = indexPath
+        temp.section = mediaGallerySection(indexPath.section)
+
+        return MediaGalleryIndexPath(temp)
+    }
+
+    private func indexPath(_ mediaGalleryIndexPath: MediaGalleryIndexPath) -> IndexPath {
+        var temp = mediaGalleryIndexPath.indexPath
+        temp.section = localSection(mediaGalleryIndexPath.section)
+        return temp
+    }
+
     private var indexPathsOfVisibleRealItems: [IndexPath] {
         let numberOfDates = mediaGallery.galleryDates.count
         return reallyVisibleIndexPaths.filter { path in
@@ -187,15 +214,15 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     private func filter(_ mediaType: MediaGallery.MediaType) {
-        let maybeDate = oldestVisibleIndexPath.map { mediaGallery.galleryDates[$0.section - 1] }
+        let maybeDate = oldestVisibleIndexPath.map { mediaGallery.galleryDates[mediaGallerySection($0.section)] }
         let indexPathToScrollTo = mediaGallery.setAllowedMediaType(mediaType,
                                                                    loadUntil: maybeDate ?? GalleryDate(date: Date.distantPast),
                                                                    batchSize: kLoadBatchSize,
-                                                                   firstVisibleIndexPath: oldestVisibleIndexPath?.shiftingSection(by: -1))
+                                                                   firstVisibleIndexPath: oldestVisibleIndexPath.map { mediaGalleryIndexPath($0) })
         footerBarState = .filtering
         if let indexPath = indexPathToScrollTo {
             // Scroll to approximately where you were before.
-            collectionView.scrollToItem(at: indexPath.shiftingSection(by: 1),
+            collectionView.scrollToItem(at: self.indexPath(indexPath),
                                         at: .top,
                                         animated: false)
         }
@@ -240,7 +267,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             nil,
             loadUntil: date ?? GalleryDate(date: .distantFuture),
             batchSize: kLoadBatchSize,
-            firstVisibleIndexPath: oldestVisibleIndexPath?.shiftingSection(by: -1))
+            firstVisibleIndexPath: oldestVisibleIndexPath.map { mediaGalleryIndexPath($0) })
         updateFooterBarState()
 
         if date == nil {
@@ -254,7 +281,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             }
         }
         if let indexPath = indexPathToScrollTo {
-            collectionView.scrollToItem(at: indexPath.shiftingSection(by: 1),
+            collectionView.scrollToItem(at: self.indexPath(indexPath),
                                         at: .top,
                                         animated: false)
         }
@@ -434,7 +461,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             scrollFlag.alpha = 0.0
             return
         }
-        let i = max(0, indexPath.section - 1)
+        let i = mediaGallerySection(indexPath.section)
         let date = mediaGallery.galleryDates[i]
         scrollFlag.stringValue = date.localizedString
         scrollFlag.sizeToFit()
@@ -663,7 +690,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return 0
         }
 
-        let count = mediaGallery.numberOfItemsInSection(sectionIdx - 1)
+        let count = mediaGallery.numberOfItemsInSection(mediaGallerySection(sectionIdx))
         return count
     }
 
@@ -707,7 +734,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                     owsFailDebug("unable to build section header for indexPath: \(indexPath)")
                     return defaultView
                 }
-                guard let date = mediaGallery.galleryDates[safe: indexPath.section - 1] else {
+                guard let date = mediaGallery.galleryDates[safe: mediaGallerySection(indexPath.section)] else {
                     owsFailDebug("unknown section for indexPath: \(indexPath)")
                     return defaultView
                 }
@@ -771,8 +798,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     func galleryItem(at indexPath: IndexPath, loadAsync: Bool = false) -> MediaGalleryItem? {
-        var underlyingPath = indexPath
-        underlyingPath.section -= 1
+        let underlyingPath = mediaGalleryIndexPath(indexPath)
         if let loadedGalleryItem = mediaGallery.galleryItem(at: underlyingPath) {
             return loadedGalleryItem
         }
@@ -1009,7 +1035,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         let confirmationTitle = String.localizedStringWithFormat(format, indexPaths.count)
 
         let deleteAction = ActionSheetAction(title: confirmationTitle, style: .destructive) { _ in
-            let galleryIndexPaths = indexPaths.map { IndexPath(item: $0.item, section: $0.section - 1) }
+            let galleryIndexPaths = indexPaths.map { self.mediaGalleryIndexPath($0) }
             self.mediaGallery.delete(items: items, atIndexPaths: galleryIndexPaths, initiatedBy: self)
             self.endSelectMode()
         }
@@ -1210,7 +1236,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     let kLoadOlderSectionIdx: Int = 0
     var loadNewerSectionIdx: Int {
-        return mediaGallery.galleryDates.count + 1
+        return localSection(mediaGallery.galleryDates.count)
     }
     private var eagerLoadingDidComplete = false
 
@@ -1301,8 +1327,7 @@ extension MediaTileViewController: MediaPresentationContextProvider {
             owsFailDebug("galleryItemIndexPath was unexpectedly nil")
             return nil
         }
-        var indexPath = underlyingPath
-        indexPath.section += 1
+        let indexPath = self.indexPath(underlyingPath)
 
         guard let visibleIndex = collectionView.indexPathsForVisibleItems.firstIndex(of: indexPath) else {
             Logger.debug("visibleIndex was nil, swiped to offscreen gallery item")

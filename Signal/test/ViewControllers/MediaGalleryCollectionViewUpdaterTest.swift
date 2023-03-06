@@ -31,24 +31,24 @@ class CollectionViewLogger: MediaGalleryCollectionViewUpdaterDelegate {
 
     private(set) var log = [Mod]()
 
-    func updaterDeleteSections(_ sections: IndexSet) {
-        log.append(.deleteSections(sections))
+    func updaterDeleteSections(_ sections: Signal.MediaGallerySectionIndexSet) {
+        log.append(.deleteSections(sections.indexSet))
     }
 
-    func updaterDeleteItems(at indexPaths: [IndexPath]) {
-        log.append(.deleteItems(indexPaths))
+    func updaterDeleteItems(at indexPaths: [Signal.MediaGalleryIndexPath]) {
+        log.append(.deleteItems(indexPaths.map { $0.indexPath }))
     }
 
-    func updaterInsertSections(_ sections: IndexSet) {
-        log.append(.insertSections(sections))
+    func updaterInsertSections(_ sections: Signal.MediaGallerySectionIndexSet) {
+        log.append(.insertSections(sections.indexSet))
     }
 
-    func updaterReloadItems(at indexPaths: [IndexPath]) {
-        log.append(.reloadItems(indexPaths))
+    func updaterReloadItems(at indexPaths: [Signal.MediaGalleryIndexPath]) {
+        log.append(.reloadItems(indexPaths.map { $0.indexPath }))
     }
 
-    func updaterReloadSections(_ sections: IndexSet) {
-        log.append(.reloadSections(sections))
+    func updaterReloadSections(_ sections: Signal.MediaGallerySectionIndexSet) {
+        log.append(.reloadSections(sections.indexSet))
     }
 
     func updaterDidFinish(numberOfSectionsBefore: Int, numberOfSectionsAfter: Int) {

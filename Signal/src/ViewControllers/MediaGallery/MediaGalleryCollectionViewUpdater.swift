@@ -5,6 +5,14 @@
 
 import Foundation
 
+struct MediaGallerySectionIndexSet: Equatable {
+    var indexSet: IndexSet
+
+    init(_ indexSet: IndexSet) {
+        self.indexSet = indexSet
+    }
+}
+
 extension IndexSet {
     /// Returns the index of the `n`th value that belongs to the index set.
     ///
@@ -29,13 +37,13 @@ extension IndexSet {
 /// 1. Testability: a test can implement the delegate directly, making it easy to see the outputs of the system under test.
 /// 2. `MediaTileViewController` has a fake first and last section that `MediaGallerySections` doesn’t know about. This code is greatly simplified by also not knowing about it.
 protocol MediaGalleryCollectionViewUpdaterDelegate: AnyObject {
-    func updaterDeleteSections(_ sections: IndexSet)
-    func updaterDeleteItems(at indexPaths: [IndexPath])
+    func updaterDeleteSections(_ sections: MediaGallerySectionIndexSet)
+    func updaterDeleteItems(at indexPaths: [MediaGalleryIndexPath])
 
-    func updaterInsertSections(_ sections: IndexSet)
+    func updaterInsertSections(_ sections: MediaGallerySectionIndexSet)
 
-    func updaterReloadItems(at indexPaths: [IndexPath])
-    func updaterReloadSections(_ sections: IndexSet)
+    func updaterReloadItems(at indexPaths: [MediaGalleryIndexPath])
+    func updaterReloadSections(_ sections: MediaGallerySectionIndexSet)
 
     // This is always called last in an update.
     func updaterDidFinish(numberOfSectionsBefore: Int, numberOfSectionsAfter: Int)
@@ -71,9 +79,9 @@ protocol MediaGalleryCollectionViewUpdaterDelegate: AnyObject {
 ///
 ///     // What the main thread is expected to do.
 ///     collectionView.performBatchUpdates {
-///         collectionView.deleteSections(IndexSet([0, 1]))  // original indexes
-///         collectionView.reloadSections(IndexSet([2]))  // original indexes
-///         collectionView.insertSections(IndexSet([0, 99])  // new indexes
+///         collectionView.deleteSections(MediaGalleryIndexSet([0, 1]))  // original indexes
+///         collectionView.reloadSections(MediaGalleryIndexSet([2]))  // original indexes
+///         collectionView.insertSections(MediaGalleryIndexSet([0, 99])  // new indexes
 ///     }
 ///
 /// In the name of simplicity, only the types of `UICollectionView` updates used by `MediaGallerySections` are implemented. For example, no attempt is made to support moving items.
@@ -237,7 +245,7 @@ struct MediaGalleryCollectionViewUpdater {
         // Inserts happen last. These use post-delete indexes.
         performSectionInserts()
 
-        let newCount = originalSectionCount + prependsIndexSet.count + appendsIndexSet.count - deletedSectionIndexes.count
+        let newCount = originalSectionCount + prependsIndexSet.indexSet.count + appendsIndexSet.indexSet.count - deletedSectionIndexes.indexSet.count
         delegate?.updaterDidFinish(numberOfSectionsBefore: originalSectionCount,
                                    numberOfSectionsAfter: newCount)
     }
@@ -253,21 +261,21 @@ struct MediaGalleryCollectionViewUpdater {
             if !deletedItemIndexes.isEmpty {
                 Logger.debug("delete items \(deletedItemIndexes)")
                 delegate?.updaterDeleteItems(at: deletedItemIndexes.map {
-                    IndexPath(item: $0, section: originalSectionIndex)
+                    MediaGalleryIndexPath(item: $0, section: originalSectionIndex)
                 })
             }
         }
     }
 
-    private var deletedSectionIndexes: IndexSet {
-        let remainingOriginalSectionIndexes = IndexSet(model.compactMap { $0.originalSectionIndex })
-        let originalSectionIndexes = IndexSet(0..<originalSectionCount)
-        return originalSectionIndexes.subtracting(remainingOriginalSectionIndexes)
+    private var deletedSectionIndexes: MediaGallerySectionIndexSet {
+        let remainingOriginalSectionIndexes = MediaGallerySectionIndexSet(IndexSet(model.compactMap { $0.originalSectionIndex }))
+        let originalSectionIndexes = MediaGallerySectionIndexSet(IndexSet(0..<originalSectionCount))
+        return MediaGallerySectionIndexSet(originalSectionIndexes.indexSet.subtracting(remainingOriginalSectionIndexes.indexSet))
     }
 
     private func performSectionDeletes() {
         let deletedSectionIndexes = self.deletedSectionIndexes
-        if !deletedSectionIndexes.isEmpty {
+        if !deletedSectionIndexes.indexSet.isEmpty {
             Logger.debug("delete sections \(deletedSectionIndexes)")
             delegate?.updaterDeleteSections(deletedSectionIndexes)
         }
@@ -276,30 +284,30 @@ struct MediaGalleryCollectionViewUpdater {
     private func performSectionInserts() {
         let prepends = prependsIndexSet
         let appends = appendsIndexSet
-        guard !prepends.isEmpty || !appends.isEmpty else {
+        guard !prepends.indexSet.isEmpty || !appends.indexSet.isEmpty else {
             return
         }
-        let indexSet = prepends.union(appends)
-        Logger.debug("insert sections \(indexSet.map { String($0) })")
+        let indexSet = MediaGallerySectionIndexSet(prepends.indexSet.union(appends.indexSet))
+        Logger.debug("insert sections \(indexSet.indexSet.map { String($0) })")
         delegate?.updaterInsertSections(indexSet)
     }
 
     /// - Returns: Section indexes of newly prepended sections or nil if there were no prepends.
-    private var prependsIndexSet: IndexSet {
+    private var prependsIndexSet: MediaGallerySectionIndexSet {
         guard model.first == .novelPrepended else {
-            return IndexSet()
+            return MediaGallerySectionIndexSet(IndexSet())
         }
         let count = model.prefix { $0 == .novelPrepended }.count
-        return IndexSet(0..<count)
+        return MediaGallerySectionIndexSet(IndexSet(0..<count))
     }
 
     /// - Returns: Section indexes of newly appended sections or nil if there were no appends.
-    private var appendsIndexSet: IndexSet {
+    private var appendsIndexSet: MediaGallerySectionIndexSet {
         guard model.last == .novelAppended else {
-            return IndexSet()
+            return MediaGallerySectionIndexSet(IndexSet())
         }
         let count = model.suffix { $0 == .novelAppended }.count
-        return IndexSet((model.count - count)..<model.count)
+        return MediaGallerySectionIndexSet(IndexSet((model.count - count)..<model.count))
     }
 
     private func performReloads() {
@@ -307,7 +315,7 @@ struct MediaGalleryCollectionViewUpdater {
             switch section {
             case let .preexisting(index: originalSectionIndex, items: items):
                 owsAssertDebug(items.indexesToReload.isSubset(of: items.survivors))
-                let indexPaths = items.indexesToReload.map { IndexPath(item: $0, section: originalSectionIndex) }
+                let indexPaths = items.indexesToReload.map { MediaGalleryIndexPath(item: $0, section: originalSectionIndex) }
                 if !indexPaths.isEmpty {
                     Logger.debug("reload items \(indexPaths.debugDescription)")
                     // If we decide to fade in the image rather than just replace it this needs to get more complicated
@@ -315,7 +323,7 @@ struct MediaGalleryCollectionViewUpdater {
                     delegate?.updaterReloadItems(at: indexPaths)
                 }
             case .needsReload(let index):
-                delegate?.updaterReloadSections(IndexSet(integer: index))
+                delegate?.updaterReloadSections(MediaGallerySectionIndexSet(IndexSet(integer: index)))
             case .novelPrepended, .novelAppended:
                 continue
             }

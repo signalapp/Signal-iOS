@@ -420,7 +420,7 @@ class MediaGallery: Dependencies {
                                            userData: MediaGalleryUpdateUserData? = nil,
                                            completion: ((_ newSections: IndexSet) -> Void)? = nil) {
         Logger.info("")
-        let anchorItem: MediaGalleryItem? = sections.loadedItem(at: IndexPath(item: itemIndex, section: sectionIndex))
+        let anchorItem: MediaGalleryItem? = sections.loadedItem(at: MediaGalleryIndexPath(item: itemIndex, section: sectionIndex))
 
         // May include a negative start location.
         let naiveRequestRange: Range<Int> = {
@@ -604,7 +604,7 @@ class MediaGallery: Dependencies {
     }
 
     internal func delete(items: [MediaGalleryItem],
-                         atIndexPaths givenIndexPaths: [IndexPath]? = nil,
+                         atIndexPaths givenIndexPaths: [MediaGalleryIndexPath]? = nil,
                          initiatedBy: AnyObject) {
         AssertIsOnMainThread()
 
@@ -648,7 +648,7 @@ class MediaGallery: Dependencies {
             }
         }
 
-        var deletedIndexPaths: [IndexPath]
+        var deletedIndexPaths: [MediaGalleryIndexPath]
         if let indexPaths = givenIndexPaths {
             if OWSIsDebugBuild() {
                 for (item, path) in zip(items, indexPaths) {
@@ -673,18 +673,18 @@ class MediaGallery: Dependencies {
     /// Searches the appropriate section for this item.
     ///
     /// Will return nil if the item was not loaded through the gallery.
-    internal func indexPath(for item: MediaGalleryItem) -> IndexPath? {
+    internal func indexPath(for item: MediaGalleryItem) -> MediaGalleryIndexPath? {
         return sections.indexPath(for: item)
     }
 
     /// Returns the item at `path`, which will be `nil` if not yet loaded.
     ///
     /// `path` must be a valid path for the items currently loaded.
-    internal func galleryItem(at path: IndexPath) -> MediaGalleryItem? {
+    internal func galleryItem(at path: MediaGalleryIndexPath) -> MediaGalleryItem? {
         return sections.loadedItem(at: path)
     }
 
-    internal func galleryItemWithoutLoading(at path: IndexPath) -> MediaGalleryItem? {
+    internal func galleryItemWithoutLoading(at path: MediaGalleryIndexPath) -> MediaGalleryItem? {
         return sections.itemsBySection[path.section].value[path.item].item
     }
 
@@ -694,7 +694,7 @@ class MediaGallery: Dependencies {
     ///   - allowedMediaType: If `nil`, do not filter results. Otherwise, show only media of this type.
     ///   - loadUntil: Load sections from the latest until this date, inclusive.
     ///   - batchSize: Number of items to load at once.
-    func setAllowedMediaType(_ allowedMediaType: MediaType?, loadUntil: GalleryDate, batchSize: Int, firstVisibleIndexPath: IndexPath?) -> IndexPath? {
+    func setAllowedMediaType(_ allowedMediaType: MediaType?, loadUntil: GalleryDate, batchSize: Int, firstVisibleIndexPath: MediaGalleryIndexPath?) -> MediaGalleryIndexPath? {
         self.allowedMediaType = allowedMediaType
         return mutate { sections in
             mediaGalleryFinder = MediaGalleryFinder(thread: mediaGalleryFinder.thread,
@@ -720,7 +720,7 @@ class MediaGallery: Dependencies {
     }
 
     private func galleryItem(_ direction: GalleryDirection, item currentItem: MediaGalleryItem) -> MediaGalleryItem? {
-        let advance: (IndexPath) -> IndexPath?
+        let advance: (MediaGalleryIndexPath) -> MediaGalleryIndexPath?
         switch direction {
         case .around:
             owsFailDebug("should not use this function with .around")

@@ -6,6 +6,32 @@
 import Foundation
 import SignalServiceKit
 
+struct MediaGalleryIndexPath: Comparable {
+    var indexPath: IndexPath
+
+    var item: Int {
+        get { indexPath.item }
+        set { indexPath.item = newValue }
+    }
+    var section: Int {
+        get { indexPath.section }
+        set { indexPath.section = newValue }
+    }
+    var count: Int { indexPath.count }
+
+    init(item: Int, section: Int) {
+        indexPath = IndexPath(item: item, section: section)
+    }
+
+    init(_ indexPath: IndexPath) {
+        self.indexPath = indexPath
+    }
+
+    static func < (lhs: MediaGalleryIndexPath, rhs: MediaGalleryIndexPath) -> Bool {
+        return lhs.indexPath < rhs.indexPath
+    }
+}
+
 /// The minimal requirements needed for items loaded and managed by MediaGallerySections.
 internal protocol MediaGallerySectionItem {
     var uniqueId: String { get }
@@ -292,7 +318,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         /// If the collection is empty, this returns nil.
         internal func indexPathAtApproximateLocation(sectionDate: GalleryDate,
                                                      itemDate: Date,
-                                                     rowid: Int64) -> IndexPath? {
+                                                     rowid: Int64) -> MediaGalleryIndexPath? {
             let si = itemsBySection.orderedKeys.firstIndex { key in
                 key >= sectionDate
             }
@@ -304,32 +330,32 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
             // First try to find by rowid because that's more precise.
             if let i = slots.firstIndex(where: { slot in slot.rowid == rowid }) {
-                return IndexPath(item: i, section: si)
+                return MediaGalleryIndexPath(item: i, section: si)
             }
 
             // No luck? Find the first item with a later date.
             if let i = slots.firstIndex(where: { slot in slot.receivedAt >= itemDate }) {
-                return IndexPath(item: i, section: si)
+                return MediaGalleryIndexPath(item: i, section: si)
             }
             if si + 1 < itemsBySection.orderedKeys.count {
                 // Everything in the section of `indexPath` was before the desired date, so return
                 // the first item in the subsequent section.
-                return IndexPath(item: 0, section: si + 1)
+                return MediaGalleryIndexPath(item: 0, section: si + 1)
             }
             // Return the latest item if one exists.
             return lastIndexPath
         }
 
-        private var lastIndexPath: IndexPath? {
+        private var lastIndexPath: MediaGalleryIndexPath? {
             guard let entry = itemsBySection.last else {
                 return nil
             }
-            return IndexPath(item: entry.value.count - 1, section: itemsBySection.orderedKeys.count - 1)
+            return MediaGalleryIndexPath(item: entry.value.count - 1, section: itemsBySection.orderedKeys.count - 1)
         }
 
         internal mutating func resolveNaiveStartIndex(request: LoadItemsRequest,
                                                       batchSize: Int,
-                                                      transaction: SDSAnyReadTransaction?) -> (path: IndexPath?, numberOfSectionsLoaded: Int) {
+                                                      transaction: SDSAnyReadTransaction?) -> (path: MediaGalleryIndexPath?, numberOfSectionsLoaded: Int) {
             guard let naiveRange = resolveLoadItemsRequest(request) else {
                 return (path: nil, numberOfSectionsLoaded: 0)
             }
@@ -343,7 +369,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         /// index.
         ///
         /// For example, if section 1 has 5 items, `resolveNaiveStartIndex(-2, relativeToSection: 2)` will return
-        /// `IndexPath(item: 3, section: 1)`.
+        /// `MediaGalleryIndexPath(item: 3, section: 1)`.
         ///
         /// If the search reaches the first section, `maybeLoadEarlierSections` will be invoked. It should return the
         /// number of sections that have been loaded, which will adjust all section indexes. The default value always
@@ -360,11 +386,11 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             relativeToSection initialSectionIndex: Int,
             batchSize: Int,
             transaction: SDSAnyReadTransaction?
-        ) -> (path: IndexPath?, numberOfSectionsLoaded: Int) {
+        ) -> (path: MediaGalleryIndexPath?, numberOfSectionsLoaded: Int) {
             guard naiveIndex < 0 else {
                 let items = itemsBySection[initialSectionIndex].value
                 owsAssertDebug(naiveIndex <= items.count, "should not be used for indexes after the current section")
-                return (IndexPath(item: naiveIndex, section: initialSectionIndex), 0)
+                return (MediaGalleryIndexPath(item: naiveIndex, section: initialSectionIndex), 0)
             }
 
             var currentSectionIndex = initialSectionIndex
@@ -396,11 +422,11 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                 offsetInCurrentSection += items.count
             }
 
-            return (IndexPath(item: offsetInCurrentSection, section: currentSectionIndex), totalLoadCount)
+            return (MediaGalleryIndexPath(item: offsetInCurrentSection, section: currentSectionIndex), totalLoadCount)
         }
 
         /// Equivalant to calling the three-argument `resolveNaiveStartIndex` without a transaction.
-        internal func resolveNaiveStartIndex(_ naiveIndex: Int, relativeToSection initialSectionIndex: Int) -> IndexPath? {
+        internal func resolveNaiveStartIndex(_ naiveIndex: Int, relativeToSection initialSectionIndex: Int) -> MediaGalleryIndexPath? {
             // The five-argument form is `mutating`, but only so it can load more sections.
             // Thanks to Swift's copy-on-write data types, this will only do a few retains even in non-optimized builds.
             var mutableSelf = self
@@ -414,15 +440,15 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         /// section index.
         ///
         /// For example, if section 1 has 5 items and section 2 has 3, `resolveNaiveStartIndex(7, relativeToSection: 1)`
-        /// will return `IndexPath(item: 2, section: 2)`. `resolveNaiveStartIndex(5, relativeToSection: 1)` will return
-        /// `IndexPath(item: 5, section: 1)` rather than `IndexPath(item: 0, section: 2)`.
+        /// will return `MediaGalleryIndexPath(item: 2, section: 2)`. `resolveNaiveStartIndex(5, relativeToSection: 1)` will return
+        /// `MediaGalleryIndexPath(item: 5, section: 1)` rather than `MediaGalleryIndexPath(item: 0, section: 2)`.
         ///
-        /// If the search reaches the true last section, this will clamp the result to the IndexPath representing the
+        /// If the search reaches the true last section, this will clamp the result to the MediaGalleryIndexPath representing the
         /// end index of the final section (note: not a valid item index!).
         /// If it reaches the last *loaded* section but there might be more sections, it returns nil.
         ///
         /// This is essentially a more powerful version of `indexPath(after:)`.
-        internal func resolveNaiveEndIndex(_ naiveIndex: Int, relativeToSection initialSectionIndex: Int) -> IndexPath? {
+        internal func resolveNaiveEndIndex(_ naiveIndex: Int, relativeToSection initialSectionIndex: Int) -> MediaGalleryIndexPath? {
             owsAssert(naiveIndex >= 0, "should not be used for indexes before the current section")
 
             var currentSectionIndex = initialSectionIndex
@@ -448,7 +474,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                 }
             }
 
-            return IndexPath(item: limitInCurrentSection, section: currentSectionIndex)
+            return MediaGalleryIndexPath(item: limitInCurrentSection, section: currentSectionIndex)
         }
 
         /// Trims indexes from the start of `naiveRange` if they refer to loaded items.
@@ -692,7 +718,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         ///
         /// If any sections are reduced to zero items, they are removed from the model. The indexes of all such removed
         /// sections are returned.
-        internal mutating func removeLoadedItems(atIndexPaths paths: [IndexPath]) -> IndexSet {
+        internal mutating func removeLoadedItems(atIndexPaths paths: [MediaGalleryIndexPath]) -> IndexSet {
             var removedSections = IndexSet()
 
             // Iterate in reverse so the index paths don't get disrupted as we remove items.
@@ -1035,15 +1061,15 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     internal mutating func replaceLoader(loader: Loader,
                                          batchSize: Int,
                                          loadUntil: GalleryDate,
-                                         searchFor indexPath: IndexPath?,
-                                         userData: UpdateUserData? = nil) -> IndexPath? {
+                                         searchFor indexPath: MediaGalleryIndexPath?,
+                                         userData: UpdateUserData? = nil) -> MediaGalleryIndexPath? {
         snapshotManager.cancelAsyncJobs()
 
         let sectionDate = indexPath.map { sectionDates[$0.section] }
         let itemDate = indexPath.map { itemsBySection[$0.section].value[$0.item].receivedAt }
         let rowid = indexPath.map { itemsBySection[$0.section].value[$0.item].rowid }
 
-        return snapshotManager.mutate(userData: nil) { state, transaction -> IndexPath? in
+        return snapshotManager.mutate(userData: nil) { state, transaction -> MediaGalleryIndexPath? in
             state.replaceLoader(loader: loader, batchSize: batchSize, loadUntil: loadUntil, transaction: transaction)
             if let sectionDate, let itemDate, let rowid {
                 return state.indexPathAtApproximateLocation(sectionDate: sectionDate, itemDate: itemDate, rowid: rowid)
@@ -1106,7 +1132,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     /// Returns the item at `path`, which will be `nil` if not yet loaded.
     ///
     /// `path` must be a valid path for the items currently loaded.
-    internal func loadedItem(at path: IndexPath) -> Item? {
+    internal func loadedItem(at path: MediaGalleryIndexPath) -> Item? {
         owsAssert(path.count == 2)
         guard let slot = state.itemsBySection[safe: path.section]?.value[safe: path.item] else {
             owsFailDebug("invalid path \(path)")
@@ -1119,7 +1145,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     /// Searches the appropriate section for this item by its `galleryDate` and `uniqueId`.
     ///
     /// Will return nil if the item is not in `state.itemsBySection` (say, if it was loaded externally).
-    internal func indexPath(for item: Item) -> IndexPath? {
+    internal func indexPath(for item: Item) -> MediaGalleryIndexPath? {
         // Search backwards because people view recent items.
         // Note: we could use binary search because orderedKeys is sorted.
         guard let sectionIndex = state.itemsBySection.orderedKeys.lastIndex(of: item.galleryDate),
@@ -1129,13 +1155,13 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             return nil
         }
 
-        return IndexPath(item: itemIndex, section: sectionIndex)
+        return MediaGalleryIndexPath(item: itemIndex, section: sectionIndex)
     }
 
     /// Returns the path to the next item after `path`, which may cross a section boundary.
     ///
     /// If `path` refers to the last item in the loaded sections, returns `nil`.
-    internal func indexPath(after path: IndexPath) -> IndexPath? {
+    internal func indexPath(after path: MediaGalleryIndexPath) -> MediaGalleryIndexPath? {
         owsAssert(path.count == 2)
         var result = path
 
@@ -1160,7 +1186,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     /// Returns the path to the item just before `path`, which may cross a section boundary.
     ///
     /// If `path` refers to the first item in the loaded sections, returns `nil`.
-    internal func indexPath(before path: IndexPath) -> IndexPath? {
+    internal func indexPath(before path: MediaGalleryIndexPath) -> MediaGalleryIndexPath? {
         owsAssert(path.count == 2)
         var result = path
 
@@ -1243,7 +1269,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         var rowid: Int64
     }
 
-    internal mutating func removeLoadedItems(atIndexPaths paths: [IndexPath],
+    internal mutating func removeLoadedItems(atIndexPaths paths: [MediaGalleryIndexPath],
                                              userData: UpdateUserData? = nil) -> IndexSet {
         let locations = paths.map {
             let entry = state.itemsBySection[$0.section]
@@ -1256,14 +1282,14 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             }.mapValues {
                 Set($0.lazy.map { $0.rowid })
             }
-            let paths = sectionIndexToRowIDs.flatMap { keyAndValue -> [IndexPath] in
+            let paths = sectionIndexToRowIDs.flatMap { keyAndValue -> [MediaGalleryIndexPath] in
                 let (date, desiredRowIDs) = keyAndValue
                 guard let sectionIndex = state.itemsBySection.orderedKeys.firstIndex(of: date) else {
                     return []
                 }
                 let slots = state.itemsBySection[sectionIndex].value
                 let itemIndexes = slots.indices.lazy.filter { desiredRowIDs.contains(slots[$0].rowid) }
-                return itemIndexes.lazy.map { IndexPath(item: $0, section: sectionIndex )}
+                return itemIndexes.lazy.map { MediaGalleryIndexPath(item: $0, section: sectionIndex )}
             }
             return state.removeLoadedItems(atIndexPaths: Array(paths))
         }
