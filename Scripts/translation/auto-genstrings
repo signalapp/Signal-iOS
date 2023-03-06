@@ -46,8 +46,6 @@ find "${TARGETS[@]}" \
 	')' \
 	-exec genstrings -s OWSLocalizedString -o "$TMP" "{}" "+"
 
-exit 0
-
 # We have to convert the new .strings files to UTF-8 in order to deal with them
 # STRINGFILE is already UTF-8.
 OLDUTF8=$(cat $STRINGFILE)
