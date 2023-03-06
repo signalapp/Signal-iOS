@@ -439,19 +439,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// skipped the PIN early on, we won't ask for it again for recovery purposes later.
         var hasSkippedPinEntry = false
 
-        enum ReglockState: Codable {
-            /// No reglock known of preventing registration.
-            case none
-            /// We tried to register and got reglocked; we have to
-            /// recover from KBS with the credential given.
-            case reglocked(credential: KBSAuthCredential, expirationDate: Date)
-            /// We couldn't recover credentials from KBS (probably
-            /// because PIN guesses were exhausted) and so waiting
-            /// out the reglock is the only option.
-            case waitingTimeout(expirationDate: Date)
+        struct SessionState: Codable {
+            let sessionId: String
+
+            enum ReglockState: Codable {
+                /// No reglock known of preventing registration.
+                case none
+                /// We tried to register and got reglocked; we have to
+                /// recover from KBS with the credential given.
+                case reglocked(credential: KBSAuthCredential, expirationDate: Date)
+                /// We couldn't recover credentials from KBS (probably
+                /// because PIN guesses were exhausted) and so waiting
+                /// out the reglock is the only option.
+                case waitingTimeout(expirationDate: Date)
+            }
+
+            var reglockState: ReglockState = .none
+
         }
 
-        var sessionFlowReglockState: ReglockState = .none
+        var sessionState: SessionState?
 
         /// Once we get an account identity response from the server
         /// for registering, re-registering, or changing phone number,
@@ -486,6 +493,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         update(&state)
         self._persistedState = state
         try? self.kvStore.setCodable(state, key: Constants.persistedStateKey, transaction: transaction)
+    }
+
+    private func updatePersistedSessionState(
+        session: RegistrationSession,
+        _ transaction: DBWriteTransaction,
+        _ update: (inout PersistedState.SessionState) -> Void
+    ) {
+        updatePersistedState(transaction) {
+            var sessionState = $0.sessionState ?? .init(sessionId: session.id)
+            if sessionState.sessionId != session.id {
+                self.resetSession(transaction)
+                sessionState = .init(sessionId: session.id)
+            }
+            update(&sessionState)
+            $0.sessionState = sessionState
+        }
     }
 
     /// Once per in memory instantiation of this class, we need to do a few things:
@@ -537,7 +560,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         let sessionGuarantee: Guarantee<Void> = sessionManager.restoreSession()
             .map(on: schedulers.main) { [weak self] session in
-                self?.processSession(session)
+                self?.db.write { self?.processSession(session, $0) }
             }
 
         let permissionsGuarantee: Guarantee<Void> = requiresSystemPermissions()
@@ -1121,12 +1144,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(.transferSelection)
         }
 
-        switch persistedState.sessionFlowReglockState {
+        switch persistedState.sessionState?.reglockState ?? .none {
         case .none:
             break
         case let .reglocked(kbsAuthCredential, reglockExpirationDate):
             if let pinFromUser = inMemoryState.pinFromUser {
                 return restoreKBSMasterSecretForSessionPathReglock(
+                    session: session,
                     pin: pinFromUser,
                     kbsAuthCredential: kbsAuthCredential,
                     reglockExpirationDate: reglockExpirationDate
@@ -1142,8 +1166,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // We've passed the time needed and reglock should be expired.
                 // Wipe our state and proceed.
                 db.write { tx in
-                    self.updatePersistedState(tx) {
-                        $0.sessionFlowReglockState = .none
+                    self.updatePersistedSessionState(session: session, tx) {
+                        $0.reglockState = .none
                     }
                 }
                 return self.nextStep()
@@ -1162,7 +1186,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         return .value(.appUpdateBanner)
                     } else {
                         // We want to reset the whole session.
-                        self.resetSession()
+                        db.write { self.resetSession($0) }
                         return self.nextStep()
                     }
                 case .captcha:
@@ -1229,7 +1253,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         )))
     }
 
-    private func processSession(_ session: RegistrationSession?) {
+    private func processSession(_ session: RegistrationSession?, _ transaction: DBWriteTransaction) {
+        if session == nil || persistedState.sessionState?.sessionId != session?.id {
+            self.updatePersistedState(transaction) {
+                $0.sessionState = session.map { .init(sessionId: $0.id) }
+            }
+        }
         if session?.verified == true {
             // Any verified session is good and we should keep it.
             inMemoryState.session = session
@@ -1256,23 +1285,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 inMemoryState.session = session
                 return
             } else {
-                resetSession()
+                self.resetSession(transaction)
                 return
             }
         }
         inMemoryState.session = session
     }
 
-    private func resetSession() {
+    private func resetSession(_ transaction: DBWriteTransaction) {
         inMemoryState.session = nil
         inMemoryState.pendingCodeTransport = nil
         // Force the user to enter an e164 again
         // when making a new session.
         inMemoryState.hasEnteredE164 = false
-        // TODO[Registration]: update the name of this method;
-        // its used when a session completes successfully but also
-        // when we invalidate one.
-        self.sessionManager.completeSession()
+        self.updatePersistedState(transaction) {
+            $0.sessionState = nil
+        }
+        self.sessionManager.clearPersistedSession(transaction)
     }
 
     private func makeRegisterOrChangeNumberRequestFromSession(
@@ -1301,12 +1330,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         switch response {
         case .success(let identityResponse):
-            // We can clear the session now!
-            sessionManager.completeSession()
             inMemoryState.session = nil
             db.write { tx in
+                // We can clear the session now!
+                sessionManager.clearPersistedSession(tx)
                 updatePersistedState(tx) {
                     $0.accountIdentity = identityResponse
+                    $0.sessionState = nil
                 }
             }
             // Should take us to the profile setup flow since
@@ -1319,15 +1349,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             db.write { tx in
                 kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
                 let reglockExpirationDate = self.dateProvider().addingTimeInterval(TimeInterval(reglockFailure.timeRemainingMs / 1000))
-                self.updatePersistedState(tx) {
-                    $0.sessionFlowReglockState = .reglocked(credential: reglockFailure.kbsAuthCredential, expirationDate: reglockExpirationDate)
+                self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
+                    $0.reglockState = .reglocked(credential: reglockFailure.kbsAuthCredential, expirationDate: reglockExpirationDate)
                 }
             }
             return nextStep()
 
         case .rejectedVerificationMethod:
             // The session is invalid; we have to wipe it and potentially start again.
-            resetSession()
+            db.write { self.resetSession($0) }
             return nextStep()
 
         case .retryAfter(let timeInterval):
@@ -1379,7 +1409,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     switch response {
                     case .success(let session):
-                        strongSelf.processSession(session)
+                        strongSelf.db.write { strongSelf.processSession(session, $0) }
                         // When we get a new session, immediately send an sms code.
                         strongSelf.inMemoryState.pendingCodeTransport = .sms
                         return strongSelf.nextStep()
@@ -1435,23 +1465,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             switch result {
             case .success(let session):
                 self.inMemoryState.pendingCodeTransport = nil
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
             case .rejectedArgument(let session):
                 Logger.error("Should never get rejected argument error from requesting code. E164 already set on session.")
                 // Wipe the pending code request, so we don't retry.
                 self.inMemoryState.pendingCodeTransport = nil
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
             case .disallowed(let session):
                 // Whatever caused this should be represented on the session itself,
                 // and once we unblock we should retry sending so don't clear the pending
                 // code transport.
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
             case .invalidSession:
                 self.inMemoryState.pendingCodeTransport = nil
-                self.resetSession()
+                self.db.write { self.resetSession($0) }
                 return .value(.showErrorSheet(.sessionInvalidated))
             case .serverFailure(let failureResponse):
                 self.inMemoryState.pendingCodeTransport = nil
@@ -1463,7 +1493,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .value(.showErrorSheet(.todo))
                 }
             case .retryAfterTimeout(let session):
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
 
                 let timeInterval: TimeInterval?
                 switch transport {
@@ -1506,7 +1536,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         )))
                     } else {
                         // Can't send a code, session is useless.
-                        self.resetSession()
+                        self.db.write { self.resetSession($0) }
                         return .value(.showErrorSheet(.sessionInvalidated))
                     }
                 }
@@ -1540,20 +1570,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             switch result {
             case .success(let session):
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
             case .rejectedArgument(let session):
                 // TODO[Registration] invalid captcha token; show error
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
             case .disallowed(let session):
                 Logger.warn("Disallowed to complete a challenge which should be impossible.")
                 // Don't keep trying to send a code.
                 self.inMemoryState.pendingCodeTransport = nil
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 return .value(.showErrorSheet(.todo))
             case .invalidSession:
-                self.resetSession()
+                self.db.write { self.resetSession($0) }
                 return .value(.showErrorSheet(.sessionInvalidated))
             case .serverFailure(let failureResponse):
                 if failureResponse.isPermanent {
@@ -1568,7 +1598,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // Clear the pending code; we want the user to press again
                 // once the timeout expires.
                 self.inMemoryState.pendingCodeTransport = nil
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
             case .networkFailure:
                 if retriesLeft > 0 {
@@ -1603,10 +1633,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // The code must have been wrong.
                     fallthrough
                 }
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
             case .rejectedArgument(let session):
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
                     return .value(.verificationCodeEntry(self.verificationCodeEntryState(
                         session: session,
@@ -1621,10 +1651,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // This state means the session state is updated
                 // such that what comes next has changed, e.g. we can't send a verification
                 // code and will kick the user back to sending an sms code.
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
             case .invalidSession:
-                self.resetSession()
+                self.db.write { self.resetSession($0) }
                 return .value(.showErrorSheet(.sessionInvalidated))
             case .serverFailure(let failureResponse):
                 if failureResponse.isPermanent {
@@ -1635,7 +1665,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .value(.showErrorSheet(.todo))
                 }
             case .retryAfterTimeout(let session):
-                self.processSession(session)
+                self.db.write { self.processSession(session, $0) }
                 if let timeInterval = session.nextVerificationAttempt, timeInterval < Constants.autoRetryInterval {
                     return Guarantee
                         .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
@@ -1675,6 +1705,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func restoreKBSMasterSecretForSessionPathReglock(
+        session: RegistrationSession,
         pin: String,
         kbsAuthCredential: KBSAuthCredential,
         reglockExpirationDate: Date,
@@ -1694,9 +1725,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.inMemoryState.hasBackedUpToKBS = true
                     self.db.write { tx in
                         self.loadLocalMasterKey(tx)
-                        self.updatePersistedState(tx) {
+                        self.updatePersistedSessionState(session: session, tx) {
                             // Now we have the state we need to get past reglock.
-                            $0.sessionFlowReglockState = .none
+                            $0.reglockState = .none
                         }
                     }
                     return self.nextStep()
@@ -1709,14 +1740,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // If we are unable to talk to KBS, it got wiped, probably
                     // because we used up our guesses. We can't get past reglock.
                     self.db.write { tx in
-                        self.updatePersistedState(tx) {
-                            $0.sessionFlowReglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
+                        self.updatePersistedSessionState(session: session, tx) {
+                            $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                         }
                     }
                     return .value(.showErrorSheet(.pinGuessesExhausted))
                 case .networkError:
                     if retriesLeft > 0 {
                         return self.restoreKBSMasterSecretForSessionPathReglock(
+                            session: session,
                             pin: pin,
                             kbsAuthCredential: kbsAuthCredential,
                             reglockExpirationDate: reglockExpirationDate,

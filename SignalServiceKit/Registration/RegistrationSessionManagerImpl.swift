@@ -71,8 +71,8 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             .map(on: schedulers.sync) { [weak self] in self?.persistSessionFromResponse($0) ?? $0 }
     }
 
-    public func completeSession() {
-        db.write { self.clearPersistedSession($0) }
+    public func clearPersistedSession(_ transaction: DBWriteTransaction) {
+        kvStore.removeValue(forKey: KvStore.sessionKey, transaction: transaction)
     }
 
     // MARK: - Session persistence
@@ -88,10 +88,6 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         } catch {
             owsFailDebug("Unable to encode session; will not be recoverable after app relaunch.")
         }
-    }
-
-    private func clearPersistedSession(_ transaction: DBWriteTransaction) {
-        kvStore.removeValue(forKey: KvStore.sessionKey, transaction: transaction)
     }
 
     private func getPersistedSession(_ transaction: DBReadTransaction) -> RegistrationSession? {

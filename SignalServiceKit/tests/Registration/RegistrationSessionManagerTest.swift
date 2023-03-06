@@ -262,7 +262,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
 
         // If we complete the session, that should reset everything and behave like the first time.
 
-        registrationSessionManager.completeSession()
+        db.write { registrationSessionManager.clearPersistedSession($0) }
 
         // Should have no saved session
         savedSession = try db.read { transaction in

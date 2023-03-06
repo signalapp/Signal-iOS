@@ -31,7 +31,7 @@ public protocol RegistrationSessionManager {
     /// Typically called once the session is verified and is used to complete registration.
     /// Note: a session is NOT automatically completed when `RegistrationSession.verified` is true, as the registration
     /// process may be interrupted before using the verified session to actually register. (e.g. the user backgrounds the app).
-    func completeSession()
+    func clearPersistedSession(_ transaction: DBWriteTransaction)
 }
 
 public enum Registration {

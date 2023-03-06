@@ -58,7 +58,7 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
         return submitCodeResponse!
     }
 
-    public func completeSession() {
+    public func clearPersistedSession(_ transaction: DBWriteTransaction) {
         sessionToRestore = nil
     }
 }
