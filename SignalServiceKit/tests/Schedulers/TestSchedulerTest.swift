@@ -1009,4 +1009,22 @@ public class TestSchedulerTest: XCTestCase {
         XCTAssert(didObserveResult)
         XCTAssertNotNil(timeoutPromise.result)
     }
+
+    func test_advanceToSameTime() {
+        let scheduler = TestScheduler()
+
+        var flag = false
+        scheduler.run(atTime: 5) {
+            XCTAssertFalse(flag, "We should only run this once")
+            flag = true
+        }
+
+        scheduler.advance(to: 4)
+        scheduler.advance(to: 4)
+        XCTAssertFalse(flag)
+
+        scheduler.advance(to: 5)
+        scheduler.advance(to: 5)
+        XCTAssertTrue(flag)
+    }
 }

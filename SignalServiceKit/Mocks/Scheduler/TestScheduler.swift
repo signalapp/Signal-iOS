@@ -98,6 +98,10 @@ public class TestScheduler: Scheduler {
     /// executing all work items in between (inclusive; work items at the current time
     /// and at the destination time are also executed.)
     public func advance(to time: Int) {
+        if currentTime > time {
+            fatalError("Cannot advance to a time in the past (it's \(currentTime); \(time) is in the past)")
+        }
+
         while currentTime < time {
             executeWorkItems(atTime: currentTime)
             currentTime += 1
