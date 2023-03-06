@@ -5263,6 +5263,9 @@
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Set up your profile";
 
+/* During registration, users can choose who can see their phone number. */
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
 

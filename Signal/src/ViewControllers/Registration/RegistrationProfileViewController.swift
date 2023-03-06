@@ -206,6 +206,8 @@ class RegistrationProfileViewController: OWSViewController {
         return result
     }()
 
+    private lazy var phoneNumberDisclosureView = PhoneNumberPrivacyLabel()
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         initialRender()
@@ -238,6 +240,7 @@ class RegistrationProfileViewController: OWSViewController {
             explanationView,
             avatarContainerView,
             nameStackView,
+            phoneNumberDisclosureView,
             UIView.vStretchingSpacer()
         ])
         stackView.axis = .vertical
@@ -280,6 +283,8 @@ class RegistrationProfileViewController: OWSViewController {
         cameraImageWrapperView.backgroundColor = Theme.backgroundColor
         [givenNameTextField, familyNameTextField].forEach { $0.textColor = Theme.primaryTextColor }
         textFieldStrokes.forEach { $0.backgroundColor = Theme.cellSeparatorColor }
+
+        phoneNumberDisclosureView.render()
     }
 
     // MARK: Events
@@ -374,6 +379,174 @@ extension RegistrationProfileViewController: UITextFieldDelegate {
             owsFailBeta("Got a \"return\" event for an unexpected text field")
         }
         return false
+    }
+}
+
+// MARK: - PhoneNumberPrivacyLabel
+
+extension RegistrationProfileViewController {
+    private class PhoneNumberPrivacyLabel: UIView {
+
+        private enum Constants {
+            static let iconSize: CGFloat = 24.0
+            static let verticalSpacing: CGFloat = 0.0
+            static let horizontalSpacing: CGFloat = 12.0
+            static let layoutInsets: UIEdgeInsets = UIEdgeInsets(
+                top: 8,
+                leading: 0,
+                bottom: 8,
+                trailing: 0
+            )
+        }
+
+        private var isDiscoverable: Bool = false
+
+        // MARK: Init
+
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            initialRender()
+        }
+
+        @available(*, unavailable, message: "Use other constructor")
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        // MARK: Views
+
+        private lazy var button: OWSFlatButton = {
+            return OWSFlatButton()
+        }()
+
+        private lazy var iconView: UIImageView = {
+            let iconView = UIImageView()
+            iconView.contentMode = .scaleAspectFit
+            return iconView
+        }()
+
+        private lazy var titleLabel: UILabel = {
+            let titleLabel = UILabel()
+            titleLabel.numberOfLines = 0
+            titleLabel.lineBreakMode = .byWordWrapping
+            return titleLabel
+        }()
+
+        private lazy var subTitleLabel: UILabel = {
+            let subTitleLabel = UILabel()
+            subTitleLabel.numberOfLines = 0
+            subTitleLabel.lineBreakMode = .byWordWrapping
+            return subTitleLabel
+        }()
+
+        private lazy var disclosureView: UIImageView = {
+            let disclosureView = UIImageView()
+            disclosureView.contentMode = .scaleAspectFit
+            return disclosureView
+        }()
+
+        // MARK: Layout
+
+        private func initialRender() {
+
+            addSubview(button)
+            button.autoPinEdgesToSuperviewEdges()
+
+            let iconContainer = UIView()
+            iconContainer.addSubview(iconView)
+
+            iconView.autoPinWidthToSuperview()
+            iconView.autoSetDimensions(to: CGSize(square: Constants.iconSize))
+            iconView.autoVCenterInSuperview()
+            iconView.autoMatch(
+                .height,
+                to: .height,
+                of: iconContainer,
+                withOffset: 0,
+                relation: .lessThanOrEqual)
+
+            let topSpacer = UIView.vStretchingSpacer()
+            let bottomSpacer = UIView.vStretchingSpacer()
+
+            let vStack = UIStackView(arrangedSubviews: [
+                topSpacer,
+                titleLabel,
+                subTitleLabel,
+                bottomSpacer
+            ])
+            vStack.axis = .vertical
+            vStack.spacing = Constants.verticalSpacing
+            topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+
+            let disclosureContainer = UIView()
+            disclosureContainer.addSubview(disclosureView)
+
+            disclosureView.autoPinEdgesToSuperviewEdges()
+            disclosureView.autoSetDimension(.width, toSize: Constants.iconSize)
+
+            let hStack = UIStackView(arrangedSubviews: [
+                iconContainer,
+                vStack,
+                disclosureContainer
+            ])
+
+            hStack.axis = .horizontal
+            hStack.spacing = Constants.horizontalSpacing
+            hStack.isLayoutMarginsRelativeArrangement = true
+            hStack.layoutMargins = Constants.layoutInsets
+            hStack.isUserInteractionEnabled = false
+
+            button.addSubview(hStack)
+            hStack.autoPinEdgesToSuperviewEdges()
+            button.addTarget(target: self, selector: #selector(disclosureButtonTapped))
+
+            render()
+        }
+
+        public func render() {
+            button.setBackgroundColors(upColor: Theme.backgroundColor)
+
+            let disclosureIconName = CurrentAppContext().isRTL ? "chevron-left-20" : "chevron-right-20"
+            let labelIconName = isDiscoverable ? "group-outline-24" : "lock-outline-24"
+
+            titleLabel.text = OWSLocalizedString(
+                "REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE",
+                comment: "During registration, users can choose who can see their phone number.")
+
+            if isDiscoverable {
+                subTitleLabel.text = OWSLocalizedString(
+                    "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY",
+                    comment: "A user friendly name for the 'everybody' phone number discoverability mode.")
+            } else {
+                subTitleLabel.text = OWSLocalizedString(
+                    "PHONE_NUMBER_DISCOVERABILITY_NOBODY",
+                    comment: "A user friendly name for the 'nobody' phone number discoverability mode.")
+            }
+
+            iconView.setTemplateImageName(
+                labelIconName,
+                tintColor: Theme.primaryIconColor
+            )
+
+            titleLabel.font = UIFont.ows_dynamicTypeBodyClamped
+            titleLabel.textColor = Theme.primaryTextColor
+
+            subTitleLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+            subTitleLabel.textColor = Theme.secondaryTextAndIconColor
+
+            disclosureView.setTemplateImageName(
+                disclosureIconName,
+                tintColor: Theme.secondaryTextAndIconColor
+            )
+        }
+
+        // MARK: Actions
+
+        @objc
+        private func disclosureButtonTapped() {
+            self.isDiscoverable = !self.isDiscoverable
+            render()
+        }
     }
 }
 
