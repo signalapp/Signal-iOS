@@ -224,7 +224,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 let pinFromDisk = inMemoryState.pinFromDisk,
                 pinFromDisk != code
             {
-                var numberOfWrongGuesses = persistedState.numLocalPinGuesses + 1
+                let numberOfWrongGuesses = persistedState.numLocalPinGuesses + 1
                 db.write { tx in
                     updatePersistedState(tx) {
                         $0.numLocalPinGuesses = numberOfWrongGuesses
