@@ -279,7 +279,10 @@ end
 
 # Workaround for RingRTC's weird cached artifacts, hopefully temporary
 def fix_ringrtc_project_symlink(installer)
-  installer.pods_project.reference_for_path(installer.sandbox.pod_dir('SignalRingRTC') + 'out/release/libringrtc/ringrtc.h').path = 'out/release/libringrtc/ringrtc.h'
+  ringrtc_header_ref = installer.pods_project.reference_for_path(installer.sandbox.pod_dir('SignalRingRTC') + 'out/release/libringrtc/ringrtc.h')
+  if ringrtc_header_ref.path.start_with?('../') || ringrtc_header_ref.path.start_with?('/') then
+    ringrtc_header_ref.path = 'out/release/libringrtc/ringrtc.h'
+  end
 end
 
 def copy_acknowledgements
