@@ -56,16 +56,12 @@ public class VideoAttachmentDetection: NSObject {
 
     @objc
     public func attachmentStreamIsAnimated(_ attachmentStream: TSAttachmentStream) -> Bool {
-        return attachmentStreamIsGIFOrLoopingVideo(attachmentStream) || attachmentStream.hasNonGIFAnimatedImageContent
+        return attachmentIsGIF(attachmentStream) || attachmentStream.hasNonGIFAnimatedImageContent
     }
 
     public var attachmentIsNonGIFImageSQL: String {
         let mimeTypes = Self.imageMimeTypes.map { "\"\($0)\"" }
         return "\(attachmentColumn: .contentType) in (\(mimeTypes.joined(separator: ",")))"
-    }
-
-    private func attachmentStreamIsGIFOrLoopingVideo(_ attachmentStream: TSAttachmentStream) -> Bool {
-        return attachmentIsGIF(attachmentStream) || attachmentIsLoopingVideo(attachmentStream)
     }
 
     private var attachmentIsGIFSQL: String {
