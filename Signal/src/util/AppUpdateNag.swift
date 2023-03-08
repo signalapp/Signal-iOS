@@ -98,7 +98,7 @@ class AppUpdateNag: NSObject {
             return
         }
 
-        let intervalBeforeNag = 7 * kDayInterval
+        let intervalBeforeNag = 21 * kDayInterval
         guard Date() > Date.init(timeInterval: intervalBeforeNag, since: firstHeardOfNewVersionDate) else {
             Logger.info("firstHeardOfNewVersionDate: \(firstHeardOfNewVersionDate) not nagging for new release yet.")
             return
