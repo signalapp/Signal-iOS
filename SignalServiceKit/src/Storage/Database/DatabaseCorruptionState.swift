@@ -71,10 +71,16 @@ public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertibl
 
     /// If the error is a `SQLITE_CORRUPT` error, set the "has database corruption" flag, log, and crash.
     /// We do this so we can attempt to perform diagnostics/recovery on relaunch.
-    public static func flagDatabaseCorruptionIfNecessary(userDefaults: UserDefaults, error: Error) {
+    public static func flagDatabaseCorruptionIfNecessary(
+        userDefaults: UserDefaults,
+        error: Error,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
         if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
             flagDatabaseAsCorrupted(userDefaults: userDefaults)
-            owsFail("Crashing due to database corruption. Extended result code: \(error.extendedResultCode)")
+            owsFail("Crashing due to database corruption. Source: [\(file):\(line) \(function)]. Extended result code: \(error.extendedResultCode)")
         }
     }
 
