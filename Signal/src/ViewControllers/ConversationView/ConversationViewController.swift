@@ -475,8 +475,7 @@ public class ConversationViewController: OWSViewController {
 
     public override var shouldAutorotate: Bool {
         // Don't allow orientation changes while recording voice messages.
-        if let currentVoiceMessageModel = viewState.currentVoiceMessageModel,
-           currentVoiceMessageModel.isRecording {
+        if viewState.inProgressVoiceMessage?.isRecording == true {
             return false
         }
 

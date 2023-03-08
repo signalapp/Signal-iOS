@@ -268,10 +268,12 @@ extension ConversationViewController {
         collectionView.collectionViewLayout.collectionViewContentSize.height
     }
 
-    public func buildInputToolbar(conversationStyle: ConversationStyle,
-                                  messageDraft: MessageBody?,
-                                  draftReply: ThreadReplyInfo?,
-                                  voiceMemoDraft: VoiceMessageModel?) -> ConversationInputToolbar {
+    func buildInputToolbar(
+        conversationStyle: ConversationStyle,
+        messageDraft: MessageBody?,
+        draftReply: ThreadReplyInfo?,
+        voiceMemoDraft: VoiceMessageInterruptedDraft?
+    ) -> ConversationInputToolbar {
         AssertIsOnMainThread()
         owsAssertDebug(hasViewWillAppearEverBegun)
 

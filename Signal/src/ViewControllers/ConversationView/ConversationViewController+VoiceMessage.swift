@@ -13,21 +13,25 @@ extension ConversationViewController {
         // Cancel any ongoing audio playback.
         cvAudioPlayer.stopAll()
 
-        let voiceMessageModel = VoiceMessageModel(thread: thread)
-        viewState.currentVoiceMessageModel = voiceMessageModel
+        let inProgressVoiceMessage = VoiceMessageInProgressDraft(
+            thread: thread,
+            audioSession: audioSession,
+            sleepManager: deviceSleepManager
+        )
+        viewState.inProgressVoiceMessage = inProgressVoiceMessage
 
         // Delay showing the voice memo UI for N ms to avoid a jarring transition
         // when you just tap and don't hold.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             guard let self = self else { return }
-            guard self.viewState.currentVoiceMessageModel === voiceMessageModel else { return }
+            guard self.viewState.inProgressVoiceMessage === inProgressVoiceMessage else { return }
             self.configureScrollDownButtons()
             self.inputToolbar?.showVoiceMemoUI()
         }
 
         ows_askForMicrophonePermissions { [weak self] granted in
             guard let self = self else { return }
-            guard self.viewState.currentVoiceMessageModel === voiceMessageModel else { return }
+            guard self.viewState.inProgressVoiceMessage === inProgressVoiceMessage else { return }
 
             guard granted else {
                 self.cancelRecordingVoiceMessage()
@@ -35,21 +39,17 @@ extension ConversationViewController {
                 return
             }
 
-            self.startRecordingVoiceMessage()
+            self.startRecordingVoiceMessage(inProgressVoiceMessage)
         }
     }
 
-    private func startRecordingVoiceMessage() {
+    private func startRecordingVoiceMessage(_ inProgressVoiceMessage: VoiceMessageInProgressDraft) {
         AssertIsOnMainThread()
-
-        guard let voiceMessageModel = viewState.currentVoiceMessageModel else {
-            return owsFailDebug("Unexpectedly missing voice message model")
-        }
 
         ImpactHapticFeedback.impactOccured(style: .light)
 
         do {
-            try voiceMessageModel.startRecording()
+            try inProgressVoiceMessage.startRecording()
         } catch {
             owsFailDebug("Failed to start recording voice message \(error)")
             cancelRecordingVoiceMessage()
@@ -59,15 +59,14 @@ extension ConversationViewController {
     func cancelRecordingVoiceMessage() {
         AssertIsOnMainThread()
 
-        defer { viewState.currentVoiceMessageModel = nil }
-        guard let voiceMessageModel = viewState.currentVoiceMessageModel else { return }
+        guard let inProgressVoiceMessage = viewState.inProgressVoiceMessage else { return }
+        viewState.inProgressVoiceMessage = nil
 
-        voiceMessageModel.stopRecordingAsync()
+        inProgressVoiceMessage.stopRecordingAsync()
 
         NotificationHapticFeedback().notificationOccurred(.warning)
 
         clearVoiceMessageDraft()
-        viewState.currentVoiceMessageModel = nil
         inputToolbar?.hideVoiceMemoUI(animated: true)
         configureScrollDownButtons()
     }
@@ -78,12 +77,12 @@ extension ConversationViewController {
     func finishRecordingVoiceMessage(sendImmediately: Bool = false) {
         AssertIsOnMainThread()
 
-        defer { viewState.currentVoiceMessageModel = nil }
-        guard let voiceMessageModel = viewState.currentVoiceMessageModel else { return }
+        guard let inProgressVoiceMessage = viewState.inProgressVoiceMessage else { return }
+        viewState.inProgressVoiceMessage = nil
 
-        voiceMessageModel.stopRecording()
+        inProgressVoiceMessage.stopRecording()
 
-        guard let duration = voiceMessageModel.duration, duration >= Self.minimumVoiceMessageDuration else {
+        guard let duration = inProgressVoiceMessage.duration, duration >= Self.minimumVoiceMessageDuration else {
             inputToolbar?.showVoiceMemoTooltip()
             cancelRecordingVoiceMessage()
             return
@@ -91,23 +90,25 @@ extension ConversationViewController {
 
         ImpactHapticFeedback.impactOccured(style: .medium)
 
+        configureScrollDownButtons()
+
         if sendImmediately {
-            sendVoiceMessageModel(voiceMessageModel)
+            sendVoiceMessageDraft(inProgressVoiceMessage)
         } else {
-            databaseStorage.asyncWrite { voiceMessageModel.saveDraft(transaction: $0) } completion: {
-                self.inputToolbar?.showVoiceMemoDraft(voiceMessageModel)
-                self.configureScrollDownButtons()
+            databaseStorage.asyncWrite {
+                let interruptedDraft = inProgressVoiceMessage.convertToDraft(transaction: $0)
+                DispatchQueue.main.async {
+                    self.inputToolbar?.showVoiceMemoDraft(interruptedDraft)
+                }
             }
         }
     }
 
-    func sendVoiceMessageModel(_ voiceMessageModel: VoiceMessageModel) {
+    func sendVoiceMessageDraft(_ voiceMemoDraft: VoiceMessageSendableDraft) {
         inputToolbar?.hideVoiceMemoUI(animated: true)
-        configureScrollDownButtons()
 
         do {
-            let attachment = try voiceMessageModel.prepareForSending()
-            tryToSendAttachments([attachment], messageBody: nil)
+            tryToSendAttachments([try voiceMemoDraft.prepareAttachment()], messageBody: nil)
             clearVoiceMessageDraft()
         } catch {
             owsFailDebug("Failed to send prepare voice message for sending \(error)")
@@ -115,6 +116,8 @@ extension ConversationViewController {
     }
 
     func clearVoiceMessageDraft() {
-        databaseStorage.asyncWrite { [thread] in VoiceMessageModels.clearDraft(for: thread, transaction: $0) }
+        databaseStorage.asyncWrite { [thread] in
+            VoiceMessageInterruptedDraftStore.clearDraft(for: thread, transaction: $0)
+        }
     }
 }

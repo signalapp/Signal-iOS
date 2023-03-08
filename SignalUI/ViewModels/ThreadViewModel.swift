@@ -148,7 +148,7 @@ public class ChatListInfo: Dependencies {
             return draftMessageBody.plaintextBody(transaction: transaction.unwrapGrdbRead)
         }
         func hasVoiceMemoDraft() -> Bool {
-            VoiceMessageModels.hasDraft(for: thread, transaction: transaction)
+            VoiceMessageInterruptedDraftStore.hasDraft(for: thread, transaction: transaction)
         }
         func loadLastMessageText() -> String? {
             guard let previewable = lastMessageForInbox as? OWSPreviewText else {

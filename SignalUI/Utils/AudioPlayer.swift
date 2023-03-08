@@ -36,7 +36,7 @@ public class AudioPlayer: NSObject {
 
     public weak var delegate: AudioPlayerDelegate?
 
-    var duration: TimeInterval {
+    public var duration: TimeInterval {
         audioPlayer?.duration ?? 0
     }
 

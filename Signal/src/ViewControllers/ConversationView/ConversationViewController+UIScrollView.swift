@@ -61,7 +61,7 @@ extension ConversationViewController {
         let scrollToNextMentionWasHidden = isHidingScrollToNextMentionButton || scrollToNextMentionButton.isHidden
         var scrollToNextMentionIsHidden = scrollToNextMentionWasHidden
 
-        if viewState.currentVoiceMessageModel?.isRecording == true {
+        if viewState.inProgressVoiceMessage?.isRecording == true {
             scrollDownIsHidden = true
             scrollToNextMentionIsHidden = true
         } else if isInPreviewPlatter {

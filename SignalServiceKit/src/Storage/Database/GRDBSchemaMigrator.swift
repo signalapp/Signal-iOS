@@ -218,6 +218,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addVideoDuration
         case addUsernameLookupRecordsTable
         case dropUsernameColumnFromOWSUserProfile
+        case migrateVoiceMessageDrafts
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2134,6 +2135,15 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.migrateVoiceMessageDrafts) { transaction in
+            try migrateVoiceMessageDrafts(
+                transaction: transaction,
+                appSharedDataUrl: URL(fileURLWithPath: CurrentAppContext().appSharedDataDirectoryPath()),
+                copyItem: FileManager.default.copyItem(at:to:)
+            )
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -2562,7 +2572,57 @@ public class GRDBSchemaMigrator: NSObject {
 
         // MARK: - Data Migration Insertion Point
     }
+
+    // MARK: - Migrations
+
+    static func migrateVoiceMessageDrafts(
+        transaction: GRDBWriteTransaction,
+        appSharedDataUrl: URL,
+        copyItem: (URL, URL) throws -> Void
+    ) throws {
+        // In the future, this entire migration could be safely replaced by the
+        // `DELETE FROM…` query. The impact of that change would be to delete old
+        // voice memo drafts rather than migrate them to the current version.
+
+        let collection = "DraftVoiceMessage"
+        let baseUrl = URL(fileURLWithPath: "draft-voice-messages", isDirectory: true, relativeTo: appSharedDataUrl)
+
+        let oldRows = try Row.fetchAll(
+            transaction.database,
+            sql: "SELECT key, value FROM keyvalue WHERE collection IS ?",
+            arguments: [collection]
+        )
+        try transaction.database.execute(sql: "DELETE FROM keyvalue WHERE collection IS ?", arguments: [collection])
+        for oldRow in oldRows {
+            let uniqueThreadId: String = oldRow[0]
+            let hasDraft = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSNumber.self, from: oldRow[1])?.boolValue
+            guard hasDraft == true else {
+                continue
+            }
+            let oldRelativePath = uniqueThreadId.addingPercentEncoding(withAllowedCharacters: .alphanumerics)!
+            let newRelativePath = UUID().uuidString
+            do {
+                try copyItem(
+                    baseUrl.appendingPathComponent(oldRelativePath, isDirectory: true),
+                    baseUrl.appendingPathComponent(newRelativePath, isDirectory: true)
+                )
+            } catch {
+                Logger.warn("Couldn't migrate voice message draft \(error.shortDescription)")
+                continue
+            }
+            try transaction.database.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: [
+                    collection,
+                    uniqueThreadId,
+                    try NSKeyedArchiver.archivedData(withRootObject: newRelativePath, requiringSecureCoding: true)
+                ]
+            )
+        }
+    }
 }
+
+// MARK: -
 
 public func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throws {
     try Bench(title: "createInitialGalleryRecords", logInProduction: true) {

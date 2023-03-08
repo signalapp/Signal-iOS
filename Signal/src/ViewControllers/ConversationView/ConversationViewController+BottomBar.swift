@@ -163,7 +163,7 @@ public extension ConversationViewController {
 
         var messageDraft: MessageBody?
         var replyDraft: ThreadReplyInfo?
-        var voiceMemoDraft: VoiceMessageModel?
+        var voiceMemoDraft: VoiceMessageInterruptedDraft?
         if let oldInputToolbar = self.inputToolbar {
             // Maintain draft continuity.
             messageDraft = oldInputToolbar.messageBody
@@ -172,9 +172,7 @@ public extension ConversationViewController {
         } else {
             Self.databaseStorage.read { transaction in
                 messageDraft = self.thread.currentDraft(transaction: transaction)
-                if VoiceMessageModels.hasDraft(for: self.thread, transaction: transaction) {
-                    voiceMemoDraft = VoiceMessageModel(thread: self.thread)
-                }
+                voiceMemoDraft = VoiceMessageInterruptedDraft.currentDraft(for: self.thread, transaction: transaction)
                 if messageDraft != nil || voiceMemoDraft != nil {
                     replyDraft = ThreadReplyInfo(threadUniqueID: self.thread.uniqueId, transaction: transaction)
                 }

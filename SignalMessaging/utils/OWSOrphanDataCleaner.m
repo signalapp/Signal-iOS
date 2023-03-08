@@ -40,6 +40,7 @@ NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleane
 @property (nonatomic) NSSet<NSString *> *filePaths;
 @property (nonatomic) NSSet<NSString *> *reactionIds;
 @property (nonatomic) NSSet<NSString *> *mentionIds;
+@property (nonatomic) NSSet<NSString *> *fileAndDirectoryPaths;
 
 @end
 
@@ -314,12 +315,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
-    NSString *voiceMessageDirPath = VoiceMessageModels.draftVoiceMessageDirectory.path;
-    NSSet<NSString *> *_Nullable allVoiceMessageFilePaths = [self filePathsInDirectorySafe:voiceMessageDirPath];
-    if (!allVoiceMessageFilePaths || !self.isMainAppAndActive) {
-        return nil;
-    }
-
     NSMutableSet<NSString *> *allOnDiskFilePaths = [NSMutableSet new];
     [allOnDiskFilePaths unionSet:legacyAttachmentFilePaths];
     [allOnDiskFilePaths unionSet:sharedDataAttachmentFilePaths];
@@ -327,7 +322,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [allOnDiskFilePaths unionSet:sharedDataProfileAvatarFilePaths];
     [allOnDiskFilePaths unionSet:allGroupAvatarFilePaths];
     [allOnDiskFilePaths unionSet:allStickerFilePaths];
-    [allOnDiskFilePaths unionSet:allVoiceMessageFilePaths];
     [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
     // TODO: Badges?
 
@@ -365,11 +359,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
     OWSLogVerbose(@"allOnDiskFilePaths: %lu", (unsigned long)allOnDiskFilePaths.count);
 
-    __block NSSet<NSString *> *voiceMessageDraftFilePaths;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        voiceMessageDraftFilePaths = [VoiceMessageModels allDraftFilePathsWithTransaction:transaction];
-    }];
-
     __block NSSet<NSString *> *profileAvatarFilePaths;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         profileAvatarFilePaths = [OWSProfileManager allProfileAvatarFilePathsWithTransaction:transaction];
@@ -390,6 +379,12 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSNumber *_Nullable totalFileSize = [self fileSizeOfFilePathsSafe:allOnDiskFilePaths.allObjects];
 
     if (!totalFileSize || !self.isMainAppAndActive) {
+        return nil;
+    }
+
+    NSSet<NSString *> *voiceMessageDraftOrphanedPaths = [self findOrphanedVoiceMessageDraftPaths];
+
+    if (!self.isMainAppAndActive) {
         return nil;
     }
 
@@ -558,7 +553,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [orphanFilePaths minusSet:allAttachmentFilePaths];
     [orphanFilePaths minusSet:profileAvatarFilePaths];
     [orphanFilePaths minusSet:groupAvatarFilePaths];
-    [orphanFilePaths minusSet:voiceMessageDraftFilePaths];
     [orphanFilePaths minusSet:activeStickerFilePaths];
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [allAttachmentFilePaths mutableCopy];
     [missingAttachmentFilePaths minusSet:allOnDiskFilePaths];
@@ -599,12 +593,17 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSLogDebug(@"orphan mentionIds: %zu", orphanMentionIds.count);
     OWSLogDebug(@"missing mentionIds: %zu", missingMentionIds.count);
 
+    NSSet<NSString *> *orphanFileAndDirectoryPaths = voiceMessageDraftOrphanedPaths;
+
+    OWSLogDebug(@"orphan file/directory paths: %zu", orphanFileAndDirectoryPaths.count);
+
     OWSOrphanData *result = [OWSOrphanData new];
     result.interactionIds = [orphanInteractionIds copy];
     result.attachmentIds = [orphanAttachmentIds copy];
     result.filePaths = [orphanFilePaths copy];
     result.reactionIds = [orphanReactionIds copy];
     result.mentionIds = [orphanMentionIds copy];
+    result.fileAndDirectoryPaths = [orphanFileAndDirectoryPaths copy];
     return result;
 }
 
@@ -907,6 +906,13 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         }
     }
     OWSLogInfo(@"Deleted orphan files: %zu", filesRemoved);
+
+    if (shouldRemoveOrphans) {
+        BOOL cancelled = ![self removeOrphanedFileAndDirectoryPaths:orphanData.fileAndDirectoryPaths];
+        if (cancelled) {
+            return NO;
+        }
+    }
 
     return YES;
 }

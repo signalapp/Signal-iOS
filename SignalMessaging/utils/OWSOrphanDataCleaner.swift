@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 extension OWSOrphanDataCleaner {
     @objc
@@ -173,5 +174,124 @@ extension OWSOrphanDataCleaner {
         }
 
         return nil
+    }
+
+    // MARK: - Find
+
+    /// Finds paths in `baseUrl` not present in `fetchExpectedRelativePaths()`.
+    private static func findOrphanedPaths(
+        baseUrl: URL,
+        fetchExpectedRelativePaths: (SDSAnyReadTransaction) -> Set<String>
+    ) -> Set<String> {
+        let basePath = VoiceMessageInterruptedDraftStore.draftVoiceMessageDirectory.path
+
+        // The ordering within this method is important. First, we search the file
+        // system for files that already exist. Next, we ensure that any pending
+        // database write operations have finished. This ensures that any files
+        // written as part of a database transaction are visible to our read
+        // transaction. If we skip the write transaction, we may treat just-created
+        // files as orphaned and remove them. If a new write transaction is opened
+        // after the one in this method, we won't treat any files it creates as
+        // orphaned since we've already finished searching the file system.
+        // Finally, we consult the database to see which files should exist.
+
+        let actualRelativePaths: [String]
+        do {
+            actualRelativePaths = try FileManager.default.subpathsOfDirectory(atPath: basePath)
+        } catch {
+            Logger.warn("Couldn't find any voice message drafts \(error.shortDescription)")
+            return []
+        }
+
+        databaseStorage.write { _ in }
+        var expectedRelativePaths = databaseStorage.read { fetchExpectedRelativePaths($0) }
+
+        // Mark the directories that contain these files as expected as well. This
+        // avoids redundant `rmdir` calls to check if the directories are empty.
+        while true {
+            let oldCount = expectedRelativePaths.count
+            expectedRelativePaths.formUnion(expectedRelativePaths.lazy.map {
+                ($0 as NSString).deletingLastPathComponent
+            })
+            let newCount = expectedRelativePaths.count
+            if oldCount == newCount {
+                break
+            }
+        }
+
+        let orphanedRelativePaths = Set(actualRelativePaths).subtracting(expectedRelativePaths)
+        return Set(orphanedRelativePaths.lazy.map { basePath.appendingPathComponent($0) })
+    }
+
+    @objc
+    static func findOrphanedVoiceMessageDraftPaths() -> Set<String> {
+        findOrphanedPaths(
+            baseUrl: VoiceMessageInterruptedDraftStore.draftVoiceMessageDirectory,
+            fetchExpectedRelativePaths: {
+                VoiceMessageInterruptedDraftStore.allDraftFilePaths(transaction: $0)
+            }
+        )
+    }
+
+    // MARK: - Remove
+
+    @objc
+    static func removeOrphanedFileAndDirectoryPaths(_ fileAndDirectoryPaths: Set<String>) -> Bool {
+        var successCount = 0
+        var errorCount = 0
+        // Sort by longest path to shortest path so that we remove files before we
+        // try to remove the directories that contain them.
+        for fileOrDirectoryPath in fileAndDirectoryPaths.sorted(by: { $0.count < $1.count }).reversed() {
+            if !self.isMainAppAndActive() {
+                return false
+            }
+            do {
+                try removeFileOrEmptyDirectory(at: fileOrDirectoryPath)
+                successCount += 1
+            } catch {
+                owsFailDebug("Couldn't remove file or directory: \(error.shortDescription)")
+                errorCount += 1
+            }
+        }
+        Logger.info("Deleted orphaned files/directories [successes: \(successCount), failures: \(errorCount)]")
+        return true
+    }
+
+    private static func removeFileOrEmptyDirectory(at path: String) throws {
+        do {
+            // First, remove it if it's a directory.
+            try runUnixOperation(rmdir, argument: path)
+        } catch POSIXError.ENOENT {
+            // It doesn't exist (or a parent directory doesn't exist).
+            return
+        } catch POSIXError.ENOTEMPTY {
+            // It's not empty, so don't delete it.
+            return
+        } catch POSIXError.ENOTDIR {
+            // It's a file.
+        } catch {
+            Logger.warn("Couldn't remove directory \(error.shortDescription)")
+            // Fall through since it seems like this isn't a directory...
+        }
+
+        do {
+            try runUnixOperation(unlink, argument: path)
+        } catch POSIXError.ENOTDIR, POSIXError.ENOENT {
+            // The file (or its containing directory) doesn't exist.
+            return
+        } catch {
+            throw error
+        }
+    }
+
+    private static func runUnixOperation(_ op: (UnsafePointer<CChar>?) -> Int32, argument path: String) throws {
+        let result = path.withCString { op($0) }
+        if result == 0 {
+            return
+        }
+        if let errorCode = POSIXErrorCode(rawValue: errno) {
+            throw POSIXError(errorCode)
+        }
+        throw OWSGenericError("Operation failed.")
     }
 }

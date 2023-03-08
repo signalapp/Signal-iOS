@@ -144,11 +144,11 @@ public class CVViewState: NSObject {
 
     weak var reactionsDetailSheet: ReactionsDetailSheet?
 
+    public var lastKeyboardAnimationDate: Date?
+
     // MARK: - Voice Messages
 
-    public var currentVoiceMessageModel: VoiceMessageModel?
-
-    public var lastKeyboardAnimationDate: Date?
+    var inProgressVoiceMessage: VoiceMessageInProgressDraft?
 
     // MARK: - Gift Badges
 
@@ -158,8 +158,7 @@ public class CVViewState: NSObject {
 
     // MARK: - 
 
-    public required init(threadViewModel: ThreadViewModel,
-                         conversationStyle: ConversationStyle) {
+    public required init(threadViewModel: ThreadViewModel, conversationStyle: ConversationStyle) {
         self.threadViewModel = threadViewModel
         self.conversationStyle = conversationStyle
     }

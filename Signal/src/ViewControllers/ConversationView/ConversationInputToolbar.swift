@@ -8,7 +8,7 @@ import SignalMessaging
 import SignalUI
 import UIKit
 
-public protocol ConversationInputToolbarDelegate: AnyObject {
+protocol ConversationInputToolbarDelegate: AnyObject {
 
     func sendButtonPressed()
 
@@ -34,7 +34,7 @@ public protocol ConversationInputToolbarDelegate: AnyObject {
 
     func voiceMemoGestureWasInterrupted()
 
-    func sendVoiceMemoDraft(_ draft: VoiceMessageModel)
+    func sendVoiceMemoDraft(_ draft: VoiceMessageInterruptedDraft)
 
     // MARK: Attachments
 
@@ -65,7 +65,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private weak var inputToolbarDelegate: ConversationInputToolbarDelegate?
 
-    public init(
+    init(
         conversationStyle: ConversationStyle,
         mediaCache: CVMediaCache,
         messageDraft: MessageBody?,
@@ -1289,7 +1289,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         }
     }
 
-    var voiceMemoDraft: VoiceMessageModel?
+    var voiceMemoDraft: VoiceMessageInterruptedDraft?
     private var voiceMemoStartTime: Date?
     private var voiceMemoUpdateTimer: Timer?
     private var voiceMemoTooltipView: UIView?
@@ -1418,7 +1418,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             repeats: true)
     }
 
-    func showVoiceMemoDraft(_ voiceMemoDraft: VoiceMessageModel) {
+    func showVoiceMemoDraft(_ voiceMemoDraft: VoiceMessageInterruptedDraft) {
         AssertIsOnMainThread()
 
         isShowingVoiceMemoUI = true
@@ -1437,10 +1437,16 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         voiceMemoUpdateTimer = nil
 
         let draftView = VoiceMessageDraftView(
-            voiceMessageModel: voiceMemoDraft,
-            mediaCache: mediaCache) { [weak self] in
-                self?.hideVoiceMemoUI(animated: true)
+            voiceMessageInterruptedDraft: voiceMemoDraft,
+            mediaCache: mediaCache,
+            deleteAction: { [weak self] in
+                Self.databaseStorage.asyncWrite {
+                    voiceMemoDraft.clearDraft(transaction: $0)
+                } completion: {
+                    self?.hideVoiceMemoUI(animated: true)
+                }
             }
+        )
         voiceMemoContentView.addSubview(draftView)
         draftView.autoPinEdgesToSuperviewEdges()
     }

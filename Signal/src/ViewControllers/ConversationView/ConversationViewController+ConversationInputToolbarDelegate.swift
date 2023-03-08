@@ -228,10 +228,10 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         finishRecordingVoiceMessage(sendImmediately: false)
     }
 
-    public func sendVoiceMemoDraft(_ voiceMemoDraft: VoiceMessageModel) {
+    func sendVoiceMemoDraft(_ voiceMemoDraft: VoiceMessageInterruptedDraft) {
         AssertIsOnMainThread()
 
-        sendVoiceMessageModel(voiceMemoDraft)
+        sendVoiceMessageDraft(voiceMemoDraft)
     }
 
     public func saveDraft() {
