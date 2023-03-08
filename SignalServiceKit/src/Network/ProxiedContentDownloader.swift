@@ -331,8 +331,6 @@ public class ProxiedContentAssetRequest: NSObject {
         let fileName = (NSUUID().uuidString as NSString).appendingPathExtension(fileExtension)!
         let filePath = (downloadFolderPath as NSString).appendingPathComponent(fileName)
 
-        Logger.verbose("filePath: \(filePath).")
-
         do {
             try assetData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
             let asset = ProxiedContentAsset(assetDescription: assetDescription, filePath: filePath)
@@ -501,15 +499,16 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
     //
     // The success callbacks may be called synchronously on cache hit, in
     // which case the ProxiedContentAssetRequest parameter will be nil.
-    public func requestAsset(assetDescription: ProxiedContentAssetDescription,
-                             priority: ProxiedContentRequestPriority,
-                             success: @escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
-                             failure: @escaping ((ProxiedContentAssetRequest) -> Void)) -> ProxiedContentAssetRequest? {
+    public func requestAsset(
+        assetDescription: ProxiedContentAssetDescription,
+        priority: ProxiedContentRequestPriority,
+        success: @escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
+        failure: @escaping ((ProxiedContentAssetRequest) -> Void)
+    ) -> ProxiedContentAssetRequest? {
         AssertIsOnMainThread()
 
         if let asset = assetMap.get(key: assetDescription.url) {
             // Synchronous cache hit.
-            Logger.verbose("asset cache hit: \(assetDescription.url)")
             success(nil, asset)
             return nil
         }
@@ -517,11 +516,12 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         // Cache miss.
         //
         // Asset requests are done queued and performed asynchronously.
-        Logger.verbose("asset cache miss: \(assetDescription.url)")
-        let assetRequest = ProxiedContentAssetRequest(assetDescription: assetDescription,
-                                             priority: priority,
-                                             success: success,
-                                             failure: failure)
+        let assetRequest = ProxiedContentAssetRequest(
+            assetDescription: assetDescription,
+            priority: priority,
+            success: success,
+            failure: failure
+        )
         assetRequestQueue.append(assetRequest)
         // Process the queue (which may start this request)
         // asynchronously so that the caller has time to store
@@ -533,8 +533,6 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
 
     public func cancelAllRequests() {
         AssertIsOnMainThread()
-
-        Logger.verbose("cancelAllRequests")
 
         self.assetRequestQueue.forEach { $0.cancel() }
         self.assetRequestQueue = []
@@ -610,7 +608,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         AssertIsOnMainThread()
 
         guard assetRequestQueue.contains(assetRequest) else {
-            Logger.warn("could not remove asset request from queue: \(assetRequest.assetDescription.url)")
+            Logger.warn("could not remove asset request from queue")
             return
         }
 
@@ -882,12 +880,12 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             return
         }
         if let error = error {
-            Logger.error("download failed with error: \(error)")
+            Logger.error("download failed with error: \(error.shortDescription)")
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
         guard let httpResponse = task.response as? HTTPURLResponse else {
-            Logger.error("missing or unexpected response: \(String(describing: task.response))")
+            Logger.error("missing or unexpected response: \(type(of: task.response))")
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
