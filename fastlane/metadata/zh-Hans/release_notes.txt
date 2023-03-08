@@ -1,5 +1,9 @@
+• Share more things from more places. The share extension now has better support for the text format that various popular news apps share by default. We also squashed a bug that sometimes caused your first attempt to fail when sharing something.
+
+• Speaking of sharing, another bug was making it difficult to share text content from other apps like Apple Notes as Signal Stories. Text has arguably been an important component of some of the best stories throughout history, so we're excited to close the chapter on this particular problem.
+
 • 媒体和头像查看器推出了动画方面的新改进，让您享受更好的查看体验。
-• Share more things from more places. The share extension now has better support for the text format that various popular news apps share by default. We also squashed a bug that sometimes caused your first attempt to share something to fail.
-• Speaking of sharing, another bug was making it difficult to share text content from other apps (like Apple Notes) as Signal Stories. Text has arguably been an important component of some of the best stories throughout history, so we're excited to close the chapter on this particular problem.
-• We fixed a couple of layout issues that could cause buttons to show up in the wrong place on new iPhones, like invisible castaways marooned underneath Apple's Dynamic Island.
-• This update also includes support for Cantonese.
+
+• 我们解决了几个布局上的问题，这些问题会导致新 iPhone 上的按钮出现在错误的位置上，就像看不见的漂流者被困在 Apple 的灵动岛下一样。
+
+• This update also includes support for Cantonese and Uyghur.
