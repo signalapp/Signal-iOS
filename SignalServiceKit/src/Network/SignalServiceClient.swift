@@ -30,7 +30,7 @@ public protocol SignalServiceClient {
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void>
     func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data>
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
-    func getAccountWhoAmI() -> Promise<WhoAmIResponse>
+    func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI>
     func requestStorageAuth() -> Promise<(username: String, password: String)>
     func getRemoteConfig() -> Promise<[String: RemoteConfigItem]>
 
@@ -145,16 +145,16 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         return networkManager.makePromise(request: request).asVoid()
     }
 
-    public func getAccountWhoAmI() -> Promise<WhoAmIResponse> {
-        let request = OWSRequestFactory.accountWhoAmIRequest()
+    public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
+        let request = WhoAmIRequestFactory.whoAmIRequest()
 
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
-            guard let json = response.responseBodyJson else {
+            guard let json = response.responseBodyData else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
-            return try WhoAmIResponse.parse(json)
+            return try JSONDecoder().decode(WhoAmIRequestFactory.Responses.WhoAmI.self, from: json)
         }
     }
 
@@ -257,24 +257,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 }
 
 // MARK: -
-
-public struct WhoAmIResponse {
-    public let aci: UUID
-    public let pni: UUID
-    public let e164: String?
-
-    public static func parse(_ json: Any?) throws -> Self {
-        guard let parser = ParamParser(responseObject: json) else {
-            throw OWSAssertionError("Missing or invalid response.")
-        }
-
-        let aci: UUID = try parser.required(key: "uuid")
-        let pni: UUID = try parser.required(key: "pni")
-        let e164: String? = try parser.optional(key: "number")
-
-        return WhoAmIResponse(aci: aci, pni: pni, e164: e164)
-    }
-}
 
 public struct VerifySecondaryDeviceResponse {
     public let pni: UUID

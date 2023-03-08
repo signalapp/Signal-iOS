@@ -817,6 +817,7 @@
 		6640639C294D201F00997E0B /* OutgoingCallEventSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6640639B294D201F00997E0B /* OutgoingCallEventSyncMessage.m */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
 		664160D029A6D60A00F5BA85 /* ChatServiceAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */; };
+		66533E3729B7B56000E8D928 /* WhoAmIRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3629B7B56000E8D928 /* WhoAmIRequestFactory.swift */; };
 		66586D3729005A1B00DDA9B9 /* story_viewer_onboarding_2.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */; };
 		66586D3829005A1B00DDA9B9 /* story_viewer_onboarding_1.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */; };
 		66586D3929005A1B00DDA9B9 /* story_viewer_onboarding_3.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */; };
@@ -3250,6 +3251,7 @@
 		6640639B294D201F00997E0B /* OutgoingCallEventSyncMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutgoingCallEventSyncMessage.m; sourceTree = "<group>"; };
 		6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessage.swift; sourceTree = "<group>"; };
 		664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceAuth.swift; sourceTree = "<group>"; };
+		66533E3629B7B56000E8D928 /* WhoAmIRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoAmIRequestFactory.swift; sourceTree = "<group>"; };
 		6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_2.json; sourceTree = "<group>"; };
 		66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_1.json; sourceTree = "<group>"; };
@@ -6394,6 +6396,14 @@
 			path = V2;
 			sourceTree = "<group>";
 		};
+		66533E3529B7B53500E8D928 /* WhoAmI */ = {
+			isa = PBXGroup;
+			children = (
+				66533E3629B7B56000E8D928 /* WhoAmIRequestFactory.swift */,
+			);
+			path = WhoAmI;
+			sourceTree = "<group>";
+		};
 		666BAB0E2980B76B00867196 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -8835,6 +8845,7 @@
 			isa = PBXGroup;
 			children = (
 				66A1DF71298C634500C4E4A7 /* Registration */,
+				66533E3529B7B53500E8D928 /* WhoAmI */,
 				664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */,
 				D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */,
 				F9D5BFCC2979A017001737E5 /* OWSRequestFactory+Spam.swift */,
@@ -12053,6 +12064,7 @@
 				500824CE292737FC005A5DC0 /* WebSocketPromise.swift in Sources */,
 				F9C5CC97289453B300548EEE /* WebSocketProto.swift in Sources */,
 				F9C5CCA2289453B300548EEE /* WebSocketResources.pb.swift in Sources */,
+				66533E3729B7B56000E8D928 /* WhoAmIRequestFactory.swift in Sources */,
 				F9C5CD5E289453B300548EEE /* YDBStorage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -42,7 +42,7 @@ public class FakeAccountServiceClient: AccountServiceClient {
         return Promise { $0.resolve() }
     }
 
-    public override func getAccountWhoAmI() -> Promise<WhoAmIResponse> {
-        return Promise { $0.resolve(WhoAmIResponse(aci: UUID(), pni: UUID(), e164: nil)) }
+    public override func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
+        return Promise { $0.resolve(WhoAmIRequestFactory.Responses.WhoAmI(aci: UUID(), pni: UUID(), e164: nil)) }
     }
 }

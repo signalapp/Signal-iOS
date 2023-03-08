@@ -64,8 +64,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier
                                          voipIdentifier:(nullable NSString *)voipId;
 
-+ (TSRequest *)accountWhoAmIRequest;
-
 + (TSRequest *)unregisterAccountRequest;
 
 + (TSRequest *)requestVerificationCodeRequestWithE164:(NSString *)e164

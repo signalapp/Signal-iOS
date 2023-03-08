@@ -142,14 +142,22 @@ public class ChangePhoneNumber: NSObject {
     }
 
     public static func updateLocalPhoneNumberPromise() -> Promise<LocalPhoneNumber> {
-        firstly { () -> Promise<WhoAmIResponse> in
+        firstly { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
             Self.accountServiceClient.getAccountWhoAmI()
         }.map(on: DispatchQueue.global()) { whoAmIResponse in
-            try Self.updateLocalPhoneNumber(from: whoAmIResponse)
+            try Self.updateLocalPhoneNumber(
+                aci: whoAmIResponse.aci,
+                pni: whoAmIResponse.pni,
+                e164: whoAmIResponse.e164
+            )
         }
     }
 
-    public static func updateLocalPhoneNumber(from whoAmIResponse: WhoAmIResponse) throws -> LocalPhoneNumber {
+    public static func updateLocalPhoneNumber(
+        aci: UUID,
+        pni: UUID,
+        e164: String?
+    ) throws -> LocalPhoneNumber {
         guard let localUuid = tsAccountManager.localUuid else {
             throw OWSAssertionError("Missing localUuid.")
         }
@@ -158,14 +166,14 @@ public class ChangePhoneNumber: NSObject {
         }
         let localPni = tsAccountManager.localPni
 
-        let serviceUuid = whoAmIResponse.aci
-        guard let servicePhoneNumber = whoAmIResponse.e164 else {
+        let serviceUuid = aci
+        guard let servicePhoneNumber = e164 else {
             throw OWSAssertionError("Missing servicePhoneNumber.")
         }
         guard serviceUuid == localUuid else {
             throw OWSAssertionError("Unexpected uuid: \(serviceUuid) != \(localUuid)")
         }
-        let servicePni = whoAmIResponse.pni
+        let servicePni = pni
 
         Logger.info("localUuid: \(localUuid), localPhoneNumber: \(localPhoneNumber), serviceUuid: \(serviceUuid), servicePhoneNumber: \(servicePhoneNumber)")
 

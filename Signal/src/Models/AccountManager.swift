@@ -204,7 +204,11 @@ public class AccountManager: NSObject {
                                           registrationLock: registrationLock)
         }.map(on: DispatchQueue.global()) { response in
             // Try to take the change from the service.
-            try ChangePhoneNumber.updateLocalPhoneNumber(from: response)
+            try ChangePhoneNumber.updateLocalPhoneNumber(
+                aci: response.aci,
+                pni: response.pni,
+                e164: response.e164
+            )
         }.done(on: DispatchQueue.global()) { localPhoneNumber in
             owsAssertDebug(localPhoneNumber.localPhoneNumber == newPhoneNumber)
 
@@ -217,9 +221,28 @@ public class AccountManager: NSObject {
         }
     }
 
+    // TODO[Registration]: Modernize this.
+    public struct ChangePhoneNumberResponse {
+        public let aci: UUID
+        public let pni: UUID
+        public let e164: String?
+
+        public static func parse(_ json: Any?) throws -> Self {
+            guard let parser = ParamParser(responseObject: json) else {
+                throw OWSAssertionError("Missing or invalid response.")
+            }
+
+            let aci: UUID = try parser.required(key: "uuid")
+            let pni: UUID = try parser.required(key: "pni")
+            let e164: String? = try parser.optional(key: "number")
+
+            return ChangePhoneNumberResponse(aci: aci, pni: pni, e164: e164)
+        }
+    }
+
     private func changePhoneNumberRequest(newPhoneNumber: String,
                                           verificationCode: String,
-                                          registrationLock: String?) -> Promise<WhoAmIResponse> {
+                                          registrationLock: String?) -> Promise<ChangePhoneNumberResponse> {
         return Promise { future in
             let request = OWSRequestFactory.changePhoneNumberRequest(newPhoneNumberE164: newPhoneNumber,
                                                                      verificationCode: verificationCode,
@@ -228,7 +251,7 @@ public class AccountManager: NSObject {
                                                      success: future.resolve,
                                                      failure: future.reject)
         }.map(on: DispatchQueue.global()) { json in
-            return try WhoAmIResponse.parse(json)
+            return try ChangePhoneNumberResponse.parse(json)
         }
     }
 

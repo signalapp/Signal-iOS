@@ -62,8 +62,8 @@ public class AccountServiceClient: NSObject {
         return serviceClient.updatePrimaryDeviceAccountAttributes()
     }
 
-    public func getAccountWhoAmI() -> Promise<WhoAmIResponse> {
-        serviceClient.getAccountWhoAmI()
+    public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
+        return serviceClient.getAccountWhoAmI()
     }
 
     public func verifySecondaryDevice(verificationCode: String,

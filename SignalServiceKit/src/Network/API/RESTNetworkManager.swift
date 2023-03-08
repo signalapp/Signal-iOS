@@ -58,23 +58,60 @@ public class RESTSessionManager: NSObject {
             urlSession.promiseForTSRequest(request)
         }.done(on: DispatchQueue.global()) { (response: HTTPResponse) in
             success(response)
-        }.catch(on: DispatchQueue.global()) { /* [tsAccountManager] */ error in
+        }.catch(on: DispatchQueue.global()) { error in
             // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
             if let httpError = error as? OWSHTTPError {
                 HTTPUtils.applyHTTPError(httpError)
 
-                if httpError.httpStatusCode == 401, request.shouldMarkDeregisteredOn401 {
-                    // TODO: (IOS-3479) Handle 401 errors on REST requests.
-                    // tsAccountManager.setIsDeregistered(true)
+                let wrappedError = OWSHTTPErrorWrapper(error: httpError)
+                if httpError.httpStatusCode == 401, request.shouldCheckDeregisteredOn401 {
+                    NetworkManagerQueue().async {
+                        self.makeIsDeregisteredRequest(
+                            originalRequestFailureHandler: failure,
+                            originalRequestFailure: wrappedError
+                        )
+                    }
+                } else {
+                    failure(wrappedError)
                 }
-
-                failure(OWSHTTPErrorWrapper(error: httpError))
             } else {
                 owsFailDebug("Unexpected error: \(error)")
 
                 failure(OWSHTTPErrorWrapper(error: OWSHTTPError.invalidRequest(requestUrl: requestUrl)))
             }
         }
+    }
+
+    private func makeIsDeregisteredRequest(
+        originalRequestFailureHandler: @escaping RESTNetworkManagerFailure,
+        originalRequestFailure: OWSHTTPErrorWrapper
+    ) {
+        let isDeregisteredRequest = WhoAmIRequestFactory.amIDeregisteredRequest()
+
+        let handleDeregisteredResponse: (WhoAmIRequestFactory.Responses.AmIDeregistered?) -> Void = { [tsAccountManager] response in
+            switch response {
+            case .deregistered:
+                Logger.warn("AmIDeregistered response says we are deregistered, marking as such.")
+                tsAccountManager.setIsDeregistered(true)
+            case .notDeregistered:
+                Logger.info("AmIDeregistered response says not deregistered; account probably disabled. Doing nothing.")
+            case .none, .unexpectedError:
+                Logger.error("Got unexpected AmIDeregistered response. Doing nothing.")
+            }
+        }
+
+        self.performRequest(
+            isDeregisteredRequest,
+            success: { rawResponse in
+                let response = WhoAmIRequestFactory.Responses.AmIDeregistered(rawValue: rawResponse.responseStatusCode)
+                handleDeregisteredResponse(response)
+                originalRequestFailureHandler(originalRequestFailure)
+            }, failure: { rawFailure in
+                let response = WhoAmIRequestFactory.Responses.AmIDeregistered(rawValue: rawFailure.error.responseStatusCode)
+                handleDeregisteredResponse(response)
+                originalRequestFailureHandler(originalRequestFailure)
+            }
+        )
     }
 }
 

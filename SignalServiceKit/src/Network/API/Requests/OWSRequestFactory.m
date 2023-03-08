@@ -57,7 +57,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
     [StoryManager appendStoryHeadersToRequest:request];
-    request.shouldMarkDeregisteredOn401 = YES;
+    request.shouldCheckDeregisteredOn401 = YES;
     return request;
 }
 
@@ -210,11 +210,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:self.textSecureAttributesAPI]
                               method:@"PUT"
                           parameters:accountAttributes];
-}
-
-+ (TSRequest *)accountWhoAmIRequest
-{
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/accounts/whoami"] method:@"GET" parameters:@{}];
 }
 
 + (TSRequest *)unregisterAccountRequest
