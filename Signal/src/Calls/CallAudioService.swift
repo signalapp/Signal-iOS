@@ -452,7 +452,7 @@ class CallAudioService: NSObject, CallObserver {
             return [AudioSource.builtInSpeaker]
         }
 
-        Logger.info("availableInputs: \(availableInputs)")
+        Logger.info("availableInputs: \(availableInputs.map(\.logSafeDescription))")
         return [AudioSource.builtInSpeaker] + availableInputs.map { portDescription in
             return AudioSource(portDescription: portDescription)
         }
