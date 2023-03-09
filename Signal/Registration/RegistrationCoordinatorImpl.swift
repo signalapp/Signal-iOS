@@ -203,7 +203,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             owsFailBeta("Shouldn't be submitting captcha from non session paths.")
             return nextStep()
         case .session(let session):
-            return submitCaptchaChallengeFulfillment(session: session, token: token)
+            return submit(challengeFulfillment: .captcha(token), for: session)
         }
     }
 
@@ -456,6 +456,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             var reglockState: ReglockState = .none
 
+            enum PushChallengeState: Codable, Equatable {
+                /// We've never requested a push challenge token.
+                case notRequested
+                /// We don't expect to receive a push challenge token, likely because the user disabled
+                /// push notifications.
+                case ineligible
+                /// We are waiting to receive a push challenge token. Make sure to check the associated
+                /// `requestedAt` date to see if it's been too long.
+                case waitingForPush(requestedAt: Date)
+                /// We've received a push challenge token that we haven't fulfilled.
+                case unfulfilledPush(challengeToken: String)
+                /// We've sucessfully submitted a push challenge token.
+                case fulfilled
+            }
+
+            var pushChallengeState: PushChallengeState = .notRequested
         }
 
         var sessionState: SessionState?
@@ -1178,23 +1194,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if let pendingCodeTransport = inMemoryState.pendingCodeTransport {
             guard session.allowedToRequestCode else {
-                // Check for challenges.
-                switch session.requestedInformation.first {
-                case .none:
-                    if session.hasUnknownChallengeRequiringAppUpdate {
-                        inMemoryState.pendingCodeTransport = nil
-                        return .value(.appUpdateBanner)
-                    } else {
-                        // We want to reset the whole session.
-                        db.write { self.resetSession($0) }
-                        return self.nextStep()
-                    }
-                case .captcha:
-                    return .value(.captchaChallenge)
-                case .pushChallenge:
-                    // TODO[Registration]: complete push challenge.
-                    return .value(.splash)
-                }
+                return attemptToFulfillAvailableChallengesWaitingIfNeeded(for: session)
             }
 
             // If we have pending transport and can send, send.
@@ -1400,6 +1400,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 guard let strongSelf = self else {
                     return .value(.showErrorSheet(.todo))
                 }
+
                 return strongSelf.sessionManager.beginOrRestoreSession(
                     e164: e164,
                     apnsToken: apnsToken
@@ -1409,9 +1410,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     switch response {
                     case .success(let session):
-                        strongSelf.db.write { strongSelf.processSession(session, $0) }
-                        // When we get a new session, immediately send an sms code.
+                        strongSelf.db.write { transaction in
+                            strongSelf.processSession(session, transaction)
+
+                            if apnsToken == nil {
+                                strongSelf.noPreAuthChallengeTokenWillArrive(
+                                    session: session,
+                                    transaction: transaction
+                                )
+                            } else {
+                                strongSelf.prepareToReceivePreAuthChallengeToken(
+                                    session: session,
+                                    transaction: transaction
+                                )
+                            }
+                        }
+
+                        // When we get a new session, an SMS code is sent immediately.
                         strongSelf.inMemoryState.pendingCodeTransport = .sms
+
                         return strongSelf.nextStep()
                     case .invalidArgument:
                         return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
@@ -1556,21 +1573,182 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private func submitCaptchaChallengeFulfillment(
+    private func noPreAuthChallengeTokenWillArrive(
         session: RegistrationSession,
-        token: String,
+        transaction: DBWriteTransaction
+    ) {
+        switch persistedState.sessionState?.pushChallengeState {
+        case nil, .notRequested, .waitingForPush:
+            Logger.info("No pre-auth challenge token will arrive. Noting that")
+            updatePersistedSessionState(session: session, transaction) {
+                $0.pushChallengeState = .ineligible
+            }
+        case .ineligible, .unfulfilledPush, .fulfilled:
+            Logger.info("No pre-auth challenge token will arrive, but we don't need to update our state")
+        }
+    }
+
+    private func prepareToReceivePreAuthChallengeToken(
+        session: RegistrationSession,
+        transaction: DBWriteTransaction
+    ) {
+        switch persistedState.sessionState?.pushChallengeState {
+        case nil, .notRequested, .ineligible:
+            // It's unlikely but possible to go from ineligible -> waiting if the user denied
+            // notification permissions, closed the app, re-enabled them in settings, and then
+            // relaunched. It's much more likely that we'd be in the "not requested" state.
+            Logger.info("Started waiting for a pre-auth challenge token")
+            self.updatePersistedSessionState(session: session, transaction) {
+                $0.pushChallengeState = .waitingForPush(requestedAt: dateProvider())
+            }
+        case .waitingForPush, .unfulfilledPush, .fulfilled:
+            Logger.info("Already waiting for a pre-auth challenge token, presumably from a prior launch")
+        }
+
+        // There is no timeout on this promise. That's deliberate. If we get a push challenge token
+        // at some point, we'd like to hold onto it, even if it took awhile to arrive. Other spots
+        // in the code may handle a timeout.
+        pushRegistrationManager.receivePreAuthChallengeToken().done { [weak self] token in
+            guard let self else { return }
+            self.db.write { transaction in
+                self.didReceive(pushChallengeToken: token, for: session, transaction: transaction)
+            }
+        }
+    }
+
+    private func didReceive(
+        pushChallengeToken: String,
+        for session: RegistrationSession,
+        transaction: DBWriteTransaction
+    ) {
+        Logger.info("Received a push challenge token")
+        updatePersistedSessionState(session: session, transaction) {
+            $0.pushChallengeState = .unfulfilledPush(challengeToken: pushChallengeToken)
+        }
+    }
+
+    private func attemptToFulfillAvailableChallengesWaitingIfNeeded(
+        for session: RegistrationSession
+    ) -> Guarantee<RegistrationStep> {
+        Logger.info("Found \(session.requestedInformation.count) challenge(s)")
+
+        var requestsPushChallenge = false
+        var requestsCaptchaChallenge = false
+        for challenge in session.requestedInformation {
+            switch challenge {
+            case .pushChallenge: requestsPushChallenge = true
+            case .captcha: requestsCaptchaChallenge = true
+            }
+        }
+
+        // Our first choice: a push challenge for which we already have the challenge token.
+        let unfulfilledPushChallengeToken: String? = {
+            switch persistedState.sessionState?.pushChallengeState {
+            case nil, .notRequested, .ineligible, .waitingForPush, .fulfilled:
+                return nil
+            case let .unfulfilledPush(challengeToken):
+                return challengeToken
+            }
+        }()
+        if requestsPushChallenge, let unfulfilledPushChallengeToken {
+            Logger.info("Attempting to fulfill push challenge with a token we already have")
+            return submit(
+                challengeFulfillment: .pushChallenge(unfulfilledPushChallengeToken),
+                for: session
+            )
+        }
+
+        // Our second choice: a CAPTCHA challenge.
+        if requestsCaptchaChallenge {
+            Logger.info("Showing the CAPTCHA challenge to the user")
+            return .value(.captchaChallenge)
+        }
+
+        // Our third choice: a push challenge where we're still waiting for the challenge token.
+        let isWaitingForPushChallengeToken: Bool = {
+            switch persistedState.sessionState?.pushChallengeState {
+            case nil, .notRequested, .ineligible, .unfulfilledPush, .fulfilled:
+                return false
+            case let .waitingForPush(requestedAt):
+                let deadline = requestedAt.addingTimeInterval(Constants.pushTokenTimeout)
+                return dateProvider() < deadline
+            }
+        }()
+        if requestsPushChallenge, isWaitingForPushChallengeToken {
+            Logger.info("Attempting to fulfill push challenge with a token we don't have yet")
+            return pushRegistrationManager
+                .receivePreAuthChallengeToken()
+                .map { $0 }
+                .nilTimeout(on: schedulers.sharedBackground, seconds: Constants.pushTokenTimeout)
+                .then(on: schedulers.sharedBackground) { [weak self] (challengeToken: String?) -> Guarantee<RegistrationStep> in
+                    guard let self else {
+                        return .value(.showErrorSheet(.todo))
+                    }
+
+                    if let challengeToken {
+                        self.db.write { transaction in
+                            self.didReceive(
+                                pushChallengeToken: challengeToken,
+                                for: session,
+                                transaction: transaction
+                            )
+                        }
+                        return self.submit(
+                            challengeFulfillment: .pushChallenge(challengeToken),
+                            for: session
+                        )
+                    }
+
+                    Logger.warn("No challenge token received in time. Resetting")
+                    self.db.write { self.resetSession($0) }
+                    return .value(.showErrorSheet(.sessionInvalidated))
+                }
+                .recover(on: schedulers.sharedBackground) { error in
+                    // We never expect to hit this code because no part of it should fail. In the
+                    // long term, we should fix this by making `Guarantee#nilTimeout` return a
+                    // `Guarantee`, not a `Promise`.
+                    owsFailBeta("Unexpected error: \(error)")
+                    self.db.write { self.resetSession($0) }
+                    return .value(.showErrorSheet(.sessionInvalidated))
+                }
+        }
+
+        // We're out of luck.
+        if session.hasUnknownChallengeRequiringAppUpdate {
+            Logger.warn("An unknown challenge was found")
+            inMemoryState.pendingCodeTransport = nil
+            return .value(.appUpdateBanner)
+        } else {
+            Logger.warn("Couldn't fulfill any challenges. Resetting the session")
+            db.write { resetSession($0) }
+            return nextStep()
+        }
+    }
+
+    private func submit(
+        challengeFulfillment fulfillment: Registration.ChallengeFulfillment,
+        for session: RegistrationSession,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         return sessionManager.fulfillChallenge(
             for: session,
-            fulfillment: .captcha(token)
+            fulfillment: fulfillment
         ).then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
             guard let self else {
                 return .value(.showErrorSheet(.todo))
             }
             switch result {
             case .success(let session):
-                self.db.write { self.processSession(session, $0) }
+                self.db.write { tx in
+                    self.db.write { self.processSession(session, $0) }
+                    switch fulfillment {
+                    case .captcha: break
+                    case .pushChallenge:
+                        self.updatePersistedSessionState(session: session, tx) {
+                            $0.pushChallengeState = .fulfilled
+                        }
+                    }
+                }
                 return self.nextStep()
             case .rejectedArgument(let session):
                 // TODO[Registration] invalid captcha token; show error
@@ -1602,9 +1780,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return self.nextStep()
             case .networkFailure:
                 if retriesLeft > 0 {
-                    return self.submitCaptchaChallengeFulfillment(
-                        session: session,
-                        token: token,
+                    return self.submit(
+                        challengeFulfillment: fulfillment,
+                        for: session,
                         retriesLeft: retriesLeft - 1
                     )
                 }
@@ -2286,5 +2464,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // though. This is how many tries they have before we wipe our local state and make
         // them go through re-registration.
         static let maxLocalPINGuesses = 10
+
+        /// How long we block waiting for a push challenge after requesting one.
+        /// We might still fulfill the challenge after this, but we won't opportunistically block proceeding.
+        static let pushTokenTimeout: TimeInterval = 30
     }
 }

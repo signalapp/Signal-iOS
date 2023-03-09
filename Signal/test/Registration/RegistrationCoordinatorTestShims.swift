@@ -174,6 +174,18 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
         return requestPushTokenMock!()
     }
 
+    public var receivePreAuthChallengeTokenMock: (() -> Guarantee<String>)!
+
+    public func receivePreAuthChallengeToken() -> Guarantee<String> {
+        return receivePreAuthChallengeTokenMock!()
+    }
+
+    public var didClearPreAuthChallengeToken = false
+
+    public func clearPreAuthChallengeToken() {
+        didClearPreAuthChallengeToken = true
+    }
+
     public var syncPushTokensForcingUploadMock: ((
         _ auth: ChatServiceAuth
     ) -> Guarantee<Registration.SyncPushTokensResult>)?

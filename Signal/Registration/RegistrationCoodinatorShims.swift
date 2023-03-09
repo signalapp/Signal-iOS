@@ -235,6 +235,10 @@ public protocol _RegistrationCoordinator_PushRegistrationManagerShim {
 
     func requestPushToken() -> Guarantee<String?>
 
+    func receivePreAuthChallengeToken() -> Guarantee<String>
+
+    func clearPreAuthChallengeToken()
+
     func syncPushTokensForcingUpload(
         auth: ChatServiceAuth
     ) -> Guarantee<Registration.SyncPushTokensResult>
@@ -257,6 +261,14 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
         return manager.requestPushTokens(forceRotation: false)
             .map { $0.0 }
             .recover { _ in return .value(nil) }
+    }
+
+    public func receivePreAuthChallengeToken() -> Guarantee<String> {
+        return manager.receivePreAuthChallengeToken()
+    }
+
+    public func clearPreAuthChallengeToken() {
+        manager.clearPreAuthChallengeToken()
     }
 
     public func syncPushTokensForcingUpload(

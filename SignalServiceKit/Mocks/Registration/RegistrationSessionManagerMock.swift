@@ -26,13 +26,13 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
     }
 
     public var fulfillChallengeResponse: Guarantee<Registration.UpdateSessionResponse>?
-    public var didFulfillChallenge = false
+    public var latestChallengeFulfillment: Registration.ChallengeFulfillment?
 
     public func fulfillChallenge(
         for session: RegistrationSession,
         fulfillment: Registration.ChallengeFulfillment
     ) -> Guarantee<Registration.UpdateSessionResponse> {
-        didFulfillChallenge = true
+        latestChallengeFulfillment = fulfillment
         return fulfillChallengeResponse!
     }
 

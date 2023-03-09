@@ -93,19 +93,17 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // MARK: Vanilla push token
 
-    /// Receives the next pre-auth challenge token.
+    /// Receives a pre-auth challenge token.
     ///
     /// Notably, this method is not responsible for requesting these tokens—that must be
     /// managed elsewhere. Before you request one, you should call this method.
-    ///
-    /// The result will be "reset" when a token is received. For example, if you call this
-    /// method twice in rapid succession, you'll get the same result. But if you call it,
-    /// receive a token, and then call it again, you'll get two different results.
-    public func receiveNextPreAuthChallengeToken() -> Guarantee<String> {
+    public func receivePreAuthChallengeToken() -> Guarantee<String> { preauthChallengeGuarantee }
+
+    /// Clears any existing pre-auth challenge token. If none exists, this method does nothing.
+    public func clearPreAuthChallengeToken() {
         if preauthChallengeGuarantee.isSealed {
             (preauthChallengeGuarantee, preauthChallengeFuture) = Guarantee<String>.pending()
         }
-        return preauthChallengeGuarantee
     }
 
     @objc
