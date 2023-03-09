@@ -673,7 +673,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (void)didTapCancel
 {
-    [self.delegate didCancelQuotedReply];
+    [self.cancelDelegate quotedReplyPreviewDidPressCancel];
 }
 
 @end

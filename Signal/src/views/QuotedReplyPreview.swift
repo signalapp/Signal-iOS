@@ -5,13 +5,13 @@
 
 import SignalUI
 
-protocol QuotedReplyPreviewDelegate: AnyObject {
-    func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview)
+@objc protocol QuotedReplyPreviewCancelDelegate: AnyObject {
+    func quotedReplyPreviewDidPressCancel()
 }
 
 class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
 
-    public weak var delegate: QuotedReplyPreviewDelegate?
+    private weak var cancelDelegate: QuotedReplyPreviewCancelDelegate!
 
     private let quotedReply: OWSQuotedReplyModel
     private let conversationStyle: ConversationStyle
@@ -28,9 +28,12 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
         fatalError("init(frame:) has not been implemented")
     }
 
-    init(quotedReply: OWSQuotedReplyModel, conversationStyle: ConversationStyle) {
+    init(quotedReply: OWSQuotedReplyModel,
+         conversationStyle: ConversationStyle,
+         cancelDelegate: QuotedReplyPreviewCancelDelegate) {
         self.quotedReply = quotedReply
         self.conversationStyle = conversationStyle
+        self.cancelDelegate = cancelDelegate
 
         super.init(frame: .zero)
 
@@ -57,6 +60,7 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
         // sizes changes).
         let quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply, conversationStyle: conversationStyle)
         quotedMessageView.delegate = self
+        quotedMessageView.cancelDelegate = self.cancelDelegate
         self.quotedMessageView = quotedMessageView
         quotedMessageView.setContentHuggingHorizontalLow()
         quotedMessageView.setCompressionResistanceHorizontalLow()
@@ -90,10 +94,5 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
     @objc
     public func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
         // Do nothing.
-    }
-
-    @objc
-    public func didCancelQuotedReply() {
-        self.delegate?.quotedReplyPreviewDidPressCancel(self)
     }
 }

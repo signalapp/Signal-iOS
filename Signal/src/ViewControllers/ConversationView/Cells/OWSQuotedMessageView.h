@@ -18,14 +18,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didTapQuotedReply:(OWSQuotedReplyModel *)quotedReply
     failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer;
 
-- (void)didCancelQuotedReply;
-
 @end
+
+@protocol QuotedReplyPreviewCancelDelegate;
 
 // TODO: Remove this view.
 @interface OWSQuotedMessageView : UIView
 
 @property (nonatomic, nullable, weak) id<OWSQuotedMessageViewDelegate> delegate;
+@property (nonatomic, nullable, weak) id<QuotedReplyPreviewCancelDelegate> cancelDelegate;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

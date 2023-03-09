@@ -57,7 +57,7 @@ protocol ConversationInputToolbarDelegate: AnyObject {
     func showUnblockConversationUI(completion: ((Bool) -> Void)?)
 }
 
-public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, QuotedReplyPreviewDelegate {
+public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, QuotedReplyPreviewCancelDelegate {
 
     private var conversationStyle: ConversationStyle
 
@@ -918,8 +918,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             return
         }
 
-        let quotedMessagePreview = QuotedReplyPreview(quotedReply: quotedReply, conversationStyle: conversationStyle)
-        quotedMessagePreview.delegate = self
+        let quotedMessagePreview = QuotedReplyPreview(quotedReply: quotedReply, conversationStyle: conversationStyle, cancelDelegate: self)
         quotedMessagePreview.setContentHuggingHorizontalLow()
         quotedMessagePreview.setCompressionResistanceHorizontalLow()
         quotedMessagePreview.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "quotedMessagePreview")
@@ -972,7 +971,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         return ThreadReplyInfo(timestamp: quotedReply.timestamp, authorAddress: quotedReply.authorAddress)
     }
 
-    func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview) {
+    func quotedReplyPreviewDidPressCancel() {
         if DebugFlags.internalLogging {
             OWSLogger.info("")
         }
