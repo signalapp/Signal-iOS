@@ -7,7 +7,7 @@ import Foundation
 import AVFoundation
 import SignalServiceKit
 
-public struct AudioSource: Hashable {
+public struct AudioSource: Hashable, CustomDebugStringConvertible {
 
     public let localizedName: String
     public let portDescription: AVAudioSessionPortDescription?
@@ -81,5 +81,23 @@ public struct AudioSource: Hashable {
         }
 
         hasher.combine(portDescription.uid)
+    }
+
+    public var debugDescription: String {
+        guard let portDescription = self.portDescription else {
+            assert(self.isBuiltInSpeaker)
+            return "<built-in speaker>"
+        }
+        return portDescription.logSafeDescription
+    }
+}
+
+extension AVAudioSessionPortDescription {
+    var logSafeDescription: String {
+        let portName = self.portName
+        if portName.dropFirst(4).isEmpty {
+            return "<\(portType): \(portName)>"
+        }
+        return "<\(portType): \(portName.prefix(2))..\(portName.suffix(2))>"
     }
 }
