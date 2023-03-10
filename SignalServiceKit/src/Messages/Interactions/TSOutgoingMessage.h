@@ -60,6 +60,11 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     TSGroupMetaMessageRequestInfo,
 };
 
+typedef NS_ENUM(NSInteger, EncryptionStyle) {
+    EncryptionStyleWhisper,
+    EncryptionStylePlaintext
+};
+
 @protocol DeliveryReceiptContext;
 
 @class SDSAnyWriteTransaction;

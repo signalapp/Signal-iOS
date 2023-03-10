@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
+@class SSKProtoSyncMessage;
 @class SSKProtoSyncMessageBuilder;
 
 /**
@@ -59,6 +60,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(syncMessageBuilder(transaction:));
+
++ (nullable SSKProtoSyncMessage *)buildSyncMessageProtoForMessageBuilder:
+                                      (SSKProtoSyncMessageBuilder *)syncMessageBuilder
+                                                                   error:(NSError **)errorHandle;
 
 @end
 

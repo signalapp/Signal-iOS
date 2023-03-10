@@ -16,6 +16,19 @@ public extension MessageSender {
     }
 }
 
+// MARK: - Message "isXYZ" properties
+
+@objc
+extension TSOutgoingMessage {
+    var isTransientSKDM: Bool {
+        (self as? OWSOutgoingSenderKeyDistributionMessage)?.isSentOnBehalfOfOnlineMessage ?? false
+    }
+
+    var isResendRequest: Bool {
+        self is OWSOutgoingResendRequest
+    }
+}
+
 // MARK: -
 
 extension MessageSender {
@@ -91,12 +104,19 @@ extension MessageSender {
 
             let promise: Promise<Void> = firstly(on: DispatchQueue.global()) { () -> Promise<SignalServiceKit.PreKeyBundle> in
                 let (promise, future) = Promise<SignalServiceKit.PreKeyBundle>.pending()
+
+                let forOnlineMessage = messageSend.message.isOnline
+                let forTransientSKDM = messageSend.message.isTransientSKDM
+                let forStorySend = messageSend.message.isStorySend
+
                 self.makePrekeyRequest(
-                    message: messageSend.message,
-                    recipientAddress: messageSend.address,
-                    deviceId: NSNumber(value: deviceId),
-                    accountId: accountId,
-                    udSendingAccessProvider: messageSend,
+                    forRecipientAddress: messageSend.address,
+                    recipientDeviceId: NSNumber(value: deviceId),
+                    recipientAccountId: accountId,
+                    forOnlineMessage: forOnlineMessage,
+                    forTransientSenderKeyDistributionMessage: forTransientSKDM,
+                    forStorySendMessage: forStorySend,
+                    udSendingParamsProvider: messageSend,
                     success: { preKeyBundle in
                         guard let preKeyBundle = preKeyBundle else {
                             return future.reject(OWSAssertionError("Missing preKeyBundle."))
@@ -166,11 +186,13 @@ extension MessageSender {
 public extension MessageSender {
 
     class func makePrekeyRequest(
-        message: TSOutgoingMessage,
-        recipientAddress: SignalServiceAddress,
-        deviceId: NSNumber,
-        accountId: AccountId?,
-        udSendingAccessProvider: UDSendingAccessProvider?,
+        forRecipientAddress recipientAddress: SignalServiceAddress,
+        recipientDeviceId deviceId: NSNumber,
+        recipientAccountId accountId: AccountId?,
+        forOnlineMessage isOnline: Bool,
+        forTransientSenderKeyDistributionMessage isTransientSKDM: Bool,
+        forStorySendMessage isStorySend: Bool,
+        udSendingParamsProvider: UDSendingParamsProvider?,
         success: @escaping (SignalServiceKit.PreKeyBundle?) -> Void,
         failure: @escaping (Error) -> Void
     ) {
@@ -205,14 +227,13 @@ public extension MessageSender {
             }
         }
 
-        let isTransientSKDM = (message as? OWSOutgoingSenderKeyDistributionMessage)?.isSentOnBehalfOfOnlineMessage ?? false
-        if message.isOnline || isTransientSKDM {
+        if isOnline || isTransientSKDM {
             Logger.info("Skipping prekey request for transient message")
             return failure(MessageSenderNoSessionForTransientMessageError())
         }
 
         // Don't use UD for story preKey fetches, we don't have a valid UD auth key
-        let udAccess = message.isStorySend ? nil : udSendingAccessProvider?.udSendingAccess?.udAccess
+        let udAccess = isStorySend ? nil : udSendingParamsProvider?.udSendingAccess?.udAccess
 
         let requestMaker = RequestMaker(
             label: "Prekey Fetch",
@@ -227,7 +248,7 @@ public extension MessageSender {
             udAuthFailureBlock: {
                 // Note the UD auth failure so subsequent retries
                 // to this recipient also use basic auth.
-                udSendingAccessProvider?.disableUDAuth()
+                udSendingParamsProvider?.disableUDAuth()
             },
             serviceId: serviceId.wrappedValue,
             udAccess: udAccess,
@@ -1165,13 +1186,12 @@ extension MessageSender {
 
 extension MessageSender {
 
-    @objc(encryptedMessageForMessage:recipientAddress:plaintextContent:deviceId:udSendingAccessProvider:transaction:error:)
+    @objc(encryptedMessageForMessagePlaintextContent:recipientAddress:deviceId:udSendingParamsProvider:transaction:error:)
     private func encryptedMessage(
-        forMessage message: TSOutgoingMessage,
+        messagePlaintextContent plaintextContent: Data?,
         recipientAddress: SignalServiceAddress,
-        plaintextContent: Data?,
         deviceId: Int32,
-        udSendingAccessProvider: UDSendingAccessProvider?,
+        udSendingParamsProvider: UDSendingParamsProvider?,
         transaction: SDSAnyWriteTransaction
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
@@ -1195,7 +1215,10 @@ extension MessageSender {
 
         let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: UInt32(bitPattern: deviceId))
 
-        if let udSendingAccess = udSendingAccessProvider?.udSendingAccess {
+        if
+            let udSendingParamsProvider,
+            let udSendingAccess = udSendingParamsProvider.udSendingAccess
+        {
             let secretCipher = try SMKSecretSessionCipher(
                 sessionStore: signalProtocolStore.sessionStore,
                 preKeyStore: signalProtocolStore.preKeyStore,
@@ -1207,8 +1230,8 @@ extension MessageSender {
                 recipient: recipientAddress,
                 deviceId: deviceId,
                 paddedPlaintext: paddedPlaintext,
-                contentHint: message.contentHint.signalClientHint,
-                groupId: message.envelopeGroupIdWithTransaction(transaction),
+                contentHint: udSendingParamsProvider.contentHint.signalClientHint,
+                groupId: udSendingParamsProvider.envelopeGroupId(transaction: transaction),
                 senderCertificate: udSendingAccess.senderCertificate,
                 protocolContext: transaction)
 
@@ -1254,13 +1277,13 @@ extension MessageSender {
         )
     }
 
-    @objc(wrappedPlaintextMessageForMessage:recipientAddress:plaintextContent:deviceId:udSendingAccessProvider:transaction:error:)
+    @objc(wrappedPlaintextMessageForMessagePlaintextContent:isResendRequest:recipientAddress:deviceId:udSendingParamsProvider:transaction:error:)
     private func wrappedPlaintextMessage(
-        forMessage message: TSOutgoingMessage,
+        messagePlaintextContent plaintextContent: Data?,
+        isResendRequestMessage: Bool,
         recipientAddress: SignalServiceAddress,
-        plaintextContent: Data?,
         deviceId: Int32,
-        udSendingAccessProvider: UDSendingAccessProvider?,
+        udSendingParamsProvider: UDSendingParamsProvider?,
         transaction: SDSAnyWriteTransaction
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
@@ -1268,22 +1291,26 @@ extension MessageSender {
         guard recipientAddress.isValid else { throw OWSAssertionError("Invalid address") }
         let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: UInt32(bitPattern: deviceId))
 
-        let permittedMessageTypes = [OWSOutgoingResendRequest.self]
-        guard permittedMessageTypes.contains(where: { message.isKind(of: $0) }) else {
+        // Only resend request messages are allowed to use this codepath.
+        guard isResendRequestMessage else {
             throw OWSAssertionError("Unexpected message type")
         }
+
         guard let rawPlaintext = plaintextContent else { throw OWSAssertionError("Missing plaintext") }
         let plaintext = try PlaintextContent(bytes: rawPlaintext)
 
         let serializedMessage: Data
         let messageType: SSKProtoEnvelopeType
 
-        if let udSendingAccess = udSendingAccessProvider?.udSendingAccess {
+        if
+            let udSendingParamsProvider,
+            let udSendingAccess = udSendingParamsProvider.udSendingAccess
+        {
             let usmc = try UnidentifiedSenderMessageContent(
                 CiphertextMessage(plaintext),
                 from: udSendingAccess.senderCertificate,
-                contentHint: message.contentHint.signalClientHint,
-                groupId: message.envelopeGroupIdWithTransaction(transaction) ?? Data()
+                contentHint: udSendingParamsProvider.contentHint.signalClientHint,
+                groupId: udSendingParamsProvider.envelopeGroupId(transaction: transaction) ?? Data()
             )
             let outerBytes = try sealedSenderEncrypt(
                 usmc,

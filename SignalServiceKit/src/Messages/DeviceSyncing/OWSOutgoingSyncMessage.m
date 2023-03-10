@@ -63,16 +63,14 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    // Add a random 1-512 bytes to obscure sync message type
-    size_t paddingBytesLength = arc4random_uniform(512) + 1;
-    builder.padding = [Cryptography generateRandomBytes:paddingBytesLength];
-
     NSError *error;
-    SSKProtoSyncMessage *_Nullable proto = [builder buildAndReturnError:&error];
+    SSKProtoSyncMessage *_Nullable proto = [[self class] buildSyncMessageProtoForMessageBuilder:builder error:&error];
+
     if (error || !proto) {
         OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
+
     return proto;
 }
 
@@ -94,6 +92,17 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
     [contentBuilder setSyncMessage:syncMessage];
     return contentBuilder;
+}
+
++ (nullable SSKProtoSyncMessage *)buildSyncMessageProtoForMessageBuilder:
+                                      (SSKProtoSyncMessageBuilder *)syncMessageBuilder
+                                                                   error:(NSError **)errorHandle
+{
+    // Add a random 1-512 bytes to obscure sync message type
+    size_t paddingBytesLength = arc4random_uniform(512) + 1;
+    syncMessageBuilder.padding = [Cryptography generateRandomBytes:paddingBytesLength];
+
+    return [syncMessageBuilder buildAndReturnError:errorHandle];
 }
 
 @end

@@ -48,22 +48,29 @@ public class ChangePhoneNumber: NSObject {
 
         owsAssertDebug(CurrentAppContext().isMainApp)
 
-        guard let localAddress = tsAccountManager.localAddress else {
-            return .init(error: OWSAssertionError("Missing local address before change number!"))
-        }
-
         return firstly { () -> Promise<(Parameters, PendingState)> in
             func makeGeneratePniIdentityPromise(
                 usingTransaction transaction: SDSAnyWriteTransaction
             ) -> Promise<(Parameters, PendingState)> {
-                let localDeviceId = tsAccountManager.storedDeviceId(
-                    with: transaction
-                )
+                guard
+                    let localAci = tsAccountManager.localUuid(with: transaction).map({ ServiceId($0) }),
+                    let localAddress = tsAccountManager.localAddress(with: transaction),
+                    let localRecipient = SignalRecipient.get(
+                        address: localAddress,
+                        mustHaveDevices: false,
+                        transaction: transaction
+                    ),
+                    let localUserAllDeviceIds = localRecipient.deviceIds
+                else {
+                    return .init(error: OWSAssertionError("Missing local parameters!"))
+                }
 
                 return changePhoneNumberPniManager.generatePniIdentity(
                     forNewE164: newE164,
-                    localAddress: localAddress,
-                    localDeviceId: localDeviceId,
+                    localAci: localAci,
+                    localAccountId: localRecipient.accountId,
+                    localDeviceId: tsAccountManager.storedDeviceId(with: transaction),
+                    localUserAllDeviceIds: localUserAllDeviceIds,
                     transaction: transaction.asV2Write
                 ).then(on: DispatchQueue.global()) { generatePniIdentityResult -> Promise<(Parameters, PendingState)> in
                     switch generatePniIdentityResult {
@@ -86,8 +93,7 @@ public class ChangePhoneNumber: NSObject {
             if let incompleteChangeToken {
                 return firstly { () -> Promise<Void> in
                     recoverIncompleteChangeToken(
-                        changeToken: incompleteChangeToken,
-                        localAddress: localAddress
+                        changeToken: incompleteChangeToken
                     )
                 }.then(on: DispatchQueue.global()) { () -> Promise<(Parameters, PendingState)> in
                     self.databaseStorage.write { transaction in
@@ -124,18 +130,12 @@ public class ChangePhoneNumber: NSObject {
     ) {
         owsAssertDebug(CurrentAppContext().isMainApp)
 
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing local address!")
-            return
-        }
-
         if
             changeWasSuccesful,
             let pniPendingState = changeToken.pniPendingState
         {
             changePhoneNumberPniManager.finalizePniIdentity(
                 withPendingState: pniPendingState,
-                localAddress: localAddress,
                 transaction: transaction.asV2Write
             )
         }
@@ -149,8 +149,7 @@ public class ChangePhoneNumber: NSObject {
     /// Take steps to recover from an interrupted change-number operation,
     /// indicated by the presence of the given change token.
     private func recoverIncompleteChangeToken(
-        changeToken: ChangeToken,
-        localAddress: SignalServiceAddress
+        changeToken: ChangeToken
     ) -> Promise<Void> {
         firstly { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
             self.accountServiceClient.getAccountWhoAmI()
@@ -218,11 +217,6 @@ public class ChangePhoneNumber: NSObject {
             return
         }
 
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing local address!")
-            return
-        }
-
         let incompleteChangeToken: ChangeToken? = self.databaseStorage.read { transaction in
             incompleteChangeTokenStore.existingToken(
                 transaction: transaction
@@ -233,10 +227,11 @@ public class ChangePhoneNumber: NSObject {
             return
         }
 
-        recoverIncompleteChangeToken(
-            changeToken: incompleteChangeToken,
-            localAddress: localAddress
-        ).done(on: DispatchQueue.global()) {
+        firstly { () -> Promise<Void> in
+            recoverIncompleteChangeToken(
+                changeToken: incompleteChangeToken
+            )
+        }.done(on: DispatchQueue.global()) {
             Logger.info("Recovered incomplete change token!")
         }.catch(on: DispatchQueue.global()) { error in
             Logger.info("Failed to recover incomplete change token: \(error)")

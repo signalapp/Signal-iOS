@@ -4,6 +4,7 @@
 //
 
 #import <SignalServiceKit/DataSource.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +22,7 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @class TSThread;
 
 @protocol ContactsManagerProtocol;
-@protocol UDSendingAccessProvider;
+@protocol UDSendingParamsProvider;
 
 /**
  * Useful for when you *sometimes* want to retry before giving up and calling the failure handler
@@ -103,19 +104,24 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
                         success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *error))failureHandler;
 
-/// Build a ``DeviceMessage`` for the given message with the given recipient
-/// details. This method may make blocking network requests.
+/// Build a ``DeviceMessage`` for the given parameters describing a message.
+/// This method may make blocking network requests.
 ///
 /// A `nil` return value with a `nil` error indicates that the given message
 /// could not be built due to an invalid device ID.
-- (nullable DeviceMessage *)buildDeviceMessageForMessage:(TSOutgoingMessage *)message
-                                        recipientAddress:(SignalServiceAddress *)recipientAddress
-                                      recipientAccountId:(NSString *)recipientAccountId
-                                       recipientDeviceId:(NSNumber *)recipientDeviceId
-                                        plaintextContent:(nullable NSData *)plaintextContent
-                                 udSendingAccessProvider:(nullable id<UDSendingAccessProvider>)udSendingAccessProvider
-                                                   error:(NSError **)errorHandle
-    __attribute__((swift_error(nonnull_error)));
+- (nullable DeviceMessage *)buildDeviceMessageForMessagePlaintextContent:(nullable NSData *)messagePlaintextContent
+                                                  messageEncryptionStyle:(EncryptionStyle)messageEncryptionStyle
+                                                        recipientAddress:(SignalServiceAddress *)recipientAddress
+                                                      recipientAccountId:(NSString *)recipientAccountId
+                                                       recipientDeviceId:(NSNumber *)recipientDeviceId
+                                                         isOnlineMessage:(BOOL)isOnlineMessage
+                                 isTransientSenderKeyDistributionMessage:(BOOL)isTransientSenderKeyDistributionMessage
+                                                      isStorySendMessage:(BOOL)isStorySendMessage
+                                                  isResendRequestMessage:(BOOL)isResendRequestMessage
+                                                 udSendingParamsProvider:
+                                                     (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
+                                                                   error:(NSError **)errorHandle;
+__attribute__((swift_error(nonnull_error)));
 
 + (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message;
 

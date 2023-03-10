@@ -9,11 +9,10 @@ import Curve25519Kit
 /// Represents a message sent to linked devices during a change-number
 /// informing those devices of the new PNI identity.
 ///
-/// Note that while this type is a "message" subclass for compatibility with
-/// other machinery, it should never be sent through the standard "send
-/// message" message" machinery. Rather, it is _only_ used as part of a
-/// change-number request.
-final class PniChangePhoneNumberSyncMessage: OWSOutgoingSyncMessage {
+/// Note that this type is not a ``TSOutgoingMessage`` subclass, as it is not
+/// sent through our message-sending machinery, and is instead part of a
+/// change-number request (and thereafter distributed by the service).
+final class PniChangePhoneNumberSyncMessage {
     private let pniIdentityKeyPair: ECKeyPair
     private let signedPreKey: SignedPreKeyRecord
     private let registrationId: UInt32
@@ -21,49 +20,28 @@ final class PniChangePhoneNumberSyncMessage: OWSOutgoingSyncMessage {
     init(
         pniIdentityKeyPair: ECKeyPair,
         signedPreKey: SignedPreKeyRecord,
-        registrationId: UInt32,
-        thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        registrationId: UInt32
     ) {
         self.pniIdentityKeyPair = pniIdentityKeyPair
         self.signedPreKey = signedPreKey
         self.registrationId = registrationId
-
-        super.init(thread: thread, transaction: transaction)
     }
 
-    public override func syncMessageBuilder(
-        transaction: SDSAnyReadTransaction
-    ) -> SSKProtoSyncMessageBuilder? {
+    /// Build a serialized message proto for this sync message.
+    func buildSerializedMessageProto() throws -> Data {
         let changeNumberBuilder = SSKProtoSyncMessagePniChangeNumber.builder()
-
-        do {
-            changeNumberBuilder.setIdentityKeyPair(Data(pniIdentityKeyPair.identityKeyPair.serialize()))
-            changeNumberBuilder.setSignedPreKey(Data(try signedPreKey.asLSCRecord().serialize()))
-            changeNumberBuilder.setRegistrationID(registrationId)
-        } catch let error {
-            owsFailDebug("Failed to build message: \(error)")
-            return nil
-        }
+        changeNumberBuilder.setIdentityKeyPair(Data(pniIdentityKeyPair.identityKeyPair.serialize()))
+        changeNumberBuilder.setSignedPreKey(Data(try signedPreKey.asLSCRecord().serialize()))
+        changeNumberBuilder.setRegistrationID(registrationId)
 
         let syncMessageBuilder = SSKProtoSyncMessage.builder()
         syncMessageBuilder.setPniChangeNumber(changeNumberBuilder.buildInfallibly())
-        return syncMessageBuilder
-    }
 
-    override var shouldBeSaved: Bool {
-        false
-    }
+        let syncMessageProto = try OWSOutgoingSyncMessage.buildSyncMessageProto(for: syncMessageBuilder)
 
-    // MARK: - MTLModel
+        let contentProto = SSKProtoContent.builder()
+        contentProto.setSyncMessage(syncMessageProto)
 
-    @available(*, unavailable, message: "This type should never be serialized/deserialized.")
-    public required init?(coder: NSCoder) {
-        owsFail("This type should never be serialized/deserialized.")
-    }
-
-    @available(*, unavailable, message: "This type should never be serialized/deserialized.")
-    public required init(dictionary: [String: Any]) throws {
-        owsFail("This type should never be serialized/deserialized.")
+        return try contentProto.buildSerializedData()
     }
 }

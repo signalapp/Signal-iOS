@@ -76,9 +76,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
 
         switch destinationUuid {
-        case tsAccountManager.uuid(with: transaction):
+        case tsAccountManager.localUuid(with: transaction):
             return .aci
-        case tsAccountManager.pni(with: transaction):
+        case tsAccountManager.localPni(with: transaction):
             return .pni
         default:
             // PNI TODO: Handle past PNIs?

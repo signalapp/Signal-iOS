@@ -5,10 +5,18 @@
 
 import Foundation
 
+/// Provides parameters required for assembling a UD (sealed-sender) message.
 @objc
-public protocol UDSendingAccessProvider {
+public protocol UDSendingParamsProvider {
+    /// Indicates desired behavior on the case of decryption error.
+    var contentHint: SealedSenderContentHint { get }
+
     /// UD sending access, if available.
     var udSendingAccess: OWSUDSendingAccess? { get }
+
+    /// Fetches a group ID to attache to the message envelope, to assist error
+    /// handling in the case of decryption error.
+    func envelopeGroupId(transaction: SDSAnyReadTransaction) -> Data?
 
     /// Disable UD auth. After this method is called, ``udSendingAccess``
     /// should return `nil`.
@@ -20,7 +28,7 @@ public protocol UDSendingAccessProvider {
 // to multiple recipients and therefore require multiple instances of
 // OWSMessageSend.
 @objc
-public class OWSMessageSend: NSObject, UDSendingAccessProvider {
+public class OWSMessageSend: NSObject, UDSendingParamsProvider {
     @objc
     public let message: TSOutgoingMessage
 
@@ -100,7 +108,7 @@ public class OWSMessageSend: NSObject, UDSendingAccessProvider {
         self.udSendingAccess = udSendingAccess
     }
 
-    // MARK: - UD auth and UDSendingAccessProvider
+    // MARK: - UDSendingParamsProvider
 
     private var _udSendingAccess = AtomicOptional<OWSUDSendingAccess>(nil)
     @objc
@@ -110,9 +118,21 @@ public class OWSMessageSend: NSObject, UDSendingAccessProvider {
     }
 
     @objc
+    public var contentHint: SealedSenderContentHint {
+        message.contentHint
+    }
+
+    @objc
+    public func envelopeGroupId(transaction: SDSAnyReadTransaction) -> Data? {
+        message.envelopeGroupIdWithTransaction(transaction)
+    }
+
+    @objc
     public func disableUDAuth() {
         udSendingAccess = nil
     }
+
+    // MARK: - Getters
 
     @objc
     public var isUDSend: Bool {

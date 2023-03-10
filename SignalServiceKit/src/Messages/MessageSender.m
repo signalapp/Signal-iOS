@@ -303,22 +303,22 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
 @interface MessageSender (ImplementedInSwift)
 
-- (nullable DeviceMessage *)encryptedMessageForMessage:(TSOutgoingMessage *)message
-                                      recipientAddress:(SignalServiceAddress *)recipientAddress
-                                      plaintextContent:(nullable NSData *)plaintextContent
-                                              deviceId:(int)deviceId
-                               udSendingAccessProvider:(nullable id<UDSendingAccessProvider>)udSendingAccessProvider
-                                           transaction:(SDSAnyWriteTransaction *)transaction
-                                                 error:(NSError **)error;
+- (nullable DeviceMessage *)encryptedMessageForMessagePlaintextContent:(nullable NSData *)plaintextContent
+                                                      recipientAddress:(SignalServiceAddress *)recipientAddress
+                                                              deviceId:(int)deviceId
+                                               udSendingParamsProvider:
+                                                   (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
+                                                           transaction:(SDSAnyWriteTransaction *)transaction
+                                                                 error:(NSError **)error;
 
-- (nullable DeviceMessage *)wrappedPlaintextMessageForMessage:(TSOutgoingMessage *)message
-                                             recipientAddress:(SignalServiceAddress *)recipientAddress
-                                             plaintextContent:(nullable NSData *)plaintextContent
-                                                     deviceId:(int)deviceId
-                                      udSendingAccessProvider:
-                                          (nullable id<UDSendingAccessProvider>)udSendingAccessProvider
-                                                  transaction:(SDSAnyWriteTransaction *)transaction
-                                                        error:(NSError **)error;
+- (nullable DeviceMessage *)wrappedPlaintextMessageForMessagePlaintextContent:(nullable NSData *)plaintextContent
+                                                       isResendRequestMessage:(BOOL)isResendRequestMessage
+                                                             recipientAddress:(SignalServiceAddress *)recipientAddress
+                                                                     deviceId:(int)deviceId
+                                                      udSendingParamsProvider:
+                                                          (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
+                                                                  transaction:(SDSAnyWriteTransaction *)transaction
+                                                                        error:(NSError **)error;
 
 @end
 
@@ -938,13 +938,18 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     NSMutableArray<DeviceMessage *> *deviceMessages = [NSMutableArray array];
 
     for (NSNumber *deviceId in recipientDeviceIds) {
-        DeviceMessage *deviceMessage = [self buildDeviceMessageForMessage:messageSend.message
-                                                         recipientAddress:recipient.address
-                                                       recipientAccountId:recipient.accountId
-                                                        recipientDeviceId:deviceId
-                                                         plaintextContent:messageSend.plaintextContent
-                                                  udSendingAccessProvider:messageSend
-                                                                    error:errorHandle];
+        DeviceMessage *deviceMessage =
+            [self buildDeviceMessageForMessagePlaintextContent:messageSend.plaintextContent
+                                        messageEncryptionStyle:messageSend.message.encryptionStyle
+                                              recipientAddress:recipient.address
+                                            recipientAccountId:recipient.accountId
+                                             recipientDeviceId:deviceId
+                                               isOnlineMessage:messageSend.message.isOnline
+                       isTransientSenderKeyDistributionMessage:messageSend.message.isTransientSKDM
+                                            isStorySendMessage:messageSend.message.isStorySend
+                                        isResendRequestMessage:messageSend.message.isResendRequest
+                                       udSendingParamsProvider:messageSend
+                                                         error:errorHandle];
 
         if (*errorHandle) {
             return nil;
@@ -958,25 +963,34 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     return deviceMessages;
 }
 
-- (nullable DeviceMessage *)buildDeviceMessageForMessage:(TSOutgoingMessage *)message
-                                        recipientAddress:(SignalServiceAddress *)recipientAddress
-                                      recipientAccountId:(NSString *)recipientAccountId
-                                       recipientDeviceId:(NSNumber *)recipientDeviceId
-                                        plaintextContent:(nullable NSData *)plaintextContent
-                                 udSendingAccessProvider:(nullable id<UDSendingAccessProvider>)udSendingAccessProvider
-                                                   error:(NSError **)errorHandle
+- (nullable DeviceMessage *)buildDeviceMessageForMessagePlaintextContent:(nullable NSData *)messagePlaintextContent
+                                                  messageEncryptionStyle:(EncryptionStyle)messageEncryptionStyle
+                                                        recipientAddress:(SignalServiceAddress *)recipientAddress
+                                                      recipientAccountId:(NSString *)recipientAccountId
+                                                       recipientDeviceId:(NSNumber *)recipientDeviceId
+                                                         isOnlineMessage:(BOOL)isOnlineMessage
+                                 isTransientSenderKeyDistributionMessage:(BOOL)isTransientSenderKeyDistributionMessage
+                                                      isStorySendMessage:(BOOL)isStorySendMessage
+                                                  isResendRequestMessage:(BOOL)isResendRequestMessage
+                                                 udSendingParamsProvider:
+                                                     (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
+                                                                   error:(NSError **)errorHandle
 {
     OWSAssertDebug(!NSThread.isMainThread);
     OWSAssertDebug(errorHandle);
 
     DeviceMessage *deviceMessage;
     @try {
-        deviceMessage = [self throws_deviceMessageForMessage:message
-                                            recipientAddress:recipientAddress
-                                          recipientAccountId:recipientAccountId
-                                           recipientDeviceId:recipientDeviceId
-                                            plaintextContent:plaintextContent
-                                     udSendingAccessProvider:udSendingAccessProvider];
+        deviceMessage = [self throws_deviceMessageForMessagePlaintextContent:messagePlaintextContent
+                                                      messageEncryptionStyle:messageEncryptionStyle
+                                                            recipientAddress:recipientAddress
+                                                          recipientAccountId:recipientAccountId
+                                                           recipientDeviceId:recipientDeviceId
+                                                             isOnlineMessage:isOnlineMessage
+                                     isTransientSenderKeyDistributionMessage:isTransientSenderKeyDistributionMessage
+                                                          isStorySendMessage:isStorySendMessage
+                                                      isResendRequestMessage:isResendRequestMessage
+                                                     udSendingParamsProvider:udSendingParamsProvider];
     } @catch (NSException *exception) {
         OWSLogWarn(@"Could not build device messages: %@", exception);
         NSError *error = nil;
@@ -1248,49 +1262,54 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         });
 }
 
-- (DeviceMessage *)throws_deviceMessageForMessage:(TSOutgoingMessage *)message
-                                 recipientAddress:(SignalServiceAddress *)recipientAddress
-                               recipientAccountId:(NSString *)recipientAccountId
-                                recipientDeviceId:(NSNumber *)recipientDeviceId
-                                 plaintextContent:(nullable NSData *)plaintextContent
-                          udSendingAccessProvider:(nullable id<UDSendingAccessProvider>)udSendingAccessProvider
+- (DeviceMessage *)throws_deviceMessageForMessagePlaintextContent:(nullable NSData *)messagePlaintextContent
+                                           messageEncryptionStyle:(EncryptionStyle)messageEncryptionStyle
+                                                 recipientAddress:(SignalServiceAddress *)recipientAddress
+                                               recipientAccountId:(NSString *)recipientAccountId
+                                                recipientDeviceId:(NSNumber *)recipientDeviceId
+                                                  isOnlineMessage:(BOOL)isOnlineMessage
+                          isTransientSenderKeyDistributionMessage:(BOOL)isTransientSenderKeyDistributionMessage
+                                               isStorySendMessage:(BOOL)isStorySendMessage
+                                           isResendRequestMessage:(BOOL)isResendRequestMessage
+                                          udSendingParamsProvider:
+                                              (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
 {
     OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(message);
     OWSAssertDebug(recipientAddress.isValid);
 
-    if (!plaintextContent) {
+    if (!messagePlaintextContent) {
         OWSRaiseException(InvalidMessageException, @"No message proto");
     }
 
     // This may involve blocking network requests.
-    [self throws_ensureRecipientHasSessionForMessage:message
-                                    recipientAddress:recipientAddress
-                                            deviceId:recipientDeviceId
-                                           accountId:recipientAccountId
-                             udSendingAccessProvider:udSendingAccessProvider];
+    [self throws_ensureRecipientHasSessionForRecipientAddress:recipientAddress
+                                            recipientDeviceId:recipientDeviceId
+                                           recipientAccountId:recipientAccountId
+                                             forOnlineMessage:isOnlineMessage
+                     forTransientSenderKeyDistributionMessage:isTransientSenderKeyDistributionMessage
+                                          forStorySendMessage:isStorySendMessage
+                                      udSendingParamsProvider:udSendingParamsProvider];
 
     __block NSError *encryptionError;
     __block DeviceMessage *__nullable deviceMessage = nil;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        switch (message.encryptionStyle) {
+        switch (messageEncryptionStyle) {
             case EncryptionStyleWhisper:
-                deviceMessage = [self encryptedMessageForMessage:message
-                                                recipientAddress:recipientAddress
-                                                plaintextContent:plaintextContent
-                                                        deviceId:recipientDeviceId.intValue
-                                         udSendingAccessProvider:udSendingAccessProvider
-                                                     transaction:transaction
-                                                           error:&encryptionError];
+                deviceMessage = [self encryptedMessageForMessagePlaintextContent:messagePlaintextContent
+                                                                recipientAddress:recipientAddress
+                                                                        deviceId:recipientDeviceId.intValue
+                                                         udSendingParamsProvider:udSendingParamsProvider
+                                                                     transaction:transaction
+                                                                           error:&encryptionError];
                 break;
             case EncryptionStylePlaintext:
-                deviceMessage = [self wrappedPlaintextMessageForMessage:message
-                                                       recipientAddress:recipientAddress
-                                                       plaintextContent:plaintextContent
-                                                               deviceId:recipientDeviceId.intValue
-                                                udSendingAccessProvider:udSendingAccessProvider
-                                                            transaction:transaction
-                                                                  error:&encryptionError];
+                deviceMessage = [self wrappedPlaintextMessageForMessagePlaintextContent:messagePlaintextContent
+                                                                 isResendRequestMessage:isResendRequestMessage
+                                                                       recipientAddress:recipientAddress
+                                                                               deviceId:recipientDeviceId.intValue
+                                                                udSendingParamsProvider:udSendingParamsProvider
+                                                                            transaction:transaction
+                                                                                  error:&encryptionError];
                 break;
             default:
                 encryptionError = OWSErrorMakeAssertionError(@"Unrecognized encryption style");
@@ -1308,24 +1327,26 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     return deviceMessage;
 }
 
-- (void)throws_ensureRecipientHasSessionForMessage:(TSOutgoingMessage *)message
-                                  recipientAddress:(SignalServiceAddress *)recipientAddress
-                                          deviceId:(NSNumber *)deviceId
-                                         accountId:(NSString *)accountId
-                           udSendingAccessProvider:(nullable id<UDSendingAccessProvider>)udSendingAccessProvider
+- (void)throws_ensureRecipientHasSessionForRecipientAddress:(SignalServiceAddress *)recipientAddress
+                                          recipientDeviceId:(NSNumber *)recipientDeviceId
+                                         recipientAccountId:(NSString *)recipientAccountId
+                                           forOnlineMessage:(BOOL)forOnlineMessage
+                   forTransientSenderKeyDistributionMessage:(BOOL)forTransientSenderKeyDistributionMessage
+                                        forStorySendMessage:(BOOL)forStorySendMessage
+                                    udSendingParamsProvider:
+                                        (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
 {
     OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(message);
-    OWSAssertDebug(deviceId);
-    OWSAssertDebug(accountId);
+    OWSAssertDebug(recipientDeviceId);
+    OWSAssertDebug(recipientAccountId);
 
     OWSAssertDebug(recipientAddress.isValid);
 
     __block BOOL hasSession;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
-        hasSession = [sessionStore containsActiveSessionForAccountId:accountId
-                                                            deviceId:[deviceId intValue]
+        hasSession = [sessionStore containsActiveSessionForAccountId:recipientAccountId
+                                                            deviceId:[recipientDeviceId intValue]
                                                          transaction:transaction];
     }];
     if (hasSession) {
@@ -1335,11 +1356,13 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     __block PreKeyBundle *_Nullable bundle;
     __block NSException *_Nullable exception;
-    [MessageSender makePrekeyRequestWithMessage:message
-        recipientAddress:recipientAddress
-        deviceId:deviceId
-        accountId:accountId
-        udSendingAccessProvider:udSendingAccessProvider
+    [MessageSender makePrekeyRequestForRecipientAddress:recipientAddress
+        recipientDeviceId:recipientDeviceId
+        recipientAccountId:recipientAccountId
+        forOnlineMessage:forOnlineMessage
+        forTransientSenderKeyDistributionMessage:forTransientSenderKeyDistributionMessage
+        forStorySendMessage:forStorySendMessage
+        udSendingParamsProvider:udSendingParamsProvider
         success:^(PreKeyBundle *_Nullable responseBundle) {
             bundle = responseBundle;
             dispatch_semaphore_signal(sema);
@@ -1400,9 +1423,9 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     __block NSError *error;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         success = [[self class] createSessionForPreKeyBundle:bundle
-                                                   accountId:accountId
+                                                   accountId:recipientAccountId
                                             recipientAddress:recipientAddress
-                                                    deviceId:deviceId
+                                                    deviceId:recipientDeviceId
                                                  transaction:transaction
                                                        error:&error];
     });

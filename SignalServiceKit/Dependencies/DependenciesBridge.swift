@@ -108,11 +108,12 @@ public class DependenciesBridge {
         )
 
         self.changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
-            identityManager: identityManager,
-            messageSender: messageSender,
-            pniProtocolStore: pniProtocolStore,
             schedulers: schedulers,
-            tsAccountManager: ChangePhoneNumberPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager: tsAccountManager)
+            identityManager: ChangePhoneNumberPniManagerImpl.Wrappers.IdentityManager(identityManager),
+            messageSender: ChangePhoneNumberPniManagerImpl.Wrappers.MessageSender(messageSender),
+            preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
+            pniSignedPreKeyStore: ChangePhoneNumberPniManagerImpl.Wrappers.SignedPreKeyStore(pniProtocolStore.signedPreKeyStore),
+            tsAccountManager: ChangePhoneNumberPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
 
         self.registrationSessionManager = RegistrationSessionManagerImpl(

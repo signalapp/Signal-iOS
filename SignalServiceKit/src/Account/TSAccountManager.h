@@ -105,11 +105,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 @property (readonly, nullable) NSUUID *localUuid;
 
-- (nullable NSUUID *)localUuidWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(uuid(with:));
+- (nullable NSUUID *)localUuidWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(localUuid(with:));
 
 @property (readonly, nullable) NSUUID *localPni;
 
-- (nullable NSUUID *)localPniWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(pni(with:));
+- (nullable NSUUID *)localPniWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(localPni(with:));
 
 @property (readonly, nullable, class) SignalServiceAddress *localAddress;
 @property (readonly, nullable) SignalServiceAddress *localAddress;
