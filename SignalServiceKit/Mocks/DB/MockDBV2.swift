@@ -36,7 +36,27 @@ private class MockWriteTransaction: DBWriteTransaction {
 /// just blindly pass the ones created by this class around.
 public class MockDB: DB {
 
+    private let queue = DispatchQueue(label: "mockDB")
+
     public init() {}
+
+    private var hasOpenTransaction = false
+
+    private func makeRead() -> MockReadTransaction {
+        guard !hasOpenTransaction else {
+            fatalError("Re-entrant transaction opened")
+        }
+        hasOpenTransaction = true
+        return MockReadTransaction()
+    }
+
+    private func makeWrite() -> MockWriteTransaction {
+        guard !hasOpenTransaction else {
+            fatalError("Re-entrant transaction opened")
+        }
+        hasOpenTransaction = true
+        return MockWriteTransaction()
+    }
 
     public func read(
         file: String,
@@ -44,7 +64,10 @@ public class MockDB: DB {
         line: Int,
         block: (DBReadTransaction) -> Void
     ) {
-        block(MockReadTransaction())
+        queue.sync {
+            block(self.makeRead())
+            self.hasOpenTransaction = false
+        }
     }
 
     public func write(
@@ -53,7 +76,10 @@ public class MockDB: DB {
         line: Int,
         block: (DBWriteTransaction) -> Void
     ) {
-        block(MockWriteTransaction())
+        queue.sync {
+            block(self.makeWrite())
+            self.hasOpenTransaction = false
+        }
     }
 
     // MARK: - Async Methods
@@ -66,12 +92,15 @@ public class MockDB: DB {
         completionQueue: DispatchQueue,
         completion: (() -> Void)?
     ) {
-        block(MockReadTransaction())
-        guard let completion = completion else {
-             return
-        }
-        completionQueue.async {
-            completion()
+        queue.sync {
+            block(self.makeRead())
+            self.hasOpenTransaction = false
+            guard let completion = completion else {
+                return
+            }
+            completionQueue.sync {
+                completion()
+            }
         }
     }
 
@@ -83,12 +112,15 @@ public class MockDB: DB {
         completionQueue: DispatchQueue,
         completion: (() -> Void)?
     ) {
-        block(MockWriteTransaction())
-        guard let completion = completion else {
-             return
-        }
-        completionQueue.async {
-            completion()
+        queue.sync {
+            block(self.makeWrite())
+            self.hasOpenTransaction = false
+            guard let completion = completion else {
+                return
+            }
+            completionQueue.sync {
+                completion()
+            }
         }
     }
 
@@ -100,7 +132,10 @@ public class MockDB: DB {
         line: Int,
         _ block: @escaping (DBReadTransaction) -> Void
     ) -> AnyPromise {
-        block(MockReadTransaction())
+        queue.sync {
+            block(self.makeRead())
+            self.hasOpenTransaction = false
+        }
         return AnyPromise(Promise<Void>.value(()))
     }
 
@@ -110,7 +145,11 @@ public class MockDB: DB {
         line: Int,
         _ block: @escaping (DBReadTransaction) -> T
     ) -> Promise<T> {
-        let t = block(MockWriteTransaction())
+        let t = queue.sync {
+            let t = block(self.makeRead())
+            self.hasOpenTransaction = false
+            return t
+        }
         return Promise<T>.value(t)
     }
 
@@ -122,7 +161,11 @@ public class MockDB: DB {
         _ block: @escaping (DBReadTransaction) throws -> T
     ) -> Promise<T> {
         do {
-            let t = try block(MockReadTransaction())
+            let t = try queue.sync {
+                let t = try block(self.makeRead())
+                self.hasOpenTransaction = false
+                return t
+            }
             return Promise<T>.value(t)
         } catch {
             return Promise<T>.init(error: error)
@@ -135,7 +178,10 @@ public class MockDB: DB {
         line: Int,
         _ block: @escaping (DBWriteTransaction) -> Void
     ) -> AnyPromise {
-        block(MockWriteTransaction())
+        queue.sync {
+            block(self.makeWrite())
+            self.hasOpenTransaction = false
+        }
         return AnyPromise(Promise<Void>.value(()))
     }
 
@@ -145,7 +191,11 @@ public class MockDB: DB {
         line: Int,
         _ block: @escaping (DBWriteTransaction) -> T
     ) -> Promise<T> {
-        let t = block(MockWriteTransaction())
+        let t = queue.sync {
+            let t = block(self.makeWrite())
+            self.hasOpenTransaction = false
+            return t
+        }
         return Promise<T>.value(t)
     }
 
@@ -157,7 +207,11 @@ public class MockDB: DB {
         _ block: @escaping (DBWriteTransaction) throws -> T
     ) -> Promise<T> {
         do {
-            let t = try block(MockWriteTransaction())
+            let t = try queue.sync {
+                let t = try block(self.makeWrite())
+                self.hasOpenTransaction = false
+                return t
+            }
             return Promise<T>.value(t)
         } catch {
             return Promise<T>(error: error)
@@ -172,7 +226,11 @@ public class MockDB: DB {
         line: Int,
         block: (DBReadTransaction) -> T
     ) -> T {
-        return block(MockReadTransaction())
+        return queue.sync {
+            let t = block(self.makeRead())
+            self.hasOpenTransaction = false
+            return t
+        }
     }
 
     // throws version
@@ -182,7 +240,11 @@ public class MockDB: DB {
         line: Int,
         block: (DBReadTransaction) throws -> T
     ) throws -> T {
-        return try block(MockReadTransaction())
+        return try queue.sync {
+            let t = try block(self.makeRead())
+            self.hasOpenTransaction = false
+            return t
+        }
     }
 
     public func write<T>(
@@ -191,7 +253,11 @@ public class MockDB: DB {
         line: Int,
         block: (DBWriteTransaction) -> T
     ) -> T {
-        return block(MockWriteTransaction())
+        return queue.sync {
+            let t = block(self.makeWrite())
+            self.hasOpenTransaction = false
+            return t
+        }
     }
 
     // throws version
@@ -201,7 +267,11 @@ public class MockDB: DB {
         line: Int,
         block: (DBWriteTransaction) throws -> T
     ) throws -> T {
-        return try block(MockWriteTransaction())
+        return try queue.sync {
+            let t = try block(self.makeWrite())
+            self.hasOpenTransaction = false
+            return t
+        }
     }
 }
 

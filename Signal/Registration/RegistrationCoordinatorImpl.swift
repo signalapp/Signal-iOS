@@ -1635,7 +1635,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // There is no timeout on this promise. That's deliberate. If we get a push challenge token
         // at some point, we'd like to hold onto it, even if it took awhile to arrive. Other spots
         // in the code may handle a timeout.
-        pushRegistrationManager.receivePreAuthChallengeToken().done { [weak self] token in
+        pushRegistrationManager.receivePreAuthChallengeToken().done(on: schedulers.main) { [weak self] token in
             guard let self else { return }
             self.db.write { transaction in
                 self.didReceive(pushChallengeToken: token, for: session, transaction: transaction)
