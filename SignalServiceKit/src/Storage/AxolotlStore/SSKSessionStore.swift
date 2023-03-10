@@ -282,3 +282,14 @@ extension SSKSessionStore: SessionStore {
                          transaction: context.asTransaction)
     }
 }
+
+#if TESTABLE_BUILD
+
+@objc
+extension SSKSessionStore {
+    func removeAll(transaction: SDSAnyWriteTransaction) {
+        keyValueStore.removeAll(transaction: transaction)
+    }
+}
+
+#endif

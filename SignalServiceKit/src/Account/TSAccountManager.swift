@@ -364,7 +364,7 @@ extension TSAccountManager {
         }
     }
 
-    private static func processRegistrationError(_ error: Error) -> Error {
+    public static func processRegistrationError(_ error: Error) -> Error {
         Logger.warn("Error: \(error)")
 
         let statusCode = error.httpStatusCode ?? 0

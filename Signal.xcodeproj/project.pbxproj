@@ -1246,7 +1246,7 @@
 		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
 		D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */; };
 		D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */; };
-		D9E335A12993143500825677 /* AppSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A02993143500825677 /* AppSetup.swift */; };
+		D9CA5BF729B3F61E00D9AAD1 /* ChangePhoneNumber+ChangeTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA5BF629B3F61E00D9AAD1 /* ChangePhoneNumber+ChangeTokens.swift */; };
 		D9E335A42993269100825677 /* MockDBV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAE2982F4C4002E0CFE /* MockDBV2.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
@@ -3763,7 +3763,7 @@
 		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
 		D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManifest.swift; sourceTree = "<group>"; };
 		D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+SSK.swift"; sourceTree = "<group>"; };
-		D9E335A02993143500825677 /* AppSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSetup.swift; sourceTree = "<group>"; };
+		D9CA5BF629B3F61E00D9AAD1 /* ChangePhoneNumber+ChangeTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChangePhoneNumber+ChangeTokens.swift"; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
 		DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDBCB034D1DFAF85ADFD5E76 /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -5238,7 +5238,6 @@
 			children = (
 				347850661FD9B789007B8332 /* AppSetup.h */,
 				347850651FD9B789007B8332 /* AppSetup.m */,
-				D9E335A02993143500825677 /* AppSetup.swift */,
 				346129401FD1D74B00532771 /* Environment.h */,
 				346129411FD1D74B00532771 /* Environment.m */,
 				349C3636233D198300D52012 /* LaunchJobs.swift */,
@@ -7564,6 +7563,7 @@
 		D9C2D78529A80BE700D79715 /* ChangePhoneNumber */ = {
 			isa = PBXGroup;
 			children = (
+				D9CA5BF629B3F61E00D9AAD1 /* ChangePhoneNumber+ChangeTokens.swift */,
 				F9C5CB3C289453B200548EEE /* ChangePhoneNumber.swift */,
 				50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */,
 				D9C2D78629A80C9C00D79715 /* PniChangePhoneNumberSyncMessage.swift */,
@@ -10688,7 +10688,6 @@
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				349ED992221EE80D008045B0 /* AppPreferences.swift in Sources */,
 				347850691FD9B78A007B8332 /* AppSetup.m in Sources */,
-				D9E335A12993143500825677 /* AppSetup.swift in Sources */,
 				34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */,
 				883A7FD2269F642F00841DF9 /* AvatarModel.swift in Sources */,
 				66FA2B1F28CBA4A5006845CD /* BiometryType.swift in Sources */,
@@ -11509,6 +11508,7 @@
 				F9C5CC0C289453B300548EEE /* CDNDownloadOperation.swift in Sources */,
 				5049FA3228BEAAD800D6E099 /* cdsi.pb.swift in Sources */,
 				661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */,
+				D9CA5BF729B3F61E00D9AAD1 /* ChangePhoneNumber+ChangeTokens.swift in Sources */,
 				F9C5CE0E289453B400548EEE /* ChangePhoneNumber.swift in Sources */,
 				50E5E4B32993352C00E15A1C /* ChangePhoneNumberPniManager.swift in Sources */,
 				664160D029A6D60A00F5BA85 /* ChatServiceAuth.swift in Sources */,

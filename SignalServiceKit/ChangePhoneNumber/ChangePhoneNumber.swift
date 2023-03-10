@@ -9,202 +9,350 @@ import SignalCoreKit
 @objc
 public class ChangePhoneNumber: NSObject {
 
-    @objc
-    public static var shared: ChangePhoneNumber { SSKEnvironment.shared.changePhoneNumber }
+    private enum Constants {
+        static let localUserSupportsChangePhoneNumberKey = "localUserSupportsChangePhoneNumber"
+    }
+
+    private let changePhoneNumberPniManager: ChangePhoneNumberPniManager
+
+    /// Stores metadata about change-number operations for this user.
+    private let keyValueStore = SDSKeyValueStore(collection: "ChangePhoneNumber")
+
+    /// Records change-number operations that were started (by this, or
+    /// potentially a prior launch of the app) but not yet known to have
+    /// completed.
+    ///
+    /// If, on a launch, we find an incomplete change-number operation in here,
+    /// we will attempt to recover it.
+    private let incompleteChangeTokenStore = IncompleteChangeTokenStore()
 
     @objc
     public override init() {
+        self.changePhoneNumberPniManager = DependenciesBridge.shared.changePhoneNumberPniManager
+
         super.init()
 
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            Self.verifyLocalPhoneNumberIfNecessary()
+            self.recoverInterruptedChangeNumberIfNecessary()
         }
     }
 
-    public struct ChangeToken {
-        fileprivate let changeId: String
-    }
+    public func buildNewChangeToken(
+        forNewE164 newE164: E164,
+        transaction synchronousTransaction: SDSAnyWriteTransaction
+    ) -> Promise<(ChangePhoneNumberPni.Parameters, ChangeToken)> {
+        typealias Parameters = ChangePhoneNumberPni.Parameters
+        typealias PendingState = ChangePhoneNumberPni.PendingState
 
-    // incompleteChangeStore persists the set of changes that
-    // were begun (by this or previous launches of the app)
-    // and not yet marked as complete.
-    private static let incompleteChangeStore = SDSKeyValueStore(collection: "ChangePhoneNumber.incompleteChanges")
-    private static let lastVerifyAppVersion4Key = "lastVerifyAppVersion4Key"
-
-    public static func changeWillBegin(transaction: SDSAnyWriteTransaction) -> ChangeToken {
         owsAssertDebug(CurrentAppContext().isMainApp)
 
-        // Generate and insert a new "change phone number" id.
-        let changeId = UUID().uuidString
-        incompleteChangeStore.setString(changeId, key: changeId, transaction: transaction)
-        return ChangeToken(changeId: changeId)
-    }
-
-    public static func changeDidComplete(changeToken: ChangeToken, transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(CurrentAppContext().isMainApp)
-
-        clear(changeId: changeToken.changeId, transaction: transaction)
-    }
-
-    private static func clear(changeId: String, transaction: SDSAnyWriteTransaction) {
-        incompleteChangeStore.removeValue(forKey: changeId, transaction: transaction)
-    }
-
-    private static func verifyDidComplete(changeIds: Set<String>, transaction: SDSAnyWriteTransaction) {
-        Self.keyValueStore.setString(AppVersion.shared().currentAppVersion4,
-                                     key: lastVerifyAppVersion4Key,
-                                     transaction: transaction)
-
-        for changeId in changeIds {
-            clear(changeId: changeId, transaction: transaction)
-        }
-    }
-
-    private enum VerifyStatus {
-        case doNotVerify
-        case verify(changeIds: Set<String>)
-    }
-
-    private static func buildVerifyStatus(transaction: SDSAnyReadTransaction) -> VerifyStatus {
-        // Verify if there are incomplete changes in the db.
-        let incompleteChangeIds = Set(incompleteChangeStore.allKeys(transaction: transaction))
-        guard incompleteChangeIds.isEmpty else {
-            return .verify(changeIds: incompleteChangeIds)
-        }
-        // Verify if we haven't verified at least once on this app version.
-        let currentAppVersion4 = AppVersion.shared().currentAppVersion4
-        let lastVerifyAppVersion4: String? = Self.keyValueStore.getString(lastVerifyAppVersion4Key,
-                                                                          transaction: transaction)
-        guard currentAppVersion4 == lastVerifyAppVersion4 else {
-            return .verify(changeIds: Set())
-        }
-#if DEBUG
-        // Always verify in debug builds.
-        return .verify(changeIds: Set())
-        #else
-        return .doNotVerify
-#endif
-    }
-
-    private static func verifyLocalPhoneNumberIfNecessary() {
-        guard AppReadiness.isAppReady else {
-            owsFailDebug("isAppReady.")
-            return
-        }
-        guard !appExpiry.isExpired else {
-            owsFailDebug("appExpiry.")
-            return
-        }
-        guard CurrentAppContext().isMainApp,
-              tsAccountManager.isRegisteredAndReady else {
-            return
+        guard let localAddress = tsAccountManager.localAddress else {
+            return .init(error: OWSAssertionError("Missing local address before change number!"))
         }
 
-        let verifyStatus = databaseStorage.read { transaction in
-            Self.buildVerifyStatus(transaction: transaction)
-        }
+        return firstly { () -> Promise<(Parameters, PendingState)> in
+            func makeGeneratePniIdentityPromise(
+                usingTransaction transaction: SDSAnyWriteTransaction
+            ) -> Promise<(Parameters, PendingState)> {
+                let localDeviceId = tsAccountManager.storedDeviceId(
+                    with: transaction
+                )
 
-        switch verifyStatus {
-        case .doNotVerify:
-            return
-        case .verify(let changeIds):
-            firstly {
-                Self.updateLocalPhoneNumberPromise()
-            }.done(on: DispatchQueue.global()) { _ in
-                Self.databaseStorage.write { transaction in
-                    Self.verifyDidComplete(changeIds: changeIds, transaction: transaction)
-                }
-            }.catch(on: DispatchQueue.global()) { error in
-                owsFailDebugUnlessNetworkFailure(error)
-
-                if !error.isNetworkFailureOrTimeout {
-                    Self.databaseStorage.write { transaction in
-                        Self.verifyDidComplete(changeIds: changeIds, transaction: transaction)
+                return changePhoneNumberPniManager.generatePniIdentity(
+                    forNewE164: newE164,
+                    localAddress: localAddress,
+                    localDeviceId: localDeviceId,
+                    transaction: transaction.asV2Write
+                ).then(on: DispatchQueue.global()) { generatePniIdentityResult -> Promise<(Parameters, PendingState)> in
+                    switch generatePniIdentityResult {
+                    case let .success(parameters, pendingState):
+                        return .value((parameters, pendingState))
+                    case .failure:
+                        return .init(error: OWSAssertionError("Failed to generate PNI identity!"))
                     }
                 }
+            }
+
+            // If we have an incomplete change token from a previous
+            // interrupted attempt, attempt to recover that before proceeding
+            // with PNI identity generation.
+
+            let incompleteChangeToken: ChangeToken? = incompleteChangeTokenStore.existingToken(
+                transaction: synchronousTransaction
+            )
+
+            if let incompleteChangeToken {
+                return firstly { () -> Promise<Void> in
+                    recoverIncompleteChangeToken(
+                        changeToken: incompleteChangeToken,
+                        localAddress: localAddress
+                    )
+                }.then(on: DispatchQueue.global()) { () -> Promise<(Parameters, PendingState)> in
+                    self.databaseStorage.write { transaction in
+                        makeGeneratePniIdentityPromise(usingTransaction: transaction)
+                    }
+                }
+            } else {
+                return makeGeneratePniIdentityPromise(usingTransaction: synchronousTransaction)
+            }
+        }.map(on: DispatchQueue.global()) { (parameters, pendingState) throws -> (Parameters, ChangeToken) in
+            let newChangeToken: ChangeToken = {
+                if FeatureFlags.useChangePhoneNumberPniParameters {
+                    return ChangeToken(pniPendingState: pendingState)
+                }
+
+                return ChangeToken(legacyChangeId: UUID().uuidString)
+            }()
+
+            try self.databaseStorage.write { transaction in
+                try self.incompleteChangeTokenStore.save(
+                    changeToken: newChangeToken,
+                    transaction: transaction
+                )
+            }
+
+            return (parameters, newChangeToken)
+        }
+    }
+
+    public func changeDidComplete(
+        changeToken: ChangeToken,
+        successfully changeWasSuccesful: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        owsAssertDebug(CurrentAppContext().isMainApp)
+
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("Missing local address!")
+            return
+        }
+
+        if
+            changeWasSuccesful,
+            let pniPendingState = changeToken.pniPendingState
+        {
+            changePhoneNumberPniManager.finalizePniIdentity(
+                withPendingState: pniPendingState,
+                localAddress: localAddress,
+                transaction: transaction.asV2Write
+            )
+        }
+
+        incompleteChangeTokenStore.clear(
+            changeToken: changeToken,
+            transaction: transaction
+        )
+    }
+
+    /// Take steps to recover from an interrupted change-number operation,
+    /// indicated by the presence of the given change token.
+    private func recoverIncompleteChangeToken(
+        changeToken: ChangeToken,
+        localAddress: SignalServiceAddress
+    ) -> Promise<Void> {
+        firstly { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
+            self.accountServiceClient.getAccountWhoAmI()
+        }.done(on: DispatchQueue.global()) { whoAmIResponse in
+            try self.databaseStorage.write { transaction in
+                let changeWasSuccessful: Bool
+
+                if let pniPendingState = changeToken.pniPendingState {
+                    if pniPendingState.newE164.stringValue == whoAmIResponse.e164 {
+                        changeWasSuccessful = true
+                    } else {
+                        changeWasSuccessful = false
+                    }
+                } else {
+                    // Legacy change-number attempt - take whatever is on the
+                    // service and ensure we have the same state locally, then
+                    // clear the token.
+                    changeWasSuccessful = true
+                }
+
+                _ = try self.updateLocalPhoneNumber(
+                    forServiceAci: whoAmIResponse.aci,
+                    servicePni: whoAmIResponse.pni,
+                    serviceE164: whoAmIResponse.e164,
+                    transaction: transaction
+                )
+
+                self.changeDidComplete(
+                    changeToken: changeToken,
+                    successfully: changeWasSuccessful,
+                    transaction: transaction
+                )
+            }
+        }.recover(on: DispatchQueue.global()) { error in
+            if error.isNetworkFailureOrTimeout {
+                // If there was a network error, we can't confirm anything.
+                throw error
+            }
+
+            self.databaseStorage.write { transaction in
+                self.changeDidComplete(
+                    changeToken: changeToken,
+                    successfully: false,
+                    transaction: transaction
+                )
             }
         }
     }
 
+    private func recoverInterruptedChangeNumberIfNecessary() {
+        guard AppReadiness.isAppReady else {
+            owsFailDebug("isAppReady.")
+            return
+        }
+
+        guard !appExpiry.isExpired else {
+            owsFailDebug("appExpiry.")
+            return
+        }
+
+        guard
+            CurrentAppContext().isMainApp,
+            tsAccountManager.isRegisteredAndReady
+        else {
+            return
+        }
+
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("Missing local address!")
+            return
+        }
+
+        let incompleteChangeToken: ChangeToken? = self.databaseStorage.read { transaction in
+            incompleteChangeTokenStore.existingToken(
+                transaction: transaction
+            )
+        }
+
+        guard let incompleteChangeToken else {
+            return
+        }
+
+        recoverIncompleteChangeToken(
+            changeToken: incompleteChangeToken,
+            localAddress: localAddress
+        ).done(on: DispatchQueue.global()) {
+            Logger.info("Recovered incomplete change token!")
+        }.catch(on: DispatchQueue.global()) { error in
+            Logger.info("Failed to recover incomplete change token: \(error)")
+        }
+    }
+
+    // MARK: - Update the local phone number
+
     @objc
-    public static func updateLocalPhoneNumber() {
-        firstly {
-            Self.updateLocalPhoneNumberPromise()
+    public func updateLocalPhoneNumber() {
+        // TODO: [CNPNI] This is no longer a safe thing to do
+
+        firstly { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
+            Self.accountServiceClient.getAccountWhoAmI()
+        }.map(on: DispatchQueue.global()) { whoAmIResponse throws in
+            try self.databaseStorage.write { transaction in
+                try self.updateLocalPhoneNumber(
+                    forServiceAci: whoAmIResponse.aci,
+                    servicePni: whoAmIResponse.pni,
+                    serviceE164: whoAmIResponse.e164,
+                    transaction: transaction
+                )
+            }
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebugUnlessNetworkFailure(error)
         }
     }
 
-    public struct LocalPhoneNumber {
-        public let localPhoneNumber: String
-    }
+    /// Update local state concerning the phone number, based on values fetched
+    /// from the service.
+    /// 
+    /// - Returns
+    /// The persisted local phone number.
+    public func updateLocalPhoneNumber(
+        forServiceAci serviceAci: UUID,
+        servicePni: UUID,
+        serviceE164: String?,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> E164 {
+        guard let serviceE164 = E164(serviceE164) else {
+            throw OWSAssertionError("Missing or invalid service e164.")
+        }
 
-    public static func updateLocalPhoneNumberPromise() -> Promise<LocalPhoneNumber> {
-        firstly { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
-            Self.accountServiceClient.getAccountWhoAmI()
-        }.map(on: DispatchQueue.global()) { whoAmIResponse in
-            try Self.updateLocalPhoneNumber(
-                aci: whoAmIResponse.aci,
-                pni: whoAmIResponse.pni,
-                e164: whoAmIResponse.e164
-            )
+        guard
+            let localAci = tsAccountManager.localUuid,
+            let localE164 = E164(tsAccountManager.localNumber)
+        else {
+            throw OWSAssertionError("Missing or invalid local parameters!")
         }
-    }
 
-    public static func updateLocalPhoneNumber(
-        aci: UUID,
-        pni: UUID,
-        e164: String?
-    ) throws -> LocalPhoneNumber {
-        guard let localUuid = tsAccountManager.localUuid else {
-            throw OWSAssertionError("Missing localUuid.")
-        }
-        guard let localPhoneNumber = tsAccountManager.localNumber else {
-            throw OWSAssertionError("Missing localPhoneNumber.")
-        }
         let localPni = tsAccountManager.localPni
 
-        let serviceUuid = aci
-        guard let servicePhoneNumber = e164 else {
-            throw OWSAssertionError("Missing servicePhoneNumber.")
-        }
-        guard serviceUuid == localUuid else {
-            throw OWSAssertionError("Unexpected uuid: \(serviceUuid) != \(localUuid)")
-        }
-        let servicePni = pni
-
-        Logger.info("localUuid: \(localUuid), localPhoneNumber: \(localPhoneNumber), serviceUuid: \(serviceUuid), servicePhoneNumber: \(servicePhoneNumber)")
-
-        databaseStorage.write { transaction in
-            let address = SignalServiceAddress(uuid: serviceUuid, phoneNumber: servicePhoneNumber)
-
-            SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
-                .markAsRegistered(transaction: transaction)
-
-            if servicePhoneNumber != localPhoneNumber || servicePni != localPni {
-                Logger.info("Recording new phone number: \(servicePhoneNumber), pni: \(servicePni)")
-
-                Self.tsAccountManager.updateLocalPhoneNumber(servicePhoneNumber,
-                                                             aci: localUuid,
-                                                             pni: servicePni,
-                                                             shouldUpdateStorageService: true,
-                                                             transaction: transaction)
-            }
+        guard serviceAci == localAci else {
+            throw OWSAssertionError("Service ACI \(serviceAci) unexpectedly did not match local ACI!")
         }
 
-        return LocalPhoneNumber(localPhoneNumber: servicePhoneNumber)
+        Logger.info(
+            """
+            localAci: \(localAci),
+            localPni: \(localPni?.uuidString ?? "nil"),
+            localE164: \(localE164),
+            serviceAci: \(serviceAci),
+            servicePni: \(servicePni),
+            serviceE164: \(serviceE164)")
+            """
+        )
+
+        let addressFromServiceParams = SignalServiceAddress(
+            uuid: serviceAci,
+            e164: serviceE164
+        )
+
+        SignalRecipient.fetchOrCreate(
+            for: addressFromServiceParams,
+            trustLevel: .high,
+            transaction: transaction
+        )
+        .markAsRegistered(transaction: transaction)
+
+        if
+            serviceE164 != localE164
+                || servicePni != localPni
+        {
+            Logger.info(
+                "Recording new phone number: \(serviceE164), PNI: \(servicePni)"
+            )
+
+            self.tsAccountManager.updateLocalPhoneNumber(
+                serviceE164.stringValue,
+                aci: serviceAci, // Verified equal to `localAci` above
+                pni: servicePni,
+                shouldUpdateStorageService: true,
+                transaction: transaction
+            )
+
+            return serviceE164
+        } else {
+            return localE164
+        }
     }
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "ChangePhoneNumber")
-    private static let localUserSupportsChangePhoneNumberKey = "localUserSupportsChangePhoneNumber"
+    // MARK: - Supports change-number
 
-    public static func localUserSupportsChangePhoneNumber(transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(localUserSupportsChangePhoneNumberKey, defaultValue: false, transaction: transaction)
+    public func localUserSupportsChangePhoneNumber(transaction: SDSAnyReadTransaction) -> Bool {
+        keyValueStore.getBool(
+            Constants.localUserSupportsChangePhoneNumberKey,
+            defaultValue: false,
+            transaction: transaction
+        )
     }
 
-    public static func setLocalUserSupportsChangePhoneNumber(_ value: Bool, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setBool(value, key: localUserSupportsChangePhoneNumberKey, transaction: transaction)
+    public func setLocalUserSupportsChangePhoneNumber(_ value: Bool, transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setBool(
+            value,
+            key: Constants.localUserSupportsChangePhoneNumberKey,
+            transaction: transaction
+        )
     }
 }

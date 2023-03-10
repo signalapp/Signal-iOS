@@ -6,9 +6,9 @@
 import Curve25519Kit
 import Foundation
 
-// MARK: - ChangeNumberPniManager protocol
+// MARK: - ChangePhoneNumberPniManager protocol
 
-public protocol ChangeNumberPniManager {
+public protocol ChangePhoneNumberPniManager {
     /// Prepares for an impending "change number" request.
     ///
     /// Generates parameters to set a new PNI identity, including:
@@ -31,8 +31,10 @@ public protocol ChangeNumberPniManager {
     /// call ``finalizePniIdentity`` with the pending state and should then
     /// discard the pending state. If the change-number request is interrupted
     /// and the caller still holds pending state from a previous attempt, the
-    /// caller must call ``checkServicePniIdentityMatches`` and take further
-    /// action per that method's documentation.
+    /// caller must check if the pending state matches state on the server. If
+    /// so, the server accepted the change before the interruption and the
+    /// caller must immediately call ``finalizePniIdentity``. If not, the change
+    /// was not accepted and the pending state should be discarded.
     ///
     /// - Returns
     /// Parameters included as part of a change-number request, and corresponding
@@ -43,33 +45,7 @@ public protocol ChangeNumberPniManager {
         localAddress: SignalServiceAddress,
         localDeviceId: UInt32,
         transaction: DBWriteTransaction
-    ) -> Guarantee<ChangeNumberPni.GeneratePniIdentityResult>
-
-    /// Checks whether the identity committed to the service matches pending
-    /// state from a previous change-number request.
-    ///
-    /// If a change-number request is interrupted, the server may have
-    /// committed the identity change without the caller being aware of the
-    /// outcome. In this scenario, the caller should use this method to check
-    /// the current identity committed on the service, using pending state from
-    /// a prior call to ``generatePniIdentity``.
-    ///
-    /// If the identity on the service matches the local identity, then the
-    /// pending state is obsolete and should be discarded. If it matches the
-    /// identity in the pending state, the caller should immediately call
-    /// ``finalizePendingState`` with the pending state to update the local
-    /// identity. If neither matches...we're in trouble (and should force a
-    /// re-registration?).
-    ///
-    /// - Parameter pendingState
-    /// Pending state the caller believes may match the identity committed on
-    /// the service.
-    /// - Returns
-    /// The result of attempting to match the identity on the service.
-    func checkServicePniIdentityMatches(
-        pendingState: ChangeNumberPni.PendingState,
-        localE164: E164
-    ) -> Guarantee<ChangeNumberPni.CheckServiceIdentityResult>
+    ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult>
 
     /// Commits an identity generated for a change number request.
     ///
@@ -77,7 +53,7 @@ public protocol ChangeNumberPniManager {
     /// server has committed a new PNI identity, with the state from a prior
     /// call to ``generatePniIdentity``.
     func finalizePniIdentity(
-        withPendingState pendingState: ChangeNumberPni.PendingState,
+        withPendingState pendingState: ChangePhoneNumberPni.PendingState,
         localAddress: SignalServiceAddress,
         transaction: DBWriteTransaction
     )
@@ -86,13 +62,13 @@ public protocol ChangeNumberPniManager {
 // MARK: - Change-Number PNI types
 
 /// Namespace for change-number PNI types.
-public enum ChangeNumberPni {
+public enum ChangePhoneNumberPni {
 
     /// PNI-related parameters for a change-number request.
     public struct Parameters {
         private let pniIdentityKey: Data
-        private var devicePniSignedPreKeys: [UInt32: SignedPreKeyRecord] = [:]
-        private var pniRegistrationIds: [UInt32: UInt32] = [:]
+        private var devicePniSignedPreKeys: [String: SignedPreKeyRecord] = [:]
+        private var pniRegistrationIds: [String: UInt32] = [:]
         private var deviceMessages: [DeviceMessage] = []
 
         fileprivate init(pniIdentityKey: Data) {
@@ -104,8 +80,8 @@ public enum ChangeNumberPni {
             signedPreKey: SignedPreKeyRecord,
             registrationId: UInt32
         ) {
-            devicePniSignedPreKeys[localDeviceId] = signedPreKey
-            pniRegistrationIds[localDeviceId] = registrationId
+            devicePniSignedPreKeys["\(localDeviceId)"] = signedPreKey
+            pniRegistrationIds["\(localDeviceId)"] = registrationId
         }
 
         fileprivate mutating func addLinkedDevice(
@@ -115,17 +91,16 @@ public enum ChangeNumberPni {
             deviceMessage: DeviceMessage
         ) {
             owsAssert(deviceId == deviceMessage.destinationDeviceId)
-            owsAssert(registrationId == deviceMessage.destinationRegistrationId)
 
-            devicePniSignedPreKeys[deviceId] = signedPreKey
-            pniRegistrationIds[deviceId] = registrationId
+            devicePniSignedPreKeys["\(deviceId)"] = signedPreKey
+            pniRegistrationIds["\(deviceId)"] = registrationId
             deviceMessages.append(deviceMessage)
         }
 
         func requestParameters() -> [String: Any] {
             [
                 "pniIdentityKey": pniIdentityKey.prependKeyType().base64EncodedString(),
-                "devicePniSignedPreKeys": devicePniSignedPreKeys.mapValues { OWSRequestFactory.signedPreKeyRequestParameters($0) },
+                "devicePniSignedPrekeys": devicePniSignedPreKeys.mapValues { OWSRequestFactory.signedPreKeyRequestParameters($0) },
                 "deviceMessages": deviceMessages.map { $0.requestParameters() },
                 "pniRegistrationIds": pniRegistrationIds
             ]
@@ -134,7 +109,8 @@ public enum ChangeNumberPni {
 
     /// Represents a change-number operation that has not yet been finalized.
     public struct PendingState {
-        fileprivate let newE164: E164
+        let newE164: E164
+
         fileprivate let pniIdentityKeyPair: ECKeyPair
         fileprivate let localDevicePniSignedPreKeyRecord: SignedPreKeyRecord
         fileprivate let localDevicePniRegistrationId: UInt32
@@ -144,59 +120,34 @@ public enum ChangeNumberPni {
         /// Successful generation of PNI change-number parameters and state.
         case success(parameters: Parameters, pendingState: PendingState)
 
-        /// An error occurred. Automatic recovery or retry is not recommended.
-        case failure(underlyingError: Error)
-    }
-
-    /// The result of checking the identity committed on the service.
-    public enum CheckServiceIdentityResult {
-        public enum MatchResult {
-            /// The service identity matches the local identity.
-            case matchesLocalIdentity
-            /// The service identity matches pending identity state.
-            case matchesPendingState
-            /// The service identity did not match any known identity.
-            case matchUnknown
-        }
-
-        /// A match was successfully computed.
-        case match(matchResult: MatchResult)
-        /// A network error occurred. Retry may succeed.
-        case networkError(underlyingError: Error)
-        /// An unexpected error occurred. Retry is unlikely to succeed.
-        case assertionError(underlyingError: Error)
+        /// An error occurred.
+        case failure
     }
 }
 
 // MARK: - ChangeNumberPniManagerImpl implementation
 
-class ChangeNumberPniManagerImpl: ChangeNumberPniManager {
+class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
     // MARK: - Init
 
     private let logger: PrefixedLogger = .init(prefix: "[CNPNI]")
 
-    private let accountServiceClient: AccountServiceClient
     private let identityManager: OWSIdentityManager
     private let messageSender: MessageSender
-    private let networkManager: NetworkManager
     private let pniProtocolStore: SignalProtocolStore
     private let schedulers: Schedulers
     private let tsAccountManager: Shims.TSAccountManager
 
     init(
-        accountServiceClient: AccountServiceClient,
         identityManager: OWSIdentityManager,
         messageSender: MessageSender,
-        networkManager: NetworkManager,
         pniProtocolStore: SignalProtocolStore,
         schedulers: Schedulers,
         tsAccountManager: Shims.TSAccountManager
     ) {
-        self.accountServiceClient = accountServiceClient
         self.identityManager = identityManager
         self.messageSender = messageSender
-        self.networkManager = networkManager
         self.pniProtocolStore = pniProtocolStore
         self.schedulers = schedulers
         self.tsAccountManager = tsAccountManager
@@ -209,7 +160,7 @@ class ChangeNumberPniManagerImpl: ChangeNumberPniManager {
         localAddress: SignalServiceAddress,
         localDeviceId: UInt32,
         transaction: DBWriteTransaction
-    ) -> Guarantee<ChangeNumberPni.GeneratePniIdentityResult> {
+    ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
         logger.info("Generating PNI identity!")
 
         let transaction: SDSAnyWriteTransaction = SDSDB.shimOnlyBridge(transaction)
@@ -221,21 +172,21 @@ class ChangeNumberPniManagerImpl: ChangeNumberPniManager {
                 localDeviceId: localDeviceId,
                 transaction: transaction
             )
-        } catch let error {
+        } catch {
             logger.error("Failed to load recipient params.")
-            return .value(.failure(underlyingError: error))
+            return .value(.failure)
         }
 
         let pniIdentityKeyPair = identityManager.generateNewIdentityKeyPair()
 
-        let pendingState = ChangeNumberPni.PendingState(
+        let pendingState = ChangePhoneNumberPni.PendingState(
             newE164: newE164,
             pniIdentityKeyPair: pniIdentityKeyPair,
             localDevicePniSignedPreKeyRecord: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair),
             localDevicePniRegistrationId: TSAccountManager.generateRegistrationId()
         )
 
-        var pniParameters = ChangeNumberPni.Parameters(pniIdentityKey: pniIdentityKeyPair.publicKey)
+        var pniParameters = ChangePhoneNumberPni.Parameters(pniIdentityKey: pniIdentityKeyPair.publicKey)
 
         // Include the signed pre key & registration ID for the current device.
         pniParameters.addLocalDevice(
@@ -291,7 +242,7 @@ class ChangeNumberPniManagerImpl: ChangeNumberPniManager {
         return Guarantee.when(
             on: schedulers.global(),
             resolved: linkedDevicePromises
-        ).map(on: schedulers.global()) { (linkedDeviceParamResults: [Result<LinkedDeviceParams?, Error>]) -> ChangeNumberPni.GeneratePniIdentityResult in
+        ).map(on: schedulers.global()) { (linkedDeviceParamResults: [Result<LinkedDeviceParams?, Error>]) -> ChangePhoneNumberPni.GeneratePniIdentityResult in
             for linkedDeviceParamResult in linkedDeviceParamResults {
                 switch linkedDeviceParamResult {
                 case .success(let param):
@@ -303,9 +254,9 @@ class ChangeNumberPniManagerImpl: ChangeNumberPniManager {
                         registrationId: param.registrationId,
                         deviceMessage: param.deviceMessage
                     )
-                case .failure(let error):
-                    // If we have any errors, return the first we hit.
-                    return .failure(underlyingError: error)
+                case .failure:
+                    // If we have any errors, return immediately.
+                    return .failure
                 }
             }
 
@@ -334,7 +285,11 @@ class ChangeNumberPniManagerImpl: ChangeNumberPniManager {
         localDeviceId: UInt32,
         transaction: SDSAnyWriteTransaction
     ) throws -> MyselfAsRecipientParams {
-        guard let localRecipient = SignalRecipient.get(address: localAddress, mustHaveDevices: false, transaction: transaction) else {
+        guard let localRecipient = SignalRecipient.get(
+            address: localAddress,
+            mustHaveDevices: false,
+            transaction: transaction
+        ) else {
             throw OWSAssertionError("Can't change number without local recipient.")
         }
 
@@ -390,6 +345,8 @@ class ChangeNumberPniManagerImpl: ChangeNumberPniManager {
         )
 
         return firstly(on: schedulers.global()) { () throws -> DeviceMessage? in
+            // Important to wrap this in asynchronity, since it might make
+            // blocking network requests.
             let deviceMessage: DeviceMessage? = try self.messageSender.buildDeviceMessage(
                 for: message,
                 recipientAddress: recipientAddress,
@@ -399,55 +356,14 @@ class ChangeNumberPniManagerImpl: ChangeNumberPniManager {
                 udSendingAccessProvider: nil // Sync messages do not use UD
             )
 
-            // Important to wrap this in asynchronity, since it might make
-            // blocking network requests.
             return deviceMessage
-        }
-    }
-
-    // MARK: - Check the service identity
-
-    func checkServicePniIdentityMatches(
-        pendingState: ChangeNumberPni.PendingState,
-        localE164: E164
-    ) -> Guarantee<ChangeNumberPni.CheckServiceIdentityResult> {
-        let logger = logger
-
-        logger.info("Checking service PNI identity.")
-
-        return firstly { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
-            accountServiceClient.getAccountWhoAmI()
-        }.map(on: schedulers.global()) { whoami -> ChangeNumberPni.CheckServiceIdentityResult in
-            guard let whoamiE164 = E164(whoami.e164) else {
-                return .assertionError(underlyingError: OWSAssertionError("whoami response contained invalid e164 string!"))
-            }
-
-            let matchResult: ChangeNumberPni.CheckServiceIdentityResult.MatchResult = {
-                switch whoamiE164 {
-                case localE164:
-                    return .matchesLocalIdentity
-                case pendingState.newE164:
-                    return .matchesPendingState
-                default:
-                    return .matchUnknown
-                }
-            }()
-
-            logger.info("Service identity matched: \(matchResult).")
-            return .match(matchResult: matchResult)
-        }.recover(on: schedulers.global()) { error -> Guarantee<ChangeNumberPni.CheckServiceIdentityResult> in
-            if error.isNetworkFailureOrTimeout {
-                return .value(.networkError(underlyingError: error))
-            }
-
-            return .value(.assertionError(underlyingError: error))
         }
     }
 
     // MARK: - Saving the New Identity
 
     func finalizePniIdentity(
-        withPendingState pendingState: ChangeNumberPni.PendingState,
+        withPendingState pendingState: ChangePhoneNumberPni.PendingState,
         localAddress: SignalServiceAddress,
         transaction v2Transaction: DBWriteTransaction
     ) {
@@ -455,31 +371,34 @@ class ChangeNumberPniManagerImpl: ChangeNumberPniManager {
 
         let transaction: SDSAnyWriteTransaction = SDSDB.shimOnlyBridge(v2Transaction)
 
-        // Store the identity key.
+        // Store pending state in the right places
+
         identityManager.storeIdentityKeyPair(
             pendingState.pniIdentityKeyPair,
             for: .pni,
             transaction: transaction
         )
 
-        // Store the signed pre-key, and kick off a pre-key upload.
         let newSignedPreKeyRecord = pendingState.localDevicePniSignedPreKeyRecord
-
         pniProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
             signedPreKeyId: newSignedPreKeyRecord.id,
             signedPreKeyRecord: newSignedPreKeyRecord,
             transaction: transaction
         )
 
-        TSPreKeyManager.refreshOneTimePreKeys(
-            forIdentity: .pni,
-            alsoRefreshSignedPreKey: false
-        )
-
-        // Save the registration ID.
         tsAccountManager.setPniRegistrationId(
             newRegistrationId: pendingState.localDevicePniRegistrationId,
             transaction: v2Transaction
+        )
+
+        // Followup tasks
+
+        // Since we rotated the identity key, we need new one-time pre-keys.
+        // However, no need to update the signed pre-key, which we also just
+        // rotated.
+        TSPreKeyManager.refreshOneTimePreKeys(
+            forIdentity: .pni,
+            alsoRefreshSignedPreKey: false
         )
     }
 }
@@ -511,12 +430,89 @@ class _ChangePhoneNumberPniManager_TSAccountManagerWrapper: _ChangePhoneNumberPn
     }
 }
 
-extension ChangeNumberPniManagerImpl {
+extension ChangePhoneNumberPniManagerImpl {
     enum Shims {
         typealias TSAccountManager = _ChangePhoneNumberPniManager_TSAccountManagerShim
     }
 
     enum Wrappers {
         typealias TSAccountManager = _ChangePhoneNumberPniManager_TSAccountManagerWrapper
+    }
+}
+
+// MARK: - PendingState Codable
+
+extension ChangePhoneNumberPni.PendingState: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case newE164
+        case pniIdentityKeyPair
+        case localDevicePniSignedPreKeyRecord
+        case localDevicePniRegistrationId
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.newE164 = try container.decode(E164.self, forKey: .newE164)
+        self.localDevicePniRegistrationId = try container.decode(UInt32.self, forKey: .localDevicePniRegistrationId)
+
+        guard
+            let pniIdentityKeyPair: ECKeyPair = try Self.decodeKeyedArchive(
+                fromDecodingContainer: container,
+                forKey: .pniIdentityKeyPair
+            ),
+            let localDevicePniSignedPreKeyRecord: SignedPreKeyRecord = try Self.decodeKeyedArchive(
+                fromDecodingContainer: container,
+                forKey: .localDevicePniSignedPreKeyRecord
+            )
+        else {
+            throw OWSAssertionError("Unable to deserialize NSKeyedArchiver fields!")
+        }
+
+        self.pniIdentityKeyPair = pniIdentityKeyPair
+        self.localDevicePniSignedPreKeyRecord = localDevicePniSignedPreKeyRecord
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(newE164, forKey: .newE164)
+        try container.encode(localDevicePniRegistrationId, forKey: .localDevicePniRegistrationId)
+
+        try Self.encodeKeyedArchive(
+            value: pniIdentityKeyPair,
+            toEncodingContainer: &container,
+            forKey: .pniIdentityKeyPair
+        )
+
+        try Self.encodeKeyedArchive(
+            value: localDevicePniSignedPreKeyRecord,
+            toEncodingContainer: &container,
+            forKey: .localDevicePniSignedPreKeyRecord
+        )
+    }
+
+    // MARK: NSKeyed[Un]Archiver
+
+    private static func decodeKeyedArchive<T: NSObject & NSSecureCoding>(
+        fromDecodingContainer decodingContainer: KeyedDecodingContainer<CodingKeys>,
+        forKey key: CodingKeys
+    ) throws -> T? {
+        let data = try decodingContainer.decode(Data.self, forKey: key)
+
+        return try NSKeyedUnarchiver.unarchivedObject(ofClass: T.self, from: data)
+    }
+
+    private static func encodeKeyedArchive<T: NSObject & NSSecureCoding>(
+        value: T,
+        toEncodingContainer encodingContainer: inout KeyedEncodingContainer<CodingKeys>,
+        forKey key: CodingKeys
+    ) throws {
+        let data = try NSKeyedArchiver.archivedData(
+            withRootObject: value,
+            requiringSecureCoding: true
+        )
+
+        try encodingContainer.encode(data, forKey: key)
     }
 }

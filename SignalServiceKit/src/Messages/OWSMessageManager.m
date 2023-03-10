@@ -1872,6 +1872,9 @@ NS_ASSUME_NONNULL_BEGIN
         [CallRecord createOrUpdateForSyncMessage:syncMessage.callEvent
                                 messageTimestamp:envelope.timestamp
                                      transaction:transaction];
+    } else if (syncMessage.pniChangeNumber) {
+        [self.identityManager processIncomingPniChangePhoneNumberWithProto:syncMessage.pniChangeNumber
+                                                               transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }

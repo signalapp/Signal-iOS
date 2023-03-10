@@ -180,42 +180,79 @@ public class AccountManager: NSObject {
         }
     }
 
-    func requestChangePhoneNumber(newPhoneNumber: String, verificationCode: String, registrationLock: String?) -> Promise<Void> {
+    func requestChangePhoneNumber(
+        newPhoneNumber: String,
+        verificationCode: String,
+        registrationLock: String?
+    ) -> Promise<Void> {
         guard let verificationCode = verificationCode.nilIfEmpty else {
-            let error = OWSError(error: .userError,
-                                 description: NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
-                                                                comment: "alert body during registration"),
-                                 isRetryable: false)
+            let error = OWSError(
+                error: .userError,
+                description: OWSLocalizedString(
+                    "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
+                    comment: "alert body during registration"
+                ),
+                isRetryable: false
+            )
+
             return Promise(error: error)
+        }
+
+        guard let newE164 = E164(newPhoneNumber) else {
+            return Promise(error: OWSAssertionError("Invalid new phone number!"))
         }
 
         Logger.info("Changing phone number.")
 
-        // Mark a change as in flight.  If the change is interrupted,
-        // we'll use /whoami on next app launch to ensure local client
-        // state reflects current service state.
-        let changeToken = Self.databaseStorage.write { transaction in
-            ChangePhoneNumber.changeWillBegin(transaction: transaction)
-        }
+        typealias PniParameters = ChangePhoneNumberPni.Parameters
+        typealias ChangeToken = ChangePhoneNumber.ChangeToken
 
-        return firstly {
-            // Change the phone number on the service.
-            self.changePhoneNumberRequest(newPhoneNumber: newPhoneNumber,
-                                          verificationCode: verificationCode,
-                                          registrationLock: registrationLock)
-        }.map(on: DispatchQueue.global()) { response in
-            // Try to take the change from the service.
-            try ChangePhoneNumber.updateLocalPhoneNumber(
-                aci: response.aci,
-                pni: response.pni,
-                e164: response.e164
-            )
-        }.done(on: DispatchQueue.global()) { localPhoneNumber in
-            owsAssertDebug(localPhoneNumber.localPhoneNumber == newPhoneNumber)
+        return firstly { () -> Promise<(PniParameters, ChangeToken)> in
+            // Mark a change as in flight.  If the change is interrupted, we'll
+            // check on next app launch to ensure local client state reflects
+            // current service state.
 
-            // Mark change as complete.
-            Self.databaseStorage.write { transaction in
-                ChangePhoneNumber.changeDidComplete(changeToken: changeToken, transaction: transaction)
+            databaseStorage.write { transaction -> Promise<(PniParameters, ChangeToken)> in
+                changePhoneNumber.buildNewChangeToken(
+                    forNewE164: newE164,
+                    transaction: transaction
+                )
+            }
+        }.then(on: DispatchQueue.global()) { (parameters, changeToken) -> Promise<(E164, ChangeToken)> in
+            firstly { () -> Promise<ChangePhoneNumberResponse> in
+                // Make the request to change phone number and PNI parameters on
+                // the service.
+
+                self.makeChangePhoneNumberRequest(
+                    newE164: newE164,
+                    verificationCode: verificationCode,
+                    registrationLock: registrationLock,
+                    pniChangePhoneNumberParameters: parameters
+                )
+            }.map(on: DispatchQueue.global()) { changePhoneNumberResponse -> (E164, ChangeToken) in
+                // Reconcile local state with service state.
+
+                let currentLocalE164 = try self.databaseStorage.write { transaction in
+                    try self.changePhoneNumber.updateLocalPhoneNumber(
+                        forServiceAci: changePhoneNumberResponse.aci,
+                        servicePni: changePhoneNumberResponse.pni,
+                        serviceE164: changePhoneNumberResponse.e164,
+                        transaction: transaction
+                    )
+                }
+
+                return (currentLocalE164, changeToken)
+            }
+        }.done(on: DispatchQueue.global()) { (localE164, changeToken) in
+            // Mark the change-number operation as complete.
+            owsAssertDebug(localE164 == newE164)
+
+            self.databaseStorage.write { transaction in
+                self.changePhoneNumber.changeDidComplete(
+                    changeToken: changeToken,
+                    successfully: true,
+                    transaction: transaction
+                )
             }
 
             self.profileManager.fetchLocalUsersProfile()
@@ -223,12 +260,12 @@ public class AccountManager: NSObject {
     }
 
     // TODO[Registration]: Modernize this.
-    public struct ChangePhoneNumberResponse {
-        public let aci: UUID
-        public let pni: UUID
-        public let e164: String?
+    private struct ChangePhoneNumberResponse {
+        let aci: UUID
+        let pni: UUID
+        let e164: String?
 
-        public static func parse(_ json: Any?) throws -> Self {
+        static func parse(_ json: Any?) throws -> Self {
             guard let parser = ParamParser(responseObject: json) else {
                 throw OWSAssertionError("Missing or invalid response.")
             }
@@ -241,18 +278,38 @@ public class AccountManager: NSObject {
         }
     }
 
-    private func changePhoneNumberRequest(newPhoneNumber: String,
-                                          verificationCode: String,
-                                          registrationLock: String?) -> Promise<ChangePhoneNumberResponse> {
-        return Promise { future in
-            let request = OWSRequestFactory.changePhoneNumberRequest(newPhoneNumberE164: newPhoneNumber,
-                                                                     verificationCode: verificationCode,
-                                                                     registrationLock: registrationLock)
-            tsAccountManager.verifyChangePhoneNumber(request: request,
-                                                     success: future.resolve,
-                                                     failure: future.reject)
-        }.map(on: DispatchQueue.global()) { json in
-            return try ChangePhoneNumberResponse.parse(json)
+    private func makeChangePhoneNumberRequest(
+        newE164: E164,
+        verificationCode: String,
+        registrationLock: String?,
+        pniChangePhoneNumberParameters: ChangePhoneNumberPni.Parameters
+    ) -> Promise<ChangePhoneNumberResponse> {
+        firstly { () -> Promise<HTTPResponse> in
+            let request = OWSRequestFactory.changePhoneNumberRequest(
+                newPhoneNumberE164: newE164.stringValue,
+                verificationCode: verificationCode,
+                registrationLock: registrationLock,
+                pniChangePhoneNumberParameters: pniChangePhoneNumberParameters
+            )
+
+            return networkManager.makePromise(request: request)
+        }.map(on: DispatchQueue.global()) { response -> ChangePhoneNumberResponse in
+            let statusCode = response.responseStatusCode
+
+            switch statusCode {
+            case 200, 204:
+                guard let json = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing or invalid JSON")
+                }
+
+                Logger.info("Change-number request accepted!")
+
+                return try ChangePhoneNumberResponse.parse(json)
+            default:
+                throw OWSAssertionError("Unexpected status while verifying code: \(statusCode)")
+            }
+        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ChangePhoneNumberResponse> in
+            throw TSAccountManager.processRegistrationError(error)
         }
     }
 

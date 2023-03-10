@@ -188,7 +188,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
             [self.storageServiceManager recordPendingLocalAccountUpdates];
         }
 
-        [ChangePhoneNumber updateLocalPhoneNumber];
+        [self.changePhoneNumber updateLocalPhoneNumber];
 
         [self postRegistrationStateDidChangeNotification];
 

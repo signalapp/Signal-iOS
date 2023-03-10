@@ -237,7 +237,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         SignalProtocolStore *signalProtocolStore = [self signalProtocolStoreForIdentity:OWSIdentityACI];
-        // FIXME: This isn't removing sessions!
+        [signalProtocolStore.sessionStore removeAllWithTransaction:transaction];
         [signalProtocolStore.signedPreKeyStore removeAll:transaction];
         [signalProtocolStore.preKeyStore removeAll:transaction];
     });

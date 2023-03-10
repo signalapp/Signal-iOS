@@ -52,24 +52,39 @@ public extension OWSRequestFactory {
         return .init(url: URL(string: textSecure2FAAPI)!, method: "PUT", parameters: ["pin": pin])
     }
 
-    static func changePhoneNumberRequest(newPhoneNumberE164: String,
-                                         verificationCode: String,
-                                         registrationLock: String?) -> TSRequest {
+    @nonobjc
+    static func changePhoneNumberRequest(
+        newPhoneNumberE164: String,
+        verificationCode: String,
+        registrationLock: String?,
+        pniChangePhoneNumberParameters: ChangePhoneNumberPni.Parameters
+    ) -> TSRequest {
         owsAssertDebug(nil != newPhoneNumberE164.strippedOrNil)
         owsAssertDebug(nil != verificationCode.strippedOrNil)
 
         let url = URL(string: "\(textSecureAccountsAPI)/number")!
+
         var parameters: [String: Any] = [
             "number": newPhoneNumberE164,
             "code": verificationCode
         ]
+
         if let registrationLock = registrationLock?.strippedOrNil {
             parameters["reglock"] = registrationLock
         }
 
-        return TSRequest(url: url,
-                  method: HTTPMethod.put.methodName,
-                  parameters: parameters)
+        parameters.merge(
+            pniChangePhoneNumberParameters.requestParameters(),
+            uniquingKeysWith: { (_, _) in
+                owsFail("Unexpectedly encountered duplicate keys!")
+            }
+        )
+
+        return TSRequest(
+            url: url,
+            method: HTTPMethod.put.methodName,
+            parameters: parameters
+        )
     }
 
     static func enableRegistrationLockV2Request(token: String) -> TSRequest {

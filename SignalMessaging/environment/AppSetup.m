@@ -65,13 +65,19 @@ NS_ASSUME_NONNULL_BEGIN
         OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
         id<SyncManagerProtocol> syncManager = (id<SyncManagerProtocol>)[[OWSSyncManager alloc] initDefault];
         OWS2FAManager *ows2FAManager = [OWS2FAManager new];
+        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
+        MessageSender *messageSender = [MessageSender new];
+        SignalProtocolStore *pniSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityPNI];
 
-        [self setupDependenciesBridgeWithDatabaseStorage:databaseStorage
-                                        tsAccountManager:tsAccountManager
-                                           signalService:signalService
-                                   storageServiceManager:storageServiceManager
-                                             syncManager:syncManager
-                                           ows2FAManager:ows2FAManager];
+        [DependenciesBridgeSetup setupSingletonWithDatabaseStorage:databaseStorage
+                                                  tsAccountManager:tsAccountManager
+                                                     signalService:signalService
+                                             storageServiceManager:storageServiceManager
+                                                       syncManager:syncManager
+                                                     ows2FAManager:ows2FAManager
+                                                   identityManager:identityManager
+                                                     messageSender:messageSender
+                                                  pniProtocolStore:pniSignalProtocolStore];
 
         // MARK: SignalMessaging environment properties
 
@@ -88,16 +94,13 @@ NS_ASSUME_NONNULL_BEGIN
         OWSContactsManager *contactsManager = [[OWSContactsManager alloc]
             initWithSwiftValues:[OWSContactsManagerSwiftValues makeWithValuesFromDependenciesBridge]];
         OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
-        MessageSender *messageSender = [MessageSender new];
         id<PendingReceiptRecorder> pendingReceiptRecorder = [MessageRequestPendingReceipts new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithDatabaseStorage:databaseStorage];
         NetworkManager *networkManager = [NetworkManager new];
         OWSMessageManager *messageManager = [OWSMessageManager new];
         BlockingManager *blockingManager = [BlockingManager new];
-        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
         id<RemoteConfigManager> remoteConfigManager = [ServiceRemoteConfigManager new];
         SignalProtocolStore *aciSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityACI];
-        SignalProtocolStore *pniSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityPNI];
         id<OWSUDManager> udManager = [OWSUDManagerImpl new];
         OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
         GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];

@@ -149,7 +149,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     return false
                 }
                 return Self.databaseStorage.read { transaction in
-                    ChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction)
+                    self.changePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction)
                 }
             }()
             if shouldShowChangePhoneNumber {

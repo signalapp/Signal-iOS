@@ -97,6 +97,11 @@ extension OWSIdentityManager {
                                               transaction: SDSAnyReadTransaction) -> Bool {
         return OWSRecipientIdentity.groupContainsUnverifiedMember(groupUniqueID, transaction: transaction)
     }
+}
+
+// MARK: - PNIs
+
+extension OWSIdentityManager {
 
     @objc
     public func processIncomingPniIdentityProto(_ pniIdentity: SSKProtoSyncMessagePniIdentity,
@@ -124,6 +129,80 @@ extension OWSIdentityManager {
             )
         } catch {
             owsFailDebug("Invalid PNI identity data: \(error)")
+        }
+    }
+
+    @objc
+    public func processIncomingPniChangePhoneNumber(
+        proto: SSKProtoSyncMessagePniChangeNumber,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard let (
+            pniIdentityKeyPair,
+            pniSignedPreKey,
+            pniRegistrationId
+        ) = deserializeIncomingPniChangePhoneNumber(proto: proto) else {
+            return
+        }
+
+        let pniProtocolStore = signalProtocolStore(for: .pni)
+
+        // Store in the right places
+
+        storeIdentityKeyPair(
+            pniIdentityKeyPair,
+            for: .pni,
+            transaction: transaction
+        )
+
+        pniSignedPreKey.markAsAcceptedByService()
+        pniProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
+            signedPreKeyId: pniSignedPreKey.id,
+            signedPreKeyRecord: pniSignedPreKey,
+            transaction: transaction
+        )
+
+        tsAccountManager.setPniRegistrationId(
+            newRegistrationId: pniRegistrationId,
+            transaction: transaction
+        )
+
+        // Clean up thereafter
+
+        // We need to refresh our one-time pre-keys, and should also refresh
+        // our signed pre-key so we use the one generated on the primary for as
+        // little time as possible.
+        TSPreKeyManager.refreshOneTimePreKeys(
+            forIdentity: .pni,
+            alsoRefreshSignedPreKey: true
+        )
+    }
+
+    private func deserializeIncomingPniChangePhoneNumber(
+        proto: SSKProtoSyncMessagePniChangeNumber
+    ) -> (ECKeyPair, SignalServiceKit.SignedPreKeyRecord, UInt32)? {
+        guard
+            let pniIdentityKeyPairData = proto.identityKeyPair,
+            let pniSignedPreKeyData = proto.signedPreKey,
+            proto.hasRegistrationID, proto.registrationID > 0
+        else {
+            owsFailDebug("Invalid PNI change number proto, missing fields!")
+            return nil
+        }
+
+        do {
+            let pniIdentityKeyPair = ECKeyPair(try IdentityKeyPair(bytes: pniIdentityKeyPairData))
+            let pniSignedPreKey = try LibSignalClient.SignedPreKeyRecord(bytes: pniSignedPreKeyData).asSSKRecord()
+            let pniRegistrationId = proto.registrationID
+
+            return (
+                pniIdentityKeyPair,
+                pniSignedPreKey,
+                pniRegistrationId
+            )
+        } catch let error {
+            owsFailDebug("Error while deserializing PNI change-number proto: \(error)")
+            return nil
         }
     }
 
@@ -224,8 +303,11 @@ extension OWSIdentityManager {
     public func clearShouldSharePhoneNumberForEveryone(transaction: SDSAnyWriteTransaction) {
         shareMyPhoneNumberStore.removeAll(transaction: transaction)
     }
+}
 
-    // MARK: - Batch Identity Lookup
+// MARK: - Batch Identity Lookup
+
+extension OWSIdentityManager {
 
     @discardableResult
     public func batchUpdateIdentityKeys(addresses: [SignalServiceAddress]) -> Promise<Void> {

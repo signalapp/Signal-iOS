@@ -33,36 +33,51 @@ NS_ASSUME_NONNULL_BEGIN
     StorageCoordinator *storageCoordinator = [StorageCoordinator new];
     SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
 
+    // Set up DependenciesBridge
+
+    TSAccountManager *tsAccountManager = [TSAccountManager new];
+    id<OWSSignalServiceProtocol> signalService = [OWSSignalServiceMock new];
+    OWSFakeStorageServiceManager *storageServiceManager = [OWSFakeStorageServiceManager new];
+    id<SyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
+    OWS2FAManager *ows2FAManager = [OWS2FAManager new];
+    OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
+    MessageSender *messageSender = [FakeMessageSender new];
+    SignalProtocolStore *pniSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityPNI];
+
+    [DependenciesBridgeSetup setupSingletonWithDatabaseStorage:databaseStorage
+                                              tsAccountManager:tsAccountManager
+                                                 signalService:signalService
+                                         storageServiceManager:storageServiceManager
+                                                   syncManager:syncManager
+                                                 ows2FAManager:ows2FAManager
+                                               identityManager:identityManager
+                                                 messageSender:messageSender
+                                              pniProtocolStore:pniSignalProtocolStore];
+
+    // Set up ourselves
+
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
-    MessageSender *messageSender = [FakeMessageSender new];
     id<PendingReceiptRecorder> pendingReceiptRecorder = [NoopPendingReceiptRecorder new];
     id<ProfileManagerProtocol> profileManager = [OWSFakeProfileManager new];
     NetworkManager *networkManager = [OWSFakeNetworkManager new];
     OWSMessageManager *messageManager = [OWSMessageManager new];
     BlockingManager *blockingManager = [BlockingManager new];
-    OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
     id<RemoteConfigManager> remoteConfigManager = [StubbableRemoteConfigManager new];
     SignalProtocolStore *aciSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityACI];
-    SignalProtocolStore *pniSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityPNI];
     id<OWSUDManager> udManager = [OWSUDManagerImpl new];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
     GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
     SocketManager *socketManager = [[SocketManager alloc] init];
-    TSAccountManager *tsAccountManager = [TSAccountManager new];
-    OWS2FAManager *ows2FAManager = [OWS2FAManager new];
     OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
     OWSReceiptManager *receiptManager = [OWSReceiptManager new];
     OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
     id<SSKReachabilityManager> reachabilityManager = [MockSSKReachabilityManager new];
-    id<SyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
     id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
     OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
     StickerManager *stickerManager = [[StickerManager alloc] init];
     SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
-    id<OWSSignalServiceProtocol> signalService = [OWSSignalServiceMock new];
     AccountServiceClient *accountServiceClient = [FakeAccountServiceClient new];
-    OWSFakeStorageServiceManager *storageServiceManager = [OWSFakeStorageServiceManager new];
     SSKPreferences *sskPreferences = [SSKPreferences new];
     id<GroupsV2> groupsV2 = [[MockGroupsV2 alloc] init];
     id<GroupV2Updates> groupV2Updates = [[MockGroupV2Updates alloc] init];

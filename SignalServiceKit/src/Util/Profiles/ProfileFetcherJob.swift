@@ -539,7 +539,7 @@ public class ProfileFetcherJob: NSObject {
             )
 
             if address.isLocalAddress {
-                ChangePhoneNumber.setLocalUserSupportsChangePhoneNumber(
+                self.changePhoneNumber.setLocalUserSupportsChangePhoneNumber(
                     profile.supportsChangeNumber,
                     transaction: transaction
                 )

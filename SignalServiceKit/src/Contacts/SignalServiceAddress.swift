@@ -137,6 +137,10 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(uuid: uuid, phoneNumber: phoneNumber, trustLevel: .low)
     }
 
+    public convenience init(uuid: UUID?, e164: E164?) {
+        self.init(uuid: uuid, phoneNumber: e164?.stringValue)
+    }
+
     internal convenience init(from address: ProtocolAddress) {
         if let uuid = UUID(uuidString: address.name) {
             self.init(uuid: uuid)

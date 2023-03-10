@@ -1322,6 +1322,7 @@ class StorageServiceOperation: OWSOperation {
             recordUpdater: StorageServiceAccountRecordUpdater(
                 localAddress: localAddress,
                 localAci: localAci,
+                changePhoneNumber: changePhoneNumber,
                 paymentsHelper: paymentsHelperSwift,
                 preferences: preferences,
                 profileManager: profileManagerImpl,

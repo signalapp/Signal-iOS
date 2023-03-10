@@ -8,7 +8,7 @@ import Foundation
 public struct E164: Equatable, Hashable, Codable, CustomDebugStringConvertible {
     public let stringValue: String
 
-    init?(_ stringValue: String?) {
+    public init?(_ stringValue: String?) {
         guard let stringValue, stringValue.isStructurallyValidE164 else {
             return nil
         }

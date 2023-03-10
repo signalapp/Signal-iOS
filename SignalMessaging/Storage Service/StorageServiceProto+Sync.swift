@@ -909,6 +909,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
     private let localAddress: SignalServiceAddress
     private let localAci: UUID
+
+    private let changePhoneNumber: ChangePhoneNumber
     private let paymentsHelper: PaymentsHelperSwift
     private let preferences: OWSPreferences
     private let profileManager: OWSProfileManager
@@ -925,6 +927,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     init(
         localAddress: SignalServiceAddress,
         localAci: UUID,
+        changePhoneNumber: ChangePhoneNumber,
         paymentsHelper: PaymentsHelperSwift,
         preferences: OWSPreferences,
         profileManager: OWSProfileManager,
@@ -940,6 +943,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     ) {
         self.localAddress = localAddress
         self.localAci = localAci
+
+        self.changePhoneNumber = changePhoneNumber
         self.paymentsHelper = paymentsHelper
         self.preferences = preferences
         self.profileManager = profileManager
@@ -1299,7 +1304,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                         // Consult "whoami" service endpoint; the service is the source of truth
                         // for the local phone number.  This ensures that the primary will always
                         // reflect the latest value.
-                        ChangePhoneNumber.updateLocalPhoneNumber()
+                        self.changePhoneNumber.updateLocalPhoneNumber()
 
                         // The primary should always reflect the latest value.
                         // If local db state doesn't agree with the storage service state,
