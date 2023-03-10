@@ -218,7 +218,7 @@ public class AccountManager: NSObject {
                     transaction: transaction
                 )
             }
-        }.then(on: DispatchQueue.global()) { (parameters, changeToken) -> Promise<(E164, ChangeToken)> in
+        }.then(on: DispatchQueue.global()) { (parameters, changeToken) -> Promise<Void> in
             firstly { () -> Promise<ChangePhoneNumberResponse> in
                 // Make the request to change phone number and PNI parameters on
                 // the service.
@@ -229,33 +229,27 @@ public class AccountManager: NSObject {
                     registrationLock: registrationLock,
                     pniChangePhoneNumberParameters: parameters
                 )
-            }.map(on: DispatchQueue.global()) { changePhoneNumberResponse -> (E164, ChangeToken) in
-                // Reconcile local state with service state.
+            }.map(on: DispatchQueue.global()) { changePhoneNumberResponse -> Void in
+                // Update local state to match new service state.
 
-                let currentLocalE164 = try self.databaseStorage.write { transaction in
-                    try self.changePhoneNumber.updateLocalPhoneNumber(
-                        forServiceAci: changePhoneNumberResponse.aci,
-                        servicePni: changePhoneNumberResponse.pni,
-                        serviceE164: changePhoneNumberResponse.e164,
+                guard let serviceE164 = E164(changePhoneNumberResponse.e164) else {
+                    throw OWSAssertionError("Invalid or missing e164 from change-number response!")
+                }
+
+                self.databaseStorage.write { transaction in
+                    self.changePhoneNumber.changeDidComplete(
+                        changeToken: changeToken,
+                        successfulChangeParams: ChangePhoneNumber.SuccessfulChangeParams(
+                            newServiceE164: serviceE164,
+                            serviceAci: changePhoneNumberResponse.aci,
+                            servicePni: changePhoneNumberResponse.pni
+                        ),
                         transaction: transaction
                     )
                 }
 
-                return (currentLocalE164, changeToken)
+                self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
             }
-        }.done(on: DispatchQueue.global()) { (localE164, changeToken) in
-            // Mark the change-number operation as complete.
-            owsAssertDebug(localE164 == newE164)
-
-            self.databaseStorage.write { transaction in
-                self.changePhoneNumber.changeDidComplete(
-                    changeToken: changeToken,
-                    successfully: true,
-                    transaction: transaction
-                )
-            }
-
-            self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
         }
     }
 

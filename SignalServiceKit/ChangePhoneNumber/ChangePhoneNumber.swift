@@ -123,21 +123,59 @@ public class ChangePhoneNumber: NSObject {
         }
     }
 
+    /// Parameters representing a successfully-completed change.
+    public struct SuccessfulChangeParams {
+        /// Our account's new E164 on the service.
+        let newServiceE164: E164
+        /// Our account's ACI on the service.
+        let serviceAci: UUID
+        /// Our account's PNI on the service.
+        let servicePni: UUID
+
+        public init(
+            newServiceE164: E164,
+            serviceAci: UUID,
+            servicePni: UUID
+        ) {
+            self.newServiceE164 = newServiceE164
+            self.serviceAci = serviceAci
+            self.servicePni = servicePni
+        }
+    }
+
+    /// Mark the given change as complete, optionally including additional data
+    /// if the change was completed successfully.
+    ///
+    /// - Parameter changeToken
+    /// The change to mark as complete.
+    /// - Parameter successfulChange
+    /// If the change was successful, contains parameters representing our new
+    /// state post-change. `nil` if the change was unsuccessful.
     public func changeDidComplete(
         changeToken: ChangeToken,
-        successfully changeWasSuccesful: Bool,
+        successfulChangeParams: SuccessfulChangeParams?,
         transaction: SDSAnyWriteTransaction
     ) {
         owsAssertDebug(CurrentAppContext().isMainApp)
 
-        if
-            changeWasSuccesful,
-            let pniPendingState = changeToken.pniPendingState
-        {
-            changePhoneNumberPniManager.finalizePniIdentity(
-                withPendingState: pniPendingState,
-                transaction: transaction.asV2Write
-            )
+        if let successfulChangeParams {
+            do {
+                try updateLocalPhoneNumber(
+                    forServiceAci: successfulChangeParams.serviceAci,
+                    servicePni: successfulChangeParams.servicePni,
+                    serviceE164: successfulChangeParams.newServiceE164.stringValue,
+                    transaction: transaction
+                )
+
+                if let pniPendingState = changeToken.pniPendingState {
+                    changePhoneNumberPniManager.finalizePniIdentity(
+                        withPendingState: pniPendingState,
+                        transaction: transaction.asV2Write
+                    )
+                }
+            } catch {
+                Logger.error("Failed to update local state while completing change!")
+            }
         }
 
         incompleteChangeTokenStore.clear(
@@ -154,7 +192,7 @@ public class ChangePhoneNumber: NSObject {
         firstly { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
             self.accountServiceClient.getAccountWhoAmI()
         }.done(on: DispatchQueue.global()) { whoAmIResponse in
-            try self.databaseStorage.write { transaction in
+            self.databaseStorage.write { transaction in
                 let changeWasSuccessful: Bool
 
                 if let pniPendingState = changeToken.pniPendingState {
@@ -170,16 +208,22 @@ public class ChangePhoneNumber: NSObject {
                     changeWasSuccessful = true
                 }
 
-                _ = try self.updateLocalPhoneNumber(
-                    forServiceAci: whoAmIResponse.aci,
-                    servicePni: whoAmIResponse.pni,
-                    serviceE164: whoAmIResponse.e164,
-                    transaction: transaction
-                )
+                let successfulChangeParams: SuccessfulChangeParams? = {
+                    guard
+                        changeWasSuccessful,
+                        let newE164 = E164(whoAmIResponse.e164)
+                    else { return nil }
+
+                    return SuccessfulChangeParams(
+                        newServiceE164: newE164,
+                        serviceAci: whoAmIResponse.aci,
+                        servicePni: whoAmIResponse.pni
+                    )
+                }()
 
                 self.changeDidComplete(
                     changeToken: changeToken,
-                    successfully: changeWasSuccessful,
+                    successfulChangeParams: successfulChangeParams,
                     transaction: transaction
                 )
             }
@@ -192,7 +236,7 @@ public class ChangePhoneNumber: NSObject {
             self.databaseStorage.write { transaction in
                 self.changeDidComplete(
                     changeToken: changeToken,
-                    successfully: false,
+                    successfulChangeParams: nil,
                     transaction: transaction
                 )
             }
@@ -265,7 +309,8 @@ public class ChangePhoneNumber: NSObject {
     /// 
     /// - Returns
     /// The persisted local phone number.
-    public func updateLocalPhoneNumber(
+    @discardableResult
+    fileprivate func updateLocalPhoneNumber(
         forServiceAci serviceAci: UUID,
         servicePni: UUID,
         serviceE164: String?,
