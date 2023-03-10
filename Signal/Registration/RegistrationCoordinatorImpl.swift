@@ -1767,7 +1767,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             switch result {
             case .success(let session):
                 self.db.write { tx in
-                    self.db.write { self.processSession(session, $0) }
+                    self.processSession(session, tx)
                     switch fulfillment {
                     case .captcha: break
                     case .pushChallenge:
