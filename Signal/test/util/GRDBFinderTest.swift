@@ -223,7 +223,7 @@ class GRDBFinderTest: SignalBaseTest {
         self.write { transaction in
             let buildUserProfile = { () -> OWSUserProfile in
                 let address = CommonGenerator.address(hasPhoneNumber: true)
-                return OWSUserProfile.getOrBuild(for: address, transaction: transaction)
+                return OWSUserProfile.getOrBuild(for: address, authedAccount: .implicit(), transaction: transaction)
             }
 
             do {
@@ -236,6 +236,7 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 userProfile.update(lastFetchDate: dateWithOffsetFromNow(-1 * kMonthInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
             }
 
@@ -244,6 +245,7 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 userProfile.update(lastFetchDate: dateWithOffsetFromNow(-1 * kMinuteInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
             }
 
@@ -252,6 +254,7 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 userProfile.update(lastMessagingDate: dateWithOffsetFromNow(-2 * kMonthInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
             }
 
@@ -260,9 +263,11 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 userProfile.update(lastMessagingDate: dateWithOffsetFromNow(-2 * kMonthInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
                 userProfile.update(lastFetchDate: dateWithOffsetFromNow(-1 * kMonthInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
             }
 
@@ -271,9 +276,11 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 userProfile.update(lastMessagingDate: dateWithOffsetFromNow(-2 * kMonthInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
                 userProfile.update(lastFetchDate: dateWithOffsetFromNow(-1 * kMinuteInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
             }
 
@@ -282,6 +289,7 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 userProfile.update(lastMessagingDate: dateWithOffsetFromNow(-1 * kHourInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
                 expectedAddresses.insert(userProfile.address)
                 userProfile.logDates(prefix: "Expected profile")
@@ -292,9 +300,11 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 userProfile.update(lastMessagingDate: dateWithOffsetFromNow(-1 * kHourInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
                 userProfile.update(lastFetchDate: dateWithOffsetFromNow(-1 * kMonthInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
                 expectedAddresses.insert(userProfile.address)
                 userProfile.logDates(prefix: "Expected profile")
@@ -305,9 +315,11 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 userProfile.update(lastMessagingDate: dateWithOffsetFromNow(-1 * kHourInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
                 userProfile.update(lastFetchDate: dateWithOffsetFromNow(-1 * kMinuteInterval),
                                    userProfileWriter: .metadataUpdate,
+                                   authedAccount: .implicit(),
                                    transaction: transaction)
             }
         }

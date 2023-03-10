@@ -172,14 +172,19 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     return (int)[self.tsAccountManager getOrGenerateRegistrationIdWithTransaction:transaction];
 }
 
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey address:(SignalServiceAddress *)address
+- (BOOL)saveRemoteIdentity:(NSData *)identityKey
+                   address:(SignalServiceAddress *)address
+             authedAccount:(AuthedAccount *)authedAccount
 {
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
     OWSAssertDebug(address.isValid);
 
     __block BOOL result;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        result = [self saveRemoteIdentity:identityKey address:address transaction:transaction];
+        result = [self saveRemoteIdentity:identityKey
+                                  address:address
+                            authedAccount:authedAccount
+                              transaction:transaction];
     });
 
     return result;
@@ -187,15 +192,20 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey
                    address:(SignalServiceAddress *)address
+             authedAccount:(AuthedAccount *)authedAccount
                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
     NSString *accountId = [self ensureAccountIdForAddress:address transaction:transaction];
-    return [self saveRemoteIdentity:identityKey accountId:accountId transaction:transaction];
+    return [self saveRemoteIdentity:identityKey
+                          accountId:accountId
+                      authedAccount:authedAccount
+                        transaction:transaction];
 }
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey
                  accountId:(NSString *)accountId
+             authedAccount:(AuthedAccount *)authedAccount
                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
@@ -219,7 +229,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
         [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
 
         // Identity key was created, schedule a social graph backup
-        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ accountId ]];
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ accountId ]
+                                                                authedAccount:authedAccount];
 
         return NO;
     }
@@ -264,7 +275,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
         [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
 
         // Identity key was changed, schedule a social graph backup
-        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ accountId ]];
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ accountId ]
+                                                                authedAccount:authedAccount];
 
         return YES;
     }
@@ -276,6 +288,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                  identityKey:(NSData *)identityKey
                      address:(SignalServiceAddress *)address
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
+               authedAccount:(AuthedAccount *)authedAccount
 {
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
     OWSAssertDebug(address.isValid);
@@ -285,6 +298,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                        identityKey:identityKey
                            address:address
              isUserInitiatedChange:isUserInitiatedChange
+                     authedAccount:authedAccount
                        transaction:transaction];
     });
 }
@@ -293,6 +307,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                  identityKey:(NSData *)identityKey
                      address:(SignalServiceAddress *)address
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
+               authedAccount:(AuthedAccount *)authedAccount
                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
@@ -301,7 +316,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
     // Ensure a remote identity exists for this key. We may be learning about
     // it for the first time.
-    [self saveRemoteIdentity:identityKey address:address transaction:transaction];
+    [self saveRemoteIdentity:identityKey address:address authedAccount:authedAccount transaction:transaction];
 
     NSString *accountId = [self ensureAccountIdForAddress:address transaction:transaction];
     OWSRecipientIdentity *_Nullable recipientIdentity = [OWSRecipientIdentity anyFetchWithUniqueId:accountId
@@ -335,7 +350,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     }
 
     // Verification state has changed, schedule a social graph backup
-    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ accountId ]];
+    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ accountId ]
+                                                            authedAccount:AuthedAccount.implicit];
 
     [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
 }
@@ -920,7 +936,10 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
         
         // Ensure a remote identity exists for this key. We may be learning about
         // it for the first time.
-        [self saveRemoteIdentity:identityKey address:address transaction:transaction];
+        [self saveRemoteIdentity:identityKey
+                         address:address
+                   authedAccount:AuthedAccount.implicit
+                     transaction:transaction];
 
         recipientIdentity = [OWSRecipientIdentity anyFetchWithUniqueId:accountId transaction:transaction];
 
@@ -970,7 +989,10 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
             }
 
             OWSLogWarn(@"recipientIdentity has non-matching identityKey; overwriting: %@", address);
-            [self saveRemoteIdentity:identityKey address:address transaction:transaction];
+            [self saveRemoteIdentity:identityKey
+                             address:address
+                       authedAccount:AuthedAccount.implicit
+                         transaction:transaction];
 
             recipientIdentity = [OWSRecipientIdentity anyFetchWithUniqueId:accountId transaction:transaction];
 

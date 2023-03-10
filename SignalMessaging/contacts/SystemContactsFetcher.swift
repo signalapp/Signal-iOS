@@ -158,8 +158,17 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
 
 @objc
 public protocol SystemContactsFetcherDelegate: AnyObject {
-    func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact], isUserRequested: Bool)
-    func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, hasAuthorizationStatus authorizationStatus: RawContactAuthorizationStatus)
+    func systemContactsFetcher(
+        _ systemContactsFetcher: SystemContactsFetcher,
+        updatedContacts contacts: [Contact],
+        isUserRequested: Bool,
+        authedAccount: AuthedAccount
+    )
+    func systemContactsFetcher(
+        _ systemContactsFetcher: SystemContactsFetcher,
+        hasAuthorizationStatus authorizationStatus: RawContactAuthorizationStatus,
+        authedAccount: AuthedAccount
+    )
 }
 
 @objc
@@ -192,7 +201,7 @@ public class SystemContactsFetcher: NSObject {
         SwiftSingletons.register(self)
     }
 
-    private func setupObservationIfNecessary() {
+    private func setupObservationIfNecessary(authedAccount: AuthedAccount) {
         AssertIsOnMainThread()
         guard !hasSetupObservation else {
             return
@@ -200,7 +209,7 @@ public class SystemContactsFetcher: NSObject {
         hasSetupObservation = true
         self.contactStoreAdapter.startObservingChanges { [weak self] in
             DispatchQueue.main.async {
-                self?.refreshAfterContactsChange()
+                self?.refreshAfterContactsChange(authedAccount: authedAccount)
             }
         }
     }
@@ -213,7 +222,10 @@ public class SystemContactsFetcher: NSObject {
      * @param   completionParam  completion handler is called on main thread.
      */
     @objc
-    public func requestOnce(completion completionParam: ((Error?) -> Void)?) {
+    public func requestOnce(
+        authedAccount: AuthedAccount,
+        completion completionParam: ((Error?) -> Void)?
+    ) {
         AssertIsOnMainThread()
 
         // Ensure completion is invoked on main thread.
@@ -231,7 +243,7 @@ public class SystemContactsFetcher: NSObject {
             completion(nil)
             return
         }
-        setupObservationIfNecessary()
+        setupObservationIfNecessary(authedAccount: authedAccount)
 
         switch rawAuthorizationStatus {
         case .notDetermined:
@@ -255,20 +267,22 @@ public class SystemContactsFetcher: NSObject {
                 }
 
                 DispatchQueue.main.async {
-                    self.updateContacts(completion: completion)
+                    self.updateContacts(authedAccount: authedAccount, completion: completion)
                 }
             }
         case .authorized:
-            self.updateContacts(completion: completion)
+            self.updateContacts(authedAccount: authedAccount, completion: completion)
         case .denied, .restricted:
             Logger.debug("contacts were \(rawAuthorizationStatus)")
-            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus)
+            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus, authedAccount: authedAccount)
             completion(nil)
         }
     }
 
     @objc
-    public func fetchOnceIfAlreadyAuthorized() {
+    public func fetchOnceIfAlreadyAuthorized(
+        authedAccount: AuthedAccount
+    ) {
         AssertIsOnMainThread()
 
         guard !CurrentAppContext().isNSE else {
@@ -276,18 +290,21 @@ public class SystemContactsFetcher: NSObject {
             return
         }
         guard rawAuthorizationStatus == .authorized else {
-            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus)
+            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus, authedAccount: authedAccount)
             return
         }
         guard !systemContactsHaveBeenRequestedAtLeastOnce else {
             return
         }
 
-        updateContacts(completion: nil, isUserRequested: false)
+        updateContacts(authedAccount: authedAccount, isUserRequested: false, completion: nil)
     }
 
     @objc
-    public func userRequestedRefresh(completion: @escaping (Error?) -> Void) {
+    public func userRequestedRefresh(
+        authedAccount: AuthedAccount,
+        completion: @escaping (Error?) -> Void
+    ) {
         AssertIsOnMainThread()
 
         guard !CurrentAppContext().isNSE else {
@@ -297,16 +314,18 @@ public class SystemContactsFetcher: NSObject {
         }
         guard rawAuthorizationStatus == .authorized else {
             owsFailDebug("should have already requested contact access")
-            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus)
+            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus, authedAccount: authedAccount)
             completion(nil)
             return
         }
 
-        updateContacts(completion: completion, isUserRequested: true)
+        updateContacts(authedAccount: authedAccount, isUserRequested: true, completion: completion)
     }
 
     @objc
-    public func refreshAfterContactsChange() {
+    public func refreshAfterContactsChange(
+        authedAccount: AuthedAccount
+    ) {
         AssertIsOnMainThread()
 
         guard !CurrentAppContext().isNSE else {
@@ -315,14 +334,18 @@ public class SystemContactsFetcher: NSObject {
         }
         guard rawAuthorizationStatus == .authorized else {
             Logger.info("ignoring contacts change; no access.")
-            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus)
+            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: rawAuthorizationStatus, authedAccount: authedAccount)
             return
         }
 
-        updateContacts(completion: nil, isUserRequested: false)
+        updateContacts(authedAccount: authedAccount, isUserRequested: false, completion: nil)
     }
 
-    private func updateContacts(completion completionParam: ((Error?) -> Void)?, isUserRequested: Bool = false) {
+    private func updateContacts(
+        authedAccount: AuthedAccount,
+        isUserRequested: Bool = false,
+        completion completionParam: ((Error?) -> Void)?
+    ) {
         AssertIsOnMainThread()
 
         guard !CurrentAppContext().isNSE else {
@@ -357,7 +380,7 @@ public class SystemContactsFetcher: NSObject {
         }
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
-        setupObservationIfNecessary()
+        setupObservationIfNecessary(authedAccount: authedAccount)
 
         serialQueue.async {
 
@@ -416,7 +439,7 @@ public class SystemContactsFetcher: NSObject {
                 self.lastDelegateNotificationDate = Date()
                 self.lastContactUpdateHash = contactsHash
 
-                self.delegate?.systemContactsFetcher(self, updatedContacts: contacts, isUserRequested: isUserRequested)
+                self.delegate?.systemContactsFetcher(self, updatedContacts: contacts, isUserRequested: isUserRequested, authedAccount: authedAccount)
                 completion(nil)
             }
         }

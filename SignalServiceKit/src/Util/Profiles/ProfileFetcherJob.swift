@@ -53,20 +53,20 @@ private struct ProfileFetchOptions {
     let ignoreThrottling: Bool
     let shouldUpdateStore: Bool
     let fetchType: ProfileFetchType
-    let auth: ChatServiceAuth
+    let authedAccount: AuthedAccount
 
     init(
         mainAppOnly: Bool = true,
         ignoreThrottling: Bool = false,
         shouldUpdateStore: Bool = true,
         fetchType: ProfileFetchType = .default,
-        auth: ChatServiceAuth
+        authedAccount: AuthedAccount
     ) {
         self.mainAppOnly = mainAppOnly
         self.ignoreThrottling = ignoreThrottling || DebugFlags.aggressiveProfileFetching.get()
         self.shouldUpdateStore = shouldUpdateStore
         self.fetchType = fetchType
-        self.auth = auth
+        self.authedAccount = authedAccount
     }
 }
 
@@ -90,13 +90,13 @@ public class ProfileFetcherJob: NSObject {
         address: SignalServiceAddress,
         mainAppOnly: Bool,
         ignoreThrottling: Bool,
-        auth: ChatServiceAuth = .implicit()
+        authedAccount: AuthedAccount = .implicit()
     ) -> AnyPromise {
         return AnyPromise(fetchProfilePromise(
             address: address,
             mainAppOnly: mainAppOnly,
             ignoreThrottling: ignoreThrottling,
-            auth: auth
+            authedAccount: authedAccount
         ))
     }
 
@@ -106,21 +106,21 @@ public class ProfileFetcherJob: NSObject {
         ignoreThrottling: Bool = false,
         shouldUpdateStore: Bool = true,
         fetchType: ProfileFetchType = .default,
-        auth: ChatServiceAuth = .implicit()
+        authedAccount: AuthedAccount = .implicit()
     ) -> Promise<FetchedProfile> {
         let options = ProfileFetchOptions(
             mainAppOnly: mainAppOnly,
             ignoreThrottling: ignoreThrottling,
             shouldUpdateStore: shouldUpdateStore,
             fetchType: fetchType,
-            auth: auth
+            authedAccount: authedAccount
         )
         return ProfileFetcherJob(subject: address, options: options).runAsPromise()
     }
 
     @objc
-    public class func fetchProfile(address: SignalServiceAddress, ignoreThrottling: Bool, auth: ChatServiceAuth = .implicit()) {
-        let options = ProfileFetchOptions(ignoreThrottling: ignoreThrottling, auth: auth)
+    public class func fetchProfile(address: SignalServiceAddress, ignoreThrottling: Bool, authedAccount: AuthedAccount = .implicit()) {
+        let options = ProfileFetchOptions(ignoreThrottling: ignoreThrottling, authedAccount: authedAccount)
         firstly {
             ProfileFetcherJob(subject: address, options: options).runAsPromise()
         }.catch { error in
@@ -159,7 +159,10 @@ public class ProfileFetcherJob: NSObject {
         }.then(on: Self.queueCluster.next()) { fetchedProfile in
             firstly { () -> Promise<Void> in
                 if self.options.shouldUpdateStore {
-                    return self.updateProfile(fetchedProfile: fetchedProfile)
+                    return self.updateProfile(
+                        fetchedProfile: fetchedProfile,
+                        authedAccount: self.options.authedAccount
+                    )
                 }
                 return .value(())
             }.map(on: Self.queueCluster.next()) { _ in
@@ -286,7 +289,7 @@ public class ProfileFetcherJob: NSObject {
         let shouldUseVersionedFetch = shouldUseVersionedFetchForUuids
 
         let udAccess: OWSUDAccess?
-        if address.isLocalAddress {
+        if address.isLocalAddress || options.authedAccount.isAddressForLocalUser(address) {
             // Don't use UD for "self" profile fetches.
             udAccess = nil
         } else {
@@ -305,7 +308,7 @@ public class ProfileFetcherJob: NSObject {
                         let request = try self.versionedProfilesSwift.versionedProfileRequest(
                             for: serviceId,
                             udAccessKey: udAccessKeyForRequest,
-                            auth: self.options.auth
+                            auth: self.options.authedAccount.chatServiceAuth
                         )
                         currentVersionedProfileRequest = request
                         return request.request
@@ -318,7 +321,7 @@ public class ProfileFetcherJob: NSObject {
                     return OWSRequestFactory.getUnversionedProfileRequest(
                         address: address,
                         udAccessKey: udAccessKeyForRequest,
-                        auth: self.options.auth
+                        auth: self.options.authedAccount.chatServiceAuth
                     )
                 }
             },
@@ -327,6 +330,7 @@ public class ProfileFetcherJob: NSObject {
             },
             serviceId: serviceId,
             udAccess: udAccess,
+            authedAccount: self.options.authedAccount,
             options: [.allowIdentifiedFallback, .isProfileFetch]
         )
 
@@ -369,19 +373,27 @@ public class ProfileFetcherJob: NSObject {
         return FetchedProfile(profile: profile, profileKey: profileKey)
     }
 
-    private func updateProfile(fetchedProfile: FetchedProfile) -> Promise<Void> {
+    private func updateProfile(
+        fetchedProfile: FetchedProfile,
+        authedAccount: AuthedAccount
+    ) -> Promise<Void> {
         firstly {
             // Before we update the profile, try to download and decrypt the avatar
             // data, if necessary.
-            downloadAvatarIfNeeded(fetchedProfile)
+            downloadAvatarIfNeeded(fetchedProfile, authedAccount: authedAccount)
         }.then(on: Self.queueCluster.next()) { localAvatarUrlIfDownloaded in
             self.updateProfile(
-                fetchedProfile: fetchedProfile, localAvatarUrlIfDownloaded: localAvatarUrlIfDownloaded
+                fetchedProfile: fetchedProfile,
+                localAvatarUrlIfDownloaded: localAvatarUrlIfDownloaded,
+                authedAccount: authedAccount
             )
         }
     }
 
-    private func downloadAvatarIfNeeded(_ fetchedProfile: FetchedProfile) -> Promise<URL?> {
+    private func downloadAvatarIfNeeded(
+        _ fetchedProfile: FetchedProfile,
+        authedAccount: AuthedAccount
+    ) -> Promise<URL?> {
         guard let newAvatarUrlPath = fetchedProfile.profile.avatarUrlPath else {
             // If profile has no avatar, we don't need to download the avatar.
             return Promise.value(nil)
@@ -393,7 +405,12 @@ public class ProfileFetcherJob: NSObject {
         }
         let profileAddress = fetchedProfile.profile.address
         let didAlreadyDownloadAvatar = databaseStorage.read { transaction -> Bool in
-            let oldAvatarUrlPath = profileManager.profileAvatarURLPath(for: profileAddress, downloadIfMissing: false, transaction: transaction)
+            let oldAvatarUrlPath = profileManager.profileAvatarURLPath(
+                for: profileAddress,
+                downloadIfMissing: false,
+                authedAccount: authedAccount,
+                transaction: transaction
+            )
             return (
                 oldAvatarUrlPath == newAvatarUrlPath
                 && profileManager.hasProfileAvatarData(profileAddress, transaction: transaction)
@@ -442,7 +459,11 @@ public class ProfileFetcherJob: NSObject {
 
     // TODO: This method can cause many database writes.
     //       Perhaps we can use a single transaction?
-    private func updateProfile(fetchedProfile: FetchedProfile, localAvatarUrlIfDownloaded: URL?) -> Promise<Void> {
+    private func updateProfile(
+        fetchedProfile: FetchedProfile,
+        localAvatarUrlIfDownloaded: URL?,
+        authedAccount: AuthedAccount
+    ) -> Promise<Void> {
         let profile = fetchedProfile.profile
         let address = profile.address
 
@@ -523,12 +544,14 @@ public class ProfileFetcherJob: NSObject {
                 canReceiveGiftBadges: profile.canReceiveGiftBadges,
                 lastFetch: Date(),
                 userProfileWriter: .profileFetch,
+                authedAccount: authedAccount,
                 transaction: transaction
             )
 
             self.verifyIdentityUpToDate(
                 address: address,
                 latestIdentityKey: profile.identityKey,
+                authedAccount: authedAccount,
                 transaction: transaction
             )
 
@@ -538,7 +561,7 @@ public class ProfileFetcherJob: NSObject {
                 transaction: transaction
             )
 
-            if address.isLocalAddress {
+            if address.isLocalAddress || authedAccount.isAddressForLocalUser(address) {
                 self.changePhoneNumber.setLocalUserSupportsChangePhoneNumber(
                     profile.supportsChangeNumber,
                     transaction: transaction
@@ -564,6 +587,7 @@ public class ProfileFetcherJob: NSObject {
             canReceiveGiftBadges: false,
             lastFetch: Date.distantPast,
             userProfileWriter: .profileFetch,
+            authedAccount: .implicit(),
             transaction: transaction
         )
 
@@ -608,10 +632,18 @@ public class ProfileFetcherJob: NSObject {
         udManager.setUnidentifiedAccessMode(.enabled, address: address)
     }
 
-    private func verifyIdentityUpToDate(address: SignalServiceAddress,
-                                        latestIdentityKey: Data,
-                                        transaction: SDSAnyWriteTransaction) {
-        if self.identityManager.saveRemoteIdentity(latestIdentityKey, address: address, transaction: transaction) {
+    private func verifyIdentityUpToDate(
+        address: SignalServiceAddress,
+        latestIdentityKey: Data,
+        authedAccount: AuthedAccount,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        if self.identityManager.saveRemoteIdentity(
+            latestIdentityKey,
+            address: address,
+            authedAccount: authedAccount,
+            transaction: transaction
+        ) {
             Logger.info("updated identity key with fetched profile for recipient: \(address)")
         }
     }

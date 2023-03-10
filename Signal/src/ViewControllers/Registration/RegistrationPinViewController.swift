@@ -89,7 +89,7 @@ class RegistrationPinViewController: OWSViewController {
 
     // MARK: Internal state
 
-    private let state: RegistrationPinState
+    public let state: RegistrationPinState
 
     private weak var presenter: RegistrationPinPresenter?
 

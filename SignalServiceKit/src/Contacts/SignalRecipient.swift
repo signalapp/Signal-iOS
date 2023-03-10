@@ -283,7 +283,10 @@ extension SignalRecipient {
         // Record the updated contact in the social graph
         if shouldUpdate {
             existingInstance.anyOverwritingUpdate(transaction: transaction)
-            storageServiceManager.recordPendingUpdates(updatedAccountIds: [existingInstance.accountId])
+            storageServiceManager.recordPendingUpdates(
+                updatedAccountIds: [existingInstance.accountId],
+                authedAccount: .implicit()
+            )
         }
 
         return existingInstance
@@ -344,7 +347,11 @@ extension SignalRecipient {
         winningInstance.recipientPhoneNumber = phoneNumberInstance.recipientPhoneNumber
         winningInstance.recipientUUID = uuidInstance.recipientUUID
 
-        OWSUserProfile.mergeUserProfilesIfNecessary(for: winningInstance.address, transaction: transaction)
+        OWSUserProfile.mergeUserProfilesIfNecessary(
+            for: winningInstance.address,
+            authedAccount: .implicit(),
+            transaction: transaction
+        )
 
         return winningInstance
     }
@@ -502,6 +509,7 @@ extension SignalRecipient {
                     // Remove old address from profile whitelist.
                     profileManager.removeUser(fromProfileWhitelist: obsoleteAddress,
                                               userProfileWriter: .changePhoneNumber,
+                                              authedAccount: .implicit(),
                                               transaction: transaction.asAnyWrite)
                 }
 
@@ -509,10 +517,12 @@ extension SignalRecipient {
                 if isWhitelisted {
                     profileManager.addUser(toProfileWhitelist: newAddress,
                                            userProfileWriter: .changePhoneNumber,
+                                           authedAccount: .implicit(),
                                            transaction: transaction.asAnyWrite)
                 } else {
                     profileManager.removeUser(fromProfileWhitelist: newAddress,
                                               userProfileWriter: .changePhoneNumber,
+                                              authedAccount: .implicit(),
                                               transaction: transaction.asAnyWrite)
                 }
             }

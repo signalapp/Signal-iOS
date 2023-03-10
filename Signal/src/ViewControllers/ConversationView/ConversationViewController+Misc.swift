@@ -146,6 +146,7 @@ public extension ConversationViewController {
                                                           identityKey: recipientIdentity.identityKey,
                                                           address: address,
                                                           isUserInitiatedChange: true,
+                                                          authedAccount: .implicit(),
                                                           transaction: transaction)
             }
         }

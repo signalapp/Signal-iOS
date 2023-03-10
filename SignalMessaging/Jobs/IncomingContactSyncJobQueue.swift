@@ -266,10 +266,13 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         }
 
         if let profileKey = contactDetails.profileKey {
-            self.profileManager.setProfileKeyData(profileKey,
-                                                  for: contactDetails.address,
-                                                  userProfileWriter: .syncMessage,
-                                                  transaction: transaction)
+            self.profileManager.setProfileKeyData(
+                profileKey,
+                for: contactDetails.address,
+                userProfileWriter: .syncMessage,
+                authedAccount: .implicit(),
+                transaction: transaction
+            )
         }
 
         if contactDetails.isBlocked {

@@ -529,6 +529,7 @@ typedef void (^CustomLayoutBlock)(void);
                                                   identityKey:self.identityKey
                                                       address:self.address
                                         isUserInitiatedChange:YES
+                                             authedAccount:AuthedAccount.implicit
                                                   transaction:transaction];
         });
 

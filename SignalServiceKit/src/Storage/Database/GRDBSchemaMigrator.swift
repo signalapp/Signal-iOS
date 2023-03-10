@@ -2228,7 +2228,10 @@ public class GRDBSchemaMigrator: NSObject {
             }
 
             OWS2FAManager.keyValueStore().removeValue(forKey: "isUsingRandomPinKey", transaction: transaction.asAnyWrite)
-            DependenciesBridge.shared.keyBackupService.useDeviceLocalMasterKey(transaction: transaction.asAnyWrite.asV2Write)
+            DependenciesBridge.shared.keyBackupService.useDeviceLocalMasterKey(
+                authedAccount: .implicit(),
+                transaction: transaction.asAnyWrite.asV2Write
+            )
             return .success(())
         }
 
@@ -2295,7 +2298,10 @@ public class GRDBSchemaMigrator: NSObject {
 
             while let thread = try cursor.next() {
                 if let thread = thread as? TSContactThread {
-                    Self.storageServiceManager.recordPendingUpdates(updatedAddresses: [thread.contactAddress])
+                    Self.storageServiceManager.recordPendingUpdates(
+                        updatedAddresses: [thread.contactAddress],
+                        authedAccount: .implicit()
+                    )
                 } else if let thread = thread as? TSGroupThread {
                     Self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
                 } else {
@@ -2548,7 +2554,10 @@ public class GRDBSchemaMigrator: NSObject {
                 accountsToRemove.insert(account)
             }
 
-            storageServiceManager.recordPendingUpdates(updatedAddresses: accountsToRemove.map { $0.recipientAddress })
+            storageServiceManager.recordPendingUpdates(
+                updatedAddresses: accountsToRemove.map { $0.recipientAddress },
+                authedAccount: .implicit()
+            )
             return .success(())
         }
 

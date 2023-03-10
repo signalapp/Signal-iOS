@@ -786,7 +786,10 @@ extension PinSetupViewController {
             ) { modal in
                 SDSDatabaseStorage.shared.asyncWrite { transaction in
                     // TODO[ViewContextPiping]
-                    ViewControllerContext.shared.keyBackupService.useDeviceLocalMasterKey(transaction: transaction.asV2Write)
+                    ViewControllerContext.shared.keyBackupService.useDeviceLocalMasterKey(
+                        authedAccount: .implicit(),
+                        transaction: transaction.asV2Write
+                    )
 
                     transaction.addAsyncCompletionOnMain {
                         modal.dismiss { future.resolve(true) }

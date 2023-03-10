@@ -103,6 +103,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
             self?.tsAccountManager.setIsDiscoverableByPhoneNumber(
                 isDiscoverable,
                 updateStorageService: true,
+                authedAccount: .implicit(),
                 transaction: transaction
             )
 
@@ -128,6 +129,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
                 self?.tsAccountManager.setIsDiscoverableByPhoneNumber(
                     true,
                     updateStorageService: true,
+                    authedAccount: .implicit(),
                     transaction: transaction
                 )
             }

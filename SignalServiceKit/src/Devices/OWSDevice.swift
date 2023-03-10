@@ -55,7 +55,7 @@ public extension OWSDevice {
             DispatchQueue.global().async {
                 // Device changes can affect the UD access mode for a recipient,
                 // so we need to fetch the profile for this user to update UD access mode.
-                self.profileManager.fetchLocalUsersProfile()
+                self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
             }
         }
         return wasDeviceAddedOrRemoved

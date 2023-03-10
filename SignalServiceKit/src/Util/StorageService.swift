@@ -9,8 +9,16 @@ import Foundation
 public protocol StorageServiceManagerProtocol {
     func recordPendingDeletions(deletedGroupV1Ids: [Data])
 
-    func recordPendingUpdates(updatedAccountIds: [AccountId])
-    func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
+    // NOTE: auth used to validate local address, not make requests.
+    func recordPendingUpdates(
+        updatedAccountIds: [AccountId],
+        authedAccount: AuthedAccount
+    )
+    // NOTE: auth used to validate local address, not make requests.
+    func recordPendingUpdates(
+        updatedAddresses: [SignalServiceAddress],
+        authedAccount: AuthedAccount
+    )
     func recordPendingUpdates(updatedGroupV1Ids: [Data])
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data])
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data])
@@ -21,10 +29,12 @@ public protocol StorageServiceManagerProtocol {
 
     func recordPendingLocalAccountUpdates()
 
-    func backupPendingChanges()
+    func backupPendingChanges(authedAccount: AuthedAccount)
 
     @discardableResult
-    func restoreOrCreateManifestIfNecessary() -> AnyPromise
+    func restoreOrCreateManifestIfNecessary(
+        authedAccount: AuthedAccount
+    ) -> AnyPromise
 
     /// Waits for pending restores to finish.
     ///
@@ -220,7 +230,10 @@ public struct StorageService: Dependencies {
     /// that there is no new content.
     ///
     /// Returns nil if a manifest has never been stored.
-    public static func fetchLatestManifest(greaterThanVersion: UInt64? = nil) -> Promise<FetchLatestManifestResponse> {
+    public static func fetchLatestManifest(
+        greaterThanVersion: UInt64? = nil,
+        chatServiceAuth: ChatServiceAuth
+    ) -> Promise<FetchLatestManifestResponse> {
         Logger.info("")
 
         var endpoint = "v1/storage/manifest"
@@ -228,7 +241,11 @@ public struct StorageService: Dependencies {
             endpoint += "/version/\(greaterThanVersion)"
         }
 
-        return storageRequest(withMethod: .get, endpoint: endpoint).map(on: DispatchQueue.global()) { response in
+        return storageRequest(
+            withMethod: .get,
+            endpoint: endpoint,
+            chatServiceAuth: chatServiceAuth
+        ).map(on: DispatchQueue.global()) { response in
             switch response.status {
             case .success:
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
@@ -262,7 +279,8 @@ public struct StorageService: Dependencies {
         _ manifest: StorageServiceProtoManifestRecord,
         newItems: [StorageItem],
         deletedIdentifiers: [StorageIdentifier] = [],
-        deleteAllExistingRecords: Bool = false
+        deleteAllExistingRecords: Bool = false,
+        chatServiceAuth: ChatServiceAuth
     ) -> Promise<StorageServiceProtoManifestRecord?> {
         Logger.info("newItems: \(newItems.count), deletedIdentifiers: \(deletedIdentifiers.count), deleteAllExistingRecords: \(deleteAllExistingRecords)")
 
@@ -300,7 +318,12 @@ public struct StorageService: Dependencies {
 
             return try builder.buildSerializedData()
         }.then(on: DispatchQueue.global()) { data in
-            storageRequest(withMethod: .put, endpoint: "v1/storage", body: data)
+            storageRequest(
+                withMethod: .put,
+                endpoint: "v1/storage",
+                body: data,
+                chatServiceAuth: chatServiceAuth
+            )
         }.map(on: DispatchQueue.global()) { response in
             switch response.status {
             case .success:
@@ -330,14 +353,17 @@ public struct StorageService: Dependencies {
     /// Fetch an item record from the service
     ///
     /// Returns nil if this record does not exist
-    public static func fetchItem(for key: StorageIdentifier) -> Promise<StorageItem?> {
-        return fetchItems(for: [key]).map { $0.first }
+    public static func fetchItem(for key: StorageIdentifier, chatServiceAuth: ChatServiceAuth) -> Promise<StorageItem?> {
+        return fetchItems(for: [key], chatServiceAuth: chatServiceAuth).map { $0.first }
     }
 
     /// Fetch a list of item records from the service
     ///
     /// The response will include only the items that could be found on the service
-    public static func fetchItems(for identifiers: [StorageIdentifier]) -> Promise<[StorageItem]> {
+    public static func fetchItems(
+        for identifiers: [StorageIdentifier],
+        chatServiceAuth: ChatServiceAuth
+    ) -> Promise<[StorageItem]> {
         Logger.info("")
 
         let keys = StorageIdentifier.deduplicate(identifiers)
@@ -352,7 +378,12 @@ public struct StorageService: Dependencies {
             builder.setReadKey(keys.map { $0.data })
             return try builder.buildSerializedData()
         }.then(on: DispatchQueue.global()) { data in
-            storageRequest(withMethod: .put, endpoint: "v1/storage/read", body: data)
+            storageRequest(
+                withMethod: .put,
+                endpoint: "v1/storage/read",
+                body: data,
+                chatServiceAuth: chatServiceAuth
+            )
         }.map(on: DispatchQueue.global()) { response in
             guard case .success = response.status else {
                 owsFailDebug("unexpected response \(response.status)")
@@ -403,59 +434,67 @@ public struct StorageService: Dependencies {
         let data: Data
     }
 
-    private static func storageRequest(withMethod method: HTTPMethod, endpoint: String, body: Data? = nil) -> Promise<StorageResponse> {
-        return serviceClient.requestStorageAuth().then { username, password -> Promise<HTTPResponse> in
-            if method == .get { assert(body == nil) }
+    private static func storageRequest(
+        withMethod method: HTTPMethod,
+        endpoint: String,
+        body: Data? = nil,
+        chatServiceAuth: ChatServiceAuth
+    ) -> Promise<StorageResponse> {
+        return serviceClient
+            .requestStorageAuth(chatServiceAuth: chatServiceAuth)
+            .then { username, password -> Promise<HTTPResponse> in
+                if method == .get { assert(body == nil) }
 
-            let httpHeaders = OWSHttpHeaders()
-            httpHeaders.addHeader("Content-Type", value: OWSMimeTypeProtobuf, overwriteOnConflict: true)
-            try httpHeaders.addAuthHeader(username: username, password: password)
+                let httpHeaders = OWSHttpHeaders()
+                httpHeaders.addHeader("Content-Type", value: OWSMimeTypeProtobuf, overwriteOnConflict: true)
+                try httpHeaders.addAuthHeader(username: username, password: password)
 
-            Logger.info("Storage request started: \(method) \(endpoint)")
+                Logger.info("Storage request started: \(method) \(endpoint)")
 
-            let urlSession = self.urlSession
-            // Some 4xx responses are expected;
-            // we'll discriminate the status code ourselves.
-            urlSession.require2xxOr3xx = false
-            return urlSession.dataTaskPromise(endpoint,
-                                              method: method,
-                                              headers: httpHeaders.headers,
-                                              body: body)
-        }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> StorageResponse in
-            let status: StorageResponse.Status
-
-            let statusCode = response.responseStatusCode
-            switch statusCode {
-            case 200:
-                status = .success
-            case 204:
-                status = .noContent
-            case 409:
-                status = .conflict
-            case 404:
-                status = .notFound
-            default:
-                let error = OWSAssertionError("Unexpected statusCode: \(statusCode)")
-                throw StorageError.networkError(statusCode: statusCode, underlyingError: error)
+                let urlSession = self.urlSession
+                // Some 4xx responses are expected;
+                // we'll discriminate the status code ourselves.
+                urlSession.require2xxOr3xx = false
+                return urlSession.dataTaskPromise(endpoint,
+                                                  method: method,
+                                                  headers: httpHeaders.headers,
+                                                  body: body)
             }
+            .map(on: DispatchQueue.global()) { (response: HTTPResponse) -> StorageResponse in
+                let status: StorageResponse.Status
 
-            // We should always receive response data, for some responses it will be empty.
-            guard let responseData = response.responseBodyData else {
-                owsFailDebug("missing response data")
-                throw StorageError.retryableAssertion
+                let statusCode = response.responseStatusCode
+                switch statusCode {
+                case 200:
+                    status = .success
+                case 204:
+                    status = .noContent
+                case 409:
+                    status = .conflict
+                case 404:
+                    status = .notFound
+                default:
+                    let error = OWSAssertionError("Unexpected statusCode: \(statusCode)")
+                    throw StorageError.networkError(statusCode: statusCode, underlyingError: error)
+                }
+
+                // We should always receive response data, for some responses it will be empty.
+                guard let responseData = response.responseBodyData else {
+                    owsFailDebug("missing response data")
+                    throw StorageError.retryableAssertion
+                }
+
+                // The layers that use this only want to process 200 and 409 responses,
+                // anything else we should raise as an error.
+
+                Logger.info("Storage request succeeded: \(method) \(endpoint)")
+
+                return StorageResponse(status: status, data: responseData)
+            }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<StorageResponse> in
+                owsFailDebugUnlessNetworkFailure(error)
+                throw StorageError.networkError(statusCode: 0, underlyingError: error)
             }
-
-            // The layers that use this only want to process 200 and 409 responses,
-            // anything else we should raise as an error.
-
-            Logger.info("Storage request succeeded: \(method) \(endpoint)")
-
-            return StorageResponse(status: status, data: responseData)
-        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<StorageResponse> in
-            owsFailDebugUnlessNetworkFailure(error)
-            throw StorageError.networkError(statusCode: 0, underlyingError: error)
         }
-    }
 }
 
 // MARK: -

@@ -349,6 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
             newContact.imageData
                 = UIImagePNGRepresentation([self.profileManagerImpl profileAvatarForAddress:address
                                                                           downloadIfMissing:YES
+                                                                              authedAccount:AuthedAccount.implicit
                                                                                 transaction:transaction]);
         }];
 

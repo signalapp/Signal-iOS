@@ -10,10 +10,7 @@ final class ChatServiceAuthTest: XCTestCase {
     func testImplicit() {
         let auth = ChatServiceAuth.implicit()
 
-        XCTAssertNil(auth.aci)
-        XCTAssertNil(auth.username)
-        XCTAssertNil(auth.password)
-        XCTAssertEqual(auth.mode, .implicit)
+        XCTAssertEqual(auth.credentials, .implicit)
     }
 
     func testExplicit() {
@@ -22,10 +19,7 @@ final class ChatServiceAuthTest: XCTestCase {
 
         let auth = ChatServiceAuth.explicit(aci: aci, password: "foo bar")
 
-        XCTAssertEqual(auth.aci, aci)
-        XCTAssertEqual(auth.username, uuidString)
-        XCTAssertEqual(auth.password, "foo bar")
-        XCTAssertEqual(auth.mode, .explicit)
+        XCTAssertEqual(auth.credentials, .explicit(username: uuidString, password: "foo bar"))
     }
 
     func testEquality() {

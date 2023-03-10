@@ -297,7 +297,11 @@ extension MessageSender {
                                 .markAsRegistered(transaction: writeTx)
                         }
 
-                        self.profileManager.didSendOrReceiveMessage(from: recipient.address, transaction: writeTx)
+                        self.profileManager.didSendOrReceiveMessage(
+                            from: recipient.address,
+                            authedAccount: .implicit(),
+                            transaction: writeTx
+                        )
 
                         guard let payloadId = payloadId else { return }
                         recipient.devices.forEach { deviceId in

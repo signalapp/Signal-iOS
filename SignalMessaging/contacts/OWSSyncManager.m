@@ -611,11 +611,12 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
             break;
         case SSKProtoSyncMessageFetchLatestTypeLocalProfile: {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                ^{ [self.profileManager fetchLocalUsersProfile]; });
+                ^{ [self.profileManager fetchLocalUsersProfileWithAuthedAccount:AuthedAccount.implicit]; });
             break;
         }
         case SSKProtoSyncMessageFetchLatestTypeStorageManifest:
-            [SSKEnvironment.shared.storageServiceManager restoreOrCreateManifestIfNecessary];
+            [SSKEnvironment.shared.storageServiceManager
+                restoreOrCreateManifestIfNecessaryWithAuthedAccount:AuthedAccount.implicit];
             break;
         case SSKProtoSyncMessageFetchLatestTypeSubscriptionStatus:
 

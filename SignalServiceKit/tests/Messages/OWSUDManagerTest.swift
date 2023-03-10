@@ -36,6 +36,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
                                                   for: self.aliceAddress,
                                                   userProfileWriter: .tests,
+                                                  authedAccount: .implicit(),
                                                   transaction: transaction)
         }
 
@@ -169,6 +170,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
                                                   for: bobRecipientAddress,
                                                   userProfileWriter: .tests,
+                                                  authedAccount: .implicit(),
                                                   transaction: transaction)
         }
 
@@ -230,6 +232,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
                                                   for: bobRecipientAddress,
                                                   userProfileWriter: .tests,
+                                                  authedAccount: .implicit(),
                                                   transaction: transaction)
         }
 
@@ -318,6 +321,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
                                                   for: bobRecipientAddress,
                                                   userProfileWriter: .tests,
+                                                  authedAccount: .implicit(),
                                                   transaction: transaction)
             identityManager.setShouldSharePhoneNumber(with: bobRecipientAddress, transaction: transaction)
         }
@@ -371,6 +375,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
                                                   for: bobRecipientAddress,
                                                   userProfileWriter: .tests,
+                                                  authedAccount: .implicit(),
                                                   transaction: transaction)
             identityManager.clearShouldSharePhoneNumber(with: bobRecipientAddress, transaction: transaction)
         }

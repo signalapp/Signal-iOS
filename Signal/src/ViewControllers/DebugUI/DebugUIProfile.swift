@@ -29,7 +29,7 @@ class DebugUIProfile: DebugUIPage {
                 }
                 let name = Self.contactsManager.displayNameWithSneakyTransaction(thread: thread)
                 return OWSTableItem(title: "Remove “\(name)” from Profile Whitelist") {
-                    Self.profileManagerImpl.removeThread(fromProfileWhitelist: thread)
+                    Self.profileManagerImpl.removeThread(fromProfileWhitelist: thread, authedAccount: .implicit())
                 }
             }(),
             OWSTableItem(title: "Log Profile Whitelist") {
@@ -61,7 +61,7 @@ class DebugUIProfile: DebugUIPage {
                 }
             },
             OWSTableItem(title: "Re-upload Profile") {
-                Self.profileManagerImpl.reuploadLocalProfile()
+                Self.profileManagerImpl.reuploadLocalProfile(authedAccount: .implicit())
             },
             OWSTableItem(title: "Log Local Profile") {
                 Self.profileManagerImpl.logLocalProfile()

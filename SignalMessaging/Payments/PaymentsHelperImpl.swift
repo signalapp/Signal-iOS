@@ -189,7 +189,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
                 // We only need to re-upload the profile if the change originated
                 // locally.
                 Logger.info("Re-uploading local profile due to payments state change.")
-                Self.profileManager.reuploadLocalProfile()
+                Self.profileManager.reuploadLocalProfile(authedAccount: .implicit())
 
                 Self.storageServiceManager.recordPendingLocalAccountUpdates()
             }

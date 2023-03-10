@@ -198,7 +198,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[OWSIdentityManager shared] saveRemoteIdentity:newKey address:self.envelope.sourceAddress];
+    [[OWSIdentityManager shared] saveRemoteIdentity:newKey
+                                            address:self.envelope.sourceAddress
+                                      authedAccount:AuthedAccount.implicit];
 
     // Decrypt this and any old messages for the newly accepted key
     NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *_Nullable messagesToDecrypt =

@@ -158,7 +158,7 @@ public class AccountManager: NSObject {
         }.then {
             self.createPreKeys()
         }.done {
-            self.profileManager.fetchLocalUsersProfile()
+            self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
         }.then { _ -> Promise<Void> in
             return self.syncPushTokens().recover { (error) -> Promise<Void> in
                 switch error {
@@ -255,7 +255,7 @@ public class AccountManager: NSObject {
                 )
             }
 
-            self.profileManager.fetchLocalUsersProfile()
+            self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
         }
     }
 
@@ -313,10 +313,10 @@ public class AccountManager: NSObject {
         }
     }
 
-    func performInitialStorageServiceRestore(auth: ChatServiceAuth = .implicit()) -> Promise<Void> {
+    func performInitialStorageServiceRestore(authedAccount: AuthedAccount = .implicit()) -> Promise<Void> {
         BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
         return firstly {
-            self.storageServiceManager.restoreOrCreateManifestIfNecessary().asVoid()
+            self.storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount).asVoid()
         }.done {
             // In the case that we restored our profile from a previous registration,
             // re-upload it so that the user does not need to refill in all the details.
@@ -331,7 +331,7 @@ public class AccountManager: NSObject {
                 // Note we *don't* return this promise. There's no need to block registration on
                 // it completing, and if there are any errors, it's durable.
                 firstly {
-                    self.profileManagerImpl.reuploadLocalProfilePromise(auth: auth)
+                    self.profileManagerImpl.reuploadLocalProfilePromise(authedAccount: authedAccount)
                 }.catch { error in
                     Logger.error("error: \(error)")
                 }
@@ -410,6 +410,7 @@ public class AccountManager: NSObject {
 
                 self.profileManagerImpl.setLocalProfileKey(provisionMessage.profileKey,
                                                            userProfileWriter: .linking,
+                                                           authedAccount: .implicit(),
                                                            transaction: transaction)
 
                 if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
@@ -455,7 +456,7 @@ public class AccountManager: NSObject {
             let storageServiceRestorePromise = firstly {
                 NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
             }.then {
-                StorageServiceManager.shared.restoreOrCreateManifestIfNecessary().asVoid()
+                StorageServiceManager.shared.restoreOrCreateManifestIfNecessary(authedAccount: .implicit()).asVoid()
             }.ensure {
                 BenchEventComplete(eventId: "initial-storage-service-restore")
             }.timeout(seconds: 60)

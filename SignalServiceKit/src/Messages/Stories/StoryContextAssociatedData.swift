@@ -190,7 +190,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
                 }
                 storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
             case .contact(let contactUuid):
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [.init(uuid: contactUuid)])
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [.init(uuid: contactUuid)], authedAccount: .implicit())
             }
         }
 

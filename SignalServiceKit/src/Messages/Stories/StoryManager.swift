@@ -87,6 +87,7 @@ public class StoryManager: NSObject {
                 profileKey,
                 for: author,
                 userProfileWriter: .localUser,
+                authedAccount: .implicit(),
                 transaction: transaction
             )
         }

@@ -36,6 +36,7 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
     OWSIdentityPNI NS_SWIFT_NAME(pni)
 };
 
+@class AuthedAccount;
 @class ECKeyPair;
 @class OWSRecipientIdentity;
 @class SDSAnyReadTransaction;
@@ -65,6 +66,7 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
                  identityKey:(NSData *)identityKey
                      address:(SignalServiceAddress *)address
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
+               authedAccount:(AuthedAccount *)authedAccount
                  transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (OWSVerificationState)verificationStateForAddress:(SignalServiceAddress *)address;
@@ -79,7 +81,8 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
                      address:(SignalServiceAddress *)address
-       isUserInitiatedChange:(BOOL)isUserInitiatedChange;
+       isUserInitiatedChange:(BOOL)isUserInitiatedChange
+               authedAccount:(AuthedAccount *)authedAccount;
 
 - (nullable OWSRecipientIdentity *)recipientIdentityForAddress:(SignalServiceAddress *)address;
 - (nullable OWSRecipientIdentity *)recipientIdentityForAddress:(SignalServiceAddress *)address
@@ -108,10 +111,13 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
 
 - (void)fireIdentityStateChangeNotificationAfterTransaction:(SDSAnyWriteTransaction *)transaction;
 
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey address:(SignalServiceAddress *)address;
+- (BOOL)saveRemoteIdentity:(NSData *)identityKey
+                   address:(SignalServiceAddress *)address
+             authedAccount:(AuthedAccount *)authedAccount;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey
                    address:(SignalServiceAddress *)address
+             authedAccount:(AuthedAccount *)authedAccount
                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isTrustedIdentityKey:(NSData *)identityKey

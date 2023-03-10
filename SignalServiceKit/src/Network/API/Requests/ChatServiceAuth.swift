@@ -8,42 +8,43 @@ import Foundation
 /// Credentials to use on a TSRequest to the chat server.
 @objc
 public class ChatServiceAuth: NSObject {
-    public enum Mode {
+
+    public enum Credentials: Equatable {
         case implicit
-        case explicit
+        case explicit(username: String, password: String)
     }
 
-    public let aci: UUID?
-    public let password: String?
+    @nonobjc
+    public let credentials: Credentials
 
-    private init(aci: UUID?, password: String?) {
-        self.aci = aci
-        self.password = password
+    private init(_ credentials: Credentials) {
+        self.credentials = credentials
         super.init()
     }
 
     /// Will use auth credentials present on TSAccountManager
     @objc
     public static func implicit() -> ChatServiceAuth {
-        return ChatServiceAuth(aci: nil, password: nil)
+        return ChatServiceAuth(.implicit)
     }
 
     @objc
-    public static func explicit(aci: UUID, password: String) -> ChatServiceAuth {
-        return ChatServiceAuth(aci: aci, password: password)
+    public static func explicit(
+        aci: UUID,
+        password: String
+    ) -> ChatServiceAuth {
+        return ChatServiceAuth(.explicit(username: aci.uuidString, password: password))
     }
-
-    @objc
-    public var username: String? {
-        return aci?.uuidString
-    }
-
-    public var mode: Mode { (aci == nil || password == nil) ? .implicit : .explicit }
 
     public override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(aci)
-        hasher.combine(password)
+        switch credentials {
+        case .implicit:
+            break
+        case let .explicit(username, password):
+            hasher.combine(username)
+            hasher.combine(password)
+        }
         return hasher.finalize()
     }
 
@@ -51,14 +52,30 @@ public class ChatServiceAuth: NSObject {
         guard let other = object as? ChatServiceAuth else {
             return false
         }
-        return aci == other.aci && password == other.password
+        return self.credentials == other.credentials
+    }
+
+    public func orIfImplicitUse(_ other: ChatServiceAuth) -> ChatServiceAuth {
+        switch (self.credentials, other.credentials) {
+        case (.explicit, _):
+            return self
+        case (_, .explicit):
+            return other
+        case (.implicit, .implicit):
+            return other
+        }
     }
 }
 
 extension TSRequest {
     @objc
     public func setAuth(_ auth: ChatServiceAuth) {
-        self.authUsername = auth.username
-        self.authPassword = auth.password
+        switch auth.credentials {
+        case .implicit:
+            break
+        case let .explicit(username, password):
+            self.authUsername = username
+            self.authPassword = password
+        }
     }
 }

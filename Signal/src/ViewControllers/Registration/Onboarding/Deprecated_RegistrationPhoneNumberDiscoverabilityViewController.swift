@@ -144,6 +144,7 @@ public class Deprecated_RegistrationPhoneNumberDiscoverabilityViewController: De
             TSAccountManager.shared.setIsDiscoverableByPhoneNumber(
                 self.isDiscoverableByPhoneNumber,
                 updateStorageService: true,
+                authedAccount: .implicit(),
                 transaction: transaction
             )
         }

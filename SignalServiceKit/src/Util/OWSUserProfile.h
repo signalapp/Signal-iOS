@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSUserProfileCompletion)(void);
 
 @class AnyUserProfileFinder;
+@class AuthedAccount;
 @class OWSAES256Key;
 @class OWSUserProfileBadgeInfo;
 @class SDSAnyReadTransaction;
@@ -113,6 +114,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
 + (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)recipientId
+                                      authedAccount:(AuthedAccount *)authedAccount
                                         transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
@@ -121,6 +123,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 // For use by the OWSUserProfile extension only.
 - (void)applyChanges:(UserProfileChanges *)changes
     userProfileWriter:(UserProfileWriter)userProfileWriter
+        authedAccount:(AuthedAccount *)authedAccount
           transaction:(SDSAnyWriteTransaction *)transaction
            completion:(nullable OWSUserProfileCompletion)completion;
 
@@ -135,6 +138,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 + (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 + (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address
+                                 authedAccount:(AuthedAccount *)authedAccount
                                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (OWSUserProfile *)shallowCopy;

@@ -79,7 +79,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 + (NSData *)avatarDataForAvatarImage:(UIImage *)image;
 
-- (void)fetchLocalUsersProfile;
+- (void)fetchLocalUsersProfileWithAuthedAccount:(AuthedAccount *)authedAccount;
 
 #pragma mark - Local Profile Updates
 
@@ -96,11 +96,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 // These methods are for debugging.
 - (void)clearProfileWhitelist;
-- (void)removeThreadFromProfileWhitelist:(TSThread *)thread;
+- (void)removeThreadFromProfileWhitelist:(TSThread *)thread authedAccount:(AuthedAccount *)authedAccount;
 - (void)logProfileWhitelist;
 - (void)debug_regenerateLocalProfileWithSneakyTransaction;
 - (void)setLocalProfileKey:(OWSAES256Key *)key
          userProfileWriter:(UserProfileWriter)userProfileWriter
+             authedAccount:(AuthedAccount *)authedAccount
                transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Other User's Profiles
@@ -122,6 +123,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
                             downloadIfMissing:(BOOL)downloadIfMissing
+                                authedAccount:(AuthedAccount *)authedAccount
                                   transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSString *)profileBioForDisplayForAddress:(SignalServiceAddress *)address

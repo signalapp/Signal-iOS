@@ -93,7 +93,12 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             return owsFailDebug("Key sync messages should only be processed on linked devices")
         }
 
-        DependenciesBridge.shared.keyBackupService.storeSyncedKey(type: .storageService, data: syncMessage.storageService, transaction: transaction.asV2Write)
+        DependenciesBridge.shared.keyBackupService.storeSyncedKey(
+            type: .storageService,
+            data: syncMessage.storageService,
+            authedAccount: .implicit(),
+            transaction: transaction.asV2Write
+        )
 
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(.OWSSyncManagerKeysSyncDidComplete, object: nil)
@@ -168,7 +173,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
         switch type {
         case .accept:
             blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
-            profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
+            profileManager.addThread(toProfileWhitelist: thread, authedAccount: .implicit(), transaction: transaction)
         case .delete:
             thread.softDelete(with: transaction)
         case .block:

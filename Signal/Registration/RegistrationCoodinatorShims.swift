@@ -11,6 +11,7 @@ extension RegistrationCoordinatorImpl {
 
     public enum Shims {
         public typealias AccountManager = _RegistrationCoordinator_AccountManagerShim
+        public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerShim
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreShim
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerShim
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerShim
@@ -24,6 +25,7 @@ extension RegistrationCoordinatorImpl {
     }
     public enum Wrappers {
         public typealias AccountManager = _RegistrationCoordinator_AccountManagerWrapper
+        public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerWrapper
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerWrapper
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerWrapper
@@ -41,7 +43,7 @@ extension RegistrationCoordinatorImpl {
 
 public protocol _RegistrationCoordinator_AccountManagerShim {
 
-    func performInitialStorageServiceRestore(auth: ChatServiceAuth) -> Promise<Void>
+    func performInitialStorageServiceRestore(authedAccount: AuthedAccount) -> Promise<Void>
 }
 
 public class _RegistrationCoordinator_AccountManagerWrapper: _RegistrationCoordinator_AccountManagerShim {
@@ -49,8 +51,31 @@ public class _RegistrationCoordinator_AccountManagerWrapper: _RegistrationCoordi
     private let manager: AccountManager
     public init(_ manager: AccountManager) { self.manager = manager }
 
-    public func performInitialStorageServiceRestore(auth: ChatServiceAuth) -> Promise<Void> {
-        return manager.performInitialStorageServiceRestore(auth: auth)
+    public func performInitialStorageServiceRestore(authedAccount: AuthedAccount) -> Promise<Void> {
+        return manager.performInitialStorageServiceRestore(authedAccount: authedAccount)
+    }
+}
+
+// MARK: OWSContactsManager
+
+public protocol _RegistrationCoordinator_ContactsManagerShim {
+
+    func fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: AuthedAccount)
+
+    func setIsPrimaryDevice()
+}
+
+public class _RegistrationCoordinator_ContactsManagerWrapper: _RegistrationCoordinator_ContactsManagerShim {
+
+    private let manager: OWSContactsManager
+    public init(_ manager: OWSContactsManager) { self.manager = manager }
+
+    public func fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: AuthedAccount) {
+        manager.fetchSystemContactsOnceIfAlreadyAuthorized(with: authedAccount)
+    }
+
+    public func setIsPrimaryDevice() {
+        manager.setIsPrimaryDevice()
     }
 }
 
@@ -184,7 +209,7 @@ public protocol _RegistrationCoordinator_ProfileManagerShim {
         givenName: String,
         familyName: String?,
         avatarData: Data?,
-        auth: ChatServiceAuth
+        authedAccount: AuthedAccount
     ) -> Promise<Void>
 }
 
@@ -201,7 +226,7 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
         givenName: String,
         familyName: String?,
         avatarData: Data?,
-        auth: ChatServiceAuth
+        authedAccount: AuthedAccount
     ) -> Promise<Void> {
         return OWSProfileManager.updateLocalProfilePromise(
             profileGivenName: givenName,
@@ -211,7 +236,7 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
             profileAvatarData: avatarData,
             visibleBadgeIds: [],
             userProfileWriter: .registration,
-            auth: auth
+            authedAccount: authedAccount
         )
     }
 }
@@ -342,6 +367,7 @@ public protocol _RegistrationCoordinator_TSAccountManagerShim {
     func setIsDiscoverableByPhoneNumber(
         _ isDiscoverable: Bool,
         updateStorageService: Bool,
+        authedAccount: AuthedAccount,
         _ transaction: DBWriteTransaction
     )
 
@@ -386,11 +412,13 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
     public func setIsDiscoverableByPhoneNumber(
         _ isDiscoverable: Bool,
         updateStorageService: Bool,
+        authedAccount: AuthedAccount,
         _ transaction: DBWriteTransaction
     ) {
         manager.setIsDiscoverableByPhoneNumber(
             isDiscoverable,
             updateStorageService: updateStorageService,
+            authedAccount: authedAccount,
             transaction: SDSDB.shimOnlyBridge(transaction)
         )
     }
@@ -401,7 +429,7 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
         _ tx: DBWriteTransaction
     ) {
         manager.didRegisterPrimary(
-            withE164: accountIdentity.e164,
+            withE164: accountIdentity.e164.stringValue,
             aci: accountIdentity.aci,
             pni: accountIdentity.pni,
             authToken: authToken,

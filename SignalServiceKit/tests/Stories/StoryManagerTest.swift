@@ -22,6 +22,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             profileManager.addUser(
                 toProfileWhitelist: author,
                 userProfileWriter: .localUser,
+                authedAccount: .implicit(),
                 transaction: $0
             )
 
@@ -77,6 +78,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             profileManager.addUser(
                 toProfileWhitelist: author,
                 userProfileWriter: .localUser,
+                authedAccount: .implicit(),
                 transaction: $0
             )
 
@@ -122,6 +124,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             profileManager.addUser(
                 toProfileWhitelist: author,
                 userProfileWriter: .localUser,
+                authedAccount: .implicit(),
                 transaction: $0
             )
 
@@ -160,6 +163,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             profileManager.addUser(
                 toProfileWhitelist: author,
                 userProfileWriter: .localUser,
+                authedAccount: .implicit(),
                 transaction: $0
             )
 
@@ -194,6 +198,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             profileManager.addUser(
                 toProfileWhitelist: author,
                 userProfileWriter: .localUser,
+                authedAccount: .implicit(),
                 transaction: $0
             )
 
@@ -228,6 +233,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             profileManager.addUser(
                 toProfileWhitelist: author,
                 userProfileWriter: .localUser,
+                authedAccount: .implicit(),
                 transaction: $0
             )
 
@@ -262,6 +268,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             profileManager.addUser(
                 toProfileWhitelist: author,
                 userProfileWriter: .localUser,
+                authedAccount: .implicit(),
                 transaction: $0
             )
 
@@ -294,6 +301,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             profileManager.addUser(
                 toProfileWhitelist: author,
                 userProfileWriter: .localUser,
+                authedAccount: .implicit(),
                 transaction: $0
             )
 
@@ -330,6 +338,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             profileManager.addUser(
                 toProfileWhitelist: author,
                 userProfileWriter: .localUser,
+                authedAccount: .implicit(),
                 transaction: $0
             )
 

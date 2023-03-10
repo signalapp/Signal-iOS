@@ -46,10 +46,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
                 // Schedule a restore. This will do nothing unless we've never
                 // registered a manifest before.
-                self.restoreOrCreateManifestIfNecessary()
+                self.restoreOrCreateManifestIfNecessary(authedAccount: .implicit())
 
                 // If we have any pending changes since we last launch, back them up now.
-                self.backupPendingChanges()
+                self.backupPendingChanges(authedAccount: .implicit())
             }
         }
     }
@@ -60,17 +60,32 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         // to try and make sure the service doesn't get stale. If for
         // some reason we aren't able to successfully complete this backup
         // while in the background we'll try again on the next app launch.
-        backupPendingChanges()
+        backupPendingChanges(authedAccount: .implicit())
     }
 
     // MARK: -
 
     private struct ManagerState {
         var hasPendingCleanup = false
-        var hasPendingBackup = false
+
+        struct PendingBackup {
+            // Ideally, we instead have the entire StorageServiceManager class be instantiated
+            // with the necesarry context to make authenticated requests.
+            // This is a middle ground between the current world (implicit auth we grab
+            // from tsAccountManager) and explicit auth management.
+            var authedAccount: AuthedAccount
+        }
+
+        var pendingBackup: PendingBackup?
         var pendingBackupTimer: Timer?
-        var pendingRestoreFutures = [Future<Void>]()
-        var pendingMutations = PendingMutations()
+
+        struct PendingRestore {
+            var authedAccount: AuthedAccount
+            var futures: [Future<Void>]
+        }
+        var pendingRestore: PendingRestore?
+
+        var pendingMutations = PendingMutations(authedAccount: .implicit())
 
         /// If set, contains the Error from the most recent restore request. If
         /// it's nil, we've either (a) not yet attempted a restore in this
@@ -118,19 +133,19 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
         if managerState.pendingMutations.hasChanges {
             let pendingMutations = managerState.pendingMutations
-            managerState.pendingMutations = PendingMutations()
+            // Keep the old account info around.
+            managerState.pendingMutations = PendingMutations(authedAccount: managerState.pendingMutations.authedAccount)
 
             return (StorageServiceOperation.recordPendingMutations(pendingMutations), nil)
         }
 
-        if !managerState.pendingRestoreFutures.isEmpty {
-            let pendingRestorePromises = managerState.pendingRestoreFutures
-            managerState.pendingRestoreFutures = []
+        if let pendingRestore = managerState.pendingRestore {
+            managerState.pendingRestore = nil
 
-            Logger.debug("Fetching with \(pendingRestorePromises.count) coalesced request(s).")
+            Logger.debug("Fetching with \(pendingRestore.futures.count) coalesced request(s).")
 
-            let restoreOperation = StorageServiceOperation(mode: .restoreOrCreate)
-            pendingRestorePromises.forEach {
+            let restoreOperation = StorageServiceOperation(mode: .restoreOrCreate(pendingRestore.authedAccount))
+            pendingRestore.futures.forEach {
                 $0.resolve(on: SyncScheduler(), with: restoreOperation.promise)
             }
             return (restoreOperation, { $0.mostRecentRestoreError = restoreOperation.failingError })
@@ -153,10 +168,10 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
             }, nil)
         }
 
-        if managerState.hasPendingBackup {
-            managerState.hasPendingBackup = false
+        if let pendingBackup = managerState.pendingBackup {
+            managerState.pendingBackup = nil
 
-            return (StorageServiceOperation(mode: .backup), nil)
+            return (StorageServiceOperation(mode: .backup(pendingBackup.authedAccount)), nil)
         }
 
         return nil
@@ -184,17 +199,29 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     @objc
-    public func recordPendingUpdates(updatedAccountIds: [AccountId]) {
+    public func recordPendingUpdates(
+        updatedAccountIds: [AccountId],
+        authedAccount: AuthedAccount
+    ) {
         Logger.info("Recording pending update for account IDs: \(updatedAccountIds)")
 
-        updatePendingMutations { $0.updatedAccountIds.formUnion(updatedAccountIds) }
+        updatePendingMutations {
+            $0.updatedAccountIds.formUnion(updatedAccountIds)
+            $0.authedAccount = authedAccount.orIfImplicitUse($0.authedAccount)
+        }
     }
 
     @objc
-    public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {
+    public func recordPendingUpdates(
+        updatedAddresses: [SignalServiceAddress],
+        authedAccount: AuthedAccount
+    ) {
         Logger.info("Recording pending update for addresses: \(updatedAddresses)")
 
-        updatePendingMutations { $0.updatedAddresses.formUnion(updatedAddresses) }
+        updatePendingMutations {
+            $0.updatedAddresses.formUnion(updatedAddresses)
+            $0.authedAccount = authedAccount.orIfImplicitUse($0.authedAccount)
+        }
     }
 
     @objc
@@ -256,18 +283,23 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     @discardableResult
-    public func restoreOrCreateManifestIfNecessary() -> AnyPromise {
+    public func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) -> AnyPromise {
         let (promise, future) = Promise<Void>.pending()
         updateManagerState { managerState in
-            managerState.pendingRestoreFutures.append(future)
+            var pendingRestore = managerState.pendingRestore ?? .init(authedAccount: authedAccount, futures: [])
+            pendingRestore.futures.append(future)
+            pendingRestore.authedAccount = authedAccount.orIfImplicitUse(pendingRestore.authedAccount)
+            managerState.pendingRestore = pendingRestore
         }
         return AnyPromise(promise)
     }
 
     @objc
-    public func backupPendingChanges() {
+    public func backupPendingChanges(authedAccount: AuthedAccount) {
         updateManagerState { managerState in
-            managerState.hasPendingBackup = true
+            var pendingBackup = managerState.pendingBackup ?? .init(authedAccount: authedAccount)
+            pendingBackup.authedAccount = authedAccount.orIfImplicitUse(pendingBackup.authedAccount)
+            managerState.pendingBackup = pendingBackup
 
             if let pendingBackupTimer = managerState.pendingBackupTimer {
                 DispatchQueue.main.async { pendingBackupTimer.invalidate() }
@@ -329,7 +361,7 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
         Logger.info("")
 
-        backupPendingChanges()
+        backupPendingChanges(authedAccount: .implicit())
     }
 }
 
@@ -341,6 +373,7 @@ private struct PendingMutations {
     var updatedGroupV2MasterKeys = Set<Data>()
     var updatedStoryDistributionListIds = Set<Data>()
     var updatedLocalAccount = false
+    var authedAccount: AuthedAccount
 
     var mutatedGroupV1Ids = [Data: StorageServiceOperation.State.ChangeState]()
 
@@ -372,8 +405,8 @@ class StorageServiceOperation: OWSOperation {
     // MARK: -
 
     fileprivate enum Mode {
-        case backup
-        case restoreOrCreate
+        case backup(AuthedAccount)
+        case restoreOrCreate(AuthedAccount)
         case cleanUpUnknownData
     }
     private let mode: Mode
@@ -412,17 +445,29 @@ class StorageServiceOperation: OWSOperation {
 
         // Under the new reg flow, we will sync kbs keys before being fully ready with
         // ts account manager auth set up. skip if so.
-        if FeatureFlags.useNewRegistrationFlow, !tsAccountManager.isRegisteredAndReady {
-            return reportSuccess()
+        switch mode {
+        case .backup(let chatServiceAuth), .restoreOrCreate(let chatServiceAuth):
+            if
+                chatServiceAuth == .implicit(),
+                FeatureFlags.useNewRegistrationFlow,
+                !tsAccountManager.isRegisteredAndReady
+            {
+                Logger.info("Skipping storage service operation with implicit auth during registration.")
+                return reportCancelled()
+            }
+        case .cleanUpUnknownData:
+            if FeatureFlags.useNewRegistrationFlow, !tsAccountManager.isRegisteredAndReady {
+                return reportCancelled()
+            }
         }
 
         switch mode {
-        case .backup:
-            backupPendingChanges()
-        case .restoreOrCreate:
-            restoreOrCreateManifestIfNecessary()
+        case .backup(let authedAccount):
+            backupPendingChanges(authedAccount: authedAccount)
+        case .restoreOrCreate(let authedAccount):
+            restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
         case .cleanUpUnknownData:
-            cleanUpUnknownData()
+            cleanUpUnknownData(authedAccount: .implicit())
         }
     }
 
@@ -433,7 +478,12 @@ class StorageServiceOperation: OWSOperation {
     }
 
     private static func recordPendingMutations(_ pendingMutations: PendingMutations, transaction: SDSAnyWriteTransaction) {
-        let localAccountId = tsAccountManager.localAccountId(transaction: transaction)
+        let localAccountId: AccountId?
+        if let localAddress = pendingMutations.authedAccount.localUserAddress() {
+            localAccountId = OWSAccountIdFinder.accountId(forAddress: localAddress, transaction: transaction)
+        } else {
+            localAccountId = tsAccountManager.localAccountId(transaction: transaction)
+        }
 
         // Coalesce addresses to account IDs. There may be duplicates among the
         // addresses and account IDs.
@@ -496,7 +546,7 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: - Backup
 
-    private func backupPendingChanges() {
+    private func backupPendingChanges(authedAccount: AuthedAccount) {
         var updatedItems: [StorageService.StorageItem] = []
         var deletedIdentifiers: [StorageService.StorageIdentifier] = []
 
@@ -519,7 +569,11 @@ class StorageServiceOperation: OWSOperation {
                 // data written by newer versions of the app.
                 let recordWithUnknownFields = stateUpdater.recordWithUnknownFields(for: localId, in: state)
                 let unknownFields = recordWithUnknownFields.flatMap { recordUpdater.unknownFields(for: $0) }
-                newRecord = recordUpdater.buildRecord(for: localId, unknownFields: unknownFields, transaction: transaction)
+                newRecord = recordUpdater.buildRecord(
+                    for: localId,
+                    unknownFields: unknownFields,
+                    transaction: transaction
+                )
             case .deleted:
                 newRecord = nil
             }
@@ -571,12 +625,16 @@ class StorageServiceOperation: OWSOperation {
         var state: State = databaseStorage.read { transaction in
             var state = State.current(transaction: transaction)
 
-            updateRecords(state: &state, stateUpdater: buildContactUpdater(), transaction: transaction)
+            if let contactUpdater = buildContactUpdater(authedAccount: authedAccount) {
+                updateRecords(state: &state, stateUpdater: contactUpdater, transaction: transaction)
+            }
             updateRecords(state: &state, stateUpdater: buildGroupV1Updater(), transaction: transaction)
             updateRecords(state: &state, stateUpdater: buildGroupV2Updater(), transaction: transaction)
             updateRecords(state: &state, stateUpdater: buildStoryDistributionListUpdater(), transaction: transaction)
 
-            if let accountUpdater = buildAccountUpdater() {
+            if let accountUpdater = buildAccountUpdater(
+                authedAccount: authedAccount
+            ) {
                 updateRecords(state: &state, stateUpdater: accountUpdater, transaction: transaction)
             }
 
@@ -618,7 +676,8 @@ class StorageServiceOperation: OWSOperation {
         StorageService.updateManifest(
             manifest,
             newItems: updatedItems,
-            deletedIdentifiers: deletedIdentifiers + invalidIdentifiers
+            deletedIdentifiers: deletedIdentifiers + invalidIdentifiers,
+            chatServiceAuth: authedAccount.chatServiceAuth
         ).done(on: DispatchQueue.global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
                 Logger.info("Successfully updated to manifest version: \(state.manifestVersion)")
@@ -635,7 +694,11 @@ class StorageServiceOperation: OWSOperation {
             }
 
             // Throw away all our work, resolve conflicts, and try again.
-            self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
+            self.mergeLocalManifest(
+                withRemoteManifest: conflictingManifest,
+                backupAfterSuccess: true,
+                authedAccount: authedAccount
+            )
         }.catch { error in
             self.reportError(withUndefinedRetry: error)
         }
@@ -652,7 +715,9 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: - Restore
 
-    private func restoreOrCreateManifestIfNecessary() {
+    private func restoreOrCreateManifestIfNecessary(
+        authedAccount: AuthedAccount
+    ) {
         let state: State = databaseStorage.read { State.current(transaction: $0) }
 
         let greaterThanVersion: UInt64? = {
@@ -664,17 +729,27 @@ class StorageServiceOperation: OWSOperation {
             return state.manifestVersion
         }()
 
-        StorageService.fetchLatestManifest(greaterThanVersion: greaterThanVersion).done(on: DispatchQueue.global()) { response in
+        StorageService.fetchLatestManifest(
+            greaterThanVersion: greaterThanVersion,
+            chatServiceAuth: authedAccount.chatServiceAuth
+        ).done(on: DispatchQueue.global()) { response in
             switch response {
             case .noExistingManifest:
                 // There is no existing manifest, lets create one.
-                return self.createNewManifest(version: 1)
+                return self.createNewManifest(
+                    version: 1,
+                    authedAccount: authedAccount
+                )
             case .noNewerManifest:
                 // Our manifest version matches the server version, nothing to do here.
                 return self.reportSuccess()
             case .latestManifest(let manifest):
                 // Our manifest is not the latest, merge in the latest copy.
-                self.mergeLocalManifest(withRemoteManifest: manifest, backupAfterSuccess: false)
+                self.mergeLocalManifest(
+                    withRemoteManifest: manifest,
+                    backupAfterSuccess: false,
+                    authedAccount: authedAccount
+                )
             }
         }.catch { error in
             if let storageError = error as? StorageService.StorageError {
@@ -686,7 +761,10 @@ class StorageServiceOperation: OWSOperation {
                     // the social graph with the keys we have locally.
                     if TSAccountManager.shared.isPrimaryDevice {
                         Logger.info("Manifest decryption failed, recreating manifest.")
-                        return self.createNewManifest(version: previousManifestVersion + 1)
+                        return self.createNewManifest(
+                            version: previousManifestVersion + 1,
+                            authedAccount: authedAccount
+                        )
                     }
 
                     Logger.info("Manifest decryption failed, clearing storage service keys.")
@@ -696,7 +774,12 @@ class StorageServiceOperation: OWSOperation {
                     self.databaseStorage.write { transaction in
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
-                        DependenciesBridge.shared.keyBackupService.storeSyncedKey(type: .storageService, data: nil, transaction: transaction.asV2Write)
+                        DependenciesBridge.shared.keyBackupService.storeSyncedKey(
+                            type: .storageService,
+                            data: nil,
+                            authedAccount: authedAccount,
+                            transaction: transaction.asV2Write
+                        )
                         OWSSyncManager.shared.sendKeysSyncRequestMessage(transaction: transaction)
                     }
                 }
@@ -708,7 +791,10 @@ class StorageServiceOperation: OWSOperation {
         }
     }
 
-    private func createNewManifest(version: UInt64) {
+    private func createNewManifest(
+        version: UInt64,
+        authedAccount: AuthedAccount
+    ) {
         var allItems: [StorageService.StorageItem] = []
         var state = State()
 
@@ -721,7 +807,11 @@ class StorageServiceOperation: OWSOperation {
             ) {
                 let recordUpdater = stateUpdater.recordUpdater
 
-                let newRecord = recordUpdater.buildRecord(for: localId, unknownFields: nil, transaction: transaction)
+                let newRecord = recordUpdater.buildRecord(
+                    for: localId,
+                    unknownFields: nil,
+                    transaction: transaction
+                )
                 guard let newRecord else {
                     return
                 }
@@ -730,13 +820,14 @@ class StorageServiceOperation: OWSOperation {
                 allItems.append(storageItem)
             }
 
-            let accountUpdater = buildAccountUpdater()
-            let contactUpdater = buildContactUpdater()
+            let accountUpdater = buildAccountUpdater(authedAccount: authedAccount)
+            let contactUpdater = buildContactUpdater(authedAccount: authedAccount)
             SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
-                if recipient.address.isLocalAddress {
+                if recipient.address.isLocalAddress || authedAccount.isAddressForLocalUser(recipient.address) {
                     guard let accountUpdater else { return }
                     createRecord(localId: (), stateUpdater: accountUpdater)
                 } else {
+                    guard let contactUpdater else { return }
                     createRecord(localId: recipient.accountId, stateUpdater: contactUpdater)
                 }
             }
@@ -796,7 +887,8 @@ class StorageServiceOperation: OWSOperation {
         StorageService.updateManifest(
             manifest,
             newItems: allItems,
-            deleteAllExistingRecords: shouldDeletePreviousRecords
+            deleteAllExistingRecords: shouldDeletePreviousRecords,
+            chatServiceAuth: authedAccount.chatServiceAuth
         ).done(on: DispatchQueue.global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
                 // Successfully updated, store our changes.
@@ -810,7 +902,11 @@ class StorageServiceOperation: OWSOperation {
             // We got a conflicting manifest that we were able to decrypt, so we may not need
             // to recreate our manifest after all. Throw away all our work, resolve conflicts,
             // and try again.
-            self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
+            self.mergeLocalManifest(
+                withRemoteManifest: conflictingManifest,
+                backupAfterSuccess: true,
+                authedAccount: authedAccount
+            )
         }.catch { error in
             self.reportError(withUndefinedRetry: error)
         }
@@ -818,7 +914,11 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: - Conflict Resolution
 
-    private func mergeLocalManifest(withRemoteManifest manifest: StorageServiceProtoManifestRecord, backupAfterSuccess: Bool) {
+    private func mergeLocalManifest(
+        withRemoteManifest manifest: StorageServiceProtoManifestRecord,
+        backupAfterSuccess: Bool,
+        authedAccount: AuthedAccount
+    ) {
         var state: State = databaseStorage.write { transaction in
             var state = State.current(transaction: transaction)
 
@@ -891,7 +991,10 @@ class StorageServiceOperation: OWSOperation {
 
             Logger.info("Merging account record update from manifest version: \(manifest.version).")
 
-            return StorageService.fetchItem(for: newLocalAccountIdentifier).done(on: DispatchQueue.global()) { item in
+            return StorageService.fetchItem(
+                for: newLocalAccountIdentifier,
+                chatServiceAuth: authedAccount.chatServiceAuth
+            ).done(on: DispatchQueue.global()) { item in
                 guard let item = item else {
                     // This can happen in normal use if between fetching the manifest and starting the item
                     // fetch a linked device has updated the manifest.
@@ -904,7 +1007,9 @@ class StorageServiceOperation: OWSOperation {
                     throw OWSAssertionError("unexpected item type for account identifier")
                 }
 
-                guard let accountUpdater = self.buildAccountUpdater() else {
+                guard let accountUpdater = self.buildAccountUpdater(
+                    authedAccount: authedAccount
+                ) else {
                     throw OWSAssertionError("can't update account record")
                 }
 
@@ -931,7 +1036,13 @@ class StorageServiceOperation: OWSOperation {
                 .filter { (recordType, unknownIdentifiers) in !unknownIdentifiers.isEmpty }
 
             // Then, fetch the remaining items in the manifest and resolve any conflicts as appropriate.
-            return self.fetchAndMergeItemsInBatches(identifiers: newOrUpdatedItems, manifest: manifest, state: state)
+            let promise: Promise<State> = self.fetchAndMergeItemsInBatches(
+                identifiers: newOrUpdatedItems,
+                manifest: manifest,
+                state: state,
+                authedAccount: authedAccount
+            )
+            return promise
         }.done(on: DispatchQueue.global()) { updatedState in
             var mutableState = updatedState
             self.databaseStorage.write { transaction in
@@ -1031,7 +1142,11 @@ class StorageServiceOperation: OWSOperation {
 
                 mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
 
-                if backupAfterSuccess { StorageServiceManager.shared.backupPendingChanges() }
+                if backupAfterSuccess {
+                    StorageServiceManager.shared.backupPendingChanges(
+                        authedAccount: authedAccount
+                    )
+                }
             }
             self.reportSuccess()
         }.catch { error in
@@ -1044,7 +1159,10 @@ class StorageServiceOperation: OWSOperation {
                     // the social graph with the keys we have locally.
                     if TSAccountManager.shared.isPrimaryDevice {
                         Logger.info("Item decryption failed, recreating manifest.")
-                        return self.createNewManifest(version: manifest.version + 1)
+                        return self.createNewManifest(
+                            version: manifest.version + 1,
+                            authedAccount: authedAccount
+                        )
                     }
 
                     Logger.info("Item decryption failed, clearing storage service keys.")
@@ -1054,7 +1172,12 @@ class StorageServiceOperation: OWSOperation {
                     self.databaseStorage.write { transaction in
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
-                        DependenciesBridge.shared.keyBackupService.storeSyncedKey(type: .storageService, data: nil, transaction: transaction.asV2Write)
+                        DependenciesBridge.shared.keyBackupService.storeSyncedKey(
+                            type: .storageService,
+                            data: nil,
+                            authedAccount: authedAccount,
+                            transaction: transaction.asV2Write
+                        )
                         OWSSyncManager.shared.sendKeysSyncRequestMessage(transaction: transaction)
                     }
                 }
@@ -1070,17 +1193,21 @@ class StorageServiceOperation: OWSOperation {
     private func fetchAndMergeItemsInBatches(
         identifiers: [StorageService.StorageIdentifier],
         manifest: StorageServiceProtoManifestRecord,
-        state: State
+        state: State,
+        authedAccount: AuthedAccount
     ) -> Promise<State> {
         var remainingItems = identifiers.count
         var mutableState = state
         var promise = Promise.value(())
         for identifierBatch in identifiers.chunked(by: Self.itemsBatchSize) {
             promise = promise.then(on: DispatchQueue.global()) {
-                StorageService.fetchItems(for: Array(identifierBatch))
+                StorageService.fetchItems(
+                    for: Array(identifierBatch),
+                    chatServiceAuth: authedAccount.chatServiceAuth
+                )
             }.done(on: DispatchQueue.global()) { items in
                 self.databaseStorage.write { transaction in
-                    let contactUpdater = self.buildContactUpdater()
+                    let contactUpdater = self.buildContactUpdater(authedAccount: authedAccount)
                     let groupV1Updater = self.buildGroupV1Updater()
                     let groupV2Updater = self.buildGroupV2Updater()
                     let storyDistributionListUpdater = self.buildStoryDistributionListUpdater()
@@ -1099,6 +1226,10 @@ class StorageServiceOperation: OWSOperation {
                         }
 
                         if let contactRecord = item.contactRecord {
+                            guard let contactUpdater else {
+                                owsFailDebug("Failed to create contact updater; skipping contact record.")
+                                continue
+                            }
                             _mergeRecord(contactRecord, stateUpdater: contactUpdater)
                         } else if let groupV1Record = item.groupV1Record {
                             _mergeRecord(groupV1Record, stateUpdater: groupV1Updater)
@@ -1143,10 +1274,15 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: - Clean Up
 
-    private func cleanUpUnknownData() {
+    private func cleanUpUnknownData(
+        authedAccount: AuthedAccount
+    ) {
         databaseStorage.write { transaction in
             self.cleanUpUnknownIdentifiers(transaction: transaction)
-            self.cleanUpRecordsWithUnknownFields(transaction: transaction)
+            self.cleanUpRecordsWithUnknownFields(
+                authedAccount: authedAccount,
+                transaction: transaction
+            )
             self.cleanUpOrphanedAccounts(transaction: transaction)
         }
 
@@ -1196,7 +1332,10 @@ class StorageServiceOperation: OWSOperation {
         state.save(transaction: transaction)
     }
 
-    private func cleanUpRecordsWithUnknownFields(transaction: SDSAnyWriteTransaction) {
+    private func cleanUpRecordsWithUnknownFields(
+        authedAccount: AuthedAccount,
+        transaction: SDSAnyWriteTransaction
+    ) {
         var state = State.current(transaction: transaction)
 
         guard state.unknownFieldLastCheckedAppVersion != appVersion.currentAppVersion4 else {
@@ -1235,10 +1374,12 @@ class StorageServiceOperation: OWSOperation {
             Logger.info("Unknown fields: Resolved \(resolvedCount) records (\(remainingCount) remaining) for \(debugDescription)")
         }
 
-        if let accountUpdater = buildAccountUpdater() {
+        if let accountUpdater = buildAccountUpdater(authedAccount: authedAccount) {
             mergeRecordsWithUnknownFields(stateUpdater: accountUpdater)
         }
-        mergeRecordsWithUnknownFields(stateUpdater: buildContactUpdater())
+        if let contactUpdater = buildContactUpdater(authedAccount: authedAccount) {
+            mergeRecordsWithUnknownFields(stateUpdater: contactUpdater)
+        }
         mergeRecordsWithUnknownFields(stateUpdater: buildGroupV1Updater())
         mergeRecordsWithUnknownFields(stateUpdater: buildGroupV2Updater())
         mergeRecordsWithUnknownFields(stateUpdater: buildStoryDistributionListUpdater())
@@ -1271,7 +1412,7 @@ class StorageServiceOperation: OWSOperation {
 
         Logger.info("Marking \(orphanedAccountIds.count) orphaned account(s) for deletion.")
 
-        var pendingMutations = PendingMutations()
+        var pendingMutations = PendingMutations(authedAccount: .implicit())
         pendingMutations.updatedAccountIds.formUnion(orphanedAccountIds)
         Self.recordPendingMutations(pendingMutations, transaction: transaction)
     }
@@ -1285,7 +1426,10 @@ class StorageServiceOperation: OWSOperation {
         stateUpdater: StateUpdater,
         transaction: SDSAnyWriteTransaction
     ) {
-        let mergeResult = stateUpdater.recordUpdater.mergeRecord(record, transaction: transaction)
+        let mergeResult = stateUpdater.recordUpdater.mergeRecord(
+            record,
+            transaction: transaction
+        )
         switch mergeResult {
         case .invalid:
             // This record doesn't have a valid identifier. We can't fix it, so we have
@@ -1310,18 +1454,25 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: - Record Updaters
 
-    private func buildAccountUpdater() -> SingleElementStateUpdater<StorageServiceAccountRecordUpdater>? {
+    private func buildAccountUpdater(
+        authedAccount: AuthedAccount
+    ) -> SingleElementStateUpdater<StorageServiceAccountRecordUpdater>? {
+        let localAddress: SignalServiceAddress? =
+            authedAccount.localUserAddress() ?? TSAccountManager.localAddress
+
         guard
-            let localAddress = TSAccountManager.localAddress,
+            let localAddress = localAddress,
             let localAci = localAddress.uuid
         else {
             owsFailDebug("Can't update local account without local address and ACI.")
             return nil
         }
+
         return SingleElementStateUpdater(
             recordUpdater: StorageServiceAccountRecordUpdater(
                 localAddress: localAddress,
                 localAci: localAci,
+                authedAccount: authedAccount,
                 changePhoneNumber: changePhoneNumber,
                 paymentsHelper: paymentsHelperSwift,
                 preferences: preferences,
@@ -1342,9 +1493,20 @@ class StorageServiceOperation: OWSOperation {
         )
     }
 
-    private func buildContactUpdater() -> MultipleElementStateUpdater<StorageServiceContactRecordUpdater> {
+    private func buildContactUpdater(
+        authedAccount: AuthedAccount
+    ) -> MultipleElementStateUpdater<StorageServiceContactRecordUpdater>? {
+        let localAddress = authedAccount.localUserAddress() ?? TSAccountManager.localAddress
+
+        guard let localAddress else {
+            owsFailDebug("Can't update contact record without local address and ACI.")
+            return nil
+        }
+
         return MultipleElementStateUpdater(
             recordUpdater: StorageServiceContactRecordUpdater(
+                localAddress: localAddress,
+                authedAccount: authedAccount,
                 blockingManager: blockingManager,
                 bulkProfileFetch: bulkProfileFetch,
                 contactsManager: contactsManagerImpl,

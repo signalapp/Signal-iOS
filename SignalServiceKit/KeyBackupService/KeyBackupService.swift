@@ -284,6 +284,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                         pinType: KBS.PinType(forPin: pin),
                         encodedVerificationString: encodedVerificationString,
                         enclaveName: self.currentEnclave.name,
+                        authedAccount: auth.authedAccount,
                         transaction: transaction
                     )
                 }
@@ -472,6 +473,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                         pinType: KBS.PinType(forPin: pin),
                         encodedVerificationString: encodedVerificationString,
                         enclaveName: self.currentEnclave.name,
+                        authedAccount: authMethod.authedAccount,
                         transaction: transaction
                     )
                 }
@@ -831,6 +833,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         pinType: KBS.PinType,
         encodedVerificationString: String,
         enclaveName: String,
+        authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
         owsAssertDebug(accountManager.isPrimaryDevice(transaction: transaction))
@@ -890,13 +893,18 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         // If the app is ready start that restoration.
         guard AppReadiness.isAppReady else { return }
 
-        storageServiceManager.restoreOrCreateManifestIfNecessary()
+        storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
 
         // Sync our new keys with linked devices.
         syncManager.sendKeysSyncMessage()
     }
 
-    public func storeSyncedKey(type: KBS.DerivedKey, data: Data?, transaction: DBWriteTransaction) {
+    public func storeSyncedKey(
+        type: KBS.DerivedKey,
+        data: Data?,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
         guard !accountManager.isPrimaryDevice(transaction: transaction) || appContext.isRunningTests else {
             return owsFailDebug("primary device should never store synced keys")
         }
@@ -911,7 +919,9 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
         // Trigger a re-fetch of the storage manifest, our keys have changed
         if type == .storageService, data != nil {
-            storageServiceManager.restoreOrCreateManifestIfNecessary()
+            storageServiceManager.restoreOrCreateManifestIfNecessary(
+                authedAccount: authedAccount
+            )
         }
     }
 
@@ -941,13 +951,17 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         reloadState(transaction: transaction)
     }
 
-    public func useDeviceLocalMasterKey(transaction: DBWriteTransaction) {
+    public func useDeviceLocalMasterKey(
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
         store(
             masterKey: generateMasterKey(),
             isMasterKeyBackedUp: false,
             pinType: .alphanumeric,
             encodedVerificationString: "",
             enclaveName: "",
+            authedAccount: authedAccount,
             transaction: transaction
         )
 
@@ -1349,8 +1363,8 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             switch backup {
             case .kbsAuth(let backupCredential, _):
                 backupAuthMethod = .kbsAuth(backupCredential.credential)
-            case let .chatServerAuth(chatAuth):
-                backupAuthMethod = .chatServer(chatAuth)
+            case let .chatServerAuth(authedAccount):
+                backupAuthMethod = .chatServer(authedAccount.chatServiceAuth)
             case .none, .implicit:
                 if kbsAuth == cachedKbsAuth {
                     backupAuthMethod = .chatServerImplicitCredentials
@@ -1358,8 +1372,8 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                     backupAuthMethod = implicitAuthMethod
                 }
             }
-        case let .chatServerAuth(chatAuth):
-            authMethod = .chatServer(chatAuth)
+        case let .chatServerAuth(authedAccount):
+            authMethod = .chatServer(authedAccount.chatServiceAuth)
         case .implicit:
             authMethod = implicitAuthMethod
         }
@@ -1430,4 +1444,18 @@ extension KeyBackupProtoDeleteRequest: KBSRequestOption {
         builder.setDelete(self)
     }
     static var stringRepresentation: String { "delete" }
+}
+
+extension KBS.AuthMethod {
+
+    var authedAccount: AuthedAccount {
+        switch self {
+        case .kbsAuth(_, let backup):
+            return backup?.authedAccount ?? .implicit()
+        case .chatServerAuth(let chatServiceAuth):
+            return chatServiceAuth
+        case .implicit:
+            return .implicit()
+        }
+    }
 }

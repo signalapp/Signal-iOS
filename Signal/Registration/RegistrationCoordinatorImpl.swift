@@ -9,6 +9,7 @@ import Foundation
 public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private let accountManager: RegistrationCoordinatorImpl.Shims.AccountManager
+    private let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
     private let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
     private let dateProvider: DateProvider
     private let db: DB
@@ -31,6 +32,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public init(
         accountManager: RegistrationCoordinatorImpl.Shims.AccountManager,
+        contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager,
         contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore,
         dateProvider: @escaping DateProvider,
         db: DB,
@@ -52,6 +54,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         udManager: RegistrationCoordinatorImpl.Shims.UDManager
     ) {
         self.accountManager = accountManager
+        self.contactsManager = contactsManager
         self.contactsStore = contactsStore
         self.dateProvider = dateProvider
         self.db = db
@@ -281,11 +284,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) -> Guarantee<RegistrationStep> {
+        guard let accountIdentity = persistedState.accountIdentity else {
+            owsFailBeta("Shouldn't be setting phone number discoverability prior to registration.")
+            return .value(.showErrorSheet(.todo))
+        }
         self.inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = true
         self.inMemoryState.isDiscoverableByPhoneNumber = isDiscoverable
         db.write { tx in
             // We will update storage service at the end of registration.
-            tsAccountManager.setIsDiscoverableByPhoneNumber(true, updateStorageService: false, tx)
+            tsAccountManager.setIsDiscoverableByPhoneNumber(
+                true,
+                updateStorageService: false,
+                authedAccount: accountIdentity.authedAccount,
+                tx
+            )
         }
 
         return nextStep()
@@ -348,6 +360,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // at the start of every session), but hit a challenge, we write this var
         // so that when we complete the challenge we send the code right away.
         var pendingCodeTransport: Registration.CodeTransport?
+
+        // Once we register with the server we have to set
+        // up contacts manager for syncs (letting it know this
+        // is the primary device). Do this again if we relaunch.
+        var hasSetUpContactsManager = false
 
         // Every time we go through registration, we should back up our KBS master
         // secret's random bytes to KBS. Its safer to do this more than it is to do
@@ -566,8 +583,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.isManualMessageFetchEnabled = tsAccountManager.isManualMessageFetchEnabled(tx)
             inMemoryState.registrationId = tsAccountManager.getOrGenerateRegistrationId(tx)
             inMemoryState.pniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx)
-            inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber(tx)
-            inMemoryState.isDiscoverableByPhoneNumber = tsAccountManager.isDiscoverableByPhoneNumber(tx)
 
             inMemoryState.allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
 
@@ -650,6 +665,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             tsAccountManager.setIsOnboarded(tx)
         }
 
+        // Start syncing system contacts now that we have set up tsAccountManager.
+        contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: accountIdentity.authedAccount)
+
         // Update the account attributes once, now, at the end.
         return updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
     }
@@ -670,7 +688,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         try? self.kvStore.setCodable(PersistedState(), key: Constants.persistedStateKey, transaction: tx)
                     }
                     // Do any storage service backups we have pending.
-                    self.storageServiceManager.backupPendingChanges()
+                    self.storageServiceManager.backupPendingChanges(authedAccount: accountIdentity.authedAccount)
                     return .value(.done)
                 }
                 if error.isNetworkConnectivityFailure, retriesLeft > 0 {
@@ -679,7 +697,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         retriesLeft: retriesLeft - 1
                     )
                 }
-                // TODO[Registration]: what should we do with a non-transiest account attributes update error?
+                // TODO[Registration]: what should we do with a non-transient account attributes update error?
                 Logger.error("Failed to register due to failed account attributes update: \(error)")
                 return .value(.showErrorSheet(.todo))
             }
@@ -1190,6 +1208,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             // TODO[Registration]: provide reglock timeout state.
             return .value(.reglockTimeout)
+        }
+
+        if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
+            return .value(.transferSelection)
+        }
+
+        if session.verified {
+            // We have to complete registration.
+            return self.makeRegisterOrChangeNumberRequestFromSession(session)
         }
 
         if let pendingCodeTransport = inMemoryState.pendingCodeTransport {
@@ -1947,6 +1974,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func nextStepForProfileSetup(
         _ accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
+        if !inMemoryState.hasSetUpContactsManager {
+            // This sets up the contact provider as the primary device one (system contacts).
+            // Without this, subsequent operations will fail as no contact provider is set
+            // and tsAccountManager isn't set up yet.
+            contactsManager.setIsPrimaryDevice()
+            inMemoryState.hasSetUpContactsManager = true
+        }
+
         // We _must_ do these steps first. The created account starts out
         // disabled and other endpoints won't work until we:
         // 1. sync push tokens OR set isManualMessageFetchEnabled=true and sync account attributes
@@ -2013,7 +2048,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.shouldRestoreFromStorageService {
-            return accountManager.performInitialStorageServiceRestore(auth: accountIdentity.chatServiceAuth)
+            return accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
                 .map(on: schedulers.main) { [weak self] in
                     self?.inMemoryState.hasRestoredFromStorageService = true
                     return ()
@@ -2034,7 +2069,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     givenName: profileInfo.givenName,
                     familyName: profileInfo.familyName,
                     avatarData: profileInfo.avatarData,
-                    auth: accountIdentity.chatServiceAuth
+                    authedAccount: accountIdentity.authedAccount
                 )
                     .map(on: schedulers.sync) { return nil }
                     .recover(on: schedulers.sync) { (error) -> Guarantee<Error?> in
@@ -2058,7 +2093,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if !inMemoryState.hasDefinedIsDiscoverableByPhoneNumber {
-            return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(e164: accountIdentity.response.e164)))
+            return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(e164: accountIdentity.response.e164.stringValue)))
         }
         if !inMemoryState.hasProfileName {
             return .value(.setupProfile)
@@ -2075,7 +2110,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         pushRegistrationManager
             .syncPushTokensForcingUpload(
-                auth: accountIdentity.chatServiceAuth
+                auth: accountIdentity.authedAccount.chatServiceAuth
             )
             .then(on: schedulers.main) { [weak self] result in
                 guard let strongSelf = self else {
@@ -2131,7 +2166,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(accountIdentity.chatServiceAuth)
+        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
         let authMethod: KBS.AuthMethod
         if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
             authMethod = .kbsAuth(kbsAuthCredential, backup: backupAuthMethod)
@@ -2184,7 +2219,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         let authMethod: KBS.AuthMethod
-        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(accountIdentity.chatServiceAuth)
+        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
         if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
             authMethod = .kbsAuth(kbsAuthCredential, backup: backupAuthMethod)
         } else {
@@ -2204,7 +2239,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 strongSelf.db.write { tx in
                     strongSelf.ows2FAManager.markPinEnabled(pin, tx)
                 }
-                return strongSelf.accountManager.performInitialStorageServiceRestore(auth: accountIdentity.chatServiceAuth)
+                return strongSelf.accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
                     .map(on: strongSelf.schedulers.main) { [weak self] in
                         self?.inMemoryState.hasRestoredFromStorageService = true
                     }
@@ -2296,6 +2331,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         inMemoryState.udAccessKey = udAccessKey
         inMemoryState.hasProfileName = profileManager.hasProfileName
+        db.read { tx in
+            inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber(tx)
+            inMemoryState.isDiscoverableByPhoneNumber = tsAccountManager.isDiscoverableByPhoneNumber(tx)
+        }
     }
 
     private func updateAccountAttributes(_ accountIdentity: AccountIdentity) -> Guarantee<Error?> {
@@ -2400,6 +2439,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         var authPassword: String {
             return authToken
+        }
+
+        var authedAccount: AuthedAccount {
+            return AuthedAccount.explicit(aci: response.aci, e164: response.e164, authPassword: authPassword)
         }
 
         var chatServiceAuth: ChatServiceAuth {

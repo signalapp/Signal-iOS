@@ -4,6 +4,7 @@
 //
 
 @class AnyPromise;
+@class AuthedAccount;
 @class BadgeStore;
 @class ModelReadCacheSizeLease;
 @class OWSAES256Key;
@@ -76,6 +77,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (void)setProfileKeyData:(NSData *)profileKeyData
                forAddress:(SignalServiceAddress *)address
         userProfileWriter:(UserProfileWriter)userProfileWriter
+            authedAccount:(AuthedAccount *)authedAccount
               transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)hasProfileAvatarData:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
@@ -83,17 +85,20 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                                      transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
                                     downloadIfMissing:(BOOL)downloadIfMissing
+                                        authedAccount:(AuthedAccount *)authedAccount
                                           transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSURL *)writeAvatarDataToFile:(NSData *)avatarData NS_SWIFT_NAME(writeAvatarDataToFile(_:));
 
 - (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
                userProfileWriter:(UserProfileWriter)userProfileWriter
-    NS_SWIFT_NAME(fillInMissingProfileKeys(_:userProfileWriter:));
+                   authedAccount:(AuthedAccount *)authedAccount
+    NS_SWIFT_NAME(fillInMissingProfileKeys(_:userProfileWriter:authedAccount:));
 
 - (void)setProfileGivenName:(nullable NSString *)firstName
                  familyName:(nullable NSString *)lastName
                  forAddress:(SignalServiceAddress *)address
           userProfileWriter:(UserProfileWriter)userProfileWriter
+              authedAccount:(AuthedAccount *)authedAccount
                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)setProfileGivenName:(nullable NSString *)firstName
@@ -101,28 +106,35 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
               avatarUrlPath:(nullable NSString *)avatarUrlPath
                  forAddress:(SignalServiceAddress *)address
           userProfileWriter:(UserProfileWriter)userProfileWriter
+              authedAccount:(AuthedAccount *)authedAccount
                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread;
-- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)addThreadToProfileWhitelist:(TSThread *)thread authedAccount:(AuthedAccount *)authedAccount;
+- (void)addThreadToProfileWhitelist:(TSThread *)thread
+                      authedAccount:(AuthedAccount *)authedAccount
+                        transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount;
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
                 userProfileWriter:(UserProfileWriter)userProfileWriter
+                    authedAccount:(AuthedAccount *)authedAccount
                       transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses;
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+                     authedAccount:(AuthedAccount *)authedAccount;
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
                  userProfileWriter:(UserProfileWriter)userProfileWriter
+                     authedAccount:(AuthedAccount *)authedAccount
                        transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount;
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
                      userProfileWriter:(UserProfileWriter)userProfileWriter
+                         authedAccount:(AuthedAccount *)authedAccount
                            transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
@@ -135,11 +147,13 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                         userProfileWriter:(UserProfileWriter)userProfileWriter
                               transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)fetchLocalUsersProfile;
+- (void)fetchLocalUsersProfileWithAuthedAccount:(AuthedAccount *)authedAccount
+    NS_SWIFT_NAME(fetchLocalUsersProfile(authedAccount:));
 
-- (AnyPromise *)fetchLocalUsersProfilePromise;
+- (AnyPromise *)fetchLocalUsersProfilePromiseWithAuthedAccount:(AuthedAccount *)authedAccount
+    NS_SWIFT_NAME(fetchLocalUsersProfilePromise(authedAccount:));
 
-- (void)fetchProfileForAddress:(SignalServiceAddress *)address;
+- (void)fetchProfileForAddress:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount;
 
 // Profile fetches will make a best effort
 // to download and decrypt avatar data,
@@ -158,6 +172,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
            canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                   lastFetchDate:(NSDate *)lastFetchDate
               userProfileWriter:(UserProfileWriter)userProfileWriter
+                  authedAccount:(AuthedAccount *)authedAccount
                     transaction:(SDSAnyWriteTransaction *)writeTx;
 
 - (BOOL)recipientAddressIsStoriesCapable:(SignalServiceAddress *)address
@@ -175,9 +190,11 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                                                       profileKey:(OWSAES256Key *)profileKey;
 
 - (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)address
+                             authedAccount:(AuthedAccount *)authedAccount
                                transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)reuploadLocalProfile;
+- (void)reuploadLocalProfileWithAuthedAccount:(AuthedAccount *)authedAccount
+    NS_SWIFT_NAME(reuploadLocalProfile(authedAccount:));
 
 - (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size;
 

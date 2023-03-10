@@ -45,7 +45,7 @@ public class _KeyBackupService_StorageServiceManagerTestMock: KBS.Shims.StorageS
 
     public func resetLocalData(transaction: DBWriteTransaction) {}
 
-    public func restoreOrCreateManifestIfNecessary() {}
+    public func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) {}
 }
 
 // MARK: - OWS2FAManager

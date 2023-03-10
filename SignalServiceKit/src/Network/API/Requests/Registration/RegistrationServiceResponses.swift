@@ -273,13 +273,13 @@ public enum RegistrationServiceResponses {
         /// The user's phone number identifier.
         public let pni: UUID
         /// The phone number associated with the PNI.
-        public let e164: String
+        public let e164: E164
         /// The username associated with the ACI.
         public let username: String?
         /// Whether the account has any data in KBS.
         public let hasPreviouslyUsedKBS: Bool
 
-        public init(aci: UUID, pni: UUID, e164: String, username: String?, hasPreviouslyUsedKBS: Bool) {
+        public init(aci: UUID, pni: UUID, e164: E164, username: String?, hasPreviouslyUsedKBS: Bool) {
             self.aci = aci
             self.pni = pni
             self.e164 = e164

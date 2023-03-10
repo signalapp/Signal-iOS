@@ -368,7 +368,7 @@ extension OWSMessageManager {
         if !hasDevice {
             Logger.info("Message received from unknown linked device; refreshing device list: \(sourceDevice).")
             OWSDevicesService.refreshDevices()
-            profileManager.fetchLocalUsersProfile()
+            profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
         }
     }
 }

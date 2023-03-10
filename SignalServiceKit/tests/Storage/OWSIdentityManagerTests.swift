@@ -32,7 +32,12 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
         let newKey = Randomness.generateRandomBytes(32)
         let address = SignalServiceAddress(phoneNumber: "+12223334444")
         write { transaction in
-            identityManager.saveRemoteIdentity(newKey, address: address, transaction: transaction)
+            identityManager.saveRemoteIdentity(
+                newKey,
+                address: address,
+                authedAccount: .implicit(),
+                transaction: transaction
+            )
             XCTAssert(identityManager.isTrustedIdentityKey(newKey,
                                                            address: address,
                                                            direction: .outgoing,
@@ -48,7 +53,12 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
         let originalKey = Randomness.generateRandomBytes(32)
         let address = SignalServiceAddress(phoneNumber: "+12223334444")
         write { transaction in
-            identityManager.saveRemoteIdentity(originalKey, address: address, transaction: transaction)
+            identityManager.saveRemoteIdentity(
+                originalKey,
+                address: address,
+                authedAccount: .implicit(),
+                transaction: transaction
+            )
 
             XCTAssert(identityManager.isTrustedIdentityKey(originalKey,
                                                            address: address,

@@ -330,7 +330,7 @@ public class GroupManager: NSObject {
                                                                             transaction: transaction)
             }
 
-            self.profileManager.addThread(toProfileWhitelist: thread)
+            self.profileManager.addThread(toProfileWhitelist: thread, authedAccount: .implicit())
 
             if shouldSendMessage {
                 return firstly {
@@ -1475,7 +1475,7 @@ public class GroupManager: NSObject {
                                                                transaction: transaction)
 
         if inProfileWhitelist {
-            profileManager.addThread(toProfileWhitelist: groupThreadV2)
+            profileManager.addThread(toProfileWhitelist: groupThreadV2, authedAccount: .implicit())
         }
         if isBlocked {
             blockingManager.addBlockedGroup(groupModel: newGroupModelV2,
@@ -1838,7 +1838,7 @@ public class GroupManager: NSObject {
         // it might be stale.  E.g. maybe they were added by someone who
         // doesn't know their new profile key.  So we only want to fill in
         // missing keys, not overwrite any existing keys.
-        profileManager.fillInMissingProfileKeys(profileKeysByAddress, userProfileWriter: .groupState)
+        profileManager.fillInMissingProfileKeys(profileKeysByAddress, userProfileWriter: .groupState, authedAccount: .implicit())
     }
 
     /// Ensure that we have a profile key commitment for our local profile
@@ -1867,7 +1867,7 @@ public class GroupManager: NSObject {
             // If we don't have a local profile key credential we should first
             // check if it is simply expired, by asking for a new one (which we
             // would get as part of fetching our local profile).
-            return self.profileManager.fetchLocalUsersProfilePromise().asVoid()
+            return self.profileManager.fetchLocalUsersProfilePromise(authedAccount: .implicit()).asVoid()
         }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             let hasProfileKeyCredentialAfterRefresh = databaseStorage.read { transaction in
                 self.groupsV2Swift.hasProfileKeyCredential(for: localAddress, transaction: transaction)

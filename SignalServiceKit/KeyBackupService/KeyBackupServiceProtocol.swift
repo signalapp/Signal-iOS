@@ -75,7 +75,7 @@ public enum KBS {
         case kbsAuth(KBSAuthCredential, backup: AuthMethod?)
         /// Get a KBS auth credential from the chat server first with the
         /// provided credentials, then user it to talk to the KBS server.
-        case chatServerAuth(ChatServiceAuth)
+        case chatServerAuth(AuthedAccount)
         /// Use whatever KBS auth credential we have cached; if unavailable or
         /// if invalid, falls back to getting a KBS auth credential from the chat server
         /// with the chat server auth credentials we have cached.
@@ -153,7 +153,12 @@ public protocol KeyBackupServiceProtocol {
     /// restored from the server if you know the pin.
     func clearKeys(transaction: DBWriteTransaction)
 
-    func storeSyncedKey(type: KBS.DerivedKey, data: Data?, transaction: DBWriteTransaction)
+    func storeSyncedKey(
+        type: KBS.DerivedKey,
+        data: Data?,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    )
 
     func hasBackupKeyRequestFailed(transaction: DBReadTransaction) -> Bool
 
@@ -165,7 +170,7 @@ public protocol KeyBackupServiceProtocol {
 
     func setMasterKeyBackedUp(_ value: Bool, transaction: DBWriteTransaction)
 
-    func useDeviceLocalMasterKey(transaction: DBWriteTransaction)
+    func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction)
 
     func data(for key: KBS.DerivedKey, transaction: DBReadTransaction) -> Data?
 

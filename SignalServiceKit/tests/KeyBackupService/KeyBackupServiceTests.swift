@@ -92,6 +92,7 @@ class KeyBackupServiceTests: XCTestCase {
                     pinType: .init(forPin: vector.pin),
                     encodedVerificationString: "",
                     enclaveName: "",
+                    authedAccount: .implicit(),
                     transaction: transaction
                 )
             }
@@ -137,6 +138,7 @@ class KeyBackupServiceTests: XCTestCase {
                 pinType: .init(forPin: pin),
                 encodedVerificationString: encodedVerificationString,
                 enclaveName: "",
+                authedAccount: .implicit(),
                 transaction: transaction
             )
         }
@@ -188,10 +190,16 @@ class KeyBackupServiceTests: XCTestCase {
                         pinType: .numeric,
                         encodedVerificationString: "",
                         enclaveName: "",
+                        authedAccount: .implicit(),
                         transaction: transaction
                     )
                 case .synced:
-                    keyBackupService.storeSyncedKey(type: .storageService, data: storageServiceKeyData, transaction: transaction)
+                    keyBackupService.storeSyncedKey(
+                        type: .storageService,
+                        data: storageServiceKeyData,
+                        authedAccount: .implicit(),
+                        transaction: transaction
+                    )
                 }
             }
         }

@@ -614,6 +614,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.profileManager setProfileKeyData:profileKey
                                         forAddress:address
                                  userProfileWriter:UserProfileWriter_LocalUser
+                                     authedAccount:AuthedAccount.implicit
                                        transaction:transaction];
         }
     }
@@ -1083,6 +1084,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.profileManager setProfileKeyData:profileKey
                                         forAddress:address
                                  userProfileWriter:UserProfileWriter_LocalUser
+                                     authedAccount:AuthedAccount.implicit
                                        transaction:transaction];
         }
     }
@@ -1639,7 +1641,7 @@ NS_ASSUME_NONNULL_BEGIN
                 if (groupId != nil) {
                     [self.profileManager addGroupIdToProfileWhitelist:groupId];
                 } else {
-                    [self.profileManager addUserToProfileWhitelist:destination];
+                    [self.profileManager addUserToProfileWhitelist:destination authedAccount:AuthedAccount.implicit];
                 }
             }
 

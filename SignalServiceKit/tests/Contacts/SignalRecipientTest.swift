@@ -170,7 +170,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             let oldProfile = OWSUserProfile.getOrBuild(
                 for: oldAddress,
-                   transaction: transaction
+                authedAccount: .implicit(),
+                transaction: transaction
             )
             // TODO: It's weird to me that getOrBuild doesn't
             // save the profile if it builds it. Maybe this is
@@ -194,7 +195,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
             )!
             let newProfile = OWSUserProfile.getOrBuild(
                 for: newAddress,
-                   transaction: transaction
+                authedAccount: .implicit(),
+                transaction: transaction
             )
             let newAccount = SignalAccount.anyFetch(
                 uniqueId: oldAccount.uniqueId,
@@ -244,7 +246,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             let oldProfile = OWSUserProfile.getOrBuild(
                 for: oldAddress,
-                   transaction: transaction
+                authedAccount: .implicit(),
+                transaction: transaction
             )
             // TODO: It's weird to me that getOrBuild doesn't
             // save the profile if it builds it. Maybe this is
@@ -268,7 +271,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
             )!
             let newProfile = OWSUserProfile.getOrBuild(
                 for: newAddress,
-                   transaction: transaction
+                authedAccount: .implicit(),
+                transaction: transaction
             )
             let newAccount = SignalAccount.anyFetch(
                 uniqueId: oldAccount.uniqueId,

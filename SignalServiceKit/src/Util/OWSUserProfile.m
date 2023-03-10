@@ -249,6 +249,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 }
 
 + (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)addressParam
+                                      authedAccount:(AuthedAccount *)authedAccount
                                         transaction:(SDSAnyWriteTransaction *)transaction
 {
     SignalServiceAddress *address = [self resolveUserProfileAddress:addressParam];
@@ -262,6 +263,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
         if ([address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
             [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
                             userProfileWriter:UserProfileWriter_LocalUser
+                                authedAccount:authedAccount
                                   transaction:transaction
                                    completion:nil];
         }
@@ -610,14 +612,17 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 // * We fire "did change" notifications.
 - (void)applyChanges:(UserProfileChanges *)changes
     userProfileWriter:(UserProfileWriter)userProfileWriter
+        authedAccount:(AuthedAccount *)authedAccount
           transaction:(SDSAnyWriteTransaction *)transaction
            completion:(nullable OWSUserProfileCompletion)completion
 {
     OWSAssertDebug(transaction);
     BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
-    // We should never be writing to or updating the "local address" profile;
-    // we should be using the "kLocalProfileInvariantPhoneNumber" profile instead.
-    OWSAssertDebug(!self.address.isLocalAddress);
+    if (isLocalUserProfile) {
+        // We should never be writing to or updating the "local address" profile;
+        // we should be using the "kLocalProfileInvariantPhoneNumber" profile instead.
+        OWSAssertDebug([self.address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]);
+    }
 
     // This should be set to true if:
     //
@@ -738,7 +743,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                     } else {
                         OWSLogInfo(@"Re-uploading local profile to update profile credential.");
                         [transaction addAsyncCompletionOffMain:^{
-                            [self.profileManager reuploadLocalProfile];
+                            [self.profileManager reuploadLocalProfileWithAuthedAccount:authedAccount];
                         }];
                     }
                 }
@@ -843,9 +848,20 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     if (self.tsAccountManager.isRegisteredAndReady && shouldUpdateStorageService
         && (!onlyAvatarChanged || isLocalUserProfile)) {
         [transaction addAsyncCompletionOffMain:^{
-            [self.storageServiceManager
-                recordPendingUpdatesWithUpdatedAddresses:@[ isLocalUserProfile ? self.tsAccountManager.localAddress
-                                                                               : self.address ]];
+            if (isLocalUserProfile) {
+                // If isLocalUserProfile is true, the address we have is actually a placeholder
+                // (its not even our real local address!)
+                // Replace it with the real deal, from either auth or tsAccountManager.
+                SignalServiceAddress *localAddress = [authedAccount localUserAddress];
+                if (localAddress == nil) {
+                    localAddress = self.tsAccountManager.localAddress;
+                }
+                [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ localAddress ]
+                                                                       authedAccount:authedAccount];
+            } else {
+                [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ self.address ]
+                                                                       authedAccount:authedAccount];
+            }
         }];
     }
 
@@ -1062,9 +1078,10 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 }
 
 + (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address
+                                 authedAccount:(AuthedAccount *)authedAccount
                                    transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if ([self isLocalProfileAddress:address]) {
+    if ([self isLocalProfileAddress:address] || [authedAccount isAddressForLocalUser:address]) {
         return;
     }
     if (address.uuid == nil || address.phoneNumber == nil) {
@@ -1085,8 +1102,12 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
         [userProfileForUuid updateWithProfileKey:userProfileForPhoneNumber.profileKey
                                userProfileWriter:UserProfileWriter_LocalUser
+                                   authedAccount:authedAccount
                                      transaction:transaction
-                                      completion:^{ [self.profileManager fetchProfileForAddress:address]; }];
+                                      completion:^{
+                                          [self.profileManager fetchProfileForAddress:address
+                                                                        authedAccount:authedAccount];
+                                      }];
     }
 }
 

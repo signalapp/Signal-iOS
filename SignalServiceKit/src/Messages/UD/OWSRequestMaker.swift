@@ -71,6 +71,7 @@ public final class RequestMaker: Dependencies {
     private let serviceId: ServiceId
     private let address: SignalServiceAddress
     private let udAccess: OWSUDAccess?
+    private let authedAccount: AuthedAccount
     private let options: Options
 
     public init(
@@ -79,6 +80,7 @@ public final class RequestMaker: Dependencies {
         udAuthFailureBlock: @escaping UDAuthFailureBlock,
         serviceId: ServiceId,
         udAccess: OWSUDAccess?,
+        authedAccount: AuthedAccount,
         options: Options
     ) {
         self.label = label
@@ -87,6 +89,7 @@ public final class RequestMaker: Dependencies {
         self.serviceId = serviceId
         self.address = SignalServiceAddress(serviceId)
         self.udAccess = udAccess
+        self.authedAccount = authedAccount
         self.options = options
     }
 
@@ -148,7 +151,7 @@ public final class RequestMaker: Dependencies {
                     // failure), mark address as _not_ in UD mode, then retry.
                     self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
                     if !self.options.contains(.isProfileFetch) {
-                        self.profileManager.fetchProfile(for: self.address)
+                        self.profileManager.fetchProfile(for: self.address, authedAccount: self.authedAccount)
                     }
                     self.udAuthFailureBlock()
 
@@ -204,7 +207,7 @@ public final class RequestMaker: Dependencies {
                     // failure), mark recipient as _not_ in UD mode, then retry.
                     self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
                     if !self.options.contains(.isProfileFetch) {
-                        self.profileManager.fetchProfile(for: self.address)
+                        self.profileManager.fetchProfile(for: self.address, authedAccount: self.authedAccount)
                     }
                     self.udAuthFailureBlock()
 
@@ -250,7 +253,7 @@ public final class RequestMaker: Dependencies {
             // If this request isn't a profile fetch, kick off a profile fetch. If it
             // is a profile fetch, don't bother fetching it *again*.
             DispatchQueue.main.async {
-                self.profileManager.fetchProfile(for: self.address)
+                self.profileManager.fetchProfile(for: self.address, authedAccount: self.authedAccount)
             }
         }
     }

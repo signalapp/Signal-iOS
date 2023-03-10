@@ -202,6 +202,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
                         identityKey: identityKey,
                         address: address,
                         isUserInitiatedChange: true,
+                        authedAccount: .implicit(),
                         transaction: writeTx)
                 }
             }, completionQueue: .main) {

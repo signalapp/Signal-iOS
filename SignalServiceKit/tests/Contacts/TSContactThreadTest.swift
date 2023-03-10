@@ -24,7 +24,8 @@ class TSContactThreadTest: SSKBaseTestSwift {
         let contactThread = self.contactThread()
         OWSIdentityManager.shared.saveRemoteIdentity(
             Data(count: Int(kStoredIdentityKeyLength)),
-            address: contactThread.contactAddress
+            address: contactThread.contactAddress,
+            authedAccount: .implicit()
         )
 
         XCTAssert(contactThread.hasSafetyNumbers())

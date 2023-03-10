@@ -142,14 +142,15 @@ fileprivate extension RemoteAttestation.Auth {
 
         let request = service.authRequest()
 
-        if let authUsername = auth.username, let authPassword = auth.password {
-            request.shouldHaveAuthorizationHeaders = true
-            request.authUsername = authUsername
-            request.authPassword = authPassword
-        } else {
+        switch auth.credentials {
+        case .implicit:
             guard tsAccountManager.isRegisteredAndReady else {
                 return Promise(error: OWSGenericError("Not registered."))
             }
+        case let .explicit(username, password):
+            request.shouldHaveAuthorizationHeaders = true
+            request.authUsername = username
+            request.authPassword = password
         }
 
         return firstly {

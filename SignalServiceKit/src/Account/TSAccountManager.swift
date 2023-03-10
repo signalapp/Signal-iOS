@@ -142,13 +142,13 @@ public extension TSAccountManager {
     }
 
     @discardableResult
-    func updateAccountAttributes() -> Promise<Void> {
+    func updateAccountAttributes(authedAccount: AuthedAccount = .implicit()) -> Promise<Void> {
         Self.databaseStorage.write { transaction in
             self.keyValueStore.setDate(Date(),
                                        key: Self.needsAccountAttributesUpdateKey,
                                        transaction: transaction)
         }
-        return updateAccountAttributesIfNecessaryAttempt()
+        return updateAccountAttributesIfNecessaryAttempt(authedAccount: authedAccount)
     }
 
     // Sets the flag to force an account attributes update,
@@ -166,7 +166,7 @@ public extension TSAccountManager {
     @objc
     func updateAccountAttributesIfNecessary() {
         firstly {
-            updateAccountAttributesIfNecessaryAttempt()
+            updateAccountAttributesIfNecessaryAttempt(authedAccount: .implicit())
         }.done(on: DispatchQueue.global()) { _ in
             Logger.info("Success.")
         }.catch(on: DispatchQueue.global()) { error in
@@ -189,7 +189,7 @@ public extension TSAccountManager {
     //
     // * On launch.
     // * When reachability changes.
-    private func updateAccountAttributesIfNecessaryAttempt() -> Promise<Void> {
+    private func updateAccountAttributesIfNecessaryAttempt(authedAccount: AuthedAccount) -> Promise<Void> {
         guard isRegisteredAndReady else {
             Logger.info("Aborting; not registered and ready.")
             return Promise.value(())
@@ -237,7 +237,7 @@ public extension TSAccountManager {
                         ? client.updatePrimaryDeviceAccountAttributes()
                         : client.updateSecondaryDeviceCapabilities())
         }.then(on: DispatchQueue.global()) {
-            self.profileManager.fetchLocalUsersProfilePromise()
+            self.profileManager.fetchLocalUsersProfilePromise(authedAccount: authedAccount)
         }.map(on: DispatchQueue.global()) { _ -> Void in
             Self.databaseStorage.write { transaction in
                 self.keyValueStore.setObject(currentDeviceCapabilities,
@@ -530,6 +530,7 @@ public extension TSAccountManager {
     func setIsDiscoverableByPhoneNumber(
         _ isDiscoverableByPhoneNumber: Bool,
         updateStorageService: Bool,
+        authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     ) {
         guard FeatureFlags.phoneNumberDiscoverability else {
@@ -553,7 +554,7 @@ public extension TSAccountManager {
         }
 
         transaction.addAsyncCompletionOffMain {
-            self.updateAccountAttributes()
+            self.updateAccountAttributes(authedAccount: authedAccount)
 
             if updateStorageService {
                 self.storageServiceManager.recordPendingLocalAccountUpdates()

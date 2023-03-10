@@ -57,7 +57,7 @@ extension OWSLinkDeviceViewController {
             self.socketManager.cycleSocket()
 
             // Fetch the local profile to determine if all linked devices support UD.
-            self.profileManager.fetchLocalUsersProfile()
+            self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
 
         }.catch(on: DispatchQueue.main) { error in
             Logger.error("Failed to provision device with error: \(error)")

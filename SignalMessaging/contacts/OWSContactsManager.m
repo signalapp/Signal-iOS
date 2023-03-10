@@ -131,15 +131,15 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }
         return;
     }
-    [self.systemContactsFetcher requestOnceWithCompletion:completion];
+    [self.systemContactsFetcher requestOnceWithAuthedAccount:AuthedAccount.implicit completion:completion];
 }
 
-- (void)fetchSystemContactsOnceIfAlreadyAuthorized
+- (void)fetchSystemContactsOnceIfAlreadyAuthorizedWithAuthedAccount:(AuthedAccount *)authedAccount
 {
     if (![self isEditingAllowed]) {
         return;
     }
-    [self.systemContactsFetcher fetchOnceIfAlreadyAuthorized];
+    [self.systemContactsFetcher fetchOnceIfAlreadyAuthorizedWithAuthedAccount:authedAccount];
 }
 
 - (AnyPromise *)userRequestedSystemContactsRefresh
@@ -149,14 +149,16 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             promiseWithError:OWSErrorMakeAssertionError(@"Editing contacts isn't available on linked devices.")];
     }
     return AnyPromise.withFuture(^(AnyFuture *future) {
-        [self.systemContactsFetcher userRequestedRefreshWithCompletion:^(NSError *error) {
-            if (error) {
-                OWSLogError(@"refreshing contacts failed with error: %@", error);
-                [future rejectWithError:error];
-            } else {
-                [future resolveWithValue:@1];
-            }
-        }];
+        [self.systemContactsFetcher
+            userRequestedRefreshWithAuthedAccount:AuthedAccount.implicit
+                                       completion:^(NSError *error) {
+                                           if (error) {
+                                               OWSLogError(@"refreshing contacts failed with error: %@", error);
+                                               [future rejectWithError:error];
+                                           } else {
+                                               [future resolveWithValue:@1];
+                                           }
+                                       }];
     });
 }
 
@@ -212,16 +214,18 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemsContactsFetcher
               updatedContacts:(NSArray<Contact *> *)contacts
               isUserRequested:(BOOL)isUserRequested
+                authedAccount:(AuthedAccount *)authedAccount
 {
     if (![self isEditingAllowed]) {
         OWSFailDebug(@"Syncing contacts isn't available on linked devices.");
         return;
     }
-    [self updateWithContacts:contacts isUserRequested:isUserRequested];
+    [self updateWithContacts:contacts authedAccount:authedAccount isUserRequested:isUserRequested];
 }
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemContactsFetcher
        hasAuthorizationStatus:(RawContactAuthorizationStatus)authorizationStatus
+                authedAccount:(AuthedAccount *)authedAccount
 {
     if (![self isEditingAllowed]) {
         OWSFailDebug(@"Syncing contacts isn't available on linked devices.");
@@ -231,7 +235,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         case RawContactAuthorizationStatusRestricted:
         case RawContactAuthorizationStatusDenied:
             // Clear the contacts cache if access to the system contacts is revoked.
-            [self updateWithContacts:@[] isUserRequested:NO];
+            [self updateWithContacts:@[] authedAccount:authedAccount isUserRequested:NO];
         case RawContactAuthorizationStatusNotDetermined:
         case RawContactAuthorizationStatusAuthorized:
             break;
@@ -408,7 +412,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     });
 }
 
-- (void)updateWithContacts:(NSArray<Contact *> *)contacts isUserRequested:(BOOL)isUserRequested
+- (void)updateWithContacts:(NSArray<Contact *> *)contacts
+             authedAccount:(AuthedAccount *)authedAccount
+           isUserRequested:(BOOL)isUserRequested
 {
     dispatch_async(self.intersectionQueue, ^{
         __block ContactsMaps *contactsMaps;
@@ -436,7 +442,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 OWSFailDebug(@"Error: %@", error);
                 return;
             }
-            [self buildSignalAccountsAndUpdatePersistedStateForFetchedSystemContacts:contactsMaps.allContacts];
+            [self buildSignalAccountsAndUpdatePersistedStateForFetchedSystemContacts:contactsMaps.allContacts
+                                                                       authedAccount:authedAccount];
         }];
     });
 }

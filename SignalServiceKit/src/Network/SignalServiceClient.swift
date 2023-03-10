@@ -31,7 +31,7 @@ public protocol SignalServiceClient {
     func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data>
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
     func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI>
-    func requestStorageAuth() -> Promise<(username: String, password: String)>
+    func requestStorageAuth(chatServiceAuth: ChatServiceAuth) -> Promise<(username: String, password: String)>
     func getRemoteConfig() -> Promise<[String: RemoteConfigItem]>
 
     // MARK: - Secondary Devices
@@ -158,8 +158,9 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }
     }
 
-    public func requestStorageAuth() -> Promise<(username: String, password: String)> {
+    public func requestStorageAuth(chatServiceAuth: ChatServiceAuth) -> Promise<(username: String, password: String)> {
         let request = OWSRequestFactory.storageAuthRequest()
+        request.setAuth(chatServiceAuth)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in

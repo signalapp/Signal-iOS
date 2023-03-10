@@ -55,7 +55,7 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
         profileAvatarData: Data?,
         visibleBadgeIds: [String],
         unsavedRotatedProfileKey: OWSAES256Key?,
-        auth: ChatServiceAuth
+        authedAccount: AuthedAccount
     ) -> Promise<VersionedProfileUpdate>
 
     func versionedProfileRequest(
@@ -98,7 +98,7 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
         profileAvatarData: Data?,
         visibleBadgeIds: [String],
         unsavedRotatedProfileKey: OWSAES256Key?,
-        auth: ChatServiceAuth
+        authedAccount: AuthedAccount
     ) -> Promise<VersionedProfileUpdate> {
         owsFail("Not implemented.")
     }

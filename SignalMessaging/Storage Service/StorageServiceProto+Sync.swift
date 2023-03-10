@@ -28,7 +28,11 @@ protocol StorageServiceRecordUpdater {
     /// - Returns: A record with the values for the item identified by
     /// `localId`. If `localId` doesn't exist, or if `localId` isn't valid,
     /// `nil` is returned. Callers should exclude items which return `nil`.
-    func buildRecord(for localId: IdType, unknownFields: UnknownStorage?, transaction: SDSAnyReadTransaction) -> RecordType?
+    func buildRecord(
+        for localId: IdType,
+        unknownFields: UnknownStorage?,
+        transaction: SDSAnyReadTransaction
+    ) -> RecordType?
 
     func buildStorageItem(for record: RecordType) -> StorageService.StorageItem
 
@@ -50,7 +54,10 @@ protocol StorageServiceRecordUpdater {
     /// - Parameter transaction: A database transaction.
     ///
     /// - Returns: A type indicating the result of the merge.
-    func mergeRecord(_ record: RecordType, transaction: SDSAnyWriteTransaction) -> StorageServiceMergeResult<IdType>
+    func mergeRecord(
+        _ record: RecordType,
+        transaction: SDSAnyWriteTransaction
+    ) -> StorageServiceMergeResult<IdType>
 }
 
 enum StorageServiceMergeResult<IdType> {
@@ -159,6 +166,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = AccountId
     typealias RecordType = StorageServiceProtoContactRecord
 
+    private let localAddress: SignalServiceAddress
+    private let authedAccount: AuthedAccount
     private let blockingManager: BlockingManager
     private let bulkProfileFetch: BulkProfileFetch
     private let contactsManager: OWSContactsManager
@@ -168,6 +177,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let usernameLookupManager: UsernameLookupManager
 
     init(
+        localAddress: SignalServiceAddress,
+        authedAccount: AuthedAccount,
         blockingManager: BlockingManager,
         bulkProfileFetch: BulkProfileFetch,
         contactsManager: OWSContactsManager,
@@ -176,6 +187,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager
     ) {
+        self.localAddress = localAddress
+        self.authedAccount = authedAccount
         self.blockingManager = blockingManager
         self.bulkProfileFetch = bulkProfileFetch
         self.contactsManager = contactsManager
@@ -200,6 +213,12 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             return nil
         }
 
+        let address = recipient.address
+        if address.isEqualToAddress(localAddress) {
+            Logger.warn("Tried to create contact record from local account address")
+            return nil
+        }
+
         var builder = StorageServiceProtoContactRecord.builder()
 
         /// Helps determine if a username is the best identifier we have for
@@ -220,8 +239,6 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
             builder.setUnregisteredAtTimestamp(unregisteredAtTimestamp)
         }
-
-        let address = recipient.address
 
         let isInWhitelist = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
         builder.setWhitelisted(isInWhitelist)
@@ -341,7 +358,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             owsFailDebug("address unexpectedly missing for contact")
             return .invalid
         }
-        guard !address.isLocalAddress else {
+        guard !address.isLocalAddress && !authedAccount.isAddressForLocalUser(address) else {
             owsFailDebug("Unexpectedly merging contact record for local user.")
             return .invalid
         }
@@ -370,6 +387,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 profileKey,
                 for: address,
                 userProfileWriter: .storageService,
+                authedAccount: authedAccount,
                 transaction: transaction
             )
 
@@ -393,6 +411,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                     familyName: record.familyName,
                     for: address,
                     userProfileWriter: .storageService,
+                    authedAccount: authedAccount,
                     transaction: transaction
                 )
             }
@@ -414,6 +433,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 identityKey: identityKey,
                 address: address,
                 isUserInitiatedChange: false,
+                authedAccount: authedAccount,
                 transaction: transaction
             )
 
@@ -436,10 +456,12 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             if record.whitelisted {
                 profileManager.addUser(toProfileWhitelist: address,
                                        userProfileWriter: .storageService,
+                                       authedAccount: authedAccount,
                                        transaction: transaction)
             } else {
                 profileManager.removeUser(fromProfileWhitelist: address,
                                           userProfileWriter: .storageService,
+                                          authedAccount: authedAccount,
                                           transaction: transaction)
             }
         }
@@ -909,6 +931,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
     private let localAddress: SignalServiceAddress
     private let localAci: UUID
+    private let authedAccount: AuthedAccount
 
     private let changePhoneNumber: ChangePhoneNumber
     private let paymentsHelper: PaymentsHelperSwift
@@ -927,6 +950,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     init(
         localAddress: SignalServiceAddress,
         localAci: UUID,
+        authedAccount: AuthedAccount,
         changePhoneNumber: ChangePhoneNumber,
         paymentsHelper: PaymentsHelperSwift,
         preferences: OWSPreferences,
@@ -943,7 +967,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     ) {
         self.localAddress = localAddress
         self.localAci = localAci
-
+        self.authedAccount = authedAccount
         self.changePhoneNumber = changePhoneNumber
         self.paymentsHelper = paymentsHelper
         self.preferences = preferences
@@ -987,7 +1011,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             builder.setFamilyName(profileFamilyName)
         }
 
-        if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(for: localAddress, downloadIfMissing: true, transaction: transaction) {
+        if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(
+            for: localAddress,
+            downloadIfMissing: true,
+            authedAccount: authedAccount,
+            transaction: transaction
+        ) {
             Logger.info("profileAvatarUrlPath: yes")
             builder.setAvatarURL(profileAvatarUrlPath)
         } else {
@@ -1090,7 +1119,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)
         let localGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction)
         let localFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction)
-        let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, downloadIfMissing: true, transaction: transaction)
+        let localAvatarUrl = profileManager.profileAvatarURLPath(
+            for: localAddress,
+            downloadIfMissing: true,
+            authedAccount: authedAccount,
+            transaction: transaction
+        )
         let localUsername = usernameLookupManager.fetchUsername(forAci: localAci, transaction: transaction.asV2Read)
 
         // On the primary device, we only ever want to
@@ -1105,6 +1139,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 profileKey,
                 for: localAddress,
                 userProfileWriter: .storageService,
+                authedAccount: authedAccount,
                 transaction: transaction
             )
         } else if localProfileKey != nil && !record.hasProfileKey {
@@ -1121,6 +1156,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 avatarUrlPath: record.avatarURL,
                 for: localAddress,
                 userProfileWriter: .storageService,
+                authedAccount: authedAccount,
                 transaction: transaction
             )
         } else if localGivenName != nil && !record.hasGivenName || localFamilyName != nil && !record.hasFamilyName || localAvatarUrl != nil && !record.hasAvatarURL {
@@ -1194,6 +1230,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             tsAccountManager.setIsDiscoverableByPhoneNumber(
                 !record.notDiscoverableByPhoneNumber,
                 updateStorageService: false,
+                authedAccount: authedAccount,
                 transaction: transaction
             )
         }

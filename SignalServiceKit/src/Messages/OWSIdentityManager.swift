@@ -53,9 +53,12 @@ public class IdentityStore: IdentityKeyStore {
     public func saveIdentity(_ identity: LibSignalClient.IdentityKey,
                              for address: ProtocolAddress,
                              context: StoreContext) throws -> Bool {
-        identityManager.saveRemoteIdentity(identity.serializeAsData(),
-                                           address: SignalServiceAddress(from: address),
-                                           transaction: context.asTransaction)
+        identityManager.saveRemoteIdentity(
+            identity.serializeAsData(),
+            address: SignalServiceAddress(from: address),
+            authedAccount: .implicit(),
+            transaction: context.asTransaction
+        )
     }
 
     public func isTrustedIdentity(_ identity: LibSignalClient.IdentityKey,
@@ -310,7 +313,7 @@ extension OWSIdentityManager {
 extension OWSIdentityManager {
 
     @discardableResult
-    public func batchUpdateIdentityKeys(addresses: [SignalServiceAddress]) -> Promise<Void> {
+    public func batchUpdateIdentityKeys(addresses: [SignalServiceAddress], authedAccount: AuthedAccount) -> Promise<Void> {
         guard !addresses.isEmpty else { return .value(()) }
 
         let addresses = Set(addresses)
@@ -378,12 +381,17 @@ extension OWSIdentityManager {
                     let address = SignalServiceAddress(uuid: uuid)
                     Logger.info("Identity key changed via batch request for address \(address)")
 
-                    self.saveRemoteIdentity(identityKey, address: address, transaction: transaction)
+                    self.saveRemoteIdentity(
+                        identityKey,
+                        address: address,
+                        authedAccount: authedAccount,
+                        transaction: transaction
+                    )
                 }
             }
         }.then { () -> Promise<Void> in
             guard !remainingAddresses.isEmpty else { return .value(()) }
-            return self.batchUpdateIdentityKeys(addresses: remainingAddresses)
+            return self.batchUpdateIdentityKeys(addresses: remainingAddresses, authedAccount: authedAccount)
         }.catch { error in
             owsFailDebug("Batch identity key update failed with error \(error)")
         }

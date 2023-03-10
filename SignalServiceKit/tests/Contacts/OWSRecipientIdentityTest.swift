@@ -43,7 +43,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         // Create identities for our recipients.
         for recipient in recipients {
             OWSIdentityManager.shared.saveRemoteIdentity(identityKey(recipient),
-                                                         address: recipient)
+                                                         address: recipient,
+                                                         authedAccount: .implicit())
         }
 
         // Create a group with our recipients plus us.
@@ -65,7 +66,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             OWSIdentityManager.shared.setVerificationState(.verified,
                                                            identityKey: identityKey(recipient),
                                                            address: recipient,
-                                                           isUserInitiatedChange: true)
+                                                           isUserInitiatedChange: true,
+                                                           authedAccount: .implicit())
         }
         XCTAssertFalse(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
     }
@@ -75,7 +77,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         OWSIdentityManager.shared.setVerificationState(.verified,
                                                        identityKey: identityKey(recipient),
                                                        address: recipient,
-                                                       isUserInitiatedChange: true)
+                                                       isUserInitiatedChange: true,
+                                                       authedAccount: .implicit())
         XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
     }
 
@@ -85,7 +88,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             OWSIdentityManager.shared.setVerificationState(.verified,
                                                            identityKey: identityKey(recipient),
                                                            address: recipient,
-                                                           isUserInitiatedChange: true)
+                                                           isUserInitiatedChange: true,
+                                                           authedAccount: .implicit())
         }
         // Make Alice and Bob no-longer-verified.
         let deverifiedAddresses = [aliceAddress, bobAddress]
@@ -93,7 +97,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             OWSIdentityManager.shared.setVerificationState(.noLongerVerified,
                                                            identityKey: identityKey(recipient),
                                                            address: recipient,
-                                                           isUserInitiatedChange: false)
+                                                           isUserInitiatedChange: false,
+                                                           authedAccount: .implicit())
         }
         XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
 
@@ -112,7 +117,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             OWSIdentityManager.shared.setVerificationState(.noLongerVerified,
                                                            identityKey: identityKey(recipient),
                                                            address: recipient,
-                                                           isUserInitiatedChange: false)
+                                                           isUserInitiatedChange: false,
+                                                           authedAccount: .implicit())
         }
         // All recipients are no longer verified. Check that the limit is respected.
         for limit in 1..<recipients.count {
@@ -135,7 +141,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             OWSIdentityManager.shared.setVerificationState(.verified,
                                                            identityKey: identityKey(recipient),
                                                            address: recipient,
-                                                           isUserInitiatedChange: true)
+                                                           isUserInitiatedChange: true,
+                                                           authedAccount: .implicit())
         }
         XCTAssertFalse(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
     }

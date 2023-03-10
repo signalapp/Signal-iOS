@@ -61,7 +61,9 @@ public class _KeyBackupService_TSAccountManagerWrapper: KBS.Shims.TSAccountManag
 
 public protocol _KeyBackupService_StorageServiceManagerShim {
     func resetLocalData(transaction: DBWriteTransaction)
-    func restoreOrCreateManifestIfNecessary()
+    func restoreOrCreateManifestIfNecessary(
+        authedAccount: AuthedAccount
+    )
 }
 
 public class _KeyBackupService_StorageServiceManagerWrapper: KBS.Shims.StorageServiceManager {
@@ -72,8 +74,12 @@ public class _KeyBackupService_StorageServiceManagerWrapper: KBS.Shims.StorageSe
         manager.resetLocalData(transaction: SDSDB.shimOnlyBridge(transaction))
     }
 
-    public func restoreOrCreateManifestIfNecessary() {
-        manager.restoreOrCreateManifestIfNecessary()
+    public func restoreOrCreateManifestIfNecessary(
+        authedAccount: AuthedAccount
+    ) {
+        manager.restoreOrCreateManifestIfNecessary(
+            authedAccount: authedAccount
+        )
     }
 }
 

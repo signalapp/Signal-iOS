@@ -9,8 +9,14 @@ import Foundation
 public class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol {
     public func recordPendingDeletions(deletedGroupV1Ids: [Data]) {}
 
-    public func recordPendingUpdates(updatedAccountIds: [AccountId]) {}
-    public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
+    public func recordPendingUpdates(
+        updatedAccountIds: [AccountId],
+        authedAccount: AuthedAccount
+    ) {}
+    public func recordPendingUpdates(
+        updatedAddresses: [SignalServiceAddress],
+        authedAccount: AuthedAccount
+    ) {}
     public func recordPendingUpdates(updatedGroupV1Ids: [Data]) {}
     public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}
     public func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
@@ -18,7 +24,15 @@ public class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol 
     public func recordPendingLocalAccountUpdates() {}
 
     public func backupPendingChanges() {}
-    public func restoreOrCreateManifestIfNecessary() -> AnyPromise { AnyPromise(Promise.value(())) }
+    public func backupPendingChanges(authedAccount: AuthedAccount) {}
+    public func restoreOrCreateManifestIfNecessary() -> AnyPromise {
+        AnyPromise(Promise.value(()))
+    }
+    public func restoreOrCreateManifestIfNecessary(
+        authedAccount: AuthedAccount
+    ) -> AnyPromise {
+        AnyPromise(Promise.value(()))
+    }
 
     public func waitForPendingRestores() -> AnyPromise { AnyPromise(Promise.value(())) }
 

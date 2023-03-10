@@ -91,7 +91,12 @@ public class KeyBackupServiceMock: KeyBackupServiceProtocol {
         hasMasterKey = false
     }
 
-    public func storeSyncedKey(type: KBS.DerivedKey, data: Data?, transaction: DBWriteTransaction) {
+    public func storeSyncedKey(
+        type: KBS.DerivedKey,
+        data: Data?,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
         // Do nothing
     }
 
@@ -119,7 +124,10 @@ public class KeyBackupServiceMock: KeyBackupServiceProtocol {
         hasBackedUpMasterKey = true
     }
 
-    public func useDeviceLocalMasterKey(transaction: DBWriteTransaction) {
+    public func useDeviceLocalMasterKey(
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
         // Do nothing
     }
 

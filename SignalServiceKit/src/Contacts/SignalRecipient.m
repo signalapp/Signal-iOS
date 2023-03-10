@@ -215,7 +215,8 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
     self.unregisteredAtTimestamp = unregisteredAtTimestamp;
 
     if (source != SignalRecipientSourceStorageService) {
-        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]
+                                                                authedAccount:AuthedAccount.implicit];
     }
 }
 
@@ -256,7 +257,7 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
     dispatch_async(dispatch_get_main_queue(), ^{
         // Device changes can affect the UD access mode for a recipient,
         // so we need to fetch the profile for this user to update UD access mode.
-        [self.profileManager fetchProfileForAddress:self.address];
+        [self.profileManager fetchProfileForAddress:self.address authedAccount:AuthedAccount.implicit];
 
         if (self.address.isLocalAddress) {
             if (OWSWebSocket.verboseLogging) {
@@ -349,7 +350,8 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.modelReadCaches.signalRecipientReadCache didRemoveSignalRecipient:self transaction:transaction];
-    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
+    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]
+                                                            authedAccount:AuthedAccount.implicit];
 }
 
 + (TSFTSIndexMode)FTSIndexMode

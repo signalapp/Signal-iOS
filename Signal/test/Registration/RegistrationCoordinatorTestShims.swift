@@ -12,6 +12,7 @@ extension RegistrationCoordinatorImpl {
 
     public enum TestMocks {
         public typealias AccountManager = _RegistrationCoordinator_AccountManagerMock
+        public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerMock
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreMock
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerMock
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerMock
@@ -31,10 +32,23 @@ public class _RegistrationCoordinator_AccountManagerMock: _RegistrationCoordinat
 
     public init() {}
 
-    public var performInitialStorageServiceRestoreMock: ((ChatServiceAuth) -> Promise<Void>)?
+    public var performInitialStorageServiceRestoreMock: ((AuthedAccount) -> Promise<Void>)?
 
-    public func performInitialStorageServiceRestore(auth: ChatServiceAuth) -> Promise<Void> {
-        return performInitialStorageServiceRestoreMock!(auth)
+    public func performInitialStorageServiceRestore(authedAccount: AuthedAccount) -> Promise<Void> {
+        return performInitialStorageServiceRestoreMock!(authedAccount)
+    }
+}
+
+public class _RegistrationCoordinator_ContactsManagerMock: _RegistrationCoordinator_ContactsManagerShim {
+
+    public init() {}
+
+    public func fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: AuthedAccount) {
+        // TODO[Registration]: test that this gets called.
+    }
+
+    public func setIsPrimaryDevice() {
+        // TODO[Registration]: test that this gets called.
     }
 }
 
@@ -136,16 +150,16 @@ public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinat
         _ givenName: String,
         _ familyName: String?,
         _ avatarData: Data?,
-        _ auth: ChatServiceAuth
+        _ authedAccount: AuthedAccount
     ) -> Promise<Void>)?
 
     public func updateLocalProfile(
         givenName: String,
         familyName: String?,
         avatarData: Data?,
-        auth: ChatServiceAuth
+        authedAccount: AuthedAccount
     ) -> Promise<Void> {
-        return updateLocalProfileMock!(givenName, familyName, avatarData, auth)
+        return updateLocalProfileMock!(givenName, familyName, avatarData, authedAccount)
     }
 
     func setIsOnboarded(_ tx: DBWriteTransaction) {}
@@ -247,10 +261,15 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
         return isDiscoverableByPhoneNumberMock()
     }
 
-    public var setIsDiscoverableByPhoneNumberMock: ((_ isDiscoverable: Bool, _ updateStorageService: Bool) -> Void)?
+    public var setIsDiscoverableByPhoneNumberMock: ((_ isDiscoverable: Bool, _ authedAccount: AuthedAccount, _ updateStorageService: Bool) -> Void)?
 
-    public func setIsDiscoverableByPhoneNumber(_ isDiscoverable: Bool, updateStorageService: Bool, _ transaction: SignalServiceKit.DBWriteTransaction) {
-        setIsDiscoverableByPhoneNumberMock?(isDiscoverable, updateStorageService)
+    public func setIsDiscoverableByPhoneNumber(
+        _ isDiscoverable: Bool,
+        updateStorageService: Bool,
+        authedAccount: AuthedAccount,
+        _ transaction: SignalServiceKit.DBWriteTransaction
+    ) {
+        setIsDiscoverableByPhoneNumberMock?(isDiscoverable, authedAccount, updateStorageService)
     }
 
     public var isManualMessageFetchEnabledMock: () -> Bool = { false }

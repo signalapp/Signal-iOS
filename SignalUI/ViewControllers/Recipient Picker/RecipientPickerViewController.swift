@@ -879,7 +879,8 @@ extension RecipientPickerViewController {
                 )
 
                 self.storageServiceManager.recordPendingUpdates(
-                    updatedAddresses: [addressForUsername]
+                    updatedAddresses: [addressForUsername],
+                    authedAccount: .implicit()
                 )
             } else {
                 // If we have a better identifier for this address, we can

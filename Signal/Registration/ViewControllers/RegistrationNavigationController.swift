@@ -40,17 +40,23 @@ public class RegistrationNavigationController: OWSNavigationController {
                 return
             }
             self.isLoading = false
-            let controller = self.controller(for: step)
+            guard let controller = self.controller(for: step) else {
+                return
+            }
+            var controllerToPush: UIViewController?
             for viewController in self.viewControllers.reversed() {
                 // If we already have this controller available, update it and pop to it.
                 if type(of: viewController) == controller.viewType {
-                    controller.updateViewController(viewController)
-                    self.popToViewController(viewController, animated: true)
-                    return
+                    if let newController = controller.updateViewController(viewController) {
+                        controllerToPush = newController
+                    } else {
+                        self.popToViewController(viewController, animated: true)
+                        return
+                    }
                 }
             }
             // If we got here, there were no matches and we should push.
-            let vc = controller.makeViewController(self)
+            let vc = controllerToPush ?? controller.makeViewController(self)
             self.pushViewController(vc, animated: true, completion: nil)
         }
     }
@@ -58,7 +64,8 @@ public class RegistrationNavigationController: OWSNavigationController {
     private struct Controller<T: UIViewController>: AnyController {
         let type: T.Type
         let make: (RegistrationNavigationController) -> UIViewController
-        let update: ((T) -> Void)?
+        // Return a new controller to push, or nil if it should reuse the same controller.
+        let update: ((T) -> T?)?
 
         var viewType: UIViewController.Type { T.self }
 
@@ -66,16 +73,19 @@ public class RegistrationNavigationController: OWSNavigationController {
             return make(presenter)
         }
 
-        func updateViewController<U>(_ vc: U) where U: UIViewController {
+        func updateViewController<U>(_ vc: U) -> U? where U: UIViewController {
             guard let vc = vc as? T else {
                 owsFailDebug("Invalid view controller type")
-                return
+                return nil
             }
-            update?(vc)
+            if let newController = update?(vc) as? U {
+                return newController
+            }
+            return nil
         }
     }
 
-    private func controller(for step: RegistrationStep) -> AnyController {
+    private func controller(for step: RegistrationStep) -> AnyController? {
         switch step {
         case .splash:
             return Controller(
@@ -105,6 +115,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                 },
                 update: { controller in
                     controller.updateState(state)
+                    return nil
                 }
             )
         case .verificationCodeEntry(let state):
@@ -115,6 +126,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                 },
                 update: { controller in
                     controller.updateState(state)
+                    return nil
                 }
             )
         case .transferSelection:
@@ -132,10 +144,20 @@ public class RegistrationNavigationController: OWSNavigationController {
                 make: { presenter in
                     return RegistrationPinViewController(state: state, presenter: presenter)
                 },
-                // The state never changes here. In theory we would build
-                // state update support in the controller,
-                // but its overkill so we have not.
-                update: nil
+                update: { [weak self] oldController in
+                    // TODO[Registration]: apply updates to state.
+                    switch (oldController.state.operation, state.operation) {
+                    case (.confirmingNewPin, .confirmingNewPin):
+                        return nil
+                    case (.creatingNewPin, .creatingNewPin):
+                        return nil
+                    case (.enteringExistingPin, .enteringExistingPin):
+                        return nil
+                    default:
+                        guard let self else { return nil }
+                        return RegistrationPinViewController(state: state, presenter: self)
+                    }
+                }
             )
         case .captchaChallenge:
             return Controller(
@@ -173,7 +195,9 @@ public class RegistrationNavigationController: OWSNavigationController {
         case .appUpdateBanner:
             fatalError("Unimplemented")
         case .done:
-            fatalError("Unimplemented")
+            Logger.info("Finished with registration!")
+            SignalApp.shared().showConversationSplitView()
+            return nil
         }
     }
 
@@ -287,5 +311,5 @@ private protocol AnyController {
 
     func makeViewController(_: RegistrationNavigationController) -> UIViewController
 
-    func updateViewController<T: UIViewController>(_: T)
+    func updateViewController<T: UIViewController>(_: T) -> T?
 }

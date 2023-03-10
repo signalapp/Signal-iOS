@@ -128,16 +128,20 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         profileAvatarData: Data?,
         visibleBadgeIds: [String],
         unsavedRotatedProfileKey: OWSAES256Key?,
-        auth: ChatServiceAuth
+        authedAccount: AuthedAccount
     ) -> Promise<VersionedProfileUpdate> {
 
         let profileKeyToUse = unsavedRotatedProfileKey ?? self.profileManager.localProfileKey()
         return firstly(on: DispatchQueue.global()) {
-            if let localUuid = auth.aci {
-                return localUuid
-            }
-            guard let localUuid = self.tsAccountManager.localUuid else {
-                throw OWSAssertionError("Missing localUuid.")
+            let localUuid: UUID
+            switch authedAccount.info {
+            case .explicit(let info):
+                localUuid = info.aci
+            case .implicit:
+                guard let uuid = self.tsAccountManager.localUuid else {
+                    throw OWSAssertionError("Missing localUuid.")
+                }
+                localUuid = uuid
             }
 
             if unsavedRotatedProfileKey != nil {
@@ -240,7 +244,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 visibleBadgeIds: visibleBadgeIds,
                 version: profileKeyVersionString,
                 commitment: commitmentData,
-                auth: auth
+                auth: authedAccount.chatServiceAuth
             )
             return self.networkManager.makePromise(request: request)
         }.then(on: DispatchQueue.global()) { response -> Promise<VersionedProfileUpdate> in

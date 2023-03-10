@@ -75,6 +75,7 @@ extension SignalApp {
     private func showRegistrationView(appDelegate: UIApplicationDelegate) {
         let coordinator = RegistrationCoordinatorImpl(
             accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(Self.accountManager),
+            contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(Self.contactsManagerImpl),
             contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
             dateProvider: { Date() },
             db: DependenciesBridge.shared.db,

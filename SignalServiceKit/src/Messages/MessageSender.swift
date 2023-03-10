@@ -231,6 +231,7 @@ public extension MessageSender {
             },
             serviceId: serviceId.wrappedValue,
             udAccess: udAccess,
+            authedAccount: .implicit(),
             // The v2/keys endpoint isn't supported via web sockets, so don't try and
             // send pre key requests via the web socket.
             options: [.allowIdentifiedFallback, .skipWebSocket]
@@ -362,7 +363,12 @@ public extension MessageSender {
         Logger.info("recipientAddress: \(recipientAddress)")
         do {
             let newRecipientIdentityKey: Data = try (preKeyBundle.identityKey as NSData).removeKeyType() as Data
-            identityManager.saveRemoteIdentity(newRecipientIdentityKey, address: recipientAddress, transaction: transaction)
+            identityManager.saveRemoteIdentity(
+                newRecipientIdentityKey,
+                address: recipientAddress,
+                authedAccount: .implicit(),
+                transaction: transaction
+            )
         } catch {
             owsFailDebug("Error: \(error)")
         }
@@ -820,6 +826,7 @@ extension MessageSender {
             },
             serviceId: serviceId.wrappedValue,
             udAccess: messageSend.udSendingAccess?.udAccess,
+            authedAccount: .implicit(),
             options: []
         )
 
@@ -913,7 +920,11 @@ extension MessageSender {
                 recipient.markAsRegistered(transaction: transaction)
             }
 
-            Self.profileManager.didSendOrReceiveMessage(from: address, transaction: transaction)
+            Self.profileManager.didSendOrReceiveMessage(
+                from: address,
+                authedAccount: .implicit(),
+                transaction: transaction
+            )
         }
 
         messageSend.success()
