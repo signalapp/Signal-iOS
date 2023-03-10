@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ECKeyPair;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SignedPreKeyRecord;
@@ -36,11 +37,15 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 #pragma mark -
 
++ (SignedPreKeyRecord *)generateSignedPreKeySignedWithIdentityKey:(ECKeyPair *)identityKeyPair
+    NS_SWIFT_NAME(generateSignedPreKey(signedBy:));
 - (SignedPreKeyRecord *)generateRandomSignedRecord;
+
+- (nullable SignedPreKeyRecord *)currentSignedPreKey;
+- (nullable SignedPreKeyRecord *)currentSignedPreKeyWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 // Returns nil if no current signed prekey id is found.
 - (nullable NSNumber *)currentSignedPrekeyId;
-- (nullable SignedPreKeyRecord *)currentSignedPreKey;
 - (void)setCurrentSignedPrekeyId:(int)value transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Prekey update failures

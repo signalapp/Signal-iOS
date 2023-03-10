@@ -92,7 +92,7 @@ static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransactio
     TSPreKeyManager.shared.lastPreKeyCheckTimestamp = [NSDate new];
 }
 
-#pragma mark - Check/Request Initiation
+#pragma mark -
 
 + (NSOperationQueue *)operationQueue
 {
@@ -111,6 +111,8 @@ static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransactio
     });
     return operationQueue;
 }
+
+#pragma mark - Check/Request Initiation
 
 + (void)checkPreKeysIfNecessary
 {
@@ -147,7 +149,8 @@ static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransactio
     void (^addOperationsForIdentity)(OWSIdentity) = ^(OWSIdentity identity) {
         NSOperation *refreshOperation = nil;
         if (shouldRefreshOneTimePreKeys) {
-            refreshOperation = [[SSKRefreshPreKeysOperation alloc] initForIdentity:identity];
+            refreshOperation = [[SSKRefreshPreKeysOperation alloc] initForIdentity:identity
+                                                         shouldRefreshSignedPreKey:true];
             [refreshOperation addDependency:messageProcessingOperation];
             [operations addObject:refreshOperation];
         }

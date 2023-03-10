@@ -69,7 +69,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
     func sendMessages_groupThread() {
         // ensure local client has necessary "registered" state
-        identityManager.generateNewIdentityKey(for: .aci)
+        identityManager.generateAndPersistNewIdentityKey(for: .aci)
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
         // Session setup
@@ -101,7 +101,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
     func sendMessages_contactThread() {
         // ensure local client has necessary "registered" state
-        identityManager.generateNewIdentityKey(for: .aci)
+        identityManager.generateAndPersistNewIdentityKey(for: .aci)
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
         // Session setup

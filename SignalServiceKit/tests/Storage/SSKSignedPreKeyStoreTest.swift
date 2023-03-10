@@ -73,14 +73,14 @@ class SSKSignedPreKeyStoreTest: SSKBaseTestSwift {
     }
 
     func testGenerateWithCorrectSignature() {
-        let aciIdentity = identityManager.generateNewIdentityKey(for: .aci)
+        let aciIdentity = identityManager.generateAndPersistNewIdentityKey(for: .aci)
         let aciStore = signalProtocolStore(for: .aci).signedPreKeyStore
         let aciRecord = aciStore.generateRandomSignedRecord()
         let aciPublicKey = aciIdentity.identityKeyPair.publicKey
         XCTAssert(try! aciPublicKey.verifySignature(message: aciRecord.keyPair.identityKeyPair.publicKey.serialize(),
                                                    signature: aciRecord.signature))
 
-        let pniIdentity = identityManager.generateNewIdentityKey(for: .pni)
+        let pniIdentity = identityManager.generateAndPersistNewIdentityKey(for: .pni)
         let pniStore = signalProtocolStore(for: .pni).signedPreKeyStore
         let pniRecord = pniStore.generateRandomSignedRecord()
         let pniPublicKey = pniIdentity.identityKeyPair.publicKey

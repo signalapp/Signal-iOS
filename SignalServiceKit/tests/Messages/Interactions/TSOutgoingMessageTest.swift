@@ -10,8 +10,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
         tsAccountManager.registerForTests(withLocalNumber: "+17775550101", uuid: UUID(), pni: UUID())
-        _ = identityManager.generateNewIdentityKey(for: .aci)
-        _ = identityManager.generateNewIdentityKey(for: .pni)
+        _ = identityManager.generateAndPersistNewIdentityKey(for: .aci)
+        _ = identityManager.generateAndPersistNewIdentityKey(for: .pni)
     }
 
     func testIsUrgent() {

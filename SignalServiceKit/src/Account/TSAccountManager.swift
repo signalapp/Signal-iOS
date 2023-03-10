@@ -99,6 +99,20 @@ public extension TSAccountManager {
         )
     }
 
+    /// Set the PNI registration ID.
+    ///
+    /// Values passed here should have already been provided to the service.
+    func setPniRegistrationId(
+        newRegistrationId: UInt32,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        keyValueStore.setUInt32(
+            newRegistrationId,
+            key: Self.pniRegistrationIdKey,
+            transaction: transaction
+        )
+    }
+
     private func getOrGenerateRegistrationId(
         forStorageKey key: String,
         nounForLogging: String,

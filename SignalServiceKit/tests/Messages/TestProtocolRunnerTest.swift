@@ -115,7 +115,7 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
     }
 
     func test_localClient_receives() {
-        Self.identityManager.generateNewIdentityKey(for: .aci)
+        Self.identityManager.generateAndPersistNewIdentityKey(for: .aci)
         Self.tsAccountManager.registerForTests(withLocalNumber: "+13235551234",
                                                                 uuid: UUID())
         let localClient = LocalSignalClient()
@@ -142,7 +142,7 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
     }
 
     func test_localClient_sends() {
-        Self.identityManager.generateNewIdentityKey(for: .aci)
+        Self.identityManager.generateAndPersistNewIdentityKey(for: .aci)
         Self.tsAccountManager.registerForTests(withLocalNumber: "+13235551234",
                                                                 uuid: UUID())
         let localClient = LocalSignalClient()

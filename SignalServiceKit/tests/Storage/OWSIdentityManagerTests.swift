@@ -73,10 +73,10 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
     }
 
     func testIdentityKey() {
-        let newKey = identityManager.generateNewIdentityKey(for: .aci)
+        let newKey = identityManager.generateAndPersistNewIdentityKey(for: .aci)
         XCTAssertEqual(newKey.publicKey.count, 32)
 
-        let pniKey = identityManager.generateNewIdentityKey(for: .pni)
+        let pniKey = identityManager.generateAndPersistNewIdentityKey(for: .pni)
         XCTAssertEqual(pniKey.publicKey.count, 32)
         XCTAssertNotEqual(pniKey.privateKey, newKey.privateKey)
 

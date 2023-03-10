@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Curve25519Kit
 
 public class OWSSyncPniIdentityMessage: OWSOutgoingSyncMessage {
     // Exposed to Objective-C and made optional for MTLModel serialization.
@@ -16,18 +17,13 @@ public class OWSSyncPniIdentityMessage: OWSOutgoingSyncMessage {
     }
 
     public override func syncMessageBuilder(transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
-        do {
-            let pniIdentityBuilder = SSKProtoSyncMessagePniIdentity.builder()
-            pniIdentityBuilder.setPublicKey(Data(keyPair.identityKeyPair.publicKey.serialize()))
-            pniIdentityBuilder.setPrivateKey(Data(keyPair.identityKeyPair.privateKey.serialize()))
+        let pniIdentityBuilder = SSKProtoSyncMessagePniIdentity.builder()
+        pniIdentityBuilder.setPublicKey(Data(keyPair.identityKeyPair.publicKey.serialize()))
+        pniIdentityBuilder.setPrivateKey(Data(keyPair.identityKeyPair.privateKey.serialize()))
 
-            let syncMessageBuilder = SSKProtoSyncMessage.builder()
-            syncMessageBuilder.setPniIdentity(try pniIdentityBuilder.build())
-            return syncMessageBuilder
-        } catch {
-            owsFailDebug("failed to build PniIdentity message: \(error)")
-            return nil
-        }
+        let syncMessageBuilder = SSKProtoSyncMessage.builder()
+        syncMessageBuilder.setPniIdentity(pniIdentityBuilder.buildInfallibly())
+        return syncMessageBuilder
     }
 
     public override var isUrgent: Bool { false }

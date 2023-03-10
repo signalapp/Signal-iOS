@@ -102,14 +102,14 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
 #pragma mark -
 
-- (SignedPreKeyRecord *)generateRandomSignedRecord
++ (SignedPreKeyRecord *)generateSignedPreKeySignedWithIdentityKey:(ECKeyPair *)identityKeyPair
 {
+    OWSAssert(identityKeyPair);
+
     ECKeyPair *keyPair = [Curve25519 generateKeyPair];
 
     // Signed prekey ids must be > 0.
     int preKeyId = 1 + (int)arc4random_uniform(INT32_MAX - 1);
-    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:_identity];
-    OWSAssert(identityKeyPair);
 
     @try {
         NSData *signature = [Ed25519 throws_sign:keyPair.publicKey.prependKeyType withKeyPair:identityKeyPair];
@@ -123,6 +123,14 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
         OWSFail(@"exception: %@", exception);
         return nil;
     }
+}
+
+- (SignedPreKeyRecord *)generateRandomSignedRecord
+{
+    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:_identity];
+    OWSAssert(identityKeyPair);
+
+    return [SSKSignedPreKeyStore generateSignedPreKeySignedWithIdentityKey:identityKeyPair];
 }
 
 - (nullable SignedPreKeyRecord *)loadSignedPreKey:(int)signedPreKeyId transaction:(SDSAnyReadTransaction *)transaction

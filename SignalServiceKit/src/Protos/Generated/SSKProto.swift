@@ -14580,6 +14580,208 @@ extension SSKProtoSyncMessageCallEventBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessagePniChangeNumber
+
+@objc
+public class SSKProtoSyncMessagePniChangeNumber: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.PniChangeNumber
+
+    @objc
+    public var identityKeyPair: Data? {
+        guard hasIdentityKeyPair else {
+            return nil
+        }
+        return proto.identityKeyPair
+    }
+    @objc
+    public var hasIdentityKeyPair: Bool {
+        return proto.hasIdentityKeyPair
+    }
+
+    @objc
+    public var signedPreKey: Data? {
+        guard hasSignedPreKey else {
+            return nil
+        }
+        return proto.signedPreKey
+    }
+    @objc
+    public var hasSignedPreKey: Bool {
+        return proto.hasSignedPreKey
+    }
+
+    @objc
+    public var registrationID: UInt32 {
+        return proto.registrationID
+    }
+    @objc
+    public var hasRegistrationID: Bool {
+        return proto.hasRegistrationID
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.PniChangeNumber) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.PniChangeNumber(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.PniChangeNumber) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessagePniChangeNumber {
+    @objc
+    public static func builder() -> SSKProtoSyncMessagePniChangeNumberBuilder {
+        return SSKProtoSyncMessagePniChangeNumberBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessagePniChangeNumberBuilder {
+        let builder = SSKProtoSyncMessagePniChangeNumberBuilder()
+        if let _value = identityKeyPair {
+            builder.setIdentityKeyPair(_value)
+        }
+        if let _value = signedPreKey {
+            builder.setSignedPreKey(_value)
+        }
+        if hasRegistrationID {
+            builder.setRegistrationID(registrationID)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessagePniChangeNumberBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.PniChangeNumber()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setIdentityKeyPair(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.identityKeyPair = valueParam
+    }
+
+    public func setIdentityKeyPair(_ valueParam: Data) {
+        proto.identityKeyPair = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setSignedPreKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.signedPreKey = valueParam
+    }
+
+    public func setSignedPreKey(_ valueParam: Data) {
+        proto.signedPreKey = valueParam
+    }
+
+    @objc
+    public func setRegistrationID(_ valueParam: UInt32) {
+        proto.registrationID = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> SSKProtoSyncMessagePniChangeNumber {
+        return SSKProtoSyncMessagePniChangeNumber(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessagePniChangeNumber {
+        return SSKProtoSyncMessagePniChangeNumber(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessagePniChangeNumber(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessagePniChangeNumber {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessagePniChangeNumberBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessagePniChangeNumber? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc
@@ -14636,6 +14838,9 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
     public let pniIdentity: SSKProtoSyncMessagePniIdentity?
 
     @objc
+    public let pniChangeNumber: SSKProtoSyncMessagePniChangeNumber?
+
+    @objc
     public let callEvent: SSKProtoSyncMessageCallEvent?
 
     @objc
@@ -14675,6 +14880,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                  outgoingPayment: SSKProtoSyncMessageOutgoingPayment?,
                  viewed: [SSKProtoSyncMessageViewed],
                  pniIdentity: SSKProtoSyncMessagePniIdentity?,
+                 pniChangeNumber: SSKProtoSyncMessagePniChangeNumber?,
                  callEvent: SSKProtoSyncMessageCallEvent?) {
         self.proto = proto
         self.sent = sent
@@ -14693,6 +14899,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
         self.outgoingPayment = outgoingPayment
         self.viewed = viewed
         self.pniIdentity = pniIdentity
+        self.pniChangeNumber = pniChangeNumber
         self.callEvent = callEvent
     }
 
@@ -14782,6 +14989,11 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
             pniIdentity = SSKProtoSyncMessagePniIdentity(proto.pniIdentity)
         }
 
+        var pniChangeNumber: SSKProtoSyncMessagePniChangeNumber?
+        if proto.hasPniChangeNumber {
+            pniChangeNumber = SSKProtoSyncMessagePniChangeNumber(proto.pniChangeNumber)
+        }
+
         var callEvent: SSKProtoSyncMessageCallEvent?
         if proto.hasCallEvent {
             callEvent = SSKProtoSyncMessageCallEvent(proto.callEvent)
@@ -14804,6 +15016,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                   outgoingPayment: outgoingPayment,
                   viewed: viewed,
                   pniIdentity: pniIdentity,
+                  pniChangeNumber: pniChangeNumber,
                   callEvent: callEvent)
     }
 
@@ -14897,6 +15110,9 @@ extension SSKProtoSyncMessage {
         builder.setViewed(viewed)
         if let _value = pniIdentity {
             builder.setPniIdentity(_value)
+        }
+        if let _value = pniChangeNumber {
+            builder.setPniChangeNumber(_value)
         }
         if let _value = callEvent {
             builder.setCallEvent(_value)
@@ -15098,6 +15314,17 @@ public class SSKProtoSyncMessageBuilder: NSObject {
 
     public func setPniIdentity(_ valueParam: SSKProtoSyncMessagePniIdentity) {
         proto.pniIdentity = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPniChangeNumber(_ valueParam: SSKProtoSyncMessagePniChangeNumber?) {
+        guard let valueParam = valueParam else { return }
+        proto.pniChangeNumber = valueParam.proto
+    }
+
+    public func setPniChangeNumber(_ valueParam: SSKProtoSyncMessagePniChangeNumber) {
+        proto.pniChangeNumber = valueParam.proto
     }
 
     @objc

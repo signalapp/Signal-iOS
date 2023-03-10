@@ -741,6 +741,7 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._username = newValue}
   }
 
+  /// Removed 'has' prefix on spec definition to avoid name conflict.
   var completedUsernameOnboarding: Bool {
     get {return _storage._completedUsernameOnboarding}
     set {_uniqueStorage()._completedUsernameOnboarding = newValue}

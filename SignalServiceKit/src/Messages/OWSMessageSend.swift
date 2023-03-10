@@ -5,12 +5,22 @@
 
 import Foundation
 
+@objc
+public protocol UDSendingAccessProvider {
+    /// UD sending access, if available.
+    var udSendingAccess: OWSUDSendingAccess? { get }
+
+    /// Disable UD auth. After this method is called, ``udSendingAccess``
+    /// should return `nil`.
+    func disableUDAuth()
+}
+
 // Corresponds to a single effort to send a message to a given recipient,
 // which may span multiple attempts.  Note that group messages may be sent
 // to multiple recipients and therefore require multiple instances of
 // OWSMessageSend.
 @objc
-public class OWSMessageSend: NSObject {
+public class OWSMessageSend: NSObject, UDSendingAccessProvider {
     @objc
     public let message: TSOutgoingMessage
 
@@ -35,13 +45,6 @@ public class OWSMessageSend: NSObject {
     public var remainingAttempts: Int {
         get { return _remainingAttempts.get() }
         set { _remainingAttempts.set(newValue) }
-    }
-
-    private var _udSendingAccess = AtomicOptional<OWSUDSendingAccess>(nil)
-    @objc
-    public var udSendingAccess: OWSUDSendingAccess? {
-        get { return _udSendingAccess.get() }
-        set { _udSendingAccess.set(newValue) }
     }
 
     @objc
@@ -97,21 +100,22 @@ public class OWSMessageSend: NSObject {
         self.udSendingAccess = udSendingAccess
     }
 
+    // MARK: - UD auth and UDSendingAccessProvider
+
+    private var _udSendingAccess = AtomicOptional<OWSUDSendingAccess>(nil)
     @objc
-    public var isUDSend: Bool {
-        return udSendingAccess != nil
+    public private(set) var udSendingAccess: OWSUDSendingAccess? {
+        get { return _udSendingAccess.get() }
+        set { _udSendingAccess.set(newValue) }
     }
 
     @objc
-    public func disableUD() {
-        Logger.verbose("\(address)")
+    public func disableUDAuth() {
         udSendingAccess = nil
     }
 
     @objc
-    public func setHasUDAuthFailed() {
-        Logger.verbose("\(address)")
-        // We "fail over" to non-UD sends after auth errors sending via UD.
-        disableUD()
+    public var isUDSend: Bool {
+        return udSendingAccess != nil
     }
 }

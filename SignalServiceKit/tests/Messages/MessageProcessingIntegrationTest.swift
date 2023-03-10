@@ -34,8 +34,8 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
 
         // ensure local client has necessary "registered" state
-        identityManager.generateNewIdentityKey(for: .aci)
-        identityManager.generateNewIdentityKey(for: .pni)
+        identityManager.generateAndPersistNewIdentityKey(for: .aci)
+        identityManager.generateAndPersistNewIdentityKey(for: .pni)
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID, pni: UUID())
 
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)

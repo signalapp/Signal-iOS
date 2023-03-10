@@ -28,7 +28,16 @@ public class CreatePreKeysOperation: OWSOperation {
             identityKeyPair = existingIdentityKeyPair
             isNewIdentityKey = false
         } else if tsAccountManager.isPrimaryDevice {
-            identityKeyPair = identityManager.generateNewIdentityKey(for: identity)
+            identityKeyPair = identityManager.generateNewIdentityKeyPair()
+
+            databaseStorage.write { transaction in
+                identityManager.storeIdentityKeyPair(
+                    identityKeyPair,
+                    for: identity,
+                    transaction: transaction
+                )
+            }
+
             isNewIdentityKey = true
         } else {
             Logger.warn("cannot create \(identity) pre-keys; missing identity key")
@@ -63,13 +72,12 @@ public class CreatePreKeysOperation: OWSOperation {
                 auth: self.auth
             )
         }.done {
-            signedPreKeyRecord.markAsAcceptedByService()
             self.databaseStorage.write { transaction in
-                signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                                        signedPreKeyRecord: signedPreKeyRecord,
-                                                                        transaction: transaction)
-                signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id,
-                                                                               transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
+                    signedPreKeyId: signedPreKeyRecord.id,
+                    signedPreKeyRecord: signedPreKeyRecord,
+                    transaction: transaction
+                )
             }
 
             Logger.debug("done")

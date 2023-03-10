@@ -92,14 +92,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                object:nil];
 }
 
-- (ECKeyPair *)generateNewIdentityKeyForIdentity:(OWSIdentity)identity
+- (ECKeyPair *)generateNewIdentityKeyPair
 {
-    __block ECKeyPair *newKeyPair;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        newKeyPair = [Curve25519 generateKeyPair];
-        [self storeIdentityKeyPair:newKeyPair forIdentity:identity transaction:transaction];
-    });
-    return newKeyPair;
+    return [Curve25519 generateKeyPair];
 }
 
 - (void)storeIdentityKeyPair:(nullable ECKeyPair *)keyPair
@@ -1040,6 +1035,20 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
         [message anyInsertWithTransaction:transaction];
     }
 }
+
+#pragma mark - Tests
+
+#if TESTABLE_BUILD
+- (ECKeyPair *)generateAndPersistNewIdentityKeyForIdentity:(OWSIdentity)identity
+{
+    __block ECKeyPair *newKeyPair;
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        newKeyPair = [self generateNewIdentityKeyPair];
+        [self storeIdentityKeyPair:newKeyPair forIdentity:identity transaction:transaction];
+    });
+    return newKeyPair;
+}
+#endif
 
 #pragma mark - Debug
 

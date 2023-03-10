@@ -12,10 +12,21 @@ private let kEphemeralPreKeysMinimumCount: UInt = 35
 @objc(SSKRefreshPreKeysOperation)
 public class RefreshPreKeysOperation: OWSOperation {
     private let identity: OWSIdentity
+    private let shouldRefreshSignedPreKey: Bool
 
-    @objc(initForIdentity:)
-    public init(for identity: OWSIdentity) {
+    /// Create an operation for the given identity type, and optionally a
+    /// signed pre-key already in use.
+    ///
+    /// If no signed pre-key is given, one will be generated and stored as part
+    /// of this operation. Any existing signed pre-keys should already be
+    /// accepted by the service and persisted.
+    @objc(initForIdentity:shouldRefreshSignedPreKey:)
+    public init(
+        for identity: OWSIdentity,
+        shouldRefreshSignedPreKey: Bool
+    ) {
         self.identity = identity
+        self.shouldRefreshSignedPreKey = shouldRefreshSignedPreKey
     }
 
     public override func run() {
@@ -27,6 +38,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
 
+        // TODO: [CNPNI] Is it possible that this key will change during message processing? Should this check be later?
         guard let identityKeyPair = identityManager.identityKeyPair(for: identity) else {
             Logger.debug("skipping - no \(self.identity) identity key")
             owsAssertDebug(identity != .aci)
@@ -40,6 +52,16 @@ public class RefreshPreKeysOperation: OWSOperation {
             self.accountServiceClient.getPreKeysCount(for: self.identity)
         }.then(on: DispatchQueue.global()) { (preKeysCount: Int) -> Promise<Void> in
             Logger.info("\(self.identity) preKeysCount: \(preKeysCount)")
+
+            if !self.shouldRefreshSignedPreKey {
+                // At the time of writing, if we're only refreshing one-time
+                // pre-keys that means we have (external to this operation)
+                // rotated our signed pre-key and therefore should have no
+                // one-time pre-keys left. If you hit this assertion in the
+                // future, this may no longer be true.
+                owsAssertDebug(preKeysCount == 0)
+            }
+
             let signalProtocolStore = self.signalProtocolStore(for: self.identity)
 
             guard preKeysCount < kEphemeralPreKeysMinimumCount ||
@@ -48,14 +70,31 @@ public class RefreshPreKeysOperation: OWSOperation {
                 return Promise.value(())
             }
 
-            let signedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
-            let preKeyRecords: [PreKeyRecord] = signalProtocolStore.preKeyStore.generatePreKeyRecords()
+            let newPreKeyRecords: [PreKeyRecord] = signalProtocolStore.preKeyStore.generatePreKeyRecords()
 
-            self.databaseStorage.write { transaction in
-                signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                                        signedPreKeyRecord: signedPreKeyRecord,
-                                                                        transaction: transaction)
-                signalProtocolStore.preKeyStore.storePreKeyRecords(preKeyRecords, transaction: transaction)
+            // Store pre key records, and get a signed pre key record.
+            let (signedPreKeyRecord, isNewSignedPreKey) = self.databaseStorage.write { transaction in
+                signalProtocolStore.preKeyStore.storePreKeyRecords(newPreKeyRecords, transaction: transaction)
+
+                if
+                    !self.shouldRefreshSignedPreKey,
+                    let currentSignedPreKey = signalProtocolStore.signedPreKeyStore.currentSignedPreKey(with: transaction)
+                {
+                    Logger.info("Using existing signed pre-key!")
+                    return (currentSignedPreKey, false)
+                } else {
+                    Logger.info("Generating new signed pre-key!")
+
+                    let newSignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
+
+                    signalProtocolStore.signedPreKeyStore.storeSignedPreKey(
+                        newSignedPreKeyRecord.id,
+                        signedPreKeyRecord: newSignedPreKeyRecord,
+                        transaction: transaction
+                    )
+
+                    return (newSignedPreKeyRecord, true)
+                }
             }
 
             return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
@@ -63,18 +102,19 @@ public class RefreshPreKeysOperation: OWSOperation {
                     for: self.identity,
                     identityKey: identityKeyPair.publicKey,
                     signedPreKeyRecord: signedPreKeyRecord,
-                    preKeyRecords: preKeyRecords,
+                    preKeyRecords: newPreKeyRecords,
                     auth: .implicit()
                 )
             }.done(on: DispatchQueue.global()) { () in
-                signedPreKeyRecord.markAsAcceptedByService()
-
                 self.databaseStorage.write { transaction in
-                    signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                                            signedPreKeyRecord: signedPreKeyRecord,
-                                                                            transaction: transaction)
-                    signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id,
-                                                                                   transaction: transaction)
+                    if isNewSignedPreKey {
+                        signalProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
+                            signedPreKeyId: signedPreKeyRecord.id,
+                            signedPreKeyRecord: signedPreKeyRecord,
+                            transaction: transaction
+                        )
+                    }
+
                     signalProtocolStore.signedPreKeyStore.cullSignedPreKeyRecords(transaction: transaction)
                     signalProtocolStore.signedPreKeyStore.clearPrekeyUpdateFailureCount(transaction: transaction)
 

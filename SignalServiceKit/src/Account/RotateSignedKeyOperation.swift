@@ -55,13 +55,13 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord, for: self.identity)
         }.done(on: DispatchQueue.global()) { () in
             Logger.info("Successfully uploaded \(self.identity) signed PreKey")
-            signedPreKeyRecord.markAsAcceptedByService()
             self.databaseStorage.write { transaction in
-                signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                                        signedPreKeyRecord: signedPreKeyRecord,
-                                                                        transaction: transaction)
-                signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id,
-                                                                               transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
+                    signedPreKeyId: signedPreKeyRecord.id,
+                    signedPreKeyRecord: signedPreKeyRecord,
+                    transaction: transaction
+                )
+
                 signalProtocolStore.signedPreKeyStore.cullSignedPreKeyRecords(transaction: transaction)
                 signalProtocolStore.signedPreKeyStore.clearPrekeyUpdateFailureCount(transaction: transaction)
             }

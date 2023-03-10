@@ -31,8 +31,8 @@ class MessageDecryptionTest: SSKBaseTestSwift {
         super.setUp()
 
         // ensure local client has necessary "registered" state
-        identityManager.generateNewIdentityKey(for: .aci)
-        identityManager.generateNewIdentityKey(for: .pni)
+        identityManager.generateAndPersistNewIdentityKey(for: .aci)
+        identityManager.generateAndPersistNewIdentityKey(for: .pni)
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localAci, pni: localPni)
 
         (notificationsManager as! NoopNotificationsManager).expectErrors = true

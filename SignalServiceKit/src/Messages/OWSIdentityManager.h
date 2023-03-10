@@ -51,7 +51,7 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage;
 
-- (ECKeyPair *)generateNewIdentityKeyForIdentity:(OWSIdentity)identity;
+- (ECKeyPair *)generateNewIdentityKeyPair;
 - (void)storeIdentityKeyPair:(nullable ECKeyPair *)keyPair
                  forIdentity:(OWSIdentity)identity
                  transaction:(SDSAnyWriteTransaction *)transaction;
@@ -129,6 +129,12 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
 
 - (nullable NSData *)identityKeyForAddress:(SignalServiceAddress *)address
                                transaction:(SDSAnyReadTransaction *)transaction;
+
+#pragma mark - Tests
+
+#if TESTABLE_BUILD
+- (ECKeyPair *)generateAndPersistNewIdentityKeyForIdentity:(OWSIdentity)identity;
+#endif
 
 #pragma mark - Debug
 

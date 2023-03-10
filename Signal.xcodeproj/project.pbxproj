@@ -786,6 +786,7 @@
 		50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2402980AD6F00899660 /* LinkValidator.swift */; };
 		50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2422980B53000899660 /* LinkValidatorTest.swift */; };
 		50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */; };
+		50E5E4B32993352C00E15A1C /* ChangePhoneNumberPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
 		6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */; };
 		6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */; };
@@ -1241,6 +1242,7 @@
 		D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */; };
 		D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */; };
 		D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */; };
+		D9C2D78729A80C9C00D79715 /* PniChangePhoneNumberSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D78629A80C9C00D79715 /* PniChangePhoneNumberSyncMessage.swift */; };
 		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
 		D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */; };
 		D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */; };
@@ -3222,6 +3224,7 @@
 		50D5E2402980AD6F00899660 /* LinkValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidator.swift; sourceTree = "<group>"; };
 		50D5E2422980B53000899660 /* LinkValidatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidatorTest.swift; sourceTree = "<group>"; };
 		50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceMessage.swift; sourceTree = "<group>"; };
+		50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManager.swift; sourceTree = "<group>"; };
 		50F96F3A28ECBC3200541EED /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -3756,6 +3759,7 @@
 		D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationManager.swift; sourceTree = "<group>"; };
 		D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUsernameMegaphone.swift; sourceTree = "<group>"; };
 		D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameSelectionCoordinator.swift; sourceTree = "<group>"; };
+		D9C2D78629A80C9C00D79715 /* PniChangePhoneNumberSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniChangePhoneNumberSyncMessage.swift; sourceTree = "<group>"; };
 		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
 		D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManifest.swift; sourceTree = "<group>"; };
 		D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+SSK.swift"; sourceTree = "<group>"; };
@@ -7557,6 +7561,16 @@
 			path = Usernames;
 			sourceTree = "<group>";
 		};
+		D9C2D78529A80BE700D79715 /* ChangePhoneNumber */ = {
+			isa = PBXGroup;
+			children = (
+				F9C5CB3C289453B200548EEE /* ChangePhoneNumber.swift */,
+				50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */,
+				D9C2D78629A80C9C00D79715 /* PniChangePhoneNumberSyncMessage.swift */,
+			);
+			path = ChangePhoneNumber;
+			sourceTree = "<group>";
+		};
 		D9E335A52993269E00825677 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
@@ -7975,6 +7989,7 @@
 			children = (
 				F9C5C9BA289453B100548EEE /* Account */,
 				F945FE482984795A00C835C7 /* Calls */,
+				D9C2D78529A80BE700D79715 /* ChangePhoneNumber */,
 				F9C5C9CC289453B100548EEE /* Contacts */,
 				6600F36A298DAA4F00B1EDB7 /* DateProvider */,
 				666BAB0E2980B76B00867196 /* Dependencies */,
@@ -8907,7 +8922,6 @@
 				F9C5CB0F289453B200548EEE /* ByteParser.m */,
 				76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */,
 				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
-				F9C5CB3C289453B200548EEE /* ChangePhoneNumber.swift */,
 				F9C5CB2A289453B200548EEE /* Collection+OWS.swift */,
 				F962B389293F9F1F00765BD8 /* CRC32.swift */,
 				F9C5CB22289453B200548EEE /* Currency.swift */,
@@ -11496,6 +11510,7 @@
 				5049FA3228BEAAD800D6E099 /* cdsi.pb.swift in Sources */,
 				661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */,
 				F9C5CE0E289453B400548EEE /* ChangePhoneNumber.swift in Sources */,
+				50E5E4B32993352C00E15A1C /* ChangePhoneNumberPniManager.swift in Sources */,
 				664160D029A6D60A00F5BA85 /* ChatServiceAuth.swift in Sources */,
 				F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */,
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
@@ -11848,6 +11863,7 @@
 				F9C5CDEF289453B400548EEE /* PinnedThreadManager.swift in Sources */,
 				F9C5CE2A289453B400548EEE /* Platform.swift in Sources */,
 				F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */,
+				D9C2D78729A80C9C00D79715 /* PniChangePhoneNumberSyncMessage.swift in Sources */,
 				D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */,
 				F9C5CBCB289453B300548EEE /* PreKeyBundle+jsonDict.m in Sources */,
 				F9C5CD50289453B300548EEE /* PreKeyBundle.m in Sources */,

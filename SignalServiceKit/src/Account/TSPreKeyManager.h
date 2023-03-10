@@ -21,6 +21,10 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity);
 // This should only be called from the TSPreKeyManager.operationQueue
 + (void)refreshPreKeysDidSucceed;
 
+#pragma mark -
+
+@property (class, nonatomic, readonly) NSOperationQueue *operationQueue;
+
 #pragma mark - Check/Request Initiation
 
 + (void)rotateSignedPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;

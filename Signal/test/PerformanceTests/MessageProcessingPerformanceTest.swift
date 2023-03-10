@@ -69,7 +69,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
     func processIncomingMessages() {
         // ensure local client has necessary "registered" state
-        identityManager.generateNewIdentityKey(for: .aci)
+        identityManager.generateAndPersistNewIdentityKey(for: .aci)
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
         bobClient = FakeSignalClient.generate(uuid: bobUUID)

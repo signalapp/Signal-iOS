@@ -22,3 +22,19 @@ public class MessageProcessingOperation: OWSOperation {
         }
     }
 }
+
+extension TSPreKeyManager {
+    /// Refresh one-time pre-keys for the given identity, and optionally refresh
+    /// the signed pre-key.
+    static func refreshOneTimePreKeys(
+        forIdentity identity: OWSIdentity,
+        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
+    ) {
+        let refreshOperation = RefreshPreKeysOperation(
+            for: identity,
+            shouldRefreshSignedPreKey: shouldRefreshSignedPreKey
+        )
+
+        operationQueue.addOperation(refreshOperation)
+    }
+}

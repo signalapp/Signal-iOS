@@ -10,15 +10,18 @@ NS_ASSUME_NONNULL_BEGIN
 extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class BlockingManager;
+@class DeviceMessage;
 @class OWSMessageSend;
 @class OutgoingMessagePreparer;
 @class PendingTasks;
 @class SDSAnyWriteTransaction;
+@class SignalServiceAddress;
 @class TSAttachmentStream;
 @class TSOutgoingMessage;
 @class TSThread;
 
 @protocol ContactsManagerProtocol;
+@protocol UDSendingAccessProvider;
 
 /**
  * Useful for when you *sometimes* want to retry before giving up and calling the failure handler
@@ -99,6 +102,20 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
                       inMessage:(TSOutgoingMessage *)outgoingMessage
                         success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *error))failureHandler;
+
+/// Build a ``DeviceMessage`` for the given message with the given recipient
+/// details. This method may make blocking network requests.
+///
+/// A `nil` return value with a `nil` error indicates that the given message
+/// could not be built due to an invalid device ID.
+- (nullable DeviceMessage *)buildDeviceMessageForMessage:(TSOutgoingMessage *)message
+                                        recipientAddress:(SignalServiceAddress *)recipientAddress
+                                      recipientAccountId:(NSString *)recipientAccountId
+                                       recipientDeviceId:(NSNumber *)recipientDeviceId
+                                        plaintextContent:(nullable NSData *)plaintextContent
+                                 udSendingAccessProvider:(nullable id<UDSendingAccessProvider>)udSendingAccessProvider
+                                                   error:(NSError **)errorHandle
+    __attribute__((swift_error(nonnull_error)));
 
 + (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message;
 

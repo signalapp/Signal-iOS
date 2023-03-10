@@ -337,7 +337,7 @@ message DataMessage {
   message GroupCallUpdate {
     optional string eraId = 1;
   }
-    
+
   message Payment {
     message Amount {
       message MobileCoin {
@@ -355,7 +355,7 @@ message DataMessage {
       // @required
       optional string uuid = 1;
     }
- 
+
     message Request {
       // @required
       optional RequestId requestId = 1;
@@ -363,28 +363,28 @@ message DataMessage {
       optional Amount    amount    = 2;
       optional string    note      = 3;
     }
- 
+
     message Notification {
       message MobileCoin {
         // @required
         optional bytes  receipt = 1;
       }
- 
+
       // oneof commented out
       // oneof Transaction {
         optional MobileCoin mobileCoin = 1;
       // }
- 
+
       // Optional, Refers to the PaymentRequest message, if any.
       optional string    note          = 2;
       optional RequestId requestId     = 1003;
     }
- 
+
     message Cancellation {
       // @required
       optional RequestId requestId = 1;
     }
- 
+
     // oneof commented out
     // oneof Item {
       optional Notification notification = 1;
@@ -397,7 +397,7 @@ message DataMessage {
     optional string authorUuid = 1;
     optional uint64 sentTimestamp = 2;
   }
-    
+
   enum ProtocolVersion {
     option allow_alias = true;
 
@@ -600,7 +600,7 @@ message SyncMessage {
     optional bytes  groupId    = 3;
     optional Type   type       = 4;
   }
-  
+
   message OutgoingPayment {
     message MobileCoin {
       optional bytes  recipientAddress     = 1;
@@ -616,7 +616,7 @@ message SyncMessage {
       repeated bytes  outputPublicKeys     = 8;
     }
     optional string     recipientUuid = 1;
-    optional string     note          = 2;		
+    optional string     note          = 2;
     // oneof attachment_identifier {
     optional MobileCoin mobileCoin    = 3;
     // }
@@ -649,6 +649,12 @@ message SyncMessage {
     optional Event     event     = 6;
   }
 
+  message PniChangeNumber {
+    optional bytes  identityKeyPair = 1; // Serialized libsignal-client IdentityKeyPair
+    optional bytes  signedPreKey    = 2; // Serialized libsignal-client SignedPreKeyRecord
+    optional uint32 registrationId  = 3;
+  }
+
   optional Sent                   sent                   = 1;
   optional Contacts               contacts               = 2;
   optional Groups                 groups                 = 3;
@@ -666,6 +672,7 @@ message SyncMessage {
   optional OutgoingPayment        outgoingPayment        = 15;
   repeated Viewed                 viewed                 = 16;
   optional PniIdentity            pniIdentity            = 17;
+  optional PniChangeNumber        pniChangeNumber        = 18;
   optional CallEvent              callEvent              = 19;
 }
 
@@ -795,7 +802,7 @@ message PaymentAddress {
     // @required
     optional bytes signature     = 2;
   }
-  
+
   // oneof commented out
   // oneof Address {
   optional MobileCoin mobileCoin = 1;

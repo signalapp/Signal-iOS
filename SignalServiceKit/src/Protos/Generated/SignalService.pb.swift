@@ -2819,6 +2819,15 @@ struct SignalServiceProtos_SyncMessage {
   /// Clears the value of `pniIdentity`. Subsequent reads from it will return its default value.
   mutating func clearPniIdentity() {_uniqueStorage()._pniIdentity = nil}
 
+  var pniChangeNumber: SignalServiceProtos_SyncMessage.PniChangeNumber {
+    get {return _storage._pniChangeNumber ?? SignalServiceProtos_SyncMessage.PniChangeNumber()}
+    set {_uniqueStorage()._pniChangeNumber = newValue}
+  }
+  /// Returns true if `pniChangeNumber` has been explicitly set.
+  var hasPniChangeNumber: Bool {return _storage._pniChangeNumber != nil}
+  /// Clears the value of `pniChangeNumber`. Subsequent reads from it will return its default value.
+  mutating func clearPniChangeNumber() {_uniqueStorage()._pniChangeNumber = nil}
+
   var callEvent: SignalServiceProtos_SyncMessage.CallEvent {
     get {return _storage._callEvent ?? SignalServiceProtos_SyncMessage.CallEvent()}
     set {_uniqueStorage()._callEvent = newValue}
@@ -3846,6 +3855,49 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _event: SignalServiceProtos_SyncMessage.CallEvent.Event? = nil
   }
 
+  struct PniChangeNumber {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// Serialized libsignal-client IdentityKeyPair
+    var identityKeyPair: Data {
+      get {return _identityKeyPair ?? Data()}
+      set {_identityKeyPair = newValue}
+    }
+    /// Returns true if `identityKeyPair` has been explicitly set.
+    var hasIdentityKeyPair: Bool {return self._identityKeyPair != nil}
+    /// Clears the value of `identityKeyPair`. Subsequent reads from it will return its default value.
+    mutating func clearIdentityKeyPair() {self._identityKeyPair = nil}
+
+    /// Serialized libsignal-client SignedPreKeyRecord
+    var signedPreKey: Data {
+      get {return _signedPreKey ?? Data()}
+      set {_signedPreKey = newValue}
+    }
+    /// Returns true if `signedPreKey` has been explicitly set.
+    var hasSignedPreKey: Bool {return self._signedPreKey != nil}
+    /// Clears the value of `signedPreKey`. Subsequent reads from it will return its default value.
+    mutating func clearSignedPreKey() {self._signedPreKey = nil}
+
+    var registrationID: UInt32 {
+      get {return _registrationID ?? 0}
+      set {_registrationID = newValue}
+    }
+    /// Returns true if `registrationID` has been explicitly set.
+    var hasRegistrationID: Bool {return self._registrationID != nil}
+    /// Clears the value of `registrationID`. Subsequent reads from it will return its default value.
+    mutating func clearRegistrationID() {self._registrationID = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _identityKeyPair: Data? = nil
+    fileprivate var _signedPreKey: Data? = nil
+    fileprivate var _registrationID: UInt32? = nil
+  }
+
   init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
@@ -4860,6 +4912,7 @@ extension SignalServiceProtos_SyncMessage.CallEvent: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.Direction: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.Event: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.PniChangeNumber: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer.Flags: @unchecked Sendable {}
 extension SignalServiceProtos_GroupContext: @unchecked Sendable {}
@@ -7610,6 +7663,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     15: .same(proto: "outgoingPayment"),
     16: .same(proto: "viewed"),
     17: .same(proto: "pniIdentity"),
+    18: .same(proto: "pniChangeNumber"),
     19: .same(proto: "callEvent"),
   ]
 
@@ -7631,6 +7685,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _outgoingPayment: SignalServiceProtos_SyncMessage.OutgoingPayment? = nil
     var _viewed: [SignalServiceProtos_SyncMessage.Viewed] = []
     var _pniIdentity: SignalServiceProtos_SyncMessage.PniIdentity? = nil
+    var _pniChangeNumber: SignalServiceProtos_SyncMessage.PniChangeNumber? = nil
     var _callEvent: SignalServiceProtos_SyncMessage.CallEvent? = nil
 
     static let defaultInstance = _StorageClass()
@@ -7655,6 +7710,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _outgoingPayment = source._outgoingPayment
       _viewed = source._viewed
       _pniIdentity = source._pniIdentity
+      _pniChangeNumber = source._pniChangeNumber
       _callEvent = source._callEvent
     }
   }
@@ -7691,6 +7747,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 15: try { try decoder.decodeSingularMessageField(value: &_storage._outgoingPayment) }()
         case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._viewed) }()
         case 17: try { try decoder.decodeSingularMessageField(value: &_storage._pniIdentity) }()
+        case 18: try { try decoder.decodeSingularMessageField(value: &_storage._pniChangeNumber) }()
         case 19: try { try decoder.decodeSingularMessageField(value: &_storage._callEvent) }()
         default: break
         }
@@ -7755,6 +7812,9 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._pniIdentity {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
       } }()
+      try { if let v = _storage._pniChangeNumber {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 18)
+      } }()
       try { if let v = _storage._callEvent {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
       } }()
@@ -7784,6 +7844,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._outgoingPayment != rhs_storage._outgoingPayment {return false}
         if _storage._viewed != rhs_storage._viewed {return false}
         if _storage._pniIdentity != rhs_storage._pniIdentity {return false}
+        if _storage._pniChangeNumber != rhs_storage._pniChangeNumber {return false}
         if _storage._callEvent != rhs_storage._callEvent {return false}
         return true
       }
@@ -8804,6 +8865,54 @@ extension SignalServiceProtos_SyncMessage.CallEvent.Event: SwiftProtobuf._ProtoN
     1: .same(proto: "ACCEPTED"),
     2: .same(proto: "NOT_ACCEPTED"),
   ]
+}
+
+extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".PniChangeNumber"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "identityKeyPair"),
+    2: .same(proto: "signedPreKey"),
+    3: .same(proto: "registrationId"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._identityKeyPair) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._signedPreKey) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self._registrationID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._identityKeyPair {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._signedPreKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._registrationID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.PniChangeNumber, rhs: SignalServiceProtos_SyncMessage.PniChangeNumber) -> Bool {
+    if lhs._identityKeyPair != rhs._identityKeyPair {return false}
+    if lhs._signedPreKey != rhs._signedPreKey {return false}
+    if lhs._registrationID != rhs._registrationID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }
 
 extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
