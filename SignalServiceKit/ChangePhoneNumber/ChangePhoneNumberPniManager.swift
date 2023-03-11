@@ -201,7 +201,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
             return .value(.failure)
         }
 
-        return firstly { () -> Guarantee<[Result<LinkedDevicePniGenerationParams?, Error>]> in
+        return firstly(on: schedulers.sync) { [schedulers] () -> Guarantee<[Result<LinkedDevicePniGenerationParams?, Error>]> in
             Guarantee.when(
                 on: schedulers.global(),
                 resolved: linkedDevicePromises
