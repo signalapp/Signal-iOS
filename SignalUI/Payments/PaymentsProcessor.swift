@@ -426,17 +426,6 @@ private class PaymentProcessingOperation: OWSOperation {
     // stall and payments are processed in a timely manner.
     fileprivate static let maxInterval: TimeInterval = kSecondInterval * 30
 
-    fileprivate static func buildBadDataError(_ message: String,
-                                              file: String = #file,
-                                              function: String = #function,
-                                              line: Int = #line) -> Error {
-        if DebugFlags.paymentsIgnoreBadData.get() {
-            return OWSGenericError(message)
-        } else {
-            return OWSAssertionError(message, file: file, function: function, line: line)
-        }
-    }
-
     // Try to usher a payment "one step forward" in the processing
     // state machine.
     //
