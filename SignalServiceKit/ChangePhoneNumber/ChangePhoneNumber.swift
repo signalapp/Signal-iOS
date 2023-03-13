@@ -163,7 +163,7 @@ public class ChangePhoneNumber: NSObject {
                 try updateLocalPhoneNumber(
                     forServiceAci: successfulChangeParams.serviceAci,
                     servicePni: successfulChangeParams.servicePni,
-                    serviceE164: successfulChangeParams.newServiceE164.stringValue,
+                    serviceE164: successfulChangeParams.newServiceE164,
                     transaction: transaction
                 )
 
@@ -196,7 +196,7 @@ public class ChangePhoneNumber: NSObject {
                 let changeWasSuccessful: Bool
 
                 if let pniPendingState = changeToken.pniPendingState {
-                    if pniPendingState.newE164.stringValue == whoAmIResponse.e164 {
+                    if pniPendingState.newE164 == whoAmIResponse.e164 {
                         changeWasSuccessful = true
                     } else {
                         changeWasSuccessful = false
@@ -209,13 +209,10 @@ public class ChangePhoneNumber: NSObject {
                 }
 
                 let successfulChangeParams: SuccessfulChangeParams? = {
-                    guard
-                        changeWasSuccessful,
-                        let newE164 = E164(whoAmIResponse.e164)
-                    else { return nil }
+                    guard changeWasSuccessful else { return nil }
 
                     return SuccessfulChangeParams(
-                        newServiceE164: newE164,
+                        newServiceE164: whoAmIResponse.e164,
                         serviceAci: whoAmIResponse.aci,
                         servicePni: whoAmIResponse.pni
                     )
@@ -313,13 +310,9 @@ public class ChangePhoneNumber: NSObject {
     fileprivate func updateLocalPhoneNumber(
         forServiceAci serviceAci: UUID,
         servicePni: UUID,
-        serviceE164: String?,
+        serviceE164: E164,
         transaction: SDSAnyWriteTransaction
     ) throws -> E164 {
-        guard let serviceE164 = E164(serviceE164) else {
-            throw OWSAssertionError("Missing or invalid service e164.")
-        }
-
         guard
             let localAci = tsAccountManager.localUuid,
             let localE164 = E164(tsAccountManager.localNumber)

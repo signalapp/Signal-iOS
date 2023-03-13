@@ -26,7 +26,16 @@ public struct E164: Equatable, Hashable, Codable, CustomDebugStringConvertible {
     }
 
     public init(from decoder: Decoder) throws {
-        self.stringValue = try decoder.singleValueContainer().decode(String.self)
+        let stringValue = try decoder.singleValueContainer().decode(String.self)
+
+        guard let selfValue = E164(stringValue) else {
+            throw DecodingError.dataCorrupted(DecodingError.Context(
+                codingPath: [],
+                debugDescription: "Failed to construct E164 from underlying string!")
+            )
+        }
+
+        self = selfValue
     }
 
     public var debugDescription: String { "<E164 \(stringValue)>" }

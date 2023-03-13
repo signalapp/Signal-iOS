@@ -9,16 +9,16 @@ public enum WhoAmIRequestFactory {
 
     public enum Responses {
 
-        public struct WhoAmI: Codable {
-            public let aci: UUID
-            public let pni: UUID
-            public let e164: String?
-
-            public enum CodingKeys: String, CodingKey {
+        public struct WhoAmI: Decodable {
+            private enum CodingKeys: String, CodingKey {
                 case aci = "uuid"
                 case pni
                 case e164 = "number"
             }
+
+            public let aci: UUID
+            public let pni: UUID
+            public let e164: E164
         }
 
         public enum AmIDeregistered: Int, UnknownEnumCodable {

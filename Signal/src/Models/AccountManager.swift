@@ -232,15 +232,11 @@ public class AccountManager: NSObject {
             }.map(on: DispatchQueue.global()) { changePhoneNumberResponse -> Void in
                 // Update local state to match new service state.
 
-                guard let serviceE164 = E164(changePhoneNumberResponse.e164) else {
-                    throw OWSAssertionError("Invalid or missing e164 from change-number response!")
-                }
-
                 self.databaseStorage.write { transaction in
                     self.changePhoneNumber.changeDidComplete(
                         changeToken: changeToken,
                         successfulChangeParams: ChangePhoneNumber.SuccessfulChangeParams(
-                            newServiceE164: serviceE164,
+                            newServiceE164: changePhoneNumberResponse.e164,
                             serviceAci: changePhoneNumberResponse.aci,
                             servicePni: changePhoneNumberResponse.pni
                         ),
@@ -254,22 +250,16 @@ public class AccountManager: NSObject {
     }
 
     // TODO[Registration]: Modernize this.
-    private struct ChangePhoneNumberResponse {
+    private struct ChangePhoneNumberResponse: Decodable {
+        private enum CodingKeys: String, CodingKey {
+            case aci = "uuid"
+            case pni
+            case e164 = "number"
+        }
+
         let aci: UUID
         let pni: UUID
-        let e164: String?
-
-        static func parse(_ json: Any?) throws -> Self {
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Missing or invalid response.")
-            }
-
-            let aci: UUID = try parser.required(key: "uuid")
-            let pni: UUID = try parser.required(key: "pni")
-            let e164: String? = try parser.optional(key: "number")
-
-            return ChangePhoneNumberResponse(aci: aci, pni: pni, e164: e164)
-        }
+        let e164: E164
     }
 
     private func makeChangePhoneNumberRequest(
@@ -292,13 +282,13 @@ public class AccountManager: NSObject {
 
             switch statusCode {
             case 200, 204:
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing or invalid JSON")
+                guard let data = response.responseBodyData else {
+                    throw OWSAssertionError("Missing or invalid body data!")
                 }
 
                 Logger.info("Change-number request accepted!")
 
-                return try ChangePhoneNumberResponse.parse(json)
+                return try JSONDecoder().decode(ChangePhoneNumberResponse.self, from: data)
             default:
                 throw OWSAssertionError("Unexpected status while verifying code: \(statusCode)")
             }
