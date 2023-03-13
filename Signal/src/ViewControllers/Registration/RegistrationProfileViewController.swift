@@ -7,10 +7,22 @@ import Foundation
 import SafariServices
 import SignalMessaging
 
+// MARK: - RegistrationProfileState
+
+public struct RegistrationProfileState: Equatable {
+    let e164: E164
+    let isDiscoverableByPhoneNumber: Bool
+}
+
 // MARK: - RegistrationProfilePresenter
 
 protocol RegistrationProfilePresenter: AnyObject {
-    func goToNextStep(givenName: String, familyName: String?, avatarData: Data?)
+    func goToNextStep(
+        givenName: String,
+        familyName: String?,
+        avatarData: Data?,
+        isDiscoverableByPhoneNumber: Bool
+    )
 }
 
 // MARK: - RegistrationProfileViewController
@@ -18,8 +30,13 @@ protocol RegistrationProfilePresenter: AnyObject {
 class RegistrationProfileViewController: OWSViewController {
     private var profilesFAQURL: URL { URL(string: "https://support.signal.org/hc/articles/360007459591")! }
 
-    public init(presenter: RegistrationProfilePresenter) {
+    var state: RegistrationProfileState
+    public init(
+        state: RegistrationProfileState,
+        presenter: RegistrationProfilePresenter
+    ) {
         self.presenter = presenter
+        self.state = state
 
         super.init()
     }
@@ -206,7 +223,21 @@ class RegistrationProfileViewController: OWSViewController {
         return result
     }()
 
-    private lazy var phoneNumberDisclosureView = PhoneNumberPrivacyLabel()
+    private lazy var phoneNumberDisclosureView: PhoneNumberPrivacyLabel = {
+        let result = PhoneNumberPrivacyLabel { [weak self] in
+            guard let self else { return }
+            let vc = RegistrationPhoneNumberDiscoverabilityViewController(
+                state: RegistrationPhoneNumberDiscoverabilityState(
+                    e164: self.state.e164,
+                    isDiscoverableByPhoneNumber: self.state.isDiscoverableByPhoneNumber
+                ),
+                presenter: self
+            )
+            self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+        }
+        result.isDiscoverable = state.isDiscoverableByPhoneNumber
+        return result
+    }()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -323,7 +354,8 @@ class RegistrationProfileViewController: OWSViewController {
         presenter?.goToNextStep(
             givenName: normalizedGivenName,
             familyName: normalizedFamilyName,
-            avatarData: avatarData
+            avatarData: avatarData,
+            isDiscoverableByPhoneNumber: state.isDiscoverableByPhoneNumber
         )
     }
 }
@@ -382,6 +414,22 @@ extension RegistrationProfileViewController: UITextFieldDelegate {
     }
 }
 
+// MARK: - RegistrationPhoneNumberDiscoverabilityPresenter
+
+extension RegistrationProfileViewController: RegistrationPhoneNumberDiscoverabilityPresenter {
+
+    var presentedAsModal: Bool { return true }
+
+    func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) {
+        phoneNumberDisclosureView.isDiscoverable = isDiscoverable
+        self.state = RegistrationProfileState(
+            e164: self.state.e164,
+            isDiscoverableByPhoneNumber: isDiscoverable
+        )
+        self.presentedViewController?.dismiss(animated: true)
+    }
+}
+
 // MARK: - PhoneNumberPrivacyLabel
 
 extension RegistrationProfileViewController {
@@ -399,12 +447,16 @@ extension RegistrationProfileViewController {
             )
         }
 
-        private var isDiscoverable: Bool = false
+        var isDiscoverable: Bool = false {
+            didSet { render() }
+        }
+        private var completion: (() -> Void)?
 
         // MARK: Init
 
-        override init(frame: CGRect) {
-            super.init(frame: frame)
+        init(completion: (() -> Void)?) {
+            self.completion = completion
+            super.init(frame: .zero)
             initialRender()
         }
 
@@ -543,8 +595,8 @@ extension RegistrationProfileViewController {
         // MARK: Actions
 
         @objc
-        private func disclosureButtonTapped() {
-            self.isDiscoverable = !self.isDiscoverable
+        func disclosureButtonTapped() {
+            completion?()
             render()
         }
     }

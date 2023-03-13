@@ -288,23 +288,32 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             owsFailBeta("Shouldn't be setting phone number discoverability prior to registration.")
             return .value(.showErrorSheet(.todo))
         }
-        self.inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = true
-        self.inMemoryState.isDiscoverableByPhoneNumber = isDiscoverable
-        db.write { tx in
-            // We will update storage service at the end of registration.
-            tsAccountManager.setIsDiscoverableByPhoneNumber(
-                true,
-                updateStorageService: false,
-                authedAccount: accountIdentity.authedAccount,
-                tx
-            )
-        }
 
-        return nextStep()
+        updatePhoneNumberDiscoverability(
+            accountIdentity: accountIdentity,
+            isDiscoverable: isDiscoverable
+        )
+
+        return self.nextStep()
     }
 
-    public func setProfileInfo(givenName: String, familyName: String?, avatarData: Data?) -> Guarantee<RegistrationStep> {
+    public func setProfileInfo(
+        givenName: String,
+        familyName: String?,
+        avatarData: Data?,
+        isDiscoverableByPhoneNumber: Bool
+    ) -> Guarantee<RegistrationStep> {
+        guard let accountIdentity = persistedState.accountIdentity else {
+            owsFailBeta("Shouldn't be setting phone number discoverability prior to registration.")
+            return .value(.showErrorSheet(.todo))
+        }
         inMemoryState.pendingProfileInfo = (givenName: givenName, familyName: familyName, avatarData: avatarData)
+
+        updatePhoneNumberDiscoverability(
+            accountIdentity: accountIdentity,
+            isDiscoverable: isDiscoverableByPhoneNumber
+        )
+
         return self.nextStep()
     }
 
@@ -2089,14 +2098,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
             }
 
-            return .value(.setupProfile)
+            return .value(.setupProfile(RegistrationProfileState(
+                e164: accountIdentity.response.e164,
+                isDiscoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber
+            )))
         }
 
         if !inMemoryState.hasDefinedIsDiscoverableByPhoneNumber {
-            return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(e164: accountIdentity.response.e164.stringValue)))
-        }
-        if !inMemoryState.hasProfileName {
-            return .value(.setupProfile)
+            return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(
+                e164: accountIdentity.response.e164,
+                isDiscoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber
+            )))
         }
 
         // We are ready to finish! Export all state and wipe things
@@ -2345,6 +2357,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 signalService: signalService,
                 schedulers: schedulers
             )
+    }
+
+    private func updatePhoneNumberDiscoverability(accountIdentity: AccountIdentity, isDiscoverable: Bool) {
+        self.inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = true
+        self.inMemoryState.isDiscoverableByPhoneNumber = isDiscoverable
+
+        db.write { tx in
+            // We will update storage service at the end of registration.
+            tsAccountManager.setIsDiscoverableByPhoneNumber(
+                true,
+                updateStorageService: false,
+                authedAccount: accountIdentity.authedAccount,
+                tx
+            )
+        }
     }
 
     // MARK: Device Transfer

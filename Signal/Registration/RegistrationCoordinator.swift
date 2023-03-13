@@ -88,5 +88,10 @@ public protocol RegistrationCoordinator {
     /// Set the user's profile information.
     /// If the update is rejected for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the rejection.
-    func setProfileInfo(givenName: String, familyName: String?, avatarData: Data?) -> Guarantee<RegistrationStep>
+    func setProfileInfo(
+        givenName: String,
+        familyName: String?,
+        avatarData: Data?,
+        isDiscoverableByPhoneNumber: Bool
+    ) -> Guarantee<RegistrationStep>
 }

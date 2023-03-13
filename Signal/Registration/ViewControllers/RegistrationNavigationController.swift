@@ -168,24 +168,21 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
+        case .setupProfile(let state):
+            return Controller(
+                type: RegistrationProfileViewController.self,
+                make: { presenter in
+                    return RegistrationProfileViewController(state: state, presenter: presenter)
+                },
+                // No state to update.
+                update: nil
+            )
         case .phoneNumberDiscoverability(let state):
             return Controller(
                 type: RegistrationPhoneNumberDiscoverabilityViewController.self,
                 make: { presenter in
                     return RegistrationPhoneNumberDiscoverabilityViewController(state: state, presenter: presenter)
                 },
-                // The state never changes here. In theory we would build
-                // state update support in the controller,
-                // but its overkill so we have not.
-                update: nil
-            )
-        case .setupProfile:
-            return Controller(
-                type: RegistrationProfileViewController.self,
-                make: { presenter in
-                    return RegistrationProfileViewController(presenter: presenter)
-                },
-                // No state to update.
                 update: nil
             )
         case .reglockTimeout:
@@ -292,13 +289,28 @@ extension RegistrationNavigationController: RegistrationTransferChoicePresenter 
 }
 
 extension RegistrationNavigationController: RegistrationProfilePresenter {
-
-    func goToNextStep(givenName: String, familyName: String?, avatarData: Data?) {
-        pushNextController(coordinator.setProfileInfo(givenName: givenName, familyName: familyName, avatarData: avatarData))
+    func goToNextStep(
+        givenName: String,
+        familyName: String?,
+        avatarData: Data?,
+        isDiscoverableByPhoneNumber: Bool
+    ) {
+        pushNextController(
+            coordinator.setProfileInfo(
+                givenName: givenName,
+                familyName: familyName,
+                avatarData: avatarData,
+                isDiscoverableByPhoneNumber: isDiscoverableByPhoneNumber
+            )
+        )
     }
 }
 
+// MARK: RegistrationPhoneNumberDiscoverabilityPresenter
+
 extension RegistrationNavigationController: RegistrationPhoneNumberDiscoverabilityPresenter {
+
+    var presentedAsModal: Bool { return false }
 
     func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) {
         pushNextController(coordinator.setPhoneNumberDiscoverability(isDiscoverable))

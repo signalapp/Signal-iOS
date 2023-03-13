@@ -6,15 +6,31 @@
 import Foundation
 import SignalMessaging
 
-public struct RegistrationPhoneNumberDiscoverabilityState: Equatable {
-    let e164: String
-}
-
 protocol RegistrationPhoneNumberDiscoverabilityPresenter: AnyObject {
     func setPhoneNumberDiscoverability(_ isDiscoverable: Bool)
+    var presentedAsModal: Bool { get }
+}
+
+public struct RegistrationPhoneNumberDiscoverabilityState: Equatable {
+    let e164: E164
+    let isDiscoverableByPhoneNumber: Bool
 }
 
 class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
+
+    private enum Constants {
+        static let continueButtonInsets: UIEdgeInsets = .init(
+                 top: 16.0,
+                 leading: 36.0,
+                 bottom: 48,
+                 trailing: 36.0
+             )
+             static let continueButtonEdgeInsets: UIEdgeInsets = .init(
+                 hMargin: 0,
+                 vMargin: 16
+             )
+    }
+
     private let state: RegistrationPhoneNumberDiscoverabilityState
     private weak var presenter: RegistrationPhoneNumberDiscoverabilityPresenter?
 
@@ -24,7 +40,9 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     ) {
         self.state = state
         self.presenter = presenter
+        self.isDiscoverableByPhoneNumber = state.isDiscoverableByPhoneNumber
         super.init()
+        render()
     }
 
     @available(*, unavailable)
@@ -40,14 +58,6 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
 
     // MARK: Rendering
 
-    private lazy var nextBarButton = UIBarButtonItem(
-        title: CommonStrings.nextButton,
-        style: .done,
-        target: self,
-        action: #selector(didTapNext),
-        accessibilityIdentifier: "registration.phoneNumberDiscoverability.nextButton"
-    )
-
     private lazy var titleLabel: UILabel = {
         let result = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE",
@@ -58,7 +68,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     }()
 
     private lazy var explanationLabel: UILabel = {
-        let formattedPhoneNumber = state.e164.e164FormattedAsPhoneNumberWithoutBreaks
+        let formattedPhoneNumber = state.e164.stringValue
         let explanationTextFormat = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT",
             comment: "Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number}"
@@ -96,6 +106,33 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         return result
     }()
 
+    private lazy var nextBarButton = UIBarButtonItem(
+        title: CommonStrings.nextButton,
+        style: .done,
+        target: self,
+        action: #selector(didTapSave),
+        accessibilityIdentifier: "registration.phoneNumberDiscoverability.nextButton"
+    )
+
+    private lazy var continueButton: UIView = {
+        let footerView = UIView()
+        let continueButton = OWSFlatButton.insetButton(
+            title: CommonStrings.continueButton,
+            font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            target: self,
+            selector: #selector(didTapSave))
+        continueButton.accessibilityIdentifier = "registration.phoneNumberDiscoverability.saveButton"
+
+        footerView.addSubview(continueButton)
+
+        continueButton.contentEdgeInsets = Constants.continueButtonEdgeInsets
+        continueButton.autoPinEdgesToSuperviewEdges(withInsets: Constants.continueButtonInsets)
+
+        return footerView
+    }()
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         initialRender()
@@ -107,13 +144,15 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     }
 
     private func initialRender() {
-        navigationItem.rightBarButtonItem = nextBarButton
+        if !(presenter?.presentedAsModal ?? true) {
+            navigationItem.rightBarButtonItem = nextBarButton
+        }
 
         let descriptionLabelContainer = UIView()
         descriptionLabelContainer.addSubview(selectionDescriptionLabel)
         selectionDescriptionLabel.autoPinEdgesToSuperviewMargins()
 
-        let stackView = UIStackView(arrangedSubviews: [
+        var stackSubviews = [
             titleLabel,
             .spacer(withHeight: 16),
             explanationLabel,
@@ -123,7 +162,16 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
             .spacer(withHeight: 16),
             descriptionLabelContainer,
             .vStretchingSpacer(minHeight: 16)
-        ])
+        ]
+
+        if presenter?.presentedAsModal ?? false {
+            stackSubviews.append(contentsOf: [
+                continueButton,
+                .spacer(withHeight: 16)
+            ])
+        }
+
+        let stackView = UIStackView(arrangedSubviews: stackSubviews)
         stackView.axis = .vertical
         view.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewMargins()
@@ -133,12 +181,15 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
 
     private func render() {
         everybodyButton.isSelected = isDiscoverableByPhoneNumber
+        everybodyButton.render()
+
         nobodyButton.isSelected = !isDiscoverableByPhoneNumber
+        nobodyButton.render()
 
         selectionDescriptionLabel.text = PhoneNumberDiscoverability.descriptionForDiscoverability(isDiscoverableByPhoneNumber)
 
         view.backgroundColor = Theme.backgroundColor
-        nextBarButton.tintColor = Theme.accentBlueColor
+        continueButton.tintColor = Theme.accentBlueColor
         titleLabel.textColor = .colorForRegistrationTitleLabel
         explanationLabel.textColor = .colorForRegistrationExplanationLabel
         selectionDescriptionLabel.textColor = .colorForRegistrationExplanationLabel
@@ -147,9 +198,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     // MARK: Events
 
     @objc
-    private func didTapNext() {
-        Logger.info("")
-
+    private func didTapSave() {
         presenter?.setPhoneNumberDiscoverability(isDiscoverableByPhoneNumber)
     }
 }
@@ -170,25 +219,22 @@ private class ButtonRow: UIButton {
         }
     }
 
+    private lazy var buttonLabel: UILabel = UILabel()
+
+    private lazy var divider: UIView = UIView()
+
     init(title: String) {
         super.init(frame: .zero)
 
         addTarget(self, action: #selector(didTap), for: .touchUpInside)
 
-        setBackgroundImage(UIImage(color: Theme.cellSelectedColor), for: .highlighted)
-        setBackgroundImage(UIImage(color: Theme.backgroundColor), for: .normal)
-
-        let titleLabel = UILabel()
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = .ows_dynamicTypeBodyClamped
-        titleLabel.text = title
+        buttonLabel.text = title
 
         selectedImageView.isHidden = true
-        selectedImageView.setTemplateImageName(Theme.iconName(.accessoryCheckmark), tintColor: Theme.primaryIconColor)
         selectedImageView.contentMode = .scaleAspectFit
         selectedImageView.autoSetDimension(.width, toSize: 24)
 
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, .hStretchingSpacer(), selectedImageView])
+        let stackView = UIStackView(arrangedSubviews: [buttonLabel, .hStretchingSpacer(), selectedImageView])
         stackView.isUserInteractionEnabled = false
         stackView.axis = .horizontal
         stackView.spacing = 8
@@ -204,17 +250,29 @@ private class ButtonRow: UIButton {
         stackView.autoPinEdgesToSuperviewEdges()
         stackView.autoSetDimension(.height, toSize: 44, relation: .greaterThanOrEqual)
 
-        let divider = UIView()
-        divider.backgroundColor = Theme.middleGrayColor
         addSubview(divider)
         divider.autoSetDimension(.height, toSize: CGHairlineWidth())
         divider.autoPinEdge(toSuperviewEdge: .trailing)
         divider.autoPinEdge(toSuperviewEdge: .bottom)
         divider.autoPinEdge(toSuperviewEdge: .leading, withInset: Self.hInset)
+
+        render()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    public func render() {
+        setBackgroundImage(UIImage(color: Theme.cellSelectedColor), for: .highlighted)
+        setBackgroundImage(UIImage(color: Theme.backgroundColor), for: .normal)
+
+        buttonLabel.textColor = Theme.primaryTextColor
+        buttonLabel.font = .ows_dynamicTypeBodyClamped
+
+        divider.backgroundColor = Theme.middleGrayColor
+
+        selectedImageView.setTemplateImageName(Theme.iconName(.accessoryCheckmark), tintColor: Theme.primaryIconColor)
     }
 
     @objc

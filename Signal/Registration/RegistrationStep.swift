@@ -54,7 +54,7 @@ public enum RegistrationStep: Equatable {
 
     /// If the account has not set profile info, this step happens after registration is complete.
     /// (Typically skipped during re-registration as a result.)
-    case setupProfile
+    case setupProfile(RegistrationProfileState)
 
     // MARK: - Non-ViewController steps
 
