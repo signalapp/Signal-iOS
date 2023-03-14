@@ -11,6 +11,7 @@ class UsernameSelectionCoordinator {
         let networkManager: NetworkManager
         let databaseStorage: SDSDatabaseStorage
         let usernameLookupManager: UsernameLookupManager
+        let schedulers: Schedulers
         let storageServiceManager: StorageServiceManagerProtocol
     }
 
@@ -75,6 +76,7 @@ class UsernameSelectionCoordinator {
                 networkManager: context.networkManager,
                 databaseStorage: context.databaseStorage,
                 usernameLookupManager: context.usernameLookupManager,
+                schedulers: context.schedulers,
                 storageServiceManager: context.storageServiceManager
             )
         )

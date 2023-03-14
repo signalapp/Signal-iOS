@@ -60,24 +60,30 @@ NS_ASSUME_NONNULL_BEGIN
 
         // MARK: DependenciesBridge
 
-        TSAccountManager *tsAccountManager = [TSAccountManager new];
+        AccountServiceClient *accountServiceClient = [AccountServiceClient new];
+        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
+        MessageProcessor *messageProcessor = [MessageProcessor new];
+        MessageSender *messageSender = [MessageSender new];
+        NetworkManager *networkManager = [NetworkManager new];
+        OWS2FAManager *ows2FAManager = [OWS2FAManager new];
+        SignalProtocolStore *pniSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityPNI];
         id<OWSSignalServiceProtocol> signalService = [OWSSignalService new];
         OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
         id<SyncManagerProtocol> syncManager = (id<SyncManagerProtocol>)[[OWSSyncManager alloc] initDefault];
-        OWS2FAManager *ows2FAManager = [OWS2FAManager new];
-        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
-        MessageSender *messageSender = [MessageSender new];
-        SignalProtocolStore *pniSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityPNI];
+        TSAccountManager *tsAccountManager = [TSAccountManager new];
 
-        [DependenciesBridgeSetup setupSingletonWithDatabaseStorage:databaseStorage
-                                                  tsAccountManager:tsAccountManager
-                                                     signalService:signalService
-                                             storageServiceManager:storageServiceManager
-                                                       syncManager:syncManager
-                                                     ows2FAManager:ows2FAManager
-                                                   identityManager:identityManager
-                                                     messageSender:messageSender
-                                                  pniProtocolStore:pniSignalProtocolStore];
+        [DependenciesBridgeSetup setupSingletonWithAccountServiceClient:accountServiceClient
+                                                        databaseStorage:databaseStorage
+                                                        identityManager:identityManager
+                                                       messageProcessor:messageProcessor
+                                                          messageSender:messageSender
+                                                         networkManager:networkManager
+                                                          ows2FAManager:ows2FAManager
+                                                       pniProtocolStore:pniSignalProtocolStore
+                                                          signalService:signalService
+                                                  storageServiceManager:storageServiceManager
+                                                            syncManager:syncManager
+                                                       tsAccountManager:tsAccountManager];
 
         // MARK: SignalMessaging environment properties
 
@@ -96,7 +102,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
         id<PendingReceiptRecorder> pendingReceiptRecorder = [MessageRequestPendingReceipts new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithDatabaseStorage:databaseStorage];
-        NetworkManager *networkManager = [NetworkManager new];
         OWSMessageManager *messageManager = [OWSMessageManager new];
         BlockingManager *blockingManager = [BlockingManager new];
         id<RemoteConfigManager> remoteConfigManager = [ServiceRemoteConfigManager new];
@@ -113,7 +118,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
         StickerManager *stickerManager = [[StickerManager alloc] init];
         SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
-        AccountServiceClient *accountServiceClient = [AccountServiceClient new];
         SSKPreferences *sskPreferences = [SSKPreferences new];
         id<GroupsV2> groupsV2 = [GroupsV2Impl new];
         id<GroupV2Updates> groupV2Updates = [[GroupV2UpdatesImpl alloc] init];
@@ -126,7 +130,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSMessagePipelineSupervisor *messagePipelineSupervisor =
             [OWSMessagePipelineSupervisor createStandardSupervisor];
         AppExpiry *appExpiry = [AppExpiry new];
-        MessageProcessor *messageProcessor = [MessageProcessor new];
         id<PaymentsHelper> paymentsHelper = [PaymentsHelperImpl new];
         id<PaymentsCurrencies> paymentsCurrencies = [PaymentsCurrenciesImpl new];
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];

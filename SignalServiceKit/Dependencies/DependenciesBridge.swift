@@ -48,44 +48,54 @@ public class DependenciesBridge {
 
     public let usernameLookupManager: UsernameLookupManager
     public let usernameEducationManager: UsernameEducationManager
+    public let usernameValidationManager: UsernameValidationManager
 
     /// Initialize and configure the ``DependenciesBridge`` singleton.
     fileprivate static func setupSingleton(
+        accountServiceClient: AccountServiceClient,
         databaseStorage: SDSDatabaseStorage,
-        tsAccountManager: TSAccountManager,
+        identityManager: OWSIdentityManager,
+        messageProcessor: MessageProcessor,
+        messageSender: MessageSender,
+        networkManager: NetworkManager,
+        ows2FAManager: OWS2FAManager,
+        pniProtocolStore: SignalProtocolStore,
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManagerProtocol,
         syncManager: SyncManagerProtocol,
-        ows2FAManager: OWS2FAManager,
-        identityManager: OWSIdentityManager,
-        messageSender: MessageSender,
-        pniProtocolStore: SignalProtocolStore
+        tsAccountManager: TSAccountManager
     ) {
         _shared = .init(
+            accountServiceClient: accountServiceClient,
             databaseStorage: databaseStorage,
-            tsAccountManager: tsAccountManager,
+            identityManager: identityManager,
+            messageProcessor: messageProcessor,
+            messageSender: messageSender,
+            networkManager: networkManager,
+            ows2FAManager: ows2FAManager,
+            pniProtocolStore: pniProtocolStore,
             signalService: signalService,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
-            tsConstants: TSConstants.shared, // This is safe to hard-code.
-            ows2FAManager: ows2FAManager,
-            identityManager: identityManager,
-            messageSender: messageSender,
-            pniProtocolStore: pniProtocolStore
+            tsAccountManager: tsAccountManager,
+            tsConstants: TSConstants.shared // This is safe to hard-code.
         )
     }
 
     private init(
+        accountServiceClient: AccountServiceClient,
         databaseStorage: SDSDatabaseStorage,
-        tsAccountManager: TSAccountManager,
+        identityManager: OWSIdentityManager,
+        messageProcessor: MessageProcessor,
+        messageSender: MessageSender,
+        networkManager: NetworkManager,
+        ows2FAManager: OWS2FAManager,
+        pniProtocolStore: SignalProtocolStore,
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManagerProtocol,
         syncManager: SyncManagerProtocol,
-        tsConstants: TSConstantsProtocol,
-        ows2FAManager: OWS2FAManager,
-        identityManager: OWSIdentityManager,
-        messageSender: MessageSender,
-        pniProtocolStore: SignalProtocolStore
+        tsAccountManager: TSAccountManager,
+        tsConstants: TSConstantsProtocol
     ) {
         self.schedulers = DispatchQueueSchedulers()
         self.db = SDSDB(databaseStorage: databaseStorage)
@@ -126,6 +136,20 @@ public class DependenciesBridge {
 
         self.usernameLookupManager = UsernameLookupManagerImpl()
         self.usernameEducationManager = UsernameEducationManagerImpl(keyValueStoreFactory: keyValueStoreFactory)
+
+        self.usernameValidationManager = UsernameValidationManagerImpl(
+            context: .init(
+                accountManager: Usernames.Validation.Wrappers.TSAccountManager(tsAccountManager),
+                accountServiceClient: Usernames.Validation.Wrappers.AccountServiceClient(accountServiceClient),
+                database: db,
+                keyValueStoreFactory: keyValueStoreFactory,
+                messageProcessor: Usernames.Validation.Wrappers.MessageProcessor(messageProcessor),
+                networkManager: networkManager,
+                schedulers: schedulers,
+                storageServiceManager: Usernames.Validation.Wrappers.StorageServiceManager(storageServiceManager),
+                usernameLookupManager: usernameLookupManager
+            )
+        )
     }
 }
 
@@ -144,26 +168,32 @@ public class DependenciesBridgeSetup: NSObject {
     /// app setup dependencies graph.
     @objc
     static func setupSingleton(
+        accountServiceClient: AccountServiceClient,
         databaseStorage: SDSDatabaseStorage,
-        tsAccountManager: TSAccountManager,
+        identityManager: OWSIdentityManager,
+        messageProcessor: MessageProcessor,
+        messageSender: MessageSender,
+        networkManager: NetworkManager,
+        ows2FAManager: OWS2FAManager,
+        pniProtocolStore: SignalProtocolStore,
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManagerProtocol,
         syncManager: SyncManagerProtocol,
-        ows2FAManager: OWS2FAManager,
-        identityManager: OWSIdentityManager,
-        messageSender: MessageSender,
-        pniProtocolStore: SignalProtocolStore
+        tsAccountManager: TSAccountManager
     ) {
         DependenciesBridge.setupSingleton(
+            accountServiceClient: accountServiceClient,
             databaseStorage: databaseStorage,
-            tsAccountManager: tsAccountManager,
+            identityManager: identityManager,
+            messageProcessor: messageProcessor,
+            messageSender: messageSender,
+            networkManager: networkManager,
+            ows2FAManager: ows2FAManager,
+            pniProtocolStore: pniProtocolStore,
             signalService: signalService,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
-            ows2FAManager: ows2FAManager,
-            identityManager: identityManager,
-            messageSender: messageSender,
-            pniProtocolStore: pniProtocolStore
+            tsAccountManager: tsAccountManager
         )
     }
 }

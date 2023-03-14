@@ -9,9 +9,11 @@ public extension Usernames {
     /// Manages interactions with username-related APIs.
     struct API {
         private let networkManager: NetworkManager
+        private let schedulers: Schedulers
 
-        public init(networkManager: NetworkManager) {
+        public init(networkManager: NetworkManager, schedulers: Schedulers) {
             self.networkManager = networkManager
+            self.schedulers = schedulers
         }
 
         private func performRequest<T>(
@@ -21,9 +23,9 @@ public extension Usernames {
         ) -> Promise<T> {
             firstly {
                 networkManager.makePromise(request: request)
-            }.map(on: DispatchQueue.sharedUserInitiated) { response throws in
+            }.map(on: schedulers.sharedUserInitiated) { response throws in
                 try onSuccess(response)
-            }.recover(on: DispatchQueue.sharedUserInitiated) { error throws -> Promise<T> in
+            }.recover(on: schedulers.sharedUserInitiated) { error throws -> Promise<T> in
                 .value(try onFailure(error))
             }
         }

@@ -15,6 +15,7 @@ public class CLVReminderViews: NSObject {
     fileprivate var outageView = UIView()
     fileprivate var archiveReminderView = UIView()
     fileprivate let paymentsReminderView = UIView()
+    fileprivate var usernameValidationFailedView = UIView()
 
     @objc
     public weak var viewController: ChatListViewController?
@@ -62,6 +63,18 @@ public class CLVReminderViews: NSObject {
 
         reminderStackView.addArrangedSubview(paymentsReminderView)
         paymentsReminderView.accessibilityIdentifier = "paymentsReminderView"
+
+        usernameValidationFailedView = ReminderView.nag(
+            text: OWSLocalizedString(
+                "UNREGISTERED_USERNAME_WARNING",
+                comment: "Label warning the user that the validation of their username has failed."
+            ),
+            tapAction: { [weak self] in
+                self?.didTapFailedUsernameValidationView()
+            }
+        )
+        reminderStackView.addArrangedSubview(usernameValidationFailedView)
+        usernameValidationFailedView.accessibilityIdentifier = "usernameValidationFailedView"
     }
 
     @objc
@@ -74,12 +87,46 @@ public class CLVReminderViews: NSObject {
         RegistrationUtils.showReregistrationUI(from: viewController)
     }
 
+    @objc
+    private func didTapFailedUsernameValidationView() {
+        AssertIsOnMainThread()
+        guard let viewController = viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+        guard let localAci = tsAccountManager.localUuid else {
+            owsFailDebug("Missing local ACI.")
+            return
+        }
+
+        let usernameSelectionCoordinator = UsernameSelectionCoordinator(
+            localAci: localAci,
+            currentUsername: nil,
+            context: .init(
+                usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
+                networkManager: self.networkManager,
+                databaseStorage: self.databaseStorage,
+                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
+                schedulers: DependenciesBridge.shared.schedulers,
+                storageServiceManager: self.storageServiceManager
+            )
+        )
+        usernameSelectionCoordinator.present(fromViewController: viewController)
+
+        databaseStorage.write { transaction in
+            DependenciesBridge.shared.usernameValidationManager.clearUsernameHasFailedValidation(transaction.asV2Write)
+        }
+    }
+
     public var hasVisibleReminders: Bool {
-        (!self.archiveReminderView.isHidden ||
+        (
+            !self.archiveReminderView.isHidden ||
             !self.deregisteredView.isHidden ||
             !self.outageView.isHidden ||
             !self.expiredView.isHidden ||
-            !self.paymentsReminderView.isHidden)
+            !self.paymentsReminderView.isHidden ||
+            !self.usernameValidationFailedView.isHidden
+        )
     }
 }
 
@@ -107,6 +154,7 @@ extension ChatListViewController {
     fileprivate var outageView: UIView { reminderViews.outageView }
     fileprivate var archiveReminderView: UIView { reminderViews.archiveReminderView }
     fileprivate var paymentsReminderView: UIView { reminderViews.paymentsReminderView }
+    fileprivate var usernameValidationFailedView: UIView { reminderViews.usernameValidationFailedView }
 
     @objc
     public var reminderViews: CLVReminderViews { viewState.reminderViews }
@@ -138,6 +186,10 @@ extension ChatListViewController {
             self.paymentsReminderView.isHidden = false
             self.configureUnreadPaymentsBannerMultiple(paymentsReminderView,
                                                        unreadCount: unreadPaymentNotificationsCount)
+        }
+
+        databaseStorage.read { transaction in
+            usernameValidationFailedView.isHidden = !DependenciesBridge.shared.usernameValidationManager.hasUsernameFailedValidation(transaction.asV2Read)
         }
 
         loadCoordinator.loadIfNecessary()

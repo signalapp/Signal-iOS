@@ -175,6 +175,7 @@ class ExperienceUpgradeManager: NSObject {
                         networkManager: networkManager,
                         databaseStorage: databaseStorage,
                         usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
+                        schedulers: DependenciesBridge.shared.schedulers,
                         storageServiceManager: storageServiceManager
                     )
                 ),

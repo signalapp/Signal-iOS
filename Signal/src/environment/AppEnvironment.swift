@@ -36,6 +36,8 @@ public class AppEnvironment: NSObject {
     @objc
     public var accountManagerRef: AccountManager
 
+    private var usernameValidationObserverRef: UsernameValidationObserver?
+
     @objc
     public var notificationPresenterRef: NotificationPresenter
 
@@ -72,6 +74,11 @@ public class AppEnvironment: NSObject {
     @objc
     public func setup() {
         callService.createCallUIAdapter()
+
+        self.usernameValidationObserverRef = UsernameValidationObserver(
+            manager: DependenciesBridge.shared.usernameValidationManager,
+            database: DependenciesBridge.shared.db
+        )
 
         // Hang certain singletons on SSKEnvironment too.
         SSKEnvironment.shared.notificationsManagerRef = notificationPresenterRef

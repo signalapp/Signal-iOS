@@ -809,7 +809,10 @@ extension RecipientPickerViewController {
     ) {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
             firstly { () -> Promise<UUID?> in
-                Usernames.API(networkManager: self.networkManager)
+                Usernames.API(
+                        networkManager: self.networkManager,
+                        schedulers: DependenciesBridge.shared.schedulers
+                    )
                     .attemptAciLookup(forHashedUsername: hashedUsername)
             }.done(on: DispatchQueue.main) { [weak self] maybeAci in
                 modal.dismissIfNotCanceled {

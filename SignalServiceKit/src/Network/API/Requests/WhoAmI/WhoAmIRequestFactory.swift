@@ -14,11 +14,13 @@ public enum WhoAmIRequestFactory {
                 case aci = "uuid"
                 case pni
                 case e164 = "number"
+                case usernameHash
             }
 
             public let aci: UUID
             public let pni: UUID
             public let e164: E164
+            public let usernameHash: String?
         }
 
         public enum AmIDeregistered: Int, UnknownEnumCodable {

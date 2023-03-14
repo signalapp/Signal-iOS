@@ -91,6 +91,11 @@ extension ChatListViewController {
             name: SSKReachability.owsReachabilityDidChange,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(usernameFailedValidation),
+            name: Usernames.Validation.usernameValidationDidChange,
+            object: nil)
 
         contactsViewHelper.addObserver(self)
 
@@ -235,6 +240,13 @@ extension ChatListViewController {
                 self.searchBar.delegate?.searchBarCancelButtonClicked?(self.searchBar)
             }
         }
+    }
+
+    @objc
+    private func usernameFailedValidation(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        updateReminderViews()
     }
 }
 

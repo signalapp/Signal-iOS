@@ -280,6 +280,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                     networkManager: self.networkManager,
                     databaseStorage: self.databaseStorage,
                     usernameLookupManager: self.context.usernameLookupManager,
+                    schedulers: self.context.schedulers,
                     storageServiceManager: self.storageServiceManager
                 )
             )
@@ -293,7 +294,11 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 canCancel: false
             ) { modal in
                 firstly {
-                    Usernames.API(networkManager: self.networkManager)
+                    Usernames
+                        .API(
+                            networkManager: self.networkManager,
+                            schedulers: self.context.schedulers
+                        )
                         .attemptToDeleteCurrentUsername()
                 }.done(on: DispatchQueue.main) { [weak self] in
                     defer { modal.dismiss() }

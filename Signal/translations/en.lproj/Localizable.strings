@@ -7111,6 +7111,9 @@
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Unread";
 
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Received unsupported attachment type.";
 

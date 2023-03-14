@@ -19,6 +19,7 @@ public class ViewControllerContext {
     public let db: DB
 
     public let keyBackupService: KeyBackupServiceProtocol
+    public let schedulers: Schedulers
 
     public let usernameLookupManager: UsernameLookupManager
     public let usernameEducationManager: UsernameEducationManager
@@ -26,11 +27,13 @@ public class ViewControllerContext {
     public init(
         db: DB,
         keyBackupService: KeyBackupServiceProtocol,
+        schedulers: Schedulers,
         usernameLookupManager: UsernameLookupManager,
         usernameEducationManager: UsernameEducationManager
     ) {
         self.db = db
         self.keyBackupService = keyBackupService
+        self.schedulers = schedulers
         self.usernameLookupManager = usernameLookupManager
         self.usernameEducationManager = usernameEducationManager
     }
@@ -47,6 +50,7 @@ public class ViewControllerContext {
         return ViewControllerContext(
             db: bridge.db,
             keyBackupService: bridge.keyBackupService,
+            schedulers: bridge.schedulers,
             usernameLookupManager: bridge.usernameLookupManager,
             usernameEducationManager: bridge.usernameEducationManager
         )

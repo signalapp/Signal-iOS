@@ -81,6 +81,24 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             self.error = error
         }
 
+        public static func serviceResponseError(
+            matcher: @escaping (TSRequest) -> Bool,
+            statusCode: Int,
+            headers: OWSHttpHeaders = OWSHttpHeaders(),
+            bodyData: Data? = nil,
+            url: URL
+        ) -> Self {
+            Self.init(
+                matcher: matcher,
+                error: OWSHTTPError.forServiceResponse(
+                    requestUrl: url,
+                    responseStatus: statusCode,
+                    responseHeaders: headers,
+                    responseError: nil,
+                    responseData: bodyData)
+            )
+        }
+
         public static func networkError(
             url: URL
         ) -> Self {
