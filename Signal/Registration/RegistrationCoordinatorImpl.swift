@@ -8,75 +8,100 @@ import Foundation
 
 public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
-    private let accountManager: RegistrationCoordinatorImpl.Shims.AccountManager
-    private let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
-    private let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
-    private let dateProvider: DateProvider
-    private let db: DB
-    private let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
-    private let kbs: KeyBackupServiceProtocol
-    private let kbsAuthCredentialStore: KBSAuthCredentialStorage
-    private let kvStore: KeyValueStoreProtocol
-    private let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
-    private let preKeyManager: RegistrationCoordinatorImpl.Shims.PreKeyManager
-    private let profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager
-    private let pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager
-    private let receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager
-    private let remoteConfig: RegistrationCoordinatorImpl.Shims.RemoteConfig
-    private let schedulers: Schedulers
-    private let sessionManager: RegistrationSessionManager
-    private let signalService: OWSSignalServiceProtocol
-    private let storageServiceManager: StorageServiceManagerProtocol
-    private let tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager
-    private let udManager: RegistrationCoordinatorImpl.Shims.UDManager
+    public struct Dependencies {
+        public let accountManager: RegistrationCoordinatorImpl.Shims.AccountManager
+        public let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
+        public let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
+        public let dateProvider: DateProvider
+        public let db: DB
+        public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
+        public let kbs: KeyBackupServiceProtocol
+        public let kbsAuthCredentialStore: KBSAuthCredentialStorage
+        public let keyValueStoreFactory: KeyValueStoreFactory
+        public let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
+        public let preKeyManager: RegistrationCoordinatorImpl.Shims.PreKeyManager
+        public let profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager
+        public let pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager
+        public let receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager
+        public let remoteConfig: RegistrationCoordinatorImpl.Shims.RemoteConfig
+        public let schedulers: Schedulers
+        public let sessionManager: RegistrationSessionManager
+        public let signalService: OWSSignalServiceProtocol
+        public let storageServiceManager: StorageServiceManagerProtocol
+        public let tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager
+        public let udManager: RegistrationCoordinatorImpl.Shims.UDManager
 
-    public init(
-        accountManager: RegistrationCoordinatorImpl.Shims.AccountManager,
-        contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager,
-        contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore,
-        dateProvider: @escaping DateProvider,
-        db: DB,
-        experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager,
-        kbs: KeyBackupServiceProtocol,
-        kbsAuthCredentialStore: KBSAuthCredentialStorage,
-        keyValueStoreFactory: KeyValueStoreFactory,
-        ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager,
-        preKeyManager: RegistrationCoordinatorImpl.Shims.PreKeyManager,
-        profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager,
-        pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager,
-        receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager,
-        remoteConfig: RegistrationCoordinatorImpl.Shims.RemoteConfig,
-        schedulers: Schedulers,
-        sessionManager: RegistrationSessionManager,
-        signalService: OWSSignalServiceProtocol,
-        storageServiceManager: StorageServiceManagerProtocol,
-        tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager,
-        udManager: RegistrationCoordinatorImpl.Shims.UDManager
+        fileprivate var kvStore: KeyValueStoreProtocol {
+            keyValueStoreFactory.keyValueStore(collection: "RegistrationCoordinator")
+        }
+    }
+
+    /// `desiredMode` may not be the mode we end up in; for example if we
+    /// were in the middle of re-registration and try to change number, that will
+    /// be disallowed and we will fall back to re-registration.
+    public static func forDesiredMode(
+        _ desiredMode: RegistrationMode,
+        dependencies: Dependencies,
+        transaction: DBReadTransaction
+    ) -> RegistrationCoordinatorImpl {
+        let mode: RegistrationMode = {
+            guard let restoredMode: RegistrationMode = Self.restoreLastMode(
+                dependencies: dependencies,
+                transaction: transaction
+            ) else {
+                return desiredMode
+            }
+            return restoredMode
+        }()
+        return RegistrationCoordinatorImpl(mode: mode, dependencies: dependencies)
+    }
+
+    /// If the return value is non-nil, the user had an in-progress registration that can (typically, must) be restored.
+    public static func restoreLastMode(
+        dependencies: Dependencies,
+        transaction: DBReadTransaction
+    ) -> RegistrationMode? {
+        let kvStore = dependencies.kvStore
+        do {
+            return try kvStore.getCodableValue(forKey: Constants.modeKey, transaction: transaction)
+        } catch {
+            // Failed to parse, even though we know there is something there.
+            // This is BAD. We might've been in the middle of change number, which NEEDS to recover.
+            owsFailBeta("Unable to restore in-progress registration mode: \(error)")
+            return nil
+        }
+
+    }
+
+    private init(
+        mode: RegistrationMode,
+        dependencies: Dependencies
     ) {
-        self.accountManager = accountManager
-        self.contactsManager = contactsManager
-        self.contactsStore = contactsStore
-        self.dateProvider = dateProvider
-        self.db = db
-        self.experienceManager = experienceManager
-        self.kbs = kbs
-        self.kbsAuthCredentialStore = kbsAuthCredentialStore
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: "RegistrationCoordinator")
-        self.ows2FAManager = ows2FAManager
-        self.preKeyManager = preKeyManager
-        self.profileManager = profileManager
-        self.pushRegistrationManager = pushRegistrationManager
-        self.receiptManager = receiptManager
-        self.remoteConfig = remoteConfig
-        self.schedulers = schedulers
-        self.sessionManager = sessionManager
-        self.signalService = signalService
-        self.storageServiceManager = storageServiceManager
-        self.tsAccountManager = tsAccountManager
-        self.udManager = udManager
+        self.mode = mode
+        self.kvStore = dependencies.kvStore
+        self.deps = dependencies
     }
 
     // MARK: - Public API
+
+    public func exitRegistration() -> Bool {
+        switch mode {
+        case .registering:
+            // Never allowed. Besides, where would the user go?
+            return false
+        case .reRegistering:
+            // Let the user exit, but preserve all state so they can
+            // come back and pick up where they left off, probably on next app launch.
+            return true
+        case .changingNumber:
+            // TODO[Registration]: disallow exiting change number
+            // if in the middle of the actual change number request.
+            // Wipe in progress state; presumably the user decided not
+            // to change number.
+            self.wipePersistedState()
+            return true
+        }
+    }
 
     public func nextStep() -> Guarantee<RegistrationStep> {
         AssertIsOnMainThread()
@@ -101,13 +126,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public func requestPermissions() -> Guarantee<RegistrationStep> {
         // Notifications first, then contacts if needed.
-        return pushRegistrationManager.registerUserNotificationSettings()
+        return deps.pushRegistrationManager.registerUserNotificationSettings()
             .then(on: schedulers.main) { [weak self] in
                 guard let self else {
                     owsFailBeta("Unretained self lost")
                     return .value(())
                 }
-                return self.contactsStore.requestContactsAuthorization()
+                return self.deps.contactsStore.requestContactsAuthorization()
             }
             .then(on: schedulers.main) { [weak self] in
                 guard let self else {
@@ -240,7 +265,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         updatePersistedState(tx) {
                             $0.hasSkippedPinEntry = true
                         }
-                        kbs.clearKeys(transaction: tx)
+                        deps.kbs.clearKeys(transaction: tx)
                     }
                     self.wipeInMemoryStateToPreventKBSPathAttempts()
                     return .value(.showErrorSheet(.pinGuessesExhausted))
@@ -268,7 +293,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             // Whenever we do this, wipe the keys we've got.
             // We don't want to have them and use then implicitly later.
-            kbs.clearKeys(transaction: tx)
+            deps.kbs.clearKeys(transaction: tx)
         }
         self.wipeInMemoryStateToPreventKBSPathAttempts()
         return nextStep()
@@ -318,6 +343,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     // MARK: - Internal
+
+    /// Does not change in the course of registration; you must finish a registration for a mode
+    /// before registering in a different mode.
+    /// Kept apart from PersistedState as this is read independently and updated independently,
+    /// even though both are persisted to disk.
+    private let mode: RegistrationMode
+
+    private let deps: Dependencies
+    private let kvStore: KeyValueStoreProtocol
+
+    // Shortcuts for the commonly used ones.
+    private var db: DB { deps.db }
+    private var schedulers: Schedulers { deps.schedulers }
 
     // MARK: - In Memory State
 
@@ -418,20 +456,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Persisted State
 
-    enum Mode: Codable, Equatable {
-        case registering
-        case reRegistering(e164: String)
-        case changingNumber(oldE164: String, oldAuthToken: String)
-    }
-
     /// This state is kept across launches of registration. Whatever is set
     /// here must be explicitly wiped between sessions if desired.
     /// Note: We don't persist RegistrationSession because RegistrationSessionManager
     /// handles that; we restore it to InMemoryState instead.
+    /// Note: `mode` is kept separate; it has a different lifecycle than the rest
+    /// of PersistedState even though it is also persisted to disk.
     private struct PersistedState: Codable {
-        // TODO[Registration] allow setting this when kicking things off.
-        var mode: Mode = .registering
-
         /// We only ever want to show the splash once, and only
         /// for flows possible from new devices.
         var hasShownSplash = false
@@ -582,23 +613,28 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.loadProfileState()
 
         db.write { tx in
-            self.loadLocalMasterKey(tx)
-            inMemoryState.pinFromDisk = ows2FAManager.pinCode(tx)
+            // Take this chance to write the mode to disk.
+            // It's okay if we quit before here; that means we had nothing
+            // to recover anyway and saving the mode does nothing.
+            try? self.kvStore.setCodable(self.mode, key: Constants.modeKey, transaction: tx)
 
-            let kbsAuthCredentialCandidates = kbsAuthCredentialStore.getAuthCredentials(tx)
+            self.loadLocalMasterKey(tx)
+            inMemoryState.pinFromDisk = deps.ows2FAManager.pinCode(tx)
+
+            let kbsAuthCredentialCandidates = deps.kbsAuthCredentialStore.getAuthCredentials(tx)
             if kbsAuthCredentialCandidates.isEmpty.negated {
                 inMemoryState.kbsAuthCredentialCandidates = kbsAuthCredentialCandidates
             }
-            inMemoryState.isManualMessageFetchEnabled = tsAccountManager.isManualMessageFetchEnabled(tx)
-            inMemoryState.registrationId = tsAccountManager.getOrGenerateRegistrationId(tx)
-            inMemoryState.pniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx)
+            inMemoryState.isManualMessageFetchEnabled = deps.tsAccountManager.isManualMessageFetchEnabled(tx)
+            inMemoryState.registrationId = deps.tsAccountManager.getOrGenerateRegistrationId(tx)
+            inMemoryState.pniRegistrationId = deps.tsAccountManager.getOrGeneratePniRegistrationId(tx)
 
-            inMemoryState.allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
+            inMemoryState.allowUnrestrictedUD = deps.udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
 
-            inMemoryState.wasReglockEnabled = ows2FAManager.isReglockEnabled(tx)
+            inMemoryState.wasReglockEnabled = deps.ows2FAManager.isReglockEnabled(tx)
         }
 
-        let sessionGuarantee: Guarantee<Void> = sessionManager.restoreSession()
+        let sessionGuarantee: Guarantee<Void> = deps.sessionManager.restoreSession()
             .map(on: schedulers.main) { [weak self] session in
                 self?.db.write { self?.processSession(session, $0) }
             }
@@ -616,7 +652,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
                 if self?.persistedState.hasShownSplash == false {
                     var showSplashIfUnshown: Bool
-                    switch self?.persistedState.mode {
+                    switch self?.mode {
                     case .reRegistering, .changingNumber:
                         // For these flows starting from a registered client,
                         // don't show the splash.
@@ -654,28 +690,28 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if inMemoryState.hasBackedUpToKBS {
                 // No need to show the experience if we made the pin
                 // and backed up.
-                experienceManager.clearIntroducingPinsExperience(tx)
+                deps.experienceManager.clearIntroducingPinsExperience(tx)
             }
 
-            switch persistedState.mode {
+            switch mode {
             case .reRegistering, .changingNumber:
                 break
             case .registering:
                 // For new users, read receipts are on by default.
-                receiptManager.setAreReadReceiptsEnabled(true, tx)
-                receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
+                deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
+                deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
                 // New users also have the onboarding banner cards enabled
-                experienceManager.enableAllGetStartedCards(tx)
+                deps.experienceManager.enableAllGetStartedCards(tx)
             }
 
             // TODO[Registration]: should this happen after updating account attributes,
             // since that can fail?
-            tsAccountManager.didRegister(accountIdentity.response, authToken: accountIdentity.authToken, tx)
-            tsAccountManager.setIsOnboarded(tx)
+            deps.tsAccountManager.didRegister(accountIdentity.response, authToken: accountIdentity.authToken, tx)
+            deps.tsAccountManager.setIsOnboarded(tx)
         }
 
         // Start syncing system contacts now that we have set up tsAccountManager.
-        contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: accountIdentity.authedAccount)
+        deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: accountIdentity.authedAccount)
 
         // Update the account attributes once, now, at the end.
         return updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
@@ -693,11 +729,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 guard let error else {
                     // We are done! Wipe everything
                     self.inMemoryState = InMemoryState()
-                    self.db.write { tx in
-                        try? self.kvStore.setCodable(PersistedState(), key: Constants.persistedStateKey, transaction: tx)
-                    }
+                    self.wipePersistedState()
                     // Do any storage service backups we have pending.
-                    self.storageServiceManager.backupPendingChanges(authedAccount: accountIdentity.authedAccount)
+                    self.deps.storageServiceManager.backupPendingChanges(authedAccount: accountIdentity.authedAccount)
                     return .value(.done)
                 }
                 if error.isNetworkConnectivityFailure, retriesLeft > 0 {
@@ -710,6 +744,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 Logger.error("Failed to register due to failed account attributes update: \(error)")
                 return .value(.showErrorSheet(.todo))
             }
+    }
+
+    private func wipePersistedState() {
+        self.db.write { tx in
+            self.kvStore.removeValue(forKey: Constants.persistedStateKey, transaction: tx)
+            self.kvStore.removeValue(forKey: Constants.modeKey, transaction: tx)
+        }
     }
 
     // MARK: - Pathway
@@ -923,11 +964,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             db.write { tx in
                 // Store it and wipe it so we also overwrite any existing credential for the same user.
                 // We want to wipe the credential on disk too; we don't want to retry it on next app launch.
-                kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
-                kbsAuthCredentialStore.deleteInvalidCredentials([reglockFailure.kbsAuthCredential], tx)
+                deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                deps.kbsAuthCredentialStore.deleteInvalidCredentials([reglockFailure.kbsAuthCredential], tx)
                 // Clear the KBS master key locally; we failed reglock so we know its wrong
                 // and useless anyway.
-                kbs.clearKeys(transaction: tx)
+                deps.kbs.clearKeys(transaction: tx)
             }
             wipeInMemoryStateToPreventKBSPathAttempts()
 
@@ -947,7 +988,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             db.write { tx in
                 // We do want to clear out any credentials permanently; we know we
                 // have to use the session path so credentials aren't helpful.
-                kbsAuthCredentialStore.deleteInvalidCredentials([inMemoryState.kbsAuthCredential].compacted(), tx)
+                deps.kbsAuthCredentialStore.deleteInvalidCredentials([inMemoryState.kbsAuthCredential].compacted(), tx)
             }
             // Wipe our in memory KBS state; its now useless.
             wipeInMemoryStateToPreventKBSPathAttempts()
@@ -1032,7 +1073,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         credential: KBSAuthCredential,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        kbs.restoreKeysAndBackup(pin: pin, authMethod: .kbsAuth(credential, backup: nil))
+        deps.kbs.restoreKeysAndBackup(pin: pin, authMethod: .kbsAuth(credential, backup: nil))
             .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
                 guard let self = self else {
                     return .value(.showErrorSheet(.todo))
@@ -1076,11 +1117,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func loadLocalMasterKey(_ tx: DBReadTransaction) {
         // The hex vs base64 different here is intentional.
-        inMemoryState.regRecoveryPw = kbs.data(for: .registrationRecoveryPassword, transaction: tx)?.base64EncodedString()
-        inMemoryState.reglockToken = kbs.data(for: .registrationLock, transaction: tx)?.hexadecimalString
+        inMemoryState.regRecoveryPw = deps.kbs.data(for: .registrationRecoveryPassword, transaction: tx)?.base64EncodedString()
+        inMemoryState.reglockToken = deps.kbs.data(for: .registrationLock, transaction: tx)?.hexadecimalString
         // If we have a local master key, theres no need to restore after registration.
         // (we will still back up though)
-        inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = !kbs.hasMasterKey(transaction: tx)
+        inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = !deps.kbs.hasMasterKey(transaction: tx)
     }
 
     // MARK: - KBS Auth Credential Candidates Pathway
@@ -1111,7 +1152,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return Service.makeKBSAuthCheckRequest(
             e164: e164,
             candidateCredentials: kbsAuthCredentialCandidates,
-            signalService: signalService,
+            signalService: deps.signalService,
             schedulers: schedulers
         ).then(on: schedulers.main) { [weak self] response in
             guard let self else {
@@ -1170,7 +1211,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // will just return an empty promise.
         self.inMemoryState.kbsAuthCredential = matchedCredential
         self.db.write { tx in
-            self.kbsAuthCredentialStore.deleteInvalidCredentials(credentialsToDelete, tx)
+            self.deps.kbsAuthCredentialStore.deleteInvalidCredentials(credentialsToDelete, tx)
         }
         return self.nextStep()
     }
@@ -1205,7 +1246,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 )))
             }
         case .waitingTimeout(let reglockExpirationDate):
-            if dateProvider() >= reglockExpirationDate {
+            if deps.dateProvider() >= reglockExpirationDate {
                 // We've passed the time needed and reglock should be expired.
                 // Wipe our state and proceed.
                 db.write { tx in
@@ -1237,7 +1278,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if session.allowedToRequestCode {
                 switch pendingCodeTransport {
                 case .sms:
-                    if let nextSMSDate = session.nextSMSDate, nextSMSDate <= dateProvider() {
+                    if let nextSMSDate = session.nextSMSDate, nextSMSDate <= deps.dateProvider() {
                         return requestSessionCode(session: session, transport: pendingCodeTransport)
                     } else if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
                         return .value(.verificationCodeEntry(self.verificationCodeEntryState(
@@ -1254,7 +1295,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
                     }
                 case .voice:
-                    if let nextCallDate = session.nextCallDate, nextCallDate <= dateProvider() {
+                    if let nextCallDate = session.nextCallDate, nextCallDate <= deps.dateProvider() {
                         return requestSessionCode(session: session, transport: pendingCodeTransport)
                     } else if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
                         return .value(.verificationCodeEntry(self.verificationCodeEntryState(
@@ -1337,7 +1378,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.updatePersistedState(transaction) {
             $0.sessionState = nil
         }
-        self.sessionManager.clearPersistedSession(transaction)
+        self.deps.sessionManager.clearPersistedSession(transaction)
     }
 
     private func makeRegisterOrChangeNumberRequestFromSession(
@@ -1369,7 +1410,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.session = nil
             db.write { tx in
                 // We can clear the session now!
-                sessionManager.clearPersistedSession(tx)
+                deps.sessionManager.clearPersistedSession(tx)
                 updatePersistedState(tx) {
                     $0.accountIdentity = identityResponse
                     $0.sessionState = nil
@@ -1383,8 +1424,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // So we set up the state we need (the KBS credential)
             // and go to the next step which should look at the state and take us to the right place.
             db.write { tx in
-                kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
-                let reglockExpirationDate = self.dateProvider().addingTimeInterval(TimeInterval(reglockFailure.timeRemainingMs / 1000))
+                deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                let reglockExpirationDate = self.deps.dateProvider().addingTimeInterval(TimeInterval(reglockFailure.timeRemainingMs / 1000))
                 self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                     $0.reglockState = .reglocked(credential: reglockFailure.kbsAuthCredential, expirationDate: reglockExpirationDate)
                 }
@@ -1431,13 +1472,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         e164: String,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        return pushRegistrationManager.requestPushToken()
+        return deps.pushRegistrationManager.requestPushToken()
             .then(on: schedulers.sharedBackground) { [weak self] apnsToken -> Guarantee<RegistrationStep> in
                 guard let strongSelf = self else {
                     return .value(.showErrorSheet(.todo))
                 }
-
-                return strongSelf.sessionManager.beginOrRestoreSession(
+                return strongSelf.deps.sessionManager.beginOrRestoreSession(
                     e164: e164,
                     apnsToken: apnsToken
                 ).then(on: strongSelf.schedulers.main) { [weak self] response -> Guarantee<RegistrationStep> in
@@ -1486,7 +1526,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         }
                         return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
                             mode: strongSelf.phoneNumberEntryStateMode(),
-                            validationError: .rateLimited(expiration: strongSelf.dateProvider().addingTimeInterval(timeInterval))
+                            validationError: .rateLimited(expiration: strongSelf.deps.dateProvider().addingTimeInterval(timeInterval))
                         )))
                     case .networkFailure:
                         if retriesLeft > 0 {
@@ -1508,7 +1548,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         transport: Registration.CodeTransport,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        return sessionManager.requestVerificationCode(
+        return deps.sessionManager.requestVerificationCode(
             for: session,
             transport: transport
         ).then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
@@ -1585,7 +1625,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         // We were trying to resend from the phone number screen.
                         return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
                             mode: self.phoneNumberEntryStateMode(),
-                            validationError: .rateLimited(expiration: self.dateProvider().addingTimeInterval(timeInterval))
+                            validationError: .rateLimited(expiration: self.deps.dateProvider().addingTimeInterval(timeInterval))
                         )))
                     } else {
                         // Can't send a code, session is useless.
@@ -1635,7 +1675,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // relaunched. It's much more likely that we'd be in the "not requested" state.
             Logger.info("Started waiting for a pre-auth challenge token")
             self.updatePersistedSessionState(session: session, transaction) {
-                $0.pushChallengeState = .waitingForPush(requestedAt: dateProvider())
+                $0.pushChallengeState = .waitingForPush(requestedAt: deps.dateProvider())
             }
         case .waitingForPush, .unfulfilledPush, .fulfilled:
             Logger.info("Already waiting for a pre-auth challenge token, presumably from a prior launch")
@@ -1644,7 +1684,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // There is no timeout on this promise. That's deliberate. If we get a push challenge token
         // at some point, we'd like to hold onto it, even if it took awhile to arrive. Other spots
         // in the code may handle a timeout.
-        pushRegistrationManager.receivePreAuthChallengeToken().done(on: schedulers.main) { [weak self] token in
+        deps.pushRegistrationManager.receivePreAuthChallengeToken().done(on: schedulers.main) { [weak self] token in
             guard let self else { return }
             self.db.write { transaction in
                 self.didReceive(pushChallengeToken: token, for: session, transaction: transaction)
@@ -1707,12 +1747,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return false
             case let .waitingForPush(requestedAt):
                 let deadline = requestedAt.addingTimeInterval(Constants.pushTokenTimeout)
-                return dateProvider() < deadline
+                return deps.dateProvider() < deadline
             }
         }()
         if requestsPushChallenge, isWaitingForPushChallengeToken {
             Logger.info("Attempting to fulfill push challenge with a token we don't have yet")
-            return pushRegistrationManager
+            return deps.pushRegistrationManager
                 .receivePreAuthChallengeToken()
                 .map { $0 }
                 .nilTimeout(on: schedulers.sharedBackground, seconds: Constants.pushTokenTimeout)
@@ -1766,7 +1806,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         for session: RegistrationSession,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        return sessionManager.fulfillChallenge(
+        return deps.sessionManager.fulfillChallenge(
             for: session,
             fulfillment: fulfillment
         ).then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
@@ -1834,7 +1874,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         code: String,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        return sessionManager.submitVerificationCode(
+        return deps.sessionManager.submitVerificationCode(
             for: session,
             code: code
         ).then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
@@ -1925,7 +1965,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         reglockExpirationDate: Date,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        return kbs.restoreKeysAndBackup(
+        return deps.kbs.restoreKeysAndBackup(
             pin: pin,
             authMethod: .kbsAuth(kbsAuthCredential, backup: nil)
         )
@@ -1987,7 +2027,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // This sets up the contact provider as the primary device one (system contacts).
             // Without this, subsequent operations will fail as no contact provider is set
             // and tsAccountManager isn't set up yet.
-            contactsManager.setIsPrimaryDevice()
+            deps.contactsManager.setIsPrimaryDevice()
             inMemoryState.hasSetUpContactsManager = true
         }
 
@@ -2001,7 +2041,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if !persistedState.didSyncPrekeys {
-            return preKeyManager
+            return deps.preKeyManager
                 .createPreKeys(auth: accountIdentity.chatServiceAuth)
                 .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
                     guard let self else {
@@ -2057,7 +2097,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if inMemoryState.shouldRestoreFromStorageService {
-            return accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
+            return deps.accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
                 .map(on: schedulers.main) { [weak self] in
                     self?.inMemoryState.hasRestoredFromStorageService = true
                     return ()
@@ -2074,7 +2114,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if !inMemoryState.hasProfileName {
             if let profileInfo = inMemoryState.pendingProfileInfo {
-                return profileManager.updateLocalProfile(
+                return deps.profileManager.updateLocalProfile(
                     givenName: profileInfo.givenName,
                     familyName: profileInfo.familyName,
                     avatarData: profileInfo.avatarData,
@@ -2120,7 +2160,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         _ accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        pushRegistrationManager
+        return deps.pushRegistrationManager
             .syncPushTokensForcingUpload(
                 auth: accountIdentity.authedAccount.chatServiceAuth
             )
@@ -2151,7 +2191,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                                 return .value(.showErrorSheet(.todo))
                             }
                             strongSelf.db.write { tx in
-                                strongSelf.tsAccountManager.setIsManualMessageFetchEnabled(true, tx)
+                                strongSelf.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx)
                                 strongSelf.updatePersistedState(tx) {
                                     // Say that we synced push tokens so that we skip this step hereafter.
                                     $0.didSyncPushTokens = true
@@ -2185,7 +2225,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             authMethod = backupAuthMethod
         }
-        return kbs
+        return deps.kbs
             .restoreKeysAndBackup(
                 pin: pin,
                 authMethod: authMethod
@@ -2237,7 +2277,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             authMethod = backupAuthMethod
         }
-        return kbs
+        return deps.kbs
             .generateAndBackupKeys(
                 pin: pin,
                 authMethod: authMethod,
@@ -2249,9 +2289,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 strongSelf.inMemoryState.hasBackedUpToKBS = true
                 strongSelf.db.write { tx in
-                    strongSelf.ows2FAManager.markPinEnabled(pin, tx)
+                    strongSelf.deps.ows2FAManager.markPinEnabled(pin, tx)
                 }
-                return strongSelf.accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
+                return strongSelf.deps.accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
                     .map(on: strongSelf.schedulers.main) { [weak self] in
                         self?.inMemoryState.hasRestoredFromStorageService = true
                     }
@@ -2306,7 +2346,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         return Service.makeEnableReglockRequest(
             reglockToken: reglockToken,
-            signalService: signalService,
+            signalService: deps.signalService,
             schedulers: schedulers
         ).recover(on: schedulers.sync) { _ -> Guarantee<Void> in
             // This isn't immediately catastrophic; this user already had reglock
@@ -2321,15 +2361,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return .value(.showErrorSheet(.todo))
             }
             self.inMemoryState.hasSetReglock = true
+            self.inMemoryState.wasReglockEnabled = true
             self.db.write { tx in
-                self.ows2FAManager.markRegistrationLockEnabled(tx)
+                self.deps.ows2FAManager.markRegistrationLockEnabled(tx)
             }
             return self.nextStep()
         }
     }
 
     private func loadProfileState() {
-        let profileKey = profileManager.localProfileKey
+        let profileKey = deps.profileManager.localProfileKey
         inMemoryState.profileKey = profileKey
         let udAccessKey: SMKUDAccessKey
         do {
@@ -2342,10 +2383,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             owsFail("Could not determine UD access key: \(error).")
         }
         inMemoryState.udAccessKey = udAccessKey
-        inMemoryState.hasProfileName = profileManager.hasProfileName
+        inMemoryState.hasProfileName = deps.profileManager.hasProfileName
         db.read { tx in
-            inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber(tx)
-            inMemoryState.isDiscoverableByPhoneNumber = tsAccountManager.isDiscoverableByPhoneNumber(tx)
+            inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = deps.tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber(tx)
+            inMemoryState.isDiscoverableByPhoneNumber = deps.tsAccountManager.isDiscoverableByPhoneNumber(tx)
         }
     }
 
@@ -2354,7 +2395,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             .makeUpdateAccountAttributesRequest(
                 makeAccountAttributes(authToken: accountIdentity.authToken),
                 auth: accountIdentity.chatServiceAuth,
-                signalService: signalService,
+                signalService: deps.signalService,
                 schedulers: schedulers
             )
     }
@@ -2365,7 +2406,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         db.write { tx in
             // We will update storage service at the end of registration.
-            tsAccountManager.setIsDiscoverableByPhoneNumber(
+            deps.tsAccountManager.setIsDiscoverableByPhoneNumber(
                 true,
                 updateStorageService: false,
                 authedAccount: accountIdentity.authedAccount,
@@ -2377,20 +2418,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     // MARK: Device Transfer
 
     private func shouldSkipDeviceTransfer() -> Bool {
-        switch persistedState.mode {
+        switch mode {
         case .registering:
             return persistedState.hasDeclinedTransfer
         case .reRegistering, .changingNumber:
             // Always skip device transfer in these modes.
-            return false
+            return true
         }
     }
 
     // MARK: - Permissions
 
     private func requiresSystemPermissions() -> Guarantee<Bool> {
-        let contacts = contactsStore.needsContactsAuthorization()
-        let notifications = pushRegistrationManager.needsNotificationAuthorization()
+        let contacts = deps.contactsStore.needsContactsAuthorization()
+        let notifications = deps.pushRegistrationManager.needsNotificationAuthorization()
         return Guarantee.when(fulfilled: [contacts, notifications])
             .map { results in
                 return results.allSatisfy({ $0 })
@@ -2404,7 +2445,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         _ method: RegistrationRequestFactory.VerificationMethod,
         e164: String
     ) -> Guarantee<AccountResponse> {
-        switch persistedState.mode {
+        switch mode {
         case .registering, .reRegistering:
             // The auth token we use going forwards for chat server auth headers
             // is generated by the client. We do that here and put it on the
@@ -2419,7 +2460,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     e164: e164,
                     accountAttributes: accountAttributes,
                     skipDeviceTransfer: shouldSkipDeviceTransfer(),
-                    signalService: signalService,
+                    signalService: deps.signalService,
                     schedulers: schedulers
                 )
 
@@ -2429,7 +2470,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 e164: e164,
                 reglockToken: inMemoryState.reglockToken,
                 authToken: oldAuthToken,
-                signalService: signalService,
+                signalService: deps.signalService,
                 schedulers: schedulers
             )
         }
@@ -2443,10 +2484,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             pniRegistrationId: inMemoryState.pniRegistrationId,
             unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
             unrestrictedUnidentifiedAccess: inMemoryState.allowUnrestrictedUD,
-            registrationLockToken: inMemoryState.reglockToken,
+            registrationLockToken: inMemoryState.wasReglockEnabled ? inMemoryState.reglockToken : nil,
             encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
             discoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber,
-            canReceiveGiftBadges: remoteConfig.canReceiveGiftBadges
+            canReceiveGiftBadges: deps.remoteConfig.canReceiveGiftBadges
         )
     }
 
@@ -2492,7 +2533,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     // MARK: - Step State Generation Helpers
 
     private func phoneNumberEntryStateMode() -> RegistrationPhoneNumberState.RegistrationPhoneNumberMode {
-        switch persistedState.mode {
+        switch mode {
         case .registering:
             return .initialRegistration(previouslyEnteredE164: persistedState.e164)
         case .reRegistering(let e164):
@@ -2519,6 +2560,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     // MARK: - Constants
 
     enum Constants {
+        static let modeKey = "mode"
         static let persistedStateKey = "state"
 
         // how many times we will retry network errors.

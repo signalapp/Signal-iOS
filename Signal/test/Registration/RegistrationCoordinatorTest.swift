@@ -68,12 +68,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         scheduler = TestScheduler()
 
-        coordinator = RegistrationCoordinatorImpl(
+        let db = MockDB()
+
+        let dependencies = RegistrationCoordinatorImpl.Dependencies(
             accountManager: accountManagerMock,
             contactsManager: RegistrationCoordinatorImpl.TestMocks.ContactsManager(),
             contactsStore: contactsStore,
             dateProvider: { self.dateProvider() },
-            db: MockDB(),
+            db: db,
             experienceManager: experienceManager,
             kbs: kbs,
             kbsAuthCredentialStore: kbsAuthCredentialStore,
@@ -91,6 +93,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
             tsAccountManager: tsAccountManagerMock,
             udManager: RegistrationCoordinatorImpl.TestMocks.UDManager()
         )
+        coordinator = db.read {
+             return RegistrationCoordinatorImpl.forDesiredMode(
+                .registering, // TODO[Registration]: this should differ from one test case to another.
+                dependencies: dependencies,
+                transaction: $0
+            )
+        }
     }
 
     // MARK: - Opening Path
@@ -133,11 +142,21 @@ public class RegistrationCoordinatorTest: XCTestCase {
     // MARK: - Reg Recovery Password Path
 
     func testRegRecoveryPwPath_happyPath() throws {
+        try _runRegRecoverPwPathTestHappyPath(wasReglockEnabled: false)
+    }
+
+    func testRegRecoveryPwPath_happyPathWithReglock() throws {
+        try _runRegRecoverPwPathTestHappyPath(wasReglockEnabled: true)
+    }
+
+    private func _runRegRecoverPwPathTestHappyPath(wasReglockEnabled: Bool) throws {
         // Don't care about timing, just start it.
         scheduler.start()
 
         // Set profile info so we skip those steps.
         setupDefaultAccountAttributes()
+
+        ows2FAManagerMock.isReglockEnabledMock = { wasReglockEnabled }
 
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
@@ -180,7 +199,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 // The password is generated internally by RegistrationCoordinator.
                 // Extract it so we can check that the same password sent to the server
                 // to register is used later for other requests.
-                authPassword = Self.attributesFromCreateAccountRequest(request).authKey
+                let requestAttributes = Self.attributesFromCreateAccountRequest(request)
+                authPassword = requestAttributes.authKey
+                if wasReglockEnabled {
+                    XCTAssertEqual(Stubs.reglockData.hexadecimalString, requestAttributes.registrationLockToken)
+                } else {
+                    XCTAssertNil(requestAttributes.registrationLockToken)
+                }
                 return request.url == expectedRequest.url
             },
             statusCode: 200,
@@ -201,6 +226,18 @@ public class RegistrationCoordinatorTest: XCTestCase {
         preKeyManagerMock.createPreKeysMock = { auth in
             XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
             return .value(())
+        }
+
+        if wasReglockEnabled {
+            // If we had reglock before registration, it should be re-enabled.
+            let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(token: Stubs.reglockToken)
+            mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
+                matcher: { request in
+                    return request.url == expectedReglockRequest.url
+                },
+                statusCode: 200,
+                bodyData: nil
+            ))
         }
 
         // We haven't done a kbs backup; that should happen now.

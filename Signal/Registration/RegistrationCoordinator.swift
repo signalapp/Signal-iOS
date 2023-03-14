@@ -9,6 +9,16 @@ import Foundation
 /// including re-registration and change number.
 public protocol RegistrationCoordinator {
 
+    /// Attempt to exit registration, returning true if allowed.
+    ///
+    /// When allowed differs by `RegistrationMode`:
+    /// - registration: Never allowed (where would you go anyway?)
+    /// - reRegistration: Allowed any time, but exiting preserves in-progress
+    /// state which will be restored on the next attempt.
+    /// - changeNumber: Allowed only before initiating the actual
+    /// change number request on the server. Exiting wipes in progress state.
+    func exitRegistration() -> Bool
+
     /// Call this method to determine which step comes next in the flow.
     /// If nothing has changed, this may be the current step, in which case
     /// no change in the UI is needed.

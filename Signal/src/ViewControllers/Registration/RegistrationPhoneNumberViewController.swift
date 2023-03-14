@@ -129,7 +129,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         case .initialRegistration:
             break
         case .reregistration:
-            return false
+            return true
         case let .changingPhoneNumber(oldE164):
             if e164 == oldE164 { return false }
         }

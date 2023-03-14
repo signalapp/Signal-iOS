@@ -29,12 +29,58 @@ public extension RegistrationUtils {
 
         Self.preferences.unsetRecordedAPNSTokens()
 
+        if FeatureFlags.useNewRegistrationFlow {
+            showReRegistration(e164: phoneNumber)
+        } else {
+            showLegacyReRegistration(fromViewController: fromViewController, e164: phoneNumber)
+        }
+    }
+
+    private static func showReRegistration(e164: String) {
+        let dependencies = RegistrationCoordinatorImpl.Dependencies(
+            accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(Self.accountManager),
+            contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(Self.contactsManagerImpl),
+            contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
+            dateProvider: { Date() },
+            db: DependenciesBridge.shared.db,
+            experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
+            kbs: DependenciesBridge.shared.keyBackupService,
+            kbsAuthCredentialStore: DependenciesBridge.shared.kbsCredentialStorage,
+            keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
+            ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(Self.ows2FAManager),
+            preKeyManager: RegistrationCoordinatorImpl.Wrappers.PreKeyManager(),
+            profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(Self.profileManager),
+            pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(Self.pushRegistrationManager),
+            receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(Self.receiptManager),
+            remoteConfig: RegistrationCoordinatorImpl.Wrappers.RemoteConfig(),
+            schedulers: DependenciesBridge.shared.schedulers,
+            sessionManager: DependenciesBridge.shared.registrationSessionManager,
+            signalService: Self.signalService,
+            storageServiceManager: Self.storageServiceManager,
+            tsAccountManager: RegistrationCoordinatorImpl.Wrappers.TSAccountManager(Self.tsAccountManager),
+            udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(Self.udManager)
+        )
+
+        let desiredMode = RegistrationMode.reRegistering(e164: e164)
+        let coordinator = databaseStorage.read {
+            return RegistrationCoordinatorImpl.forDesiredMode(
+                desiredMode,
+                dependencies: dependencies,
+                transaction: $0.asV2Read
+            )
+        }
+        let navController = RegistrationNavigationController(coordinator: coordinator)
+        let window: UIWindow = CurrentAppContext().mainWindow!
+        window.rootViewController = navController
+    }
+
+    private static func showLegacyReRegistration(fromViewController: UIViewController, e164: String) {
         ModalActivityIndicatorViewController.present(
             fromViewController: fromViewController,
             canCancel: false) { modalActivityIndicator in
 
                 firstly {
-                    Self.accountManager.deprecated_requestRegistrationVerification(e164: phoneNumber,
+                    Self.accountManager.deprecated_requestRegistrationVerification(e164: e164,
                                                                                    captchaToken: nil,
                                                                                    isSMS: true)
                 }.done(on: DispatchQueue.main) { _ in
@@ -48,8 +94,8 @@ public extension RegistrationUtils {
                         let context = ViewControllerContext.shared
                         let onboardingController = Deprecated_OnboardingController(context: context, onboardingMode: .registering)
                         let registrationPhoneNumber = Deprecated_RegistrationPhoneNumber(
-                            e164: phoneNumber,
-                            userInput: phoneNumber
+                            e164: e164,
+                            userInput: e164
                         )
                         onboardingController.update(phoneNumber: registrationPhoneNumber)
 
@@ -85,8 +131,8 @@ public extension RegistrationUtils {
                                 let context = ViewControllerContext.shared
                                 let onboardingController = Deprecated_OnboardingController(context: context, onboardingMode: .registering)
                                 let registrationPhoneNumber = Deprecated_RegistrationPhoneNumber(
-                                    e164: phoneNumber,
-                                    userInput: phoneNumber
+                                    e164: e164,
+                                    userInput: e164
                                 )
                                 onboardingController.update(phoneNumber: registrationPhoneNumber)
 

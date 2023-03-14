@@ -56,15 +56,44 @@ extension SignalApp {
         Logger.info("Presenting app \(startupDuration) seconds after launch started.")
 
         let onboardingController = Deprecated_OnboardingController()
-        if onboardingController.isComplete {
-            onboardingController.markAsOnboarded()
-            showConversationSplitView()
-        } else if FeatureFlags.useNewRegistrationFlow {
-            showRegistrationView(appDelegate: appDelegate)
-            AppReadiness.setUIIsReady()
+
+        if FeatureFlags.useNewRegistrationFlow {
+            let regDeps = makeRegistrationDependencies()
+            var desiredMode: RegistrationMode? = DependenciesBridge.shared.db.read {
+                RegistrationCoordinatorImpl.restoreLastMode(dependencies: regDeps, transaction: $0)
+            }
+            if desiredMode == nil {
+                // Check for legacy state.
+                // TODO[Registration]: use a db migration to move this state to reg coordinator.
+                if !onboardingController.isComplete {
+                    desiredMode = .registering
+                }
+            }
+            if let desiredMode {
+                let coordinator = databaseStorage.read { tx in
+                    return RegistrationCoordinatorImpl.forDesiredMode(
+                        desiredMode,
+                        dependencies: regDeps,
+                        transaction: tx.asV2Read
+                    )
+                }
+                let navController = RegistrationNavigationController(coordinator: coordinator)
+
+                appDelegate.window??.rootViewController = navController
+
+                conversationSplitViewController = nil
+            } else {
+                onboardingController.markAsOnboarded()
+                showConversationSplitView()
+            }
         } else {
-            showDeprecatedOnboardingView(onboardingController)
-            AppReadiness.setUIIsReady()
+            if onboardingController.isComplete {
+                onboardingController.markAsOnboarded()
+                showConversationSplitView()
+            } else {
+                showDeprecatedOnboardingView(onboardingController)
+                AppReadiness.setUIIsReady()
+            }
         }
 
         AppUpdateNag.shared.showAppUpgradeNagIfNecessary()
@@ -72,8 +101,8 @@ extension SignalApp {
         UIViewController.attemptRotationToDeviceOrientation()
     }
 
-    private func showRegistrationView(appDelegate: UIApplicationDelegate) {
-        let coordinator = RegistrationCoordinatorImpl(
+    private func makeRegistrationDependencies() -> RegistrationCoordinatorImpl.Dependencies {
+        return RegistrationCoordinatorImpl.Dependencies(
             accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(Self.accountManager),
             contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(Self.contactsManagerImpl),
             contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
@@ -96,11 +125,6 @@ extension SignalApp {
             tsAccountManager: RegistrationCoordinatorImpl.Wrappers.TSAccountManager(Self.tsAccountManager),
             udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(Self.udManager)
         )
-        let navController = RegistrationNavigationController(coordinator: coordinator)
-
-        appDelegate.window??.rootViewController = navController
-
-        conversationSplitViewController = nil
     }
 
     func showAppSettings(mode: ShowAppSettingsMode) {

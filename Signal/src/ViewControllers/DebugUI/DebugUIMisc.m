@@ -261,14 +261,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"re-registering.");
 
-    if (![[TSAccountManager shared] resetForReregistration]) {
-        OWSFailDebug(@"could not reset for re-registration.");
-        return;
-    }
-
-    [Environment.shared.preferences unsetRecordedAPNSTokens];
-
-    [SignalApp.shared showDeprecatedOnboardingView:[Deprecated_OnboardingController new]];
+    [RegistrationUtils reregisterFromViewController:[SignalApp.shared conversationSplitViewController]];
 }
 
 + (void)clearHasDismissedOffers

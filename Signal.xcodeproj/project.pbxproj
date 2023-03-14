@@ -823,6 +823,7 @@
 		664160D029A6D60A00F5BA85 /* ChatServiceAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */; };
 		66533E3729B7B56000E8D928 /* WhoAmIRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3629B7B56000E8D928 /* WhoAmIRequestFactory.swift */; };
 		66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3B29BA8BB200E8D928 /* AuthedAccount.swift */; };
+		66533E3A29B9502100E8D928 /* RegistrationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3929B9502100E8D928 /* RegistrationMode.swift */; };
 		66586D3729005A1B00DDA9B9 /* story_viewer_onboarding_2.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */; };
 		66586D3829005A1B00DDA9B9 /* story_viewer_onboarding_1.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */; };
 		66586D3929005A1B00DDA9B9 /* story_viewer_onboarding_3.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */; };
@@ -3269,6 +3270,7 @@
 		664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceAuth.swift; sourceTree = "<group>"; };
 		66533E3629B7B56000E8D928 /* WhoAmIRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoAmIRequestFactory.swift; sourceTree = "<group>"; };
 		66533E3B29BA8BB200E8D928 /* AuthedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedAccount.swift; sourceTree = "<group>"; };
+		66533E3929B9502100E8D928 /* RegistrationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationMode.swift; sourceTree = "<group>"; };
 		6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_2.json; sourceTree = "<group>"; };
 		66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_1.json; sourceTree = "<group>"; };
@@ -6389,6 +6391,7 @@
 				66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */,
 				66A93A7F29940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift */,
 				6600F38D29918A6100B1EDB7 /* RegistrationCoordinatorImpl.swift */,
+				66533E3929B9502100E8D928 /* RegistrationMode.swift */,
 				6600F38F29918CBF00B1EDB7 /* RegistrationStep.swift */,
 			);
 			path = Registration;
@@ -11323,6 +11326,7 @@
 				66A93A8029940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift in Sources */,
 				6600F38E29918A6100B1EDB7 /* RegistrationCoordinatorImpl.swift in Sources */,
 				F92E4C74299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift in Sources */,
+				66533E3A29B9502100E8D928 /* RegistrationMode.swift in Sources */,
 				F95A64F3299589CA007FDBDF /* RegistrationNavigationController.swift in Sources */,
 				F9D5C39F2993F9FF004891FC /* RegistrationPermissionsViewController.swift in Sources */,
 				F905DFEB29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift in Sources */,
