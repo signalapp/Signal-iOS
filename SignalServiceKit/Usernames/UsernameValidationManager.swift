@@ -62,7 +62,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
 
     // MARK: Init
 
-    private let keyValueStore: KeyValueStoreProtocol
+    private let keyValueStore: KeyValueStore
     private let context: Context
 
     init(context: Context) {
@@ -307,8 +307,7 @@ public protocol _UsernameValidationManager_MessageProcessorShim {
     func fetchingAndProcessingCompletePromise() -> Promise<Void>
 }
 
-internal class _UsernameValidationManager_MessageProcessorWrapper:
-    Usernames.Validation.Shims.MessageProcessor {
+internal class _UsernameValidationManager_MessageProcessorWrapper: Usernames.Validation.Shims.MessageProcessor {
     private let messageProcessor: MessageProcessor
     public init(_ messageProcessor: MessageProcessor) {
         self.messageProcessor = messageProcessor
@@ -326,8 +325,7 @@ public protocol _UsernameValidationManager_StorageServiceManagerShim {
     func waitForPendingRestores() -> Promise<Void>
 }
 
-internal class _UsernameValidationManager_StorageServiceManagerWrapper:
-    Usernames.Validation.Shims.StorageServiceManager {
+internal class _UsernameValidationManager_StorageServiceManagerWrapper: Usernames.Validation.Shims.StorageServiceManager {
     private let storageServiceManager: StorageServiceManagerProtocol
     public init(_ storageServiceManager: StorageServiceManagerProtocol) {
         self.storageServiceManager = storageServiceManager

@@ -854,9 +854,9 @@
 		6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691E7EE2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift */; };
 		6691E7F22996E9BC0032A68A /* RegistrationSessionManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691E7F12996E9BC0032A68A /* RegistrationSessionManagerMock.swift */; };
 		6691E7F72996EAD70032A68A /* KeyBackupServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691E7F62996EAD70032A68A /* KeyBackupServiceMock.swift */; };
-		6698FC0D297EFE21004EFC30 /* KeyValueStoreProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0C297EFE21004EFC30 /* KeyValueStoreProtocol.swift */; };
+		6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */; };
 		6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */; };
-		6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStoreProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStoreProtocol.swift */; };
+		6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */; };
 		6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC192980AB45004EFC30 /* DependenciesBridge.swift */; };
 		6698FC1C2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC1B2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift */; };
 		669E8FE828B4153C00043D28 /* OWSUrlSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSUrlSession.swift */; };
@@ -3306,9 +3306,9 @@
 		6691E7EE2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequestOWSURLSessionMock.swift; sourceTree = "<group>"; };
 		6691E7F12996E9BC0032A68A /* RegistrationSessionManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSessionManagerMock.swift; sourceTree = "<group>"; };
 		6691E7F62996EAD70032A68A /* KeyBackupServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceMock.swift; sourceTree = "<group>"; };
-		6698FC0C297EFE21004EFC30 /* KeyValueStoreProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreProtocol.swift; sourceTree = "<group>"; };
+		6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStore.swift; sourceTree = "<group>"; };
 		6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreFactory.swift; sourceTree = "<group>"; };
-		6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStoreProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSKeyValueStore+KeyValueStoreProtocol.swift"; sourceTree = "<group>"; };
+		6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSKeyValueStore+KeyValueStore.swift"; sourceTree = "<group>"; };
 		6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerContext.swift; sourceTree = "<group>"; };
 		6698FC192980AB45004EFC30 /* DependenciesBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesBridge.swift; sourceTree = "<group>"; };
 		6698FC1B2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceObjcBridge.swift; sourceTree = "<group>"; };
@@ -6503,9 +6503,9 @@
 		6673FF82297B659D00F96CFD /* SDSKeyValueStore */ = {
 			isa = PBXGroup;
 			children = (
+				6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */,
 				6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */,
-				6698FC0C297EFE21004EFC30 /* KeyValueStoreProtocol.swift */,
-				6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStoreProtocol.swift */,
+				6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */,
 				F9C5CA49289453B100548EEE /* SDSKeyValueStore+ObjC.h */,
 				F9C5CA33289453B100548EEE /* SDSKeyValueStore+ObjC.m */,
 				F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */,
@@ -11685,8 +11685,8 @@
 				6698FC1C2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift in Sources */,
 				66138FB6298326C7002E0CFE /* KeyBackupServiceProtocol.swift in Sources */,
 				6673FF81297B3A5000F96CFD /* KeyBackupServiceShims.swift in Sources */,
+				6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */,
 				6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */,
-				6698FC0D297EFE21004EFC30 /* KeyValueStoreProtocol.swift in Sources */,
 				F9C5CC1A289453B300548EEE /* KnownStickerPack+SDS.swift in Sources */,
 				F9C5CC10289453B300548EEE /* KnownStickerPack.m in Sources */,
 				F9C5CD47289453B300548EEE /* LegacyChainKey.m in Sources */,
@@ -11964,7 +11964,7 @@
 				6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */,
 				F9C5CD1B289453B300548EEE /* SDSDeserialization.swift in Sources */,
 				F9C5CD13289453B300548EEE /* SDSError.swift in Sources */,
-				6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStoreProtocol.swift in Sources */,
+				6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift in Sources */,
 				F9C5CD14289453B300548EEE /* SDSKeyValueStore+ObjC.m in Sources */,
 				F9C5CD2A289453B300548EEE /* SDSKeyValueStore.swift in Sources */,
 				F9C5CD15289453B300548EEE /* SDSModel.swift in Sources */,

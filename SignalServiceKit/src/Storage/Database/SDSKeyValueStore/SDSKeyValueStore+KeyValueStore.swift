@@ -5,8 +5,8 @@
 
 import Foundation
 
-/// Unwraps DB Transactions into SDS Transactions and forward calls.
-extension SDSKeyValueStore: KeyValueStoreProtocol {
+/// Unwraps DB Transactions into SDS Transactions and forwards calls.
+extension SDSKeyValueStore: KeyValueStore {
 
     public func hasValue(_ key: String, transaction: DBReadTransaction) -> Bool {
         let sdsTx = SDSDB.shimOnlyBridge(transaction)

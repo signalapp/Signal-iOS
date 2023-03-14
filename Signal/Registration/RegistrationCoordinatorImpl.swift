@@ -31,7 +31,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         public let tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager
         public let udManager: RegistrationCoordinatorImpl.Shims.UDManager
 
-        fileprivate var kvStore: KeyValueStoreProtocol {
+        fileprivate var kvStore: KeyValueStore {
             keyValueStoreFactory.keyValueStore(collection: "RegistrationCoordinator")
         }
     }
@@ -351,7 +351,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private let mode: RegistrationMode
 
     private let deps: Dependencies
-    private let kvStore: KeyValueStoreProtocol
+    private let kvStore: KeyValueStore
 
     // Shortcuts for the commonly used ones.
     private var db: DB { deps.db }

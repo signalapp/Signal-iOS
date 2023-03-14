@@ -16,7 +16,7 @@ struct UsernameEducationManagerImpl: UsernameEducationManager {
         static let shouldShowUsernameEducationKey: String = "shouldShow"
     }
 
-    private let keyValueStore: KeyValueStoreProtocol
+    private let keyValueStore: KeyValueStore
 
     init(keyValueStoreFactory: KeyValueStoreFactory) {
         keyValueStore = keyValueStoreFactory.keyValueStore(collection: Constants.collectionName)

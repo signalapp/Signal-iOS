@@ -14,7 +14,7 @@ public class InMemoryKeyValueStoreFactory: KeyValueStoreFactory {
 
     public init() {}
 
-    public func keyValueStore(collection: String) -> SignalServiceKit.KeyValueStoreProtocol {
+    public func keyValueStore(collection: String) -> SignalServiceKit.KeyValueStore {
         if let store = stores[collection] {
             return store
         }
@@ -26,7 +26,7 @@ public class InMemoryKeyValueStoreFactory: KeyValueStoreFactory {
 
 /// In memory implementation of a KeyValueStore, requiring no database setup.
 /// Should only be used in test environments to simplify testing while replicating "real" storage.
-public class InMemoryKeyValueStore: KeyValueStoreProtocol {
+public class InMemoryKeyValueStore: KeyValueStore {
 
     private var dict = [String: Any]()
 

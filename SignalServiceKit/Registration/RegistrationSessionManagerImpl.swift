@@ -10,7 +10,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     private let dateProvider: DateProvider
     private let db: DB
-    private let kvStore: KeyValueStoreProtocol
+    private let kvStore: KeyValueStore
     private let schedulers: Schedulers
     private let signalService: OWSSignalServiceProtocol
 

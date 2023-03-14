@@ -672,7 +672,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     // MARK: - State
 
-    private lazy var keyValueStore: KeyValueStoreProtocol = {
+    private lazy var keyValueStore: KeyValueStore = {
         return keyValueStoreFactory.keyValueStore(collection: "kOWSKeyBackupService_Keys")
     }()
 
@@ -696,7 +696,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         let syncedDerivedKeys: [KBS.DerivedKey: Data]
         let enclaveName: String?
 
-        init(keyValueStore: KeyValueStoreProtocol, transaction: DBReadTransaction) {
+        init(keyValueStore: KeyValueStore, transaction: DBReadTransaction) {
             masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
 
             if let rawPinType = keyValueStore.getInt(pinTypeIdentifier, transaction: transaction) {
@@ -1158,7 +1158,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     // MARK: - Token
 
-    public var tokenStore: KeyValueStoreProtocol {
+    public var tokenStore: KeyValueStore {
         return keyValueStoreFactory.keyValueStore(collection: "kOWSKeyBackupService_Token")
     }
 

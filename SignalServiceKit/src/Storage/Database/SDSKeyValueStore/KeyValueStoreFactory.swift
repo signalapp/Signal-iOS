@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// Classes that require a `KeyValueStoreProtocol` instance should
+/// Classes that require a `KeyValueStore` instance should
 /// accept a `KeyValueStoreFactory` as an explicit dependency, and use it
 /// to generate key value store instances.
 ///
@@ -14,15 +14,15 @@ import Foundation
 /// will let code under test read and write without setting up a database.
 public protocol KeyValueStoreFactory {
 
-    func keyValueStore(collection: String) -> KeyValueStoreProtocol
+    func keyValueStore(collection: String) -> KeyValueStore
 }
 
-/// Produces `KeyValueStoreProtocol` instances backed by GRDB (`SDSKeyValueStore`s).
+/// Produces `KeyValueStore` instances backed by GRDB (`SDSKeyValueStore`s).
 public class SDSKeyValueStoreFactory: KeyValueStoreFactory {
 
     public init() {}
 
-    public func keyValueStore(collection: String) -> KeyValueStoreProtocol {
+    public func keyValueStore(collection: String) -> KeyValueStore {
         return SDSKeyValueStore(collection: collection)
     }
 }

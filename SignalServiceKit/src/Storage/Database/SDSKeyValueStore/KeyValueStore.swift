@@ -11,10 +11,10 @@ import Foundation
 /// In test code, typically backed by `InMemoryKeyValueStore`, which just keeps
 /// everything in memory to avoid setting up an entire db schema on every test case run.
 ///
-/// Instances of `KeyValueStoreProtocol` should be created using a `KeyValueStoreFactory`.
+/// Instances of `KeyValueStore` should be created using a `KeyValueStoreFactory`.
 ///
 /// Methods are identical to those on `SDSKeyValueStore`.
-public protocol KeyValueStoreProtocol {
+public protocol KeyValueStore {
 
     init(collection: String)
 
