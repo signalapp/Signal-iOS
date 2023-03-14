@@ -326,20 +326,20 @@ fileprivate extension RemoteAttestation {
         }
     }
 
-    static func remoteAttestationRequest(enclaveName: String,
-                                         authUsername: String,
-                                         authPassword: String,
-                                         service: Service,
-                                         clientEphemeralKeyPair: ECKeyPair) -> TSRequest {
-
-        let path = "v1/attestation/\(enclaveName)"
-        var parameters: [String: Any] = [
-            "clientPublic": clientEphemeralKeyPair.publicKey.base64EncodedString()
-        ]
-
-        let request = TSRequest(url: URL(string: path)!,
-                                method: "PUT",
-                                parameters: parameters)
+    static func remoteAttestationRequest(
+        enclaveName: String,
+        authUsername: String,
+        authPassword: String,
+        service: Service,
+        clientEphemeralKeyPair: ECKeyPair
+    ) -> TSRequest {
+        let request = TSRequest(
+            url: URL(string: "v1/attestation/\(enclaveName)")!,
+            method: "PUT",
+            parameters: [
+                "clientPublic": clientEphemeralKeyPair.publicKey.base64EncodedString()
+            ]
+        )
 
         request.authUsername = authUsername
         request.authPassword = authPassword
