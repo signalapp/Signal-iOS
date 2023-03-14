@@ -134,6 +134,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
  *  @return server authentication token
  */
 - (nullable NSString *)storedServerAuthToken;
+- (nullable NSString *)storedServerAuthTokenWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setStoredServerAuthToken:(NSString *)authToken
                         deviceId:(UInt32)deviceId
                      transaction:(SDSAnyWriteTransaction *)transaction;

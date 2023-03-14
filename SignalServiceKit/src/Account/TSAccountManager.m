@@ -571,6 +571,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     return [self getOrLoadAccountStateWithSneakyTransaction].serverAuthToken;
 }
 
+- (nullable NSString *)storedServerAuthTokenWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self getOrLoadAccountStateWithTransaction:transaction].serverAuthToken;
+}
+
 - (nullable NSString *)storedDeviceName
 {
     return [self getOrLoadAccountStateWithSneakyTransaction].deviceName;

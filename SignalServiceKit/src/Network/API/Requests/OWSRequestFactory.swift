@@ -250,4 +250,64 @@ extension OWSRequestFactory {
             return nil
         }
     }
+
+    public static func deprecated_verifyPrimaryDeviceRequest(
+        verificationCode: String,
+        phoneNumber: String,
+        authPassword: String,
+        checkForAvailableTransfer: Bool,
+        attributes: AccountAttributes
+    ) -> TSRequest {
+        owsAssertDebug(verificationCode.isEmpty.negated)
+        owsAssertDebug(phoneNumber.isEmpty.negated)
+
+        let urlPathComponents = URLPathComponents(
+            [self.textSecureAccountsAPI, "code", verificationCode]
+        )
+        var urlComponents = URLComponents()
+        urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
+        if checkForAvailableTransfer {
+            urlComponents.queryItems = [URLQueryItem(name: "transfer", value: "true")]
+        }
+        let url = urlComponents.url!
+
+        // The request expects the AccountAttributes to be the root object.
+        // Serialize it to JSON then get the key value dict to do that.
+        let data = try! JSONEncoder().encode(attributes)
+        let parameters = try! JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as! [String: Any]
+
+        let result = TSRequest(url: url, method: "PUT", parameters: parameters)
+        // The "verify code" request handles auth differently.
+        result.authUsername = phoneNumber
+        result.authPassword = authPassword
+        return result
+    }
+
+    public static func verifySecondaryDeviceRequest(
+        verificationCode: String,
+        phoneNumber: String,
+        authPassword: String,
+        attributes: AccountAttributes
+    ) -> TSRequest {
+        owsAssertDebug(verificationCode.isEmpty.negated)
+        owsAssertDebug(phoneNumber.isEmpty.negated)
+
+        let urlPathComponents = URLPathComponents(
+            ["v1", "devices", verificationCode]
+        )
+        var urlComponents = URLComponents()
+        urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
+        let url = urlComponents.url!
+
+        // The request expects the AccountAttributes to be the root object.
+        // Serialize it to JSON then get the key value dict to do that.
+        let data = try! JSONEncoder().encode(attributes)
+        let parameters = try! JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as! [String: Any]
+
+        let result = TSRequest(url: url, method: "PUT", parameters: parameters)
+        // The "verify code" request handles auth differently.
+        result.authUsername = phoneNumber
+        result.authPassword = authPassword
+        return result
+    }
 }

@@ -635,14 +635,19 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             guard OWS2FAManager.shared.isRegistrationLockV2Enabled else {
                 throw PinSetupError.enableRegistrationLock
             }
-
-            // Otherwise, attempt to update our account attributes. This may also fail,
+            return Promise.value(())
+        }
+        .done {
+            // Always attempt to update our account attributes. This may fail,
             // but if it does it will flag our attributes as dirty so we upload them
             // ASAP (when we have the ability to talk to the service) and get the user
-            // switched over to their new PIN for registration lock.
-            TSAccountManager.shared.updateAccountAttributes().cauterize()
-            return Promise.value(())
-        }.done {
+            // switched over to their new PIN for registration lock and the new
+            // registration recovery password.
+            // We might have already done this in the steps above, but re-upload to be sure.
+            // Just kick it off, don't wait on the result.
+            _ = TSAccountManager.shared.updateAccountAttributes().cauterize()
+        }
+        .done {
             AssertIsOnMainThread()
 
             // The completion handler always dismisses this view, so we don't want to animate anything.

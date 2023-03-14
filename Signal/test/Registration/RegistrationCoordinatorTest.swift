@@ -189,6 +189,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
             e164: Stubs.e164.stringValue,
+            authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
         )
@@ -199,8 +200,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 // The password is generated internally by RegistrationCoordinator.
                 // Extract it so we can check that the same password sent to the server
                 // to register is used later for other requests.
+                authPassword = request.authPassword
                 let requestAttributes = Self.attributesFromCreateAccountRequest(request)
-                authPassword = requestAttributes.authKey
                 if wasReglockEnabled {
                     XCTAssertEqual(Stubs.reglockData.hexadecimalString, requestAttributes.registrationLockToken)
                 } else {
@@ -317,6 +318,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
             e164: Stubs.e164.stringValue,
+            authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
         )
@@ -325,7 +327,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         var authPassword: String!
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             matcher: { request in
-                authPassword = Self.attributesFromCreateAccountRequest(request).authKey
+                authPassword = request.authPassword
                 return request.url == expectedRequest.url
             },
             statusCode: 200,
@@ -426,6 +428,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
             e164: Stubs.e164.stringValue,
+            authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
         )
@@ -525,6 +528,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
             e164: Stubs.e164.stringValue,
+            authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
         )
@@ -626,6 +630,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
             e164: Stubs.e164.stringValue,
+            authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
         )
@@ -643,6 +648,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             let expectedRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
                 e164: Stubs.e164.stringValue,
+                authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
                 skipDeviceTransfer: true
             )
@@ -653,7 +659,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                         // The password is generated internally by RegistrationCoordinator.
                         // Extract it so we can check that the same password sent to the server
                         // to register is used later for other requests.
-                        authPassword = Self.attributesFromCreateAccountRequest(request).authKey
+                        authPassword = request.authPassword
                         return request.url == expectedRequest.url
                     },
                     statusCode: 200,
@@ -812,6 +818,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         let expectedRegRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
             e164: Stubs.e164.stringValue,
+            authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
         )
@@ -819,7 +826,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             TSRequestOWSURLSessionMock.Response(
                 matcher: { request in
                     XCTAssertEqual(self.scheduler.currentTime, 1)
-                    authPassword = Self.attributesFromCreateAccountRequest(request).authKey
+                    authPassword = request.authPassword
                     return request.url == expectedRegRecoveryPwRequest.url
                 },
                 statusCode: 200,
@@ -1005,6 +1012,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             let expectedRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .sessionId(Stubs.sessionId),
                 e164: Stubs.e164.stringValue,
+                authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
                 skipDeviceTransfer: true
             )
@@ -1012,7 +1020,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.mockURLSession.addResponse(
                 TSRequestOWSURLSessionMock.Response(
                     matcher: { request in
-                        authPassword = Self.attributesFromCreateAccountRequest(request).authKey
+                        authPassword = request.authPassword
                         return request.url == expectedRequest.url
                     },
                     statusCode: 200,
@@ -2346,13 +2354,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     private static func attributesFromCreateAccountRequest(
         _ request: TSRequest
-    ) -> RegistrationRequestFactory.AccountAttributes {
+    ) -> AccountAttributes {
         let accountAttributesData = try! JSONSerialization.data(
             withJSONObject: request.parameters["accountAttributes"]!,
             options: .fragmentsAllowed
         )
         return try! JSONDecoder().decode(
-            RegistrationRequestFactory.AccountAttributes.self,
+            AccountAttributes.self,
             from: accountAttributesData
         )
     }
@@ -2387,18 +2395,19 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         static var date: Date!
 
-        static func accountAttributes() -> RegistrationRequestFactory.AccountAttributes {
-            return RegistrationRequestFactory.AccountAttributes(
-                authKey: "",
+        static func accountAttributes() -> AccountAttributes {
+            return AccountAttributes(
                 isManualMessageFetchEnabled: false,
                 registrationId: 0,
                 pniRegistrationId: 0,
                 unidentifiedAccessKey: "",
                 unrestrictedUnidentifiedAccess: false,
-                registrationLockToken: nil,
+                twofaMode: .none,
+                registrationRecoveryPassword: nil,
                 encryptedDeviceName: nil,
                 discoverableByPhoneNumber: false,
-                canReceiveGiftBadges: false
+                canReceiveGiftBadges: false,
+                hasKBSBackups: true
             )
         }
 

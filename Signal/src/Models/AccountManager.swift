@@ -18,7 +18,7 @@ public enum AccountManagerError: Error {
  * AccountManager delegates to both.
  */
 @objc
-public class AccountManager: NSObject {
+public class AccountManager: NSObject, Dependencies {
 
     @objc
     public override init() {
@@ -492,11 +492,21 @@ public class AccountManager: NSObject {
                 throw OWSAssertionError("phoneNumberAwaitingVerification was unexpectedly nil")
             }
 
-            let request = OWSRequestFactory.verifyPrimaryDeviceRequest(verificationCode: verificationCode,
-                                                                       phoneNumber: phoneNumber,
-                                                                       authKey: serverAuthToken,
-                                                                       pin: pin,
-                                                                       checkForAvailableTransfer: checkForAvailableTransfer)
+            let accountAttributes = self.databaseStorage.write { transaction in
+                return AccountAttributes.deprecated_generateForInitialRegistration(
+                    fromDependencies: self,
+                    keyBackupService: DependenciesBridge.shared.keyBackupService,
+                    transaction: transaction
+                )
+            }
+
+            let request = OWSRequestFactory.deprecated_verifyPrimaryDeviceRequest(
+                verificationCode: verificationCode,
+                phoneNumber: phoneNumber,
+                authPassword: serverAuthToken,
+                checkForAvailableTransfer: checkForAvailableTransfer,
+                attributes: accountAttributes
+            )
 
             tsAccountManager.verifyRegistration(request: request,
                                                 success: future.resolve,

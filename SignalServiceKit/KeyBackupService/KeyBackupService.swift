@@ -66,7 +66,11 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     /// Indicates whether or not we have a master key stored in KBS
     public var hasBackedUpMasterKey: Bool {
-        return getOrLoadStateWithSneakyTransaction().isMasterKeyBackedUp
+        return db.read(block: hasBackedUpMasterKey(transaction:))
+    }
+
+    public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
+        return getOrLoadState(transaction: transaction).isMasterKeyBackedUp
     }
 
     public func hasMasterKey(transaction: DBReadTransaction) -> Bool {
@@ -565,7 +569,11 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     }
 
     public func deriveRegistrationLockToken() -> String? {
-        return db.read(block: { self.data(for: .registrationLock, transaction: $0) })?.hexadecimalString
+        return db.read(block: self.deriveRegistrationLockToken(transaction:))
+    }
+
+    public func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String? {
+        return self.data(for: .registrationLock, transaction: transaction)?.hexadecimalString
     }
 
     // MARK: - Master Key Management

@@ -104,6 +104,8 @@ public protocol KeyBackupServiceProtocol {
     /// Indicates whether or not we have a master key stored in KBS
     var hasBackedUpMasterKey: Bool { get }
 
+    func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool
+
     func hasMasterKey(transaction: DBReadTransaction) -> Bool
 
     var currentPinType: KBS.PinType? { get }
@@ -144,6 +146,7 @@ public protocol KeyBackupServiceProtocol {
     func decrypt(keyType: KBS.DerivedKey, encryptedData: Data) throws -> Data
 
     func deriveRegistrationLockToken() -> String?
+    func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String?
 
     static func normalizePin(_ pin: String) -> String
 

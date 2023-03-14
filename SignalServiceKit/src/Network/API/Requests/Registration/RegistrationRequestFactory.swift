@@ -203,126 +203,6 @@ public enum RegistrationRequestFactory {
         case recoveryPassword(String)
     }
 
-    // TODO: Share this well-defined struct with the other endpoints that use it.
-    // Previously it was defined in code that constructs the dictionary, not as an
-    // explicit struct, and used in more than one request.
-    public struct AccountAttributes: Codable {
-        /// This is a hex-encoded random sequence of 16 bytes we generate locally,
-        /// include in the register or provision request as both the auth header password
-        /// and in these account attributes.
-        /// Thereafter we include it in authenticated requests to the server for identification.
-        public let authKey: String
-
-        /// All Signal-iOS clients support voice
-        public let voice: Bool = true
-
-        /// All Signal-iOS clients support voice
-        public let video: Bool = true
-
-        /// Devices that don't support push must tell the server they fetch messages manually.
-        public let isManualMessageFetchEnabled: Bool
-
-        /// A randomly generated ID that is associated with the user's ACI that identifies
-        /// a single registration and is sent to e.g. message recipients. If this changes, it tells
-        /// you the sender has re-registered, and is cheaper to compare than doing full key comparison.
-        public let registrationId: UInt32
-
-        /// A randomly generated ID that is associated with the user's PNI that identifies
-        /// a single registration and is sent to e.g. message recipients. If this changes, it tells
-        /// you the sender has re-registered, and is cheaper to compare than doing full key comparison.
-        public let pniRegistrationId: UInt32
-
-        /// Base64-encoded SMKUDAccessKey generated from the user's profile key.
-        public let unidentifiedAccessKey: String?
-
-        /// Whether the user allows sealed sender messages to come from arbitrary senders.
-        public let unrestrictedUnidentifiedAccess: Bool
-
-        /// Reglock token derived from KBS master key, if reglock is enabled.
-        ///
-        /// NOTE: previously, we'd include the pin in this object if the reglock token
-        /// was not included but a v1 pin was set. This new formal struct is only used with
-        /// v2-compliant clients, so that is ignored.
-        public let registrationLockToken: String?
-
-        /// The device name the user entered for a linked device, encrypted with the user's ACI key pair.
-        /// Unused (nil) on primary device requests.
-        public let encryptedDeviceName: String?
-
-        /// Whether the user has opted to allow their account to be discoverable by phone number.
-        public let discoverableByPhoneNumber: Bool
-
-        public let capabilities: Capabilities
-
-        public enum CodingKeys: String, CodingKey {
-            case authKey = "AuthKey"
-            case voice
-            case video
-            case isManualMessageFetchEnabled = "fetchesMessages"
-            case registrationId
-            case pniRegistrationId
-            case unidentifiedAccessKey
-            case unrestrictedUnidentifiedAccess
-            case registrationLockToken = "registrationLock"
-            case encryptedDeviceName = "name"
-            case discoverableByPhoneNumber
-            case capabilities
-        }
-
-        public init(
-            authKey: String,
-            isManualMessageFetchEnabled: Bool,
-            registrationId: UInt32,
-            pniRegistrationId: UInt32,
-            unidentifiedAccessKey: String?,
-            unrestrictedUnidentifiedAccess: Bool,
-            registrationLockToken: String?,
-            encryptedDeviceName: String?,
-            discoverableByPhoneNumber: Bool,
-            canReceiveGiftBadges: Bool = RemoteConfig.canReceiveGiftBadges
-        ) {
-            self.authKey = authKey
-            self.isManualMessageFetchEnabled = isManualMessageFetchEnabled
-            self.registrationId = registrationId
-            self.pniRegistrationId = pniRegistrationId
-            self.unidentifiedAccessKey = unidentifiedAccessKey
-            self.unrestrictedUnidentifiedAccess = unrestrictedUnidentifiedAccess
-            self.registrationLockToken = registrationLockToken
-            self.encryptedDeviceName = encryptedDeviceName
-            self.discoverableByPhoneNumber = discoverableByPhoneNumber
-            self.capabilities = Capabilities(canReceiveGiftBadges: canReceiveGiftBadges)
-        }
-
-        public struct Capabilities: Codable {
-            public let gv2 = true
-            public let gv2_2 = true
-            public let gv2_3 = true
-            public let transfer = true
-            public let announcementGroup = true
-            public let senderKey = true
-            public let stories = true
-            public let canReceiveGiftBadges: Bool
-            // Every user going through the *new* registration
-            // code paths should have this true.
-            public let hasKBSBackups = true
-            public let changeNumber = true
-
-            public enum CodingKeys: String, CodingKey {
-                case gv2
-                case gv2_2 = "gv2-2"
-                case gv2_3 = "gv2-3"
-                case transfer
-                case announcementGroup
-                case senderKey
-                case stories
-                case canReceiveGiftBadges = "giftBadges"
-                case hasKBSBackups = "storage"
-                case changeNumber
-            }
-        }
-
-    }
-
     /// Create an account, or re-register if one exists.
     ///
     /// - parameter verificationMethod: A way to verify phone number and account ownership.
@@ -337,6 +217,7 @@ public enum RegistrationRequestFactory {
     public static func createAccountRequest(
         verificationMethod: VerificationMethod,
         e164: String,
+        authPassword: String,
         accountAttributes: AccountAttributes,
         skipDeviceTransfer: Bool
     ) -> TSRequest {
@@ -366,7 +247,7 @@ public enum RegistrationRequestFactory {
         result.addValue("OWI", forHTTPHeaderField: "X-Signal-Agent")
         // As odd as this is, it is to spec.
         result.authUsername = e164
-        result.authPassword = accountAttributes.authKey
+        result.authPassword = authPassword
         return result
     }
 

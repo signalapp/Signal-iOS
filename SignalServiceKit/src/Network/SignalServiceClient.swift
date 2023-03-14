@@ -50,7 +50,7 @@ public enum RemoteConfigItem {
 
 /// Based on libsignal-service-java's PushServiceSocket class
 @objc
-public class SignalServiceRestClient: NSObject, SignalServiceClient {
+public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencies {
 
     public static let shared = SignalServiceRestClient()
 
@@ -141,7 +141,14 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             return Promise(error: OWSAssertionError("only primary device should update account attributes"))
         }
 
-        let request = OWSRequestFactory.updatePrimaryDeviceAttributesRequest()
+        let attributes = self.databaseStorage.write { transaction in
+            return AccountAttributes.generateForPrimaryDevice(
+                fromDependencies: self,
+                keyBackupService: DependenciesBridge.shared.keyBackupService,
+                transaction: transaction
+            )
+        }
+        let request = AccountAttributesRequestFactory.updatePrimaryDeviceAttributesRequest(attributes)
         return networkManager.makePromise(request: request).asVoid()
     }
 
@@ -178,15 +185,28 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }
     }
 
-    public func verifySecondaryDevice(verificationCode: String,
-                                      phoneNumber: String,
-                                      authKey: String,
-                                      encryptedDeviceName: Data) -> Promise<VerifySecondaryDeviceResponse> {
+    public func verifySecondaryDevice(
+        verificationCode: String,
+        phoneNumber: String,
+        authKey: String,
+        encryptedDeviceName: Data
+    ) -> Promise<VerifySecondaryDeviceResponse> {
 
-        let request = OWSRequestFactory.verifySecondaryDeviceRequest(verificationCode: verificationCode,
-                                                                     phoneNumber: phoneNumber,
-                                                                     authKey: authKey,
-                                                                     encryptedDeviceName: encryptedDeviceName)
+        let accountAttributes = self.databaseStorage.write { transaction in
+            return AccountAttributes.generateForSecondaryDevice(
+                fromDependencies: self,
+                keyBackupService: DependenciesBridge.shared.keyBackupService,
+                encryptedDeviceName: encryptedDeviceName,
+                transaction: transaction
+            )
+        }
+
+        let request = OWSRequestFactory.verifySecondaryDeviceRequest(
+            verificationCode: verificationCode,
+            phoneNumber: phoneNumber,
+            authPassword: authKey,
+            attributes: accountAttributes
+        )
 
         return firstly {
             networkManager.makePromise(request: request)

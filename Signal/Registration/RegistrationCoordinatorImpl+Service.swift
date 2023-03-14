@@ -65,7 +65,8 @@ extension RegistrationCoordinatorImpl {
         static func makeCreateAccountRequest(
             _ method: RegistrationRequestFactory.VerificationMethod,
             e164: String,
-            accountAttributes: RegistrationRequestFactory.AccountAttributes,
+            authPassword: String,
+            accountAttributes: AccountAttributes,
             skipDeviceTransfer: Bool,
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers
@@ -73,6 +74,7 @@ extension RegistrationCoordinatorImpl {
             let request = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: method,
                 e164: e164,
+                authPassword: authPassword,
                 accountAttributes: accountAttributes,
                 skipDeviceTransfer: skipDeviceTransfer
             )
@@ -82,7 +84,7 @@ extension RegistrationCoordinatorImpl {
                 schedulers: schedulers,
                 handler: {
                     self.handleCreateAccountResponse(
-                        authToken: accountAttributes.authKey,
+                        authPassword: authPassword,
                         statusCode: $0,
                         retryAfterHeader: $1,
                         bodyData: $2
@@ -94,7 +96,7 @@ extension RegistrationCoordinatorImpl {
         }
 
         private static func handleCreateAccountResponse(
-            authToken: String,
+            authPassword: String,
             statusCode: Int,
             retryAfterHeader: String?,
             bodyData: Data?
@@ -110,7 +112,7 @@ extension RegistrationCoordinatorImpl {
                     Logger.warn("Unable to parse Account identity from response")
                     return .genericError
                 }
-                return .success(AccountIdentity(response: response, authToken: authToken))
+                return .success(AccountIdentity(response: response, authPassword: authPassword))
 
             case .deviceTransferPossible:
                 return .deviceTransferPossible
@@ -167,7 +169,7 @@ extension RegistrationCoordinatorImpl {
             _ method: RegistrationRequestFactory.VerificationMethod,
             e164: String,
             reglockToken: String?,
-            authToken: String,
+            authPassword: String,
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers
         ) -> Guarantee<AccountResponse> {
@@ -181,7 +183,7 @@ extension RegistrationCoordinatorImpl {
                 signalService: signalService,
                 schedulers: schedulers,
                 handler: {
-                    return self.handleChangeNumberResponse(authToken: authToken, statusCode: $0, retryAfterHeader: $1, bodyData: $2)
+                    return self.handleChangeNumberResponse(authPassword: authPassword, statusCode: $0, retryAfterHeader: $1, bodyData: $2)
                 },
                 fallbackError: .genericError,
                 networkFailureError: .networkError
@@ -189,7 +191,7 @@ extension RegistrationCoordinatorImpl {
         }
 
         private static func handleChangeNumberResponse(
-            authToken: String,
+            authPassword: String,
             statusCode: Int,
             retryAfterHeader: String?,
             bodyData: Data?
@@ -205,7 +207,7 @@ extension RegistrationCoordinatorImpl {
                     Logger.warn("Unable to parse Account identity from response")
                     return .genericError
                 }
-                return .success(AccountIdentity(response: response, authToken: authToken))
+                return .success(AccountIdentity(response: response, authPassword: authPassword))
 
             case .reglockFailed:
                 guard let bodyData else {
@@ -278,7 +280,7 @@ extension RegistrationCoordinatorImpl {
 
         /// Returns nil error if success.
         public static func makeUpdateAccountAttributesRequest(
-            _ attributes: RegistrationRequestFactory.AccountAttributes,
+            _ attributes: AccountAttributes,
             auth: ChatServiceAuth,
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers,

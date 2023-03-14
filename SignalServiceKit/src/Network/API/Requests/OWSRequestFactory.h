@@ -88,24 +88,9 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                                         isStory:(BOOL)isStory
     NS_SWIFT_NAME(submitMultiRecipientMessageRequest(ciphertext:compositeUDAccessKey:timestamp:isOnline:isUrgent:isStory:));
 
-+ (TSRequest *)verifyPrimaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
-                                                  phoneNumber:(NSString *)phoneNumber
-                                                      authKey:(NSString *)authKey
-                                                          pin:(nullable NSString *)pin
-                                    checkForAvailableTransfer:(BOOL)checkForAvailableTransfer
-    NS_SWIFT_NAME(verifyPrimaryDeviceRequest(verificationCode:phoneNumber:authKey:pin:checkForAvailableTransfer:));
-
-+ (TSRequest *)verifySecondaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
-                                                    phoneNumber:(NSString *)phoneNumber
-                                                        authKey:(NSString *)authKey
-                                            encryptedDeviceName:(NSData *)encryptedDeviceName
-    NS_SWIFT_NAME(verifySecondaryDeviceRequest(verificationCode:phoneNumber:authKey:encryptedDeviceName:));
-
 + (TSRequest *)currencyConversionRequest NS_SWIFT_NAME(currencyConversionRequest());
 
 #pragma mark - Attributes and Capabilities
-
-+ (TSRequest *)updatePrimaryDeviceAttributesRequest;
 
 + (TSRequest *)updateSecondaryDeviceCapabilitiesRequest;
 

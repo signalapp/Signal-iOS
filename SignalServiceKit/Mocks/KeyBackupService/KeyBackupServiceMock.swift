@@ -21,6 +21,10 @@ public class KeyBackupServiceMock: KeyBackupServiceProtocol {
 
     public var hasBackedUpMasterKey: Bool = false
 
+    public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
+        return hasBackedUpMasterKey
+    }
+
     public func hasMasterKey(transaction: DBReadTransaction) -> Bool {
         return hasMasterKey
     }
@@ -76,6 +80,10 @@ public class KeyBackupServiceMock: KeyBackupServiceProtocol {
     }
 
     public func deriveRegistrationLockToken() -> String? {
+        return reglockToken
+    }
+
+    public func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String? {
         return reglockToken
     }
 

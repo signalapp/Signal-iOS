@@ -394,6 +394,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // This is a way to double check they know the PIN.
         var pinFromUser: String?
         var pinFromDisk: String?
+        // A really old user might be on v1 2fa; they have a PIN,
+        // but no kbs backups. We will encourage backing up
+        // to kbs but the user may skip it.
+        var isV12faUser: Bool = false
         var unconfirmedPinBlob: RegistrationPinConfirmationBlob?
 
         // Wehn we try to register, if we get a response from the server
@@ -620,6 +624,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             self.loadLocalMasterKey(tx)
             inMemoryState.pinFromDisk = deps.ows2FAManager.pinCode(tx)
+            if
+                inMemoryState.pinFromDisk != nil,
+                deps.kbs.hasBackedUpMasterKey(transaction: tx).negated
+            {
+                // If we had a pin but no kbs backups, we must be a v1 2fa user.
+                inMemoryState.isV12faUser = true
+            }
 
             let kbsAuthCredentialCandidates = deps.kbsAuthCredentialStore.getAuthCredentials(tx)
             if kbsAuthCredentialCandidates.isEmpty.negated {
@@ -706,7 +717,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             // TODO[Registration]: should this happen after updating account attributes,
             // since that can fail?
-            deps.tsAccountManager.didRegister(accountIdentity.response, authToken: accountIdentity.authToken, tx)
+            deps.tsAccountManager.didRegister(accountIdentity.response, authToken: accountIdentity.authPassword, tx)
             deps.tsAccountManager.setIsOnboarded(tx)
         }
 
@@ -2393,7 +2404,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func updateAccountAttributes(_ accountIdentity: AccountIdentity) -> Guarantee<Error?> {
         return Service
             .makeUpdateAccountAttributesRequest(
-                makeAccountAttributes(authToken: accountIdentity.authToken),
+                makeAccountAttributes(),
                 auth: accountIdentity.chatServiceAuth,
                 signalService: deps.signalService,
                 schedulers: schedulers
@@ -2453,41 +2464,54 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // write it to TSAccountManager when all is said and done, and use
             // it for requests we need to make between now and then.
             let authToken = generateServerAuthToken()
-            let accountAttributes = makeAccountAttributes(authToken: authToken)
+            let accountAttributes = makeAccountAttributes()
             return Service
                 .makeCreateAccountRequest(
                     method,
                     e164: e164,
+                    authPassword: authToken,
                     accountAttributes: accountAttributes,
                     skipDeviceTransfer: shouldSkipDeviceTransfer(),
                     signalService: deps.signalService,
                     schedulers: schedulers
                 )
 
-        case .changingNumber(_, let oldAuthToken):
+        case .changingNumber(_, let oldAuthPassword):
             return Service.makeChangeNumberRequest(
                 method,
                 e164: e164,
                 reglockToken: inMemoryState.reglockToken,
-                authToken: oldAuthToken,
+                authPassword: oldAuthPassword,
                 signalService: deps.signalService,
                 schedulers: schedulers
             )
         }
     }
 
-    private func makeAccountAttributes(authToken: String) -> RegistrationRequestFactory.AccountAttributes {
-        return RegistrationRequestFactory.AccountAttributes(
-            authKey: authToken,
+    private func makeAccountAttributes() -> AccountAttributes {
+        let twoFAMode: AccountAttributes.TwoFactorAuthMode
+        if inMemoryState.wasReglockEnabled, let reglockToken = inMemoryState.reglockToken {
+            twoFAMode = .v2(reglockToken: reglockToken)
+        } else if
+            let pinCode = inMemoryState.pinFromDisk,
+            inMemoryState.isV12faUser
+        {
+            twoFAMode = .v1(pinCode: pinCode)
+        } else {
+            twoFAMode = .none
+        }
+        return AccountAttributes(
             isManualMessageFetchEnabled: inMemoryState.isManualMessageFetchEnabled,
             registrationId: inMemoryState.registrationId,
             pniRegistrationId: inMemoryState.pniRegistrationId,
             unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
             unrestrictedUnidentifiedAccess: inMemoryState.allowUnrestrictedUD,
-            registrationLockToken: inMemoryState.wasReglockEnabled ? inMemoryState.reglockToken : nil,
+            twofaMode: twoFAMode,
+            registrationRecoveryPassword: inMemoryState.regRecoveryPw,
             encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
             discoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber,
-            canReceiveGiftBadges: deps.remoteConfig.canReceiveGiftBadges
+            canReceiveGiftBadges: deps.remoteConfig.canReceiveGiftBadges,
+            hasKBSBackups: true // Always true when registering from this class.
         )
     }
 
@@ -2500,13 +2524,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// The auth token used to communicate with the server.
         /// We create this locally and include it in the create account request,
         /// then use it to authenticate subsequent requests.
-        let authToken: String
+        let authPassword: String
 
         var authUsername: String {
             return response.aci.uuidString
-        }
-        var authPassword: String {
-            return authToken
         }
 
         var authedAccount: AuthedAccount {

@@ -192,26 +192,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
 }
 
-+ (TSRequest *)updatePrimaryDeviceAttributesRequest
-{
-    // If you are updating capabilities for a secondary device, use `updateSecondaryDeviceCapabilities` instead
-    OWSAssertDebug(self.tsAccountManager.isPrimaryDevice);
-    NSString *authKey = self.tsAccountManager.storedServerAuthToken;
-    OWSAssertDebug(authKey.length > 0);
-    NSString *_Nullable pin = [self.ows2FAManager pinCode];
-    BOOL isManualMessageFetchEnabled = self.tsAccountManager.isManualMessageFetchEnabled;
-
-    NSDictionary<NSString *, id> *accountAttributes = [self accountAttributesWithAuthKey:authKey
-                                                                                     pin:pin
-                                                                     encryptedDeviceName:nil
-                                                             isManualMessageFetchEnabled:isManualMessageFetchEnabled
-                                                                       isSecondaryDevice:NO];
-
-    return [TSRequest requestWithUrl:[NSURL URLWithString:self.textSecureAttributesAPI]
-                              method:@"PUT"
-                          parameters:accountAttributes];
-}
-
 + (TSRequest *)unregisterAccountRequest
 {
     NSString *path = [NSString stringWithFormat:@"%@/%@", self.textSecureAccountsAPI, @"me"];
@@ -287,128 +267,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     }
 }
 
-+ (TSRequest *)verifyPrimaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
-                                                  phoneNumber:(NSString *)phoneNumber
-                                                      authKey:(NSString *)authKey
-                                                          pin:(nullable NSString *)pin
-                                    checkForAvailableTransfer:(BOOL)checkForAvailableTransfer
-{
-    OWSAssertDebug(verificationCode.length > 0);
-    OWSAssertDebug(phoneNumber.length > 0);
-    OWSAssertDebug(authKey.length > 0);
-
-    NSString *path = [NSString stringWithFormat:@"%@/code/%@", self.textSecureAccountsAPI, verificationCode];
-
-    if (checkForAvailableTransfer) {
-        path = [path stringByAppendingString:@"?transfer=true"];
-    }
-
-    BOOL isManualMessageFetchEnabled = self.tsAccountManager.isManualMessageFetchEnabled;
-    NSMutableDictionary<NSString *, id> *accountAttributes =
-        [[self accountAttributesWithAuthKey:authKey
-                                        pin:pin
-                        encryptedDeviceName:nil
-                isManualMessageFetchEnabled:isManualMessageFetchEnabled
-                          isSecondaryDevice:NO] mutableCopy];
-    [accountAttributes removeObjectForKey:OWSRequestKey_AuthKey];
-
-    TSRequest *request =
-        [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:accountAttributes];
-    // The "verify code" request handles auth differently.
-    request.authUsername = phoneNumber;
-    request.authPassword = authKey;
-    return request;
-}
-
-+ (TSRequest *)verifySecondaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
-                                                    phoneNumber:(NSString *)phoneNumber
-                                                        authKey:(NSString *)authKey
-                                            encryptedDeviceName:(NSData *)encryptedDeviceName
-{
-    OWSAssertDebug(verificationCode.length > 0);
-    OWSAssertDebug(phoneNumber.length > 0);
-    OWSAssertDebug(authKey.length > 0);
-    OWSAssertDebug(encryptedDeviceName.length > 0);
-
-    NSString *path = [NSString stringWithFormat:@"v1/devices/%@", verificationCode];
-
-    NSMutableDictionary<NSString *, id> *accountAttributes = [[self accountAttributesWithAuthKey:authKey
-                                                                                             pin:nil
-                                                                             encryptedDeviceName:encryptedDeviceName
-                                                                     isManualMessageFetchEnabled:YES
-                                                                               isSecondaryDevice:YES] mutableCopy];
-
-    [accountAttributes removeObjectForKey:OWSRequestKey_AuthKey];
-
-    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                                            method:@"PUT"
-                                        parameters:accountAttributes];
-    // The "verify code" request handles auth differently.
-    request.authUsername = phoneNumber;
-    request.authPassword = authKey;
-    return request;
-}
-
 + (TSRequest *)currencyConversionRequest NS_SWIFT_NAME(currencyConversionRequest())
 {
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/payments/conversions"] method:@"GET" parameters:@{}];
-}
-
-+ (NSDictionary<NSString *, id> *)accountAttributesWithAuthKey:(NSString *)authKey
-                                                           pin:(nullable NSString *)pin
-                                           encryptedDeviceName:(nullable NSData *)encryptedDeviceName
-                                   isManualMessageFetchEnabled:(BOOL)isManualMessageFetchEnabled
-                                             isSecondaryDevice:(BOOL)isSecondaryDevice
-{
-    OWSAssertDebug(authKey.length > 0);
-
-    __block uint32_t registrationId;
-    __block uint32_t pniRegistrationId;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        registrationId = [self.tsAccountManager getOrGenerateRegistrationIdWithTransaction:transaction];
-        pniRegistrationId = [self.tsAccountManager getOrGeneratePniRegistrationIdWithTransaction:transaction];
-    });
-
-    OWSAES256Key *profileKey = [self.profileManager localProfileKey];
-    NSError *error;
-    SMKUDAccessKey *_Nullable udAccessKey = [[SMKUDAccessKey alloc] initWithProfileKey:profileKey.keyData error:&error];
-    if (error || udAccessKey.keyData.length < 1) {
-        // Crash app if UD cannot be enabled.
-        OWSFail(@"Could not determine UD access key: %@.", error);
-    }
-    BOOL allowUnrestrictedUD = [self.udManager shouldAllowUnrestrictedAccessLocal] && udAccessKey != nil;
-
-    // We no longer include the signalingKey.
-    NSMutableDictionary *accountAttributes = [@{
-        OWSRequestKey_AuthKey : authKey,
-        @"voice" : @(YES), // all Signal-iOS clients support voice
-        @"video" : @(YES), // all Signal-iOS clients support WebRTC-based voice and video calls.
-        @"fetchesMessages" : @(isManualMessageFetchEnabled), // devices that don't support push must tell the server
-                                                             // they fetch messages manually
-        @"registrationId" : [NSString stringWithFormat:@"%i", registrationId],
-        @"pniRegistrationId" : [NSString stringWithFormat:@"%i", pniRegistrationId],
-        @"unidentifiedAccessKey" : udAccessKey.keyData.base64EncodedString,
-        @"unrestrictedUnidentifiedAccess" : @(allowUnrestrictedUD),
-    } mutableCopy];
-
-    NSString *_Nullable registrationLockToken = [KeyBackupServiceObjcBridge deriveRegistrationLockToken];
-    if (registrationLockToken.length > 0 && OWS2FAManager.shared.isRegistrationLockV2Enabled) {
-        accountAttributes[@"registrationLock"] = registrationLockToken;
-    } else if (pin.length > 0 && self.ows2FAManager.mode != OWS2FAMode_V2) {
-        accountAttributes[@"pin"] = pin;
-    }
-
-    if (encryptedDeviceName.length > 0) {
-        accountAttributes[@"name"] = encryptedDeviceName.base64EncodedString;
-    }
-
-    if (SSKFeatureFlags.phoneNumberDiscoverability) {
-        accountAttributes[@"discoverableByPhoneNumber"] = @([self.tsAccountManager isDiscoverableByPhoneNumber]);
-    }
-
-    accountAttributes[@"capabilities"] = [self deviceCapabilitiesWithIsSecondaryDevice:isSecondaryDevice];
-
-    return [accountAttributes copy];
 }
 
 + (TSRequest *)updateSecondaryDeviceCapabilitiesRequest
