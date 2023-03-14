@@ -2045,7 +2045,7 @@
 		F9C5CDEA289453B400548EEE /* TestModel.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB18289453B200548EEE /* TestModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDEB289453B400548EEE /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB19289453B200548EEE /* JobQueue.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDEC289453B400548EEE /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1A289453B200548EEE /* FunctionalUtil.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDED289453B400548EEE /* KeyBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1B289453B200548EEE /* KeyBackupService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
+		F9C5CDED289453B400548EEE /* KeyBackupServiceImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1B289453B200548EEE /* KeyBackupServiceImpl.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1C289453B200548EEE /* SDS+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDEF289453B400548EEE /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4581,7 +4581,7 @@
 		F9C5CB18289453B200548EEE /* TestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestModel.h; sourceTree = "<group>"; };
 		F9C5CB19289453B200548EEE /* JobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
 		F9C5CB1A289453B200548EEE /* FunctionalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtil.m; sourceTree = "<group>"; };
-		F9C5CB1B289453B200548EEE /* KeyBackupService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyBackupService.swift; sourceTree = "<group>"; };
+		F9C5CB1B289453B200548EEE /* KeyBackupServiceImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceImpl.swift; sourceTree = "<group>"; };
 		F9C5CB1C289453B200548EEE /* SDS+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDS+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
 		F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRegularExpression+SSK.swift"; sourceTree = "<group>"; };
@@ -6479,7 +6479,7 @@
 				66A1DF6D298C2AFE00C4E4A7 /* KBSAuthCredential.swift */,
 				6673FF6F2978C40300F96CFD /* KBSAuthCredentialStorage.swift */,
 				6673FF712979B33800F96CFD /* KBSAuthCredentialStorageImpl.swift */,
-				F9C5CB1B289453B200548EEE /* KeyBackupService.swift */,
+				F9C5CB1B289453B200548EEE /* KeyBackupServiceImpl.swift */,
 				6698FC1B2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift */,
 				66138FB5298326C7002E0CFE /* KeyBackupServiceProtocol.swift */,
 				6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */,
@@ -11680,7 +11680,7 @@
 				6691E7EC2996E62B0032A68A /* KBSAuthCredentialStorageMock.swift in Sources */,
 				F9C5CC93289453B300548EEE /* KeyBackup.pb.swift in Sources */,
 				F9C5CC9B289453B300548EEE /* KeyBackupProto.swift in Sources */,
-				F9C5CDED289453B400548EEE /* KeyBackupService.swift in Sources */,
+				F9C5CDED289453B400548EEE /* KeyBackupServiceImpl.swift in Sources */,
 				6691E7F72996EAD70032A68A /* KeyBackupServiceMock.swift in Sources */,
 				6698FC1C2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift in Sources */,
 				66138FB6298326C7002E0CFE /* KeyBackupServiceProtocol.swift in Sources */,
