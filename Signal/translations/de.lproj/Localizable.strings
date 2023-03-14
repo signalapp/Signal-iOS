@@ -119,7 +119,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Bilder";
 
 /* Menu option to limit All Media view to displaying only videos */
 "ALL_MEDIA_FILTER_VIDEOS" = "Videos";
@@ -440,7 +440,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monatliche Spende beendet";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Deine wiederkehrende monatliche Spende wurde beendet. Dein %1$@ Spendenabzeichen ist nicht mehr in deinem Profil sichtbar.\n\nUm Signal weiterhin zu unterstützen und dein Abzeichen zu reaktivieren, aktualisiere deine Zahlungsdaten und spende erneut.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Deine wiederkehrende monatliche Spende wurde beendet. Dein %1$@-Spendenabzeichen ist nicht mehr in deinem Profil sichtbar.\n\nUm Signal weiterhin zu unterstützen und dein Abzeichen zu reaktivieren, aktualisiere deine Zahlungsdaten und spende erneut.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Deine wiederkehrende monatliche Spende wurde automatisch beendet, weil du zu lange inaktiv warst. Dein %1$@-Abzeichen ist nicht mehr in deinem Profil sichtbar.\n\nDu kannst Signal weiterhin nutzen, aber um die App zu unterstützen und dein Abzeichen zu reaktivieren, könntest du jetzt spenden.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Spende";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Spende im Namen von %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Du hast im Namen von %1$@ eine Spende an Signal getätigt. Sie erhalten die Möglichkeit, ihre Unterstützung in ihrem Profil zu zeigen.";
@@ -5081,10 +5081,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Originalnachricht nicht gefunden.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Auf deine Story reagiert";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Hat auf deine Story reagiert";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Auf Story von %1$@ reagiert";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Hat auf die Story von %1$@ reagiert";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Story";
@@ -5111,40 +5111,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Alle · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Mit %1$@ auf deine Nachricht reagiert";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Hat mit %1$@ auf deine Nachricht reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Mit %1$@ auf dein Album reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Hat mit %1$@ auf dein Album reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Mit %1$@ auf dein Audio reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Hat mit %1$@ auf dein Audio reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Mit %1$@ auf dein Kontaktteilen reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Hat mit %1$@ auf dein Kontaktteilen reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Mit %1$@ auf deine Datei reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Hat mit %1$@ auf deine Datei reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Mit %1$@ auf dein GIF reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Hat mit %1$@ auf dein GIF reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Mit %1$@ auf dein Foto reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Hat mit %1$@ auf dein Foto reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Mit %1$@ auf deinen Sticker reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ auf deinen Sticker reagiert";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Mit %1$@ reagiert auf: »%2$@«";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ auf »%2$@« reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Mit %1$@ auf dein Video reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Hat mit %1$@ auf dein Video reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Mit %1$@ auf deine einmalig anzeigbaren Medieninhalte reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ auf deine einmalig anzeigbaren Medieninhalte reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Mit %1$@ auf deine Sprachnachricht reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ auf deine Sprachnachricht reagiert";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Gelesen";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Nachname";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Wer kann mich anhand der Nummer finden?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Vorname";
@@ -6731,19 +6731,19 @@
 "STORY_PRIVACY_TITLE" = "Story-Datenschutz";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Mit %1$@ auf deine Story reagiert";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Hat mit %1$@ auf deine Story reagiert";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Mit %1$@ auf eine Story reagiert";
+"STORY_REACTION_QUOTE_FORMAT" = "Hat mit %1$@ auf eine Story reagiert";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Mit %1$@ auf die Story von %2$@ reagiert";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Hat mit %1$@ auf die Story von %2$@ reagiert";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Antworten";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Auf Story reagiert";
+"STORY_REPLY_REACTION" = "Hat auf Story reagiert";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Persönliche Antwort an %1$@";

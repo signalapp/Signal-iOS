@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Forstået";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en læsekvittering eller en mediefil kunne ikke leveres til dig fra %1$@ i denne samtale.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en kvittering for læsning eller en mediefil kunne ikke leveres til dig fra %1$@ i denne samtale.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Leveringsproblem";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en læsekvittering eller en mediefil kunne ikke leveres til dig fra %1$@. De kan have forsøgt at sende direkte til dig eller i en gruppe.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en kvittering for læsning eller en mediefil kunne ikke leveres til dig fra %1$@. Vedkommende kan have forsøgt at sende elementet direkte til dig eller i en gruppe.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Kassér";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Om beskedanmodninger";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF'er";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Billeder";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Videoer";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_BOOST_BODY" = "Dit Boost-badge er udløbet og er ikke længere synligt på din profil.\n\nDu kan fortsætte med at bruge Signal, men for at støtte teknologien, der er udviklet til dig, kan du overveje at blive en månedlig donor.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Dit Boost-badge er udløbet og er ikke længere synligt på din profil.\n\nDu kan genaktivere dit Boost-badge i 30 dage mere med et engangsbidrag.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Dit Boost-badge er udløbet og er ikke længere synligt på din profil.\n\nDu kan genaktivere dit Boost-badge i 30 dage med en engangsdonation.";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Emblem udløbet";
@@ -440,10 +440,10 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Månedlig donation annulleret";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Din månedlige donation blev annulleret. %1$@ donationsbadge er ikke længere synlig på din profil.\n\nHvis du vil fortsætte med at støtte Signal og genaktivere dit badge, skal du opdatere dine betalingsoplysninger og donere igen.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Din månedlige donation blev annulleret. %1$@ donationsbadge er ikke længere synligt på din profil.\n\nHvis du vil fortsætte med at støtte Signal og genaktivere dit badge, skal du opdatere dine betalingsoplysninger og donere igen.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Din løbende månedlige donation blev automatisk annulleret, da du var inaktiv for længe. Dit %1$@-badge er ikke længere synlig på din profil.\n\nDu kan fortsætte med at bruge Signal, men for at støtte appen og genaktivere din badge, skal du donere nu.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Din løbende månedlige donation blev automatisk annulleret, da du var inaktiv for længe. Dit %1$@-badge er ikke længere synligt på din profil.\n\nDu kan fortsætte med at bruge Signal, men for at støtte appen og genaktivere dit badge, skal du donere nu.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Du har optjent et donorbadge fra Signal! Vis det på din profil for at vise din støtte.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donation";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation på vegne af %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Du har foretaget en donation til Signal på vegne af %1$@. De vil få mulighed for at vise deres støtte på deres profil.";
@@ -4076,7 +4076,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Ingen andre grupper til fælles";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Egen note";
+"NOTE_TO_SELF" = "Personlig note";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Du har muligvis fået beskeder, mens din %1$@ blev genstartet";
@@ -5141,7 +5141,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagerede med %1$@ på din video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagerede med %1$@ på dit vis-én-gang mediefil";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagerede med %1$@ på din engangsmediefil";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagerede med %1$@ på din talebesked";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Efternavn";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Hvem kan finde mig med mit nummer?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Fornavn";
@@ -6620,10 +6620,10 @@
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Lad folk, der kan se din historie, reagere og svare.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Svar & reaktioner";
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Svar og reaktioner";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Tillad svar & reaktioner";
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Tillad svar og reaktioner";
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "Svar";
@@ -6737,7 +6737,7 @@
 "STORY_REACTION_QUOTE_FORMAT" = "Reagerede %1$@ på en historie";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reagerede %1$@ på %2$@s historie";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reagerede %1$@ på historien fra %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Besvar";

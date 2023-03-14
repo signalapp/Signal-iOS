@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "확인";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "이 채팅의 %1$@ 님에게서 메시지, 스티커, 반응, 수신 확인, 미디어를 받지 못했습니다.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "이 채팅의 %1$@ 님이 보낸 메시지, 스티커, 반응, 수신 확인 또는 미디어를 받지 못했습니다.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "배송 문제";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ 님이 보낸 메시지, 스티커, 반응, 수신 확인, 미디어를 받지 못했습니다. 사용자에게 직접 보내거나 그룹에 보내려고 했을 수 있습니다.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ 님이 보낸 메시지, 스티커, 반응, 수신 확인 또는 미디어를 받지 못했습니다. 사용자에게 직접 보내거나 그룹에서 보내려고 했을 수 있습니다.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "파기";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "메시지 요청 정보";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "사진";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "동영상";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -440,7 +440,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "월간 기부를 취소함";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "월간 기부를 취소했습니다. %1$@ 배지가 더는 프로필에 표시되지 않습니다.\n\nSignal을 계속 지지하고 배지를 재활성화하려면 결제 정보를 업데이트하고 기부를 다시 시작해 주세요.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "월간 기부를 취소했습니다. %1$@ 배지가 더는 프로필에 표시되지 않습니다.\n\nSignal을 계속 지원하고 배지를 재활성화하려면 결제 정보를 업데이트하고 기부를 다시 시작하세요.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "오랫동안 활동이 없어 자동으로 월간 기부가 취소되었습니다. %1$@ 배지가 더는 프로필에 표시되지 않습니다.\n\nSignal을 계속 사용할 수는 있지만 앱을 지원하고 배지를 재활성화하려면 지금 기부를 시작하세요.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "기부";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "%1$@ 님 대신 기부";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "%1$@ 님을 대신하여 Signal에 기부했습니다. 프로필을 통해 지지를 표현할 옵션이 제공됩니다.";
@@ -5084,7 +5084,7 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "내 스토리에 반응함";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@ 님의 스토리에 반응함";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@ 님의 스토리에 반응했습니다.";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · 스토리";
@@ -5111,40 +5111,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "모두 · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "내 메시지에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "내 메시지에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "내 앨범에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "내 앨범에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "내 음성에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "내 음성에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "내 연락처 공유에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "내 연락처 공유에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "내 파일에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "내 파일에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "내 GIF에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "내 GIF에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "내 사진에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "내 사진에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "내 스티커에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "내 스티커에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%1$@ 이모지로 반응함: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "'%2$@'에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "내 동영상에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "내 동영상에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "한 번 볼 수 있는 미디어에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "한 번만 볼 수 있는 내 미디어에 %1$@ 이모지로 반응했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "음성 메시지에 %1$@ 이모지로 반응함";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "내 음성 메시지에 %1$@ 이모지로 반응했습니다.";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "읽음";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "성";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "전화번호로 나를 찾을 수 있는 사람";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "이름";
@@ -5882,10 +5882,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "결제 비활성화";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "결제를 비활성화하기 전에 다른 지갑 주소로 자금을 이체하는 것이 좋습니다. 지금 자금을 이체하지 않기로 선택하면 결제를 다시 활성화하면 Signal에 연결된 지갑에 남아 있게 됩니다.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "결제를 비활성화하기 전에 다른 지갑 주소로 자금을 이체하는 것이 좋습니다. 지금 자금을 이체하지 않기로 선택할 경우 결제를 다시 활성화하면 자금이 Signal에 연결된 지갑에 남아 있게 됩니다.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "결제를 다시 활성화하기로 선택한 경우 잔액은 Signal에 연결된 지갑에 남아 있습니다.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "결제를 다시 활성화하기로 선택할 경우 잔액이 Signal에 연결된 지갑에 남아 있게 됩니다.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "전송하지 않고 비활성화하시겠습니까?";
@@ -6617,7 +6617,7 @@
 "STORIES_NO_VIEWS_YET" = "아직 아무도 조회 안 함";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "내 스토리를 볼 수 있는 사람들의 반응과 답장 허용";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "내 스토리를 볼 수 있는 사용자의 반응 및 답장 허용";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "답장 및 반응";
@@ -6743,7 +6743,7 @@
 "STORY_REPLY_BUTTON" = "답장";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "스토리에 반응함";
+"STORY_REPLY_REACTION" = "스토리에 반응했습니다.";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "%1$@ 님에게 비공개로 답장";

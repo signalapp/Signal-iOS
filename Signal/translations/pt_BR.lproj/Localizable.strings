@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Entendi";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Não foi possível entregar para você uma mensagem (texto, figurinha, reação, confirmação de leitura ou mídia) de %1$@ nessa conversa.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Não foi possível entregar para você uma mensagem (texto, figurinha, reação, confirmação de leitura ou mídia) de %1$@ nesse chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problema na entrega";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Não foi possível entregar para você uma mensagem (texto, figurinha, reação, confirmação de leitura ou mídia) de %1$@. Essa pessoa tentou enviar para você diretamente ou em um grupo.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Não foi possível entregar para você uma mensagem (texto, figurinha, reação, confirmação de leitura ou mídia) de %1$@. Essa pessoa tentou entrar em contato com você diretamente ou em um grupo.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Descartar";
@@ -119,10 +119,10 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Fotos";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Vídeos";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -443,7 +443,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Sua doação mensal recorrente foi cancelada. O selo de doação de %1$@ não está mais visível no seu perfil.\n\nPara continuar apoiando o Signal e reativar seu selo, atualize os detalhes de pagamento e faça outra doação.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Sua doação mensal recorrente foi cancelada automaticamente porque você ficou sem usar o Signal por muito tempo. Seu selo %1$@ não está mais visível no seu perfil.\n\nVocê ainda pode usar o Signal, mas para apoiar o aplicativo e reativar este selo, faça uma doação agora.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Sua doação mensal recorrente foi cancelada automaticamente porque você ficou sem usar o Signal por muito tempo. Seu selo %1$@ não está mais visível no seu perfil.\n\nVocê ainda pode usar o Signal, mas para apoiar o app e reativar este selo, faça uma doação agora.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Você recebeu um selo de doador do Signal! Exiba-o em seu perfil para mostrar o seu apoio.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Doação";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Doação em nome de %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Você fez uma doação para o Signal no nome de %1$@. Essa pessoa poderá escolher se quer mostrar que apoia o Signal no perfil.";
@@ -5114,7 +5114,7 @@
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagiu com %1$@ à sua mensagem";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagiu com %1$@ ao seu album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagiu com %1$@ ao seu álbum";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagiu com %1$@ ao seu áudio";
@@ -5135,13 +5135,13 @@
 "REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagiu com %1$@ à sua figurinha";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagiu com %1$@ à: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagiu com %1$@ para: \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagiu com %1$@ ao seu vídeo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagiu com %1$@ à sua mídia efêmera";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagiu com %1$@ à sua mídia temporária";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagiu com %1$@ à sua mensagem de voz";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Sobrenome";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Quem pode me encontrar pelo número?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Nome";
@@ -5882,10 +5882,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Desativar o módulo de Pagamentos";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "É recomendável que você transfira o seu saldo para outro endereço de carteira antes de desativar o módulo de pagamentos. Se você optar por não transferir o seu saldo agora, ele permanecerá em sua carteira vinculada à sua conta do Signal, mas estará suspenso para utilização até o momento em que você decida reativar o módulo de pagamentos.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "É recomendável que você transfira o seu saldo para outro endereço de carteira antes de desativar o módulo de pagamentos. Se você optar por não transferir o seu saldo agora, ele permanecerá na carteira vinculada à sua conta do Signal, mas estará suspenso para utilização até que você decida reativar o módulo de pagamentos.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Seu saldo permanecerá em sua carteira vinculada à sua conta do Signal, mas estará suspenso para utilização até o momento em que você decida reativar o módulo de pagamentos.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Seu saldo permanecerá na carteira vinculada à sua conta do Signal, mas estará suspenso para utilização até que você decida reativar o módulo de pagamentos.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Desativar sem transferir?";
@@ -6734,7 +6734,7 @@
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagiu com %1$@ ao seu story";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reagiu com %1$@ ao seu story";
+"STORY_REACTION_QUOTE_FORMAT" = "Reagiu com %1$@ a um story";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
 "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reagiu com %1$@ ao story de %2$@";

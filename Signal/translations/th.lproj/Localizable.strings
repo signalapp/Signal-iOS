@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "เข้าใจแล้ว";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "ข้อความ สติกเกอร์ การตอบสนอง การตอบรับเมื่ออ่าน หรือสื่อไม่สามารถส่งให้คุณได้จาก %1$@ ในแชตนี้";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "มีข้อความ สติกเกอร์ การแสดงความรู้สึก การแจ้งว่าอ่านแล้ว หรือสื่อจาก %1$@ ที่ไม่สามารถส่งถึงคุณได้ในแชทนี้";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "ปัญหาการจัดส่ง";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "ข้อความ สติกเกอร์ การตอบสนอง การตอบรับเมื่ออ่าน หรือสื่อไม่สามารถส่งให้คุณได้จาก %1$@ พวกเขาอาจลองส่งให้คุณโดยตรงหรือในกลุ่มแล้ว";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "มีข้อความ สติกเกอร์ การแสดงความรู้สึก การแจ้งว่าอ่านแล้ว หรือสื่อจาก %1$@ ที่ไม่สามารถส่งถึงคุณได้ ผู้ใช้คนนี้อาจลองส่งให้คุณโดยตรงหรือส่งเข้ากลุ่มแล้ว";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "ยกเลิก";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "เกี่ยวกับคำขอส่งข้อความ";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "รูปภาพ";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "วิดีโอ";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -440,7 +440,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "ยกเลิกการบริจาครายเดือนแล้ว";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "ยกเลิกการบริจาครายเดือนของคุณแล้ว โล่บริจาค%1$@จะไม่แสดงบนโปรไฟล์อีกต่อไป\n\nหากต้องการสนับสนุน Signal ต่อและเปิดใช้งานโล่อีกครั้ง โปรดอัปเดตรายละเอียดการชำระเงินและบริจาคอีกครั้ง";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "ยกเลิกการบริจาครายเดือนของคุณแล้ว โล่บริจาค %1$@ จะไม่แสดงบนโปรไฟล์คุณอีกต่อไป\n\nหากต้องการสนับสนุน Signal ต่อและเปิดใช้งานโล่อีกครั้ง โปรดอัปเดตรายละเอียดการชำระเงินและบริจาคอีกครั้ง";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "การบริจาครายเดือนของคุณถูกยกเลิกโดยอัตโนมัติ เนื่องจากไม่มีการเคลื่อนไหวเป็นเวลานาน โล่ %1$@ ของคุณจะไม่แสดงบนโปรไฟล์อีกต่อไป\n\nคุณสามารถใช้ Signal ต่อไปได้ แต่หากต้องการสนับสนุนแอปและเปิดใช้งานโล่อีกครั้ง สามารถร่วมบริจาคได้ตอนนี้";
@@ -914,7 +914,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "คุณสามารถเปิดการเข้าถึงรายชื่อผู้ติดต่อในการตั้งค่าของ iOS เพื่อดูว่าใครในรายชื่อผู้ติดต่อของคุณเป็นผู้ใช้ Signal";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "กำหนดค่าการตอบสนอง";
+"CONFIGURE_REACTIONS" = "กำหนดค่าการแสดงความรู้สึก";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "นี่จะเป็นการรีเซ็ตแอปพลิเคชันโดยการลบข้อความของคุณ แอปจะปิดลงหลังจากที่กระบวนการนี้เสร็จสิ้น";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "การบริจาค";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "การบริจาคในนามของ %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "คุณบริจาคให้ Signal ในนามของ %1$@ ผู้ใช้คนดังกล่าวสามารถเลือกได้ว่าจะแสดงการสนับสนุนครั้งนี้บนโปรไฟล์หรือไม่";
@@ -4076,7 +4076,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "ไม่มีกลุ่มอื่นร่วมกัน";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "หมายเหตุส่วนตัว";
+"NOTE_TO_SELF" = "บันทึกส่วนตัว";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "คุณอาจได้รับข้อความในขณะที่ %1$@ ของคุณกำลังเริ่มต้นใหม่";
@@ -5111,40 +5111,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "ทั้งหมด· %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "ตอบสนอง %1$@ ต่อข้อความของคุณ";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อข้อความของคุณ";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "ตอบสนอง %1$@ ต่ออัลบั้มของคุณ";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่ออัลบั้มของคุณ";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "ตอบสนอง %1$@ ต่อเสียงของคุณ";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อเสียงของคุณ";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "ตอบสนอง %1$@ ต่อรายชื่อผู้ใช้ที่คุณแบ่งปัน";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อผู้ติดต่อที่คุณแชร์";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "ตอบสนอง %1$@ ต่อแฟ้มของคุณ";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อไฟล์ของคุณ";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "ตอบสนอง %1$@ ต่อ GIF ของคุณ";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อ GIF ของคุณ";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "ตอบสนอง %1$@ ต่อรูปภาพของคุณ";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อรูปภาพของคุณ";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "ตอบสนอง %1$@ ต่อสติกเกอร์ของคุณ";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อสติกเกอร์ของคุณ";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "ตอบสนอง %1$@ ต่อ: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อ: \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "ตอบสนอง %1$@ ต่อวิดีโอของคุณ";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อวิดีโอของคุณ";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "ตอบสนอง %1$@ กับสื่อที่ดูได้ครั้งเดียวของคุณ";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อไฟล์สื่อแบบที่ดูได้ครั้งเดียวของคุณ";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "ตอบสนอง %1$@ ต่อข้อความเสียงของคุณ";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "แสดงความรู้สึก %1$@ ต่อข้อความเสียงของคุณ";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "อ่านแล้ว";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "นามสกุล";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "ใครบ้างที่สามารถค้นหาฉันด้วยหมายเลขโทรศัพท์ได้";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "ชื่อ";
@@ -5972,7 +5972,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "ใช้ Signal เพื่อส่งและรับ MobileCoin ซึ่งเป็นสกุลเงินดิจิทัลใหม่ที่เน้นความเป็นส่วนตัว เปิดใช้งานเพื่อเริ่มต้น";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "กลับมาใช้การชำระเงิน";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "เปิดใช้งานการชำระเงินอีกครั้ง";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "แนะนำการชำระเงิน (รุ่นทดสอบ)";
@@ -6731,13 +6731,13 @@
 "STORY_PRIVACY_TITLE" = "ความเป็นส่วนตัวของสตอรี่";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "แสดงความรู้สึกต่อสตอรี่ของคุณด้วย %1$@";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "แสดงความรู้สึก %1$@ ต่อสตอรี่ของคุณ";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "แสดงความรู้สึกต่อสตอรี่ด้วย %1$@";
+"STORY_REACTION_QUOTE_FORMAT" = "แสดงความรู้สึก %1$@ ต่อสตอรี่";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "แสดงความรู้สึกต่อสตอรี่ของ %2$@ ด้วย %1$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "แสดงความรู้สึก %1$@ ต่อสตอรี่ของ %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "ตอบกลับ";

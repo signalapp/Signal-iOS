@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Зрозуміло";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Повідомлення, наліпки, реакції, сповіщення про прочитання або медіа від %1$@ не вдалося доставити вам у цьому чаті.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Не вдалося доставити повідомлення, стікер, реакцію, повідомлення про прочитання або медіа від користувача %1$@ до вас у цьому чаті.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Проблема з доставленням";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Повідомлення, наліпки, реакції, сповіщення про прочитання або медіа від %1$@ не вдалося доставити. Можливо, їх надсилали безпосередньо вам, або в групі.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Не вдалося доставити повідомлення, стікер, реакцію, повідомлення про прочитання або медіа від користувача %1$@";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Відхилити";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Про запити на повідомлення";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Фото";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Відео";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -440,7 +440,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Щомісячний донат скасовано";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваш регулярний щомісячний донат було скасовано. %1$@ більше не відображається в профілі.\n\nЩоб і надалі підтримувати Signal і відновити значок, оновіть платіжні дані та задонатьте знову.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваш регулярний щомісячний донат було скасовано. %1$@ більше не відображається в профілі.\n\nЩоб і надалі підтримувати Signal і відновити значок, оновіть платіжні дані і задонатьте знову.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Регулярний щомісячний донат було автоматично скасовано, тому що ви занадто довго не були онлайн. Ваш значок %1$@ більше не відображається в профілі.\n\nВи можете продовжувати використовувати Signal. Щоб підтримати застосунок і відновити свій значок, ви можете задонатити.";
@@ -914,7 +914,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Щоб побачити, хто з ваших контактів користується Signal, надайте програмі доступ до контактів у налаштуваннях iOS.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Налаштувати реакції";
+"CONFIGURE_REACTIONS" = "Налаштування реакцій";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Ця дія відновить програму, видаливши ваші повідомлення. Після завершення процесу програма закриється.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Донат";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Донат від імені користувача %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Ви підтримали Signal донатом від імені користувача %1$@. Користувач зможе розказати іншим про підтримку, відобразивши в профілі значок.";
@@ -4076,7 +4076,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Інших спільних груп немає.";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Замітка для себе";
+"NOTE_TO_SELF" = "Примітка для себе";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Поки ваш %1$@ перезапускався, ви могли одержати повідомлення.";
@@ -5084,7 +5084,7 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Реакції на вашу сторі";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Реагує на сторі користувача %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Реакція на сторі користувача %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Сторі";
@@ -5111,40 +5111,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Всі · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Відреагував(-ла) %1$@ на ваше повідомлення";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Реакція на ваше повідомлення: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Відреагував(-ла) %1$@ на ваш альбом";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Реакція на ваш альбом: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Відреагував(-ла) %1$@ на ваше аудіо";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Реакція на ваше аудіо: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Відреагував(-ла) %1$@ на контакт, яким ви поділилися";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Реакція на поширення контакту: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Відреагував(-ла) %1$@ на ваш файл";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Реакція на ваш файл: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Відреагував(-ла) %1$@ на ваш GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Реакція на ваш GIF: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Відреагував(-ла) %1$@ на ваше фото";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Реакція на ваше фото: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Відреагував(-ла) %1$@ на ваш стікер";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Реакція на ваш стікер: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Відреагував(-ла) %1$@ на: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Реакція %1$@ на «%2$@»";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Відреагував(-ла) %1$@ на ваше відео";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Реакція на ваше відео: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Відреагував(-ла) %1$@ на ваше одноразове медіа";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Реакція на ваше одноразове медіа: %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Відреагував(-ла) %1$@ на ваше голосове повідомлення";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Реакція на ваше голосове повідомлення: %1$@";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Прочитано";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Прізвище";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Хто може знайти мене за номером телефону?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Ім'я";
@@ -5882,10 +5882,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Вимкнути платежі";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Ми рекомендуємо вам переказати кошти на інший гаманець перед вимкненням платежів. Якщо ви бажаєте залишити кошти, вони залишаться на рахунку вашого гаманця, прив'язаного до Signal, на той випадок, якщо ви знов увімкнете платежі.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Перш ніж відключити платежі, ми рекомендуємо перевести кошти в інший гаманець. Інакше кошти залишаться у вашому гаманці, прив'язаному до Signal, якщо ви знову активуєте платежі.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Баланс залишиться на рахунку, який прив'язано до Signal, якщо ви вирішите знов увімкнути платежі.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Баланс залишиться в гаманці, прив'язаному до Signal, якщо ви вирішите знов увімкнути платежі.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Вимкнути без переводу коштів?";
@@ -5972,7 +5972,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Використовуйте Signal для переказу та отримання MobileCoin — нової цифрової валюти, націленої на безпеку. Увімкніть, щоб почати.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Увімкнути платежі знов";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Активувати платежі знов";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Представляємо Платежі (Бета)";
@@ -6620,10 +6620,10 @@
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Дозвольте глядачам своїх сторіз реагувати і відповідати на них.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Відповіді та реакції";
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Відповіді і реакції";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Дозволити відповіді та реакції";
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Дозволити відповіді і реакції";
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "Відповіді";
@@ -6743,7 +6743,7 @@
 "STORY_REPLY_BUTTON" = "Відповісти";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Реагує на сторі";
+"STORY_REPLY_REACTION" = "Реакція на сторі";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Приватна відповідь користувачу %1$@";

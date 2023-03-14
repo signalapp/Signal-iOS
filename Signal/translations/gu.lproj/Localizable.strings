@@ -92,7 +92,7 @@
 "ALERT_DELIVERY_ISSUE_TITLE" = "ડિલિવરી મુદ્દો";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "આ ચેટમાં %1$@ તરફથી તમને મેસેજ, સ્ટિકર, પ્રતિક્રિયા, વાંચ્યાની રસીદ અથવા મીડિયા ડિલિવર થઈ શકશે નહીં. તેઓએ તમને સીધા જ, અથવા ગ્રુપમાં મોકલવાનો પ્રયાસ કર્યો હોઈ શકે છે.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "આ ચેટમાં %1$@ તરફથી તમને મેસેજ, સ્ટિકર, પ્રતિક્રિયા, વાંચી લીધાનું નિશાન અથવા મીડિયા મોકલી શકાયું નહીં. તેઓએ તમને સીધા જ, અથવા ગ્રૂપમાં મોકલવાનો પ્રયાસ કર્યો હોઈ શકે છે.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "કાઢી નાખો";
@@ -119,10 +119,10 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "ફોટા";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "વીડિયો";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -440,10 +440,10 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "માસિક દાન રદ કર્યું";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "તમારું પુનરાવર્તિત માસિક દાન રદ કરવામાં આવ્યું હતું. %1$@ દાનનું બૅજ હવે તમારી પ્રોફાઇલ પર દેખાશે નહીં.\n\nSignalને સપોર્ટ કરવાનું ચાલુ રાખવા અને તમારા બૅજને ફરીથી સક્રિય કરવા માટે, તમારી ચુકવણીની વિગતો અપડેટ કરો અને ફરીથી દાન કરો.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "તમારું પુનરાવર્તિત માસિક દાન રદ કરવામાં આવ્યું હતું. %1$@ દાનનું બૅજ હવે તમારી પ્રોફાઇલ પર દેખાશે નહીં.\n\nSignalને સપોર્ટ કરવાનું ચાલુ રાખવા અને તમારા બૅજને ફરીથી સક્રિય કરવા માટે, તમારા પેમેન્ટની વિગતો અપડેટ કરો અને ફરીથી દાન કરો.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "તમારું પુનરાવર્તિત માસિક દાન આપમેળે રદ થઈ ગયું હતું કારણ કે તમે ઘણા લાંબા સમયથી નિષ્ક્રિય હતા. તમારું %1$@ બૅજ હવે તમારી પ્રોફાઇલ પર દેખાશે નહીં.\n\nતમે Signalનો ઉપયોગ કરવાનું ચાલુ રાખી શકો છો પરંતુ એપ્લિકેશનને સહયોગ આપવા અને તમારા બૅજને ફરીથી સક્રિય કરવા, હમણાં જ દાન આપો.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "તમારું પુનરાવર્તિત માસિક દાન આપમેળે રદ થઈ ગયું હતું કારણ કે તમે ઘણા લાંબા સમયથી નિષ્ક્રિય હતા. તમારું %1$@ બૅજ હવે તમારી પ્રોફાઇલ પર દેખાશે નહીં.\n\nતમે Signalનો ઉપયોગ કરવાનું ચાલુ રાખી શકો છો પરંતુ ઍપને સહયોગ આપવા અને તમારા બૅજને ફરીથી સક્રિય કરવા, હમણાં જ દાન આપો.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "તમે Signal તરફથી દાતાનો બૅજ મેળવ્યો છે! તમારો સપોર્ટ બતાવવા માટે તેને તમારી પ્રોફાઇલ પર પ્રદર્શિત કરો.";
@@ -914,7 +914,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "તમારા કયા સંપર્કો Signal વપરાશકર્તાઓ છે તે જોવા માટે તમે iOS સેટિંગ્સ એપ્લિકેશનમાં સંપર્કોને એક્સેસ સક્ષમ કરી શકો છો.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "પ્રતિક્રિયાઓ કન્ફિગર કરો";
+"CONFIGURE_REACTIONS" = "પ્રતિક્રિયાઓ ગોઠવો";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "આ તમારા મેસેજને કાઢીને એપ્લિકેશનને રિસેટ કરશે. આ પ્રક્રિયા પૂર્ણ થયા બાદ એપ્લિકેશન બંધ થઈ જશે.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "દાન";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "%1$@ વતી દાન";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "તમે %1$@ વતી Signalને દાન આપ્યું છે. તેમની પ્રોફાઇલ પર તેમનો સપોર્ટ બતાવવાનો વિકલ્પ તેઓને આપવામાં આવશે.";
@@ -4076,7 +4076,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "અન્ય કોઈ ગ્રુપ કોમનમાં નથી.";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "પોતાના માટે નોટ";
+"NOTE_TO_SELF" = "પોતાના માટે નોંધ";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "જ્યારે તમારું %1$@ ફરી શરૂ થઈ રહ્યું હતું ત્યારે તમને મેસેજ પ્રાપ્ત થઈ શકે છે.";
@@ -5123,7 +5123,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "તમારા સંપર્ક શેર પર %1$@ પ્રતિક્રિયા આપી";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "તમારી ફાઇલ પર %1$@ પ્રતિક્રિયા આપી";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "તમારી ફાઈલ પર %1$@ પ્રતિક્રિયા આપી";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "તમારી GIF પર %1$@ પ્રતિક્રિયા આપી";
@@ -5132,16 +5132,16 @@
 "REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "તમારા ફોટો પર %1$@પ્રતિક્રિયા આપી";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "તમારા સ્ટીકર પર %1$@ પ્રતિક્રિયા આપી";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "તમારા સ્ટિકર પર %1$@ પ્રતિક્રિયા આપી";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%1$@ થી પ્રતિક્રિયા આપી: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "\"%2$@\" પર %1$@ પ્રતિક્રિયા આપી";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "તમારા વિડિયો પર %1$@ પ્રતિક્રિયા આપી";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "તમારા વીડિયો પર %1$@ પ્રતિક્રિયા આપી";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "તમારા એકવાર જુઓ મીડિયા પર %1$@ પ્રતિક્રિયા આપી";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "તમારા વ્યૂ-વન્સ મીડિયા પર %1$@ પ્રતિક્રિયા આપી";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "તમારા વૉઈસ મેસેજ પર %1$@ પ્રતિક્રિયા આપી";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "અટક";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "મને નંબરથી કોણ શોધી શકે?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "નામ";
@@ -5882,10 +5882,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "પેમેન્ટ્સને નિષ્ક્રિય કરો";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "એવી ભલામણ કરવામાં આવે છે કે તમે પેમેન્ટ્સને નિષ્ક્રિય કરતા પહેલા તમારા ફંડને બીજા વૉલેટ એડ્રેસ પર સ્થાનાંતરિત કરો. જો તમે હવે તમારા ફંડને સ્થાનાંતરિત ન કરવાનું પસંદ કરો છો, તો જો તમે પેમેન્ટ્સને ફરીથી સક્રિય કરો છો તો તે Signal સાથે લિંક થયેલા તમારા વૉલેટમાં રહેશે.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "એવી ભલામણ કરવામાં આવે છે કે તમે પેમેન્ટને નિષ્ક્રિય કરતાં પહેલાં તમારા ફંડને બીજા વૉલેટ એડ્રેસ પર ટ્રાન્સફર કરો. જો તમે હવે તમારા ફંડને ટ્રાન્સફર ન કરવાનું પસંદ કરો છો, તો જો તમે પેમેન્ટને ફરીથી સક્રિય કરો છો તો તે Signal સાથે લિંક થયેલા તમારા વૉલેટમાં રહેશે.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "જો તમે પેમેન્ટને ફરીથી સક્રિય કરવાનું પસંદ કરો છો તો તમારું બેલેન્સ Signal સાથે લિંક થયેલા તમારા વૉલેટમાં રહેશે.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "જો તમે પેમેન્ટને ફરીથી સક્રિય કરવાનું પસંદ કરો છો તો તમારું બેલેન્સ તમારા Signal સાથે લિંક થયેલા વૉલેટમાં રહેશે.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "સ્થાનાંતરિત કર્યા વિના નિષ્ક્રિય કરવું છે?";
@@ -5972,7 +5972,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "MobileCoin મોકલવા અને પ્રાપ્ત કરવા માટે Signal નો ઉપયોગ કરો, જે એક નવી ગોપનીયતા કેન્દ્રિત ડિજિટલ ચલણ છે. શરૂ કરવા માટે સક્રિય કરો.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "પેમેન્ટ્સને ફરીથી સક્રિય કરો";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "પેમેન્ટને ફરીથી સક્રિય કરો";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "પેમેન્ટ્સ (બીટા)નો પરિચય";
@@ -6731,13 +6731,13 @@
 "STORY_PRIVACY_TITLE" = "સ્ટોરીની પ્રાઇવસી";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "તમારી સ્ટોરી પર %1$@ એ પ્રતિક્રિયા આપી";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "તમારી સ્ટોરી પર %1$@ પ્રતિક્રિયા આપી";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "એક સ્ટોરી પર %1$@ એ પ્રતિક્રિયા આપી";
+"STORY_REACTION_QUOTE_FORMAT" = "એક સ્ટોરી પર %1$@ પ્રતિક્રિયા આપી";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ ની સ્ટોરી પર %1$@ પ્રતિક્રિયા આપી";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ની સ્ટોરી પર %1$@ પ્રતિક્રિયા આપી";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "જવાબ આપો";

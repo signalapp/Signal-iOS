@@ -119,10 +119,10 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Afbeeldingen";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Video's";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -443,7 +443,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Je maandelijkse donaties zijn stopgezet. De donatiebadge %1$@ is niet meer zichtbaar op je profiel.\n\nUpdate je betalingsgegevens en doneer opnieuw om Signal te blijven steunen en je badge te heractiveren.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Je maandelijkse donaties zijn automatisch stopgezet, omdat je te lang inactief bent geweest. Je %1$@-badge is niet langer zichtbaar op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar als je Signal wilt ondersteunen en je badge weer wilt weergeven dan kun je nu je donaties vernieuwen.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Je maandelijkse donaties zijn automatisch stopgezet, omdat je te lang inactief bent geweest. Je %1$@-badge is niet langer zichtbaar op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar als je Signal wilt ondersteunen en je badge weer wilt weergeven dan moet je je donaties vernieuwen.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Je hebt een donateursbadge van Signal verdiend! Toon hem op je profiel en laat zien dat je ons steunt.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donatie";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donatie namens %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Je hebt namens %1$@ een donatie gedaan aan Signal. Ze krijgen de mogelijkheid om hun steun op hun profiel te tonen.";
@@ -5141,7 +5141,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reageerde met %1$@ op je video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reageerde met %1$@ op je eenmaligeweergave-bericht";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reageerde met %1$@ op je eenmaligeweergave-media";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reageerde met %1$@ op je spraakbericht";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Achternaam";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Wie kan mij via mijn nummer vinden?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Voornaam";
@@ -5882,10 +5882,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Overschrijvingen uitschakelen";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Het is raadzaam om je krediet eerst naar een ander portemonnee-adres over te schrijven voor je overschrijvingen uitschakelt. Als je er niet voor kiest om eerst je krediet over te schrijven dan blijft je krediet bestaan op het portemonnee-adres dat je aan Signal hebt gekoppeld. Je kunt het dan weer gebruiken als je overschrijvingen opnieuw inschakelt.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Het is raadzaam om je saldo eerst naar een ander portemonnee-adres over te schrijven voordat je overschrijvingen uitzet. Als je er niet voor kiest om eerst je saldo over te schrijven, dan blijft je saldo in de portemonnee die je aan Signal hebt gekoppeld. Je kunt het dan weer gebruiken als je betalingen opnieuw aanzet.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Je krediet is wanneer je overschrijvingen inschakelt weer beschikbaar in de portemonnee die aan Signal is gekoppeld.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Je saldo is weer beschikbaar in de portemonnee die aan Signal is gekoppeld zodra je betalingen weer aanzet.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Zonder over te zetten uitschakelen?";
@@ -5972,7 +5972,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Je kunt Signal ook gebruiken om een nieuw privacygericht betaalmiddel genaamd MobileCoin te verzenden en ontvangen. Als je dat wilt, schakel dan overschrijvingen in.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Overschrijvingen opnieuw inschakelen";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Betalingen opnieuw aanzetten";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Signal introduceert overschrijvingen (Bèta)";

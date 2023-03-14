@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "فهمیدم";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "پیام، استیکر، واکنش، رسید خوانده شدن، یا رسانه از %1$@ در این گفتگو نمی تواند به شما تحویل داده شود.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "یک پیام، استیکر، واکنش، رسید خوانده شدن، یا رسانه از %1$@ در این گفتگو قابل تحویل به شما نبود.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "اشکال در تحویل";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "پیام، استیکر، واکنش، رسید خوانده شدن، یا رسانه از %1$@ نمی تواند به شما تحویل داده شود. او می تواند سعی کند که آن را به طور مستقیم، یا در یک گروه برای شما ارسال نماید.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "یک پیام، استیکر، واکنش، رسید خوانده شدن، یا رسانه از %1$@ قابل تحویل به شما نبود. ممکن است سعی کرده باشد که آن را به‌طور مستقیم یا در گروه برای شما ارسال کند.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "دور انداختن";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "دربارهٔ درخواست‌های تبادل پیام";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "گیف‌ها";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "تصاویر";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "ویدئو‌ها";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "گیف";
@@ -440,10 +440,10 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "کمک مالی ماهانه لغو شد";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "کمک مالی ماهانه مکرر شما لغو شد. %1$@ نشان کمک مالی دیگر در نمایه‌تان قابل مشاهده نیست.\n\nبرای ادامه حمایت از سیگنال و فعال کردن دوباره نشان خود، اطلاعات پرداخت خود را به‌روزرسانی و دوباره کمک مالی کنید.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "کمک مالی ماهانه مکرر شما لغو شده است. %1$@ نشان کمک مالی دیگر در نمایه‌تان قابل مشاهده نیست.\n\nبرای ادامه حمایت از سیگنال و فعال کردن دوباره نشان خود، اطلاعات پرداخت خود را به‌روزرسانی و دوباره کمک مالی کنید.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "کمک مالی مکرر ماهانه شما به‌طور خودکار لغو شد، چون برای مدت طولانی غیرفعال بودید. نشان %1$@ شما منقضی شده است و دیگر در نمایه‌تان قابل مشاهده نیست.\n\nمی‌توانید به استفاده از سیگنال ادامه دهید اما برای پشتیبانی از برنامه و فعال کردن دوباره نشان خود، همین حالا کمک مالی اهدا کنید.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "کمک مالی مکرر ماهانه شما به‌طور خودکار لغو شده است، چون برای مدت طولانی غیرفعال بودید. نشان %1$@ شما منقضی شده است و دیگر در نمایه‌تان قابل مشاهده نیست.\n\nمی‌توانید به استفاده از سیگنال ادامه دهید اما برای پشتیبانی از برنامه و فعال کردن دوباره نشان خود، همین حالا کمک مالی اهدا کنید.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "شما یک نشان اهداکننده از سیگنال به‌دست آورده‌اید! برای نشان دادن حمایت خود، آن را در نمایه‌تان نمایش دهید.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "اهدای کمک مالی";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "کمک مالی از طرف %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "شما از طرف %1$@ به سیگنال کمک مالی اهدا کرده‌اید. به او امکان داده می‌شود که حمایت خود را در نمایه‌اش نشان دهد.";
@@ -5111,40 +5111,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "همه .%1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%1$@ به پیام شما واکنش نشان داد";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "با %1$@ به پیام شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "%1$@ به آلبوم شما واکنش نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "با %1$@ به آلبوم شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "به صوت شما واکنش %1$@ نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "با %1$@ به فایل صوتی شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "به ارسال مخاطب شما واکنش %1$@ نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "با %1$@ به اشتراک‌گذاری مخاطب شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "به فایل شما واکنش %1$@نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "با %1$@ به فایل شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "به گیف شما واکنش %1$@ نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "با %1$@ به گیف شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "به عکس شما واکنش %1$@ نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "با %1$@ به عکس شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "به استیکر شما واکنش %1$@ نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "با %1$@ به استیکر شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "به \"%1$@\" واکنش %2$@ نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "با «%1$@» به %2$@ واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "به ویدئو شما واکنش %1$@ نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "با %1$@ به ویدئوی شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "به رسانه یکبار مصرف شما واکنش %1$@ نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "با %1$@ به رسانه یک‌بار مصرف شما واکنش نشان داد";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "به پیام صوتی شما واکنش %1$@ نشان داد";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "با %1$@ به پیام صوتی شما واکنش نشان داد";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "خوانده شد";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "نام خانوادگی";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "چه کسی می‌تواند من را با شماره‌تلفن پیدا کند؟";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "نام";
@@ -5882,10 +5882,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "غیرفعال کردن پرداخت‌ها";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "توصیه می‌شود که قبل از اینکه پرداخت‌ها را غیرفعال کنید، اعتبار خود را به نشانی کیف پول دیگری انتقال دهید. اگر اکنون تصمیم بگیرید که اعتبار‌های خود را حالا انتقال ندهید، آن‌ها در صورتی که پرداخت‌ها را دوباره فعال کنید، در کیف پول پیوند داده شده به سیگنال شما باقی خواهند ماند.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "توصیه می‌شود قبل از اینکه پرداخت‌ها را غیرفعال کنید، وجوه خود را به نشانی کیف پول دیگری انتقال دهید. اگر تصمیم بگیرید که وجوه خود را اکنون انتقال ندهید، چنانچه پرداخت‌ها را دوباره فعال کنید، این وجوه در کیف پول پیوندداده‌شده به سیگنال شما باقی خواهند ماند.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "مانده حساب شما در کیف پول شما که به سیگنال پیوند داده شده است باقی خواهند ماند، اگر تصمیم به فعال کردن دوبارهٔ پرداخت‌ها بگیرید.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "اگر تصمیم به فعال کردن دوباره پرداخت‌ها بگیرید، موجودی شما در کیف پول پیوندداده‌شده به سیگنال شما باقی خواهد ماند.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "غیرفعال کردن بدون انتقال";
@@ -5972,7 +5972,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "از سیگنال برای ارسال و دریافت MobileCoin، یک ارز دیجیتال متمرکز بر حریم خصوصی، استفاده کنید. برای آغاز فعال کنید.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "فعال کردن دوبارهٔ پرداخت‌ها";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "فعال کردن دوباره پرداخت‌ها";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "معرفی پرداخت‌ها (بتا)";

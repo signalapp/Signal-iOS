@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Rozumím";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Z tohoto chatu vám od %1$@ nemohla být doručena zpráva, nálepka, reakce, potvrzení o přečtení nebo médium.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "V této konverzaci vám nemohla být od uživatele %1$@ doručena zpráva, nálepka, reakce, potvrzení o přečtení nebo médium.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Potíže s doručením";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Zprávu, nálepku, reakci, potvrzení o přečtení nebo médium se nepodařilo od %1$@ doručit. Možná se vám ji pokusili poslat přímo nebo ve skupině.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Zpráva, nálepka, reakce, potvrzení o přečtení nebo média od uživatele %1$@ vám nemohla být doručena. Je možné, že se vám ji pokusil/a poslat přímo nebo ve skupině.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Zahodit";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O žádostech o zprávy";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIFy";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Fotografie";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Videa";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_BOOST_BODY" = "Platnost vašeho odznaku Boost vypršela a odznak již není na vašem profilu viditelný.\n\nSignál můžete používat i nadále, ale abyste podpořili technologii, která je vytvořena pro vás, zvažte, zda se nestát měsíčním dárcem.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Platnost vašeho odznaku Boost vypršela a odznak již není na vašem profilu viditelný.\n\nOdznak Boost si můžete znovu aktivovat na dalších 30 dní jednorázovým příspěvkem.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Platnost vašeho odznaku Boost vypršela a odznak již není na vašem profilu viditelný.\n\nJednorázovým příspěvkem si můžete odznak Boost znovu aktivovat na dalších 30 dní.";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Platnost odznaku vypršela";
@@ -440,10 +440,10 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Měsíční příspěvek byl zrušen";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Váš pravidelný měsíční příspěvek byl zrušen. %1$@ Váš odznak se již na vašem profilu nezobrazuje.\n\nPokud chcete Signal dál podporovat a znovu aktivovat svůj odznak, aktualizujte své platební údaje a znovu nám přispějte.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Váš pravidelný měsíční příspěvek byl zrušen. %1$@ odznak dárcovství se již na vašem profilu nezobrazuje.\n\nPokud chcete i nadále podporovat Signal a opět aktivovat svůj odznak, aktualizujte své platební údaje a znovu nám přispějte.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Váš pravidelný měsíční příspěvek byl automaticky zrušen, protože jste byli příliš dlouho neaktivní. Váš odznak %1$@ se již na vašem profilu nezobrazuje.\n\nAplikaci Signal můžete používat i nadále, ale pokud ji chcete podpořit a znovu aktivovat svůj odznak, znovu nám přispějte.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Váš pravidelný měsíční příspěvek byl automaticky zrušen, protože jste byli příliš dlouho neaktivní. Váš odznak %1$@ se již na vašem profilu nezobrazuje.\n\nAplikaci Signal můžete používat i nadále, ale pokud ji chcete podpořit a opět aktivovat svůj odznak, znovu nám přispějte.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Získali jste odznak dárce od služby Signal! Zobrazte si ho na profilu a ukažte svou podporu.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Příspěvek";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Příspěvek jménem uživatele %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Přispěl/a jste na službu Signal jménem uživatele %1$@. Bude mít možnost ukázat svoji podporu na svém profilu.";
@@ -5111,40 +5111,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Všechny %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Na vaši zprávu zareagoval(a) %1$@";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagoval/a %1$@ na vaši zprávu";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagoval(a) %1$@ na vaše album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagoval/a %1$@ na vaše album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagoval(a) %1$@na vaše audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagoval/a %1$@ na vaše audio";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagoval(a) %1$@na vaše sdílení kontaktu";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagoval/a %1$@ na vaše sdílení kontaktu";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagoval(a) %1$@ na váš soubor";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagoval/a %1$@ na váš soubor";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagoval(a) %1$@ na váš GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagoval/a %1$@ na váš GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagoval(a) %1$@ na vaši fotku";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagoval/a %1$@ na vaši fotografii";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagoval(a) %1$@ na vaši nálepku";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagoval/a %1$@ na vaši nálepku";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reaguje %1$@ na „%2$@“";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagoval/a %1$@ na: „%2$@“";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagoval(a) %1$@ na vaše video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagoval/a %1$@ na vaše video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagoval(a) %1$@ na vaši jednorázovou zprávu";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagoval/a %1$@ na vaši zprávu pro jednorázové zobrazení";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagoval(a) %1$@ na vaši hlasovou zprávu";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagoval/a %1$@ na vaši hlasovou zprávu";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Přečteno";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Příjmení";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Kdo mě může najít podle čísla?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Křestní jméno";
@@ -5882,10 +5882,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deaktivovat platby";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Před deaktivací plateb doporučujeme převést prostředky na jinou adresu peněženky. Pokud se rozhodnete nepřevést své prostředky nyní, zůstanou ve vaší peněžence propojené se Signal, pokud znovu aktivujete platby.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Před deaktivací plateb doporučujeme převést prostředky na jinou adresu peněženky. Pokud se rozhodnete své prostředky nyní nepřevádět, zůstanou ve vaší peněžence propojené se službou Signal, pokud platby znovu aktivujete.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Pokud se rozhodnete znovu aktivovat platby, váš zůstatek zůstane v peněžence propojené se Signal.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Pokud se rozhodnete platby znovu aktivovat, zůstanou vaše prostředky v peněžence propojené se službou Signal.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deaktivovat bez převodu?";
@@ -6617,13 +6617,13 @@
 "STORIES_NO_VIEWS_YET" = "Zatím žádná zobrazení";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Umožněte lidem, kteří si mohou váš příběh zobrazit, reagovat a odpovídat.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Umožněte lidem, kteří si mohou zobrazit váš příběh, reagovat a odpovídat.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Odpovědi a reakce";
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Odpovědi a reakce";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Povolit odpovědi a reakce";
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Povolit odpovědi a reakce";
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "Odpovědi";

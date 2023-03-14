@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "У реду";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Порука, налепница, реакција, потврда о читању или медиј од %1$@ није вам достављен.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Порука, налепница, реакција, потврда о читању или садржај који шаље %1$@ није вам достављен у овом ћаскању.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Проблем у испоруци";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Порука, налепница, реакција, потврда о читању или медиј од %1$@ није могло да се испоручи. Можда су то покушали да вам пошаљу директно или у групи.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Порука, налепница, реакција, потврда о читању или садржај који шаље %1$@ није вам достављен у овом ћаскању. Овај корисник је можда покушао да вам пошаље директно или у групи.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Одбаци";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O захтевима за разговор";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF-ови";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Слике";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Видео снимци";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_BOOST_BODY" = "Ваша значка подршке је истекла и више није видљива на вашем профилу.\n\nИ даље можете да користите Signal, али да бисте подржали технологију која је направљена за вас, размотрите опцију да постанете месечни донатор.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Ваша значка подршке је истекла и више није видљива на вашем профилу.\n\nМожете поново активирати значку подршке на још 30 дана ако дате једнократну донацију.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Значка подршке вам је истекла и више није видљива на вашем профилу.\n\nМожете поново активирати значку подршке на још 30 дана ако дате једнократну донацију.";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Значка је истекла";
@@ -443,7 +443,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Периодична месечна донација је отказана. Значка донације %1$@ више није видљива на вашем профилу.\n\nДа бисте наставили да подржавате Signal и да бисте поново активирали значку, ажурирајте податке о плаћању и поново донирајте.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Ваша периодична месечна донација је аутоматски отказана јер сте предуго били неактивни. Значка „%1$@“ више није видљива на вашем профилу.\n\nЈош увек можете да користите Signal, али да бисте подржали апликацију и поново активирали значку, донирајте сада.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Ваша периодична месечна донација је аутоматски отказана јер сте предуго били неактивни. Значка %1$@ више није видљива на вашем профилу.\n\nЈош увек можете да користите Signal, али да бисте подржали апликацију и поново активирали значку, донирајте сада.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Добили сте значку донатора од Signal-а! Прикажите је на профилу да истакнете своју подршку.";
@@ -914,7 +914,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Да бисте видели ко од ваших контаката користи Signal, у iOS апликацији за подешавања дозволите Signal-у приступ телефонском именику.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Подесити реакције";
+"CONFIGURE_REACTIONS" = "Прилагодите реакције";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Ресетовањем апликације се бришу све поруке. Апликација ће бити затворена при завршетку поступка.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Донација";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Донација у име корисника (%1$@)";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Дали сте донацију Signal-у у име корисника (%1$@). Имаће могућност да прикаже подршку на свом профилу.";
@@ -4076,7 +4076,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Нема других заједничких група";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Моје белешке";
+"NOTE_TO_SELF" = "Моја белешка";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Могуће је да сте примили поруке док се %1$@ рестартовао.";
@@ -5081,10 +5081,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Оригинална порука није пронађена.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Реаговано на причу";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Реаговао/ла је на вашу причу";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Реаговано на причу од %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Реаговао/ла је на причу корисника (%1$@)";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Прича";
@@ -5111,40 +5111,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Све · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Реакција %1$@ на вашу поруку";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Реаговао/ла је %1$@ на вашу поруку";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Реакција %1$@ на ваш албум";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Реаговао/ла је %1$@ на ваш албум";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Реакција %1$@ на ваш звучни запис";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Реаговао/ла је %1$@ на ваш аудио";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Реакција %1$@ на ваш подељени контакт";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Реаговао/ла је %1$@ на ваш подељени контакт";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Dobili ste reakciju %1$@ na vaš fajl";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Реаговао/ла је %1$@ на ваш фајл";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Реакција %1$@ на ваш GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Реаговао/ла је %1$@ на ваш GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Реакција %1$@ на вашу слику";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Реаговао/ла је %1$@ на вашу фотографију";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Реакција %1$@ на вашу налепницу";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Реаговао/ла је %1$@ на вашу налепницу";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Реакција %1$@ на : „%2$@”";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Реаговао/ла је %1$@ на: „%2$@“";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Реакција %1$@ на ваш видео запис";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Реаговао/ла је %1$@ на ваш видео";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Реакција %1$@ на ваш једнократни медиј";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Реаговао/ла је %1$@ на ваш једнократни садржај";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Реакција %1$@ на вашу гласовну поруку";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Реаговао/ла је %1$@ на вашу гласовну поруку";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Прочитано";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Презиме";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Ко може да ме пронађе по броју телефона?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Име";
@@ -5882,10 +5882,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Деактивирати уплате";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Препоручује се да преносите средства на другу адресу новчаника пре деактивирања плаћања. Ако одлучите да не преносите своја средства сада, они ће остати у вашем новчанику везаном за Signal ако поново активирате уплате.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Препоручујемо вам да пренесете средства на другу адресу новчаника пре деактивирања плаћања. Ако не пренесете средства сада, остаће у вашем новчанику повезаном за Signal ако поново активирате плаћања.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Ваш салдо ће остати у вашем новчанику везаном за Signal ако поново активирате уплате.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Ваша средства ће остати у вашем новчанику повезаном за Signal ако поново активирате плаћања.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Деактивирање без преноса података?";
@@ -5972,7 +5972,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Користите Signal за слање и примање MobileCoin, нова дигитална валута фокусирана на приватност. Активирајте за почетак.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Поново активирати уплате";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Поново активирајте плаћања";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Увођење уплате (Beta)";
@@ -6617,13 +6617,13 @@
 "STORIES_NO_VIEWS_YET" = "Без прегледа";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Dozvolite ljudima koji mogu da vide vašu priču da reaguju i odgovore na nju.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Дозволите људима који могу да виде вашу причу да реагују и одговоре на њу.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Odgovori i reakcije";
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Одговори и реакције";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Dozvolite odgovore i reakcije";
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Активирај одговоре и реакције";
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "Одговора";
@@ -6731,19 +6731,19 @@
 "STORY_PRIVACY_TITLE" = "Privatnost priča";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Реаговао/ла је %1$@ на вашу причу";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %1$@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "Реаговао/ла је %1$@ на причу";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Реаговао/ла је %1$@ на причу корисника (%2$@)";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Одговори";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Реаговано на причу";
+"STORY_REPLY_REACTION" = "Реаговао/ла је на причу";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Пошаљите приватан одговор кориснику (%1$@)";

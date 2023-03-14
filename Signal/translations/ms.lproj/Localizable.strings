@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Faham";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Mesej, pelekat, reaksi, resit baca atau media tidak dapat disampaikan kepada anda daripada %1$@ dalam sembang ini.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Mesej, pelekat, reaksi, resit baca atau media tidak dapat dihantar kepada anda daripada %1$@ dalam sembang ini.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Isu penghantaran";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Mesej, pelekat, reaksi, resit baca atau media tidak dapat disampaikan kepada anda daripada %1$@. Mereka mungkin telah cuba menghantarnya kepada anda secara langsung, atau dalam kumpulan.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Mesej, pelekat, reaksi, resit baca atau media tidak dapat dihantar kepada anda daripada %1$@. Mereka mungkin telah cuba menghantarnya kepada anda secara terus, atau dalam kumpulan.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Buang";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Mengenai Permintaan Mesej";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Foto";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Video";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -443,7 +443,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Derma bulanan berulang anda telah dibatalkan. %1$@ lencana anda tidak lagi kelihatan pada profil anda.\n\nUntuk terus menyokong Signal dan mengaktifkan semula lencana anda, kemas kini butiran pembayaran anda dan derma semula.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Derma bulanan berulang anda telah dibatalkan secara automatik kerana anda tidak aktif terlalu lama. Lencana %1$@ anda tidak lagi kelihatan pada profil anda.\n\nAnda boleh terus menggunakan Signal, namun untuk menyokong aplikasi dan mengaktifkan semula lencana anda, dermalah sekarang.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Derma bulanan berulang anda telah dibatalkan secara automatik kerana anda tidak aktif terlalu lama. Lencana %1$@ anda tidak lagi kelihatan pada profil anda.\n\nAnda boleh terus menggunakan Signal, namun untuk menyokong aplikasi dan mengaktifkan semula lencana anda, sila derma sekarang.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Anda telah memperoleh lencana penderma daripada Signal! Paparkan pada profil anda untuk menunjukkan sokongan anda.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Derma";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Derma bagi pihak %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Anda telah membuat derma kepada Signal bagi pihak %1$@. Mereka akan diberi pilihan untuk menunjukkan sokongan mereka pada profil mereka.";
@@ -5081,10 +5081,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Mesej asal tidak dijumpai.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Menghantar reaksi kepada cerita anda";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Memberi reaksi kepada cerita anda";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Menghantar reaksi kepada cerita %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Memberi reaksi kepada cerita %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Cerita";
@@ -5258,7 +5258,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Nama Terakhir";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Siapa yang boleh cari saya melalui nombor?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Nama Pertama";
@@ -5882,10 +5882,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Nyahaktifkan Pembayaran";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Sebaiknya pindahkan dana anda ke alamat dompet lain sebelum menyahaktifkan pembayaran. Sekiranya anda memilih untuk tidak memindahkan dana anda sekarang, dana anda akan kekal dalam dompet anda yang dipautkan dengan Signal jika anda mengaktifkan semula pembayaran.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Sebaiknya pindahkan dana anda ke alamat dompet lain sebelum menyahaktifkan pembayaran. Sekiranya anda memilih untuk tidak memindahkan dana anda sekarang, dana anda akan kekal dalam dompet anda yang dipautkan ke Signal jika anda mengaktifkan semula pembayaran.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Baki anda akan kekal dalam dompet anda yang dipautkan dengan Signal jika anda memilih untuk mengaktifkan semula pembayaran.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Baki anda akan kekal dalam dompet anda yang dipautkan ke Signal jika anda memilih untuk mengaktifkan semula pembayaran.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Nyahaktifkan Tanpa Pemindahan?";
@@ -6617,7 +6617,7 @@
 "STORIES_NO_VIEWS_YET" = "Tiada tontonan lagi";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Biar orang yang boleh melihat cerita anda menghantar reaksi dan membalas.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Biar orang yang boleh melihat cerita anda memberi reaksi dan membalas.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Balasan & Reaksi";
@@ -6731,19 +6731,19 @@
 "STORY_PRIVACY_TITLE" = "Privasi Cerita";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Menghantar reaksi %1$@ kepada cerita anda";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Memberi reaksi %1$@ kepada cerita anda";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Menghantar reaksi %1$@ kepada cerita";
+"STORY_REACTION_QUOTE_FORMAT" = "Memberi reaksi %1$@ kepada cerita";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Menghantar reaksi %1$@ kepada cerita %2$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Memberi reaksi %1$@ kepada cerita %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Balas";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Telah menghantar reaksi kepada cerita";
+"STORY_REPLY_REACTION" = "Telah memberi reaksi kepada cerita";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Balas secara peribadi kepada %1$@";

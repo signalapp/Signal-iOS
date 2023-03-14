@@ -1,9 +1,9 @@
-• Share more things from more places. The share extension now has better support for the text format that various popular news apps share by default. We also squashed a bug that sometimes caused your first attempt to fail when sharing something.
+• Compartilhe mais conteúdo de mais lugares. A extensão de compartilhamento está com um suporte melhor para o formato de texto que vários apps de notícias populares compartilham como padrão. Também corrigimos um bug que emitia uma mensagem de erro quando você tentava compartilhar alguma coisa pela primeira vez.
 
-• Speaking of sharing, another bug was making it difficult to share text content from other apps like Apple Notes as Signal Stories. Text has arguably been an important component of some of the best stories throughout history, so we're excited to close the chapter on this particular problem.
+• Por falar em compartilhamento, outro bug estava dificultando o compartilhamento de conteúdo de texto de outros apps, por exemplo o Apple Notes, como Stories do Signal. Sem dúvida, o texto tem sido um componente importante de alguns dos melhores stories ao longo da história. Por isso, estamos felizes por encerrar a discussão sobre esse problema específico.
 
 • Com as novas melhorias de animação nos visualizadores de mídia e avatar, você pode voltar e ver a foto ampliada facilmente.
 
 • Corrigimos alguns problemas de layout que, às vezes, faziam botões aparecerem no lugar errado nos novos iPhones, presos e isolados na Ilha Dinâmica da Apple.
 
-• This update also includes support for Cantonese and Uyghur.
+• Esta atualização também inclui suporte para cantonês e uigur.
