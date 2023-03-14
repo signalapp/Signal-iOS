@@ -811,7 +811,7 @@
 		661278112996BE0C00A1D5A1 /* TestSchedulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278102996BE0C00A1D5A1 /* TestSchedulers.swift */; };
 		661278132996BE3400A1D5A1 /* TestScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278122996BE3400A1D5A1 /* TestScheduler.swift */; };
 		66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */; };
-		66138FB6298326C7002E0CFE /* KeyBackupServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB5298326C7002E0CFE /* KeyBackupServiceProtocol.swift */; };
+		66138FB6298326C7002E0CFE /* KeyBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB5298326C7002E0CFE /* KeyBackupService.swift */; };
 		661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */; };
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
@@ -3261,7 +3261,7 @@
 		661278122996BE3400A1D5A1 /* TestScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScheduler.swift; sourceTree = "<group>"; };
 		66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceTestShims.swift; sourceTree = "<group>"; };
 		66138FAE2982F4C4002E0CFE /* MockDBV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDBV2.swift; sourceTree = "<group>"; };
-		66138FB5298326C7002E0CFE /* KeyBackupServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceProtocol.swift; sourceTree = "<group>"; };
+		66138FB5298326C7002E0CFE /* KeyBackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupService.swift; sourceTree = "<group>"; };
 		661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenStoryHeaderCell.swift; sourceTree = "<group>"; };
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
@@ -6479,9 +6479,9 @@
 				66A1DF6D298C2AFE00C4E4A7 /* KBSAuthCredential.swift */,
 				6673FF6F2978C40300F96CFD /* KBSAuthCredentialStorage.swift */,
 				6673FF712979B33800F96CFD /* KBSAuthCredentialStorageImpl.swift */,
+				66138FB5298326C7002E0CFE /* KeyBackupService.swift */,
 				F9C5CB1B289453B200548EEE /* KeyBackupServiceImpl.swift */,
 				6698FC1B2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift */,
-				66138FB5298326C7002E0CFE /* KeyBackupServiceProtocol.swift */,
 				6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */,
 			);
 			path = KeyBackupService;
@@ -11680,10 +11680,10 @@
 				6691E7EC2996E62B0032A68A /* KBSAuthCredentialStorageMock.swift in Sources */,
 				F9C5CC93289453B300548EEE /* KeyBackup.pb.swift in Sources */,
 				F9C5CC9B289453B300548EEE /* KeyBackupProto.swift in Sources */,
+				66138FB6298326C7002E0CFE /* KeyBackupService.swift in Sources */,
 				F9C5CDED289453B400548EEE /* KeyBackupServiceImpl.swift in Sources */,
 				6691E7F72996EAD70032A68A /* KeyBackupServiceMock.swift in Sources */,
 				6698FC1C2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift in Sources */,
-				66138FB6298326C7002E0CFE /* KeyBackupServiceProtocol.swift in Sources */,
 				6673FF81297B3A5000F96CFD /* KeyBackupServiceShims.swift in Sources */,
 				6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */,
 				6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */,
