@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import CoreTelephony
 
 public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
@@ -44,7 +45,15 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
                 guard let restoredSession, restoredSession.e164 == e164 else {
                     // We only keep one session at a time, wipe any if we change the e164.
                     db.write { self.clearPersistedSession($0) }
-                    return self.makeBeginSessionRequest(e164: e164, apnsToken: apnsToken)
+
+                    let (mcc, mnc) = Self.getMccMnc()
+
+                    return self.makeBeginSessionRequest(
+                        e164: e164,
+                        apnsToken: apnsToken,
+                        mcc: mcc,
+                        mnc: mnc
+                    )
                         .map(on: schedulers.sync) { [weak self] in
                             self?.persistSessionFromResponse($0) ?? $0
                         }
@@ -138,6 +147,22 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         return response
     }
 
+    // MARK: - MCC/MNC
+
+    private static func getMccMnc() -> (mcc: String?, mnc: String?) {
+        guard
+            let providers = CTTelephonyNetworkInfo().serviceSubscriberCellularProviders,
+            let provider = providers.values.first
+        else {
+            Logger.info("Unable to get telephony info for mcc/mnc.")
+            return (nil, nil)
+        }
+        if providers.values.count > 1 {
+            Logger.info("Multiple telephony providers found; using the first for mcc/mnc.")
+        }
+        return (provider.mobileCountryCode, provider.mobileNetworkCode)
+    }
+
     // MARK: - Requests
 
     // TODO: make this and other methods resilient to transient network failures by adding
@@ -169,8 +194,18 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     // MARK: Begin Session
 
-    private func makeBeginSessionRequest(e164: String, apnsToken: String?) -> Guarantee<Registration.BeginSessionResponse> {
-        let request = RegistrationRequestFactory.beginSessionRequest(e164: e164, pushToken: apnsToken)
+    private func makeBeginSessionRequest(
+        e164: String,
+        apnsToken: String?,
+        mcc: String?,
+        mnc: String?
+    ) -> Guarantee<Registration.BeginSessionResponse> {
+        let request = RegistrationRequestFactory.beginSessionRequest(
+            e164: e164,
+            pushToken: apnsToken,
+            mcc: mcc,
+            mnc: mnc
+        )
         return makeRequest(
             request,
             e164: e164,

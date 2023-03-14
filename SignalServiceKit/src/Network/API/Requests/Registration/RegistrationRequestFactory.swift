@@ -12,7 +12,9 @@ public enum RegistrationRequestFactory {
     /// See `RegistrationServiceResponses.BeginSessionResponseCodes` for possible responses.
     public static func beginSessionRequest(
         e164: String,
-        pushToken: String?
+        pushToken: String?,
+        mcc: String?,
+        mnc: String?
     ) -> TSRequest {
         owsAssertDebug(!e164.isEmpty)
 
@@ -30,6 +32,12 @@ public enum RegistrationRequestFactory {
             owsAssertDebug(!pushToken.isEmpty)
             parameters["pushToken"] = pushToken
             parameters["pushTokenType"] = "apn"
+        }
+        if let mcc {
+            parameters["mcc"] = mcc
+        }
+        if let mnc {
+            parameters["mnc"] = mnc
         }
 
         let result = TSRequest(url: url, method: "POST", parameters: parameters)

@@ -169,7 +169,9 @@ public class RegistrationSessionManagerTest: XCTestCase {
         let apnsToken = "1234"
         let beginSessionRequest = RegistrationRequestFactory.beginSessionRequest(
             e164: e164,
-            pushToken: apnsToken
+            pushToken: apnsToken,
+            mcc: nil,
+            mnc: nil
         )
 
         // Without any setup, we should try and begin a new session.
