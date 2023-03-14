@@ -391,7 +391,6 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.createInitialSchema) { _ in
             owsFail("This migration should have already been run by the last YapDB migration.")
-            return .success(())
         }
 
         migrator.registerMigration(.signalAccount_add_contactAvatars) { transaction in
