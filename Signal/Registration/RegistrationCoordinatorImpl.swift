@@ -15,7 +15,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         public let dateProvider: DateProvider
         public let db: DB
         public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
-        public let kbs: KeyBackupServiceProtocol
+        public let kbs: KeyBackupService
         public let kbsAuthCredentialStore: KBSAuthCredentialStorage
         public let keyValueStoreFactory: KeyValueStoreFactory
         public let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager

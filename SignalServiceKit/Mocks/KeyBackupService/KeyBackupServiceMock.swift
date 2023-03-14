@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class KeyBackupServiceMock: KeyBackupServiceProtocol {
+public class KeyBackupServiceMock: KeyBackupService {
 
     public init() {}
 

@@ -8,7 +8,7 @@ import LibSignalClient
 import SignalArgon2
 import SignalCoreKit
 
-public class KeyBackupService: KeyBackupServiceProtocol {
+public class KeyBackupServiceImpl: KeyBackupService {
 
     // MARK: - Init
 
@@ -95,7 +95,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 return
             }
 
-            guard let pinData = KeyBackupService.normalizePin(pin).data(using: .utf8) else {
+            guard let pinData = KeyBackupServiceImpl.normalizePin(pin).data(using: .utf8) else {
                 owsFailDebug("failed to determine pin data")
                 return
             }
@@ -586,7 +586,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     func deriveEncryptionKeyAndAccessKey(pin: String, backupId: Data) throws -> (encryptionKey: Data, accessKey: Data) {
         assertIsOnBackgroundQueue()
 
-        guard let pinData = KeyBackupService.normalizePin(pin).data(using: .utf8) else { throw KBS.KBSError.assertion }
+        guard let pinData = KeyBackupServiceImpl.normalizePin(pin).data(using: .utf8) else { throw KBS.KBSError.assertion }
         guard backupId.count == 32 else { throw KBS.KBSError.assertion }
 
         let (rawHash, _) = try Argon2.hash(
@@ -606,7 +606,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     func deriveEncodedVerificationString(pin: String, salt: Data = Cryptography.generateRandomBytes(16)) throws -> String {
         assertIsOnBackgroundQueue()
 
-        guard let pinData = KeyBackupService.normalizePin(pin).data(using: .utf8) else { throw KBS.KBSError.assertion }
+        guard let pinData = KeyBackupServiceImpl.normalizePin(pin).data(using: .utf8) else { throw KBS.KBSError.assertion }
         guard salt.count == 16 else { throw KBS.KBSError.assertion }
 
         let (_, encodedString) = try Argon2.hash(

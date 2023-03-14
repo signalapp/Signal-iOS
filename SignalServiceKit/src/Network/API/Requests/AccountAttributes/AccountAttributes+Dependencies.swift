@@ -9,7 +9,7 @@ extension AccountAttributes {
 
     public static func generateForPrimaryDevice(
         fromDependencies dependencies: Dependencies,
-        keyBackupService: KeyBackupServiceProtocol,
+        keyBackupService: KeyBackupService,
         transaction: SDSAnyWriteTransaction
     ) -> AccountAttributes {
         owsAssertDebug(dependencies.tsAccountManager.isPrimaryDevice)
@@ -24,7 +24,7 @@ extension AccountAttributes {
 
     public static func deprecated_generateForInitialRegistration(
         fromDependencies dependencies: Dependencies,
-        keyBackupService: KeyBackupServiceProtocol,
+        keyBackupService: KeyBackupService,
         transaction: SDSAnyWriteTransaction
     ) -> AccountAttributes {
         owsAssertDebug(dependencies.tsAccountManager.isPrimaryDevice)
@@ -39,7 +39,7 @@ extension AccountAttributes {
 
     public static func generateForSecondaryDevice(
         fromDependencies dependencies: Dependencies,
-        keyBackupService: KeyBackupServiceProtocol,
+        keyBackupService: KeyBackupService,
         encryptedDeviceName: Data,
         transaction: SDSAnyWriteTransaction
     ) -> AccountAttributes {
@@ -54,7 +54,7 @@ extension AccountAttributes {
 
     private static func generate(
         fromDependencies dependencies: Dependencies,
-        keyBackupService: KeyBackupServiceProtocol,
+        keyBackupService: KeyBackupService,
         encryptedDeviceName encryptedDeviceNameRaw: Data?,
         isSecondaryDeviceRegistration: Bool,
         transaction: SDSAnyWriteTransaction

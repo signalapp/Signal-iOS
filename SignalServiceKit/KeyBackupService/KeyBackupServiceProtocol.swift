@@ -18,7 +18,7 @@ public enum KBS {
         case alphanumeric = 2
 
         public init(forPin pin: String) {
-            let normalizedPin = KeyBackupService.normalizePin(pin)
+            let normalizedPin = KeyBackupServiceImpl.normalizePin(pin)
             self = normalizedPin.digitsOnly() == normalizedPin ? .numeric : .alphanumeric
         }
     }
@@ -94,7 +94,7 @@ public enum KBS {
     }
 }
 
-public protocol KeyBackupServiceProtocol {
+public protocol KeyBackupService {
 
     /// Indicates whether or not we have a master key locally
     var hasMasterKey: Bool { get }
@@ -180,7 +180,7 @@ public protocol KeyBackupServiceProtocol {
     func isKeyAvailable(_ key: KBS.DerivedKey) -> Bool
 }
 
-extension KeyBackupServiceProtocol {
+extension KeyBackupService {
 
     public func restoreKeysAndBackup(with pin: String) -> Promise<Void> {
         restoreKeysAndBackup(with: pin, and: nil)

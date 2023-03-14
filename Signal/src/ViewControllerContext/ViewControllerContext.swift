@@ -18,7 +18,7 @@ public class ViewControllerContext {
 
     public let db: DB
 
-    public let keyBackupService: KeyBackupServiceProtocol
+    public let keyBackupService: KeyBackupService
     public let schedulers: Schedulers
 
     public let usernameLookupManager: UsernameLookupManager
@@ -26,7 +26,7 @@ public class ViewControllerContext {
 
     public init(
         db: DB,
-        keyBackupService: KeyBackupServiceProtocol,
+        keyBackupService: KeyBackupService,
         schedulers: Schedulers,
         usernameLookupManager: UsernameLookupManager,
         usernameEducationManager: UsernameEducationManager

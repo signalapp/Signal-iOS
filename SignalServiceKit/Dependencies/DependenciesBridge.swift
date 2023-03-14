@@ -42,7 +42,7 @@ public class DependenciesBridge {
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
 
     public let kbsCredentialStorage: KBSAuthCredentialStorage
-    public let keyBackupService: KeyBackupServiceProtocol
+    public let keyBackupService: KeyBackupService
 
     public let registrationSessionManager: RegistrationSessionManager
 
@@ -102,7 +102,7 @@ public class DependenciesBridge {
         self.keyValueStoreFactory = SDSKeyValueStoreFactory()
 
         self.kbsCredentialStorage = KBSAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
-        self.keyBackupService = KeyBackupService(
+        self.keyBackupService = KeyBackupServiceImpl(
             accountManager: KBS.Wrappers.TSAccountManager(tsAccountManager),
             appContext: CurrentAppContext(),
             credentialStorage: kbsCredentialStorage,

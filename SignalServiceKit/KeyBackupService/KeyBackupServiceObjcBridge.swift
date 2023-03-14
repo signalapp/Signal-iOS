@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// Just a container for simple static helper methods on KeyBackupService
+/// Just a container for simple static helper methods on KeyBackupServiceImpl
 /// that can be shared with other classes (incl. objc classes).
 @objc
 public final class KeyBackupServiceObjcBridge: NSObject {
@@ -14,7 +14,7 @@ public final class KeyBackupServiceObjcBridge: NSObject {
 
     @objc
     public static func normalizePin(_ pin: String) -> String {
-        return KeyBackupService.normalizePin(pin)
+        return KeyBackupServiceImpl.normalizePin(pin)
     }
 
     @objc

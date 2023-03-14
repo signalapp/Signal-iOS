@@ -10,17 +10,17 @@ import Foundation
 
 extension KBS {
     public enum TestMocks {
-        public typealias TSAccountManager = _KeyBackupService_TSAccountManagerTestMock
-        public typealias StorageServiceManager = _KeyBackupService_StorageServiceManagerTestMock
-        public typealias OWS2FAManager = _KeyBackupService_OWS2FAManagerTestMock
-        public typealias RemoteAttestation = _KeyBackupService_RemoteAttestationMock
-        public typealias URLSession = _KeyBackupService_OWSURLSessionMock
+        public typealias TSAccountManager = _KeyBackupServiceImpl_TSAccountManagerTestMock
+        public typealias StorageServiceManager = _KeyBackupServiceImpl_StorageServiceManagerTestMock
+        public typealias OWS2FAManager = _KeyBackupServiceImpl_OWS2FAManagerTestMock
+        public typealias RemoteAttestation = _KeyBackupServiceImpl_RemoteAttestationMock
+        public typealias URLSession = _KeyBackupServiceImpl_OWSURLSessionMock
     }
 }
 
 // MARK: - TSAccountManager
 
-public class _KeyBackupService_TSAccountManagerTestMock: KBS.Shims.TSAccountManager {
+public class _KeyBackupServiceImpl_TSAccountManagerTestMock: KBS.Shims.TSAccountManager {
 
     public init() {}
 
@@ -39,7 +39,7 @@ public class _KeyBackupService_TSAccountManagerTestMock: KBS.Shims.TSAccountMana
 
 // MARK: - StorageServiceManager
 
-public class _KeyBackupService_StorageServiceManagerTestMock: KBS.Shims.StorageServiceManager {
+public class _KeyBackupServiceImpl_StorageServiceManagerTestMock: KBS.Shims.StorageServiceManager {
 
     public init() {}
 
@@ -50,7 +50,7 @@ public class _KeyBackupService_StorageServiceManagerTestMock: KBS.Shims.StorageS
 
 // MARK: - OWS2FAManager
 
-public class _KeyBackupService_OWS2FAManagerTestMock: KBS.Shims.OWS2FAManager {
+public class _KeyBackupServiceImpl_OWS2FAManagerTestMock: KBS.Shims.OWS2FAManager {
     public init() {}
 
     public var pinCode: String!
@@ -64,7 +64,7 @@ public class _KeyBackupService_OWS2FAManagerTestMock: KBS.Shims.OWS2FAManager {
 
 // MARK: - RemoteAttestation
 
-public class _KeyBackupService_RemoteAttestationMock: KBS.Shims.RemoteAttestation {
+public class _KeyBackupServiceImpl_RemoteAttestationMock: KBS.Shims.RemoteAttestation {
     public init() {}
 
     var authMethodInputs = [RemoteAttestation.KeyBackupAuthMethod]()
@@ -84,7 +84,7 @@ public class _KeyBackupService_RemoteAttestationMock: KBS.Shims.RemoteAttestatio
 
 // MARK: - OWSURLSession
 
-public class _KeyBackupService_OWSURLSessionMock: BaseOWSURLSessionMock {
+public class _KeyBackupServiceImpl_OWSURLSessionMock: BaseOWSURLSessionMock {
 
     public var promiseForTSRequestBlock: ((TSRequest) -> Promise<HTTPResponse>)?
 

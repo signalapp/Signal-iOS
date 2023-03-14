@@ -186,7 +186,7 @@ extension OWS2FAManager {
     }
 
     public static func isWeakPin(_ pin: String) -> Bool {
-        let normalizedPin = KeyBackupService.normalizePin(pin)
+        let normalizedPin = KeyBackupServiceImpl.normalizePin(pin)
 
         guard pin.count >= kMin2FAv2PinLength else { return true }
 

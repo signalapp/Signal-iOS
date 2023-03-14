@@ -11,7 +11,7 @@ import XCTest
 class KeyBackupServiceTests: XCTestCase {
 
     private var db: MockDB!
-    private var keyBackupService: KeyBackupService!
+    private var keyBackupService: KeyBackupServiceImpl!
 
     private var credentialStorage: KBSAuthCredentialStorageMock!
     private var remoteAttestation: KBS.TestMocks.RemoteAttestation!
@@ -28,7 +28,7 @@ class KeyBackupServiceTests: XCTestCase {
         self.scheduler = TestScheduler()
         // Start the scheduler so everything executes synchronously.
         self.scheduler.start()
-        self.keyBackupService = KeyBackupService(
+        self.keyBackupService = KeyBackupServiceImpl(
             accountManager: KBS.TestMocks.TSAccountManager(),
             appContext: TestAppContext(),
             credentialStorage: credentialStorage,
@@ -115,7 +115,7 @@ class KeyBackupServiceTests: XCTestCase {
         let vectors = try decoder.decode([Vector].self, from: jsonData)
 
         for vector in vectors {
-            let normalizedPin = KeyBackupService.normalizePin(vector.pin)
+            let normalizedPin = KeyBackupServiceImpl.normalizePin(vector.pin)
             XCTAssertEqual(vector.bytes, normalizedPin.data(using: .utf8)!, vector.name)
         }
     }
@@ -180,7 +180,7 @@ class KeyBackupServiceTests: XCTestCase {
                 }
             }
 
-            func storeKey(keyBackupService: KeyBackupService, transaction: DBWriteTransaction) {
+            func storeKey(keyBackupService: KeyBackupServiceImpl, transaction: DBWriteTransaction) {
                 keyBackupService.clearKeys(transaction: transaction)
                 switch mode {
                 case .local:
