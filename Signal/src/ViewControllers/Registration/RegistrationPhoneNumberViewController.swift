@@ -301,12 +301,13 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
                 comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view."
             )
-        case .invalidNumber:
+        case let .invalidNumber(invalidE164):
             validationWarningLabel.alpha = 1
             validationWarningLabel.text = OWSLocalizedString(
                 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
                 comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view."
             )
+            showInvalidPhoneNumberAlertIfNecessary(for: invalidE164)
         case let .rateLimited(expiration):
             validationWarningLabel.alpha = expiration > now ? 1 : 0
             let rateLimitFormat = OWSLocalizedString(
@@ -332,6 +333,26 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         // devices, but we aren't sure. In any case, forcing a relayout fixes the bug and seems to
         // keep the safe area insets from changing.
         view.layoutSubviews()
+    }
+
+    private var previousInvalidE164: String?
+
+    private func showInvalidPhoneNumberAlertIfNecessary(for e164: String) {
+        let shouldShowAlert = e164 != previousInvalidE164
+        if shouldShowAlert {
+            OWSActionSheets.showActionSheet(
+                title: OWSLocalizedString(
+                    "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
+                    comment: "Title of alert indicating that users needs to enter a valid phone number to register."
+                ),
+                message: OWSLocalizedString(
+                    "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE",
+                    comment: "Message of alert indicating that users needs to enter a valid phone number to register."
+                )
+            )
+        }
+
+        previousInvalidE164 = e164
     }
 
     // MARK: Events
