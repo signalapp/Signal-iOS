@@ -24,10 +24,10 @@ private func BenchAsync(title: String, logInProduction: Bool = false, block: (@e
     InstrumentsMonitor.measure(category: "runtime", parent: "BenchAsync", name: title) {
         let startTime = CACurrentMediaTime()
         block {
-            let timeElapsed = CACurrentMediaTime() - startTime
-            let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-            let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
             if !DebugFlags.reduceLogChatter {
+                let timeElapsed = CACurrentMediaTime() - startTime
+                let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+                let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
                 if logInProduction {
                     Logger.info(logMessage)
                 } else {
@@ -59,9 +59,9 @@ public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval 
         let timeElapsed = CACurrentMediaTime() - startTime
 
         if timeElapsed > intervalLimit {
-            let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-            let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
             if !DebugFlags.reduceLogChatter {
+                let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+                let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
                 if logInProduction {
                     Logger.info(logMessage)
                 } else {
