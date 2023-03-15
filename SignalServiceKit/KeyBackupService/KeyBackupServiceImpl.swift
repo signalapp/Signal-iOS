@@ -66,7 +66,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
 
     /// Indicates whether or not we have a master key stored in KBS
     public var hasBackedUpMasterKey: Bool {
-        return db.read(block: hasBackedUpMasterKey(transaction:))
+        return getOrLoadStateWithSneakyTransaction().isMasterKeyBackedUp
     }
 
     public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
