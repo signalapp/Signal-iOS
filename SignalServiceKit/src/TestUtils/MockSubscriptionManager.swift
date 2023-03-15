@@ -6,7 +6,7 @@
 import Foundation
 
 @objc
-public class MockSubscriptionManager: NSObject, SubscriptionManagerProtocol {
+public class MockSubscriptionManager: NSObject, SubscriptionManager {
     public func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
     }
 

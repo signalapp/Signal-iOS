@@ -620,7 +620,7 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
             break;
         case SSKProtoSyncMessageFetchLatestTypeSubscriptionStatus:
 
-            [SubscriptionManager performDeviceSubscriptionExpiryUpdate];
+            [SubscriptionManagerImpl performDeviceSubscriptionExpiryUpdate];
             break;
     }
 }

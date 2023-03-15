@@ -47,7 +47,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(subscriptionStateDidChange),
-            name: SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
+            name: SubscriptionManagerImpl.SubscriptionJobQueueDidFinishJobNotification,
             object: nil
         )
 

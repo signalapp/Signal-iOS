@@ -82,7 +82,7 @@ extension DonateViewController {
                 approvalParams: approvalParams
             )
         }.then(on: DispatchQueue.main) { (paymentIntentId: String) -> Promise<Void> in
-            SubscriptionManager.createAndRedeemBoostReceipt(
+            SubscriptionManagerImpl.createAndRedeemBoostReceipt(
                 for: paymentIntentId,
                 withPaymentProcessor: .braintree,
                 amount: amount

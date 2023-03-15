@@ -268,7 +268,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
     private func getReceiptCredentialPresentation(
         paymentIntentId: String
     ) throws -> Promise<ReceiptCredentialPresentation> {
-        try SubscriptionManager.requestBoostReceiptCredentialPresentation(
+        try SubscriptionManagerImpl.requestBoostReceiptCredentialPresentation(
             for: paymentIntentId,
             context: receiptCredentialRequestContext,
             request: receiptCredentialRequest,

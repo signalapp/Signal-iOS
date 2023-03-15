@@ -95,10 +95,10 @@ public extension ChatListViewController {
             mostRecentSubscriptionPaymentMethod,
             hasCurrentSubscription
         ) = databaseStorage.read { transaction in (
-            SubscriptionManager.mostRecentlyExpiredBadgeID(transaction: transaction),
-            SubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction),
-            SubscriptionManager.getMostRecentSubscriptionBadgeChargeFailure(transaction: transaction),
-            SubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
+            SubscriptionManagerImpl.mostRecentlyExpiredBadgeID(transaction: transaction),
+            SubscriptionManagerImpl.showExpirySheetOnHomeScreenKey(transaction: transaction),
+            SubscriptionManagerImpl.getMostRecentSubscriptionBadgeChargeFailure(transaction: transaction),
+            SubscriptionManagerImpl.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
             subscriptionManager.hasCurrentSubscription(transaction: transaction)
         )}
 
@@ -116,7 +116,7 @@ public extension ChatListViewController {
 
         if BoostBadgeIds.contains(expiredBadgeID) {
             firstly {
-                SubscriptionManager.getBoostBadge()
+                SubscriptionManagerImpl.getBoostBadge()
             }.done(on: DispatchQueue.global()) { boostBadge in
                 firstly {
                     self.profileManager.badgeStore.populateAssetsOnBadge(boostBadge)
@@ -131,7 +131,7 @@ public extension ChatListViewController {
                     self.present(badgeSheet, animated: true)
                     self.hasShownBadgeExpiration = true
                     self.databaseStorage.write { transaction in
-                        SubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
+                        SubscriptionManagerImpl.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
                     }
                 }.catch { error in
                     owsFailDebug("Failed to fetch boost badge assets for expiry \(error)")
@@ -141,8 +141,8 @@ public extension ChatListViewController {
             }
         } else if SubscriptionBadgeIds.contains(expiredBadgeID) {
             // Fetch current subscriptions, required to populate badge assets
-            firstly { () -> Promise<SubscriptionManager.DonationConfiguration> in
-                SubscriptionManager.fetchDonationConfiguration()
+            firstly { () -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
+                SubscriptionManagerImpl.fetchDonationConfiguration()
             }.map(on: DispatchQueue.global()) { donationConfiguration -> [SubscriptionLevel] in
                 donationConfiguration.subscription.levels
             }.done(on: DispatchQueue.global()) { (subscriptions: [SubscriptionLevel]) in
@@ -173,7 +173,7 @@ public extension ChatListViewController {
                     self.present(badgeSheet, animated: true)
                     self.hasShownBadgeExpiration = true
                     self.databaseStorage.write { transaction in
-                        SubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
+                        SubscriptionManagerImpl.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
                     }
                 }.catch { error in
                     owsFailDebug("Failed to fetch subscription badge assets for expiry \(error)")

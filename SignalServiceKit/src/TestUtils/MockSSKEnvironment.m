@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
     PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
     id webSocketFactory = [WebSocketFactoryMock new];
     ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
-    id<SubscriptionManagerProtocol> subscriptionManager = [MockSubscriptionManager new];
+    id<SubscriptionManager> subscriptionManager = [MockSubscriptionManager new];
     SystemStoryManagerMock *systemStoryManager = [SystemStoryManagerMock new];
     RemoteMegaphoneFetcher *remoteMegaphoneFetcher = [RemoteMegaphoneFetcher new];
     SSKJobQueues *sskJobQueues = [SSKJobQueues new];

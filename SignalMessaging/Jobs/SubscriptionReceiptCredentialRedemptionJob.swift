@@ -182,7 +182,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
         if isBoost {
             getMoneyPromise = Promise.value(())
         } else {
-            getMoneyPromise = SubscriptionManager.getCurrentSubscriptionStatus(for: subscriberID).done { subscription in
+            getMoneyPromise = SubscriptionManagerImpl.getCurrentSubscriptionStatus(for: subscriberID).done { subscription in
                 guard let subscription = subscription else {
                     throw OWSAssertionError("Missing subscription")
                 }
@@ -206,7 +206,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
             return firstly(on: DispatchQueue.global()) { () -> Promise<ReceiptCredentialPresentation> in
                 if self.isBoost {
                     Logger.info("[Donations] Durable job requesting receipt for boost")
-                    return try SubscriptionManager.requestBoostReceiptCredentialPresentation(
+                    return try SubscriptionManagerImpl.requestBoostReceiptCredentialPresentation(
                         for: self.boostPaymentIntentID,
                         context: self.receiptCredentialRequestContext,
                         request: self.receiptCredentialRequest,
@@ -215,7 +215,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                     )
                 } else {
                     Logger.info("[Donations] Durable job requesting receipt for subscription")
-                    return try SubscriptionManager.requestReceiptCredentialPresentation(
+                    return try SubscriptionManagerImpl.requestReceiptCredentialPresentation(
                         for: self.subscriberID,
                            context: self.receiptCredentialRequestContext,
                            request: self.receiptCredentialRequest,
@@ -236,7 +236,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
         getMoneyPromise.then(on: DispatchQueue.global()) {
             getReceiptCredentialPresentationPromise.then(on: DispatchQueue.global()) {
-                SubscriptionManager.redeemReceiptCredentialPresentation(receiptCredentialPresentation: $0)
+                SubscriptionManagerImpl.redeemReceiptCredentialPresentation(receiptCredentialPresentation: $0)
             }
         }.done(on: DispatchQueue.global()) {
             Logger.info("[Donations] Successfully redeemed receipt credential presentation")
@@ -250,7 +250,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
         Logger.info("[Donations] Redemption job succeeded")
         self.databaseStorage.write { transaction in
             if !self.isBoost {
-                SubscriptionManager.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
+                SubscriptionManagerImpl.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
             }
 
             if let amount = amount {
@@ -266,7 +266,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
 
             NotificationCenter.default.postNotificationNameAsync(
-                SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
+                SubscriptionManagerImpl.SubscriptionJobQueueDidFinishJobNotification,
                 object: nil
             )
         }
@@ -289,7 +289,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
         Logger.error("[Donations] failed to redeem receipt credential with error: \(error.userErrorDescription)")
         self.databaseStorage.write { transaction in
             NotificationCenter.default.postNotificationNameAsync(
-                SubscriptionManager.SubscriptionJobQueueDidFailJobNotification,
+                SubscriptionManagerImpl.SubscriptionJobQueueDidFailJobNotification,
                 object: nil
             )
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)

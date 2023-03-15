@@ -26,7 +26,7 @@ extension CreditOrDebitCardDonationViewController {
                 if let existingSubscriberId, priorSubscriptionLevel != nil {
                     Logger.info("[Donations] Cancelling existing subscription")
 
-                    return SubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                    return SubscriptionManagerImpl.cancelSubscription(for: existingSubscriberId)
                 } else {
                     Logger.info("[Donations] No existing subscription to cancel")
 
@@ -35,7 +35,7 @@ extension CreditOrDebitCardDonationViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Data> in
                 Logger.info("[Donations] Preparing new monthly subscription with card")
 
-                return SubscriptionManager.prepareNewSubscription(currencyCode: currencyCode)
+                return SubscriptionManagerImpl.prepareNewSubscription(currencyCode: currencyCode)
             }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in
                 firstly { () -> Promise<String> in
                     Logger.info("[Donations] Creating Signal payment method for new monthly subscription with card")
@@ -58,7 +58,7 @@ extension CreditOrDebitCardDonationViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { (subscriberId, paymentId) -> Promise<Data> in
                 Logger.info("[Donations] Finalizing new subscription for card donation")
 
-                return SubscriptionManager.finalizeNewSubscription(
+                return SubscriptionManagerImpl.finalizeNewSubscription(
                     forSubscriberId: subscriberId,
                     withPaymentId: paymentId,
                     usingPaymentMethod: .creditOrDebitCard,

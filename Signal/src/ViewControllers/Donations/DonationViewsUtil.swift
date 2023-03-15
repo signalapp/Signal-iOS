@@ -208,8 +208,8 @@ public final class DonationViewsUtil {
     }
 
     public static func loadSubscriptionLevels(badgeStore: BadgeStore) -> Promise<[SubscriptionLevel]> {
-        firstly { () -> Promise<SubscriptionManager.DonationConfiguration> in
-            SubscriptionManager.fetchDonationConfiguration()
+        firstly { () -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
+            SubscriptionManagerImpl.fetchDonationConfiguration()
         }.map { donationConfiguration -> [SubscriptionLevel] in
             donationConfiguration.subscription.levels
         }.then { (fetchedSubscriptions: [SubscriptionLevel]) -> Promise<[SubscriptionLevel]> in
@@ -220,7 +220,7 @@ public final class DonationViewsUtil {
 
     public static func loadCurrentSubscription(subscriberID: Data?) -> Promise<Subscription?> {
         if let subscriberID = subscriberID {
-            return SubscriptionManager.getCurrentSubscriptionStatus(for: subscriberID)
+            return SubscriptionManagerImpl.getCurrentSubscriptionStatus(for: subscriberID)
         } else {
             return Promise.value(nil)
         }
@@ -342,7 +342,7 @@ public final class DonationViewsUtil {
         }
 
         return SDSDatabaseStorage.shared.read { transaction in
-            SubscriptionManager.lastReceiptRedemptionFailed(transaction: transaction)
+            SubscriptionManagerImpl.lastReceiptRedemptionFailed(transaction: transaction)
         }
     }
 

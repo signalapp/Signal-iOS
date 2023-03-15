@@ -205,7 +205,7 @@ public extension Notification.Name {
 }
 
 @objc
-public class SubscriptionManager: NSObject {
+public class SubscriptionManagerImpl: NSObject {
 
     @objc
     public override init() {
@@ -850,7 +850,7 @@ public class SubscriptionManager: NSObject {
     }
 }
 
-extension SubscriptionManager {
+extension SubscriptionManagerImpl {
 
     public static func getSubscriberID(transaction: SDSAnyReadTransaction) -> Data? {
         guard let subscriberID = subscriptionKVS.getObject(
@@ -1070,7 +1070,7 @@ public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryable
     public var isRetryableProvider: Bool { true }
 }
 
-extension SubscriptionManager {
+extension SubscriptionManagerImpl {
     public class func createAndRedeemBoostReceipt(
         for intentId: String,
         withPaymentProcessor paymentProcessor: PaymentProcessor,
@@ -1226,7 +1226,7 @@ extension SubscriptionManager {
 }
 
 @objc
-extension SubscriptionManager: SubscriptionManagerProtocol {
+extension SubscriptionManagerImpl: SubscriptionManager {
     public func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
         Logger.info("Reconciling badge state.")
 

@@ -939,7 +939,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let profileManager: OWSProfileManager
     private let receiptManager: OWSReceiptManager
     private let storageServiceManager: StorageServiceManagerProtocol
-    private let subscriptionManager: SubscriptionManagerProtocol
+    private let subscriptionManager: SubscriptionManager
     private let systemStoryManager: SystemStoryManagerProtocol
     private let tsAccountManager: TSAccountManager
     private let typingIndicators: TypingIndicators
@@ -957,7 +957,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         profileManager: OWSProfileManager,
         receiptManager: OWSReceiptManager,
         storageServiceManager: StorageServiceManagerProtocol,
-        subscriptionManager: SubscriptionManagerProtocol,
+        subscriptionManager: SubscriptionManager,
         systemStoryManager: SystemStoryManagerProtocol,
         tsAccountManager: TSAccountManager,
         typingIndicators: TypingIndicators,
@@ -1084,8 +1084,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             builder.setPreferredReactionEmoji(customEmojiSet)
         }
 
-        if let subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction),
-           let subscriberCurrencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
+        if let subscriberID = SubscriptionManagerImpl.getSubscriberID(transaction: transaction),
+           let subscriberCurrencyCode = SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: transaction) {
             builder.setSubscriberID(subscriberID)
             builder.setSubscriberCurrencyCode(subscriberCurrencyCode)
         }
@@ -1285,12 +1285,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         }
 
         if let subscriberIDData = record.subscriberID, let subscriberCurrencyCode = record.subscriberCurrencyCode {
-            if subscriberIDData != SubscriptionManager.getSubscriberID(transaction: transaction) {
-                SubscriptionManager.setSubscriberID(subscriberIDData, transaction: transaction)
+            if subscriberIDData != SubscriptionManagerImpl.getSubscriberID(transaction: transaction) {
+                SubscriptionManagerImpl.setSubscriberID(subscriberIDData, transaction: transaction)
             }
 
-            if subscriberCurrencyCode != SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
-                SubscriptionManager.setSubscriberCurrencyCode(subscriberCurrencyCode, transaction: transaction)
+            if subscriberCurrencyCode != SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: transaction) {
+                SubscriptionManagerImpl.setSubscriberCurrencyCode(subscriberCurrencyCode, transaction: transaction)
             }
         }
 

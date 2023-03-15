@@ -13,7 +13,7 @@ extension DonationViewsUtil {
         newSubscriptionLevel: SubscriptionLevel,
         priorSubscriptionLevel: SubscriptionLevel?
     ) {
-        SubscriptionManager.requestAndRedeemReceiptsIfNecessary(
+        SubscriptionManagerImpl.requestAndRedeemReceiptsIfNecessary(
             for: subscriberID,
             usingPaymentProcessor: paymentProcessor,
             subscriptionLevel: newSubscriptionLevel.level,

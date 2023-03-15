@@ -32,7 +32,7 @@ extension DonationViewsUtil {
         DispatchQueue.sharedUserInitiated.async {
             observers.append(
                 nc.addObserver(
-                    forName: SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
+                    forName: SubscriptionManagerImpl.SubscriptionJobQueueDidFinishJobNotification,
                     object: nil,
                     queue: nil
                 ) { _ in
@@ -42,7 +42,7 @@ extension DonationViewsUtil {
 
             observers.append(
                 nc.addObserver(
-                    forName: SubscriptionManager.SubscriptionJobQueueDidFailJobNotification,
+                    forName: SubscriptionManagerImpl.SubscriptionJobQueueDidFailJobNotification,
                     object: nil,
                     queue: nil
                 ) { _ in

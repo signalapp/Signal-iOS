@@ -97,7 +97,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didLongPressAvatar(sender: UIGestureRecognizer) {
-        let subscriberID = databaseStorage.read { SubscriptionManager.getSubscriberID(transaction: $0) }
+        let subscriberID = databaseStorage.read { SubscriptionManagerImpl.getSubscriberID(transaction: $0) }
         guard let subscriberID = subscriberID else { return }
 
         UIPasteboard.general.string = subscriberID.asBase64Url
@@ -130,13 +130,13 @@ class DonationSettingsViewController: OWSTableViewController2 {
             isSubscriptionRedemptionPendingInDatabase,
             hasAnyDonationReceipts
         ) = databaseStorage.read { transaction -> ValuesFromDatabase in
-            let subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
+            let subscriberID = SubscriptionManagerImpl.getSubscriberID(transaction: transaction)
             return (
                 subscriberID: subscriberID,
                 isSubscriptionRedemptionPendingInDatabase: (
                     subscriberID != nil && (
-                        SubscriptionManager.subscriptionJobQueue.hasPendingJobs(transaction: transaction) ||
-                        SubscriptionManager.subscriptionJobQueue.runningOperations.get().count != 0
+                        SubscriptionManagerImpl.subscriptionJobQueue.hasPendingJobs(transaction: transaction) ||
+                        SubscriptionManagerImpl.subscriptionJobQueue.runningOperations.get().count != 0
                     )
                 ),
                 hasAnyDonationReceipts: DonationReceiptFinder.hasAny(transaction: transaction)
@@ -202,8 +202,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
         let willEverShowBadges = hasAnyDonationReceipts
         guard willEverShowBadges else { return Guarantee.value(ProfileBadgeLookup()) }
 
-        return firstly { () -> Promise<SubscriptionManager.DonationConfiguration> in
-            SubscriptionManager.fetchDonationConfiguration()
+        return firstly { () -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
+            SubscriptionManagerImpl.fetchDonationConfiguration()
         }.map { donationConfiguration -> ProfileBadgeLookup in
             ProfileBadgeLookup(
                 boostBadge: donationConfiguration.boost.badge,
@@ -507,7 +507,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     public static func shouldShowExpiredGiftBadgeSheetWithSneakyTransaction() -> Bool {
         let expiredGiftBadgeID = self.databaseStorage.read { transaction in
-            SubscriptionManager.mostRecentlyExpiredGiftBadgeID(transaction: transaction)
+            SubscriptionManagerImpl.mostRecentlyExpiredGiftBadgeID(transaction: transaction)
         }
         guard let expiredGiftBadgeID = expiredGiftBadgeID, GiftBadgeIds.contains(expiredGiftBadgeID) else {
             return false
@@ -521,7 +521,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
         Logger.info("[Gifting] Preparing to show gift badge expiration sheet...")
         firstly {
-            SubscriptionManager.getCachedBadge(level: .giftBadge(.signalGift)).fetchIfNeeded()
+            SubscriptionManagerImpl.getCachedBadge(level: .giftBadge(.signalGift)).fetchIfNeeded()
         }.done { [weak self] cachedValue in
             guard let self = self else { return }
             guard UIApplication.shared.frontmostViewController == self else { return }
@@ -529,7 +529,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 // The server confirmed this badge doesn't exist. This shouldn't happen,
                 // but clear the flag so that we don't keep trying.
                 Logger.warn("[Gifting] Clearing expired badge ID because the server said it didn't exist")
-                SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
+                SubscriptionManagerImpl.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
                 return
             }
 
@@ -542,7 +542,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             self.present(sheet, animated: true)
 
             // We've shown it, so don't show it again.
-            SubscriptionManager.clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction()
+            SubscriptionManagerImpl.clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction()
         }.cauterize()
     }
 }

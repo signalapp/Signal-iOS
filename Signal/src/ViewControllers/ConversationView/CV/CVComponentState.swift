@@ -1186,7 +1186,7 @@ fileprivate extension CVComponentState.Builder {
         self.giftBadge = GiftBadge(
             messageUniqueId: messageUniqueId,
             otherUserShortName: threadViewModel.shortName ?? threadViewModel.name,
-            cachedBadge: SubscriptionManager.getCachedBadge(level: .giftBadge(level)),
+            cachedBadge: SubscriptionManagerImpl.getCachedBadge(level: .giftBadge(level)),
             expirationDate: expirationDate,
             redemptionState: giftBadge.redemptionState
         )

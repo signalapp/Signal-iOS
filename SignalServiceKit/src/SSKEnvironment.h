@@ -62,7 +62,7 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol RemoteConfigManager;
 @protocol SSKReachabilityManager;
 @protocol StorageServiceManagerProtocol;
-@protocol SubscriptionManagerProtocol;
+@protocol SubscriptionManager;
 @protocol SyncManagerProtocol;
 @protocol SystemStoryManagerProtocolObjc;
 @protocol VersionedProfiles;
@@ -126,7 +126,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
                        webSocketFactory:(id)webSocketFactory
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
-                    subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
+                    subscriptionManager:(id<SubscriptionManager>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
                  remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
                            sskJobQueues:(SSKJobQueues *)sskJobQueues
@@ -188,7 +188,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) PhoneNumberUtil *phoneNumberUtilRef;
 @property (nonatomic, readonly) id webSocketFactoryRef;
 @property (nonatomic, readonly) ChangePhoneNumber *changePhoneNumberRef;
-@property (nonatomic, readonly) id<SubscriptionManagerProtocol> subscriptionManagerRef;
+@property (nonatomic, readonly) id<SubscriptionManager> subscriptionManagerRef;
 @property (nonatomic, readonly) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
 @property (nonatomic, readonly) RemoteMegaphoneFetcher *remoteMegaphoneFetcherRef;
 @property (nonatomic, readonly) SSKJobQueues *sskJobQueuesRef;

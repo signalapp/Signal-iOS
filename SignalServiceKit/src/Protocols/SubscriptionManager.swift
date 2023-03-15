@@ -6,7 +6,7 @@
 import Foundation
 
 @objc
-public protocol SubscriptionManagerProtocol {
+public protocol SubscriptionManager {
     func reconcileBadgeStates(transaction: SDSAnyWriteTransaction)
     func hasCurrentSubscription(transaction: SDSAnyReadTransaction) -> Bool
     func timeSinceLastSubscriptionExpiration(transaction: SDSAnyReadTransaction) -> TimeInterval

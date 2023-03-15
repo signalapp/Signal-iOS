@@ -380,7 +380,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
                 promise: firstly(on: DispatchQueue.sharedUserInitiated) {
-                    SubscriptionManager.updateSubscriptionLevel(
+                    SubscriptionManagerImpl.updateSubscriptionLevel(
                         for: subscriberID,
                         to: selectedSubscriptionLevel,
                         currencyCode: monthly.selectedCurrencyCode
@@ -496,7 +496,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
             firstly {
-                SubscriptionManager.cancelSubscription(for: subscriberID)
+                SubscriptionManagerImpl.cancelSubscription(for: subscriberID)
             }.done(on: DispatchQueue.main) { [weak self] in
                 modal.dismiss { [weak self] in
                     guard let self = self else { return }
@@ -569,7 +569,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     /// Requests one-time and monthly badges and preset amounts from the
     /// service, prepares badge assets, and loads local state as appropriate.
     private func loadStateWithSneakyTransaction(currentState: State) -> Guarantee<State> {
-        typealias DonationConfiguration = SubscriptionManager.DonationConfiguration
+        typealias DonationConfiguration = SubscriptionManagerImpl.DonationConfiguration
 
         let (
             subscriberID,
@@ -578,16 +578,16 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             lastReceiptRedemptionFailure
         ) = databaseStorage.read {
             (
-                SubscriptionManager.getSubscriberID(transaction: $0),
-                SubscriptionManager.getSubscriberCurrencyCode(transaction: $0),
-                SubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: $0),
-                SubscriptionManager.lastReceiptRedemptionFailed(transaction: $0)
+                SubscriptionManagerImpl.getSubscriberID(transaction: $0),
+                SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: $0),
+                SubscriptionManagerImpl.getMostRecentSubscriptionPaymentMethod(transaction: $0),
+                SubscriptionManagerImpl.lastReceiptRedemptionFailed(transaction: $0)
             )
         }
 
         // Start fetching the donation configuration.
         let fetchDonationConfigPromise: Promise<DonationConfiguration> = firstly {
-            SubscriptionManager.fetchDonationConfiguration()
+            SubscriptionManagerImpl.fetchDonationConfiguration()
         }.then(on: DispatchQueue.sharedUserInitiated) { donationConfiguration -> Promise<DonationConfiguration> in
             let boostBadge = donationConfiguration.boost.badge
             let subscriptionBadges = donationConfiguration.subscription.levels.map { $0.badge }

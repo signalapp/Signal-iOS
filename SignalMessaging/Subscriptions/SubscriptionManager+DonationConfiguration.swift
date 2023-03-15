@@ -5,7 +5,7 @@
 
 import Foundation
 
-extension SubscriptionManager {
+extension SubscriptionManagerImpl {
     /// Represents donation configuration information fetched from the service,
     /// such as preset donation levels and badge information.
     public struct DonationConfiguration {
@@ -70,7 +70,7 @@ extension SubscriptionManager {
     }
 }
 
-extension SubscriptionManager.DonationConfiguration {
+extension SubscriptionManagerImpl.DonationConfiguration {
     enum ParseError: Error, Equatable {
         /// Missing a preset amount for a donation level.
         case missingAmountForLevel(_ level: UInt)
@@ -182,7 +182,7 @@ extension SubscriptionManager.DonationConfiguration {
 
 // MARK: - Parse levels
 
-private extension SubscriptionManager.DonationConfiguration {
+private extension SubscriptionManagerImpl.DonationConfiguration {
     struct BadgedLevel {
         let value: UInt
         let name: String
@@ -254,7 +254,7 @@ private extension SubscriptionManager.DonationConfiguration {
 
 // MARK: - Parse presets
 
-private extension SubscriptionManager.DonationConfiguration {
+private extension SubscriptionManagerImpl.DonationConfiguration {
     struct BoostPresets {
         let minimum: FiatMoney
         let presets: [FiatMoney]

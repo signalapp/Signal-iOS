@@ -131,7 +131,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 TSThread.anyCount(transaction: transaction),
                 TSInteraction.anyCount(transaction: transaction),
                 TSAttachment.anyCount(transaction: transaction),
-                SubscriptionManager.getSubscriberID(transaction: transaction)
+                SubscriptionManagerImpl.getSubscriberID(transaction: transaction)
             )
         }
 

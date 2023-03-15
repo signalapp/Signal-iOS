@@ -214,7 +214,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             guard let giftBadge = incomingMessage.giftBadge else {
                 throw OWSAssertionError("trying to redeem message without a badge")
             }
-            return SubscriptionManager.redeemReceiptCredentialPresentation(
+            return SubscriptionManagerImpl.redeemReceiptCredentialPresentation(
                 receiptCredentialPresentation: try giftBadge.getReceiptCredentialPresentation()
             )
         }.done(on: DispatchQueue.global()) {

@@ -469,11 +469,11 @@ public extension NSObject {
         SSKEnvironment.shared.changePhoneNumberRef
     }
 
-    var subscriptionManager: SubscriptionManagerProtocol {
+    var subscriptionManager: SubscriptionManager {
         SSKEnvironment.shared.subscriptionManagerRef
     }
 
-    static var subscriptionManager: SubscriptionManagerProtocol {
+    static var subscriptionManager: SubscriptionManager {
         SSKEnvironment.shared.subscriptionManagerRef
     }
 
@@ -970,11 +970,11 @@ public extension Dependencies {
         SSKEnvironment.shared.changePhoneNumberRef
     }
 
-    var subscriptionManager: SubscriptionManagerProtocol {
+    var subscriptionManager: SubscriptionManager {
         SSKEnvironment.shared.subscriptionManagerRef
     }
 
-    static var subscriptionManager: SubscriptionManagerProtocol {
+    static var subscriptionManager: SubscriptionManager {
         SSKEnvironment.shared.subscriptionManagerRef
     }
 

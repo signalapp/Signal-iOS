@@ -16,7 +16,7 @@ public class DonationUtilities: Dependencies {
     public static func supportedDonationPaymentMethods(
         forDonationMode donationMode: DonationMode,
         usingCurrency currencyCode: Currency.Code,
-        withConfiguration configuration: SubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration,
+        withConfiguration configuration: SubscriptionManagerImpl.DonationConfiguration.PaymentMethodsConfiguration,
         localNumber: String?
     ) -> Set<DonationPaymentMethod> {
         let generallySupportedMethods = supportedDonationPaymentMethods(

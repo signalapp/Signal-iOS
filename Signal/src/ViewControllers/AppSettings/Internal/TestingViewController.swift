@@ -64,8 +64,8 @@ class TestingViewController: OWSTableViewController2 {
                 subscriberIDSection.footerTitle = LocalizationNotNeeded("Resets subscriberID, which clears current subscription state. Do not do this in prod environment")
                 subscriberIDSection.add(OWSTableItem.actionItem(withText: LocalizationNotNeeded("Clear subscriberID State")) {
                     SDSDatabaseStorage.shared.write { transaction in
-                        SubscriptionManager.setSubscriberID(nil, transaction: transaction)
-                        SubscriptionManager.setSubscriberCurrencyCode(nil, transaction: transaction)
+                        SubscriptionManagerImpl.setSubscriberID(nil, transaction: transaction)
+                        SubscriptionManagerImpl.setSubscriberCurrencyCode(nil, transaction: transaction)
                     }
                 })
                 contents.addSection(subscriberIDSection)

@@ -8,8 +8,8 @@ import UIKit
 import SignalMessaging
 
 public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
-    typealias GiftConfiguration = SubscriptionManager.DonationConfiguration.GiftConfiguration
-    typealias PaymentMethodsConfiguration = SubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration
+    typealias GiftConfiguration = SubscriptionManagerImpl.DonationConfiguration.GiftConfiguration
+    typealias PaymentMethodsConfiguration = SubscriptionManagerImpl.DonationConfiguration.PaymentMethodsConfiguration
 
     // MARK: - State management
 
@@ -73,8 +73,8 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     private func loadData() -> Guarantee<State> {
         firstly {
             Logger.info("[Gifting] Fetching donation configuration...")
-            return SubscriptionManager.fetchDonationConfiguration()
-        }.then { donationConfiguration -> Promise<SubscriptionManager.DonationConfiguration> in
+            return SubscriptionManagerImpl.fetchDonationConfiguration()
+        }.then { donationConfiguration -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
             Logger.info("[Gifting] Populating badge assets...")
             let giftBadge = donationConfiguration.gift.badge
             return self.profileManager.badgeStore.populateAssetsOnBadge(giftBadge)

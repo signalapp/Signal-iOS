@@ -20,9 +20,9 @@ extension DonateViewController {
 
         // MARK: Typealiases
 
-        typealias PaymentMethodsConfiguration = SubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration
-        typealias OneTimeConfiguration = SubscriptionManager.DonationConfiguration.BoostConfiguration
-        typealias MonthlyConfiguration = SubscriptionManager.DonationConfiguration.SubscriptionConfiguration
+        typealias PaymentMethodsConfiguration = SubscriptionManagerImpl.DonationConfiguration.PaymentMethodsConfiguration
+        typealias OneTimeConfiguration = SubscriptionManagerImpl.DonationConfiguration.BoostConfiguration
+        typealias MonthlyConfiguration = SubscriptionManagerImpl.DonationConfiguration.SubscriptionConfiguration
 
         // MARK: - One-time state
 

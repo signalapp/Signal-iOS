@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
         SenderKeyStore *senderKeyStore = [[SenderKeyStore alloc] init];
         PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
         ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
-        SubscriptionManager *subscriptionManager = [SubscriptionManager new];
+        SubscriptionManagerImpl *subscriptionManager = [SubscriptionManagerImpl new];
         SystemStoryManager *systemStoryManager = [SystemStoryManager new];
         RemoteMegaphoneFetcher *remoteMegaphoneFetcher = [RemoteMegaphoneFetcher new];
         SSKJobQueues *sskJobQueues = [SSKJobQueues new];

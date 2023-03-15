@@ -61,7 +61,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) PhoneNumberUtil *phoneNumberUtilRef;
 @property (nonatomic) id webSocketFactoryRef;
 @property (nonatomic) ChangePhoneNumber *changePhoneNumberRef;
-@property (nonatomic) id<SubscriptionManagerProtocol> subscriptionManagerRef;
+@property (nonatomic) id<SubscriptionManager> subscriptionManagerRef;
 @property (nonatomic) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
 @property (nonatomic) RemoteMegaphoneFetcher *remoteMegaphoneFetcherRef;
 
@@ -129,7 +129,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
                        webSocketFactory:(id)webSocketFactory
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
-                    subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
+                    subscriptionManager:(id<SubscriptionManager>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
                  remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
                            sskJobQueues:(SSKJobQueues *)sskJobQueues

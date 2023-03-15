@@ -32,7 +32,7 @@ extension DonateViewController {
             if let existingSubscriberId = monthly.subscriberID, monthly.currentSubscription != nil {
                 Logger.info("[Donations] Cancelling existing subscription")
 
-                return SubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                return SubscriptionManagerImpl.cancelSubscription(for: existingSubscriberId)
             } else {
                 Logger.info("[Donations] No existing subscription to cancel")
 
@@ -41,7 +41,7 @@ extension DonateViewController {
         }.then(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Data> in
             Logger.info("[Donations] Preparing new monthly subscription with Apple Pay")
 
-            return SubscriptionManager.prepareNewSubscription(
+            return SubscriptionManagerImpl.prepareNewSubscription(
                 currencyCode: monthly.selectedCurrencyCode
             )
         }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in
@@ -65,7 +65,7 @@ extension DonateViewController {
         }.then(on: DispatchQueue.sharedUserInitiated) { (subscriberId, paymentId) -> Promise<Data> in
             Logger.info("[Donations] Finalizing new subscription for Apple Pay donation")
 
-            return SubscriptionManager.finalizeNewSubscription(
+            return SubscriptionManagerImpl.finalizeNewSubscription(
                 forSubscriberId: subscriberId,
                 withPaymentId: paymentId,
                 usingPaymentMethod: .applePay,

@@ -330,11 +330,11 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
     private func deleteSubscriptionIfNecessary() -> Promise<Void> {
         let activeSubscriptionId = databaseStorage.read {
-            SubscriptionManager.getSubscriberID(transaction: $0)
+            SubscriptionManagerImpl.getSubscriberID(transaction: $0)
         }
         if let activeSubscriptionId = activeSubscriptionId {
             Logger.info("Found subscriber ID. Canceling subscription...")
-            return SubscriptionManager.cancelSubscription(for: activeSubscriptionId)
+            return SubscriptionManagerImpl.cancelSubscription(for: activeSubscriptionId)
         } else {
             return Promise.value(())
         }
