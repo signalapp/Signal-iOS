@@ -42,8 +42,7 @@ public enum RegistrationStep: Equatable {
 
     /// If we encounter reglock, fail to recover the kbs backups (probably because
     /// PIN guesses got used up), we have no choice but to wait out the reglock.
-    /// TODO[Registration]: define the timeout state.
-    case reglockTimeout
+    case reglockTimeout(RegistrationReglockTimeoutState)
 
     // MARK: - Post-Registration
 

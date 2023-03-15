@@ -348,6 +348,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return self.nextStep()
     }
 
+    public func acknowledgeReglockTimeout() -> Guarantee<RegistrationStep> {
+        switch reglockTimeoutAcknowledgeAction {
+        case .resetPhoneNumber:
+            db.write { transaction in
+                self.resetSession(transaction)
+                self.updatePersistedState(transaction) { $0.e164 = nil }
+            }
+            return nextStep()
+        case .close:
+            // TODO[Registration] Do mode-specific cleanup.
+            return .value(.done)
+        }
+    }
+
     // MARK: - Internal
 
     /// Does not change in the course of registration; you must finish a registration for a mode
@@ -1273,8 +1287,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 return self.nextStep()
             }
-            // TODO[Registration]: provide reglock timeout state.
-            return .value(.reglockTimeout)
+            return .value(.reglockTimeout(RegistrationReglockTimeoutState(
+                reglockExpirationDate: reglockExpirationDate,
+                acknowledgeAction: self.reglockTimeoutAcknowledgeAction
+            )))
         }
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
@@ -2582,6 +2598,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             nextVerificationAttemptDate: nextVerificationAttemptDate,
             validationError: validationError
         )
+    }
+
+    private var reglockTimeoutAcknowledgeAction: RegistrationReglockTimeoutAcknowledgeAction {
+        switch mode {
+        case .registering: return .resetPhoneNumber
+        case .reRegistering, .changingNumber: return .close
+        }
     }
 
     // MARK: - Constants

@@ -185,8 +185,15 @@ public class RegistrationNavigationController: OWSNavigationController {
                 },
                 update: nil
             )
-        case .reglockTimeout:
-            fatalError("Unimplemented")
+        case .reglockTimeout(let state):
+            return Controller(
+                type: RegistrationReglockTimeoutViewController.self,
+                make: { presenter in
+                    return RegistrationReglockTimeoutViewController(state: state, presenter: presenter)
+                },
+                // No state to update.
+                update: nil
+            )
         case .showErrorSheet:
             fatalError("Unimplemented")
         case .appUpdateBanner:
@@ -307,14 +314,18 @@ extension RegistrationNavigationController: RegistrationProfilePresenter {
     }
 }
 
-// MARK: RegistrationPhoneNumberDiscoverabilityPresenter
-
 extension RegistrationNavigationController: RegistrationPhoneNumberDiscoverabilityPresenter {
 
     var presentedAsModal: Bool { return false }
 
     func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) {
         pushNextController(coordinator.setPhoneNumberDiscoverability(isDiscoverable))
+    }
+}
+
+extension RegistrationNavigationController: RegistrationReglockTimeoutPresenter {
+    func acknowledgeReglockTimeout() {
+        pushNextController(coordinator.acknowledgeReglockTimeout())
     }
 }
 
