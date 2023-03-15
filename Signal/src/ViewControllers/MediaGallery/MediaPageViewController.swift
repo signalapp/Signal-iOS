@@ -62,18 +62,38 @@ class MediaPageViewController: UIPageViewController {
         Logger.debug("deinit")
     }
 
-    // MARK: - Subview
+    // MARK: - Controls
+
+    private var needsCompactToolbars: Bool {
+        traitCollection.horizontalSizeClass == .compact && traitCollection.verticalSizeClass == .compact
+    }
 
     // Top Bar
-    private lazy var topContainer = UIView()
-    // See `viewSafeAreaInsetsDidChange` why this is needed.
-    private var navigationBarTopLayoutConstraint: NSLayoutConstraint?
+    private lazy var topPanel = buildsChromePanelView()
+    private var topBarVerticalPositionConstraint: NSLayoutConstraint?
+    private var topBarHeightConstraint: NSLayoutConstraint?
+    private var topBarHeight: CGFloat { needsCompactToolbars ? 32 : 44 }
 
     // Bottom Bar
-    private lazy var bottomContainer = UIView()
+    private lazy var bottomPanel = buildsChromePanelView()
     private lazy var footerBar = UIToolbar.clear()
-    private lazy var captionContainerView = CaptionContainerView()
-    private lazy var galleryRailView = GalleryRailView()
+    private var footerBarHeight: CGFloat { topBarHeight }
+    private var footerBarHeightConstraint: NSLayoutConstraint?
+
+    private lazy var captionContainerView: CaptionContainerView = {
+        let view = CaptionContainerView()
+        view.delegate = self
+        return view
+    }()
+    private lazy var galleryRailView: GalleryRailView = {
+        let view = GalleryRailView()
+        view.delegate = self
+        view.itemSize = 40
+        view.layoutMargins.bottom = 0
+        view.isScrollEnabled = false
+        view.preservesSuperviewLayoutMargins = true
+        return view
+    }()
 
     // MARK: UIViewController
 
@@ -128,63 +148,63 @@ class MediaPageViewController: UIPageViewController {
         }
 
         // Top bar
-        captionContainerView.delegate = self
-        updateCaptionContainerVisibility()
+        view.addSubview(topPanel)
+        topPanel.autoPinWidthToSuperview()
+        topPanel.autoPinEdge(toSuperviewEdge: .top)
 
-        galleryRailView.delegate = self
-        galleryRailView.autoSetDimension(.height, toSize: 72)
-
-        view.addSubview(topContainer)
-        topContainer.autoPinWidthToSuperview()
-        topContainer.autoPinEdge(toSuperviewEdge: .top)
-        topContainer.backgroundColor = .ows_blackAlpha40
-
-        let navigationBar = UINavigationBar()
-        navigationBar.delegate = self
-        navigationBar.tintColor = Theme.darkThemeNavbarIconColor
+        // Use UINavigation bar to ensure position of the < back button matches exactly of one in the presenting VC.
+        let topBar = UINavigationBar()
+        topBar.delegate = self
+        topBar.tintColor = Theme.darkThemePrimaryColor
         if #available(iOS 13, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithTransparentBackground()
-            navigationBar.standardAppearance = appearance
-            navigationBar.compactAppearance = appearance
-            navigationBar.scrollEdgeAppearance = appearance
-            navigationBar.overrideUserInterfaceStyle = .dark
+            topBar.standardAppearance = appearance
+            topBar.compactAppearance = appearance
+            topBar.scrollEdgeAppearance = appearance
+            topBar.overrideUserInterfaceStyle = .dark
         } else {
-            navigationBar.barTintColor = .clear
-            navigationBar.isTranslucent = false
+            topBar.barTintColor = .clear
+            topBar.isTranslucent = false
         }
-        navigationBar.setItems([ UINavigationItem(title: ""), UINavigationItem(title: "") ], animated: false)
-        topContainer.addSubview(navigationBar)
-        navigationBar.autoPinWidthToSuperview()
-        navigationBarTopLayoutConstraint = navigationBar.autoPinEdge(toSuperviewEdge: .top)
-        navigationBar.autoPinEdge(toSuperviewEdge: .bottom)
+        topBar.setItems([ UINavigationItem(title: ""), navigationItem ], animated: false)
+        topPanel.addSubview(topBar)
+        topBar.autoPinEdge(toSuperviewSafeArea: .leading)
+        topBar.autoPinEdge(toSuperviewSafeArea: .trailing)
+        topBar.autoPinEdge(toSuperviewEdge: .bottom)
+        // See `viewSafeAreaInsetsDidChange` why this is needed.
+        topBarVerticalPositionConstraint = topBar.autoPinEdge(toSuperviewEdge: .top)
+        topBarHeightConstraint = topBar.autoSetDimension(.height, toSize: topBarHeight)
 
-        topContainer.addSubview(headerView)
-        headerView.autoAlignAxis(.vertical, toSameAxisOf: navigationBar)
-        headerView.autoAlignAxis(.horizontal, toSameAxisOf: navigationBar)
+        navigationItem.titleView = headerView
+        navigationItem.rightBarButtonItem = contextMenuBarButton
+
+        updateContextMenuButtonIcon()
 
         // Bottom bar
+        view.addSubview(bottomPanel)
+        bottomPanel.autoPinWidthToSuperview()
+        bottomPanel.autoPinEdge(toSuperviewEdge: .bottom)
+
         footerBar.tintColor = Theme.darkThemePrimaryColor
-        bottomContainer.backgroundColor = .ows_blackAlpha40
+        footerBarHeightConstraint = footerBar.autoSetDimension(.height, toSize: footerBarHeight)
 
         let bottomStack = UIStackView(arrangedSubviews: [captionContainerView, galleryRailView, footerBar])
         bottomStack.axis = .vertical
-        bottomContainer.addSubview(bottomStack)
-        bottomStack.autoPinEdgesToSuperviewEdges()
+        bottomStack.preservesSuperviewLayoutMargins = true
+        bottomPanel.addSubview(bottomStack)
+        bottomStack.autoPinWidthToSuperview()
+        bottomStack.autoPinEdge(toSuperviewEdge: .top, withInset: 16)
+        bottomStack.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
-        view.addSubview(bottomContainer)
-        bottomContainer.autoPinWidthToSuperview()
-        bottomContainer.autoPinEdge(toSuperviewEdge: .bottom)
-        footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        footerBar.autoSetDimension(.height, toSize: 44)
-
-        updateTitle()
         updateCaption(item: currentItem)
-        updateMediaRail()
+        updateCaptionContainerVisibility()
+        updateTitle()
+        updateMediaRail(animated: false)
+        updateContextMenuActions()
         updateFooterBarButtonItems(isPlayingVideo: true)
 
         // Gestures
-
         let verticalSwipe = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeView))
         verticalSwipe.direction = [.up, .down]
         view.addGestureRecognizer(verticalSwipe)
@@ -195,9 +215,20 @@ class MediaPageViewController: UIPageViewController {
         setNeedsStatusBarAppearanceUpdate()
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if let topBarHeightConstraint {
+            topBarHeightConstraint.constant = topBarHeight
+        }
+        if let footerBarHeightConstraint {
+            footerBarHeightConstraint.constant = footerBarHeight
+        }
+        updateContextMenuButtonIcon()
+    }
+
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
-        if let navigationBarTopLayoutConstraint {
+        if let topBarVerticalPositionConstraint {
             // On iPhones with a Dynamic Island standard position of a navigation bar is bottom of the status bar,
             // which is ~5 dp smaller than the top safe area (https://useyourloaf.com/blog/iphone-14-screen-sizes/) .
             // Since it is not possible to constrain top edge of our manually maintained navigation bar to that position
@@ -206,7 +237,7 @@ class MediaPageViewController: UIPageViewController {
             if topInset == 59 {
                 topInset -= 5 + CGHairlineWidth()
             }
-            navigationBarTopLayoutConstraint.constant = topInset
+            topBarVerticalPositionConstraint.constant = topInset
         }
     }
 
@@ -244,7 +275,8 @@ class MediaPageViewController: UIPageViewController {
         updateCaption(item: item)
         setViewControllers([galleryPage], direction: direction, animated: isAnimated)
         updateFooterBarButtonItems(isPlayingVideo: false)
-        updateMediaRail()
+        updateMediaRail(animated: isAnimated)
+        updateContextMenuActions()
     }
 
     private var mostRecentAlbum: MediaGalleryAlbum?
@@ -287,8 +319,8 @@ class MediaPageViewController: UIPageViewController {
             setNeedsStatusBarAppearanceUpdate()
 
             currentViewController?.setShouldHideToolbars(shouldHideToolbars)
-            bottomContainer.isHidden = shouldHideToolbars
-            topContainer.isHidden = shouldHideToolbars
+            bottomPanel.isHidden = shouldHideToolbars
+            topPanel.isHidden = shouldHideToolbars
         }
     }
 
@@ -298,27 +330,87 @@ class MediaPageViewController: UIPageViewController {
         return shouldHideToolbars || traitCollection.verticalSizeClass == .compact
     }
 
+    // MARK: Context Menu
+
+    private func updateContextMenuButtonIcon() {
+        guard let button = contextMenuBarButton.customView as? UIButton else {
+            owsFailDebug("button is nil")
+            return
+        }
+        if #available(iOS 13, *) {
+            let iconSize: CGFloat = needsCompactToolbars ? 18 : 22
+            let buttonImage = UIImage(systemName: "ellipsis.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: iconSize))
+            button.setImage(buttonImage, for: .normal)
+        } else {
+            button.setImage(UIImage(imageLiteralResourceName: "ellipsis-circle-20"), for: .normal)
+            // TODO: 24 pt icon for portrait orientation
+        }
+    }
+
+    private func updateContextMenuActions() {
+        guard let contextMenuButton = contextMenuBarButton.customView as? ContextMenuButton else {
+            owsFailDebug("contextMenuButton == nil")
+            return
+        }
+
+        var contextMenuActions: [ContextMenuAction] = []
+        // TODO: Video Playback Speed
+        // TODO: Edit
+        contextMenuActions.append(ContextMenuAction(
+            title: NSLocalizedString(
+                "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
+                comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video."
+            ),
+            image: UIImage(imageLiteralResourceName: "trash-outline-24"),
+            attributes: .destructive,
+            handler: { [weak self] _ in
+                self?.deleteCurrentMedia()
+            }))
+        contextMenuButton.contextMenu = ContextMenu(contextMenuActions)
+    }
+
     // MARK: Bar Buttons
 
-    private lazy var shareBarButton: UIBarButtonItem = {
-        let image = UIImage(imageLiteralResourceName: "share-outline-24")
-        let shareBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didPressShare))
-        shareBarButton.tintColor = Theme.darkThemePrimaryColor
-        return shareBarButton
+    private lazy var contextMenuBarButton: UIBarButtonItem = {
+        let contextButton = ContextMenuButton()
+        contextButton.showsContextMenuAsPrimaryAction = true
+        contextButton.forceDarkTheme = true
+        return UIBarButtonItem(customView: contextButton)
     }()
+
+    private lazy var shareBarButton = UIBarButtonItem(
+        image: UIImage(imageLiteralResourceName: "share-outline-24"),
+        landscapeImagePhone: UIImage(imageLiteralResourceName: "share-outline-20"),
+        style: .plain,
+        target: self,
+        action: #selector(didPressShare)
+    )
 
     private lazy var forwardBarButton: UIBarButtonItem = {
-        let image = UIImage(imageLiteralResourceName: "forward-solid-24")
-        let forwardBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didPressForward))
-        forwardBarButton.tintColor = Theme.darkThemePrimaryColor
-        return forwardBarButton
-    }()
-
-    private lazy var deleteBarButton: UIBarButtonItem = {
-        let image = UIImage(imageLiteralResourceName: "trash-solid-24")
-        let deleteBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didPressDelete))
-        deleteBarButton.tintColor = Theme.darkThemePrimaryColor
-        return deleteBarButton
+        let barButton: UIBarButtonItem
+        if #available(iOS 13, *) {
+            let imageName: String
+            if #available(iOS 14, *) {
+                imageName = "arrowshape.turn.up.forward"
+            } else {
+                imageName = CurrentAppContext().isRTL ? "arrowshape.turn.up.left" : "arrowshape.turn.up.right"
+            }
+            barButton = UIBarButtonItem(
+                image: UIImage(systemName: imageName),
+                style: .plain,
+                target: self,
+                action: #selector(didPressForward)
+            )
+        } else {
+            barButton = UIBarButtonItem(
+               image: UIImage(imageLiteralResourceName: "forward-outline-24"),
+               landscapeImagePhone: UIImage(imageLiteralResourceName: "forward-outline-20"),
+               style: .plain,
+               target: self,
+               action: #selector(didPressForward)
+           )
+        }
+        return barButton
     }()
 
     private func buildFlexibleSpace() -> UIBarButtonItem {
@@ -340,8 +432,6 @@ class MediaPageViewController: UIPageViewController {
     private func updateFooterBarButtonItems(isPlayingVideo: Bool) {
         var toolbarItems: [UIBarButtonItem] = [
             shareBarButton,
-            buildFlexibleSpace(),
-            forwardBarButton,
             buildFlexibleSpace()
         ]
 
@@ -352,22 +442,55 @@ class MediaPageViewController: UIPageViewController {
             ]
         }
 
-        toolbarItems.append(deleteBarButton)
+        toolbarItems.append(forwardBarButton)
 
         footerBar.setItems(toolbarItems, animated: false)
     }
 
-    private func updateMediaRail() {
+    // MARK: Media Rail
+
+    private static var galleryCellConfiguration = GalleryRailCellConfiguration(
+        cornerRadius: 6,
+        itemBorderWidth: 0,
+        itemBorderColor: nil,
+        focusedItemBorderWidth: 2,
+        focusedItemBorderColor: .white,
+        focusedItemOverlayColor: nil
+    )
+
+    private func updateMediaRail(animated: Bool) {
         if mostRecentAlbum?.items.contains(currentItem) != true {
             mostRecentAlbum = mediaGallery.album(for: currentItem)
         }
 
-        galleryRailView.configureCellViews(itemProvider: mostRecentAlbum!,
-                                           focusedItem: currentItem,
-                                           cellViewBuilder: { _ in return GalleryRailCellView() })
+        galleryRailView.configureCellViews(
+            itemProvider: mostRecentAlbum!,
+            focusedItem: currentItem,
+            cellViewBuilder: { _ in
+                return GalleryRailCellView(configuration: MediaPageViewController.galleryCellConfiguration)
+            },
+            animated: animated
+        )
     }
 
     // MARK: Helpers
+
+    private func buildsChromePanelView() -> UIView {
+        let view = UIView()
+        view.tintColor = Theme.darkThemePrimaryColor
+        view.preservesSuperviewLayoutMargins = true
+
+        let blurEffect: UIBlurEffect
+        if #available(iOS 13, *) {
+            blurEffect = UIBlurEffect(style: .systemChromeMaterialDark)
+        } else {
+            blurEffect = UIBlurEffect(style: .dark)
+        }
+        let blurBackgroundView = UIVisualEffectView(effect: blurEffect)
+        view.addSubview(blurBackgroundView)
+        blurBackgroundView.autoPinEdgesToSuperviewEdges()
+        return view
+    }
 
     private func buildRenderItem(forGalleryItem galleryItem: MediaGalleryItem) -> CVRenderItem? {
         return databaseStorage.read { transaction in
@@ -407,13 +530,19 @@ class MediaPageViewController: UIPageViewController {
     // MARK: Actions
 
     @objc
+    private func didTapBackButton(_ sender: Any) {
+        Logger.debug("")
+        dismissSelf(animated: true)
+    }
+
+    @objc
     private func didSwipeView(sender: Any) {
         Logger.debug("")
         dismissSelf(animated: true)
     }
 
     @objc
-    private func didPressShare(_ sender: UIBarButtonItem) {
+    private func didPressShare(_ sender: Any) {
         guard let currentViewController else { return }
         let attachmentStream = currentViewController.galleryItem.attachmentStream
         AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: sender)
@@ -439,15 +568,15 @@ class MediaPageViewController: UIPageViewController {
                                              delegate: self)
     }
 
-    @objc
-    private func didPressDelete(_ sender: Any) {
-        guard let currentViewController else { return }
+    private func deleteCurrentMedia() {
+        Logger.verbose("")
+
+        guard let mediaItem = currentItem else { return }
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
         let deleteAction = ActionSheetAction(title: CommonStrings.deleteButton,
                                              style: .destructive) { _ in
-            let deletedItem = currentViewController.galleryItem
-            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self)
+            self.mediaGallery.delete(items: [mediaItem], initiatedBy: self)
         }
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(deleteAction)
@@ -510,17 +639,14 @@ class MediaPageViewController: UIPageViewController {
     }()
 
     private lazy var headerView: UIView = {
-        let stackView = UIStackView()
+        let stackView = UIStackView(arrangedSubviews: [ headerNameLabel, headerDateLabel ])
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.spacing = 0
         stackView.distribution = .fillProportionally
-        stackView.addArrangedSubview(headerNameLabel)
-        stackView.addArrangedSubview(headerDateLabel)
 
         let containerView = UIView()
-        containerView.layoutMargins = UIEdgeInsets(top: 2, left: 8, bottom: 4, right: 8)
-
+        containerView.layoutMargins = UIEdgeInsets(top: 2, left: 0, bottom: 4, right: 0)
         containerView.addSubview(stackView)
 
         stackView.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
@@ -590,9 +716,10 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
             }
 
             updateTitle()
-            updateMediaRail()
+            updateMediaRail(animated: true)
             previousPage.zoomOut(animated: false)
             previousPage.stopVideoIfPlaying()
+            updateContextMenuActions()
             updateFooterBarButtonItems(isPlayingVideo: false)
         } else {
             captionContainerView.pendingText = nil
@@ -804,24 +931,26 @@ extension MediaPageViewController: MediaPresentationContextProvider {
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
-        view.layoutIfNeeded()
+        defer {
+            UIGraphicsEndImageContext()
+        }
 
-        guard let bottomSnapshot = bottomContainer.snapshotView(afterScreenUpdates: true) else {
-            owsFailDebug("bottomSnapshot was unexpectedly nil")
+        // Snapshot the entire view and then apply masking to only show top and bottom panels.
+        UIGraphicsBeginImageContextWithOptions(view.bounds.size, false, 0)
+        view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
             return nil
         }
 
-        guard let topSnapshot = topContainer.snapshotView(afterScreenUpdates: true) else {
-            owsFailDebug("topSnapshot was unexpectedly nil")
-            return nil
-        }
-
-        let snapshot = UIView(frame: view.frame)
-        snapshot.addSubview(topSnapshot)
-        topSnapshot.frame = topContainer.frame
-
-        snapshot.addSubview(bottomSnapshot)
-        bottomSnapshot.frame = bottomContainer.frame
+        let snapshot = UIImageView(image: image)
+        snapshot.frame = view.bounds
+        let maskLayer = CAShapeLayer()
+        maskLayer.frame = snapshot.layer.bounds
+        snapshot.layer.mask = maskLayer
+        let path = UIBezierPath()
+        path.append(UIBezierPath(rect: topPanel.frame))
+        path.append(UIBezierPath(rect: bottomPanel.frame))
+        maskLayer.path = path.cgPath
 
         let presentationFrame = coordinateSpace.convert(snapshot.frame, from: view.superview!)
 

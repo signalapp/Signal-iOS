@@ -83,9 +83,9 @@ class AttachmentApprovalToolbar: UIView {
         attachmentTextToolbar.setIsViewOnce(enabled: configuration.isViewOnceOn, animated: false)
 
         galleryRailView = GalleryRailView()
+        galleryRailView.itemSize = 44
         galleryRailView.hidesAutomatically = false
         galleryRailView.scrollFocusMode = .keepWithinBounds
-        galleryRailView.autoSetDimension(.height, toSize: 60)
 
         super.init(frame: frame)
 

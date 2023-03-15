@@ -420,39 +420,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             } else if let prevItem = attachmentApprovalItemCollection.itemBefore(item: attachmentApprovalItem) {
                 setCurrentItem(prevItem, direction: .reverse, animated: true)
             } else {
-                owsFailDebug("removing last item shouldn't be possible because rail should not be visible")
+                owsFailBeta("removing last item shouldn't be possible because rail should not be visible")
                 return
             }
-        }
-
-        guard let cell = galleryRailView.cellViews.first(where: { cellView in
-            guard let item = cellView.item else { return false }
-            return item.isEqualToGalleryRailItem(attachmentApprovalItem)
-        }) else {
-            owsFailDebug("cell was unexpectedly nil")
-            return
+        } else {
+            owsFailBeta("Deleting item that is not current")
         }
 
         attachmentApprovalItemCollection.remove(item: attachmentApprovalItem)
         approvalDelegate?.attachmentApproval(self, didRemoveAttachment: attachmentApprovalItem.attachment)
-
-        // Special logic if there is just one item after deletion.
-        // Fade out the entire rail view because it won't be visible after animations complete.
-        guard attachmentApprovalItems.count > 1 else {
-            updateContents(animated: true)
-            return
-        }
-
-        // If rail view is still be visible after deletion it looks better
-        // if cell for deleted item is faded out.
-        UIView.animate(withDuration: 0.15,
-                       animations: {
-            cell.isHidden = true
-            cell.alpha = 0
-        },
-                       completion: { _ in
-            self.updateContents(animated: true)
-        })
     }
 
     lazy var pagerScrollView: UIScrollView? = {
@@ -620,7 +596,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     func updateMediaRail(animated: Bool = false) {
         guard isViewLoaded else { return }
 
-        guard let currentItem = self.currentItem else {
+        guard let currentItem else {
             owsFailDebug("currentItem was unexpectedly nil")
             return
         }
