@@ -1058,7 +1058,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     retriesLeft: retriesLeft - 1
                 )
             }
-            return .value(.showErrorSheet(.todo))
+            return .value(.showErrorSheet(.networkError))
 
         case .genericError:
             return .value(.showErrorSheet(.todo))
@@ -1139,7 +1139,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             retriesLeft: retriesLeft - 1
                         )
                     }
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.networkError))
                 case .genericError:
                     return .value(.showErrorSheet(.todo))
                 }
@@ -1495,7 +1495,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     retriesLeft: retriesLeft - 1
                 )
             }
-            return .value(.showErrorSheet(.todo))
+            return .value(.showErrorSheet(.networkError))
         case .genericError:
             return .value(.showErrorSheet(.todo))
         }
@@ -1568,7 +1568,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                                 retriesLeft: retriesLeft - 1
                             )
                         }
-                        return .value(.showErrorSheet(.todo))
+                        return .value(.showErrorSheet(.networkError))
                     case .genericError:
                         return .value(.showErrorSheet(.todo))
                     }
@@ -2042,7 +2042,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             retriesLeft: retriesLeft - 1
                         )
                     }
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.networkError))
                 case .genericError:
                     return .value(.showErrorSheet(.todo))
                 }
@@ -2239,7 +2239,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             retriesLeft: retriesLeft - 1
                         )
                     }
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.networkError))
                 case .genericError:
                     return .value(.showErrorSheet(.todo))
                 }
@@ -2291,7 +2291,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             retriesLeft: retriesLeft - 1
                         )
                     }
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.networkError))
                 case .genericError:
                     return .value(.showErrorSheet(.todo))
                 }

@@ -69,6 +69,9 @@ public enum RegistrationStep: Equatable {
         /// All PIN guesses have been exhausted, locking the user out
         /// of their KBS backups.
         case pinGuessesExhausted
+        /// A network error occurred. The user can probably fix this by
+        /// checking their internet connection.
+        case networkError
         // TODO[Registration]: define other error types.
         case todo
     }

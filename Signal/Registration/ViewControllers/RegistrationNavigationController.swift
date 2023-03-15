@@ -194,8 +194,30 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
-        case .showErrorSheet:
-            fatalError("Unimplemented")
+        case let .showErrorSheet(errorSheet):
+            let title: String?
+            let message: String
+            switch errorSheet {
+            case .sessionInvalidated:
+                fatalError("Unimplemented")
+            case .verificationCodeSubmissionUnavailable:
+                fatalError("Unimplemented")
+            case .pinGuessesExhausted:
+                fatalError("Unimplemented")
+            case .networkError:
+                title = OWSLocalizedString(
+                    "REGISTRATION_NETWORK_ERROR_TITLE",
+                    comment: "A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet."
+                )
+                message = OWSLocalizedString(
+                    "REGISTRATION_NETWORK_ERROR_BODY",
+                    comment: "A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet."
+                )
+            case .todo:
+                fatalError("TODO[Registration] This should be removed")
+            }
+            OWSActionSheets.showActionSheet(title: title, message: message)
+            return nil
         case .appUpdateBanner:
             present(UIAlertController.registrationAppUpdateBanner(), animated: true)
             return nil
