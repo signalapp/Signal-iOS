@@ -72,6 +72,8 @@ public enum RegistrationStep: Equatable {
         /// A network error occurred. The user can probably fix this by
         /// checking their internet connection.
         case networkError
+        /// A generic error occurred. Prefer to use other error types.
+        case genericError
         // TODO[Registration]: define other error types.
         case todo
     }

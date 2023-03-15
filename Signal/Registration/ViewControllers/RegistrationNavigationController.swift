@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public class RegistrationNavigationController: OWSNavigationController {
 
@@ -213,6 +214,9 @@ public class RegistrationNavigationController: OWSNavigationController {
                     "REGISTRATION_NETWORK_ERROR_BODY",
                     comment: "A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet."
                 )
+            case .genericError:
+                title = nil
+                message = CommonStrings.somethingWentWrongTryAgainLaterError
             case .todo:
                 fatalError("TODO[Registration] This should be removed")
             }

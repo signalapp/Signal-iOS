@@ -317,7 +317,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     public func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) -> Guarantee<RegistrationStep> {
         guard let accountIdentity = persistedState.accountIdentity else {
             owsFailBeta("Shouldn't be setting phone number discoverability prior to registration.")
-            return .value(.showErrorSheet(.todo))
+            return .value(.showErrorSheet(.genericError))
         }
 
         updatePhoneNumberDiscoverability(
@@ -336,7 +336,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         guard let accountIdentity = persistedState.accountIdentity else {
             owsFailBeta("Shouldn't be setting phone number discoverability prior to registration.")
-            return .value(.showErrorSheet(.todo))
+            return .value(.showErrorSheet(.genericError))
         }
         inMemoryState.pendingProfileInfo = (givenName: givenName, familyName: familyName, avatarData: avatarData)
 
@@ -755,7 +755,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         updateAccountAttributes(accountIdentity)
             .then(on: schedulers.main) { [weak self] error -> Guarantee<RegistrationStep> in
                 guard let self else {
-                    return .value(.showErrorSheet(.todo))
+                    return unretainedSelfError()
                 }
                 guard let error else {
                     // We are done! Wipe everything
@@ -964,7 +964,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 e164: e164,
                 pinFromUser: pinFromUser,
                 retriesLeft: retriesLeft
-            ) ?? .value(.showErrorSheet(.todo))
+            ) ?? unretainedSelfError()
         }
     }
 
@@ -1033,7 +1033,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
                     .then(on: self.schedulers.sync) { [weak self] in
                         guard let self else {
-                            return .value(.showErrorSheet(.todo))
+                            return unretainedSelfError()
                         }
                         return self.registerForRegRecoveryPwPath(
                             regRecoveryPw: regRecoveryPw,
@@ -1061,7 +1061,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(.showErrorSheet(.networkError))
 
         case .genericError:
-            return .value(.showErrorSheet(.todo))
+            return .value(.showErrorSheet(.genericError))
         }
     }
 
@@ -1107,7 +1107,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         deps.kbs.restoreKeysAndBackup(pin: pin, authMethod: .kbsAuth(credential, backup: nil))
             .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
                 guard let self = self else {
-                    return .value(.showErrorSheet(.todo))
+                    return unretainedSelfError()
                 }
                 switch result {
                 case .success:
@@ -1141,7 +1141,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     return .value(.showErrorSheet(.networkError))
                 case .genericError:
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.genericError))
                 }
             }
     }
@@ -1187,7 +1187,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             schedulers: schedulers
         ).then(on: schedulers.main) { [weak self] response in
             guard let self else {
-                return .value(.showErrorSheet(.todo))
+                return unretainedSelfError()
             }
             return self.handleKBSAuthCredentialCheckResponse(
                 response,
@@ -1423,7 +1423,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             e164: session.e164
         ).then(on: schedulers.main) { [weak self] response in
             guard let self = self else {
-                return .value(.showErrorSheet(.todo))
+                return unretainedSelfError()
             }
             return self.handleCreateAccountResponseFromSession(
                 response,
@@ -1476,7 +1476,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     .after(on: schedulers.sharedBackground, seconds: timeInterval)
                     .then(on: schedulers.sync) { [weak self] in
                         guard let self else {
-                            return .value(.showErrorSheet(.todo))
+                            return unretainedSelfError()
                         }
                         return self.makeRegisterOrChangeNumberRequestFromSession(
                             sessionFromBeforeRequest
@@ -1497,7 +1497,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             return .value(.showErrorSheet(.networkError))
         case .genericError:
-            return .value(.showErrorSheet(.todo))
+            return .value(.showErrorSheet(.genericError))
         }
     }
 
@@ -1508,14 +1508,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return deps.pushRegistrationManager.requestPushToken()
             .then(on: schedulers.sharedBackground) { [weak self] apnsToken -> Guarantee<RegistrationStep> in
                 guard let strongSelf = self else {
-                    return .value(.showErrorSheet(.todo))
+                    return unretainedSelfError()
                 }
                 return strongSelf.deps.sessionManager.beginOrRestoreSession(
                     e164: e164,
                     apnsToken: apnsToken
                 ).then(on: strongSelf.schedulers.main) { [weak self] response -> Guarantee<RegistrationStep> in
                     guard let strongSelf = self else {
-                        return .value(.showErrorSheet(.todo))
+                        return unretainedSelfError()
                     }
                     switch response {
                     case .success(let session):
@@ -1550,7 +1550,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                                 .after(on: strongSelf.schedulers.sharedBackground, seconds: timeInterval)
                                 .then(on: strongSelf.schedulers.sync) { [weak self] in
                                     guard let self else {
-                                        return .value(.showErrorSheet(.todo))
+                                        return unretainedSelfError()
                                     }
                                     return self.startSession(
                                         e164: e164
@@ -1570,7 +1570,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         }
                         return .value(.showErrorSheet(.networkError))
                     case .genericError:
-                        return .value(.showErrorSheet(.todo))
+                        return .value(.showErrorSheet(.genericError))
                     }
                 }
             }
@@ -1586,7 +1586,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             transport: transport
         ).then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
             guard let self else {
-                return .value(.showErrorSheet(.todo))
+                return unretainedSelfError()
             }
             switch result {
             case .success(let session):
@@ -1633,7 +1633,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
                         .then(on: self.schedulers.sync) { [weak self] in
                             guard let self else {
-                                return .value(.showErrorSheet(.todo))
+                                return unretainedSelfError()
                             }
                             return self.requestSessionCode(
                                 session: session,
@@ -1674,10 +1674,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         retriesLeft: retriesLeft - 1
                     )
                 }
-                return .value(.showErrorSheet(.todo))
+                return .value(.showErrorSheet(.networkError))
             case .genericError:
                 self.inMemoryState.pendingCodeTransport = nil
-                return .value(.showErrorSheet(.todo))
+                return .value(.showErrorSheet(.genericError))
             }
         }
     }
@@ -1791,7 +1791,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 .nilTimeout(on: schedulers.sharedBackground, seconds: Constants.pushTokenTimeout)
                 .then(on: schedulers.sharedBackground) { [weak self] (challengeToken: String?) -> Guarantee<RegistrationStep> in
                     guard let self else {
-                        return .value(.showErrorSheet(.todo))
+                        return unretainedSelfError()
                     }
 
                     if let challengeToken {
@@ -1844,7 +1844,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             fulfillment: fulfillment
         ).then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
             guard let self else {
-                return .value(.showErrorSheet(.todo))
+                return unretainedSelfError()
             }
             switch result {
             case .success(let session):
@@ -1895,9 +1895,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         retriesLeft: retriesLeft - 1
                     )
                 }
-                return .value(.showErrorSheet(.todo))
+                return .value(.showErrorSheet(.networkError))
             case .genericError:
-                return .value(.showErrorSheet(.todo))
+                return .value(.showErrorSheet(.genericError))
             }
         }
     }
@@ -1912,7 +1912,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             code: code
         ).then(on: schedulers.main) { [weak self] (result: Registration.UpdateSessionResponse) -> Guarantee<RegistrationStep> in
             guard let self else {
-                return .value(.showErrorSheet(.todo))
+                return unretainedSelfError()
             }
             switch result {
             case .success(let session):
@@ -1958,7 +1958,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
                         .then(on: self.schedulers.sync) { [weak self] in
                             guard let self else {
-                                return .value(.showErrorSheet(.todo))
+                                return unretainedSelfError()
                             }
                             return self.submitSessionCode(
                                 session: session,
@@ -1984,9 +1984,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         retriesLeft: retriesLeft - 1
                     )
                 }
-                return .value(.showErrorSheet(.todo))
+                return .value(.showErrorSheet(.networkError))
             case .genericError:
-                return .value(.showErrorSheet(.todo))
+                return .value(.showErrorSheet(.genericError))
             }
         }
     }
@@ -2004,7 +2004,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         )
             .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
                 guard let self else {
-                    return .value(.showErrorSheet(.todo))
+                    return unretainedSelfError()
                 }
                 switch result {
                 case .success:
@@ -2044,7 +2044,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     return .value(.showErrorSheet(.networkError))
                 case .genericError:
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.genericError))
                 }
             }
     }
@@ -2078,7 +2078,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 .createPreKeys(auth: accountIdentity.chatServiceAuth)
                 .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
                     guard let self else {
-                        return .value(.showErrorSheet(.todo))
+                        return unretainedSelfError()
                     }
                     self.db.write { tx in
                         self.updatePersistedState(tx) {
@@ -2140,8 +2140,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .value(())
                 }
                 .then(on: schedulers.sync) { [weak self] in
-                    self?.loadProfileState()
-                    return self?.nextStep() ?? .value(.showErrorSheet(.todo))
+                    guard let self else {
+                        return unretainedSelfError()
+                    }
+                    self.loadProfileState()
+                    return self.nextStep()
                 }
         }
 
@@ -2199,7 +2202,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
             .then(on: schedulers.main) { [weak self] result in
                 guard let strongSelf = self else {
-                    return .value(.showErrorSheet(.todo))
+                    return unretainedSelfError()
                 }
                 switch result {
                 case .success:
@@ -2219,7 +2222,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     strongSelf.inMemoryState.isManualMessageFetchEnabled = true
                     return strongSelf.updateAccountAttributes(accountIdentity)
                         .then(on: strongSelf.schedulers.main) { [weak self] maybeError -> Guarantee<RegistrationStep> in
-                            guard let strongSelf = self, maybeError == nil else {
+                            guard let strongSelf = self else {
+                                return unretainedSelfError()
+                            }
+                            guard maybeError == nil else {
                                 Logger.error("Unable to update account attributes for manual message fetch with error: \(String(describing: maybeError))")
                                 return .value(.showErrorSheet(.todo))
                             }
@@ -2241,7 +2247,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     return .value(.showErrorSheet(.networkError))
                 case .genericError:
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.genericError))
                 }
             }
     }
@@ -2265,7 +2271,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
             .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
                 guard let self else {
-                    return .value(.showErrorSheet(.todo))
+                    return unretainedSelfError()
                 }
                 switch result {
                 case .success:
@@ -2293,7 +2299,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     return .value(.showErrorSheet(.networkError))
                 case .genericError:
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.genericError))
                 }
             }
     }
@@ -2318,7 +2324,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
             .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep>  in
                 guard let strongSelf = self else {
-                    return .value(.showErrorSheet(.todo))
+                    return unretainedSelfError()
                 }
                 strongSelf.inMemoryState.hasBackedUpToKBS = true
                 strongSelf.db.write { tx in
@@ -2331,12 +2337,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // Ignore errors. This matches the legacy registration flow.
                     .recover(on: strongSelf.schedulers.sync) { _ in return .value(()) }
                     .then(on: strongSelf.schedulers.sync) { [weak self] in
-                        return self?.nextStep() ?? .value(.showErrorSheet(.todo))
+                        return self?.nextStep() ?? unretainedSelfError()
                     }
             }
             .recover(on: schedulers.main) { [weak self] error -> Guarantee<RegistrationStep> in
                 guard let self else {
-                    return .value(.showErrorSheet(.todo))
+                    return unretainedSelfError()
                 }
                 if error.isNetworkConnectivityFailure {
                     if retriesLeft > 0 {
@@ -2346,7 +2352,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             retriesLeft: retriesLeft - 1
                         )
                     }
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.networkError))
                 }
                 Logger.error("Failed to back up to KBS with error: \(error)")
                 // We want to let people get through registration even if backups
@@ -2391,7 +2397,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(())
         }.then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
             guard let self else {
-                return .value(.showErrorSheet(.todo))
+                return unretainedSelfError()
             }
             self.inMemoryState.hasSetReglock = true
             self.inMemoryState.wasReglockEnabled = true
@@ -2631,4 +2637,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// We might still fulfill the challenge after this, but we won't opportunistically block proceeding.
         static let pushTokenTimeout: TimeInterval = 30
     }
+}
+
+private func unretainedSelfError() -> Guarantee<RegistrationStep> {
+    Logger.warn("Registration coordinator reference lost. Showing generic error")
+    return .value(.showErrorSheet(.genericError))
 }
