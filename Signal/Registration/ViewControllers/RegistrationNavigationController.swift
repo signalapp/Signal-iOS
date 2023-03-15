@@ -190,7 +190,8 @@ public class RegistrationNavigationController: OWSNavigationController {
         case .showErrorSheet:
             fatalError("Unimplemented")
         case .appUpdateBanner:
-            fatalError("Unimplemented")
+            present(UIAlertController.registrationAppUpdateBanner(), animated: true)
+            return nil
         case .done:
             Logger.info("Finished with registration!")
             SignalApp.shared().showConversationSplitView()

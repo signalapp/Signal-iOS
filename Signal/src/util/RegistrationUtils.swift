@@ -39,6 +39,7 @@ public extension RegistrationUtils {
     private static func showReRegistration(e164: String) {
         let dependencies = RegistrationCoordinatorImpl.Dependencies(
             accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(Self.accountManager),
+            appExpiry: RegistrationCoordinatorImpl.Wrappers.AppExpiry(Self.appExpiry),
             contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(Self.contactsManagerImpl),
             contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
             dateProvider: { Date() },

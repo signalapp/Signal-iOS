@@ -25,6 +25,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private var coordinator: RegistrationCoordinatorImpl!
 
     private var accountManagerMock: RegistrationCoordinatorImpl.TestMocks.AccountManager!
+    private var appExpiryMock: RegistrationCoordinatorImpl.TestMocks.AppExpiry!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
     private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
     private var kbs: KeyBackupServiceMock!
@@ -46,6 +47,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         dateProvider = { self.date }
 
         accountManagerMock = RegistrationCoordinatorImpl.TestMocks.AccountManager()
+        appExpiryMock = RegistrationCoordinatorImpl.TestMocks.AppExpiry()
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
         kbs = KeyBackupServiceMock()
@@ -72,6 +74,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         let dependencies = RegistrationCoordinatorImpl.Dependencies(
             accountManager: accountManagerMock,
+            appExpiry: appExpiryMock,
             contactsManager: RegistrationCoordinatorImpl.TestMocks.ContactsManager(),
             contactsStore: contactsStore,
             dateProvider: { self.dateProvider() },
@@ -114,6 +117,18 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(coordinator.nextStep().value, .splash)
         // Once we show it, don't show it again.
         XCTAssertNotEqual(coordinator.continueFromSplash().value, .splash)
+    }
+
+    func testOpeningPath_appExpired() {
+        // Don't care about timing, just start it.
+        scheduler.start()
+
+        appExpiryMock.isExpired = true
+
+        setupDefaultAccountAttributes()
+
+        // We should start with the banner.
+        XCTAssertEqual(coordinator.nextStep().value, .appUpdateBanner)
     }
 
     func testOpeningPath_permissions() {

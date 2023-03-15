@@ -10,6 +10,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public struct Dependencies {
         public let accountManager: RegistrationCoordinatorImpl.Shims.AccountManager
+        public let appExpiry: RegistrationCoordinatorImpl.Shims.AppExpiry
         public let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
         public let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
         public let dateProvider: DateProvider
@@ -105,6 +106,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public func nextStep() -> Guarantee<RegistrationStep> {
         AssertIsOnMainThread()
+
+        if deps.appExpiry.isExpired {
+            return .value(.appUpdateBanner)
+        }
+
         // Always start by restoring state.
         return restoreStateIfNeeded().then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
             guard let self = self else {

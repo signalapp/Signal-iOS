@@ -6,11 +6,13 @@
 import Contacts
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 extension RegistrationCoordinatorImpl {
 
     public enum Shims {
         public typealias AccountManager = _RegistrationCoordinator_AccountManagerShim
+        public typealias AppExpiry = _RegistrationCoordinator_AppExpiryShim
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerShim
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreShim
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerShim
@@ -25,6 +27,7 @@ extension RegistrationCoordinatorImpl {
     }
     public enum Wrappers {
         public typealias AccountManager = _RegistrationCoordinator_AccountManagerWrapper
+        public typealias AppExpiry = _RegistrationCoordinator_AppExpiryWrapper
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerWrapper
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerWrapper
@@ -54,6 +57,19 @@ public class _RegistrationCoordinator_AccountManagerWrapper: _RegistrationCoordi
     public func performInitialStorageServiceRestore(authedAccount: AuthedAccount) -> Promise<Void> {
         return manager.performInitialStorageServiceRestore(authedAccount: authedAccount)
     }
+}
+
+// MARK: - AppExpiry
+
+public protocol _RegistrationCoordinator_AppExpiryShim {
+    var isExpired: Bool { get }
+}
+
+public struct _RegistrationCoordinator_AppExpiryWrapper: _RegistrationCoordinator_AppExpiryShim {
+    private let appExpiry: AppExpiry
+    public init(_ appExpiry: AppExpiry) { self.appExpiry = appExpiry }
+
+    public var isExpired: Bool { appExpiry.isExpired }
 }
 
 // MARK: OWSContactsManager

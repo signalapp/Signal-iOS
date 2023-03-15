@@ -104,6 +104,7 @@ extension SignalApp {
     private func makeRegistrationDependencies() -> RegistrationCoordinatorImpl.Dependencies {
         return RegistrationCoordinatorImpl.Dependencies(
             accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(Self.accountManager),
+            appExpiry: RegistrationCoordinatorImpl.Wrappers.AppExpiry(Self.appExpiry),
             contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(Self.contactsManagerImpl),
             contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
             dateProvider: { Date() },

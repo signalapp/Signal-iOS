@@ -129,3 +129,35 @@ extension ActionSheetController {
         return result
     }
 }
+
+// MARK: - Alerts
+
+extension UIAlertController {
+    static func registrationAppUpdateBanner() -> UIAlertController {
+        let result = UIAlertController(
+            title: OWSLocalizedString(
+                "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE",
+                comment: "During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert."
+            ),
+            message: OWSLocalizedString(
+                "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION",
+                comment: "During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert."
+            ),
+            preferredStyle: .alert
+        )
+
+        let updateAction = UIAlertAction(
+            title: OWSLocalizedString(
+                "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION",
+                comment: "During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert."
+            ),
+            style: .default
+        ) { _ in
+            UIApplication.shared.open(TSConstants.appStoreUpdateURL)
+        }
+        result.addAction(updateAction)
+        result.preferredAction = updateAction
+
+        return result
+    }
+}
