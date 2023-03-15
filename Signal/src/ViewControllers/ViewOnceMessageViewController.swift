@@ -312,7 +312,7 @@ class ViewOnceMessageViewController: OWSViewController {
             let videoContainer = UIView()
 
             let videoUrl = URL(fileURLWithPath: content.filePath)
-            let player = OWSVideoPlayer(url: videoUrl, shouldLoop: true)
+            let player = VideoPlayer(url: videoUrl, shouldLoop: true)
             self.videoPlayer = player
             player.delegate = self
 
@@ -366,7 +366,7 @@ class ViewOnceMessageViewController: OWSViewController {
     // MARK: Video
 
     var videoPlayerProgressObserver: Any?
-    var videoPlayer: OWSVideoPlayer?
+    var videoPlayer: VideoPlayer?
 
     func setupDatabaseObservation() {
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -449,8 +449,8 @@ extension ViewOnceMessageViewController: DatabaseChangeDelegate {
     }
 }
 
-extension ViewOnceMessageViewController: OWSVideoPlayerDelegate {
-    func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
+extension ViewOnceMessageViewController: VideoPlayerDelegate {
+    func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer) {
         // no-op
     }
 }

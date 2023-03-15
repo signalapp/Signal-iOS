@@ -700,9 +700,9 @@ class StoryItemMediaView: UIView {
     }
 
     private var videoPlayerLoopCount = 0
-    private var videoPlayer: OWSVideoPlayer?
+    private var videoPlayer: VideoPlayer?
     private func buildVideoView(originalMediaUrl: URL, shouldLoop: Bool) -> UIView {
-        let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: shouldLoop, shouldMixAudioWithOthers: true)
+        let player = VideoPlayer(url: originalMediaUrl, shouldLoop: shouldLoop, shouldMixAudioWithOthers: true)
         player.delegate = self
         self.videoPlayer = player
         updateMuteState()
@@ -853,8 +853,8 @@ extension StoryItem {
     }
 }
 
-extension StoryItemMediaView: OWSVideoPlayerDelegate {
-    func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
+extension StoryItemMediaView: VideoPlayerDelegate {
+    func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer) {
         videoPlayerLoopCount += 1
     }
 }

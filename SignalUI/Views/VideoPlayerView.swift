@@ -23,7 +23,7 @@ public class VideoPlayerView: UIView {
     public weak var delegate: VideoPlayerViewDelegate?
 
     @objc
-    public var videoPlayer: OWSVideoPlayer? {
+    public var videoPlayer: VideoPlayer? {
         didSet {
             player = videoPlayer?.avPlayer
         }

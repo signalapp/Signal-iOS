@@ -3,21 +3,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import AVFoundation
+import Foundation
 
-@objc
-public protocol OWSVideoPlayerDelegate: AnyObject {
-    func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer)
+public protocol VideoPlayerDelegate: AnyObject {
+    func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer)
 }
 
-@objc
-public class OWSVideoPlayer: NSObject {
+public class VideoPlayer: NSObject {
 
-    @objc
     public let avPlayer: AVPlayer
-    let audioActivity: AudioActivity
-    let shouldLoop: Bool
+    private let audioActivity: AudioActivity
+    private let shouldLoop: Bool
 
     public var isMuted = false {
         didSet {
@@ -25,29 +22,28 @@ public class OWSVideoPlayer: NSObject {
         }
     }
 
-    @objc
-    weak public var delegate: OWSVideoPlayerDelegate?
+    weak public var delegate: VideoPlayerDelegate?
 
-    @objc
     convenience public init(url: URL) {
         self.init(url: url, shouldLoop: false)
     }
 
-    @objc
     public init(url: URL, shouldLoop: Bool, shouldMixAudioWithOthers: Bool = false) {
-        self.avPlayer = AVPlayer(url: url)
-        self.audioActivity = AudioActivity(
-            audioDescription: "[OWSVideoPlayer] url:\(url)",
+        avPlayer = AVPlayer(url: url)
+        audioActivity = AudioActivity(
+            audioDescription: "[VideoPlayer] url:\(url)",
             behavior: shouldMixAudioWithOthers ? .playbackMixWithOthers : .playback
         )
         self.shouldLoop = shouldLoop
 
         super.init()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(playerItemDidPlayToCompletion(_:)),
-                                               name: .AVPlayerItemDidPlayToEndTime,
-                                               object: avPlayer.currentItem)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(playerItemDidPlayToCompletion(_:)),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: avPlayer.currentItem
+        )
     }
 
     deinit {
@@ -60,15 +56,13 @@ public class OWSVideoPlayer: NSObject {
         audioSession.endAudioActivity(audioActivity)
     }
 
-    @objc
     public func pause() {
         avPlayer.pause()
         endAudioActivity()
     }
 
-    @objc
     public func play() {
-        let success = audioSession.startAudioActivity(self.audioActivity)
+        let success = audioSession.startAudioActivity(audioActivity)
         assert(success)
 
         guard let item = avPlayer.currentItem else {
@@ -84,14 +78,12 @@ public class OWSVideoPlayer: NSObject {
         avPlayer.play()
     }
 
-    @objc
     public func stop() {
         avPlayer.pause()
         avPlayer.seek(to: CMTime.zero)
         endAudioActivity()
     }
 
-    @objc(seekToTime:)
     public func seek(to time: CMTime) {
         // Seek with a tolerance (or precision) of a hundredth of a second.
         let tolerance = CMTime(seconds: 0.01, preferredTimescale: 1000)
@@ -106,7 +98,7 @@ public class OWSVideoPlayer: NSObject {
 
     @objc
     private func playerItemDidPlayToCompletion(_ notification: Notification) {
-        self.delegate?.videoPlayerDidPlayToCompletion(self)
+        delegate?.videoPlayerDidPlayToCompletion(self)
         if shouldLoop {
             avPlayer.seek(to: CMTime.zero)
             avPlayer.play()

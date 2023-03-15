@@ -469,7 +469,7 @@
 		34A954E2271B4F3E00B05242 /* ColorOrGradientSwatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */; };
 		34A954E6271B4F6A00B05242 /* AttachmentSharing.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A954E3271B4F6900B05242 /* AttachmentSharing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34A954E7271B4F6A00B05242 /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A954E4271B4F6A00B05242 /* AttachmentSharing.m */; };
-		34A954E8271B4F6A00B05242 /* OWSVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954E5271B4F6A00B05242 /* OWSVideoPlayer.swift */; };
+		34A954E8271B4F6A00B05242 /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954E5271B4F6A00B05242 /* VideoPlayer.swift */; };
 		34A954F7271B4FB000B05242 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A954EC271B4FB000B05242 /* UIViewController+OWS.m */; };
 		34A954FC271B4FB000B05242 /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A954F1271B4FB000B05242 /* UIFont+OWS.m */; };
 		34A954FD271B4FB000B05242 /* UIViewController+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A954F2271B4FB000B05242 /* UIViewController+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2756,7 +2756,7 @@
 		34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorOrGradientSwatchView.swift; sourceTree = "<group>"; };
 		34A954E3271B4F6900B05242 /* AttachmentSharing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentSharing.h; sourceTree = "<group>"; };
 		34A954E4271B4F6A00B05242 /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentSharing.m; sourceTree = "<group>"; };
-		34A954E5271B4F6A00B05242 /* OWSVideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSVideoPlayer.swift; sourceTree = "<group>"; };
+		34A954E5271B4F6A00B05242 /* VideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
 		34A954EC271B4FB000B05242 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+OWS.m"; sourceTree = "<group>"; };
 		34A954F1271B4FB000B05242 /* UIFont+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+OWS.m"; sourceTree = "<group>"; };
 		34A954F2271B4FB000B05242 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+OWS.h"; sourceTree = "<group>"; };
@@ -5518,10 +5518,10 @@
 			children = (
 				34A954E3271B4F6900B05242 /* AttachmentSharing.h */,
 				34A954E4271B4F6A00B05242 /* AttachmentSharing.m */,
-				34A954E5271B4F6A00B05242 /* OWSVideoPlayer.swift */,
 				34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */,
 				3402A9F2271D9A060084CBAE /* UIUtil.h */,
 				3402A9F3271D9A060084CBAE /* UIUtil.m */,
+				34A954E5271B4F6A00B05242 /* VideoPlayer.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -10624,7 +10624,6 @@
 				3402AA5A271D9DCD0084CBAE /* OWSTableViewController2.swift in Sources */,
 				F9C8CFD0293580D00094469C /* OWSTextField.swift in Sources */,
 				7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */,
-				34A954E8271B4F6A00B05242 /* OWSVideoPlayer.swift in Sources */,
 				66F44B4B2909EEDA004CF66C /* OWSViewController.swift in Sources */,
 				3402AA59271D9DCD0084CBAE /* OWSViewControllerObjc.m in Sources */,
 				3402AA3B271D9DCD0084CBAE /* OWSWindow.swift in Sources */,
@@ -10692,6 +10691,7 @@
 				76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */,
 				3402AA97271D9E180084CBAE /* VideoEditorModel.swift in Sources */,
 				3402AA6F271D9E180084CBAE /* VideoEditorView.swift in Sources */,
+				34A954E8271B4F6A00B05242 /* VideoPlayer.swift in Sources */,
 				3402AAB4271D9E180084CBAE /* VideoPlayerView.swift in Sources */,
 				76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */,
 				3402AA52271D9DCD0084CBAE /* ViewControllerUtils.m in Sources */,

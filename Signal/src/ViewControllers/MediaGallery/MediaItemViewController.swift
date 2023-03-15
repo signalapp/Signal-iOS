@@ -50,7 +50,7 @@ class MediaItemViewController: OWSViewController {
     private var mediaViewTopConstraint: NSLayoutConstraint?
     private var mediaViewTrailingConstraint: NSLayoutConstraint?
 
-    private var videoPlayer: OWSVideoPlayer?
+    private var videoPlayer: VideoPlayer?
     private var buttonPlayVideo: UIButton?
     private var videoProgressBar: PlayerProgressBar?
 
@@ -259,7 +259,7 @@ class MediaItemViewController: OWSViewController {
         return videoView
     }
 
-    private func buildVideoPlayerView() -> (OWSVideoPlayer, VideoPlayerView)? {
+    private func buildVideoPlayerView() -> (VideoPlayer, VideoPlayerView)? {
         guard let attachmentUrl = attachmentStream.originalMediaURL else {
             owsFailBeta("Invalid URL")
             return nil
@@ -268,7 +268,7 @@ class MediaItemViewController: OWSViewController {
             owsFailBeta("Missing video file")
         }
 
-        let videoPlayer = OWSVideoPlayer(url: attachmentUrl)
+        let videoPlayer = VideoPlayer(url: attachmentUrl)
         videoPlayer.seek(to: .zero)
 
         let videoPlayerView = VideoPlayerView()
@@ -450,8 +450,8 @@ extension MediaItemViewController: LoopingVideoViewDelegate {
     }
 }
 
-extension MediaItemViewController: OWSVideoPlayerDelegate {
-    func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
+extension MediaItemViewController: VideoPlayerDelegate {
+    func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer) {
         owsAssertDebug(isVideo)
         owsAssertDebug(self.videoPlayer != nil)
         Logger.verbose("")

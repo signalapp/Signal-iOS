@@ -29,7 +29,7 @@ class VideoEditorView: UIView {
 
     private lazy var playerView: VideoPlayerView = {
         let playerView = VideoPlayerView()
-        playerView.videoPlayer = OWSVideoPlayer(url: URL(fileURLWithPath: model.srcVideoPath))
+        playerView.videoPlayer = VideoPlayer(url: URL(fileURLWithPath: model.srcVideoPath))
         playerView.delegate = self
         return playerView
     }()
@@ -145,7 +145,7 @@ class VideoEditorView: UIView {
 
     func playVideo() {
         if ensureSeekReflectsTrimming() {
-            // If this delay isn't induced OWSVideoPlayer.play() would reset
+            // If this delay isn't induced VideoPlayer.play() would reset
             // current position to 0, likely because AVPlayer hasn't yet
             // had a chance to update its currentTime.
             DispatchQueue.main.async {
