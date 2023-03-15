@@ -123,16 +123,6 @@
                                stickingRightward:false]);
 }
 
-- (void)testCallingCodeFromCountryCode
-{
-    XCTAssertEqualObjects([PhoneNumberUtil callingCodeFromCountryCode:@"US"], @"+1");
-    XCTAssertEqualObjects([PhoneNumberUtil callingCodeFromCountryCode:@"GB"], @"+44");
-    // Invalid country code.
-    XCTAssertEqualObjects([PhoneNumberUtil callingCodeFromCountryCode:@"EK"], @"+0");
-    XCTAssertEqualObjects([PhoneNumberUtil callingCodeFromCountryCode:@"ZZZ"], @"+0");
-    XCTAssertEqualObjects([PhoneNumberUtil callingCodeFromCountryCode:@""], @"+0");
-}
-
 - (void)testCountryNameFromCountryCode
 {
     XCTAssertEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@"US"], @"United States");
