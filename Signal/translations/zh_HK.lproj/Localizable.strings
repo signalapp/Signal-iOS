@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "我知道了";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "來自 %1$@ 的一則訊息、貼圖、心情、已讀標記或媒體無法在此聊天中向您送達。";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "系統無法在此聊天中將 %1$@ 的訊息、貼圖、心情回應、已讀標記或多媒體傳送給你。";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "送遞問題";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "來自 %1$@ 的一則訊息、貼圖、心情、已讀標記或媒體無法向您送達。未知是直接發送給您，還是發送到某個群組中。";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "系統無法將 %1$@ 的訊息、貼圖、心情回應、已讀標記或多媒體傳送給你。他們可能是直接或透過群組向你傳送的。";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "捨棄";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "關於訊息請求";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "相片";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "影片";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -440,10 +440,10 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "已取消每月捐款";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "你的每月定期捐款已取消。%1$@ 捐款徽章不再在你的個人檔案中顯示。\n\n如要繼續支持 Signal 並重新啟動徽章，請更新你的付款詳情並再次捐款。";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "你的每月定期捐款已經取消。%1$@ 捐款徽章不會再顯示在你的個人檔案中。\n\n如要繼續支持 Signal 並重新啟動徽章，請更新你的付款詳情並再次捐款。";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "由於你太長時間沒有使用，因此你的每月定期捐款已被自動取消。你的 %1$@ 徽章不會再顯示在你的個人檔案中。\n\n你可如常使用 Signal，但如果想支持應用程式並重新啟動你的徽章，請立即捐款贊助。";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "由於你太長時間沒有使用，因此你的每月定期捐款已被自動取消。你的 %1$@ 徽章不會再顯示在你的個人檔案中。\n\n你可如常使用 Signal，但如果想支持應用程式並重新啟動徽章，請立即捐款贊助。";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "你已獲取 Signal 的捐款者徽章！在你的個人檔案中展示徽章，秀出你對我們的支持。";
@@ -914,7 +914,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "您可以在設定中允許 Signal 存取聯絡人資料來查看在您的聯絡人中有誰是 Signal 用戶。";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "轉換心情";
+"CONFIGURE_REACTIONS" = "設定心情回應";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "這將會刪除您的訊息以便重設應用程式。過程完成後，應用程式將關閉。";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "捐款";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "代表 %1$@ 捐款";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "你已代表 %1$@ 向 Signal 捐款。他們可以選擇在個人檔案上展現支持。";
@@ -3568,6 +3568,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "本月";
 
+/* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "稍後提醒我";
 
@@ -5111,40 +5114,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "所有 %1$@ 個心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "對您的訊息表達了 %1$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "對你的訊息表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "對您的相簿表達了 %1$@心情";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "對你的相簿表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "對您的音訊表達了 %1$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "對你的音訊表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "對您的共享聯絡人表達了 %1$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "對你的共享聯絡人表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "對您的檔案表達了 %1$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "對你的檔案表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "對您的 GIF 表達了 %1$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "對你的 GIF 表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "對您的照片表達了 %1$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "對你的相片表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "對您的貼圖表達了 %1$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "對你的貼圖表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
 "REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "對「%1$@」表達了 %2$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "對您的影片表達了 %1$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "對你的影片表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "對您的閱後即焚媒體表達了 %1$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "對你的「閱後即焚」多媒體檔案表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "對您的語音訊息表達了 %1$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "對你的語音訊息表達了 %1$@ 心情";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "已讀取";
@@ -5197,6 +5200,15 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "無法重設通知功能。";
 
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "我們必須確認你是真人";
 
@@ -5223,6 +5235,24 @@
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "檢查連線";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "呢個電話唔可以用響Signal，請你同我地嘅技術支援傾下";
@@ -5258,7 +5288,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "姓氏";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "誰可以透過電話號碼找到我？";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "名字";
@@ -5882,10 +5912,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "停用付款功能";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "建議您在停用付款之前，將您的款項轉移到另一個錢包位址。若您現在選擇不作轉移，假如您重新啟用付款，您的款項將會保留在您已連結至 Signal 的錢包中。";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "我們建議你在停用付款之前，將你的資金轉移到另一個錢包位址。若你現在選擇不作轉移，當你重新啟用付款時，資金將會保留在已連結至 Signal 的錢包中。";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "若您選擇重新啟用付款，您的餘額將會保留在您已連結至 Signal 的錢包中。";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "若你選擇重新啟用付款，你的餘額將會保留在已連結至 Signal 的錢包中。";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "要停用而不作轉移嗎？";
@@ -7110,6 +7140,9 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "標記為未讀";
+
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "收到不支援的附件格式";

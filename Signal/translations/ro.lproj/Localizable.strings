@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Despre solicitări mesaj";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF-uri";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Poze";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Video";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donație";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donație în numele persoanei %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Ai făcut o donație către Signal în numele %1$@. Persoana aleasă de tine va primi opțiunea să afișeze sprijinul la profil.";
@@ -3568,6 +3568,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Luna aceasta";
 
+/* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Amintește-mi mai târziu";
 
@@ -5141,7 +5144,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "A reacționat cu %1$@ la înregistrarea ta";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "A reacționat cu %1$@ la media ta vizibilă o singură dată.";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "A reacționat cu %1$@ la media ta vizibilă o singură dată";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "A reacționat cu %1$@ la mesajul tău vocal";
@@ -5197,6 +5200,15 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Eroare la re-înregistrare pentru notificările push.";
 
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "Trebuie să verificăm dacă ești om";
 
@@ -5223,6 +5235,24 @@
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Verificare conexiune";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Acest format de număr de telefon nu este suportat, te rog contactează suportul tehnic.";
@@ -5258,7 +5288,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Nume";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Cine mă poate găsi după număr?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Prenume";
@@ -5972,7 +6002,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Utilizează Signal pentru a trimite și primi MobileCoin, o nouă monedă digitală axată pe confidențialitate. Activează pentru a începe.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivează plățile";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivează Plățile";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Vă prezentăm Plăți (Beta)";
@@ -7110,6 +7140,9 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Necitit";
+
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "A fost primit un tip de atașament care nu e suportat.";

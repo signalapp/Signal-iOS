@@ -86,7 +86,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Rozumiem";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Nie udało się dostarczyć Ci wiadomości, naklejki, reakcji, potwierdzenia przeczytania lub multimediów od %1$@, w tej rozmowie.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Nie udało się dostarczyć Ci wiadomości, naklejki, reakcji, potwierdzenia przeczytania lub multimediów od %1$@ w tej rozmowie.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problem z dostarczeniem wiadomości";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O prośbach o kontakt";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF-y";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Zdjęcia";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Wideo";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -443,7 +443,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Twoja comiesięczna darowizna została anulowana. Odznaka za darowiznę %1$@ nie jest już widoczna na Twoim profilu.\n\nAby nadal wspierać Signal i przywrócić odznakę, uaktualnij swoją metodę płatności i ponownie wpłać darowiznę.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Twoja comiesięczna subskrypcja została automatycznie anulowana ze wzgłędu na zbyt długą nieaktywność konta. Twoja odznaka %1$@ nie jest już widoczna na Twoim profilu.\n\nMożesz nadal korzystać z Signal, ale jeśli chcesz wesprzeć aplikację i ponownie uaktywnić swoją odznakę, wpłać darowiznę.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Twoja comiesięczna subskrypcja została automatycznie anulowana ze względu na zbyt długą nieaktywność konta. Twoja odznaka %1$@ nie jest już widoczna na Twoim profilu.\n\nMożesz nadal korzystać z Signal, ale jeśli chcesz wesprzeć aplikację i ponownie uaktywnić swoją odznakę, wpłać darowiznę.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Zdobywasz odznakę darczyńcy Signal! Pochwal się nią na profilu i pokaż, że wspierasz apkę.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Darowizna";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Darowizna w imieniu: %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Wpłaciłeś(-aś) darowiznę na rzecz Signal w imieniu %1$@. Otrzyma on(a) możliwość pochwalenia się wsparciem na profilu.";
@@ -3568,6 +3568,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Ten miesiąc";
 
+/* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Przypomnij później";
 
@@ -5197,6 +5200,15 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Nie udało się ponownie zarejestrować powiadomień push.";
 
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "Musimy sprawdzić, czy jesteś człowiekiem";
 
@@ -5223,6 +5235,24 @@
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Sprawdź połączenie";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Ten format numeru nie jest obsługiwany, skontaktuj się z pomocą techniczną.";
@@ -5258,7 +5288,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Nazwisko";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Kto może mnie znaleźć po numerze telefonu?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Imię";
@@ -5882,7 +5912,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Dezaktywuj płatności";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Przed dezaktywacją płatności, zalecamy przeniesienie środków do innego portfela. Jeśli postanowisz nie przenosić teraz swoich środków, pozostaną one w Twoim portfelu, powiązanym z Signal, jeśli reaktywujesz płatności.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Przed dezaktywacją płatności zalecamy przeniesienie środków do innego portfela. Jeśli postanowisz nie przenosić teraz swoich środków, pozostaną one w Twoim portfelu powiązanym z Signal, jeśli reaktywujesz płatności.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Twoje środki pozostaną w portfelu połączonym z Signal, jeśli postanowisz reaktywować płatności.";
@@ -7110,6 +7140,9 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Nieprzeczytane";
+
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Otrzymano nieobsługiwany typ załącznika.";

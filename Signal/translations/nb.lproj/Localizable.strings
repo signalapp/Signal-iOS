@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Skjønner";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En melding, et klistremerke, en reaksjon, en lesebekreftelse eller et medium fra %1$@ kunne ikke sendes til deg i denne samtalen.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En melding, et klistremerke, en reaksjon, en lesebekreftelse eller et medium fra %1$@ kunne ikke leveres til deg i denne samtalen.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problemer med levering";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "En melding, et klistremerke, en reaksjon, en lesebekreftelse eller et medium kunne ikke leveres til deg fra %1$@. Det kunne ha blitt sendt til deg direkte eller i en gruppe.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "En melding, et klistremerke, en reaksjon, en lesebekreftelse eller et medium fra %1$@ kunne ikke leveres til deg. Vedkommende kan ha forsøkt å sende dette til deg direkte eller i en gruppe.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Kast";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Om meldingsforespørsler";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF-er";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Bilder";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Videoer";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -443,7 +443,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Den månedlige pengegaven har blitt stoppet. %1$@-merket vises ikke lenger på profilen din.\n\nOppdater betalingsinformasjonen din for å fortsette å støtte Signal og aktivere merket ditt på nytt.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Det månedlige pengebeløpet ble stoppet automatisk fordi du har vært inaktiv for lenge. %1$@-merket ditt er ikke lenger synlig på profilen din.\n\nDu kan fortsatt bruke Signal, men hvis du vil støtte appen og beholde merket ditt, må du gi et pengebeløp nå.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Den månedlige pengegaven ble stoppet automatisk fordi du har vært inaktiv for lenge. %1$@-merket ditt vises ikke lenger på profilen din.\n\nDu kan fortsatt bruke Signal, men hvis du vil støtte appen og beholde merket ditt, må du gi en pengegave nå.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Du har fått et merke fra Signal! Vis det frem i profilen din for å vise at du støtter Signal.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Pengegave";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Pengegave på vegne av %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Du har gitt en pengegave til Signal på vegne av %1$@. Vedkommende vil få muligheten til å vise frem støtten på profilen sin.";
@@ -3568,6 +3568,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Denne måneden";
 
+/* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Minn meg på senere";
 
@@ -5111,40 +5114,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Alle · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagerte %1$@ på meldingen din";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagerte med %1$@ på meldingen din";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagerte %1$@ på ditt album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagerte med %1$@ på albumet ditt";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagerte %1$@ på din lyd";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagerte med %1$@ på lyden din";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagerte %1$@ på din delte kontaktinfo";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagerte med %1$@ på den delte kontakten din";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagerte %1$@ på din fil";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagerte med %1$@ på filen din";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagerte %1$@ på din GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagerte med %1$@ på GIF-en din";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagerte %1$@ på ditt bilde";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagerte med %1$@ på bildet ditt";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagerte %1$@ på ditt klistremerke";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagerte med %1$@ på klistremerket ditt";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagerte %1$@ til: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagerte med %1$@ på «%2$@»";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagerte %1$@ på din video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagerte med %1$@ på videoen din";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagerte %1$@ på din engangsmedia";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagerte med %1$@ på vis-én-gang-mediefilen din";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagerte %1$@ på din lydmelding";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagerte med %1$@ på talemeldingen din";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Lest";
@@ -5197,6 +5200,15 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Klarte ikke å omregistrere for push-varslinger.";
 
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "Vi må bekrefte at du er et menneske";
 
@@ -5223,6 +5235,24 @@
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Kontroller nettverkstilkobling";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Formatet på telefonnummeret støttes ikke, vennligst ta kontakt med kundeservice.";
@@ -5258,7 +5288,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Etternavn";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Hvem kan finne meg ved å søke opp telefonnummeret mitt?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Fornavn";
@@ -5882,10 +5912,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deaktiver betalinger";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Det anbefales at du overfører pengene til en annen lommebokadresse før du deaktiverer betalinger. Hvis du velger å ikke overføre pengene dine nå, vil de forbli i lommeboken som er knyttet til Signal hvis du aktiverer betalinger på nytt.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Vi anbefaler deg å overføre pengene til en annen lommebokadresse før du deaktiverer betalinger. Hvis du velger å ikke overføre pengene nå, forblir de i lommeboken som er knyttet til Signal, hvis du aktiverer betalinger på nytt.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Kontosaldoen din vil holde seg i lommeboken du har koblet til Signal, hvis du ønsker å reaktivere betalingene.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Saldoen din forblir i lommeboken som er knyttet til Signal, hvis du velger å aktivere betalinger på nytt.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deaktiver uten å overføre den gjenstående balansen?";
@@ -5972,7 +6002,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Bruk Signal til å sende og motta MobileCoin, en ny personvernorientert digital valuta. Aktiver for å komme i gang.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reaktiver betalingene";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Aktiver betalingene på nytt";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Vi introduserer betalinger (Beta)";
@@ -6617,7 +6647,7 @@
 "STORIES_NO_VIEWS_YET" = "Ingen visninger ennå";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Gjør det mulig for de som kan se storyen din å reagere og svare.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Gjør det mulig for de som kan se storyen din, å reagere og svare.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Svar og reaksjoner";
@@ -7110,6 +7140,9 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Ulest";
+
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Mottok ustøttet vedleggstype.";

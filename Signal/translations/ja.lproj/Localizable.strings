@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "わかりました";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "このチャットで %1$@ からのメッセージ、ステッカー、リアクション、既読通知またはメディアを、あなたに配送できませんでした。";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "このチャットで %1$@ さんからのメッセージ、ステッカー、リアクション、既読通知またはメディアを、あなたに配送できませんでした。";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "配送エラー";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ からのメッセージ、ステッカー、リアクション、既読通知またはメディアを、あなたに配送できませんでした。直接またはグループで送信しようとしているかもしれません。";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ さんからのメッセージ、ステッカー、リアクション、既読通知またはメディアを、あなたに配送できませんでした。直接送信しようとしたか、グループで送ろうとしたかもしれません。";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "破棄する";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "メッセージ申請について";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "写真";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "動画";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_BOOST_BODY" = "ブーストバッジの有効期限が切れたため、プロフィールには表示されません。\n\nSignalは今後もご利用いただけますが、あなたのために作られた技術をサポートするため、毎月の寄付をご検討ください。";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "ブーストバッジの有効期限が切れたため、プロフィールには表示されません。1回の寄付で、ブーストバッジをさらに30日間有効にすることができます。";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "ブーストバッジの有効期限が切れたため、プロフィールには表示されません。\n\n1回の寄付で、ブーストバッジをさらに30日間有効にすることができます。";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "バッジが失効しました";
@@ -443,7 +443,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "毎月の定期的な寄付がキャンセルされました。%1$@ バッジはプロフィールに表示されなくなりました。\n\nSignalへのサポートを継続してバッジを再び有効にするために、決済詳細を更新して再度寄付をお願いします。";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "長い間ご利用がなかったため、毎月の定期的な寄付が自動的にキャンセルされました。%1$@ バッジはプロフィールに表示されなくなっています。\n\nSignalは今後もご利用いただけますが、アプリのサポートやバッジを再び有効にするには、今すぐ寄付をお願いします。";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "長い間ご利用がなかったため、毎月の定期的な寄付が自動的にキャンセルされました。%1$@ バッジはプロフィールに表示されなくなっています。\n\nSignalは今後もご利用いただけますが、アプリをサポートし、バッジを再び有効にするためにぜひ寄付をお願いいたします。";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Signalからバッジを受け取りました！プロフィールに表示してSignalをサポートしていることを示しましょう。";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "寄付";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "%1$@に代わって寄付をする";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "%1$@ に代わってあなたがSignalに寄付しました。その人のプロフィールには、サポートしていることを表示するオプションが付与されます。";
@@ -3568,6 +3568,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "今月";
 
+/* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "あとで通知";
 
@@ -5081,7 +5084,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "元のメッセージが見つかりません。";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "あなたのストーリーにリアクションされました";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "あなたのストーリーにリアクションがありました";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@さんのストーリーにリアクションする";
@@ -5111,40 +5114,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "すべて · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "あなたのメッセージに %1$@";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "あなたのメッセージに %1$@のリアクションがありました";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "あなたのアルバムに %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "あなたのアルバムに %1$@のリアクションがありました";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "あなたの音声に %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "あなたの音声に %1$@のリアクションがありました";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "あなたの連絡先共有に %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "あなたの連絡先共有に %1$@のリアクションがありました";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "あなたのファイルに %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "あなたのファイルに %1$@のリアクションがありました";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "あなたのGIFに %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "あなたのGIFに %1$@のリアクションがありました";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "あなたの写真に %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "あなたの写真に %1$@のリアクションがありました";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "あなたのステッカーに %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "あなたのステッカーに %1$@のリアクションがありました";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%1$@ >「%2$@」";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "「%2$@」に%1$@のリアクションをしました";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "あなたの動画に %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "あなたの動画に %1$@のリアクションがありました";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "あなたの使い捨てメディアに %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "あなたの使い捨てメディアに %1$@のリアクションがありました";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "あなたの音声メッセージに %1$@";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "あなたの音声メッセージに %1$@のリアクションがありました";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "既読にする";
@@ -5197,6 +5200,15 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "プッシュ通知の再登録に失敗しました。";
 
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "あなたがロボットでないことを確認します";
 
@@ -5223,6 +5235,24 @@
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "接続を確認してください";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "サポートされていない形式の電話番号です。サポートに連絡してください。";
@@ -5258,7 +5288,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "姓";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "私を電話番号から検索できる人は？";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "名";
@@ -6734,7 +6764,7 @@
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "あなたのストーリーに %1$@ のリアクションがありました";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "ストーリーに%1$@ のリアクションがありました";
+"STORY_REACTION_QUOTE_FORMAT" = "ストーリーに%1$@ のリアクションをしました";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
 "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ さんのストーリーに%1$@ のリアクションをしました";
@@ -6743,7 +6773,7 @@
 "STORY_REPLY_BUTTON" = "返信";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "ストーリーにリアクションがありました";
+"STORY_REPLY_REACTION" = "ストーリーにリアクションしました";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "%1$@ のプライベートストーリーに返信する";
@@ -7110,6 +7140,9 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "未読にする";
+
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "サポートされていない種類の添付ファイルを受信しました。";

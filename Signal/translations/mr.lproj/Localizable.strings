@@ -119,10 +119,10 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "फोटोज";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "व्हिडिओज";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -440,7 +440,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "मासिक देणगी रद्द करण्यात आली";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "आपली आवर्ती मासिक देणगी रद्द करण्यात आली होती. %1$@ देणगी बॅज आपल्या प्रोफाईलवर यापुढे दृश्यमान असणार नाही.\n\nSignal ला सपोर्ट करणे पुढे सुरु ठेवण्यासाठी आणि आपल्या बँजला पुन्हा सक्रिय करण्यास, आपला पेमेंट्स तपशील अपडेट करा आणि पुन्हा देणगी द्या.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "आपली आवर्ती मासिक देणगी रद्द करण्यात आली होती. %1$@ देणगी बॅज आपल्या प्रोफाईलवर यापुढे दृश्यमान असणार नाही.\n\nSignal ला सपोर्ट करणे पुढे सुरु ठेवण्यासाठी आणि आपल्या बॅजला पुन्हा सक्रिय करण्यास, आपला पेमेंट्स तपशील अपडेट करा आणि पुन्हा देणगी द्या.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "आपण दीर्घ काळासाठी असक्रिय असल्याकारणाने आपली आवर्ती मासिक देणगी आपोआप रद्द झाली होती. आपला %1$@ बॅज यापुढे आपल्या प्रोफाइलवर दृश्यमान राहणार नाही.\n\nआपण Signal ला वापरणे सुरु ठेवू शकता परंतु अ‍ॅपला सपोर्ट करण्यासाठी आणि आपला बॅज पुन्हा सक्रिय करण्यासाठी, आत्ता देणगी द्या.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "देणगी";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "%1$@च्या वतीने देणगी";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "आपण %1$@ च्या वतीने Signal ला देणगी दिली आहे. त्यांना त्यांच्या प्रोफाईलवर त्यांचा सपोर्ट दाखवण्याचा पर्याय दिला जाईल.";
@@ -3568,6 +3568,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "हा महिना";
 
+/* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "मला नंतर आठवण करून द्या";
 
@@ -4076,7 +4079,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "इतर कुठलेही गट समाईक नाहीत";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "स्वतःला संदेश";
+"NOTE_TO_SELF" = "स्वतःला नोंद";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "आपला %1$@ पुन्हा चालू होत असताना आपल्याला संदेश प्राप्त झाले असू शकतात.";
@@ -5111,40 +5114,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "सर्व · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "आपल्या संदेशाला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "आपल्या संदेशाला %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "आपल्या अल्बमला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "आपल्या अल्बमला %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "आपल्या ऑडिओला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "आपल्या ऑडिओला %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "आपल्या संपर्क सामायिकरणाला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "आपल्या संपर्क सामायिकरणावर %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "आपल्या फाईलला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "आपल्या फाइलवर %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "आपल्या GIF ला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "आपल्या GIF ला %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "आपल्या फोटोला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "आपल्या फोटोला %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "आपल्या स्टिकरला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "आपल्या स्टिकरला %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%1$@ प्रतिसाद दिला यास: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "\"%2$@\" :ला %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "आपल्या व्हिडिओला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "आपल्या व्हिडिओवर %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "आपल्या एकदा-बघा व्हिडिओला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "आपल्या एकदा-बघा व्हिडिओवर %1$@ प्रतिक्रिया दिली";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "आपल्या व्हॉईस संदेशाला %1$@ प्रतिसाद दिला";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "आपल्या व्हॉईस संदेशाला %1$@ प्रतिक्रिया दिली";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "वाचले";
@@ -5197,6 +5200,15 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "पुश सूचनांकरिता पुनर्नोंदणी करण्यात अयशस्वी.";
 
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "आम्हाला आपण मनुष्य असल्याचे सत्यापित करायचे आहे";
 
@@ -5223,6 +5235,24 @@
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "कनेक्शन तपासा";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "हा फोन नंबर स्वरूपन समर्थित नाही, कृपया समर्थनाला संपर्क साधा.";
@@ -5258,7 +5288,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "आडनाव";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "नंबराने माझा शोध कोण घेऊ शकतात?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "नाव";
@@ -5882,10 +5912,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "पेमेंट निष्क्रिय करा";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "पेमेंट निष्क्रिय करण्यापूर्वी आपण आपले फंड इतर वॉलेट पत्त्यावर स्थानांतरित करण्याची शिफारस केलेली आहे. आपण आपले फंड स्थानांतरित नाही करण्याचे निवडल्यास, आपण पेमेंट पुन्हा सक्रिय केल्यास ते आपल्या वॉलेट मध्ये Signal ला लिंक केलेले राहतील.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "पेमेंट्स निष्क्रिय करण्यापूर्वी आपण आपले फंड्स इतर वॉलेट पत्त्यावर ट्रान्सफर करण्याची शिफारस केलेली आहे. आपण आपले फंड ट्रान्सफर न करण्याचे निवडल्यास, आपण पेमेंट पुन्हा सक्रिय केल्यास ते आपल्या वॉलेट मध्ये Signal ला लिंक केलेले राहतील.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "आपण पेमेंट पुन्हा सक्रिय करण्याचे निवडल्यास आपला बॅलंस आपल्या वॉलेट मध्ये Signal ला लिंक केलेला राहील.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "आपण पेमेंट्स पुन्हा सक्रिय करण्याचे निवडल्यास आपला बॅलंस आपल्या वॉलेट मध्ये Signal ला लिंक केलेला राहील.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "स्थानांतरित न करता निष्क्रिय करायचा?";
@@ -5972,7 +6002,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "नवीन गोपनीयता केंद्रित डिजिटल चलन, MobileCoin पाठवण्यासाठी आणि प्राप्त करण्यासाठी Signal वापरा. चालू करण्यासाठी सक्रिय करा.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "पेमेंट पुन्हा सक्रिय करा";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "पेमेंट्स पुन्हा सक्रिय करा";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "सादर करत आहे पेमेंट (बीटा)";
@@ -6620,10 +6650,10 @@
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "आपली स्टोरी पाहू शकतील अशा लोकांना प्रतिक्रिया आणि उत्तर देऊ द्या.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_HEADER" = "प्रत्युत्तरे आणि प्रतिक्रिया";
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "प्रत्युत्तरे व प्रतिक्रिया";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "प्रत्युत्तरे आणि प्रतिक्रियांना अनुमती द्या";
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "प्रत्युत्तरे व प्रतिक्रियांना अनुमती द्या";
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "प्रत्युत्तरे";
@@ -7110,6 +7140,9 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "वाचले नाही";
+
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "असमर्थित संलग्न प्रकार प्राप्त झाला.";

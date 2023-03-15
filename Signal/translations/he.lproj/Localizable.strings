@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "הבנתי";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "הודעה, מדבקה, תגובה, אישור קריאה או מדיה לא יכלו להימסר אליך מאת %1$@ בהתכתבות זו.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "לא ניתן היה למסור לך הודעה, סטיקר, תגובה, אישור קריאה או מדיה מאת %1$@ בצ׳אט זה.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "סוגיית מסירה";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "הודעה, מדבקה, תגובה, אישור קריאה או מדיה לא יכלו להימסר אליך מאת %1$@. ייתכן שהצד השני ניסה לשלוח את זה ישירות אליך, או בקבוצה.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "לא ניתן היה למסור לך הודעה, סטיקר, תגובה, אישור קריאה או מדיה מאת %1$@. יתכן שהצד השני ניסה לשלוח לך את זה ישירות, או בקבוצה.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "השמט";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "על אודות בקשות הודעה";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "קבצי GIF";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "תמונות";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "סרטונים";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_BOOST_BODY" = "תג הבוסט שלכם פג תוקף והוא לא גלוי יותר בפרופיל שלכם.\n\nאפשר להמשיך להשתמש ב–Signal אבל כדי לתמוך בטכנולוגיה שנבנתה עבורכם, נשמח אם תשקלו להפוך לתורמים על בסיס חודשי.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "תג הבוסט שלכם פג תוקף והוא לא גלוי יותר בפרופיל שלכם.\n\nאפשר להפעיל מחדש את תג הבוסט שלך למשך 30 ימים נוספים עם תרומה חד פעמית.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "תג הבוסט שלך פג תוקף והוא לא גלוי יותר בפרופיל שלך.\n\nאפשר להפעיל מחדש את תג הבוסט שלך למשך 30 ימים נוספים עם תרומה חד פעמית.";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "תג פג";
@@ -443,7 +443,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "התרומה החודשית החוזרת שלך בוטלה. תג התרומה %1$@ כבר לא גלוי בפרופיל שלך.\n\nכדי להמשיך לתמוך ב–Signal ולהפעיל מחדש את התג שלך, אפשר לעדכן את פרטי התשלום ולתרום שוב.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "התרומה החודשית החוזרת שלך בוטלה אוטומטית כי לא היית פעיל במשך זמן רב מדי. תג ה%1$@ שלך לא גלוי יותר בפרופיל שלך.\n\nאפשר להמשיך להשתמש ב–Signal אבל כדי לתמוך באפליקציה ולהפעיל מחדש את התג שלך, כדאי לתרום עכשיו.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "התרומה החודשית החוזרת שלך בוטלה אוטומטית כי לא התקיימה אצלך פעילות במשך זמן רב מדי. תג ה%1$@ שלך לא גלוי יותר בפרופיל שלך.\n\nאפשר להמשיך להשתמש ב–Signal אבל כדי לתמוך באפליקציה ולהפעיל מחדש את התג שלך, כדאי לתרום עכשיו.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "הרווחת תג תרומה מ–Signal! אפשר להציג אותו בפרופיל שלך כדי להשוויץ בתמיכה שלך.";
@@ -914,7 +914,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי לראות אילו מאנשי הקשר שלך הם משתמשי Signal.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "תצר תגובות";
+"CONFIGURE_REACTIONS" = "התאמה אישית של תגובות";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "זה יאפס את היישום ע״י מחיקת ההודעות שלך. היישום ייסגר לאחר שתהליך זה יושלם.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "תרומה";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "תרומה בשם %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "ביצעת תרומה ל–Signal בשם %1$@. הוא או היא יקבלו את האפשרות להשוויץ בתמיכה שלהם בפרופיל.";
@@ -3568,6 +3568,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "החודש";
 
+/* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "הזכר לי מאוחר יותר";
 
@@ -4076,7 +4079,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "אין קבוצות אחרות במשותף.";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "הערה לעצמי";
+"NOTE_TO_SELF" = "הערות לעצמי";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "ייתכן שקיבלת הודעות בזמן שה־%1$@ שלך הופעל מחדש.";
@@ -5111,40 +5114,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "כל ה · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "הגיב עם %1$@ אל ההודעה שלך";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "הגיב/ה %1$@ להודעה שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "הגיב עם %1$@ אל האלבום שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "הגיב/ה %1$@ לאלבום שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "הגיב עם %1$@ אל השמע שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "הגיב/ה %1$@ להודעה הקולית שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "הגיב עם %1$@ אל שיתוף איש הקשר שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "הגיב/ה %1$@ לשיתוף איש הקשר שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "הגיב עם %1$@ אל הקובץ שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "הגיב/ה %1$@ לקובץ שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "הגיב %1$@ אל ה־GIF שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "הגיב/ה %1$@ ל–GIF שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "הגיב עם %1$@ אל התמונה שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "הגיב/ה %1$@ לתמונה שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "הגיב עם %1$@ אל המדבקה שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "הגיב/ה %1$@ לסטיקר שלך";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "הגיב עם %1$@ אל: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "הגיב/ה %1$@ ל: \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "הגיב עם %1$@ אל הסרטון שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "הגיב/ה %1$@ לסרטון שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "הגיב עם %1$@ אל המדיה לצפייה חד־פעמית שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "הגיב/ה %1$@ למדיה לצפייה חד–פעמית שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "הגיב עם %1$@ אל ההודעה הקולית שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "הגיב/ה %1$@ להודעה הקולית שלך";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "נקרא";
@@ -5197,6 +5200,15 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "נכשל בהרשמה מחדש עבור התראות דחיפה.";
 
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "אנחנו צריכים לוודא שלא מדובר ברובוט";
 
@@ -5223,6 +5235,24 @@
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "בדוק חיבור";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "תסדיר זה של מספר הטלפון אינו נתמך. אנא צור קשר עם התמיכה.";
@@ -5258,7 +5288,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "שם משפחה";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "מי יכול למצוא אותי לפי המספר שלי?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "שם פרטי";
@@ -5882,10 +5912,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "בטל הפעלת תשלומים";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "מומלץ שתעביר את הכספים שלך אל כתובת ארנק אחרת לפני ביטול הפעלת תשלומים. אם תבחר לא להעביר את הכספים שלך עכשיו, הם יישארו בארנק שמקושר אל Signal אם תפעיל מחדש תשלומים.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "מומלץ להעביר את הכספים שלך לכתובת ארנק אחרת לפני ביטול ההפעלה של תשלומים. במקרה של בחירה לא להעביר את הכספים עכשיו, הם יישארו בארנק שמקושר אל Signal בעת הפעלה מחדש של תשלומים.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "המאזן שלך יישאר בארנק שמקושר אל Signal אם תבחר להפעיל מחדש תשלומים.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "היתרה שלך תישאר בארנק שמקושר אל Signal במקרה של בחירה להפעיל מחדש את תשלומים.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "לבטל הפעלה בלי להעביר?";
@@ -5972,7 +6002,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "השתמש ב־Signal כדי לשלוח ולקבל MobileCoin, מטבע דיגיטלי חדש ממוקד פרטיות. הפעל כדי להתחיל.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "הפעל מחדש תשלומים";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "הפעלה מחדש של תשלומים";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "היכרות עם תשלומים (בטא)";
@@ -6623,7 +6653,7 @@
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "תשובות ותגובות";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "אפשר תשובות ותגובות";
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "הפעלת תשובות ותגובות";
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "תשובות";
@@ -7110,6 +7140,9 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "לא נקרא";
+
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "התקבל סוג בלתי נתמך של צרופה.";

@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "عُلم";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "لم يتمكن %1$@ من توصيل رسالة أو ملصق أو رد فعل أو وصل القراءة إليك في هذه المحادثة.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "لم يتمكن %1$@ من توصيل رسالة أو ملصق أو رد فعل أو وصل القراءة إليك في هذه الدردشة.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "هناك مشكل في التوصيل";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "لقد تعذر توصيل رسالة – نصية، ملصقة، رد فعل، وصل القراءة، أو وسيط – من %1$@. يُحتمَل أنها أُرسِلت إليك مباشرة أو أنها قد أُرسِلت في مجموعة.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "لم يتمكن %1$@ من توصيل رسالة أو ملصق أو رد فعل أو وصل القراءة أو وسيط إليك. يُحتمَل أنها أُرسِلت إليك مباشرة أو أنها قد أُرسِلت في مجموعة.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "تجاهل";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "حَول طلبات المُراسلة";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "الصور المتحركة";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "الصور";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "الفيديوهات";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "صورة متحركة";
@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_BOOST_BODY" = "لقد نفذت صلاحية شارة الدعم الخاصة بك، لذلك لم تعُد ظاهرة في حسابك.\n\nيُمكنك الاستمرار في استخدام Signal لكن لتدعم التقنية التي بُنيت من أجلك، يُرجى التفكير في أن تصبح داعمًا شهريًا.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "لقد نفذت صلاحية شارة الدعم الخاصة بك، لذلك لم تعُد ظاهرة في حسابك.\n\nيُمكنك إعادة تفعيل شارة الدعم الخاصة بك لمدة 30 يوماً أخرى بمساهمة لمرة واحدة.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "لقد نفذت صلاحية شارة الدعم الخاصة بك، لذلك لم تعُد ظاهرة في حسابك.يُمكنك إعادة تفعيل شارة الدعم الخاصة بك لمدة 30 يوماً أخرى بتبرّع لمرة واحدة.";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "لقد نفذت الشارة";
@@ -440,10 +440,10 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "تم إلغاء التبرعات الشهرية";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "تم إلغاء التبرّع الشهري المُتكرر. %1$@ لم تعد شارتك ظاهرة على حسابك.\n\nللاستمرار في دعم Signal وإعادة تنشيط شارتك، يُرجى تحديث تفاصيل الدفع الخاصة بك والتبرّع مرة أخرى.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "تم إلغاء التبرّع الشهري المُتكرر. %1$@ لم تعد شارتك ظاهرة على حسابك.\n\nللاستمرار في دعم Signal وإعادة تفعيل شارتك، يُرجى تحديث تفاصيل الدفع الخاصة بك والتبرّع مرة أخرى.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "لقد أُلغيَ تبرعك الشهري الدوري تلقائيًا، بسبب طول غياب نشاطك لفترة طويلة. لم تعد شارتك %1$@ ظاهرة في حسابك.\n\nيُمكنك الاستمرار في استخدام Signal، ولكن يُرجى التجديد الآن لدعم التطبيق وإعادة تفعيل شارتك، تبرّع الآن.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "لقد أُلغيَ تبرّعك الشهري المُتكرر تلقائيًا بسبب طول غياب نشاطك لفترة طويلة. لم تعُد شارتك %1$@ ظاهرة في حسابك.\n\nيُمكنك الاستمرار في استخدام Signal، ولكن يُرجى التجديد الآن لدعم التطبيق وإعادة تفعيل شارتك، تبرّع الآن.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "لقد حصلت على شارة مُتبرع من Signal! اعرضها في حسابك الشخصي لإظهار دعمك.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "تبرّع";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "تبرع نيابة عن %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "قدّمت تبرّعًا لـ Signal نيابة عن %1$@. سَيتم منحهم خيار إظهار دعمهم على حسابهم الشخصي.";
@@ -3568,6 +3568,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "هذا الشهر";
 
+/* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "ذكِّرني لاحقاً";
 
@@ -5084,7 +5087,7 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "تفاعلَ مع قصتك";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "تفاعل مع قصة %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "تفاعَلَ مع قصة %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "قصة · %1$@";
@@ -5111,40 +5114,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "الكُل · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "تفاعُل بِـ%1$@ على رسالتك";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "تفاعل %1$@ مع رسالتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "تفاعُل بِـ%1$@ على ألبومك";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "تفاعل %1$@ مع ألبومك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "تفاعُل بِـ%1$@ على صوتك";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "تفاعل %1$@ مع صوتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على جهة اتصالك المُشاركَة";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "تفاعل %1$@ مع جهة اتصالك المُشارَكة";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على ملفك";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "تفاعل %1$@ مع ملفك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "تفاعُل بِـ%1$@ على صورتك المتحركة";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "تفاعل %1$@ مع صورتك المتحركة";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "تفاعُل بِـ%1$@ على صورتك";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "تفاعل %1$@ مع صورتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على مُلصقك";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "تفاعل %1$@ مع مُلصقك";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "تفاعل %1$@ مع : \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "تفاعُل بِـ%1$@ على مقطعك المرئي";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "تفاعل %1$@ مع الفيديو الخاص بك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على وسيطك المعروض لمرة واحدة";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "تفاعل %1$@ مع وسيطك المعروض لمرة واحدة";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على تسجيلكَ الصوتيّ";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "تفاعل %1$@ مع تسجيلكَ الصوتي";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "مقروء";
@@ -5197,6 +5200,15 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "فشلت إعادة الاشتراك في الإشعارات اللحظية.";
 
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "علينا التحقق من أنك إنسان";
 
@@ -5223,6 +5235,24 @@
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "تأكَّد مِنَ الاِتِّصال";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "صيغة رقم الهاتف هذه غير مدعومة، فضلًا تواصل مع الدعم.";
@@ -5258,7 +5288,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "اسم العائلة";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "مَن يُمكنه العثور عليَّ باستخدام رقمي الخاص؟";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "الاسم الأول";
@@ -5882,10 +5912,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "تعطيل المدفوعات";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "يٌوصَى بإرسال مبالغك إلى عنوان محفظة أخرى قبل تعطيل الدفوعات. إذا اخترت عدم إرسال مبالغك الآن، سوف تبقى في محفظتك مرتبطة بـ Signal إذا أعدت تفعيل الدفوعات.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "يوصَى بإرسال رصيدك المالي إلى عنوان محفظة أخرى قبل تعطيل عمليات الدفع. إذا اخترت عدم إرسال رصيدك المالي الآن، سَتبقى في محفظتك مرتبطة بـ Signal إذا أعدت تفعيل الدفوعات.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "سوف يبقى رصيدك في محفظتك مرتبطا بـ Signal إذا اخترت إعادة تفعيل الدفوعات.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "سَيبقى رصيدك في محفظتك مرتبطًا بـ Signal إذا اخترت إعادة تفعيل عمليات الدفع.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "تعطيل بدون أي إرسال ؟";
@@ -5972,7 +6002,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "استخدم Signal لإرسال واستلام MobileCoin، العملة الرقمية الجديدة التي تركز على الخصوصي. عليك بتفعيلها للبدء بالاستخدام.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "إعادة تفعيل الدفوعات";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "إعادة تفعيل عمليات الدفع";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "مقدمة حول الدفوعات (الإصدار التجريبي)";
@@ -6617,7 +6647,7 @@
 "STORIES_NO_VIEWS_YET" = "لا مشاهدة حاليا";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "السماح للأفراد الذين يمكنهم مشاهدة قصتك من التفاعل معها والرد عليها.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "السماح للأفراد الذين يُمكنهم مشاهدة قصتك من التفاعل معها والرد عليها.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "الإجابات وردود الفعل";
@@ -6731,13 +6761,13 @@
 "STORY_PRIVACY_TITLE" = "إعدادات خصوصية القِصة";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "تفاعل %1$@ مع قصتك";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "تفاعَلَ %1$@ مع قصتك";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "تفاعل %1$@ مع قصة";
+"STORY_REACTION_QUOTE_FORMAT" = "تفاعَلَ %1$@ مع قصة";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "تفاعل %1$@ مع قصة %2$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "تفاعَلَ %1$@ مع قصة %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "رد";
@@ -7110,6 +7140,9 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "غير مقروءة";
+
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "تلقيت مرفق من نوع غير مدعوم.";

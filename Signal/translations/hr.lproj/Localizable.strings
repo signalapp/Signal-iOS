@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Shvaćam";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Poruka, naljepnica, reakcija, potvrda o čitanju ili mediji nisu vam mogli biti isporučeni od osobe %1$@";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Isporuka poruke, naljepnice, reakcije, potvrde o čitanju ili medijskog zapisa u ovom razgovoru od strane korisnika %1$@ nije uspjela.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problem s isporukom";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Poruka, naljepnica, reakcija, potvrda o čitanju ili mediji nisu vam mogli biti isporučeni od osobe %1$@. Možda su vam to pokušali poslati izravno ili u grupu.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Isporuka poruke, naljepnice, reakcije, potvrde o čitanju ili medijskog zapisa od strane korisnika %1$@ nije uspjela. Moguće je da ju je pokušao/la poslati vama izravno ili u grupi.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Poništi";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O zahtjevima za razgovorom";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF-ovi";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "Slike";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "Videozapisi";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -440,10 +440,10 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Mjesečna donacija je otkazana";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Vaša obnavljajuća mjesečna donacija je otkazana. Vaša značka donacije %1$@ više nije vidljiva na vašem profilu.\n\nDa biste nastavili podržavati Signal i ponovno aktivirali svoju značku, ažurirajte podatke o plaćanju i ponovno donirajte.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Vaša obnavljajuća mjesečna donacija je otkazana. Vaša značka donacije %1$@ ne prikazuje se više na vašem profilu.\n\nDa biste nastavili podržavati Signal i ponovno aktivirali svoju značku, ažurirajte podatke o plaćanju i ponovno donirajte.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Vaša pretplata je automatski otkazana zbog toga što ste dugo bili neaktivni. Vaša značka %1$@ više nije vidljiva na vašem profilu.\n\nMožete nastaviti koristiti Signal, ali ako želite podržati aplikaciju i ponovno aktivirati svoju značku, bit će potrebno ponoviti donaciju.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Vaša pretplata je automatski otkazana jer ste dugo bili neaktivni. Vaša značka %1$@ ne prikazuje se više na vašem profilu.\n\nI dalje možete koristiti Signal, ali ako želite podržati aplikaciju i ponovno aktivirati svoju značku, bit će potrebno ponoviti donaciju.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Osvojili ste značku donatora! Prikažite je na svom profilu i iskažite svoju podršku Signalu.";
@@ -914,7 +914,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Možete omogućiti pristup kontaktima u postavkama iOS-a kako biste vidjeli koji od vaših kontakata su korisnici Signala.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Uredite reakcije";
+"CONFIGURE_REACTIONS" = "Prilagodite postavke reakcija";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Ovo će resetirati aplikaciju brisanjem vaših poruka. Aplikacija će se zatvoriti nakon dovršetka ovog postupka.";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donacija";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donacija u ime korisnika %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Izvršili ste donaciju Signalu u ime korisnika %1$@. Korisnik će moći izabrati hoće li iskazati podršku na svom profilu.";
@@ -3568,6 +3568,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Ovog mjeseca";
 
+/* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Podsjeti me kasnije";
 
@@ -5117,7 +5120,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagira s %1$@ na vaš album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagira s %1$@ na vaš zvuk";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagira s %1$@ na vaš zvučni zapis";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagira s %1$@ na vaše dijeljenje kontakta";
@@ -5138,7 +5141,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagira s %1$@ na \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagira s %1$@ na vaš video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagira s %1$@ na vaš videozapis";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagira s %1$@ na vaš jednom vidljiv medijski zapis";
@@ -5197,6 +5200,15 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Ponovna registracija push obavijesti nije uspjela.";
 
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "Moramo potvrditi da ste ljudsko biće";
 
@@ -5223,6 +5235,24 @@
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Provjerite vašu mrežnu vezu";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Format ovog broja telefona nije podržan. Molimo kontaktirajte službu za podršku.";
@@ -5258,7 +5288,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Prezime";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Tko me može pronaći po broju telefona?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Ime";
@@ -5882,10 +5912,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Onemogući plaćanja";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Prije onemogućavanja plaćanja, preporučuje se da sredstva prebacite na drugu adresu novčanika. Ako odlučite ne prenijeti svoja sredstva sada, ona će ostati u vašem novčaniku povezana sa Signalom dok ponovno ne aktivirate plaćanja.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Prije onemogućavanja plaćanja, preporučujemo vam da sredstva prebacite na drugu adresu novčanika. Ako odlučite ne prenijeti svoja sredstva sada, ona će ostati u vašem novčaniku povezana sa Signalom sve dok ponovno ne aktivirate plaćanja.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Vaše će stanje ostati u novčaniku povezanom sa Signalom ako odlučite ponovno aktivirati plaćanja.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Vaše će stanje ostati u novčaniku povezanim sa Signalom ako odlučite ponovno omogućiti plaćanja.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Onemogući bez prijenosa?";
@@ -6617,7 +6647,7 @@
 "STORIES_NO_VIEWS_YET" = "Još nema pregleda";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Dopustite osobama koje mogu vidjeti vašu priču da reagiraju i odgovaraju.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Dopustite osobama koje mogu vidjeti vašu priču da reagiraju i odgovaraju na nju.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Odgovori i reakcije";
@@ -7110,6 +7140,9 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Označi kao nepročitano";
+
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Primljena je nepodržana vrsta privitka.";

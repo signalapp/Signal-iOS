@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "বুঝতে পেরেছি";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "এই চ্যাটে %1$@ থেকে একটি বার্তা, স্টিকার, প্রতিক্রিয়া, পঠিত রসিদ বা মিডিয়া আপনাকে সরবরাহ করা যাবে না।";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "এই চ্যাটে %1$@-এর কাছ থেকে কোনো ম্যাসেজ, স্টিকার, প্রতিক্রিয়া, রিড রিসিপ্ট বা মিডিয়া আপনাকে পাঠানো যায়নি।";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "পাঠানোর ক্ষেত্রে সমস্যা";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ থেকে একটি বার্তা, স্টিকার, প্রতিক্রিয়া, রিড রসিদ বা মিডিয়া আপনাকে সরবরাহ করা যায়নি। তারা হয়তো সরাসরি, অথবা কোনও গ্রুপে এটি আপনার কাছে পাঠানোর চেষ্টা করেছিল।";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@-এর কাছ থেকে একটি ম্যাসেজ, স্টিকার, প্রতিক্রিয়া, রিড রিসিপ্ট বা মিডিয়া আপনাকে পাঠানো যায়নি। তারা হয়তো সরাসরি, অথবা কোনো গ্রুপে এটি আপনাকে পাঠানোর চেষ্টা করেছিলেন।";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "বাতিল করুন";
@@ -116,13 +116,13 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "মেসেজের অনুরোধ সম্পর্কে";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Photos";
+"ALL_MEDIA_FILTER_PHOTOS" = "ছবি";
 
 /* Menu option to limit All Media view to displaying only videos */
-"ALL_MEDIA_FILTER_VIDEOS" = "Videos";
+"ALL_MEDIA_FILTER_VIDEOS" = "ভিডিও";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_BOOST_BODY" = "আপনার বুস্ট ব্যাজের মেয়াদ শেষ হয়ে গেছে, এবং আপনার প্রোফাইলে তা আর দৃশ্যমান নয়।\n\nআপনি Signal ব্যবহার করা চালিয়ে যেতে পারেন, কিন্তু আপনার জন্য তৈরি এই প্রযুক্তিকে সমর্থন করার জন্য, অনুগ্রহ করে একজন মাসিক ডোনার হওয়ার বিষয়টি বিবেচনা করুন।";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "আপনার বুস্ট ব্যাজের মেয়াদ শেষ হয়ে গেছে, এবং আপনার প্রোফাইলে তা আর দৃশ্যমান নয়।\n\nএককালীন ডোনেশনের মাধ্যমে আপনি আপনার বুস্ট ব্যাজকে আরও 30 দিনের জন্য পুনরায় সক্রিয় করতে পারেন।";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "আপনার বুস্ট ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং আপনার প্রোফাইলে তা আর দৃশ্যমান নয়।\n\nএককালীন ডোনেশনের মাধ্যমে আপনি আপনার বুস্ট ব্যাজকে আরো 30 দিনের জন্য পুনরায় সক্রিয় করতে পারবেন।";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "ব্যাজের মেয়াদ শেষ হয়েছে";
@@ -440,7 +440,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "মাসিক ডোনেশন বাতিল করা হয়েছে";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "আপনার পুনরাবৃত্ত মাসিক ডোনেশন বাতিল করা হয়েছে। %1$@ ডোনেশন ব্যাজ আপনার প্রোফাইলে আর দেখা যাবে না।\n\nSignal-কে সমর্থন করা চালিয়ে যেতে এবং আপনার ব্যাজ আবার সক্রিয় করতে, আপনার পেমেন্টের বিবরণ আপডেট করুন এবং আবারো ডোনেট করুন।";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "আপনার পুনরাবৃত্ত মাসিক ডোনেশন বাতিল করা হয়েছে। %1$@ ডোনেশন ব্যাজ আপনার প্রোফাইলে আর দেখা যাবে না।\n\nSignal-কে সহায়তা করা চালিয়ে যেতে এবং আপনার ব্যাজ আবার সক্রিয় করতে, আপনার পেমেন্টের বিবরণ আপডেট করুন এবং আবারো ডোনেট করুন।";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "অনেক দিন ধরে নিষ্ক্রিয় থাকার কারণে আপনার পুনরাবৃত্ত মাসিক ডোনেশন স্বয়ংক্রিয়ভাবে বাতিল হয়ে গেছে। আপনার %1$@ ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়।\n\nআপনি Signal ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটিকে সহায়তা করতে এবং আপনার ব্যাজ পুনরায় সক্রিয় করতে, এখনই ডোনেট করুন।";
@@ -914,7 +914,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "আপনার পরিচিতি গুলির মধ্যে কোনটি Signal ব্যবহারকারী তা দেখতে আপনি iOS সেটিংস অ্যাপ থেকে পরিচিতি অ্যাক্সেস সক্ষম করতে পারেন।";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "রিঅ্যাকশন কনফিগার করুন";
+"CONFIGURE_REACTIONS" = "প্রতিক্রিয়া কনফিগার করুন";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "এটি আপনার মেসেজগুলি মুছে দিয়ে অ্যাপ্লিকেশনটি রিসেট করবে। এই প্রক্রিয়াটি সম্পন্ন হওয়ার পর অ্যাপটি বন্ধ হবে।";
@@ -1928,7 +1928,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "ডোনেশন";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation on behalf of %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "%1$@-এর পক্ষ থেকে ডোনেশন";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "আপনি %1$@-এর পক্ষ হয়ে Signal-এ একটি ডোনেশন দিয়েছেন। তাদের প্রোফাইলে তাদের সমর্থন প্রদর্শন করার জন্য বিকল্প দেওয়া হবে।";
@@ -3568,6 +3568,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "এই মাস";
 
+/* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "আমাকে পরে মনে করিয়ে দেবেন";
 
@@ -4076,7 +4079,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "একই রকমের আর কোনও গ্রুপ নেই";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "নিজের জন্য বার্তা";
+"NOTE_TO_SELF" = "নিজের জন্য নোট";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "আপনার %1$@ পুনঃসূচনা করার সময় হয়তবা আপনি বার্তা পেয়েছেন।";
@@ -5081,10 +5084,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "মূল বার্তাটি পাওয়া যায়নি।";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "আপনার স্টোরি-তে রিঅ্যাক্ট করা হয়েছে";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "আপনার স্টোরিতে রিঅ্যাক্ট করেছেন";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@-এর স্টোরি-তে রিঅ্যাক্ট করা হয়েছে";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@-এর স্টোরিতে রিঅ্যাক্ট করেছেন";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · স্টোরি";
@@ -5111,40 +5114,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "সমস্ত · %1$@টি";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "আপনার মেসেজে %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "আপনার ম্যাসেজে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "আপনার অ্যালবামে %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "আপনার অ্যালবামে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "আপনার অডিওতে %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "আপনার অডিওতে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "আপনার কন্ট্যাক্ট শেয়ারে %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "আপনার কন্টাক্ট শেয়ারে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "আপনার ফাইলটিতে %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "আপনার ফাইলটিতে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "আপনার GIF-এ %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "আপনার GIF-এ %1$@ রিঅ্যাক্ট করেছেন";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "আপনার ফটোতে %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "আপনার ছবিতে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "আপনার স্টিকারটিতে %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "আপনার স্টিকারে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "\"%1$@\" প্রতিক্রিয়া ব্যক্ত করা হয়েছে: %2$@";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%1$@ রিঅ্যাক্ট করেছেন: \"%2$@\"-এ";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "আপনার ভিডিওতে %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "আপনার ভিডিওতে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "আপনার একবার দেখার যোগ্য মিডিয়াতে %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "আপনার ভিউ-ওয়ান্স মিডিয়াতে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "আপনার ভয়েস মেসেজে %1$@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "আপনার ভয়েস ম্যাসেজে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "পড়ুন";
@@ -5197,6 +5200,15 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "পুশ বিজ্ঞপ্তিগুলির জন্য পুনরায় নিবন্ধন করতে ব্যর্থ।";
 
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+
+/* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "আপনি যে একজন মানুষ তা আমরা যাচাই করতে চাই।";
 
@@ -5223,6 +5235,24 @@
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "সংযোগ পরীক্ষা করুন";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+
+/* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "এই ফোন নাম্বার ফর্ম্যাটটি সমর্থিত নয়, দয়া করে সহায়তার সাথে যোগাযোগ করুন।";
@@ -5258,7 +5288,7 @@
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "নামের শেষ অংশ";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Who can find me by number?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "নম্বরের মাধ্যমে কারা আমাকে খুঁজে পাবেন?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "নামের প্রথম অংশ";
@@ -5882,10 +5912,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "পেমেন্ট বন্ধ করুন";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "সুপারিশ করা হচ্ছে যে পেমেন্ট বন্ধ করার আগে আপনি আপনার ফান্ডগুলি আরেকটি ওয়ালেট ঠিকানায় স্থানান্তর করুন। আপনি এখনই আপনার ফান্ডগুলি স্থানান্তর করতে না চাইলে, সেগুলি Signal-এর সাথে লিঙ্ক করা আপনার ওয়ালেটে থাকবে যদি আপনি পেমেন্ট পুনরায় সক্রিয় করতে চান।";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "পেমেন্ট নিষ্ক্রিয় করার আগে আপনাকে অন্য ওয়ালেট ঠিকানায় আপনার ফান্ড স্থানান্তর করার পরামর্শ দেওয়া হচ্ছে। আপনি যদি এখন আপনার ফান্ড স্থানান্তর না করার সিদ্ধান্ত নেন, এবং আপনি যদি পেমেন্ট পুনরায় সক্রিয় করেন তবে সেগুলো আপনার Signal-এর সাথে লিংককৃত ওয়ালেটে থাকবে।";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "আপনি পেমেন্ট পুনঃসক্রিয় করা বেছে নিলে আপনার ব্যালান্স Signal-এর সাথে লিঙ্ক করা আপনার ওয়ালেটে থাকবে।";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "আপনি পেমেন্ট পুনরায় সক্রিয় করলে আপনার ব্যালান্স Signal-এর সাথে লিংককৃত আপনার ওয়ালেটে থাকবে।";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "ট্রান্সফার না করেই বন্ধ করবেন?";
@@ -5972,7 +6002,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "গোপনীয়তাকে গুরুত্ব দেয় এমন একটি নতুন ডিজিটাল মুদ্রা MobileCoin পাঠাতে ও গ্রহণ করতে Signal ব্যবহার করুন। শুরু করতে সক্রিয় করুন।";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "পেমেন্ট পুনরায় চালু করুন";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "পেমেন্ট আবারো চালু করুন";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "পেমেন্ট উপস্থাপন করা হচ্ছে (বিটা)";
@@ -6617,13 +6647,13 @@
 "STORIES_NO_VIEWS_YET" = "এখন পর্যন্ত কোন ভিউ নেই";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "যারা আপনার স্টোরি দেখতে পাবেন তাদের রিঅ্যাক্ট এবং উত্তর দিতে দিন।";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "আপনার স্টোরি দেখতে পাবেন এমন লোকজনকে রিঅ্যাক্ট করতে ও উত্তর দিতে দিন।";
 
 /* Section header for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_HEADER" = "উত্তর ও রিঅ্যাকশন";
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "উত্তর ও প্রতিক্রিয়া";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "উত্তর ও রিঅ্যাকশন অনুমোদন করুন";
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "উত্তর ও প্রতিক্রিয়ার অনুমতি দিন";
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "রিপ্লাই";
@@ -6731,19 +6761,19 @@
 "STORY_PRIVACY_TITLE" = "স্টোরির গোপনীয়তা";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "আপনার স্টোরিতে %1$@ রিঅ্যাক্ট করেছে";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "আপনার স্টোরিতে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "একটি স্টোরিতে %1$@ রিঅ্যাক্ট করেছে";
+"STORY_REACTION_QUOTE_FORMAT" = "একটি স্টোরিতে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@-এর স্টোরিতে %1$@ রিঅ্যাক্ট করেছে";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@-এর স্টোরিতে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "প্রত্যুত্তর";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "স্টোরি-তে রিঅ্যাক্ট করা হয়েছে";
+"STORY_REPLY_REACTION" = "স্টোরিতে রিঅ্যাক্ট করেছেন";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "%1$@-কে গোপনে উত্তর";
@@ -7110,6 +7140,9 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "অপঠিত করুন";
+
+/* Label warning the user that the validation of their username has failed. */
+"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "অসমর্থিত সংযুক্তির ধরন পওয়া গেছে।";
