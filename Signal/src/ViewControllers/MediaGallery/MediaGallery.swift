@@ -40,10 +40,14 @@ public class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     init(message: TSMessage, attachmentStream: TSAttachmentStream) {
         self.message = message
         self.attachmentStream = attachmentStream
-        self.captionForDisplay = attachmentStream.caption?.filterForDisplay
         self.galleryDate = GalleryDate(message: message)
         self.albumIndex = message.attachmentIds.firstIndex(of: attachmentStream.uniqueId) ?? 0
         self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
+        if let captionText = attachmentStream.caption?.filterForDisplay {
+            self.captionForDisplay = captionText
+        } else {
+            self.captionForDisplay = message.body?.filterForDisplay
+        }
     }
 
     var isVideo: Bool {
