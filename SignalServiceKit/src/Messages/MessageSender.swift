@@ -1187,7 +1187,7 @@ extension MessageSender {
 extension MessageSender {
 
     @objc(encryptedMessageForMessagePlaintextContent:recipientAddress:deviceId:udSendingParamsProvider:transaction:error:)
-    private func encryptedMessage(
+    func encryptedMessage(
         messagePlaintextContent plaintextContent: Data?,
         recipientAddress: SignalServiceAddress,
         deviceId: Int32,
@@ -1277,8 +1277,8 @@ extension MessageSender {
         )
     }
 
-    @objc(wrappedPlaintextMessageForMessagePlaintextContent:isResendRequest:recipientAddress:deviceId:udSendingParamsProvider:transaction:error:)
-    private func wrappedPlaintextMessage(
+    @objc(wrappedPlaintextMessageForMessagePlaintextContent:isResendRequestMessage:recipientAddress:deviceId:udSendingParamsProvider:transaction:error:)
+    func wrappedPlaintextMessage(
         messagePlaintextContent plaintextContent: Data?,
         isResendRequestMessage: Bool,
         recipientAddress: SignalServiceAddress,
