@@ -1,6 +1,6 @@
 # Building
 
-We typically develop against the latest stable version of Xcode.
+We typically develop against the latest stable version of Xcode on the latest OS.
 
 ## 1. Clone
 
