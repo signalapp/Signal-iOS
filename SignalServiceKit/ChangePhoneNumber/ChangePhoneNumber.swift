@@ -70,8 +70,7 @@ public class ChangePhoneNumber: NSObject {
                     localAci: localAci,
                     localAccountId: localRecipient.accountId,
                     localDeviceId: tsAccountManager.storedDeviceId(with: transaction),
-                    localUserAllDeviceIds: localUserAllDeviceIds,
-                    transaction: transaction.asV2Write
+                    localUserAllDeviceIds: localUserAllDeviceIds
                 ).then(on: DispatchQueue.global()) { generatePniIdentityResult -> Promise<(Parameters, PendingState)> in
                     switch generatePniIdentityResult {
                     case let .success(parameters, pendingState):

@@ -45,8 +45,7 @@ public protocol ChangePhoneNumberPniManager {
         localAci: ServiceId,
         localAccountId: String,
         localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32],
-        transaction: DBWriteTransaction
+        localUserAllDeviceIds: [UInt32]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult>
 
     /// Commits an identity generated for a change number request.
@@ -164,8 +163,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         localAci: ServiceId,
         localAccountId: String,
         localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32],
-        transaction: DBWriteTransaction
+        localUserAllDeviceIds: [UInt32]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
         logger.info("Generating PNI identity!")
 

@@ -174,16 +174,13 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         let localDeviceId: UInt32 = 1
 
-        return db.write { transaction in
-            changeNumberPniManager.generatePniIdentity(
-                forNewE164: e164,
-                localAci: aci,
-                localAccountId: accountId,
-                localDeviceId: localDeviceId,
-                localUserAllDeviceIds: [localDeviceId] + linkedDeviceIds,
-                transaction: transaction
-            )
-        }
+        return changeNumberPniManager.generatePniIdentity(
+            forNewE164: e164,
+            localAci: aci,
+            localAccountId: accountId,
+            localDeviceId: localDeviceId,
+            localUserAllDeviceIds: [localDeviceId] + linkedDeviceIds
+        )
     }
 }
 
