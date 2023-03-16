@@ -12,7 +12,7 @@ public class MessagePipelineSupervisor: NSObject {
 
     private let lock = UnfairLock()
     private let pipelineStages = NSHashTable<MessageProcessingPipelineStage>.weakObjects()
-    private var suspensionCount = 0
+    private var suspensions = Set<Suspension>()
 
     // MARK: - Lifecycle
 
@@ -44,22 +44,39 @@ public class MessagePipelineSupervisor: NSObject {
     @objc
     public var isMessageProcessingPermitted: Bool {
         if CurrentAppContext().shouldProcessIncomingMessages {
-            return lock.withLock { (suspensionCount == 0) }
+            return lock.withLock { (suspensions.isEmpty) }
         } else {
             return false
         }
     }
 
+    public enum Suspension: Hashable {
+        case uuidBackfill
+        case nseWakingUpApp(suspensionId: UUID, payloadString: String)
+
+        fileprivate var reasonString: String {
+            switch self {
+            case .uuidBackfill:
+                return "UUID Backfill"
+            case .nseWakingUpApp(_, let payloadString):
+                return "Waking main app for \(payloadString)"
+            }
+        }
+    }
+
     /// Invoking this method will ensure that all registered message processing stages are notified that they should
     /// suspend their activity. This suppression will persist until the returned handle is invalidated.
-    /// Note: The caller *must* invalidate the returned handle.
-    @objc
-    public func suspendMessageProcessing(for reason: String) -> MessagePipelineSuspensionHandle {
-        incrementSuspensionCount(for: reason)
+    /// Note: The caller *must* invalidate the returned handle or call `unsuspendMessageProcessing`.
+    public func suspendMessageProcessing(for suspension: Suspension) -> MessagePipelineSuspensionHandle {
+        addSuspension(suspension)
         let handle = MessagePipelineSuspensionHandle {
-            self.decrementSuspensionCount(for: "Handle invalidation: \(reason)")
+            self.removeSuspension(suspension)
         }
         return handle
+    }
+
+    public func unsuspendMessageProcessing(for suspension: Suspension) {
+        removeSuspension(suspension)
     }
 
     /// Registers a message processing stage to receive updates on whether processing is permitted
@@ -80,27 +97,36 @@ public class MessagePipelineSupervisor: NSObject {
 
     // MARK: - Private
 
-    private func incrementSuspensionCount(for reason: String) {
-        let updatedCount: Int = lock.withLock {
-            suspensionCount += 1
-            return suspensionCount
+    private func addSuspension(_ suspension: Suspension) {
+        let (oldCount, updatedCount): (Int, Int) = lock.withLock {
+            let oldCount = suspensions.count
+            suspensions.insert(suspension)
+            return (oldCount, suspensions.count)
         }
-        Logger.info("Incremented suspension refcount to \(updatedCount) for reason: \(reason)")
-        if updatedCount == 1 {
-            notifyOfSuspensionStateChange()
+        if oldCount != updatedCount {
+            Logger.info("Incremented suspension refcount to \(updatedCount) for reason: \(suspension.reasonString)")
+            if updatedCount == 1 {
+                notifyOfSuspensionStateChange()
+            }
+        } else {
+            Logger.info("Already suspended for reason: \(suspension.reasonString)")
         }
     }
 
-    private func decrementSuspensionCount(for reason: String) {
-        let updatedCount: Int = lock.withLock {
-            suspensionCount -= 1
-            return suspensionCount
+    private func removeSuspension(_ suspension: Suspension) {
+        let (oldCount, updatedCount): (Int, Int) = lock.withLock {
+            let oldCount = suspensions.count
+            suspensions.remove(suspension)
+            return (oldCount, suspensions.count)
         }
-        Logger.info("Decremented suspension refcount to \(updatedCount) for reason: \(reason)")
-        assert(updatedCount >= 0, "Suspension refcount dipped below zero")
+        if oldCount != updatedCount {
+            Logger.info("Decremented suspension refcount to \(updatedCount) for reason: \(suspension.reasonString)")
 
-        if updatedCount == 0 {
-            notifyOfSuspensionStateChange()
+            if updatedCount == 0 {
+                notifyOfSuspensionStateChange()
+            }
+        } else {
+            Logger.info("Was already not suspended, doing nothing for reason: \(suspension.reasonString)")
         }
     }
 
@@ -129,7 +155,7 @@ public class MessagePipelineSupervisor: NSObject {
         let shouldBackfillUUIDs = CurrentAppContext().shouldProcessIncomingMessages &&
                                   !CurrentAppContext().isRunningTests
         if shouldBackfillUUIDs {
-            let uuidBackfillSuspension = suspendMessageProcessing(for: "UUID Backfill")
+            let uuidBackfillSuspension = suspendMessageProcessing(for: .uuidBackfill)
             AppReadiness.runNowOrWhenAppDidBecomeReadySync {
                 firstly {
                     UUIDBackfillTask(

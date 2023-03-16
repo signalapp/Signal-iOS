@@ -50,8 +50,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(messageProcessorDidFlushQueue),
-            name: MessageProcessor.messageProcessorDidFlushQueue,
+            selector: #selector(messageProcessorDidDrainQueue),
+            name: MessageProcessor.messageProcessorDidDrainQueue,
             object: nil
         )
 
@@ -170,7 +170,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     @objc
-    func messageProcessorDidFlushQueue() {
+    func messageProcessorDidDrainQueue() {
         // We don't want to send additional resets until we
         // have received the "empty" response from the WebSocket
         // or finished at least one REST fetch.

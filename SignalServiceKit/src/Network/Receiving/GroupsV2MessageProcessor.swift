@@ -131,6 +131,12 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
     private let unfairLock = UnfairLock()
     private var groupIdsBeingProcessed: Set<Data> = Set()
 
+    fileprivate var isActivelyProcessing: Bool {
+        return unfairLock.withLock {
+            return groupIdsBeingProcessed.isEmpty.negated
+        }
+    }
+
     // At any given time, we need to ensure that there is exactly
     // one GroupsMessageProcessor for each group that needs to
     // process incoming messages.
@@ -983,6 +989,10 @@ public class GroupsV2MessageProcessor: NSObject {
         } else {
             return nil
         }
+    }
+
+    public func isActivelyProcessing() -> Bool {
+        return processingQueue.isActivelyProcessing
     }
 
     @objc

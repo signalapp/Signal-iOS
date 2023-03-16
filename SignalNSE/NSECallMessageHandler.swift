@@ -120,7 +120,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
 
             // We don't want to risk consuming any call messages that the main app needs to perform the call
             // We suspend message processing in our process to give the main app a chance to wake and take over
-            let suspension = messagePipelineSupervisor.suspendMessageProcessing(for: "Waking main app for \(payload)")
+            let suspension = messagePipelineSupervisor.suspendMessageProcessing(for: .nseWakingUpApp(suspensionId: UUID(), payloadString: "\(payload)"))
             DispatchQueue.sharedUtility.asyncAfter(deadline: .now() + .seconds(10)) {
                 suspension.invalidate()
             }

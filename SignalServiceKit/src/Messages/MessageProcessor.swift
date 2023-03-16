@@ -10,7 +10,7 @@ import SignalCoreKit
 @objc
 public class MessageProcessor: NSObject {
     @objc
-    public static let messageProcessorDidFlushQueue = Notification.Name("messageProcessorDidFlushQueue")
+    public static let messageProcessorDidDrainQueue = Notification.Name("messageProcessorDidDrainQueue")
 
     @objc
     public var hasPendingEnvelopes: Bool {
@@ -23,7 +23,41 @@ public class MessageProcessor: NSObject {
         return AnyPromise(processingCompletePromise())
     }
 
-    public func processingCompletePromise() -> Promise<Void> {
+    /// When calling `processingCompletePromise` while message processing is suspended,
+    /// there is a problem. We may have pending messages waiting to be processed once the suspension
+    /// is lifted. But what's more, we may have started processing messages, then suspended, then called
+    /// `processingCompletePromise` before that initial processing finished. Suspending does not
+    /// interrupt processing if it already started.
+    ///
+    /// So there are 4 cases to worry about:
+    /// 1. Message processing isn't suspended
+    /// 2. Suspended with no pending messages
+    /// 3. Suspended with pending messages and no active processing underway
+    /// 4. Suspended but still processing from before the suspension took effect
+    ///
+    /// Cases 1 and 2 are easy and behave the same in all cases.
+    ///
+    /// Case 3 differs in behavior; sometimes we want to wait for suspension to be lifted and
+    /// those pending messages to be processed, other times we don't want to wait to unsuspend.
+    ///
+    /// Case 4 is once again the same in all cases; processing has started and can't be stopped, so
+    /// we should always wait until it finishes.
+    public enum SuspensionBehavior {
+        /// Default value. (Legacy behavior)
+        /// If suspended with pending messages and no processing underway, wait for suspension
+        /// to be lifted and those messages to be processed.
+        case alwaysWait
+        /// If suspended with pending messages, only wait if processing has already started. If it
+        /// hasn't started, don't wait for it to start, so that the promise can resolve before suspension
+        /// is lifted.
+        case onlyWaitIfAlreadyInProgress
+    }
+
+    /// - parameter suspensionBehavior: What the promise should wait for if message processing
+    /// is suspended; see `SuspensionBehavior` documentation for details.
+    public func processingCompletePromise(
+        suspensionBehavior: SuspensionBehavior = .alwaysWait
+    ) -> Promise<Void> {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             if DebugFlags.isMessageProcessingVerbose {
                 Logger.verbose("!shouldProcessIncomingMessages")
@@ -31,16 +65,32 @@ public class MessageProcessor: NSObject {
             return Promise.value(())
         }
 
-        if self.hasPendingEnvelopes {
+        var shouldWaitForMessageProcessing = self.hasPendingEnvelopes
+        var shouldWaitForGV2MessageProcessing = self.databaseStorage.read {
+            Self.groupsV2MessageProcessor.hasPendingJobs(transaction: $0)
+        }
+        // Check if processing is suspended; if so we need to fork behavior.
+        if self.messagePipelineSupervisor.isMessageProcessingPermitted.negated {
+            switch suspensionBehavior {
+            case .alwaysWait:
+                break
+            case .onlyWaitIfAlreadyInProgress:
+                // Check if we are already processing, if so wait for that to finish.
+                // If not don't wait even if we have pending messages; those won't process
+                // until we unsuspend.
+                shouldWaitForMessageProcessing = self.isDrainingPendingEnvelopes.get()
+                shouldWaitForGV2MessageProcessing = self.groupsV2MessageProcessor.isActivelyProcessing()
+            }
+        }
+
+        if shouldWaitForMessageProcessing {
             if DebugFlags.internalLogging {
                 Logger.info("hasPendingEnvelopes, queuedContentCount: \(self.queuedContentCount)")
             }
             return NotificationCenter.default.observe(
-                once: Self.messageProcessorDidFlushQueue
+                once: Self.messageProcessorDidDrainQueue
             ).then { _ in self.processingCompletePromise() }.asVoid()
-        } else if databaseStorage.read(
-            block: { Self.groupsV2MessageProcessor.hasPendingJobs(transaction: $0) }
-        ) {
+        } else if shouldWaitForGV2MessageProcessing {
             if DebugFlags.internalLogging {
                 let pendingJobCount = databaseStorage.read {
                     Self.groupsV2MessageProcessor.pendingJobCount(transaction: $0)
@@ -232,9 +282,8 @@ public class MessageProcessor: NSObject {
                                             autoreleaseFrequency: .workItem)
 
     private var pendingEnvelopes = PendingEnvelopes()
-    private var isDrainingPendingEnvelopes = false {
-        didSet { assertOnQueue(serialQueue) }
-    }
+
+    private var isDrainingPendingEnvelopes = AtomicBool(false, lock: .init())
 
     private func drainPendingEnvelopes() {
         guard Self.messagePipelineSupervisor.isMessageProcessingPermitted else { return }
@@ -243,12 +292,11 @@ public class MessageProcessor: NSObject {
         guard CurrentAppContext().shouldProcessIncomingMessages else { return }
 
         serialQueue.async {
-            guard !self.isDrainingPendingEnvelopes else { return }
-            self.isDrainingPendingEnvelopes = true
+            self.isDrainingPendingEnvelopes.set(true)
             while autoreleasepool(invoking: { self.drainNextBatch() }) {}
-            self.isDrainingPendingEnvelopes = false
+            self.isDrainingPendingEnvelopes.set(false)
             if self.pendingEnvelopes.isEmpty {
-                NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
+                NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidDrainQueue, object: nil)
             }
         }
     }
@@ -256,7 +304,6 @@ public class MessageProcessor: NSObject {
     /// Returns whether or not to continue draining the queue.
     private func drainNextBatch() -> Bool {
         assertOnQueue(serialQueue)
-        owsAssertDebug(isDrainingPendingEnvelopes)
 
         // We want a value that is just high enough to yield perf benefits.
         let kIncomingMessageBatchSize = 16

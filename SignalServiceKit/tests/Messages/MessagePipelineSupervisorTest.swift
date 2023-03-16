@@ -22,7 +22,7 @@ class MessagePipelineSupervisorTest: SSKBaseTestSwift {
 
     func testSuspendAndResume() {
         // Setup
-        let handle = dut.suspendMessageProcessing(for: "Testing")
+        let handle = dut.suspendMessageProcessing(for: .uuidBackfill)
 
         // Test
         let processingPermittedWitActiveSuppression = dut.isMessageProcessingPermitted
@@ -40,7 +40,7 @@ class MessagePipelineSupervisorTest: SSKBaseTestSwift {
         dut.register(pipelineStage: pipelineStage)
 
         // Test
-        let handle = dut.suspendMessageProcessing(for: "Testing")
+        let handle = dut.suspendMessageProcessing(for: .uuidBackfill)
 
         // Verify
         XCTAssertEqual(pipelineStage.suspendCalloutCount, 1)
@@ -52,7 +52,7 @@ class MessagePipelineSupervisorTest: SSKBaseTestSwift {
 
     func testResumeNotifications() {
         // Setup
-        let handle = dut.suspendMessageProcessing(for: "Testing")
+        let handle = dut.suspendMessageProcessing(for: .uuidBackfill)
         let pipelineStage = MockPipelineStage()
         dut.register(pipelineStage: pipelineStage)
 
@@ -72,7 +72,7 @@ class MessagePipelineSupervisorTest: SSKBaseTestSwift {
 
         // Test
         dut.register(pipelineStage: addedBeforeSuspension)
-        let handle = dut.suspendMessageProcessing(for: "Testing")
+        let handle = dut.suspendMessageProcessing(for: .uuidBackfill)
         dut.register(pipelineStage: addedAfterSuspension)
         handle.invalidate()
         dut.register(pipelineStage: addedAfterResume)
@@ -95,7 +95,7 @@ class MessagePipelineSupervisorTest: SSKBaseTestSwift {
         dut.register(pipelineStage: stage)
         dut.register(pipelineStage: stage)
 
-        let handle = dut.suspendMessageProcessing(for: "Testing")
+        let handle = dut.suspendMessageProcessing(for: .uuidBackfill)
 
         dut.unregister(pipelineStage: stage)
 
@@ -117,7 +117,7 @@ class MessagePipelineSupervisorTest: SSKBaseTestSwift {
 
         // Test
         dut.unregister(pipelineStage: removedBeforeSuspension)
-        let handle = dut.suspendMessageProcessing(for: "Testing")
+        let handle = dut.suspendMessageProcessing(for: .uuidBackfill)
         dut.unregister(pipelineStage: removedAfterSuspension)
         handle.invalidate()
         dut.unregister(pipelineStage: removedAfterResume)
@@ -135,13 +135,13 @@ class MessagePipelineSupervisorTest: SSKBaseTestSwift {
         // Setup
         let pipelineStage = MockPipelineStage()
         dut.register(pipelineStage: pipelineStage)
-        let handle = dut.suspendMessageProcessing(for: "Testing")
+        let handle = dut.suspendMessageProcessing(for: .uuidBackfill)
 
         // Test, repeatedly invalidate. Then try and re-suspend
         handle.invalidate()
         handle.invalidate()
         handle.invalidate()
-        let handle2 = dut.suspendMessageProcessing(for: "Round 2")
+        let handle2 = dut.suspendMessageProcessing(for: .nseWakingUpApp(suspensionId: UUID(), payloadString: ""))
 
         // Verify, repeated invalidations of same handle don't mess with reference count
         XCTAssertEqual(pipelineStage.suspendCalloutCount, 2)
@@ -165,7 +165,7 @@ class MessagePipelineSupervisorTest: SSKBaseTestSwift {
             dut.register(pipelineStage: stage!)
 
             // Take out a handle, then nil out the stage
-            handle = dut.suspendMessageProcessing(for: "Testing")
+            handle = dut.suspendMessageProcessing(for: .uuidBackfill)
         }
         // Invalidate the handle
         handle?.invalidate()

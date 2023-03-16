@@ -61,7 +61,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         // Wait until message processing has completed, otherwise future
         // tests may break as we try and drain the processing queue.
         let expectFlushNotification = expectation(description: "queue flushed")
-        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidDrainQueue).done { _ in
             expectFlushNotification.fulfill()
         }
 
@@ -135,7 +135,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         // Wait until message processing has completed, otherwise future
         // tests may break as we try and drain the processing queue.
         let expectFlushNotification = expectation(description: "queue flushed")
-        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidDrainQueue).done { _ in
             expectFlushNotification.fulfill()
         }
 
@@ -209,7 +209,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         // Wait until message processing has completed, otherwise future
         // tests may break as we try and drain the processing queue.
         let expectFlushNotification = expectation(description: "queue flushed")
-        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidDrainQueue).done { _ in
             expectFlushNotification.fulfill()
         }
 
@@ -244,7 +244,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
         // Wait until message processing has completed, otherwise future
         // tests may break as we try and drain the processing queue.
-        _ = expectation(forNotification: MessageProcessor.messageProcessorDidFlushQueue, object: nil)
+        _ = expectation(forNotification: MessageProcessor.messageProcessorDidDrainQueue, object: nil)
 
         read { transaction in
             XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))

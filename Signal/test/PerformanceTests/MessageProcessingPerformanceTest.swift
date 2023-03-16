@@ -95,7 +95,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         // Wait until message processing has completed, otherwise future
         // tests may break as we try and drain the processing queue.
         let expectFlushNotification = expectation(description: "queue flushed")
-        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidDrainQueue).done { _ in
             expectFlushNotification.fulfill()
         }
 
