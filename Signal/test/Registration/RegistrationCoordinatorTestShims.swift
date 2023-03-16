@@ -291,10 +291,21 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
         setIsManualMessageFetchEnabledMock?(isEnabled)
     }
 
-    public var didRegisterMock: ((_ accountIdentity: RegistrationServiceResponses.AccountIdentityResponse, _ authToken: String) -> Void)?
+    public var didRegisterMock: ((
+        _ e164: E164,
+        _ aci: UUID,
+        _ pni: UUID,
+        _ authToken: String
+    ) -> Void)?
 
-    public func didRegister(_ accountIdentity: RegistrationServiceResponses.AccountIdentityResponse, authToken: String, _ tx: DBWriteTransaction) {
-        didRegisterMock?(accountIdentity, authToken)
+    public func didRegister(
+        e164: E164,
+        aci: UUID,
+        pni: UUID,
+        authToken: String,
+        _ tx: DBWriteTransaction
+    ) {
+        didRegisterMock?(e164, aci, pni, authToken)
     }
 
     public var registrationIdMock: (() -> UInt32) = { 8 /* an arbitrary default value */ }

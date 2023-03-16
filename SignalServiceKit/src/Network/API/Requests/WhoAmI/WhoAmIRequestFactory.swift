@@ -33,7 +33,9 @@ public enum WhoAmIRequestFactory {
     }
 
     /// Response body should be a `Responses.WhoAmI` json.
-    public static func whoAmIRequest() -> TSRequest {
+    public static func whoAmIRequest(
+        auth: ChatServiceAuth
+    ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
             ["v1", "accounts", "whoami"]
         )
@@ -43,6 +45,7 @@ public enum WhoAmIRequestFactory {
 
         let result = TSRequest(url: url, method: "GET", parameters: [:])
         result.shouldHaveAuthorizationHeaders = true
+        result.setAuth(auth)
         return result
     }
 

@@ -737,7 +737,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             // TODO[Registration]: should this happen after updating account attributes,
             // since that can fail?
-            deps.tsAccountManager.didRegister(accountIdentity.response, authToken: accountIdentity.authPassword, tx)
+            deps.tsAccountManager.didRegister(
+                e164: accountIdentity.e164,
+                aci: accountIdentity.aci,
+                pni: accountIdentity.pni,
+                authToken: accountIdentity.authPassword,
+                tx
+            )
             deps.tsAccountManager.setIsOnboarded(tx)
         }
 
@@ -2093,7 +2099,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
         }
 
-        let isRestoringPinBackup = accountIdentity.response.hasPreviouslyUsedKBS
+        let isRestoringPinBackup = accountIdentity.hasPreviouslyUsedKBS
 
         if !persistedState.hasSkippedPinEntry {
             guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
@@ -2175,14 +2181,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             return .value(.setupProfile(RegistrationProfileState(
-                e164: accountIdentity.response.e164,
+                e164: accountIdentity.e164,
                 isDiscoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber
             )))
         }
 
         if !inMemoryState.hasDefinedIsDiscoverableByPhoneNumber {
             return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(
-                e164: accountIdentity.response.e164,
+                e164: accountIdentity.e164,
                 isDiscoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber
             )))
         }
@@ -2505,14 +2511,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 )
 
         case .changingNumber(let state):
-            return Service.makeChangeNumberRequest(
-                method,
-                e164: e164,
-                reglockToken: inMemoryState.reglockToken,
-                authPassword: state.oldAuthToken,
-                signalService: deps.signalService,
-                schedulers: schedulers
-            )
+            fatalError("Unimplemented")
         }
     }
 
@@ -2548,22 +2547,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     struct AccountIdentity: Codable {
-        let response: RegistrationServiceResponses.AccountIdentityResponse
+        let aci: UUID
+        let pni: UUID
+        let e164: E164
+        let hasPreviouslyUsedKBS: Bool
+
         /// The auth token used to communicate with the server.
         /// We create this locally and include it in the create account request,
         /// then use it to authenticate subsequent requests.
         let authPassword: String
 
         var authUsername: String {
-            return response.aci.uuidString
+            return aci.uuidString
         }
 
         var authedAccount: AuthedAccount {
-            return AuthedAccount.explicit(aci: response.aci, e164: response.e164, authPassword: authPassword)
+            return AuthedAccount.explicit(aci: aci, e164: e164, authPassword: authPassword)
         }
 
         var chatServiceAuth: ChatServiceAuth {
-            return ChatServiceAuth.explicit(aci: response.aci, password: authPassword)
+            return ChatServiceAuth.explicit(aci: aci, password: authPassword)
         }
     }
 

@@ -388,7 +388,9 @@ public protocol _RegistrationCoordinator_TSAccountManagerShim {
     )
 
     func didRegister(
-        _ accountIdentity: RegistrationServiceResponses.AccountIdentityResponse,
+        e164: E164,
+        aci: UUID,
+        pni: UUID,
         authToken: String,
         _ tx: DBWriteTransaction
     )
@@ -440,14 +442,16 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
     }
 
     public func didRegister(
-        _ accountIdentity: RegistrationServiceResponses.AccountIdentityResponse,
+        e164: E164,
+        aci: UUID,
+        pni: UUID,
         authToken: String,
         _ tx: DBWriteTransaction
     ) {
         manager.didRegisterPrimary(
-            withE164: accountIdentity.e164.stringValue,
-            aci: accountIdentity.aci,
-            pni: accountIdentity.pni,
+            withE164: e164.stringValue,
+            aci: aci,
+            pni: pni,
             authToken: authToken,
             transaction: SDSDB.shimOnlyBridge(tx)
         )

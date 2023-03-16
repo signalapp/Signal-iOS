@@ -112,7 +112,13 @@ extension RegistrationCoordinatorImpl {
                     Logger.warn("Unable to parse Account identity from response")
                     return .genericError
                 }
-                return .success(AccountIdentity(response: response, authPassword: authPassword))
+                return .success(AccountIdentity(
+                    aci: response.aci,
+                    pni: response.pni,
+                    e164: response.e164,
+                    hasPreviouslyUsedKBS: response.hasPreviouslyUsedKBS,
+                    authPassword: authPassword
+                ))
 
             case .deviceTransferPossible:
                 return .deviceTransferPossible
@@ -170,13 +176,15 @@ extension RegistrationCoordinatorImpl {
             e164: E164,
             reglockToken: String?,
             authPassword: String,
+            pniChangeNumberParameters: ChangePhoneNumberPni.Parameters,
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers
         ) -> Guarantee<AccountResponse> {
             let request = RegistrationRequestFactory.changeNumberRequest(
                 verificationMethod: method,
                 e164: e164,
-                reglockToken: reglockToken
+                reglockToken: reglockToken,
+                pniChangeNumberParameters: pniChangeNumberParameters
             )
             return makeRequest(
                 request,
@@ -207,7 +215,13 @@ extension RegistrationCoordinatorImpl {
                     Logger.warn("Unable to parse Account identity from response")
                     return .genericError
                 }
-                return .success(AccountIdentity(response: response, authPassword: authPassword))
+                return .success(AccountIdentity(
+                    aci: response.aci,
+                    pni: response.pni,
+                    e164: response.e164,
+                    hasPreviouslyUsedKBS: response.hasPreviouslyUsedKBS,
+                    authPassword: authPassword
+                ))
 
             case .reglockFailed:
                 guard let bodyData else {
@@ -309,6 +323,48 @@ extension RegistrationCoordinatorImpl {
                         )
                     }
                     return .value(error)
+                }
+        }
+
+        enum WhoAmIResponse {
+            case success(WhoAmIRequestFactory.Responses.WhoAmI)
+            case networkError
+            case genericError
+        }
+
+        public static func makeWhoAmIRequest(
+            auth: ChatServiceAuth,
+            signalService: OWSSignalServiceProtocol,
+            schedulers: Schedulers,
+            retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
+        ) -> Guarantee<WhoAmIResponse> {
+            let request = WhoAmIRequestFactory.whoAmIRequest(auth: auth)
+            return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
+                .map(on: schedulers.sync) { response in
+                    guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
+                        return .genericError
+                    }
+                    guard let bodyData = response.responseBodyData else {
+                        Logger.error("Got empty whoami response")
+                        return .genericError
+                    }
+                    guard let response = try? JSONDecoder().decode(WhoAmIRequestFactory.Responses.WhoAmI.self, from: bodyData) else {
+                        Logger.error("Unable to parse whoami response from response")
+                        return .genericError
+                    }
+
+                    return .success(response)
+                }
+                .recover(on: schedulers.sync) { error -> Guarantee<WhoAmIResponse> in
+                    if error.isNetworkConnectivityFailure, retriesLeft > 0 {
+                        return makeWhoAmIRequest(
+                            auth: auth,
+                            signalService: signalService,
+                            schedulers: schedulers,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    }
+                    return .value(error.isNetworkFailureOrTimeout ? .networkError : .genericError)
                 }
         }
 

@@ -153,7 +153,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     }
 
     public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
-        let request = WhoAmIRequestFactory.whoAmIRequest()
+        let request = WhoAmIRequestFactory.whoAmIRequest(auth: .implicit())
 
         return firstly {
             networkManager.makePromise(request: request)

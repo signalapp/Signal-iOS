@@ -249,19 +249,19 @@ public enum RegistrationRequestFactory {
         return result
     }
 
-    // TODO[Registration]: Extra PNI-related fields aren't being set right now.
-    // pniIdentityKey, deviceMessages, devicePniSignedPrekeys, pniRegistrationIds
-    // They are required and requests will fail until they are set.
     /// Update the phone number on an account.
     ///
     /// - parameter verificationMethod: A way to verify phone number and account ownership.
     /// - parameter e164: The phone number to change to.
     /// - parameter reglockToken: If reglock is enabled, required to succeed. Derived from the
     ///   kbs master key.
+    /// - parameter pniChangeNumberParameters: pni related params used to inform
+    ///   linked device of the change number and rotated pni keys.
     public static func changeNumberRequest(
         verificationMethod: VerificationMethod,
         e164: E164,
-        reglockToken: String?
+        reglockToken: String?,
+        pniChangeNumberParameters: ChangePhoneNumberPni.Parameters
     ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
             ["v2", "accounts", "number"]
@@ -283,9 +283,12 @@ public enum RegistrationRequestFactory {
             parameters["reglock"] = reglockToken
         }
 
-        // TODO: Extra PNI-related fields aren't being set right now.
-        // pniIdentityKey, deviceMessages, devicePniSignedPrekeys, pniRegistrationIds
-        // They are required and requests will fail until they are set.
+        parameters["pniIdentityKey"] = pniChangeNumberParameters.pniIdentityKey.prependKeyType().base64EncodedString()
+        parameters["devicePniSignedPrekeys"] = pniChangeNumberParameters.devicePniSignedPreKeys.mapValues {
+            OWSRequestFactory.signedPreKeyRequestParameters($0)
+        }
+        parameters["deviceMessages"] = pniChangeNumberParameters.deviceMessages.map { $0.requestParameters() }
+        parameters["pniRegistrationIds"] = pniChangeNumberParameters.pniRegistrationIds
 
         let result = TSRequest(url: url, method: "PUT", parameters: parameters)
         result.shouldHaveAuthorizationHeaders = true
