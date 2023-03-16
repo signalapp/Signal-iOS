@@ -1618,11 +1618,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .serverFailure(let failureResponse):
                 self.inMemoryState.pendingCodeTransport = nil
                 if failureResponse.isPermanent {
-                    // TODO[Registration] show something special here.
-                    return .value(.showErrorSheet(.todo))
-                } else {
-                    return .value(.showErrorSheet(.genericError))
+                    self.db.write { self.resetSession($0) }
                 }
+                return .value(.showErrorSheet(.genericError))
             case .retryAfterTimeout(let session):
                 self.db.write { self.processSession(session, $0) }
 
