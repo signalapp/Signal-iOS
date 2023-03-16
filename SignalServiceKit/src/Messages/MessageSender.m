@@ -301,27 +301,6 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
 @end
 
-@interface MessageSender (ImplementedInSwift)
-
-- (nullable DeviceMessage *)encryptedMessageForMessagePlaintextContent:(nullable NSData *)plaintextContent
-                                                      recipientAddress:(SignalServiceAddress *)recipientAddress
-                                                              deviceId:(int)deviceId
-                                               udSendingParamsProvider:
-                                                   (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
-                                                           transaction:(SDSAnyWriteTransaction *)transaction
-                                                                 error:(NSError **)error;
-
-- (nullable DeviceMessage *)wrappedPlaintextMessageForMessagePlaintextContent:(nullable NSData *)plaintextContent
-                                                       isResendRequestMessage:(BOOL)isResendRequestMessage
-                                                             recipientAddress:(SignalServiceAddress *)recipientAddress
-                                                                     deviceId:(int)deviceId
-                                                      udSendingParamsProvider:
-                                                          (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
-                                                                  transaction:(SDSAnyWriteTransaction *)transaction
-                                                                        error:(NSError **)error;
-
-@end
-
 #pragma mark -
 
 @implementation MessageSender
