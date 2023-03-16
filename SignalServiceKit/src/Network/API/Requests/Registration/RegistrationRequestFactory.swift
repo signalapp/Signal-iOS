@@ -181,7 +181,7 @@ public enum RegistrationRequestFactory {
         let url = urlComponents.url!
 
         let parameters: [String: Any] = [
-            "number": e164,
+            "number": e164.stringValue,
             "passwords": credentials.map {
                 "\($0.username):\($0.credential.password)"
             }
