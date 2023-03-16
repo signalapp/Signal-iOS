@@ -1621,8 +1621,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // TODO[Registration] show something special here.
                     return .value(.showErrorSheet(.todo))
                 } else {
-                    // TODO[Registration] show some particular error here.
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.genericError))
                 }
             case .retryAfterTimeout(let session):
                 self.db.write { self.processSession(session, $0) }
