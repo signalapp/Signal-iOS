@@ -150,7 +150,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
-    public func submitE164(_ e164: String) -> Guarantee<RegistrationStep> {
+    public func submitE164(_ e164: E164) -> Guarantee<RegistrationStep> {
         // TODO[Registration] do some validation on the e164 format?
         // maybe we trust the view controller to do that.
         db.write { tx in
@@ -494,7 +494,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// The e164 the user has entered for this attempt at registration.
         /// Initially the e164 in the UI may be pre-populated (e.g. in re-reg)
         /// but this value is not set until the user accepts it or enters their own value.
-        var e164: String?
+        var e164: E164?
 
         /// How many times the user has tried making guesses against the PIN
         /// we have locally? This happens when we have a local KBS master key
@@ -950,7 +950,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func registerForRegRecoveryPwPath(
         regRecoveryPw: String,
-        e164: String,
+        e164: E164,
         pinFromUser: String,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
@@ -971,7 +971,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func handleCreateAccountResponseFromRegRecoveryPassword(
         _ response: AccountResponse,
         regRecoveryPw: String,
-        e164: String,
+        e164: E164,
         pinFromUser: String,
         retriesLeft: Int
     ) -> Guarantee<RegistrationStep> {
@@ -1177,7 +1177,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func makeKBSAuthCredentialCheckRequest(
         kbsAuthCredentialCandidates: [KBSAuthCredential],
-        e164: String,
+        e164: E164,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         return Service.makeKBSAuthCheckRequest(
@@ -1201,7 +1201,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func handleKBSAuthCredentialCheckResponse(
         _ response: Service.KBSAuthCheckResponse,
         kbsAuthCredentialCandidates: [KBSAuthCredential],
-        e164: String,
+        e164: E164,
         retriesLeft: Int
     ) -> Guarantee<RegistrationStep> {
         var matchedCredential: KBSAuthCredential?
@@ -1502,7 +1502,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func startSession(
-        e164: String,
+        e164: E164,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         return deps.pushRegistrationManager.requestPushToken()
@@ -2482,7 +2482,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func makeRegisterOrChangeNumberRequest(
         _ method: RegistrationRequestFactory.VerificationMethod,
-        e164: String
+        e164: E164
     ) -> Guarantee<AccountResponse> {
         switch mode {
         case .registering, .reRegistering:
@@ -2504,12 +2504,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     schedulers: schedulers
                 )
 
-        case .changingNumber(_, let oldAuthPassword):
+        case .changingNumber(let state):
             return Service.makeChangeNumberRequest(
                 method,
                 e164: e164,
                 reglockToken: inMemoryState.reglockToken,
-                authPassword: oldAuthPassword,
+                authPassword: state.oldAuthToken,
                 signalService: deps.signalService,
                 schedulers: schedulers
             )
@@ -2587,8 +2587,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .initialRegistration(previouslyEnteredE164: persistedState.e164)
         case .reRegistering(let e164):
             return .reregistration(e164: e164)
-        case .changingNumber(let oldE164, _):
-            return .changingPhoneNumber(oldE164: oldE164)
+        case .changingNumber(let state):
+            return .changingPhoneNumber(oldE164: state.oldE164)
         }
     }
 

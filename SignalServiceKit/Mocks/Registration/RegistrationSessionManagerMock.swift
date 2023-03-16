@@ -20,7 +20,7 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
     public var beginSessionResponse: Guarantee<Registration.BeginSessionResponse>?
     public var didBeginOrRestoreSession = false
 
-    public func beginOrRestoreSession(e164: String, apnsToken: String?) -> Guarantee<Registration.BeginSessionResponse> {
+    public func beginOrRestoreSession(e164: E164, apnsToken: String?) -> Guarantee<Registration.BeginSessionResponse> {
         didBeginOrRestoreSession = true
         return beginSessionResponse!
     }

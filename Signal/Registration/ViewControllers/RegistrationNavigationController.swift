@@ -261,7 +261,7 @@ extension RegistrationNavigationController: RegistrationPermissionsPresenter {
 
 extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
 
-    func goToNextStep(withE164 e164: String) {
+    func goToNextStep(withE164 e164: E164) {
         pushNextController(coordinator.submitE164(e164))
     }
 }

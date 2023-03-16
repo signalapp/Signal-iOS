@@ -35,7 +35,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         return restoreSession(forE164: nil)
     }
 
-    public func beginOrRestoreSession(e164: String, apnsToken: String?) -> Guarantee<Registration.BeginSessionResponse> {
+    public func beginOrRestoreSession(e164: E164, apnsToken: String?) -> Guarantee<Registration.BeginSessionResponse> {
         // Verify the session is still valid.
         return restoreSession(forE164: e164)
             .then(on: schedulers.sync) { [weak self, db, schedulers] restoredSession in
@@ -167,7 +167,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     // TODO: make this and other methods resilient to transient network failures by adding
     // basic retrying logic.
-    private func restoreSession(forE164 e164: String?) -> Guarantee<RegistrationSession?> {
+    private func restoreSession(forE164 e164: E164?) -> Guarantee<RegistrationSession?> {
         guard let existingSession = db.read(block: { self.getPersistedSession($0) }) else {
             return .value(nil)
         }
@@ -195,7 +195,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     // MARK: Begin Session
 
     private func makeBeginSessionRequest(
-        e164: String,
+        e164: E164,
         apnsToken: String?,
         mcc: String?,
         mnc: String?
@@ -216,7 +216,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     }
 
     private func handleBeginSessionResponse(
-        forE164 e164: String,
+        forE164 e164: E164,
         statusCode: Int,
         retryAfterHeader: String?,
         bodyData: Data?
@@ -515,7 +515,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     private func registrationSession(
         fromResponseBody bodyData: Data?,
-        e164: String
+        e164: E164
     ) -> RegistrationSession? {
         guard let bodyData else {
             Logger.warn("Got empty registration session response")
@@ -560,8 +560,8 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     private func makeRequest<ResponseType>(
         _ request: TSRequest,
-        e164: String,
-        handler: @escaping (_ e164: String, _ statusCode: Int, _ retryAfterHeader: String?, _ bodyData: Data?) -> ResponseType,
+        e164: E164,
+        handler: @escaping (_ e164: E164, _ statusCode: Int, _ retryAfterHeader: String?, _ bodyData: Data?) -> ResponseType,
         fallbackError: ResponseType,
         networkFailureError: ResponseType
     ) -> Guarantee<ResponseType> {
@@ -611,7 +611,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 fileprivate extension RegistrationServiceResponses.RegistrationSession {
 
     func toLocalSession(
-        forE164 e164: String,
+        forE164 e164: E164,
         receivedAt: Date
     ) -> RegistrationSession {
         let mappedChallenges = requestedInformation.compactMap(\.asLocalChallenge)

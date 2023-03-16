@@ -93,26 +93,24 @@ public struct RegistrationCountryState: Equatable, Dependencies {
 public struct RegistrationPhoneNumber {
     public let countryState: RegistrationCountryState
     public let nationalNumber: String
-    public let e164: String
+    public let e164: E164?
 
     public init(countryState: RegistrationCountryState, nationalNumber: String) {
         self.countryState = countryState
         self.nationalNumber = nationalNumber
-
-        self.e164 = "\(countryState.callingCode)\(nationalNumber)"
+        self.e164 = E164("\(countryState.callingCode)\(nationalNumber)")
     }
 
-    public init?(e164: String) {
-        self.e164 = e164
-
+    public init?(e164: E164) {
         guard
-            let countryState = RegistrationCountryState.countryState(forE164: e164),
-            let nationalNumber = PhoneNumber(fromE164: e164)?.nationalNumber
+            let countryState = RegistrationCountryState.countryState(forE164: e164.stringValue),
+            let nationalNumber = PhoneNumber(fromE164: e164.stringValue)?.nationalNumber
         else {
             return nil
         }
         self.countryState = countryState
         self.nationalNumber = nationalNumber
+        self.e164 = e164
     }
 }
 

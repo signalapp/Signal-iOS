@@ -13,7 +13,7 @@ public protocol RegistrationSessionManager {
 
     /// Begins a new session, first attempting to restore any existing valid session for the same number.
     /// See `Registration.BeginSessionResponse` for possible responses, including errors.
-    func beginOrRestoreSession(e164: String, apnsToken: String?) -> Guarantee<Registration.BeginSessionResponse>
+    func beginOrRestoreSession(e164: E164, apnsToken: String?) -> Guarantee<Registration.BeginSessionResponse>
 
     /// Fulfill a challenge for the session (e.g. a captcha).
     /// See `Registration.UpdateSessionResponse` for possible responses, including errors.

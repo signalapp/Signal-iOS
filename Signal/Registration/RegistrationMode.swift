@@ -7,6 +7,15 @@ import Foundation
 
 public enum RegistrationMode: Codable, Equatable {
     case registering
-    case reRegistering(e164: String)
-    case changingNumber(oldE164: String, oldAuthToken: String)
+    case reRegistering(e164: E164)
+    case changingNumber(ChangeNumberParams)
+
+    public struct ChangeNumberParams: Codable, Equatable {
+        public let oldE164: E164
+        public let oldAuthToken: String
+        public let localAci: UUID
+        public let localAccountId: String
+        public let localDeviceId: UInt32
+        public let localUserAllDeviceIds: [UInt32]
+    }
 }

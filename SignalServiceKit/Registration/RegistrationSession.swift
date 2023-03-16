@@ -18,7 +18,7 @@ public struct RegistrationSession: Codable, Equatable {
     public let id: String
 
     /// The phone number (in e164 format) this session was created for.
-    public let e164: String
+    public let e164: E164
 
     /// The date at which we received this session metadata from the server.
     /// All durations should be measured against this date.

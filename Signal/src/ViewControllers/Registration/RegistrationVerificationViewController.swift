@@ -20,7 +20,7 @@ public enum RegistrationVerificationValidationError: Equatable {
 // MARK: - RegistrationVerificationState
 
 public struct RegistrationVerificationState: Equatable {
-    let e164: String
+    let e164: E164
     let nextSMSDate: Date?
     let nextCallDate: Date?
     // TODO[Registration]: use this state to render a countdown.
@@ -123,7 +123,7 @@ class RegistrationVerificationViewController: OWSViewController {
             "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT",
             comment: "Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}."
         )
-        let text = String(format: format, state.e164.e164FormattedAsPhoneNumberWithoutBreaks)
+        let text = String(format: format, state.e164.stringValue.e164FormattedAsPhoneNumberWithoutBreaks)
 
         let result = UILabel.explanationLabelForRegistration(text: text)
         result.accessibilityIdentifier = "registration.verification.explanationLabel"
@@ -300,7 +300,7 @@ class RegistrationVerificationViewController: OWSViewController {
 
         presentActionSheet(.forRegistrationVerificationConfirmation(
             mode: .sms,
-            e164: state.e164,
+            e164: state.e164.stringValue,
             didConfirm: { [weak self] in self?.presenter?.requestSMSCode() },
             didRequestEdit: { [weak self] in self?.presenter?.returnToPhoneNumberEntry() }
         ))
@@ -314,7 +314,7 @@ class RegistrationVerificationViewController: OWSViewController {
 
         presentActionSheet(.forRegistrationVerificationConfirmation(
             mode: .voice,
-            e164: state.e164,
+            e164: state.e164.stringValue,
             didConfirm: { [weak self] in self?.presenter?.requestVoiceCode() },
             didRequestEdit: { [weak self] in self?.presenter?.returnToPhoneNumberEntry() }
         ))

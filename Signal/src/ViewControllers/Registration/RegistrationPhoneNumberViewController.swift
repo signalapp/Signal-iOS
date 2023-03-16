@@ -10,7 +10,7 @@ import SignalMessaging
 // MARK: - RegistrationPhoneNumberValidationError
 
 public enum RegistrationPhoneNumberValidationError: Equatable {
-    case invalidNumber(invalidE164: String)
+    case invalidNumber(invalidE164: E164)
     case rateLimited(expiration: Date)
 }
 
@@ -20,9 +20,9 @@ public struct RegistrationPhoneNumberState: Equatable {
     public enum RegistrationPhoneNumberMode: Equatable {
         /// previouslyEnteredE164 is if the user entered a number, quit, and came back.
         /// Will be used to pre-populate the entry field.
-        case initialRegistration(previouslyEnteredE164: String?)
-        case reregistration(e164: String)
-        case changingPhoneNumber(oldE164: String)
+        case initialRegistration(previouslyEnteredE164: E164?)
+        case reregistration(e164: E164)
+        case changingPhoneNumber(oldE164: E164)
     }
 
     let mode: RegistrationPhoneNumberMode
@@ -32,7 +32,7 @@ public struct RegistrationPhoneNumberState: Equatable {
 // MARK: - RegistrationPhoneNumberPresenter
 
 protocol RegistrationPhoneNumberPresenter: AnyObject {
-    func goToNextStep(withE164: String)
+    func goToNextStep(withE164: E164)
 }
 
 // MARK: - RegistrationPhoneNumberViewController
@@ -101,7 +101,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     private var nowTimer: Timer?
 
     private var nationalNumber: String { phoneNumberInput.nationalNumber }
-    private var e164: String { phoneNumberInput.e164 }
+    private var e164: E164? { phoneNumberInput.e164 }
 
     private var localValidationError: RegistrationPhoneNumberValidationError? {
         didSet { render() }
@@ -121,7 +121,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     }
 
     private var canSubmit: Bool {
-        guard !nationalNumber.isEmpty, e164.isStructurallyValidE164 else {
+        guard !nationalNumber.isEmpty, let e164 else {
             return false
         }
 
@@ -307,7 +307,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
                 comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view."
             )
-            showInvalidPhoneNumberAlertIfNecessary(for: invalidE164)
+            showInvalidPhoneNumberAlertIfNecessary(for: invalidE164.stringValue)
         case let .rateLimited(expiration):
             validationWarningLabel.alpha = expiration > now ? 1 : 0
             let rateLimitFormat = OWSLocalizedString(
@@ -367,10 +367,12 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
         phoneNumberInput.resignFirstResponder()
 
-        let e164 = self.e164
+        guard let e164 = self.e164 else {
+            return
+        }
 
         guard
-            let phoneNumber = PhoneNumber(fromE164: e164),
+            let phoneNumber = PhoneNumber(fromE164: e164.stringValue),
             PhoneNumberValidator().isValidForRegistration(phoneNumber: phoneNumber)
         else {
             localValidationError = .invalidNumber(invalidE164: e164)
@@ -380,7 +382,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
         presentActionSheet(.forRegistrationVerificationConfirmation(
             mode: .sms,
-            e164: e164,
+            e164: e164.stringValue,
             didConfirm: { [weak self] in self?.presenter?.goToNextStep(withE164: e164) },
             didRequestEdit: { [weak self] in self?.phoneNumberInput.becomeFirstResponder() }
         ))

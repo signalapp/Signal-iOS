@@ -17,7 +17,7 @@ extension RegistrationCoordinatorImpl {
         }
 
         static func makeKBSAuthCheckRequest(
-            e164: String,
+            e164: E164,
             candidateCredentials: [KBSAuthCredential],
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers
@@ -64,7 +64,7 @@ extension RegistrationCoordinatorImpl {
 
         static func makeCreateAccountRequest(
             _ method: RegistrationRequestFactory.VerificationMethod,
-            e164: String,
+            e164: E164,
             authPassword: String,
             accountAttributes: AccountAttributes,
             skipDeviceTransfer: Bool,
@@ -167,7 +167,7 @@ extension RegistrationCoordinatorImpl {
 
         static func makeChangeNumberRequest(
             _ method: RegistrationRequestFactory.VerificationMethod,
-            e164: String,
+            e164: E164,
             reglockToken: String?,
             authPassword: String,
             signalService: OWSSignalServiceProtocol,

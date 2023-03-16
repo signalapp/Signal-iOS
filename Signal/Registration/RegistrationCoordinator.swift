@@ -44,7 +44,7 @@ public protocol RegistrationCoordinator {
     /// An e164 may already be known (e.g. re-registration); this call cements that
     /// e164. Until this is called, the e164 will not actually be used for registration.
     /// This gives the user a chance to change it before any automatic steps are taken.
-    func submitE164(_ e164: String) -> Guarantee<RegistrationStep>
+    func submitE164(_ e164: E164) -> Guarantee<RegistrationStep>
 
     /// Request an SMS code be sent, returning the next step to take.
     /// If requesting a code is disallowed for any reason, the next step will be the same current

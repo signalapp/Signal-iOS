@@ -20,7 +20,9 @@ public extension RegistrationUtils {
         }
 
         guard tsAccountManager.resetForReregistration(),
-              let phoneNumber = Self.tsAccountManager.reregistrationPhoneNumber()?.nilIfEmpty else {
+              let phoneNumber = Self.tsAccountManager.reregistrationPhoneNumber()?.nilIfEmpty,
+              let e164 = E164(phoneNumber)
+        else {
             owsFailDebug("could not reset for re-registration.")
             return
         }
@@ -30,49 +32,10 @@ public extension RegistrationUtils {
         Self.preferences.unsetRecordedAPNSTokens()
 
         if FeatureFlags.useNewRegistrationFlow {
-            showReRegistration(e164: phoneNumber)
+            showReRegistration(e164: e164)
         } else {
             showLegacyReRegistration(fromViewController: fromViewController, e164: phoneNumber)
         }
-    }
-
-    private static func showReRegistration(e164: String) {
-        let dependencies = RegistrationCoordinatorImpl.Dependencies(
-            accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(Self.accountManager),
-            appExpiry: RegistrationCoordinatorImpl.Wrappers.AppExpiry(Self.appExpiry),
-            contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(Self.contactsManagerImpl),
-            contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
-            dateProvider: { Date() },
-            db: DependenciesBridge.shared.db,
-            experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
-            kbs: DependenciesBridge.shared.keyBackupService,
-            kbsAuthCredentialStore: DependenciesBridge.shared.kbsCredentialStorage,
-            keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
-            ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(Self.ows2FAManager),
-            preKeyManager: RegistrationCoordinatorImpl.Wrappers.PreKeyManager(),
-            profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(Self.profileManager),
-            pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(Self.pushRegistrationManager),
-            receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(Self.receiptManager),
-            remoteConfig: RegistrationCoordinatorImpl.Wrappers.RemoteConfig(),
-            schedulers: DependenciesBridge.shared.schedulers,
-            sessionManager: DependenciesBridge.shared.registrationSessionManager,
-            signalService: Self.signalService,
-            storageServiceManager: Self.storageServiceManager,
-            tsAccountManager: RegistrationCoordinatorImpl.Wrappers.TSAccountManager(Self.tsAccountManager),
-            udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(Self.udManager)
-        )
-
-        let desiredMode = RegistrationMode.reRegistering(e164: e164)
-        let coordinator = databaseStorage.read {
-            return RegistrationCoordinatorImpl.forDesiredMode(
-                desiredMode,
-                dependencies: dependencies,
-                transaction: $0.asV2Read
-            )
-        }
-        let navController = RegistrationNavigationController(coordinator: coordinator)
-        let window: UIWindow = CurrentAppContext().mainWindow!
-        window.rootViewController = navController
     }
 
     private static func showLegacyReRegistration(fromViewController: UIViewController, e164: String) {
@@ -152,5 +115,47 @@ public extension RegistrationUtils {
                     }
                 }
             }
+    }
+}
+
+extension RegistrationUtils {
+
+    fileprivate static func showReRegistration(e164: E164) {
+        let dependencies = RegistrationCoordinatorImpl.Dependencies(
+            accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(Self.accountManager),
+            appExpiry: RegistrationCoordinatorImpl.Wrappers.AppExpiry(Self.appExpiry),
+            contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(Self.contactsManagerImpl),
+            contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
+            dateProvider: { Date() },
+            db: DependenciesBridge.shared.db,
+            experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
+            kbs: DependenciesBridge.shared.keyBackupService,
+            kbsAuthCredentialStore: DependenciesBridge.shared.kbsCredentialStorage,
+            keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
+            ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(Self.ows2FAManager),
+            preKeyManager: RegistrationCoordinatorImpl.Wrappers.PreKeyManager(),
+            profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(Self.profileManager),
+            pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(Self.pushRegistrationManager),
+            receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(Self.receiptManager),
+            remoteConfig: RegistrationCoordinatorImpl.Wrappers.RemoteConfig(),
+            schedulers: DependenciesBridge.shared.schedulers,
+            sessionManager: DependenciesBridge.shared.registrationSessionManager,
+            signalService: Self.signalService,
+            storageServiceManager: Self.storageServiceManager,
+            tsAccountManager: RegistrationCoordinatorImpl.Wrappers.TSAccountManager(Self.tsAccountManager),
+            udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(Self.udManager)
+        )
+
+        let desiredMode = RegistrationMode.reRegistering(e164: e164)
+        let coordinator = databaseStorage.read {
+            return RegistrationCoordinatorImpl.forDesiredMode(
+                desiredMode,
+                dependencies: dependencies,
+                transaction: $0.asV2Read
+            )
+        }
+        let navController = RegistrationNavigationController(coordinator: coordinator)
+        let window: UIWindow = CurrentAppContext().mainWindow!
+        window.rootViewController = navController
     }
 }

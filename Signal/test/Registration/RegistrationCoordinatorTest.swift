@@ -196,14 +196,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164.stringValue).value
+        var nextStep = coordinator.submitE164(Stubs.e164).value
         // Now it should ask for the PIN to confirm the user knows it.
         XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
         // Give it the pin code, which should make it try and register.
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164.stringValue,
+            e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
@@ -321,7 +321,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164.stringValue).value
+        var nextStep = coordinator.submitE164(Stubs.e164).value
         // Now it should ask for the PIN to confirm the user knows it.
         XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
@@ -332,7 +332,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Give it the right pin code, which should make it try and register.
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164.stringValue,
+            e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
@@ -429,7 +429,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        var nextStep = coordinator.submitE164(Stubs.e164)
         // Now it should ask for the PIN to confirm the user knows it.
         XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
@@ -442,7 +442,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164.stringValue,
+            e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
@@ -529,7 +529,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        var nextStep = coordinator.submitE164(Stubs.e164)
         // Now it should ask for the PIN to confirm the user knows it.
         XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
@@ -542,7 +542,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164.stringValue,
+            e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
@@ -631,7 +631,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
 
         // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        var nextStep = coordinator.submitE164(Stubs.e164)
         // Now it should ask for the PIN to confirm the user knows it.
         XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
@@ -644,7 +644,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164.stringValue,
+            e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
@@ -662,7 +662,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Resolve with success at t=3
             let expectedRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
                 skipDeviceTransfer: true
@@ -772,7 +772,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Give it a phone number, which should cause it to check the auth credentials.
         // Match the main auth credential.
         let expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
-            e164: Stubs.e164.stringValue,
+            e164: Stubs.e164,
             credentials: credentialCandidates
         )
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
@@ -786,7 +786,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             ])
         ))
 
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue).value
+        let nextStep = coordinator.submitE164(Stubs.e164).value
 
         // At this point, we should be asking for PIN entry so we can use the credential
         // to recover the KBS master key.
@@ -832,7 +832,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         var authPassword: String!
         let expectedRegRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164.stringValue,
+            e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true
@@ -925,11 +925,11 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.adjustTime(to: 0)
 
         // Give it a phone number, which should cause it to check the auth credentials.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // Don't give back any matches at t=2, which means we will want to create a session as a fallback.
         let expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
-            e164: Stubs.e164.stringValue,
+            e164: Stubs.e164,
             credentials: credentialCandidates
         )
         mockURLSession.addResponse(
@@ -1005,7 +1005,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1026,7 +1026,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler.run(atTime: 6) {
             let expectedRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .sessionId(Stubs.sessionId),
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
                 skipDeviceTransfer: true
@@ -1126,7 +1126,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     public func testSessionPath_invalidE164() {
         setUpSessionPath()
 
-        let badE164 = "555555555555"
+        let badE164 = E164("+15555555555")!
 
         // Give it a phone number, which should cause it to start a session.
         let nextStep = coordinator.submitE164(badE164)
@@ -1159,7 +1159,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         let retryTimeInterval: TimeInterval = 5
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // At t=2, reject with a rate limit.
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
@@ -1176,7 +1176,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             nextStep.value,
             .phoneNumberEntry(
                 Stubs.phoneNumberEntryState(
-                    previouslyEnteredE164: Stubs.e164.stringValue,
+                    previouslyEnteredE164: Stubs.e164,
                     withValidationErrorFor: .retryAfter(retryTimeInterval)
                 )
             )
@@ -1187,13 +1187,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
         setUpSessionPath()
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // At t=2, give back a session, but with SMS code rate limiting already.
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 10,
                 nextCall: 0,
@@ -1214,7 +1214,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             nextStep.value,
             .phoneNumberEntry(
                 Stubs.phoneNumberEntryState(
-                    previouslyEnteredE164: Stubs.e164.stringValue,
+                    previouslyEnteredE164: Stubs.e164,
                     withValidationErrorFor: .retryAfter(10)
                 )
             )
@@ -1225,7 +1225,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         setUpSessionPath()
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // We'll ask for a push challenge, though we won't resolve it in this test.
         self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
@@ -1236,7 +1236,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1256,7 +1256,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                 resolvingWith: .retryAfterTimeout(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 10,
                     nextCall: 0,
@@ -1278,7 +1278,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             nextStep.value,
             .phoneNumberEntry(
                 Stubs.phoneNumberEntryState(
-                    previouslyEnteredE164: Stubs.e164.stringValue,
+                    previouslyEnteredE164: Stubs.e164,
                     withValidationErrorFor: .retryAfter(10)
                 )
             )
@@ -1289,13 +1289,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
         setUpSessionPath()
 
         // Give it a phone number, which should cause it to start a session.
-        var nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        var nextStep = coordinator.submitE164(Stubs.e164)
 
         // At t=2, give back a session with a captcha challenge.
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1324,7 +1324,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1346,7 +1346,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 0,
                     nextCall: 0,
@@ -1379,7 +1379,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1402,7 +1402,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: secondCodeDate,
                     nextSMS: 0,
                     nextCall: 0,
@@ -1440,7 +1440,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // Prepare to provide the challenge token.
         let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
@@ -1453,7 +1453,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: self.date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1474,7 +1474,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 0,
                     nextCall: 0,
@@ -1490,7 +1490,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 0,
                     nextCall: 0,
@@ -1513,7 +1513,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 0,
                     nextCall: 0,
@@ -1535,7 +1535,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 0,
                     nextCall: 0,
@@ -1575,7 +1575,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // Prepare to provide the challenge token.
         let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
@@ -1588,7 +1588,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: self.date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1626,7 +1626,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // We'll never provide a challenge token and will just leave it around forever.
         let (challengeTokenPromise, _) = Guarantee<String>.pending()
@@ -1639,7 +1639,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: self.date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1666,7 +1666,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // We'll ask for a push challenge, though we don't need to resolve it in this test.
         self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
@@ -1678,7 +1678,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: self.date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1695,7 +1695,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(scheduler.currentTime, 2)
         XCTAssertEqual(
             nextStep.value,
-            .phoneNumberEntry(Stubs.phoneNumberEntryState(previouslyEnteredE164: Stubs.e164.stringValue))
+            .phoneNumberEntry(Stubs.phoneNumberEntryState(previouslyEnteredE164: Stubs.e164))
         )
         XCTAssertNil(sessionManager.latestChallengeFulfillment)
     }
@@ -1715,13 +1715,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // At t=2, give back a session with multiple challenges.
         sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: self.date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1739,7 +1739,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 0,
                     nextCall: 0,
@@ -1754,7 +1754,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 0,
                     nextCall: 0,
@@ -1795,7 +1795,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // Prepare to provide the challenge token.
         let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
@@ -1808,7 +1808,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1848,13 +1848,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        let nextStep = coordinator.submitE164(Stubs.e164)
 
         // At t=2, give back a session with multiple challenges.
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: self.date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1877,13 +1877,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
         setUpSessionPath()
 
         // Give it a phone number, which should cause it to start a session.
-        var nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        var nextStep = coordinator.submitE164(Stubs.e164)
 
         // At t=2, give back a session with a captcha challenge and an unknown challenge.
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1914,7 +1914,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1943,7 +1943,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
             resolvingWith: .rejectedArgument(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -1975,7 +1975,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
             resolvingWith: .retryAfterTimeout(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -2004,7 +2004,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
             resolvingWith: .retryAfterTimeout(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 7,
                 nextCall: 0,
@@ -2036,7 +2036,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
             resolvingWith: .retryAfterTimeout(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 6,
                 nextCall: 0.1,
@@ -2056,7 +2056,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                 resolvingWith: .retryAfterTimeout(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 5,
                     nextCall: 4,
@@ -2092,7 +2092,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
             resolvingWith: .disallowed(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -2118,7 +2118,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(
             nextStep.value,
             .phoneNumberEntry(Stubs.phoneNumberEntryState(
-                previouslyEnteredE164: Stubs.e164.stringValue
+                previouslyEnteredE164: Stubs.e164
             ))
         )
     }
@@ -2131,7 +2131,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
             resolvingWith: .retryAfterTimeout(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -2157,7 +2157,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(
             nextStep.value,
             .phoneNumberEntry(Stubs.phoneNumberEntryState(
-                previouslyEnteredE164: Stubs.e164.stringValue
+                previouslyEnteredE164: Stubs.e164
             ))
         )
     }
@@ -2166,13 +2166,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
        setUpSessionPath()
 
         // Give it a phone number, which should cause it to start a session.
-        var nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+        var nextStep = coordinator.submitE164(Stubs.e164)
 
         // At t=2, give back a session thats ready to go.
         self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
             resolvingWith: .success(RegistrationSession(
                 id: Stubs.sessionId,
-                e164: Stubs.e164.stringValue,
+                e164: Stubs.e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -2197,7 +2197,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 0,
                     nextCall: 0,
@@ -2236,7 +2236,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(nextStep.value, .showErrorSheet(.sessionInvalidated))
         nextStep = coordinator.nextStep()
         scheduler.runUntilIdle()
-        XCTAssertEqual(nextStep.value, .phoneNumberEntry(Stubs.phoneNumberEntryState(previouslyEnteredE164: Stubs.e164.stringValue)))
+        XCTAssertEqual(nextStep.value, .phoneNumberEntry(Stubs.phoneNumberEntryState(previouslyEnteredE164: Stubs.e164)))
     }
 
     // MARK: - Profile Setup Path
@@ -2299,7 +2299,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         preservingSchedulerState {
             // Give it a phone number, which should cause it to start a session.
-            let nextStep = coordinator.submitE164(Stubs.e164.stringValue)
+            let nextStep = coordinator.submitE164(Stubs.e164)
 
             // We'll ask for a push challenge, though we won't resolve it.
             self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
@@ -2310,7 +2310,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
-                    e164: Stubs.e164.stringValue,
+                    e164: Stubs.e164,
                     receivedDate: date,
                     nextSMS: 0,
                     nextCall: 0,
@@ -2330,7 +2330,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                     resolvingWith: .success(RegistrationSession(
                         id: Stubs.sessionId,
-                        e164: Stubs.e164.stringValue,
+                        e164: Stubs.e164,
                         receivedDate: self.date,
                         nextSMS: 0,
                         nextCall: 0,
@@ -2439,7 +2439,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         static func session(hasSentVerificationCode: Bool) -> RegistrationSession {
             return RegistrationSession(
                 id: UUID().uuidString,
-                e164: e164.stringValue,
+                e164: e164,
                 receivedDate: date,
                 nextSMS: 0,
                 nextCall: 0,
@@ -2470,7 +2470,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         static func phoneNumberEntryState(
-            previouslyEnteredE164: String? = nil,
+            previouslyEnteredE164: E164? = nil,
             withValidationErrorFor response: Registration.BeginSessionResponse = .success(Stubs.session(hasSentVerificationCode: false))
         ) -> RegistrationPhoneNumberState {
             let validationError: RegistrationPhoneNumberValidationError?
@@ -2478,7 +2478,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             case .success:
                 validationError = nil
             case .invalidArgument:
-                validationError = .invalidNumber(invalidE164: previouslyEnteredE164 ?? Stubs.e164.stringValue)
+                validationError = .invalidNumber(invalidE164: previouslyEnteredE164 ?? Stubs.e164)
             case .retryAfter(let timeInterval):
                 validationError = .rateLimited(expiration: self.date.addingTimeInterval(timeInterval))
             case .networkFailure, .genericError:
@@ -2494,7 +2494,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         static func verificationCodeEntryState(
-            e164: String = Stubs.e164.stringValue,
+            e164: E164 = Stubs.e164,
             nextSMS: TimeInterval? = 0,
             nextCall: TimeInterval? = 0,
             nextVerificationAttempt: TimeInterval = 0,

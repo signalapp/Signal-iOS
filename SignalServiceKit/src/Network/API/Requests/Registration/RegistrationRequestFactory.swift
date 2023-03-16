@@ -11,13 +11,11 @@ public enum RegistrationRequestFactory {
 
     /// See `RegistrationServiceResponses.BeginSessionResponseCodes` for possible responses.
     public static func beginSessionRequest(
-        e164: String,
+        e164: E164,
         pushToken: String?,
         mcc: String?,
         mnc: String?
     ) -> TSRequest {
-        owsAssertDebug(!e164.isEmpty)
-
         let urlPathComponents = URLPathComponents(
             ["v1", "verification", "session"]
         )
@@ -26,7 +24,7 @@ public enum RegistrationRequestFactory {
         let url = urlComponents.url!
 
         var parameters: [String: Any] = [
-            "number": e164
+            "number": e164.stringValue
         ]
         if let pushToken {
             owsAssertDebug(!pushToken.isEmpty)
@@ -170,7 +168,7 @@ public enum RegistrationRequestFactory {
     // MARK: - KBS Auth Check
 
     public static func kbsAuthCredentialCheckRequest(
-        e164: String,
+        e164: E164,
         credentials: [KBSAuthCredential]
     ) -> TSRequest {
         owsAssertDebug(!credentials.isEmpty)
@@ -216,7 +214,7 @@ public enum RegistrationRequestFactory {
     ///   response indicating that the client should prompt the user to transfer data from an existing device.
     public static func createAccountRequest(
         verificationMethod: VerificationMethod,
-        e164: String,
+        e164: E164,
         authPassword: String,
         accountAttributes: AccountAttributes,
         skipDeviceTransfer: Bool
@@ -246,7 +244,7 @@ public enum RegistrationRequestFactory {
         result.shouldHaveAuthorizationHeaders = true
         result.addValue("OWI", forHTTPHeaderField: "X-Signal-Agent")
         // As odd as this is, it is to spec.
-        result.authUsername = e164
+        result.authUsername = e164.stringValue
         result.authPassword = authPassword
         return result
     }
@@ -262,7 +260,7 @@ public enum RegistrationRequestFactory {
     ///   kbs master key.
     public static func changeNumberRequest(
         verificationMethod: VerificationMethod,
-        e164: String,
+        e164: E164,
         reglockToken: String?
     ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
@@ -273,7 +271,7 @@ public enum RegistrationRequestFactory {
         let url = urlComponents.url!
 
         var parameters: [String: Any] = [
-            "number": e164
+            "number": e164.stringValue
         ]
         switch verificationMethod {
         case .sessionId(let sessionId):

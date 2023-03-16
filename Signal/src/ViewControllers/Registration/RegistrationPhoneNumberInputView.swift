@@ -58,7 +58,7 @@ class RegistrationPhoneNumberInputView: UIStackView {
 
     public var nationalNumber: String { nationalNumberView.text?.asciiDigitsOnly ?? "" }
 
-    public var e164: String {
+    public var e164: E164? {
         return RegistrationPhoneNumber(
             countryState: countryState,
             nationalNumber: nationalNumber
