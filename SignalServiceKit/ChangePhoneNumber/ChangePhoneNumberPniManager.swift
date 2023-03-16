@@ -75,6 +75,24 @@ public enum ChangePhoneNumberPni {
             self.pniIdentityKey = pniIdentityKey
         }
 
+        #if TESTABLE_BUILD
+
+        public static func mock(
+            pniIdentityKeyPair: ECKeyPair,
+            localDeviceId: UInt32,
+            registrationId: UInt32
+        ) -> Parameters {
+            var mock = Parameters(pniIdentityKey: pniIdentityKeyPair.publicKey)
+            mock.addLocalDevice(
+                localDeviceId: localDeviceId,
+                signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair),
+                registrationId: registrationId
+            )
+            return mock
+        }
+
+        #endif
+
         fileprivate mutating func addLocalDevice(
             localDeviceId: UInt32,
             signedPreKey: SignedPreKeyRecord,
