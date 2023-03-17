@@ -5,13 +5,12 @@
 
 import Foundation
 
-public class FailedMessagesJob: Dependencies {
-
+public class FailedMessagesJob {
     /// Used for logging the total number of messages modified
     private var count: UInt = 0
     public init() {}
 
-    public func runSync() {
+    public func runSync(databaseStorage: SDSDatabaseStorage) {
         databaseStorage.write { writeTx in
             InteractionFinder.attemptingOutInteractionIds(transaction: writeTx).forEach { failedInteractionId in
                 // Since we can't directly mutate the enumerated "attempting out" expired messages, we store
@@ -30,7 +29,10 @@ public class FailedMessagesJob: Dependencies {
         Logger.info("Finished job. Marked \(count) incomplete sends as failed")
     }
 
-    public func updateFailedMessageIfNecessary(_ uniqueId: String, transaction writeTx: SDSAnyWriteTransaction) {
+    private func updateFailedMessageIfNecessary(
+        _ uniqueId: String,
+        transaction writeTx: SDSAnyWriteTransaction
+    ) {
         // Preconditions
         guard let message = TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: uniqueId, transaction: writeTx) else {
             owsFailDebug("Missing interaction with id: \(uniqueId)")

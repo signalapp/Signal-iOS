@@ -5,13 +5,12 @@
 
 import Foundation
 
-public class IncompleteCallsJob: Dependencies {
-
+public class IncompleteCallsJob {
     private var count: UInt = 0
     private let cutoffTimestamp = CurrentAppContext().appLaunchTime.ows_millisecondsSince1970
     public init() {}
 
-    public func runSync() {
+    public func runSync(databaseStorage: SDSDatabaseStorage) {
         databaseStorage.write { writeTx in
             InteractionFinder.incompleteCallIds(transaction: writeTx).forEach { incompleteCallId in
                 // Since we can't directly mutate the enumerated "incomplete" calls, we store only their ids in hopes
@@ -24,7 +23,10 @@ public class IncompleteCallsJob: Dependencies {
         Logger.info("Finished job. Updated \(count) incomplete calls")
     }
 
-    public func updateIncompleteCallIfNecessary(_ uniqueId: String, transaction writeTx: SDSAnyWriteTransaction) {
+    private func updateIncompleteCallIfNecessary(
+        _ uniqueId: String,
+        transaction writeTx: SDSAnyWriteTransaction
+    ) {
         // Preconditions: Must be a valid call that started before the app launched.
         guard let call = TSCall.anyFetchCall(uniqueId: uniqueId, transaction: writeTx) else {
             owsFailDebug("Missing call with id: \(uniqueId)")

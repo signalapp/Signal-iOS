@@ -69,13 +69,13 @@ public class LaunchJobs: NSObject {
         DispatchQueue.sharedUserInteractive.async {
             // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
             // sent before the app exited should be marked as failures.
-            FailedMessagesJob().runSync()
+            FailedMessagesJob().runSync(databaseStorage: self.databaseStorage)
             // Mark all "incomplete" calls as missed, e.g. any incoming or outgoing calls that were not
             // connected, failed or hung up before the app existed should be marked as missed.
-            IncompleteCallsJob().runSync()
+            IncompleteCallsJob().runSync(databaseStorage: self.databaseStorage)
             // Mark all "downloading" attachments as "failed", i.e. any incoming attachments that were not
             // successfully downloaded before the app exited should be marked as failures.
-            FailedAttachmentDownloadsJob().runSync()
+            FailedAttachmentDownloadsJob().runSync(databaseStorage: self.databaseStorage)
 
             // Kick off a low priority trim of the MSL
             // This will reschedule itself on a background queue ~24h or so

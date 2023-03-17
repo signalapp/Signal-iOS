@@ -5,12 +5,12 @@
 
 import Foundation
 
-public class FailedAttachmentDownloadsJob: Dependencies {
+public class FailedAttachmentDownloadsJob {
     /// Used for logging the total number of attachments modified
     private var count: UInt = 0
     public init() {}
 
-    public func runSync() {
+    public func runSync(databaseStorage: SDSDatabaseStorage) {
         databaseStorage.write { writeTx in
             AttachmentFinder.unfailedAttachmentPointerIds(transaction: writeTx).forEach { attachmentId in
                 // Since we can't directly mutate the enumerated attachments, we store only their ids in hopes
@@ -23,7 +23,10 @@ public class FailedAttachmentDownloadsJob: Dependencies {
         Logger.info("Finished job. Marked \(count) in-progress attachments as failed")
     }
 
-    public func updateAttachmentPointerIfNecessary(_ uniqueId: String, transaction writeTx: SDSAnyWriteTransaction) {
+    private func updateAttachmentPointerIfNecessary(
+        _ uniqueId: String,
+        transaction writeTx: SDSAnyWriteTransaction
+    ) {
         // Preconditions: Must be a valid attachment pointer that hasn't failed
         guard let attachment = TSAttachmentPointer.anyFetchAttachmentPointer(
             uniqueId: uniqueId,
