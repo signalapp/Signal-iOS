@@ -518,6 +518,10 @@ extension ExperienceUpgradeManifest {
     }
 
     private static func checkPreconditionsForCreateUsernameReminder(transaction: SDSAnyReadTransaction) -> Bool {
+        guard FeatureFlags.usernames else {
+            return false
+        }
+
         guard let localAci = tsAccountManager.localUuid else {
             owsFailBeta("Missing local ACI!")
             return false
