@@ -7,7 +7,7 @@ import Foundation
 import SignalCoreKit
 
 @objc
-public class ChangePhoneNumber: NSObject {
+public class LegacyChangePhoneNumber: NSObject {
 
     private enum Constants {
         static let localUserSupportsChangePhoneNumberKey = "localUserSupportsChangePhoneNumber"
@@ -39,7 +39,7 @@ public class ChangePhoneNumber: NSObject {
         }
     }
 
-    public func buildNewChangeToken(
+    public func deprecated_buildNewChangeToken(
         forNewE164 newE164: E164,
         transaction synchronousTransaction: SDSAnyWriteTransaction
     ) -> Promise<(ChangePhoneNumberPni.Parameters, ChangeToken)> {
@@ -104,10 +104,6 @@ public class ChangePhoneNumber: NSObject {
             }
         }.map(on: DispatchQueue.global()) { (parameters, pendingState) throws -> (Parameters, ChangeToken) in
             let newChangeToken: ChangeToken = {
-                if FeatureFlags.useChangePhoneNumberPniParameters {
-                    return ChangeToken(pniPendingState: pendingState)
-                }
-
                 return ChangeToken(legacyChangeId: UUID().uuidString)
             }()
 
@@ -165,13 +161,6 @@ public class ChangePhoneNumber: NSObject {
                     serviceE164: successfulChangeParams.newServiceE164,
                     transaction: transaction
                 )
-
-                if let pniPendingState = changeToken.pniPendingState {
-                    changePhoneNumberPniManager.finalizePniIdentity(
-                        withPendingState: pniPendingState,
-                        transaction: transaction.asV2Write
-                    )
-                }
             } catch {
                 Logger.error("Failed to update local state while completing change!")
             }
@@ -192,30 +181,11 @@ public class ChangePhoneNumber: NSObject {
             self.accountServiceClient.getAccountWhoAmI()
         }.done(on: DispatchQueue.global()) { whoAmIResponse in
             self.databaseStorage.write { transaction in
-                let changeWasSuccessful: Bool
-
-                if let pniPendingState = changeToken.pniPendingState {
-                    if pniPendingState.newE164 == whoAmIResponse.e164 {
-                        changeWasSuccessful = true
-                    } else {
-                        changeWasSuccessful = false
-                    }
-                } else {
-                    // Legacy change-number attempt - take whatever is on the
-                    // service and ensure we have the same state locally, then
-                    // clear the token.
-                    changeWasSuccessful = true
-                }
-
-                let successfulChangeParams: SuccessfulChangeParams? = {
-                    guard changeWasSuccessful else { return nil }
-
-                    return SuccessfulChangeParams(
-                        newServiceE164: whoAmIResponse.e164,
-                        serviceAci: whoAmIResponse.aci,
-                        servicePni: whoAmIResponse.pni
-                    )
-                }()
+                let successfulChangeParams = SuccessfulChangeParams(
+                    newServiceE164: whoAmIResponse.e164,
+                    serviceAci: whoAmIResponse.aci,
+                    servicePni: whoAmIResponse.pni
+                )
 
                 self.changeDidComplete(
                     changeToken: changeToken,
@@ -356,7 +326,7 @@ public class ChangePhoneNumber: NSObject {
                 "Recording new phone number: \(serviceE164), PNI: \(servicePni)"
             )
 
-            self.tsAccountManager.updateLocalPhoneNumber(
+            self.tsAccountManager.legacy_updateLocalPhoneNumber(
                 serviceE164.stringValue,
                 aci: serviceAci, // Verified equal to `localAci` above
                 pni: servicePni,

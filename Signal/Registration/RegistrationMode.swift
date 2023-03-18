@@ -5,7 +5,7 @@
 
 import Foundation
 
-public enum RegistrationMode: Codable, Equatable {
+public enum RegistrationMode {
     case registering
     case reRegistering(e164: E164)
     case changingNumber(ChangeNumberParams)

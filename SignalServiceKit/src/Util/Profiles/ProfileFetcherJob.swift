@@ -562,7 +562,7 @@ public class ProfileFetcherJob: NSObject {
             )
 
             if address.isLocalAddress || authedAccount.isAddressForLocalUser(address) {
-                self.changePhoneNumber.setLocalUserSupportsChangePhoneNumber(
+                self.legacyChangePhoneNumber.setLocalUserSupportsChangePhoneNumber(
                     profile.supportsChangeNumber,
                     transaction: transaction
                 )

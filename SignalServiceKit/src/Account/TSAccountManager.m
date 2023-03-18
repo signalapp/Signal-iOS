@@ -170,11 +170,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }
 }
 
-- (void)updateLocalPhoneNumber:(NSString *)phoneNumber
-                           aci:(NSUUID *)uuid
-                           pni:(NSUUID *_Nullable)pni
-    shouldUpdateStorageService:(BOOL)shouldUpdateStorageService
-                   transaction:(SDSAnyWriteTransaction *)transaction
+- (void)legacy_updateLocalPhoneNumber:(NSString *)phoneNumber
+                                  aci:(NSUUID *)uuid
+                                  pni:(NSUUID *_Nullable)pni
+           shouldUpdateStorageService:(BOOL)shouldUpdateStorageService
+                          transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(phoneNumber.isStructurallyValidE164);
     OWSAssertDebug([NSObject isNullableObject:self.localUuid equalTo:uuid]);
@@ -188,8 +188,24 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
             [self.storageServiceManager recordPendingLocalAccountUpdates];
         }
 
-        [self.changePhoneNumber updateLocalPhoneNumber];
+        [self.legacyChangePhoneNumber updateLocalPhoneNumber];
 
+        [self postRegistrationStateDidChangeNotification];
+
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameLocalNumberDidChange
+                                                                 object:nil
+                                                               userInfo:nil];
+    }];
+}
+
+- (void)updateLocalPhoneNumber:(E164ObjC *)e164
+                           aci:(NSUUID *)uuid
+                           pni:(NSUUID *)pni
+                   transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self storeLocalNumber:e164.stringValue aci:uuid pni:pni transaction:transaction];
+
+    [transaction addAsyncCompletionOffMain:^{
         [self postRegistrationStateDidChangeNotification];
 
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameLocalNumberDidChange

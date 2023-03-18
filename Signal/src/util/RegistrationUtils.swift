@@ -121,37 +121,13 @@ public extension RegistrationUtils {
 extension RegistrationUtils {
 
     fileprivate static func showReRegistration(e164: E164) {
-        let dependencies = RegistrationCoordinatorImpl.Dependencies(
-            accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(Self.accountManager),
-            appExpiry: RegistrationCoordinatorImpl.Wrappers.AppExpiry(Self.appExpiry),
-            contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(Self.contactsManagerImpl),
-            contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
-            dateProvider: { Date() },
-            db: DependenciesBridge.shared.db,
-            experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
-            kbs: DependenciesBridge.shared.keyBackupService,
-            kbsAuthCredentialStore: DependenciesBridge.shared.kbsCredentialStorage,
-            keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
-            ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(Self.ows2FAManager),
-            preKeyManager: RegistrationCoordinatorImpl.Wrappers.PreKeyManager(),
-            profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(Self.profileManager),
-            pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(Self.pushRegistrationManager),
-            receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(Self.receiptManager),
-            remoteConfig: RegistrationCoordinatorImpl.Wrappers.RemoteConfig(),
-            schedulers: DependenciesBridge.shared.schedulers,
-            sessionManager: DependenciesBridge.shared.registrationSessionManager,
-            signalService: Self.signalService,
-            storageServiceManager: Self.storageServiceManager,
-            tsAccountManager: RegistrationCoordinatorImpl.Wrappers.TSAccountManager(Self.tsAccountManager),
-            udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(Self.udManager)
-        )
-
+        let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.reRegistering(e164: e164)
-        let coordinator = databaseStorage.read {
-            return RegistrationCoordinatorImpl.forDesiredMode(
-                desiredMode,
-                dependencies: dependencies,
-                transaction: $0.asV2Read
+        let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
+        let coordinator = databaseStorage.write {
+            return loader.coordinator(
+                forDesiredMode: desiredMode,
+                transaction: $0.asV2Write
             )
         }
         let navController = RegistrationNavigationController(coordinator: coordinator)

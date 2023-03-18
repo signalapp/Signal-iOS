@@ -45,7 +45,7 @@ public struct E164: Equatable, Hashable, Codable, CustomDebugStringConvertible {
 public class E164ObjC: NSObject, NSCopying {
     public let wrappedValue: E164
 
-    init(_ wrappedValue: E164) {
+    public init(_ wrappedValue: E164) {
         self.wrappedValue = wrappedValue
     }
 

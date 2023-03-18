@@ -16,12 +16,15 @@ extension RegistrationCoordinatorImpl {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerMock
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreMock
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerMock
+        public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorMock
+        public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorMock
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerMock
         public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerMock
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerMock
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
         public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigMock
+        public typealias SignalRecipient = _RegistrationCoordinator_SignalRecipientMock
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
     }
@@ -95,6 +98,36 @@ public class _RegistrationCoordinator_ExperienceManagerMock: _RegistrationCoordi
     public func enableAllGetStartedCards(_ tx: DBWriteTransaction) {
         didEnableAllGetStartedCards = true
         enableAllGetStartedCardsMock?()
+    }
+}
+
+// MARK: - MessagePipelineSupervisor
+
+public class _RegistrationCoordinator_MessagePipelineSupervisorMock: _RegistrationCoordinator_MessagePipelineSupervisorShim {
+
+    public init() {}
+
+    public var suspensions = Set<MessagePipelineSupervisor.Suspension>()
+
+    public func suspendMessageProcessingWithoutHandle(for suspension: MessagePipelineSupervisor.Suspension) {
+        suspensions.insert(suspension)
+    }
+
+    public func unsuspendMessageProcessing(for suspension: MessagePipelineSupervisor.Suspension) {
+        suspensions.remove(suspension)
+    }
+}
+
+// MARK: - MessageProcessor
+
+public class _RegistrationCoordinator_MessageProcessorMock: _RegistrationCoordinator_MessageProcessorShim {
+
+    public init() {}
+
+    public var waitForProcessingCompleteAndThenSuspendMock: (() -> Guarantee<Void>)?
+
+    public func waitForProcessingCompleteAndThenSuspend(for suspension: MessagePipelineSupervisor.Suspension) -> Guarantee<Void> {
+        return waitForProcessingCompleteAndThenSuspendMock!()
     }
 }
 
@@ -250,6 +283,19 @@ public class _RegistrationCoordinator_RemoteConfigMock: _RegistrationCoordinator
     public var canReceiveGiftBadges: Bool { canReceiveGiftBadgesMock() }
 }
 
+// MARK: - SignalRecipient
+
+public class _RegistrationCoordinator_SignalRecipientMock: _RegistrationCoordinator_SignalRecipientShim {
+
+    public init() {}
+
+    public var createHighTrustRecipientMock: ((_ aci: UUID, _ e164: E164) -> Void)?
+
+    public func createHighTrustRecipient(aci: UUID, e164: E164, transaction: DBWriteTransaction) {
+        createHighTrustRecipientMock?(aci, e164)
+    }
+}
+
 // MARK: - TSAccountManager
 
 public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordinator_TSAccountManagerShim {
@@ -306,6 +352,21 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
         _ tx: DBWriteTransaction
     ) {
         didRegisterMock?(e164, aci, pni, authToken)
+    }
+
+    public var updateLocalPhoneNumberMock: ((
+        _ e164: E164,
+        _ aci: UUID,
+        _ pni: UUID
+    ) -> Void)?
+
+    public func updateLocalPhoneNumber(
+        e164: E164,
+        aci: UUID,
+        pni: UUID,
+        _ tx: DBWriteTransaction
+    ) {
+        updateLocalPhoneNumberMock?(e164, aci, pni)
     }
 
     public var registrationIdMock: (() -> UInt32) = { 8 /* an arbitrary default value */ }

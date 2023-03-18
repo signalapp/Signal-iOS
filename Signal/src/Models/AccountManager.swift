@@ -180,7 +180,7 @@ public class AccountManager: NSObject, Dependencies {
         }
     }
 
-    func requestChangePhoneNumber(
+    func deprecated_requestChangePhoneNumber(
         newPhoneNumber: String,
         verificationCode: String,
         registrationLock: String?
@@ -205,7 +205,7 @@ public class AccountManager: NSObject, Dependencies {
         Logger.info("Changing phone number.")
 
         typealias PniParameters = ChangePhoneNumberPni.Parameters
-        typealias ChangeToken = ChangePhoneNumber.ChangeToken
+        typealias ChangeToken = LegacyChangePhoneNumber.ChangeToken
 
         return firstly { () -> Promise<(PniParameters, ChangeToken)> in
             // Mark a change as in flight.  If the change is interrupted, we'll
@@ -213,7 +213,7 @@ public class AccountManager: NSObject, Dependencies {
             // current service state.
 
             databaseStorage.write { transaction -> Promise<(PniParameters, ChangeToken)> in
-                changePhoneNumber.buildNewChangeToken(
+                legacyChangePhoneNumber.deprecated_buildNewChangeToken(
                     forNewE164: newE164,
                     transaction: transaction
                 )
@@ -233,9 +233,9 @@ public class AccountManager: NSObject, Dependencies {
                 // Update local state to match new service state.
 
                 self.databaseStorage.write { transaction in
-                    self.changePhoneNumber.changeDidComplete(
+                    self.legacyChangePhoneNumber.changeDidComplete(
                         changeToken: changeToken,
-                        successfulChangeParams: ChangePhoneNumber.SuccessfulChangeParams(
+                        successfulChangeParams: LegacyChangePhoneNumber.SuccessfulChangeParams(
                             newServiceE164: changePhoneNumberResponse.e164,
                             serviceAci: changePhoneNumberResponse.aci,
                             servicePni: changePhoneNumberResponse.pni

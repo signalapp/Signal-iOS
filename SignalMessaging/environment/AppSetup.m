@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
         SenderKeyStore *senderKeyStore = [[SenderKeyStore alloc] init];
         PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
-        ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
+        LegacyChangePhoneNumber *legacyChangePhoneNumber = [LegacyChangePhoneNumber new];
         SubscriptionManagerImpl *subscriptionManager = [SubscriptionManagerImpl new];
         SystemStoryManager *systemStoryManager = [SystemStoryManager new];
         RemoteMegaphoneFetcher *remoteMegaphoneFetcher = [RemoteMegaphoneFetcher new];
@@ -201,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    senderKeyStore:senderKeyStore
                                                                   phoneNumberUtil:phoneNumberUtil
                                                                  webSocketFactory:webSocketFactory
-                                                                changePhoneNumber:changePhoneNumber
+                                                          legacyChangePhoneNumber:legacyChangePhoneNumber
                                                               subscriptionManager:subscriptionManager
                                                                systemStoryManager:systemStoryManager
                                                            remoteMegaphoneFetcher:remoteMegaphoneFetcher

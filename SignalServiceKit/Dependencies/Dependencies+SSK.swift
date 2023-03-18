@@ -461,12 +461,12 @@ public extension NSObject {
         SSKEnvironment.shared.phoneNumberUtilRef
     }
 
-    var changePhoneNumber: ChangePhoneNumber {
-        SSKEnvironment.shared.changePhoneNumberRef
+    var legacyChangePhoneNumber: LegacyChangePhoneNumber {
+        SSKEnvironment.shared.legacyChangePhoneNumberRef
     }
 
-    static var changePhoneNumber: ChangePhoneNumber {
-        SSKEnvironment.shared.changePhoneNumberRef
+    static var legacyChangePhoneNumber: LegacyChangePhoneNumber {
+        SSKEnvironment.shared.legacyChangePhoneNumberRef
     }
 
     var subscriptionManager: SubscriptionManager {
@@ -962,12 +962,12 @@ public extension Dependencies {
         SSKEnvironment.shared.webSocketFactoryRef as! WebSocketFactory
     }
 
-    var changePhoneNumber: ChangePhoneNumber {
-        SSKEnvironment.shared.changePhoneNumberRef
+    var legacyChangePhoneNumber: LegacyChangePhoneNumber {
+        SSKEnvironment.shared.legacyChangePhoneNumberRef
     }
 
-    static var changePhoneNumber: ChangePhoneNumber {
-        SSKEnvironment.shared.changePhoneNumberRef
+    static var legacyChangePhoneNumber: LegacyChangePhoneNumber {
+        SSKEnvironment.shared.legacyChangePhoneNumberRef
     }
 
     var subscriptionManager: SubscriptionManager {

@@ -11,9 +11,9 @@ extern NSNotificationName const WarmCachesNotification;
 @class AppExpiry;
 @class BlockingManager;
 @class BulkProfileFetch;
-@class ChangePhoneNumber;
 @class EarlyMessageManager;
 @class GroupsV2MessageProcessor;
+@class LegacyChangePhoneNumber;
 @class LocalUserLeaveGroupJobQueue;
 @class MessageFetcherJob;
 @class MessageProcessor;
@@ -125,7 +125,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
                        webSocketFactory:(id)webSocketFactory
-                      changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
+                legacyChangePhoneNumber:(LegacyChangePhoneNumber *)legacyChangePhoneNumber
                     subscriptionManager:(id<SubscriptionManager>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
                  remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
@@ -187,7 +187,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic, readonly) PhoneNumberUtil *phoneNumberUtilRef;
 @property (nonatomic, readonly) id webSocketFactoryRef;
-@property (nonatomic, readonly) ChangePhoneNumber *changePhoneNumberRef;
+@property (nonatomic, readonly) LegacyChangePhoneNumber *legacyChangePhoneNumberRef;
 @property (nonatomic, readonly) id<SubscriptionManager> subscriptionManagerRef;
 @property (nonatomic, readonly) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
 @property (nonatomic, readonly) RemoteMegaphoneFetcher *remoteMegaphoneFetcherRef;

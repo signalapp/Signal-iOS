@@ -68,7 +68,7 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
     public typealias CompletionBlock = () -> Void
     internal var syncCompletions: [CompletionBlock] = []
     public struct AsyncCompletion {
-        let queue: DispatchQueue
+        let scheduler: Scheduler
         let block: CompletionBlock
     }
     internal var asyncCompletions: [AsyncCompletion] = []
@@ -80,7 +80,11 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
 
     @objc
     public func addAsyncCompletion(queue: DispatchQueue, block: @escaping CompletionBlock) {
-        asyncCompletions.append(AsyncCompletion(queue: queue, block: block))
+        addAsyncCompletion(on: queue, block: block)
+    }
+
+    public func addAsyncCompletion(on scheduler: Scheduler, block: @escaping CompletionBlock) {
+        asyncCompletions.append(AsyncCompletion(scheduler: scheduler, block: block))
     }
 
     fileprivate typealias TransactionFinalizationBlock = (_ transaction: GRDBWriteTransaction) -> Void
@@ -204,6 +208,13 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
         switch writeTransaction {
         case .grdbWrite(let grdbWrite):
             grdbWrite.addAsyncCompletion(queue: queue, block: block)
+        }
+    }
+
+    public func addAsyncCompletion(on scheduler: Scheduler, block: @escaping () -> Void) {
+        switch writeTransaction {
+        case .grdbWrite(let grdbWrite):
+            grdbWrite.addAsyncCompletion(on: scheduler, block: block)
         }
     }
 

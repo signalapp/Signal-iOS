@@ -33,6 +33,7 @@ extern NSString *const TSAccountManager_DeviceNameKey;
 extern NSString *const TSAccountManager_DeviceIdKey;
 
 @class AnyPromise;
+@class E164ObjC;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
@@ -194,12 +195,17 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 #pragma mark - Change Phone Number
 
-- (void)updateLocalPhoneNumber:(NSString *)phoneNumber
-                           aci:(NSUUID *)aci
-                           pni:(NSUUID *_Nullable)pni
-    shouldUpdateStorageService:(BOOL)shouldUpdateStorageService
-                   transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateLocalPhoneNumber(_:aci:pni:shouldUpdateStorageService:transaction:));
+- (void)legacy_updateLocalPhoneNumber:(NSString *)phoneNumber
+                                  aci:(NSUUID *)aci
+                                  pni:(NSUUID *_Nullable)pni
+           shouldUpdateStorageService:(BOOL)shouldUpdateStorageService
+                          transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(legacy_updateLocalPhoneNumber(_:aci:pni:shouldUpdateStorageService:transaction:));
+
+- (void)updateLocalPhoneNumber:(E164ObjC *)e164
+                           aci:(NSUUID *)uuid
+                           pni:(NSUUID *)pni
+                   transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Manual Message Fetch
 

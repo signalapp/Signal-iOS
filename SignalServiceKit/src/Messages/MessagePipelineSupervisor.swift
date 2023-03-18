@@ -53,6 +53,7 @@ public class MessagePipelineSupervisor: NSObject {
     public enum Suspension: Hashable {
         case uuidBackfill
         case nseWakingUpApp(suspensionId: UUID, payloadString: String)
+        case pendingChangeNumber
 
         fileprivate var reasonString: String {
             switch self {
@@ -60,19 +61,28 @@ public class MessagePipelineSupervisor: NSObject {
                 return "UUID Backfill"
             case .nseWakingUpApp(_, let payloadString):
                 return "Waking main app for \(payloadString)"
+            case .pendingChangeNumber:
+                return "Pending change number"
             }
         }
     }
 
     /// Invoking this method will ensure that all registered message processing stages are notified that they should
     /// suspend their activity. This suppression will persist until the returned handle is invalidated.
-    /// Note: The caller *must* invalidate the returned handle or call `unsuspendMessageProcessing`.
+    /// Note: The caller *must* invalidate the returned handle; if it is deallocated without having been invalidated it will crash the app.
     public func suspendMessageProcessing(for suspension: Suspension) -> MessagePipelineSuspensionHandle {
         addSuspension(suspension)
         let handle = MessagePipelineSuspensionHandle {
             self.removeSuspension(suspension)
         }
         return handle
+    }
+
+    /// Invoking this method will ensure that all registered message processing stages are notified that they should
+    /// suspend their activity. This suppression will persist until the suspension is explicitly lifted.
+    /// For this reason calling this method is highly dangerous, and the variety that returns a handle is preferred where possible.
+    public func suspendMessageProcessingWithoutHandle(for suspension: Suspension) {
+        addSuspension(suspension)
     }
 
     public func unsuspendMessageProcessing(for suspension: Suspension) {

@@ -126,11 +126,23 @@ public enum ChangePhoneNumberPni {
     }
 
     /// Represents a change-number operation that has not yet been finalized.
-    public struct PendingState {
-        let newE164: E164
-        let pniIdentityKeyPair: ECKeyPair
-        let localDevicePniSignedPreKeyRecord: SignedPreKeyRecord
-        let localDevicePniRegistrationId: UInt32
+    public struct PendingState: Equatable {
+        public let newE164: E164
+        public let pniIdentityKeyPair: ECKeyPair
+        public let localDevicePniSignedPreKeyRecord: SignedPreKeyRecord
+        public let localDevicePniRegistrationId: UInt32
+
+        public init(
+            newE164: E164,
+            pniIdentityKeyPair: ECKeyPair,
+            localDevicePniSignedPreKeyRecord: SignedPreKeyRecord,
+            localDevicePniRegistrationId: UInt32
+        ) {
+            self.newE164 = newE164
+            self.pniIdentityKeyPair = pniIdentityKeyPair
+            self.localDevicePniSignedPreKeyRecord = localDevicePniSignedPreKeyRecord
+            self.localDevicePniRegistrationId = localDevicePniRegistrationId
+        }
     }
 
     public enum GeneratePniIdentityResult {
@@ -389,89 +401,14 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
         // Followup tasks
 
-        // Since we rotated the identity key, we need new one-time pre-keys.
-        // However, no need to update the signed pre-key, which we also just
-        // rotated.
-        preKeyManager.refreshOneTimePreKeys(
-            forIdentity: .pni,
-            alsoRefreshSignedPreKey: false
-        )
-    }
-}
-
-// MARK: - PendingState Codable
-
-extension ChangePhoneNumberPni.PendingState: Codable {
-    private enum CodingKeys: String, CodingKey {
-        case newE164
-        case pniIdentityKeyPair
-        case localDevicePniSignedPreKeyRecord
-        case localDevicePniRegistrationId
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        self.newE164 = try container.decode(E164.self, forKey: .newE164)
-        self.localDevicePniRegistrationId = try container.decode(UInt32.self, forKey: .localDevicePniRegistrationId)
-
-        guard
-            let pniIdentityKeyPair: ECKeyPair = try Self.decodeKeyedArchive(
-                fromDecodingContainer: container,
-                forKey: .pniIdentityKeyPair
-            ),
-            let localDevicePniSignedPreKeyRecord: SignedPreKeyRecord = try Self.decodeKeyedArchive(
-                fromDecodingContainer: container,
-                forKey: .localDevicePniSignedPreKeyRecord
+        transaction.addAsyncCompletion(on: schedulers.main) { [preKeyManager] in
+            // Since we rotated the identity key, we need new one-time pre-keys.
+            // However, no need to update the signed pre-key, which we also just
+            // rotated.
+            preKeyManager.refreshOneTimePreKeys(
+                forIdentity: .pni,
+                alsoRefreshSignedPreKey: false
             )
-        else {
-            throw OWSAssertionError("Unable to deserialize NSKeyedArchiver fields!")
         }
-
-        self.pniIdentityKeyPair = pniIdentityKeyPair
-        self.localDevicePniSignedPreKeyRecord = localDevicePniSignedPreKeyRecord
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try container.encode(newE164, forKey: .newE164)
-        try container.encode(localDevicePniRegistrationId, forKey: .localDevicePniRegistrationId)
-
-        try Self.encodeKeyedArchive(
-            value: pniIdentityKeyPair,
-            toEncodingContainer: &container,
-            forKey: .pniIdentityKeyPair
-        )
-
-        try Self.encodeKeyedArchive(
-            value: localDevicePniSignedPreKeyRecord,
-            toEncodingContainer: &container,
-            forKey: .localDevicePniSignedPreKeyRecord
-        )
-    }
-
-    // MARK: NSKeyed[Un]Archiver
-
-    private static func decodeKeyedArchive<T: NSObject & NSSecureCoding>(
-        fromDecodingContainer decodingContainer: KeyedDecodingContainer<CodingKeys>,
-        forKey key: CodingKeys
-    ) throws -> T? {
-        let data = try decodingContainer.decode(Data.self, forKey: key)
-
-        return try NSKeyedUnarchiver.unarchivedObject(ofClass: T.self, from: data)
-    }
-
-    private static func encodeKeyedArchive<T: NSObject & NSSecureCoding>(
-        value: T,
-        toEncodingContainer encodingContainer: inout KeyedEncodingContainer<CodingKeys>,
-        forKey key: CodingKeys
-    ) throws {
-        let data = try NSKeyedArchiver.archivedData(
-            withRootObject: value,
-            requiringSecureCoding: true
-        )
-
-        try encodingContainer.encode(data, forKey: key)
     }
 }

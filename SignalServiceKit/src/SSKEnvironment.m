@@ -60,7 +60,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic) PhoneNumberUtil *phoneNumberUtilRef;
 @property (nonatomic) id webSocketFactoryRef;
-@property (nonatomic) ChangePhoneNumber *changePhoneNumberRef;
+@property (nonatomic) LegacyChangePhoneNumber *legacyChangePhoneNumberRef;
 @property (nonatomic) id<SubscriptionManager> subscriptionManagerRef;
 @property (nonatomic) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
 @property (nonatomic) RemoteMegaphoneFetcher *remoteMegaphoneFetcherRef;
@@ -128,7 +128,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
                        webSocketFactory:(id)webSocketFactory
-                      changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
+                legacyChangePhoneNumber:(LegacyChangePhoneNumber *)legacyChangePhoneNumber
                     subscriptionManager:(id<SubscriptionManager>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
                  remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
@@ -191,7 +191,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _senderKeyStoreRef = senderKeyStore;
     _phoneNumberUtilRef = phoneNumberUtil;
     _webSocketFactoryRef = webSocketFactory;
-    _changePhoneNumberRef = changePhoneNumber;
+    _legacyChangePhoneNumberRef = legacyChangePhoneNumber;
     _subscriptionManagerRef = subscriptionManager;
     _systemStoryManagerRef = systemStoryManager;
     _remoteMegaphoneFetcherRef = remoteMegaphoneFetcher;

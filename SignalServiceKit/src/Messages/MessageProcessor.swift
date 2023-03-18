@@ -108,6 +108,27 @@ public class MessageProcessor: NSObject {
         }
     }
 
+    /// Suspends message processing, but before doing so processes any messages
+    /// received so far.
+    /// This suppression will persist until the suspension is explicitly lifted.
+    /// For this reason calling this method is highly dangerous, please use with care.
+    public func waitForProcessingCompleteAndThenSuspend(
+        for suspension: MessagePipelineSupervisor.Suspension
+    ) -> Guarantee<Void> {
+        // We need to:
+        // 1. wait to process
+        // 2. suspend
+        // 3. wait to process again
+        // This is because steps 1 and 2 are not transactional, and in between a message
+        // may get queued up for processing. After 2, nothing new can come in, so we only
+        // need to wait the once.
+        // In most cases nothing sneaks in between 1 and 2, so 3 resolves instantly.
+        return processingCompletePromise(suspensionBehavior: .onlyWaitIfAlreadyInProgress).then(on: DispatchQueue.main) {
+            self.messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: suspension)
+            return self.processingCompletePromise(suspensionBehavior: .onlyWaitIfAlreadyInProgress)
+        }.recover(on: SyncScheduler()) { _ in return () }
+    }
+
     @objc
     @available(swift, obsoleted: 1.0)
     public func fetchingAndProcessingCompletePromise() -> AnyPromise {

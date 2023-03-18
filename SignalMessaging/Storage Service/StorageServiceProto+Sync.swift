@@ -933,7 +933,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let localAci: UUID
     private let authedAccount: AuthedAccount
 
-    private let changePhoneNumber: ChangePhoneNumber
+    private let legacyChangePhoneNumber: LegacyChangePhoneNumber
     private let paymentsHelper: PaymentsHelperSwift
     private let preferences: OWSPreferences
     private let profileManager: OWSProfileManager
@@ -951,7 +951,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         localAddress: SignalServiceAddress,
         localAci: UUID,
         authedAccount: AuthedAccount,
-        changePhoneNumber: ChangePhoneNumber,
+        legacyChangePhoneNumber: LegacyChangePhoneNumber,
         paymentsHelper: PaymentsHelperSwift,
         preferences: OWSPreferences,
         profileManager: OWSProfileManager,
@@ -968,7 +968,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.localAddress = localAddress
         self.localAci = localAci
         self.authedAccount = authedAccount
-        self.changePhoneNumber = changePhoneNumber
+        self.legacyChangePhoneNumber = legacyChangePhoneNumber
         self.paymentsHelper = paymentsHelper
         self.preferences = preferences
         self.profileManager = profileManager
@@ -1341,7 +1341,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                         // Consult "whoami" service endpoint; the service is the source of truth
                         // for the local phone number.  This ensures that the primary will always
                         // reflect the latest value.
-                        self.changePhoneNumber.updateLocalPhoneNumber()
+                        self.legacyChangePhoneNumber.updateLocalPhoneNumber()
 
                         // The primary should always reflect the latest value.
                         // If local db state doesn't agree with the storage service state,
@@ -1351,11 +1351,13 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 } else {
                     // Linked devices should always take changes from the storage service.
                     if let uuid = localAddress.uuid {
-                        tsAccountManager.updateLocalPhoneNumber(serviceLocalE164,
-                                                                aci: uuid,
-                                                                pni: tsAccountManager.localPni,
-                                                                shouldUpdateStorageService: false,
-                                                                transaction: transaction)
+                        tsAccountManager.legacy_updateLocalPhoneNumber(
+                            serviceLocalE164,
+                            aci: uuid,
+                            pni: tsAccountManager.localPni,
+                            shouldUpdateStorageService: false,
+                            transaction: transaction
+                        )
                     } else {
                         owsFailDebug("Missing uuid.")
                     }

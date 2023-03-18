@@ -6,80 +6,28 @@
 import Contacts
 import Foundation
 
+public protocol RegistrationCoordinatorLoaderDelegate: AnyObject {
+    func clearPersistedMode(transaction: DBWriteTransaction)
+
+    func savePendingChangeNumber(
+        oldState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
+        pniState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniState?,
+        transaction: DBWriteTransaction
+    ) throws -> RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState
+}
+
 public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
-    public struct Dependencies {
-        public let accountManager: RegistrationCoordinatorImpl.Shims.AccountManager
-        public let appExpiry: RegistrationCoordinatorImpl.Shims.AppExpiry
-        public let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
-        public let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
-        public let dateProvider: DateProvider
-        public let db: DB
-        public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
-        public let kbs: KeyBackupService
-        public let kbsAuthCredentialStore: KBSAuthCredentialStorage
-        public let keyValueStoreFactory: KeyValueStoreFactory
-        public let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
-        public let preKeyManager: RegistrationCoordinatorImpl.Shims.PreKeyManager
-        public let profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager
-        public let pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager
-        public let receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager
-        public let remoteConfig: RegistrationCoordinatorImpl.Shims.RemoteConfig
-        public let schedulers: Schedulers
-        public let sessionManager: RegistrationSessionManager
-        public let signalService: OWSSignalServiceProtocol
-        public let storageServiceManager: StorageServiceManagerProtocol
-        public let tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager
-        public let udManager: RegistrationCoordinatorImpl.Shims.UDManager
-
-        fileprivate var kvStore: KeyValueStore {
-            keyValueStoreFactory.keyValueStore(collection: "RegistrationCoordinator")
-        }
-    }
-
-    /// `desiredMode` may not be the mode we end up in; for example if we
-    /// were in the middle of re-registration and try to change number, that will
-    /// be disallowed and we will fall back to re-registration.
-    public static func forDesiredMode(
-        _ desiredMode: RegistrationMode,
-        dependencies: Dependencies,
-        transaction: DBReadTransaction
-    ) -> RegistrationCoordinatorImpl {
-        let mode: RegistrationMode = {
-            guard let restoredMode: RegistrationMode = Self.restoreLastMode(
-                dependencies: dependencies,
-                transaction: transaction
-            ) else {
-                return desiredMode
-            }
-            return restoredMode
-        }()
-        return RegistrationCoordinatorImpl(mode: mode, dependencies: dependencies)
-    }
-
-    /// If the return value is non-nil, the user had an in-progress registration that can (typically, must) be restored.
-    public static func restoreLastMode(
-        dependencies: Dependencies,
-        transaction: DBReadTransaction
-    ) -> RegistrationMode? {
-        let kvStore = dependencies.kvStore
-        do {
-            return try kvStore.getCodableValue(forKey: Constants.modeKey, transaction: transaction)
-        } catch {
-            // Failed to parse, even though we know there is something there.
-            // This is BAD. We might've been in the middle of change number, which NEEDS to recover.
-            owsFailBeta("Unable to restore in-progress registration mode: \(error)")
-            return nil
-        }
-
-    }
-
-    private init(
-        mode: RegistrationMode,
-        dependencies: Dependencies
+    /// Only `RegistrationCoordinatorLoaderImpl` can create a nested `Mode` instance,
+    /// so only it can create this class. If you want an instance, use `RegistrationCoordinatorLoaderImpl`.
+    public init(
+        mode: RegistrationCoordinatorLoaderImpl.Mode,
+        loader: RegistrationCoordinatorLoaderDelegate,
+        dependencies: RegistrationCoordinatorDependencies
     ) {
-        self.mode = mode
-        self.kvStore = dependencies.kvStore
+        self._unsafeToModify_mode = mode
+        self.kvStore = dependencies.keyValueStoreFactory.keyValueStore(collection: "RegistrationCoordinator")
+        self.loader = loader
         self.deps = dependencies
     }
 
@@ -94,13 +42,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Let the user exit, but preserve all state so they can
             // come back and pick up where they left off, probably on next app launch.
             return true
-        case .changingNumber:
-            // TODO[Registration]: disallow exiting change number
-            // if in the middle of the actual change number request.
-            // Wipe in progress state; presumably the user decided not
-            // to change number.
-            self.wipePersistedState()
-            return true
+        case .changingNumber(let state):
+            if state.pniState != nil {
+                // Not allowed to exit once we have in progress pni state.
+                return false
+            } else {
+                // Wipe in progress state; presumably the user decided not
+                // to change number.
+                self.wipePersistedState()
+                return true
+            }
         }
     }
 
@@ -364,13 +315,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Internal
 
-    /// Does not change in the course of registration; you must finish a registration for a mode
-    /// before registering in a different mode.
-    /// Kept apart from PersistedState as this is read independently and updated independently,
-    /// even though both are persisted to disk.
-    private let mode: RegistrationMode
+    typealias Mode = RegistrationCoordinatorLoaderImpl.Mode
 
-    private let deps: Dependencies
+    /// Does not change from one mode to another in the course of registration; you must finish a registration for a mode
+    /// before registering in a different mode. (The metadata within a mode may change, e.g. changingNumber has state
+    /// that changes as operations are completed. These updates go through RegistrationCoordinatorLoader.)
+    /// Persisted on RegistrationCoordinatorLoader.
+    private var mode: Mode { return _unsafeToModify_mode }
+
+    private var _unsafeToModify_mode: Mode
+
+    private let loader: RegistrationCoordinatorLoaderDelegate
+    private let deps: RegistrationCoordinatorDependencies
     private let kvStore: KeyValueStore
 
     // Shortcuts for the commonly used ones.
@@ -407,6 +363,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // A credential we know to be valid and useable for
         // the current e164.
         var kbsAuthCredential: KBSAuthCredential?
+        // If we had kbs backups before registration even began.
+        var didHaveKbsBackupsPriorToReg = false
 
         // We always require the user to enter the PIN
         // during the in memory app session even if we
@@ -471,9 +429,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // we can restore profile info from storage service.
         var hasRestoredFromStorageService = false
         var hasSkippedRestoreFromStorageService = false
-        var shouldRestoreFromStorageService: Bool {
-            return !hasRestoredFromStorageService && !hasSkippedRestoreFromStorageService
-        }
     }
 
     private var inMemoryState = InMemoryState()
@@ -637,11 +592,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.loadProfileState()
 
         db.write { tx in
-            // Take this chance to write the mode to disk.
-            // It's okay if we quit before here; that means we had nothing
-            // to recover anyway and saving the mode does nothing.
-            try? self.kvStore.setCodable(self.mode, key: Constants.modeKey, transaction: tx)
-
             self.loadLocalMasterKey(tx)
             inMemoryState.pinFromDisk = deps.ows2FAManager.pinCode(tx)
             if
@@ -717,26 +667,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// registration if we ever re-register while in the same app session.
     private func exportAndWipeState(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
 
-        db.write { tx in
+        func finalizeRegistration(_ tx: DBWriteTransaction) {
             if inMemoryState.hasBackedUpToKBS {
                 // No need to show the experience if we made the pin
                 // and backed up.
                 deps.experienceManager.clearIntroducingPinsExperience(tx)
             }
 
-            switch mode {
-            case .reRegistering, .changingNumber:
-                break
-            case .registering:
-                // For new users, read receipts are on by default.
-                deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
-                deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
-                // New users also have the onboarding banner cards enabled
-                deps.experienceManager.enableAllGetStartedCards(tx)
-            }
-
-            // TODO[Registration]: should this happen after updating account attributes,
-            // since that can fail?
             deps.tsAccountManager.didRegister(
                 e164: accountIdentity.e164,
                 aci: accountIdentity.aci,
@@ -747,11 +684,54 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             deps.tsAccountManager.setIsOnboarded(tx)
         }
 
-        // Start syncing system contacts now that we have set up tsAccountManager.
-        deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: accountIdentity.authedAccount)
+        func setupContactsAndFinish() -> Guarantee<RegistrationStep> {
+            // Start syncing system contacts now that we have set up tsAccountManager.
+            deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: accountIdentity.authedAccount)
 
-        // Update the account attributes once, now, at the end.
-        return updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
+            // Update the account attributes once, now, at the end.
+            return updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
+        }
+
+        switch mode {
+        case .registering:
+            db.write { tx in
+                // For new users, read receipts are on by default.
+                deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
+                deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
+                // New users also have the onboarding banner cards enabled
+                deps.experienceManager.enableAllGetStartedCards(tx)
+                finalizeRegistration(tx)
+            }
+            return setupContactsAndFinish()
+
+        case .reRegistering:
+            db.write(block: finalizeRegistration)
+            return setupContactsAndFinish()
+
+        case .changingNumber(let changeNumberState):
+            if let pniState = changeNumberState.pniState {
+                return finalizeChangeNumberPniState(
+                    changeNumberState: changeNumberState,
+                    pniState: pniState,
+                    accountIdentity: accountIdentity
+                ).then(on: schedulers.main) { [weak self] result in
+                    guard let self else {
+                        return unretainedSelfError()
+                    }
+                    switch result {
+                    case .success:
+                        return self.updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
+                    case .unretainedSelf:
+                        return unretainedSelfError()
+                    case .genericError:
+                        return .value(.showErrorSheet(.genericError))
+                    }
+                }
+            } else {
+                return updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
+            }
+        }
+
     }
 
     private func updateAccountAttributesAndFinish(
@@ -763,30 +743,32 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 guard let self else {
                     return unretainedSelfError()
                 }
-                guard let error else {
-                    // We are done! Wipe everything
-                    self.inMemoryState = InMemoryState()
-                    self.wipePersistedState()
-                    // Do any storage service backups we have pending.
-                    self.deps.storageServiceManager.backupPendingChanges(authedAccount: accountIdentity.authedAccount)
-                    return .value(.done)
-                }
-                if error.isNetworkConnectivityFailure, retriesLeft > 0 {
+                if
+                    let error,
+                    error.isNetworkConnectivityFailure,
+                    retriesLeft > 0
+                {
                     return self.updateAccountAttributesAndFinish(
                         accountIdentity: accountIdentity,
                         retriesLeft: retriesLeft - 1
                     )
                 }
-                // TODO[Registration]: what should we do with a non-transient account attributes update error?
-                Logger.error("Failed to register due to failed account attributes update: \(error)")
-                return .value(.showErrorSheet(.todo))
+                if let error {
+                    Logger.error("Failed account attributes update, finishing registration anyway: \(error)")
+                }
+                // We are done! Wipe everything
+                self.inMemoryState = InMemoryState()
+                self.wipePersistedState()
+                // Do any storage service backups we have pending.
+                self.deps.storageServiceManager.backupPendingChanges(authedAccount: accountIdentity.authedAccount)
+                return .value(.done)
             }
     }
 
     private func wipePersistedState() {
         self.db.write { tx in
             self.kvStore.removeValue(forKey: Constants.persistedStateKey, transaction: tx)
-            self.kvStore.removeValue(forKey: Constants.modeKey, transaction: tx)
+            self.loader.clearPersistedMode(transaction: tx)
         }
     }
 
@@ -962,16 +944,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         return self.makeRegisterOrChangeNumberRequest(
             .recoveryPassword(regRecoveryPw),
-            e164: e164
-        ).then(on: schedulers.main) { [weak self] accountResponse in
-            return self?.handleCreateAccountResponseFromRegRecoveryPassword(
-                accountResponse,
-                regRecoveryPw: regRecoveryPw,
-                e164: e164,
-                pinFromUser: pinFromUser,
-                retriesLeft: retriesLeft
-            ) ?? unretainedSelfError()
-        }
+            e164: e164,
+            responseHandler: { [weak self] accountResponse in
+                return self?.handleCreateAccountResponseFromRegRecoveryPassword(
+                    accountResponse,
+                    regRecoveryPw: regRecoveryPw,
+                    e164: e164,
+                    pinFromUser: pinFromUser,
+                    retriesLeft: retriesLeft
+                ) ?? unretainedSelfError()
+            }
+        )
     }
 
     private func handleCreateAccountResponseFromRegRecoveryPassword(
@@ -1159,6 +1142,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // If we have a local master key, theres no need to restore after registration.
         // (we will still back up though)
         inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = !deps.kbs.hasMasterKey(transaction: tx)
+        inMemoryState.didHaveKbsBackupsPriorToReg = deps.kbs.hasBackedUpMasterKey(transaction: tx)
     }
 
     // MARK: - KBS Auth Credential Candidates Pathway
@@ -1426,17 +1410,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         return self.makeRegisterOrChangeNumberRequest(
             .sessionId(session.id),
-            e164: session.e164
-        ).then(on: schedulers.main) { [weak self] response in
-            guard let self = self else {
-                return unretainedSelfError()
+            e164: session.e164,
+            responseHandler: { [weak self] accountResponse in
+                return self?.handleCreateAccountResponseFromSession(
+                    accountResponse,
+                    sessionFromBeforeRequest: session,
+                    retriesLeft: retriesLeft
+                ) ?? unretainedSelfError()
             }
-            return self.handleCreateAccountResponseFromSession(
-                response,
-                sessionFromBeforeRequest: session,
-                retriesLeft: retriesLeft
-            )
-        }
+        )
     }
 
     private func handleCreateAccountResponseFromSession(
@@ -2059,6 +2041,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func nextStepForProfileSetup(
         _ accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
+        switch mode {
+        case .registering, .reRegistering:
+            break
+        case .changingNumber:
+            // Change number is different; we do a limited number of operations and then finalize.
+            if !persistedState.didSyncPushTokens {
+                return syncPushTokens(accountIdentity)
+            }
+
+            if let stepGuarantee = performKBSBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+                return stepGuarantee
+            }
+
+            return exportAndWipeState(accountIdentity: accountIdentity)
+        }
+
         if !inMemoryState.hasSetUpContactsManager {
             // This sets up the contact provider as the primary device one (system contacts).
             // Without this, subsequent operations will fail as no contact provider is set
@@ -2076,7 +2074,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return syncPushTokens(accountIdentity)
         }
 
-        if !persistedState.didSyncPrekeys {
+        if shouldSyncPreKeys() {
             return deps.preKeyManager
                 .createPreKeys(auth: accountIdentity.chatServiceAuth)
                 .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
@@ -2096,43 +2094,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
         }
 
-        let isRestoringPinBackup = accountIdentity.hasPreviouslyUsedKBS
-
-        if !persistedState.hasSkippedPinEntry {
-            guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
-                if isRestoringPinBackup {
-                    return .value(.pinEntry(RegistrationPinState(
-                        operation: .enteringExistingPin(canSkip: true),
-                        error: nil
-                    )))
-                } else if let blob = inMemoryState.unconfirmedPinBlob {
-                    return .value(.pinEntry(RegistrationPinState(
-                        operation: .confirmingNewPin(blob),
-                        error: nil
-                    )))
-                } else {
-                    return .value(.pinEntry(RegistrationPinState(
-                        operation: .creatingNewPin,
-                        error: nil
-                    )))
-                }
-            }
-            if inMemoryState.shouldBackUpToKBS {
-                // If we have no kbs data, fetch it.
-                if isRestoringPinBackup, inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration {
-                    return restoreKBSBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
-                } else {
-                    // If we haven't backed up, do so now.
-                    return backupToKBS(pin: pin, accountIdentity: accountIdentity)
-                }
-            }
-
-            if inMemoryState.wasReglockEnabled && inMemoryState.hasSetReglock.negated {
-                return enableReglockIfNeeded()
-            }
+        if let stepGuarantee = performKBSBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+            return stepGuarantee
         }
 
-        if inMemoryState.shouldRestoreFromStorageService {
+        if shouldRestoreFromStorageService() {
             return deps.accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
                 .map(on: schedulers.main) { [weak self] in
                     self?.inMemoryState.hasRestoredFromStorageService = true
@@ -2253,6 +2219,46 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .value(.showErrorSheet(.genericError))
                 }
             }
+    }
+
+    // returns nil if no steps needed.
+    private func performKBSBackupStepsIfNeeded(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep>? {
+        let isRestoringPinBackup = accountIdentity.hasPreviouslyUsedKBS
+
+        if !persistedState.hasSkippedPinEntry {
+            guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
+                if isRestoringPinBackup {
+                    return .value(.pinEntry(RegistrationPinState(
+                        operation: .enteringExistingPin(canSkip: true),
+                        error: nil
+                    )))
+                } else if let blob = inMemoryState.unconfirmedPinBlob {
+                    return .value(.pinEntry(RegistrationPinState(
+                        operation: .confirmingNewPin(blob),
+                        error: nil
+                    )))
+                } else {
+                    return .value(.pinEntry(RegistrationPinState(
+                        operation: .creatingNewPin,
+                        error: nil
+                    )))
+                }
+            }
+            if inMemoryState.shouldBackUpToKBS {
+                // If we have no kbs data, fetch it.
+                if isRestoringPinBackup, inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration {
+                    return restoreKBSBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
+                } else {
+                    // If we haven't backed up, do so now.
+                    return backupToKBS(pin: pin, accountIdentity: accountIdentity)
+                }
+            }
+
+            if inMemoryState.wasReglockEnabled && inMemoryState.hasSetReglock.negated {
+                return enableReglockIfNeeded()
+            }
+        }
+        return nil
     }
 
     private func restoreKBSBackupPostRegistration(
@@ -2457,6 +2463,68 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    private enum FinalizeChangeNumberResult {
+        case success
+        case unretainedSelf
+        case genericError
+    }
+
+    private func finalizeChangeNumberPniState(
+        changeNumberState: Mode.ChangeNumberState,
+        pniState: Mode.ChangeNumberState.PendingPniState,
+        accountIdentity: AccountIdentity
+    ) -> Guarantee<FinalizeChangeNumberResult> {
+        // Creating a high strust signal recipient for oneself
+        // must happen in a transaction initiated off the main thread.
+        return firstly(on: schedulers.sharedBackground) { [weak self] () -> FinalizeChangeNumberResult in
+            guard let strongSelf = self else {
+                return .unretainedSelf
+            }
+            do {
+                try strongSelf.db.write { tx in
+                    strongSelf.deps.changeNumberPniManager.finalizePniIdentity(
+                        withPendingState: pniState.asPniState(),
+                        transaction: tx
+                    )
+                    strongSelf._unsafeToModify_mode = .changingNumber(try strongSelf.loader.savePendingChangeNumber(
+                        oldState: changeNumberState,
+                        pniState: nil,
+                        transaction: tx
+                    ))
+
+                    Logger.info(
+                        """
+                        Recording new phone number
+                        localAci: \(changeNumberState.localAci.uuidString),
+                        localE164: \(changeNumberState.oldE164.stringValue),
+                        serviceAci: \(accountIdentity.aci),
+                        servicePni: \(accountIdentity.pni),
+                        serviceE164: \(accountIdentity.e164.stringValue)")
+                        """
+                    )
+
+                    // We do these here, and not in export state, so that we don't risk
+                    // syncing out-of-date state to storage service.
+                    strongSelf.deps.signalRecipientShim.createHighTrustRecipient(
+                        aci: accountIdentity.aci,
+                        e164: accountIdentity.e164,
+                        transaction: tx
+                    )
+                    strongSelf.deps.tsAccountManager.updateLocalPhoneNumber(
+                        e164: accountIdentity.e164,
+                        aci: accountIdentity.aci,
+                        pni: accountIdentity.pni,
+                        tx
+                    )
+                }
+                return .success
+            } catch {
+                Logger.error("Failed to finalize change number state: \(error)")
+                return .genericError
+            }
+        }
+    }
+
     // MARK: Device Transfer
 
     private func shouldSkipDeviceTransfer() -> Bool {
@@ -2485,8 +2553,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func makeRegisterOrChangeNumberRequest(
         _ method: RegistrationRequestFactory.VerificationMethod,
-        e164: E164
-    ) -> Guarantee<AccountResponse> {
+        e164: E164,
+        responseHandler: @escaping (AccountResponse) -> Guarantee<RegistrationStep>
+    ) -> Guarantee<RegistrationStep> {
         switch mode {
         case .registering, .reRegistering:
             // The auth token we use going forwards for chat server auth headers
@@ -2506,11 +2575,168 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     signalService: deps.signalService,
                     schedulers: schedulers
                 )
+                .then(on: schedulers.main) { accountResponse in
+                    return responseHandler(accountResponse)
+                }
 
-        case .changingNumber(let state):
-            fatalError("Unimplemented")
+        case .changingNumber(let changeNumberState):
+            if let pniState = changeNumberState.pniState {
+                // We had an in flight change number that was interrupted, recover.
+                return recoverPendingPniChangeNumberState(
+                    changeNumberState: changeNumberState,
+                    pniState: pniState
+                )
+            }
+            return self.generatePniStateAndMakeChangeNumberRequest(
+                e164: e164,
+                verificationMethod: method,
+                changeNumberState: changeNumberState
+            ).then(on: schedulers.main) { accountResponse in
+                return responseHandler(accountResponse)
+            }
+
         }
     }
+
+    private func generatePniStateAndMakeChangeNumberRequest(
+        e164: E164,
+        verificationMethod: RegistrationRequestFactory.VerificationMethod,
+        changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState
+    ) -> Guarantee<AccountResponse> {
+        return deps.changeNumberPniManager
+            .generatePniIdentity(
+                forNewE164: e164,
+                localAci: ServiceId(changeNumberState.localAci),
+                localAccountId: changeNumberState.localAccountId,
+                localDeviceId: changeNumberState.localDeviceId,
+                localUserAllDeviceIds: changeNumberState.localUserAllDeviceIds
+            )
+            .then(on: schedulers.sharedBackground) { [weak self] pniResult -> Guarantee<AccountResponse> in
+                guard let strongSelf = self else {
+                    return .value(.genericError)
+                }
+                switch pniResult {
+                case .failure:
+                    return .value(.genericError)
+                case .success(let pniParams, let pniPendingState):
+                    return strongSelf.makeChangeNumberRequest(
+                        e164: e164,
+                        verificationMethod: verificationMethod,
+                        changeNumberState: changeNumberState,
+                        pniPendingState: pniPendingState,
+                        pniParams: pniParams
+                    )
+
+                }
+            }
+    }
+
+    private func makeChangeNumberRequest(
+        e164: E164,
+        verificationMethod: RegistrationRequestFactory.VerificationMethod,
+        changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
+        pniPendingState: ChangePhoneNumberPni.PendingState,
+        pniParams: ChangePhoneNumberPni.Parameters
+    ) -> Guarantee<AccountResponse> {
+        // Process all messages first.
+        return deps.messageProcessor.waitForProcessingCompleteAndThenSuspend(for: .pendingChangeNumber)
+            .then(on: schedulers.main) { [weak self] in
+                guard let strongSelf = self else {
+                    return .value(.genericError)
+                }
+                do {
+                    try strongSelf.db.write { tx in
+                        strongSelf._unsafeToModify_mode = .changingNumber(try strongSelf.loader.savePendingChangeNumber(
+                            oldState: changeNumberState,
+                            pniState: pniPendingState.asRegPniState(),
+                            transaction: tx
+                        ))
+                    }
+                } catch {
+                    return .value(.genericError)
+                }
+                return Service
+                    .makeChangeNumberRequest(
+                        verificationMethod,
+                        e164: e164,
+                        reglockToken: strongSelf.inMemoryState.reglockToken,
+                        authPassword: changeNumberState.oldAuthToken,
+                        pniChangeNumberParameters: pniParams,
+                        signalService: strongSelf.deps.signalService,
+                        schedulers: strongSelf.schedulers
+                    )
+            }
+    }
+
+    private func recoverPendingPniChangeNumberState(
+        changeNumberState: Mode.ChangeNumberState,
+        pniState: Mode.ChangeNumberState.PendingPniState
+    ) -> Guarantee<RegistrationStep> {
+        return Service
+            .makeWhoAmIRequest(
+                auth: ChatServiceAuth.explicit(
+                    aci: changeNumberState.localAci,
+                    password: changeNumberState.oldAuthToken
+                ),
+                signalService: deps.signalService,
+                schedulers: schedulers
+            )
+            .then(on: schedulers.main) { [weak self] whoAmIResult -> Guarantee<RegistrationStep> in
+                guard let strongSelf = self else {
+                    return unretainedSelfError()
+                }
+                switch whoAmIResult {
+                case .networkError, .genericError:
+                    return .value(.showErrorSheet(.genericError))
+                case .success(let whoAmIResponse):
+                    if whoAmIResponse.e164 == pniState.newE164 {
+                        // Success! Fake us getting the success response.
+                        strongSelf.db.write { tx in
+                            strongSelf.handleSuccessfulAccountResponse(
+                                identity: AccountIdentity(
+                                    aci: whoAmIResponse.aci,
+                                    pni: whoAmIResponse.pni,
+                                    e164: whoAmIResponse.e164,
+                                    hasPreviouslyUsedKBS: strongSelf.inMemoryState.didHaveKbsBackupsPriorToReg,
+                                    authPassword: changeNumberState.oldAuthToken
+                                ),
+                                tx
+                            )
+                        }
+                        return strongSelf.nextStep()
+                    } else {
+                        // We had an in progress change number, but we arent on that number now.
+                        // pretend it never happened.
+                        do {
+                            try strongSelf.db.write { tx in
+                                strongSelf._unsafeToModify_mode = .changingNumber(try strongSelf.loader.savePendingChangeNumber(
+                                    oldState: changeNumberState,
+                                    pniState: nil,
+                                    transaction: tx
+                                ))
+                            }
+                        } catch {
+                            return .value(.showErrorSheet(.genericError))
+                        }
+                        return strongSelf.nextStep()
+                    }
+                }
+            }
+    }
+
+    private func handleSuccessfulAccountResponse(
+        identity: AccountIdentity,
+        _ transaction: DBWriteTransaction
+    ) {
+        inMemoryState.session = nil
+        deps.sessionManager.clearPersistedSession(transaction)
+        updatePersistedState(transaction) {
+            $0.accountIdentity = identity
+            $0.sessionState = nil
+        }
+    }
+
+    // MARK: - Account objects
 
     private func makeAccountAttributes() -> AccountAttributes {
         let twoFAMode: AccountAttributes.TwoFactorAuthMode
@@ -2585,8 +2811,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch mode {
         case .registering:
             return .initialRegistration(previouslyEnteredE164: persistedState.e164)
-        case .reRegistering(let e164):
-            return .reregistration(e164: e164)
+        case .reRegistering(let state):
+            return .reregistration(e164: state.e164)
         case .changingNumber(let state):
             return .changingPhoneNumber(oldE164: state.oldE164)
         }
@@ -2613,10 +2839,28 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    private func shouldRestoreFromStorageService() -> Bool {
+        switch mode {
+        case .registering, .reRegistering:
+            return !inMemoryState.hasRestoredFromStorageService
+                && !inMemoryState.hasSkippedRestoreFromStorageService
+        case .changingNumber:
+            return false
+        }
+    }
+
+    private func shouldSyncPreKeys() -> Bool {
+        switch mode {
+        case .registering, .reRegistering:
+            return !persistedState.didSyncPrekeys
+        case .changingNumber:
+            return false
+        }
+    }
+
     // MARK: - Constants
 
     enum Constants {
-        static let modeKey = "mode"
         static let persistedStateKey = "state"
 
         // how many times we will retry network errors.
@@ -2640,6 +2884,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 }
 
 private func unretainedSelfError() -> Guarantee<RegistrationStep> {
+    return .value(unretainedSelfErrorStep())
+}
+
+private func unretainedSelfErrorStep() -> RegistrationStep {
     Logger.warn("Registration coordinator reference lost. Showing generic error")
-    return .value(.showErrorSheet(.genericError))
+    return .showErrorSheet(.genericError)
 }

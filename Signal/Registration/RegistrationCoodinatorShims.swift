@@ -16,12 +16,15 @@ extension RegistrationCoordinatorImpl {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerShim
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreShim
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerShim
+        public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorShim
+        public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorShim
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerShim
         public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerShim
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
         public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigShim
+        public typealias SignalRecipient = _RegistrationCoordinator_SignalRecipientShim
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerShim
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
     }
@@ -31,12 +34,15 @@ extension RegistrationCoordinatorImpl {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerWrapper
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerWrapper
+        public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorWrapper
+        public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorWrapper
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerWrapper
         public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerWrapper
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
         public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigWrapper
+        public typealias SignalRecipient = _RegistrationCoordinator_SignalRecipientWrapper
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
     }
@@ -147,6 +153,56 @@ public class _RegistrationCoordinator_ExperienceManagerWrapper: _RegistrationCoo
 
     public func enableAllGetStartedCards(_ tx: DBWriteTransaction) {
         GetStartedBannerViewController.enableAllCards(writeTx: SDSDB.shimOnlyBridge(tx))
+    }
+}
+
+// MARK: - MessagePipelineSupervisor
+
+public protocol _RegistrationCoordinator_MessagePipelineSupervisorShim {
+
+    func suspendMessageProcessingWithoutHandle(for: MessagePipelineSupervisor.Suspension)
+
+    func unsuspendMessageProcessing(for: MessagePipelineSupervisor.Suspension)
+}
+
+public class _RegistrationCoordinator_MessagePipelineSupervisorWrapper: _RegistrationCoordinator_MessagePipelineSupervisorShim {
+
+    private let supervisor: MessagePipelineSupervisor
+
+    public init(_ supervisor: MessagePipelineSupervisor) {
+        self.supervisor = supervisor
+    }
+
+    public func suspendMessageProcessingWithoutHandle(for suspension: MessagePipelineSupervisor.Suspension) {
+        supervisor.suspendMessageProcessingWithoutHandle(for: suspension)
+    }
+
+    public func unsuspendMessageProcessing(for suspension: MessagePipelineSupervisor.Suspension) {
+        supervisor.unsuspendMessageProcessing(for: suspension)
+    }
+}
+
+// MARK: - MessageProcessor
+
+public protocol _RegistrationCoordinator_MessageProcessorShim {
+
+    func waitForProcessingCompleteAndThenSuspend(
+        for suspension: MessagePipelineSupervisor.Suspension
+    ) -> Guarantee<Void>
+}
+
+public class _RegistrationCoordinator_MessageProcessorWrapper: _RegistrationCoordinator_MessageProcessorShim {
+
+    private let processor: MessageProcessor
+
+    public init(_ processor: MessageProcessor) {
+        self.processor = processor
+    }
+
+    public func waitForProcessingCompleteAndThenSuspend(
+        for suspension: MessagePipelineSupervisor.Suspension
+    ) -> Guarantee<Void> {
+        return processor.waitForProcessingCompleteAndThenSuspend(for: suspension)
     }
 }
 
@@ -368,6 +424,40 @@ public class _RegistrationCoordinator_RemoteConfigWrapper: _RegistrationCoordina
     public var canReceiveGiftBadges: Bool { RemoteConfig.canSendGiftBadges }
 }
 
+// MARK: - SignalRecipient
+
+public protocol _RegistrationCoordinator_SignalRecipientShim {
+
+    func createHighTrustRecipient(
+        aci: UUID,
+        e164: E164,
+        transaction: DBWriteTransaction
+    )
+}
+
+public class _RegistrationCoordinator_SignalRecipientWrapper: _RegistrationCoordinator_SignalRecipientShim {
+
+    public init() {}
+
+    public func createHighTrustRecipient(
+        aci: UUID,
+        e164: E164,
+        transaction: DBWriteTransaction
+    ) {
+        let address = SignalServiceAddress(
+            uuid: aci,
+            e164: e164
+        )
+        let transaction = SDSDB.shimOnlyBridge(transaction)
+        SignalRecipient.fetchOrCreate(
+            for: address,
+            trustLevel: .high,
+            transaction: transaction
+        )
+        .markAsRegistered(transaction: transaction)
+    }
+}
+
 // MARK: - TSAccountManager
 
 public protocol _RegistrationCoordinator_TSAccountManagerShim {
@@ -392,6 +482,13 @@ public protocol _RegistrationCoordinator_TSAccountManagerShim {
         aci: UUID,
         pni: UUID,
         authToken: String,
+        _ tx: DBWriteTransaction
+    )
+
+    func updateLocalPhoneNumber(
+        e164: E164,
+        aci: UUID,
+        pni: UUID,
         _ tx: DBWriteTransaction
     )
 
@@ -453,6 +550,20 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
             aci: aci,
             pni: pni,
             authToken: authToken,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
+
+    public func updateLocalPhoneNumber(
+        e164: E164,
+        aci: UUID,
+        pni: UUID,
+        _ tx: DBWriteTransaction
+    ) {
+        manager.updateLocalPhoneNumber(
+            E164ObjC(e164),
+            aci: aci,
+            pni: pni,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }

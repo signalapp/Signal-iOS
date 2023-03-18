@@ -26,10 +26,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     private var accountManagerMock: RegistrationCoordinatorImpl.TestMocks.AccountManager!
     private var appExpiryMock: RegistrationCoordinatorImpl.TestMocks.AppExpiry!
+    private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
     private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
     private var kbs: KeyBackupServiceMock!
     private var kbsAuthCredentialStore: KBSAuthCredentialStorageMock!
+    private var mockMessagePipelineSupervisor: RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor!
+    private var mockMessageProcessor: RegistrationCoordinatorImpl.TestMocks.MessageProcessor!
     private var mockURLSession: TSRequestOWSURLSessionMock!
     private var ows2FAManagerMock: RegistrationCoordinatorImpl.TestMocks.OWS2FAManager!
     private var preKeyManagerMock: RegistrationCoordinatorImpl.TestMocks.PreKeyManager!
@@ -48,10 +51,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         accountManagerMock = RegistrationCoordinatorImpl.TestMocks.AccountManager()
         appExpiryMock = RegistrationCoordinatorImpl.TestMocks.AppExpiry()
+        changeNumberPniManager = ChangePhoneNumberPniManagerMock()
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
         kbs = KeyBackupServiceMock()
         kbsAuthCredentialStore = KBSAuthCredentialStorageMock()
+        mockMessagePipelineSupervisor = RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor()
+        mockMessageProcessor = RegistrationCoordinatorImpl.TestMocks.MessageProcessor()
         ows2FAManagerMock = RegistrationCoordinatorImpl.TestMocks.OWS2FAManager()
         preKeyManagerMock = RegistrationCoordinatorImpl.TestMocks.PreKeyManager()
         profileManagerMock = RegistrationCoordinatorImpl.TestMocks.ProfileManager()
@@ -72,9 +78,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         let db = MockDB()
 
-        let dependencies = RegistrationCoordinatorImpl.Dependencies(
+        let dependencies = RegistrationCoordinatorDependencies(
             accountManager: accountManagerMock,
             appExpiry: appExpiryMock,
+            changeNumberPniManager: changeNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.TestMocks.ContactsManager(),
             contactsStore: contactsStore,
             dateProvider: { self.dateProvider() },
@@ -83,6 +90,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
             kbs: kbs,
             kbsAuthCredentialStore: kbsAuthCredentialStore,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
+            messagePipelineSupervisor: mockMessagePipelineSupervisor,
+            messageProcessor: mockMessageProcessor,
             ows2FAManager: ows2FAManagerMock,
             preKeyManager: preKeyManagerMock,
             profileManager: profileManagerMock,
@@ -90,18 +99,19 @@ public class RegistrationCoordinatorTest: XCTestCase {
             receiptManager: receiptManagerMock,
             remoteConfig: RegistrationCoordinatorImpl.TestMocks.RemoteConfig(),
             schedulers: TestSchedulers(scheduler: scheduler),
+            signalRecipientShim: RegistrationCoordinatorImpl.TestMocks.SignalRecipient(),
             sessionManager: sessionManager,
             signalService: mockSignalService,
             storageServiceManager: storageServiceManagerMock,
             tsAccountManager: tsAccountManagerMock,
             udManager: RegistrationCoordinatorImpl.TestMocks.UDManager()
         )
-        coordinator = db.read {
-             return RegistrationCoordinatorImpl.forDesiredMode(
-                .registering, // TODO[Registration]: this should differ from one test case to another.
-                dependencies: dependencies,
+        let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
+        coordinator = db.write {
+            return loader.coordinator(
+                forDesiredMode: .registering, // TODO[Registration]: this should differ from one test case to another.
                 transaction: $0
-            )
+            ) as! RegistrationCoordinatorImpl
         }
     }
 

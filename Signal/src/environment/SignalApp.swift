@@ -41,7 +41,8 @@ extension SignalApp {
 
     func ensureRootViewController(
         appDelegate: UIApplicationDelegate,
-        launchStartedAt: TimeInterval
+        launchStartedAt: TimeInterval,
+        registrationLoader: RegistrationCoordinatorLoader
     ) {
         AssertIsOnMainThread()
 
@@ -58,9 +59,8 @@ extension SignalApp {
         let onboardingController = Deprecated_OnboardingController()
 
         if FeatureFlags.useNewRegistrationFlow {
-            let regDeps = makeRegistrationDependencies()
             var desiredMode: RegistrationMode? = DependenciesBridge.shared.db.read {
-                RegistrationCoordinatorImpl.restoreLastMode(dependencies: regDeps, transaction: $0)
+                return registrationLoader.restoreLastMode(transaction: $0)
             }
             if desiredMode == nil {
                 // Check for legacy state.
@@ -70,12 +70,8 @@ extension SignalApp {
                 }
             }
             if let desiredMode {
-                let coordinator = databaseStorage.read { tx in
-                    return RegistrationCoordinatorImpl.forDesiredMode(
-                        desiredMode,
-                        dependencies: regDeps,
-                        transaction: tx.asV2Read
-                    )
+                let coordinator = databaseStorage.write { tx in
+                    return registrationLoader.coordinator(forDesiredMode: desiredMode, transaction: tx.asV2Write)
                 }
                 let navController = RegistrationNavigationController(coordinator: coordinator)
 
@@ -99,33 +95,6 @@ extension SignalApp {
         AppUpdateNag.shared.showAppUpgradeNagIfNecessary()
 
         UIViewController.attemptRotationToDeviceOrientation()
-    }
-
-    private func makeRegistrationDependencies() -> RegistrationCoordinatorImpl.Dependencies {
-        return RegistrationCoordinatorImpl.Dependencies(
-            accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(Self.accountManager),
-            appExpiry: RegistrationCoordinatorImpl.Wrappers.AppExpiry(Self.appExpiry),
-            contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(Self.contactsManagerImpl),
-            contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
-            dateProvider: { Date() },
-            db: DependenciesBridge.shared.db,
-            experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
-            kbs: DependenciesBridge.shared.keyBackupService,
-            kbsAuthCredentialStore: DependenciesBridge.shared.kbsCredentialStorage,
-            keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
-            ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(Self.ows2FAManager),
-            preKeyManager: RegistrationCoordinatorImpl.Wrappers.PreKeyManager(),
-            profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(Self.profileManager),
-            pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(Self.pushRegistrationManager),
-            receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(Self.receiptManager),
-            remoteConfig: RegistrationCoordinatorImpl.Wrappers.RemoteConfig(),
-            schedulers: DependenciesBridge.shared.schedulers,
-            sessionManager: DependenciesBridge.shared.registrationSessionManager,
-            signalService: Self.signalService,
-            storageServiceManager: Self.storageServiceManager,
-            tsAccountManager: RegistrationCoordinatorImpl.Wrappers.TSAccountManager(Self.tsAccountManager),
-            udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(Self.udManager)
-        )
     }
 
     func showAppSettings(mode: ShowAppSettingsMode) {

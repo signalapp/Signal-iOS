@@ -89,9 +89,11 @@ class Deprecated_ChangePhoneNumberController: Dependencies {
         }
         let registrationLockToken: String? = self.registrationLockToken
 
-        let promise = Self.accountManager.requestChangePhoneNumber(newPhoneNumber: newPhoneNumber.e164,
-                                                                   verificationCode: verificationCode,
-                                                                   registrationLock: registrationLockToken)
+        let promise = Self.accountManager.deprecated_requestChangePhoneNumber(
+            newPhoneNumber: newPhoneNumber.e164,
+            verificationCode: verificationCode,
+            registrationLock: registrationLockToken
+        )
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modal in

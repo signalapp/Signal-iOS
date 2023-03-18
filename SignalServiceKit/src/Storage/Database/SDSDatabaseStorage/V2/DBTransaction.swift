@@ -25,4 +25,7 @@ public protocol DBReadTransaction {}
 /// Users can bridge to `SDSAnyWriteTransaction` by using `SDSDB.shimOnlyBridge`;
 /// this is made intentionally cumbersome as it should **never** be used in
 /// any concrete class and **only** in shim classes that bridge to old-style code.
-public protocol DBWriteTransaction: DBReadTransaction {}
+public protocol DBWriteTransaction: DBReadTransaction {
+
+    func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void)
+}

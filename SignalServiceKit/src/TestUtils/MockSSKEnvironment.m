@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
     SenderKeyStore *senderKeyStore = [SenderKeyStore new];
     PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
     id webSocketFactory = [WebSocketFactoryMock new];
-    ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
+    LegacyChangePhoneNumber *legacyChangePhoneNumber = [LegacyChangePhoneNumber new];
     id<SubscriptionManager> subscriptionManager = [MockSubscriptionManager new];
     SystemStoryManagerMock *systemStoryManager = [SystemStoryManagerMock new];
     RemoteMegaphoneFetcher *remoteMegaphoneFetcher = [RemoteMegaphoneFetcher new];
@@ -159,7 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
                            senderKeyStore:senderKeyStore
                           phoneNumberUtil:phoneNumberUtil
                          webSocketFactory:webSocketFactory
-                        changePhoneNumber:changePhoneNumber
+                  legacyChangePhoneNumber:legacyChangePhoneNumber
                       subscriptionManager:subscriptionManager
                        systemStoryManager:systemStoryManager
                    remoteMegaphoneFetcher:remoteMegaphoneFetcher

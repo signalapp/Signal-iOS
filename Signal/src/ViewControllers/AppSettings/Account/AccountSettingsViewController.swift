@@ -144,22 +144,37 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 }
             ))
         } else if tsAccountManager.isRegisteredPrimaryDevice {
-            let shouldShowChangePhoneNumber: Bool = {
-                guard RemoteConfig.changePhoneNumberUI else {
-                    return false
+            if FeatureFlags.useNewRegistrationFlow {
+                if self.changeNumberParams() != nil {
+                    accountSection.add(.actionItem(
+                        withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
+                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
+                        actionBlock: { [weak self] in
+                            guard let self, let changeNumberParams = self.changeNumberParams() else {
+                                return
+                            }
+                            self.changePhoneNumber(changeNumberParams)
+                        }
+                    ))
                 }
-                return Self.databaseStorage.read { transaction in
-                    self.changePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction)
-                }
-            }()
-            if shouldShowChangePhoneNumber {
-                accountSection.add(.actionItem(
-                    withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
-                    actionBlock: { [weak self] in
-                        self?.changePhoneNumber()
+            } else {
+                let shouldShowChangePhoneNumber: Bool = {
+                    guard RemoteConfig.changePhoneNumberUI else {
+                        return false
                     }
-                ))
+                    return Self.databaseStorage.read { transaction in
+                        self.legacyChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction)
+                    }
+                }()
+                if shouldShowChangePhoneNumber {
+                    accountSection.add(.actionItem(
+                        withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
+                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
+                        actionBlock: { [weak self] in
+                            self?.deprecated_changePhoneNumber()
+                        }
+                    ))
+                }
             }
             accountSection.add(.actionItem(
                 withText: NSLocalizedString("SETTINGS_DELETE_ACCOUNT_BUTTON", comment: ""),
@@ -219,10 +234,64 @@ class AccountSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    private func changePhoneNumber() {
+    private func deprecated_changePhoneNumber() {
         let changePhoneNumberController = Deprecated_ChangePhoneNumberController(delegate: self)
         let vc = changePhoneNumberController.firstViewController()
         navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func changeNumberParams() -> RegistrationMode.ChangeNumberParams? {
+        guard RemoteConfig.changePhoneNumberUI else {
+            return nil
+        }
+        return databaseStorage.read { transaction in
+            guard self.legacyChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction) else {
+                return nil
+            }
+            guard
+                let localAddress = tsAccountManager.localAddress(with: transaction),
+                let localAci = localAddress.uuid,
+                let localE164 = localAddress.e164,
+                let authToken = tsAccountManager.storedServerAuthToken(with: transaction),
+                let localRecipient = SignalRecipient.get(
+                    address: localAddress,
+                    mustHaveDevices: false,
+                    transaction: transaction
+                ),
+                let localUserAllDeviceIds = localRecipient.deviceIds,
+                let localAccountId = localRecipient.accountId
+            else {
+                return nil
+            }
+            let localDeviceId = tsAccountManager.storedDeviceId(with: transaction)
+
+            return RegistrationMode.ChangeNumberParams(
+                oldE164: localE164,
+                oldAuthToken: authToken,
+                localAci: localAci,
+                localAccountId: localAccountId,
+                localDeviceId: localDeviceId,
+                localUserAllDeviceIds: localUserAllDeviceIds
+            )
+        }
+    }
+
+    private func changePhoneNumber(_ params: RegistrationMode.ChangeNumberParams) {
+        guard FeatureFlags.useNewRegistrationFlow else {
+            return
+        }
+        let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
+        let desiredMode = RegistrationMode.changingNumber(params)
+        let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
+        let coordinator = databaseStorage.write {
+            return loader.coordinator(
+                forDesiredMode: desiredMode,
+                transaction: $0.asV2Write
+            )
+        }
+        let navController = RegistrationNavigationController(coordinator: coordinator)
+        let window: UIWindow = CurrentAppContext().mainWindow!
+        window.rootViewController = navController
     }
 
     // MARK: - PINs

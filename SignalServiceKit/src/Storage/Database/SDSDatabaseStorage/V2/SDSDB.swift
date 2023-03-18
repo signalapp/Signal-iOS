@@ -41,6 +41,10 @@ public class SDSDB: DB {
     fileprivate final class WriteTx: DBWriteTransaction {
         fileprivate let tx: SDSAnyWriteTransaction
         init(_ tx: SDSAnyWriteTransaction) { self.tx = tx }
+
+        func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void) {
+            tx.addAsyncCompletion(on: scheduler, block: block)
+        }
     }
 
     // MARK: - Bridging

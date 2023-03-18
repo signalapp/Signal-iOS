@@ -27,6 +27,17 @@ private class MockReadTransaction: DBReadTransaction {
 /// it is ever attempted to be unwrapped as a real SDS transaction.
 private class MockWriteTransaction: DBWriteTransaction {
     init() {}
+
+    struct AsyncCompletion {
+        let scheduler: Scheduler
+        let block: () -> Void
+    }
+
+    var asyncCompletions = [AsyncCompletion]()
+
+    func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void) {
+        asyncCompletions.append(AsyncCompletion(scheduler: scheduler, block: block))
+    }
 }
 
 /// Mock database which does literally nothing.
@@ -40,22 +51,36 @@ public class MockDB: DB {
 
     public init() {}
 
-    private var hasOpenTransaction = false
+    private var openTransaction: DBReadTransaction?
 
     private func makeRead() -> MockReadTransaction {
-        guard !hasOpenTransaction else {
+        guard openTransaction == nil else {
             fatalError("Re-entrant transaction opened")
         }
-        hasOpenTransaction = true
-        return MockReadTransaction()
+        let tx = MockReadTransaction()
+        openTransaction = tx
+        return tx
     }
 
     private func makeWrite() -> MockWriteTransaction {
-        guard !hasOpenTransaction else {
+        guard openTransaction == nil else {
             fatalError("Re-entrant transaction opened")
         }
-        hasOpenTransaction = true
-        return MockWriteTransaction()
+        let tx = MockWriteTransaction()
+        openTransaction = tx
+        return tx
+    }
+
+    private func closeTransaction() {
+        guard openTransaction != nil else {
+            fatalError("Closing transaction with none open")
+        }
+        if let oldValue = openTransaction as? MockWriteTransaction {
+            oldValue.asyncCompletions.forEach {
+                $0.scheduler.async($0.block)
+            }
+        }
+        openTransaction = nil
     }
 
     public func read(
@@ -66,7 +91,7 @@ public class MockDB: DB {
     ) {
         queue.sync {
             block(self.makeRead())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
         }
     }
 
@@ -78,7 +103,7 @@ public class MockDB: DB {
     ) {
         queue.sync {
             block(self.makeWrite())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
         }
     }
 
@@ -94,7 +119,7 @@ public class MockDB: DB {
     ) {
         queue.sync {
             block(self.makeRead())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
             guard let completion = completion else {
                 return
             }
@@ -114,7 +139,7 @@ public class MockDB: DB {
     ) {
         queue.sync {
             block(self.makeWrite())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
             guard let completion = completion else {
                 return
             }
@@ -134,7 +159,7 @@ public class MockDB: DB {
     ) -> AnyPromise {
         queue.sync {
             block(self.makeRead())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
         }
         return AnyPromise(Promise<Void>.value(()))
     }
@@ -147,7 +172,7 @@ public class MockDB: DB {
     ) -> Promise<T> {
         let t = queue.sync {
             let t = block(self.makeRead())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
             return t
         }
         return Promise<T>.value(t)
@@ -163,7 +188,7 @@ public class MockDB: DB {
         do {
             let t = try queue.sync {
                 let t = try block(self.makeRead())
-                self.hasOpenTransaction = false
+                self.closeTransaction()
                 return t
             }
             return Promise<T>.value(t)
@@ -180,7 +205,7 @@ public class MockDB: DB {
     ) -> AnyPromise {
         queue.sync {
             block(self.makeWrite())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
         }
         return AnyPromise(Promise<Void>.value(()))
     }
@@ -193,7 +218,7 @@ public class MockDB: DB {
     ) -> Promise<T> {
         let t = queue.sync {
             let t = block(self.makeWrite())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
             return t
         }
         return Promise<T>.value(t)
@@ -209,7 +234,7 @@ public class MockDB: DB {
         do {
             let t = try queue.sync {
                 let t = try block(self.makeWrite())
-                self.hasOpenTransaction = false
+                self.closeTransaction()
                 return t
             }
             return Promise<T>.value(t)
@@ -228,7 +253,7 @@ public class MockDB: DB {
     ) -> T {
         return queue.sync {
             let t = block(self.makeRead())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
             return t
         }
     }
@@ -242,7 +267,7 @@ public class MockDB: DB {
     ) throws -> T {
         return try queue.sync {
             let t = try block(self.makeRead())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
             return t
         }
     }
@@ -255,7 +280,7 @@ public class MockDB: DB {
     ) -> T {
         return queue.sync {
             let t = block(self.makeWrite())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
             return t
         }
     }
@@ -269,7 +294,7 @@ public class MockDB: DB {
     ) throws -> T {
         return try queue.sync {
             let t = try block(self.makeWrite())
-            self.hasOpenTransaction = false
+            self.closeTransaction()
             return t
         }
     }

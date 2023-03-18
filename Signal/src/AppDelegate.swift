@@ -144,6 +144,18 @@ extension AppDelegate {
         }
         guard launchJobsAreComplete else { return }
 
+        // Before we mark ready, block message processing on any pending change numbers.
+        let regLoader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
+        if
+            !CurrentAppContext().isRunningTests,
+            FeatureFlags.useNewRegistrationFlow,
+            databaseStorage.read(block: {
+                regLoader.hasPendingChangeNumber(transaction: $0.asV2Read)
+            }) {
+            // The registration loader will clear the suspension later on.
+            messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
+        }
+
         Logger.info("checkIfAppIsReady")
 
         // Note that this does much more than set a flag;
@@ -207,7 +219,8 @@ extension AppDelegate {
 
         SignalApp.shared().ensureRootViewController(
             appDelegate: self,
-            launchStartedAt: launchStartedAt
+            launchStartedAt: launchStartedAt,
+            registrationLoader: regLoader
         )
     }
 

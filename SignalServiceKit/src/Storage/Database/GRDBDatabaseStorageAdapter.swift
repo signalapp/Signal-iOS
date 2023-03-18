@@ -590,7 +590,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
 
         for asyncCompletion in asyncCompletions {
-            asyncCompletion.queue.async(execute: asyncCompletion.block)
+            asyncCompletion.scheduler.async(asyncCompletion.block)
         }
     }
 

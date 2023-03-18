@@ -1473,7 +1473,7 @@ class StorageServiceOperation: OWSOperation {
                 localAddress: localAddress,
                 localAci: localAci,
                 authedAccount: authedAccount,
-                changePhoneNumber: changePhoneNumber,
+                legacyChangePhoneNumber: legacyChangePhoneNumber,
                 paymentsHelper: paymentsHelperSwift,
                 preferences: preferences,
                 profileManager: profileManagerImpl,
