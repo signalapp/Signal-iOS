@@ -13,6 +13,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
         Int(RegistrationCoordinatorImpl.Constants.pushTokenTimeout)
     }
 
+    // If we just use the force unwrap optional, switches are forced
+    // to handle the none case.
+    private var _mode: RegistrationMode!
+
+    var mode: RegistrationMode {
+        return self._mode
+    }
+
     private var date = Date() {
         didSet {
             Stubs.date = date
@@ -109,69 +117,123 @@ public class RegistrationCoordinatorTest: XCTestCase {
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
         coordinator = db.write {
             return loader.coordinator(
-                forDesiredMode: .registering, // TODO[Registration]: this should differ from one test case to another.
+                forDesiredMode: mode,
                 transaction: $0
             ) as! RegistrationCoordinatorImpl
         }
     }
 
+    public override class var defaultTestSuite: XCTestSuite {
+        let testSuite = XCTestSuite(name: NSStringFromClass(self))
+        addTests(to: testSuite, mode: .registering)
+        addTests(to: testSuite, mode: .reRegistering(e164: Stubs.e164))
+        return testSuite
+    }
+
+    private class func addTests(
+        to testSuite: XCTestSuite,
+        mode: RegistrationMode
+    ) {
+        testInvocations.forEach { invocation in
+            let testCase = RegistrationCoordinatorTest(invocation: invocation)
+            testCase._mode = mode
+            testSuite.addTest(testCase)
+        }
+    }
+
+    private func executeTest(_ block: () -> Void) {
+        XCTContext.runActivity(named: "\(self.name), mode:\(mode.testDescription)", block: { _ in
+            block()
+        })
+    }
+
+    private func executeTest(_ block: () throws -> Void) throws {
+        try XCTContext.runActivity(named: "\(self.name), mode:\(mode.testDescription)", block: { _ in
+            try block()
+        })
+    }
+
     // MARK: - Opening Path
 
     func testOpeningPath_splash() {
-        // Don't care about timing, just start it.
-        scheduler.start()
+        executeTest {
+            // Don't care about timing, just start it.
+            scheduler.start()
 
-        setupDefaultAccountAttributes()
+            setupDefaultAccountAttributes()
 
-        // With no state set up, should show the splash.
-        XCTAssertEqual(coordinator.nextStep().value, .splash)
-        // Once we show it, don't show it again.
-        XCTAssertNotEqual(coordinator.continueFromSplash().value, .splash)
+            switch mode {
+            case .registering:
+                // With no state set up, should show the splash.
+                XCTAssertEqual(coordinator.nextStep().value, .splash)
+                // Once we show it, don't show it again.
+                XCTAssertNotEqual(coordinator.continueFromSplash().value, .splash)
+            case .reRegistering, .changingNumber:
+                XCTAssertNotEqual(coordinator.nextStep().value, .splash)
+            }
+        }
     }
 
     func testOpeningPath_appExpired() {
-        // Don't care about timing, just start it.
-        scheduler.start()
+        executeTest {
+            // Don't care about timing, just start it.
+            scheduler.start()
 
-        appExpiryMock.isExpired = true
+            appExpiryMock.isExpired = true
 
-        setupDefaultAccountAttributes()
+            setupDefaultAccountAttributes()
 
-        // We should start with the banner.
-        XCTAssertEqual(coordinator.nextStep().value, .appUpdateBanner)
+            // We should start with the banner.
+            XCTAssertEqual(coordinator.nextStep().value, .appUpdateBanner)
+        }
     }
 
     func testOpeningPath_permissions() {
-        // Don't care about timing, just start it.
-        scheduler.start()
+        executeTest {
+            // Don't care about timing, just start it.
+            scheduler.start()
 
-        setupDefaultAccountAttributes()
+            setupDefaultAccountAttributes()
 
-        contactsStore.doesNeedContactsAuthorization = true
-        pushRegistrationManagerMock.doesNeedNotificationAuthorization = true
+            contactsStore.doesNeedContactsAuthorization = true
+            pushRegistrationManagerMock.doesNeedNotificationAuthorization = true
 
-        // Gotta get the splash out of the way.
-        XCTAssertEqual(coordinator.nextStep().value, .splash)
+            var nextStep: Guarantee<RegistrationStep>
+            switch mode {
+            case .registering:
+                // Gotta get the splash out of the way.
+                XCTAssertEqual(coordinator.nextStep().value, .splash)
+                nextStep = coordinator.continueFromSplash()
+            case .reRegistering, .changingNumber:
+                // No splash for these.
+                nextStep = coordinator.nextStep()
+            }
 
-        // Now we should show the permissions.
-        XCTAssertEqual(coordinator.continueFromSplash().value, .permissions(Stubs.permissionsState()))
-        // Doesn't change even if we try and proceed.
-        XCTAssertEqual(coordinator.nextStep().value, .permissions(Stubs.permissionsState()))
+            // Now we should show the permissions.
+            XCTAssertEqual(nextStep.value, .permissions(Stubs.permissionsState()))
+            // Doesn't change even if we try and proceed.
+            XCTAssertEqual(coordinator.nextStep().value, .permissions(Stubs.permissionsState()))
 
-        // Once the state is updated we can proceed.
-        let nextStep = coordinator.requestPermissions().value
-        XCTAssertNotEqual(nextStep, .splash)
-        XCTAssertNotEqual(nextStep, .permissions(Stubs.permissionsState()))
+            // Once the state is updated we can proceed.
+            nextStep = coordinator.requestPermissions()
+            XCTAssertNotNil(nextStep.value)
+            XCTAssertNotEqual(nextStep.value, .splash)
+            XCTAssertNotEqual(nextStep.value, .permissions(Stubs.permissionsState()))
+        }
     }
 
     // MARK: - Reg Recovery Password Path
 
     func testRegRecoveryPwPath_happyPath() throws {
-        try _runRegRecoverPwPathTestHappyPath(wasReglockEnabled: false)
+        try executeTest {
+            try _runRegRecoverPwPathTestHappyPath(wasReglockEnabled: false)
+        }
     }
 
     func testRegRecoveryPwPath_happyPathWithReglock() throws {
-        try _runRegRecoverPwPathTestHappyPath(wasReglockEnabled: true)
+        try executeTest {
+            try _runRegRecoverPwPathTestHappyPath(wasReglockEnabled: true)
+        }
     }
 
     private func _runRegRecoverPwPathTestHappyPath(wasReglockEnabled: Bool) throws {
@@ -203,7 +265,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
-        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
+        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
 
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164).value
@@ -300,376 +362,47 @@ public class RegistrationCoordinatorTest: XCTestCase {
     }
 
     func testRegRecoveryPwPath_wrongPIN() throws {
-        // Don't care about timing, just start it.
-        scheduler.start()
+        try executeTest {
+            // Don't care about timing, just start it.
+            scheduler.start()
 
-        // Set profile info so we skip those steps.
-        setupDefaultAccountAttributes()
+            // Set profile info so we skip those steps.
+            setupDefaultAccountAttributes()
 
-        let wrongPinCode = "ABCD"
+            let wrongPinCode = "ABCD"
 
-        // Set a different PIN on disk.
-        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+            // Set a different PIN on disk.
+            ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-        // Make KBS give us back a reg recovery password.
-        kbs.dataGenerator = {
-            switch $0 {
-            case .registrationRecoveryPassword:
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return nil
-            }
-        }
-
-        // NOTE: We expect to skip opening path steps because
-        // if we have a KBS master key locally, this _must_ be
-        // a previously registered device, and we can skip intros.
-
-        // We haven't set a phone number so it should ask for that.
-        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
-
-        // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164).value
-        // Now it should ask for the PIN to confirm the user knows it.
-        XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
-
-        // Give it the wrong PIN, it should reject and give us the same step again.
-        nextStep = coordinator.submitPINCode(wrongPinCode).value
-        XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(error: .wrongPin(wrongPin: wrongPinCode))))
-
-        // Give it the right pin code, which should make it try and register.
-        let expectedRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164,
-            authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
-            skipDeviceTransfer: true
-        )
-
-        let identityResponse = Stubs.accountIdentityResponse()
-        var authPassword: String!
-        mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
-            matcher: { request in
-                authPassword = request.authPassword
-                return request.url == expectedRequest.url
-            },
-            statusCode: 200,
-            bodyData: try JSONEncoder().encode(identityResponse)
-        ))
-
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(aci: identityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
-        }
-
-        // When registered, it should try and sync push tokens.
-        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
-            XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-            return .value(.success)
-        }
-
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.createPreKeysMock = { auth in
-            XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-            return .value(())
-        }
-
-        // We haven't done a kbs backup; that should happen now.
-        kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
-            XCTAssertEqual(pin, Stubs.pinCode)
-            // We don't have a kbs auth credential, it should use chat server creds.
-            XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
-            XCTAssertFalse(rotateMasterKey)
-            self.kbs.hasMasterKey = true
-            return .value(())
-        }
-
-        // Once we sync push tokens, we should restore from storage service.
-        accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
-            XCTAssertEqual(auth, expectedAuthedAccount())
-            return .value(())
-        }
-
-        // Once we do the storage service restore,
-        // we will sync account attributes and then we are finished!
-        let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
-            auth: .implicit() // // doesn't matter for url matching
-        )
-        self.mockURLSession.addResponse(
-            matcher: { request in
-                return request.url == expectedAttributesRequest.url
-            },
-            statusCode: 200
-        )
-
-        nextStep = coordinator.submitPINCode(Stubs.pinCode).value
-        XCTAssertEqual(nextStep, .done)
-    }
-
-    func testRegRecoveryPwPath_wrongPassword() {
-        // Set profile info so we skip those steps.
-        setupDefaultAccountAttributes()
-
-        // Set a PIN on disk.
-        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
-
-        // Make KBS give us back a reg recovery password.
-        kbs.dataGenerator = {
-            switch $0 {
-            case .registrationRecoveryPassword:
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return nil
-            }
-        }
-        kbs.hasMasterKey = true
-
-        // Run the scheduler for a bit; we don't care about timing these bits.
-        scheduler.start()
-
-        // NOTE: We expect to skip opening path steps because
-        // if we have a KBS master key locally, this _must_ be
-        // a previously registered device, and we can skip intros.
-
-        // We haven't set a phone number so it should ask for that.
-        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
-
-        // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164)
-        // Now it should ask for the PIN to confirm the user knows it.
-        XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
-
-        // Now we want to control timing so we can verify things happened in the right order.
-        scheduler.stop()
-        scheduler.adjustTime(to: 0)
-
-        // Give it the pin code, which should make it try and register.
-        nextStep = coordinator.submitPINCode(Stubs.pinCode)
-
-        let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164,
-            authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
-            skipDeviceTransfer: true
-        )
-
-        // Fail the request at t=2; the reg recovery pw is invalid.
-        let failResponse = TSRequestOWSURLSessionMock.Response(
-            urlSuffix: expectedRecoveryPwRequest.url!.absoluteString,
-            statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.unauthorized.rawValue
-        )
-        mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
-
-        // Once the first request fails, at t=2, it should try an start a session.
-        scheduler.run(atTime: 1) {
-            // Resolve with a session at time 3.
-            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
-                atTime: 3
-            )
-        }
-
-        // Before requesting a session at t=2, it should ask for push tokens to give the session.
-        pushRegistrationManagerMock.requestPushTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 2)
-            return .value(Stubs.apnsToken)
-        }
-
-        // Then when it gets back the session at t=3, it should immediately ask for
-        // a verification code to be sent.
-        scheduler.run(atTime: 3) {
-            // We'll ask for a push challenge, though we don't need to resolve it in this test.
-            self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-                return Guarantee<String>.pending().0
+            // Make KBS give us back a reg recovery password.
+            kbs.dataGenerator = {
+                switch $0 {
+                case .registrationRecoveryPassword:
+                    return Stubs.regRecoveryPwData
+                case .registrationLock:
+                    return Stubs.reglockData
+                default:
+                    return nil
+                }
             }
 
-            // Resolve with an updated session at time 4.
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
-                atTime: 4
-            )
-        }
+            // NOTE: We expect to skip opening path steps because
+            // if we have a KBS master key locally, this _must_ be
+            // a previously registered device, and we can skip intros.
 
-        // Check we have the master key now, to be safe.
-        XCTAssert(kbs.hasMasterKey)
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 4)
+            // We haven't set a phone number so it should ask for that.
+            XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
 
-        // Now we should expect to be at verification code entry since we already set the phone number.
-        XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
-        // We want to have kept the master key; we failed the reg recovery pw check
-        // but that could happen even if the key is valid. Once we finish session based
-        // re-registration we want to be able to recover the key.
-        XCTAssert(kbs.hasMasterKey)
-    }
+            // Give it a phone number, which should show the PIN entry step.
+            var nextStep = coordinator.submitE164(Stubs.e164).value
+            // Now it should ask for the PIN to confirm the user knows it.
+            XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
-    func testRegRecoveryPwPath_failedReglock() {
-        // Set profile info so we skip those steps.
-        setupDefaultAccountAttributes()
+            // Give it the wrong PIN, it should reject and give us the same step again.
+            nextStep = coordinator.submitPINCode(wrongPinCode).value
+            XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(error: .wrongPin(wrongPin: wrongPinCode))))
 
-        // Set a PIN on disk.
-        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
-
-        // Make KBS give us back a reg recovery password.
-        kbs.dataGenerator = {
-            switch $0 {
-            case .registrationRecoveryPassword:
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return nil
-            }
-        }
-        kbs.hasMasterKey = true
-
-        // Run the scheduler for a bit; we don't care about timing these bits.
-        scheduler.start()
-
-        // NOTE: We expect to skip opening path steps because
-        // if we have a KBS master key locally, this _must_ be
-        // a previously registered device, and we can skip intros.
-
-        // We haven't set a phone number so it should ask for that.
-        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
-
-        // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164)
-        // Now it should ask for the PIN to confirm the user knows it.
-        XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
-
-        // Now we want to control timing so we can verify things happened in the right order.
-        scheduler.stop()
-        scheduler.adjustTime(to: 0)
-
-        // Give it the pin code, which should make it try and register.
-        nextStep = coordinator.submitPINCode(Stubs.pinCode)
-
-        let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164,
-            authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
-            skipDeviceTransfer: true
-        )
-
-        // Fail the request at t=2; the reglock is invalid.
-        let failResponse = TSRequestOWSURLSessionMock.Response(
-            urlSuffix: expectedRecoveryPwRequest.url!.absoluteString,
-            statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
-            bodyJson: RegistrationServiceResponses.RegistrationLockFailureResponse(
-                timeRemainingMs: 10,
-                kbsAuthCredential: Stubs.kbsAuthCredential
-            )
-        )
-        mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
-
-        // Once the first request fails, at t=2, it should try an start a session.
-        scheduler.run(atTime: 1) {
-            // We'll ask for a push challenge, though we don't need to resolve it in this test.
-            self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-                return Guarantee<String>.pending().0
-            }
-
-            // Resolve with a session at time 3.
-            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
-                atTime: 3
-            )
-        }
-
-        // Before requesting a session at t=2, it should ask for push tokens to give the session.
-        pushRegistrationManagerMock.requestPushTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 2)
-            return .value(Stubs.apnsToken)
-        }
-
-        // Then when it gets back the session at t=3, it should immediately ask for
-        // a verification code to be sent.
-        scheduler.run(atTime: 3) {
-            // Resolve with an updated session at time 4.
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
-                atTime: 4
-            )
-        }
-
-        XCTAssert(kbs.hasMasterKey)
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 4)
-
-        // Now we should expect to be at verification code entry since we already set the phone number.
-        XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
-        // We want to have wiped our master key; we failed reglock, which means the key itself is
-        // wrong.
-        XCTAssertFalse(kbs.hasMasterKey)
-    }
-
-    func testRegRecoveryPwPath_retryNetworkError() throws {
-        // Set profile info so we skip those steps.
-        setupDefaultAccountAttributes()
-
-        // Set a PIN on disk.
-        ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
-
-        // Make KBS give us back a reg recovery password.
-        kbs.dataGenerator = {
-            switch $0 {
-            case .registrationRecoveryPassword:
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return nil
-            }
-        }
-        kbs.hasMasterKey = true
-
-        // Run the scheduler for a bit; we don't care about timing these bits.
-        scheduler.start()
-
-        // NOTE: We expect to skip opening path steps because
-        // if we have a KBS master key locally, this _must_ be
-        // a previously registered device, and we can skip intros.
-
-        // We haven't set a phone number so it should ask for that.
-        XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState()))
-
-        // Give it a phone number, which should show the PIN entry step.
-        var nextStep = coordinator.submitE164(Stubs.e164)
-        // Now it should ask for the PIN to confirm the user knows it.
-        XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
-
-        // Now we want to control timing so we can verify things happened in the right order.
-        scheduler.stop()
-        scheduler.adjustTime(to: 0)
-
-        // Give it the pin code, which should make it try and register.
-        nextStep = coordinator.submitPINCode(Stubs.pinCode)
-
-        let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164,
-            authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
-            skipDeviceTransfer: true
-        )
-
-        // Fail the request at t=2 with a network error.
-        let failResponse = TSRequestOWSURLSessionMock.Response.networkError(url: expectedRecoveryPwRequest.url!)
-        mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
-
-        let identityResponse = Stubs.accountIdentityResponse()
-        var authPassword: String!
-
-        // Once the first request fails, at t=2, it should retry.
-        scheduler.run(atTime: 1) {
-            // Resolve with success at t=3
+            // Give it the right pin code, which should make it try and register.
             let expectedRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
                 e164: Stubs.e164,
@@ -678,596 +411,883 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 skipDeviceTransfer: true
             )
 
-            self.mockURLSession.addResponse(
-                TSRequestOWSURLSessionMock.Response(
-                    matcher: { request in
-                        // The password is generated internally by RegistrationCoordinator.
-                        // Extract it so we can check that the same password sent to the server
-                        // to register is used later for other requests.
-                        authPassword = request.authPassword
-                        return request.url == expectedRequest.url
-                    },
-                    statusCode: 200,
-                    bodyData: try! JSONEncoder().encode(identityResponse)
-                ),
-                atTime: 3,
-                on: self.scheduler
+            let identityResponse = Stubs.accountIdentityResponse()
+            var authPassword: String!
+            mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
+                matcher: { request in
+                    authPassword = request.authPassword
+                    return request.url == expectedRequest.url
+                },
+                statusCode: 200,
+                bodyData: try JSONEncoder().encode(identityResponse)
+            ))
+
+            func expectedAuthedAccount() -> AuthedAccount {
+                return .explicit(aci: identityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
+            }
+
+            // When registered, it should try and sync push tokens.
+            pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
+                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
+                return .value(.success)
+            }
+
+            // When registered, we should create pre-keys.
+            preKeyManagerMock.createPreKeysMock = { auth in
+                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
+                return .value(())
+            }
+
+            // We haven't done a kbs backup; that should happen now.
+            kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+                XCTAssertEqual(pin, Stubs.pinCode)
+                // We don't have a kbs auth credential, it should use chat server creds.
+                XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
+                XCTAssertFalse(rotateMasterKey)
+                self.kbs.hasMasterKey = true
+                return .value(())
+            }
+
+            // Once we sync push tokens, we should restore from storage service.
+            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+                XCTAssertEqual(auth, expectedAuthedAccount())
+                return .value(())
+            }
+
+            // Once we do the storage service restore,
+            // we will sync account attributes and then we are finished!
+            let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+                Stubs.accountAttributes(),
+                auth: .implicit() // // doesn't matter for url matching
             )
-        }
-
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(aci: identityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
-        }
-
-        // When registered at t=3, it should try and sync push tokens. Succeed at t=4
-        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
-            XCTAssertEqual(self.scheduler.currentTime, 3)
-            XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-            return self.scheduler.guarantee(resolvingWith: .success, atTime: 4)
-        }
-
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.createPreKeysMock = { auth in
-            XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-            return .value(())
-        }
-
-        // We haven't done a kbs backup; that should happen at t=4. Succeed at t=5.
-        kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
-            XCTAssertEqual(self.scheduler.currentTime, 4)
-            XCTAssertEqual(pin, Stubs.pinCode)
-            // We don't have a kbs auth credential, it should use chat server creds.
-            XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
-            XCTAssertFalse(rotateMasterKey)
-            self.kbs.hasMasterKey = true
-            return self.scheduler.promise(resolvingWith: (), atTime: 5)
-        }
-
-        // Once we sync push tokens at t=5, we should restore from storage service.
-        // Succeed at t=6.
-        accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
-            XCTAssertEqual(self.scheduler.currentTime, 5)
-            XCTAssertEqual(auth, expectedAuthedAccount())
-            return self.scheduler.promise(resolvingWith: (), atTime: 6)
-        }
-
-        // Once we do the storage service restore at t=6,
-        // we will sync account attributes and then we are finished!
-        let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
-            auth: .implicit() // // doesn't matter for url matching
-        )
-        self.mockURLSession.addResponse(
-            TSRequestOWSURLSessionMock.Response(
+            self.mockURLSession.addResponse(
                 matcher: { request in
                     return request.url == expectedAttributesRequest.url
                 },
-                statusCode: 200,
-                bodyData: nil
-            ),
-            atTime: 7,
-            on: scheduler
-        )
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 7)
-
-        XCTAssertEqual(nextStep.value, .done)
-    }
-
-    // MARK: - KBS Auth Credential Path
-
-    func testKBSAuthCredentialPath_happyPath() {
-        // Run the scheduler for a bit; we don't care about timing these bits.
-        scheduler.start()
-
-        // Don't care about timing, just start it.
-        setupDefaultAccountAttributes()
-
-        // Set profile info so we skip those steps.
-        self.setAllProfileInfo()
-
-        // Put some auth credentials in storage.
-        let credentialCandidates: [KBSAuthCredential] = [
-            Stubs.kbsAuthCredential,
-            KBSAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
-            KBSAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
-            KBSAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
-        ]
-        kbsAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
-
-        // Get past the opening.
-        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState()))
-
-        // Give it a phone number, which should cause it to check the auth credentials.
-        // Match the main auth credential.
-        let expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
-            e164: Stubs.e164,
-            credentials: credentialCandidates
-        )
-        mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
-            urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
-            statusCode: 200,
-            bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                "\(Stubs.kbsAuthCredential.username):\(Stubs.kbsAuthCredential.credential.password)": .match,
-                "aaaa:abc": .notMatch,
-                "zzzz:xyz": .invalid,
-                "0000:123": .unknown
-            ])
-        ))
-
-        let nextStep = coordinator.submitE164(Stubs.e164).value
-
-        // At this point, we should be asking for PIN entry so we can use the credential
-        // to recover the KBS master key.
-        XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForKBSAuthCredentialPath()))
-        // We should have wipted the invalid and unknown credentials.
-        let remainingCredentials = kbsAuthCredentialStore.dict
-        XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.username])
-        XCTAssertNotNil(remainingCredentials["aaaa"])
-        XCTAssertNil(remainingCredentials["zzzz"])
-        XCTAssertNil(remainingCredentials["0000"])
-
-        scheduler.stop()
-        scheduler.adjustTime(to: 0)
-
-        // Enter the PIN, which should try and recover from KBS.
-        // Once we do that, it should follow the Reg Recovery Password Path.
-        let nextStepPromise = coordinator.submitPINCode(Stubs.pinCode)
-
-        // At t=1, resolve the key restoration from kbs and have it start returning the key.
-        kbs.restoreKeysAndBackupMock = { pin, authMethod in
-            XCTAssertEqual(self.scheduler.currentTime, 0)
-            XCTAssertEqual(pin, Stubs.pinCode)
-            XCTAssertEqual(authMethod, .kbsAuth(Stubs.kbsAuthCredential, backup: nil))
-            self.kbs.hasMasterKey = true
-            return self.scheduler.guarantee(resolvingWith: .success, atTime: 1)
-        }
-
-        // At t=1 it should get the latest credentials from kbs.
-        self.kbs.dataGenerator = {
-            XCTAssertEqual(self.scheduler.currentTime, 1)
-            switch $0 {
-            case .registrationRecoveryPassword:
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return nil
-            }
-        }
-
-        // Now still at t=1 it should make a reg recovery pw request, resolve it at t=2.
-        let accountIdentityResponse = Stubs.accountIdentityResponse()
-        var authPassword: String!
-        let expectedRegRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
-            e164: Stubs.e164,
-            authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
-            skipDeviceTransfer: true
-        )
-        self.mockURLSession.addResponse(
-            TSRequestOWSURLSessionMock.Response(
-                matcher: { request in
-                    XCTAssertEqual(self.scheduler.currentTime, 1)
-                    authPassword = request.authPassword
-                    return request.url == expectedRegRecoveryPwRequest.url
-                },
-                statusCode: 200,
-                bodyJson: accountIdentityResponse
-            ),
-            atTime: 2,
-            on: self.scheduler
-        )
-
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(aci: accountIdentityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
-        }
-
-        // When registered at t=2, it should try and sync push tokens.
-        // Resolve at t=3.
-        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
-            XCTAssertEqual(self.scheduler.currentTime, 2)
-            XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-            return self.scheduler.guarantee(resolvingWith: .success, atTime: 3)
-        }
-
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.createPreKeysMock = { auth in
-            XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-            return .value(())
-        }
-
-        // At t=3 once we sync push tokens, we should restore from storage service.
-        accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
-            XCTAssertEqual(self.scheduler.currentTime, 3)
-            XCTAssertEqual(auth, expectedAuthedAccount())
-            return self.scheduler.promise(resolvingWith: (), atTime: 4)
-        }
-
-        // And at t=4 once we do the storage service restore,
-        // we will sync account attributes and then we are finished!
-        let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
-            auth: .implicit() // doesn't matter for url matching
-        )
-        self.mockURLSession.addResponse(
-            matcher: { request in
-                XCTAssertEqual(self.scheduler.currentTime, 4)
-                return request.url == expectedAttributesRequest.url
-            },
-            statusCode: 200
-        )
-
-        for i in 0...2 {
-            scheduler.run(atTime: i) {
-                XCTAssertNil(nextStepPromise.value)
-            }
-        }
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 4)
-
-        XCTAssertEqual(nextStepPromise.value, .done)
-    }
-
-    func testKBSAuthCredentialPath_noMatchingCredentials() {
-        // Don't care about timing, just start it.
-        scheduler.start()
-
-        // Set profile info so we skip those steps.
-        setupDefaultAccountAttributes()
-
-        // Put some auth credentials in storage.
-        let credentialCandidates: [KBSAuthCredential] = [
-            Stubs.kbsAuthCredential,
-            KBSAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
-            KBSAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
-            KBSAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
-        ]
-        kbsAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
-
-        // Get past the opening.
-        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState()))
-
-        scheduler.stop()
-        scheduler.adjustTime(to: 0)
-
-        // Give it a phone number, which should cause it to check the auth credentials.
-        let nextStep = coordinator.submitE164(Stubs.e164)
-
-        // Don't give back any matches at t=2, which means we will want to create a session as a fallback.
-        let expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
-            e164: Stubs.e164,
-            credentials: credentialCandidates
-        )
-        mockURLSession.addResponse(
-            TSRequestOWSURLSessionMock.Response(
-                urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
-                statusCode: 200,
-                bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                    "\(Stubs.kbsAuthCredential.username):\(Stubs.kbsAuthCredential.credential.password)": .notMatch,
-                    "aaaa:abc": .notMatch,
-                    "zzzz:xyz": .invalid,
-                    "0000:123": .unknown
-                ])
-            ),
-            atTime: 2,
-            on: scheduler
-        )
-
-        // Once the first request fails, at t=2, it should try an start a session.
-        scheduler.run(atTime: 1) {
-            // We'll ask for a push challenge, though we don't need to resolve it in this test.
-            self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-                return Guarantee<String>.pending().0
-            }
-
-            // Resolve with a session at time 3.
-            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
-                atTime: 3
+                statusCode: 200
             )
+
+            nextStep = coordinator.submitPINCode(Stubs.pinCode).value
+            XCTAssertEqual(nextStep, .done)
         }
-
-        // Then when it gets back the session at t=3, it should immediately ask for
-        // a verification code to be sent.
-        scheduler.run(atTime: 3) {
-            // Resolve with an updated session at time 4.
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
-                atTime: 4
-            )
-        }
-
-        pushRegistrationManagerMock.requestPushTokenMock = { .value(Stubs.apnsToken)}
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 4)
-
-        // Now we should expect to be at verification code entry since we already set the phone number.
-        XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
-
-        // We should have wipted the invalid and unknown credentials.
-        let remainingCredentials = kbsAuthCredentialStore.dict
-        XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.username])
-        XCTAssertNotNil(remainingCredentials["aaaa"])
-        XCTAssertNil(remainingCredentials["zzzz"])
-        XCTAssertNil(remainingCredentials["0000"])
     }
 
-    // MARK: - Session Path
+    func testRegRecoveryPwPath_wrongPassword() {
+        executeTest {
+            // Set profile info so we skip those steps.
+            setupDefaultAccountAttributes()
 
-    public func testSessionPath_happyPath() {
-        createSessionAndRequestFirstCode()
+            // Set a PIN on disk.
+            ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-        scheduler.tick()
+            // Make KBS give us back a reg recovery password.
+            kbs.dataGenerator = {
+                switch $0 {
+                case .registrationRecoveryPassword:
+                    return Stubs.regRecoveryPwData
+                case .registrationLock:
+                    return Stubs.reglockData
+                default:
+                    return nil
+                }
+            }
+            kbs.hasMasterKey = true
 
-        var nextStep: Guarantee<RegistrationStep>!
+            // Run the scheduler for a bit; we don't care about timing these bits.
+            scheduler.start()
 
-        // Submit a code at t=5.
-        scheduler.run(atTime: 5) {
-            nextStep = self.coordinator.submitVerificationCode(Stubs.pinCode)
-        }
+            // NOTE: We expect to skip opening path steps because
+            // if we have a KBS master key locally, this _must_ be
+            // a previously registered device, and we can skip intros.
 
-        // At t=7, give back a verified session.
-        self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: true
-            )),
-            atTime: 7
-        )
+            // We haven't set a phone number so it should ask for that.
+            XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
 
-        let accountIdentityResponse = Stubs.accountIdentityResponse()
-        var authPassword: String!
+            // Give it a phone number, which should show the PIN entry step.
+            var nextStep = coordinator.submitE164(Stubs.e164)
+            // Now it should ask for the PIN to confirm the user knows it.
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
 
-        // That means at t=7 it should try and register with the verified
-        // session; be ready for that starting at t=6 (but not before).
-        scheduler.run(atTime: 6) {
-            let expectedRequest = RegistrationRequestFactory.createAccountRequest(
-                verificationMethod: .sessionId(Stubs.sessionId),
+            // Now we want to control timing so we can verify things happened in the right order.
+            scheduler.stop()
+            scheduler.adjustTime(to: 0)
+
+            // Give it the pin code, which should make it try and register.
+            nextStep = coordinator.submitPINCode(Stubs.pinCode)
+
+            let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
+                verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
                 skipDeviceTransfer: true
             )
-            // Resolve it at t=8
+
+            // Fail the request at t=2; the reg recovery pw is invalid.
+            let failResponse = TSRequestOWSURLSessionMock.Response(
+                urlSuffix: expectedRecoveryPwRequest.url!.absoluteString,
+                statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.unauthorized.rawValue
+            )
+            mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
+
+            // Once the first request fails, at t=2, it should try an start a session.
+            scheduler.run(atTime: 1) {
+                // Resolve with a session at time 3.
+                self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
+                    atTime: 3
+                )
+            }
+
+            // Before requesting a session at t=2, it should ask for push tokens to give the session.
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 2)
+                return .value(Stubs.apnsToken)
+            }
+
+            // Then when it gets back the session at t=3, it should immediately ask for
+            // a verification code to be sent.
+            scheduler.run(atTime: 3) {
+                // We'll ask for a push challenge, though we don't need to resolve it in this test.
+                self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                    return Guarantee<String>.pending().0
+                }
+
+                // Resolve with an updated session at time 4.
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
+                    atTime: 4
+                )
+            }
+
+            // Check we have the master key now, to be safe.
+            XCTAssert(kbs.hasMasterKey)
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 4)
+
+            // Now we should expect to be at verification code entry since we already set the phone number.
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            // We want to have kept the master key; we failed the reg recovery pw check
+            // but that could happen even if the key is valid. Once we finish session based
+            // re-registration we want to be able to recover the key.
+            XCTAssert(kbs.hasMasterKey)
+        }
+    }
+
+    func testRegRecoveryPwPath_failedReglock() {
+        executeTest {
+            // Set profile info so we skip those steps.
+            setupDefaultAccountAttributes()
+
+            // Set a PIN on disk.
+            ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+
+            // Make KBS give us back a reg recovery password.
+            kbs.dataGenerator = {
+                switch $0 {
+                case .registrationRecoveryPassword:
+                    return Stubs.regRecoveryPwData
+                case .registrationLock:
+                    return Stubs.reglockData
+                default:
+                    return nil
+                }
+            }
+            kbs.hasMasterKey = true
+
+            // Run the scheduler for a bit; we don't care about timing these bits.
+            scheduler.start()
+
+            // NOTE: We expect to skip opening path steps because
+            // if we have a KBS master key locally, this _must_ be
+            // a previously registered device, and we can skip intros.
+
+            // We haven't set a phone number so it should ask for that.
+            XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
+
+            // Give it a phone number, which should show the PIN entry step.
+            var nextStep = coordinator.submitE164(Stubs.e164)
+            // Now it should ask for the PIN to confirm the user knows it.
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
+
+            // Now we want to control timing so we can verify things happened in the right order.
+            scheduler.stop()
+            scheduler.adjustTime(to: 0)
+
+            // Give it the pin code, which should make it try and register.
+            nextStep = coordinator.submitPINCode(Stubs.pinCode)
+
+            let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
+                verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+                e164: Stubs.e164,
+                authPassword: "", // Doesn't matter for request generation.
+                accountAttributes: Stubs.accountAttributes(),
+                skipDeviceTransfer: true
+            )
+
+            // Fail the request at t=2; the reglock is invalid.
+            let failResponse = TSRequestOWSURLSessionMock.Response(
+                urlSuffix: expectedRecoveryPwRequest.url!.absoluteString,
+                statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
+                bodyJson: RegistrationServiceResponses.RegistrationLockFailureResponse(
+                    timeRemainingMs: 10,
+                    kbsAuthCredential: Stubs.kbsAuthCredential
+                )
+            )
+            mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
+
+            // Once the first request fails, at t=2, it should try an start a session.
+            scheduler.run(atTime: 1) {
+                // We'll ask for a push challenge, though we don't need to resolve it in this test.
+                self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                    return Guarantee<String>.pending().0
+                }
+
+                // Resolve with a session at time 3.
+                self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
+                    atTime: 3
+                )
+            }
+
+            // Before requesting a session at t=2, it should ask for push tokens to give the session.
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 2)
+                return .value(Stubs.apnsToken)
+            }
+
+            // Then when it gets back the session at t=3, it should immediately ask for
+            // a verification code to be sent.
+            scheduler.run(atTime: 3) {
+                // Resolve with an updated session at time 4.
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
+                    atTime: 4
+                )
+            }
+
+            XCTAssert(kbs.hasMasterKey)
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 4)
+
+            // Now we should expect to be at verification code entry since we already set the phone number.
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            // We want to have wiped our master key; we failed reglock, which means the key itself is
+            // wrong.
+            XCTAssertFalse(kbs.hasMasterKey)
+        }
+    }
+
+    func testRegRecoveryPwPath_retryNetworkError() throws {
+        executeTest {
+            // Set profile info so we skip those steps.
+            setupDefaultAccountAttributes()
+
+            // Set a PIN on disk.
+            ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+
+            // Make KBS give us back a reg recovery password.
+            kbs.dataGenerator = {
+                switch $0 {
+                case .registrationRecoveryPassword:
+                    return Stubs.regRecoveryPwData
+                case .registrationLock:
+                    return Stubs.reglockData
+                default:
+                    return nil
+                }
+            }
+            kbs.hasMasterKey = true
+
+            // Run the scheduler for a bit; we don't care about timing these bits.
+            scheduler.start()
+
+            // NOTE: We expect to skip opening path steps because
+            // if we have a KBS master key locally, this _must_ be
+            // a previously registered device, and we can skip intros.
+
+            // We haven't set a phone number so it should ask for that.
+            XCTAssertEqual(coordinator.nextStep().value, .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
+
+            // Give it a phone number, which should show the PIN entry step.
+            var nextStep = coordinator.submitE164(Stubs.e164)
+            // Now it should ask for the PIN to confirm the user knows it.
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
+
+            // Now we want to control timing so we can verify things happened in the right order.
+            scheduler.stop()
+            scheduler.adjustTime(to: 0)
+
+            // Give it the pin code, which should make it try and register.
+            nextStep = coordinator.submitPINCode(Stubs.pinCode)
+
+            let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
+                verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+                e164: Stubs.e164,
+                authPassword: "", // Doesn't matter for request generation.
+                accountAttributes: Stubs.accountAttributes(),
+                skipDeviceTransfer: true
+            )
+
+            // Fail the request at t=2 with a network error.
+            let failResponse = TSRequestOWSURLSessionMock.Response.networkError(url: expectedRecoveryPwRequest.url!)
+            mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
+
+            let identityResponse = Stubs.accountIdentityResponse()
+            var authPassword: String!
+
+            // Once the first request fails, at t=2, it should retry.
+            scheduler.run(atTime: 1) {
+                // Resolve with success at t=3
+                let expectedRequest = RegistrationRequestFactory.createAccountRequest(
+                    verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+                    e164: Stubs.e164,
+                    authPassword: "", // Doesn't matter for request generation.
+                    accountAttributes: Stubs.accountAttributes(),
+                    skipDeviceTransfer: true
+                )
+
+                self.mockURLSession.addResponse(
+                    TSRequestOWSURLSessionMock.Response(
+                        matcher: { request in
+                            // The password is generated internally by RegistrationCoordinator.
+                            // Extract it so we can check that the same password sent to the server
+                            // to register is used later for other requests.
+                            authPassword = request.authPassword
+                            return request.url == expectedRequest.url
+                        },
+                        statusCode: 200,
+                        bodyData: try! JSONEncoder().encode(identityResponse)
+                    ),
+                    atTime: 3,
+                    on: self.scheduler
+                )
+            }
+
+            func expectedAuthedAccount() -> AuthedAccount {
+                return .explicit(aci: identityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
+            }
+
+            // When registered at t=3, it should try and sync push tokens. Succeed at t=4
+            pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 3)
+                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
+                return self.scheduler.guarantee(resolvingWith: .success, atTime: 4)
+            }
+
+            // When registered, we should create pre-keys.
+            preKeyManagerMock.createPreKeysMock = { auth in
+                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
+                return .value(())
+            }
+
+            // We haven't done a kbs backup; that should happen at t=4. Succeed at t=5.
+            kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+                XCTAssertEqual(self.scheduler.currentTime, 4)
+                XCTAssertEqual(pin, Stubs.pinCode)
+                // We don't have a kbs auth credential, it should use chat server creds.
+                XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
+                XCTAssertFalse(rotateMasterKey)
+                self.kbs.hasMasterKey = true
+                return self.scheduler.promise(resolvingWith: (), atTime: 5)
+            }
+
+            // Once we sync push tokens at t=5, we should restore from storage service.
+            // Succeed at t=6.
+            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 5)
+                XCTAssertEqual(auth, expectedAuthedAccount())
+                return self.scheduler.promise(resolvingWith: (), atTime: 6)
+            }
+
+            // Once we do the storage service restore at t=6,
+            // we will sync account attributes and then we are finished!
+            let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+                Stubs.accountAttributes(),
+                auth: .implicit() // // doesn't matter for url matching
+            )
             self.mockURLSession.addResponse(
                 TSRequestOWSURLSessionMock.Response(
                     matcher: { request in
+                        return request.url == expectedAttributesRequest.url
+                    },
+                    statusCode: 200,
+                    bodyData: nil
+                ),
+                atTime: 7,
+                on: scheduler
+            )
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 7)
+
+            XCTAssertEqual(nextStep.value, .done)
+        }
+    }
+
+    // MARK: - KBS Auth Credential Path
+
+    func testKBSAuthCredentialPath_happyPath() {
+        executeTest {
+            // Run the scheduler for a bit; we don't care about timing these bits.
+            scheduler.start()
+
+            // Don't care about timing, just start it.
+            setupDefaultAccountAttributes()
+
+            // Set profile info so we skip those steps.
+            self.setAllProfileInfo()
+
+            // Put some auth credentials in storage.
+            let credentialCandidates: [KBSAuthCredential] = [
+                Stubs.kbsAuthCredential,
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
+            ]
+            kbsAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
+
+            // Get past the opening.
+            goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
+
+            // Give it a phone number, which should cause it to check the auth credentials.
+            // Match the main auth credential.
+            let expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
+                e164: Stubs.e164,
+                credentials: credentialCandidates
+            )
+            mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
+                urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
+                statusCode: 200,
+                bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
+                    "\(Stubs.kbsAuthCredential.username):\(Stubs.kbsAuthCredential.credential.password)": .match,
+                    "aaaa:abc": .notMatch,
+                    "zzzz:xyz": .invalid,
+                    "0000:123": .unknown
+                ])
+            ))
+
+            let nextStep = coordinator.submitE164(Stubs.e164).value
+
+            // At this point, we should be asking for PIN entry so we can use the credential
+            // to recover the KBS master key.
+            XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForKBSAuthCredentialPath()))
+            // We should have wipted the invalid and unknown credentials.
+            let remainingCredentials = kbsAuthCredentialStore.dict
+            XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.username])
+            XCTAssertNotNil(remainingCredentials["aaaa"])
+            XCTAssertNil(remainingCredentials["zzzz"])
+            XCTAssertNil(remainingCredentials["0000"])
+
+            scheduler.stop()
+            scheduler.adjustTime(to: 0)
+
+            // Enter the PIN, which should try and recover from KBS.
+            // Once we do that, it should follow the Reg Recovery Password Path.
+            let nextStepPromise = coordinator.submitPINCode(Stubs.pinCode)
+
+            // At t=1, resolve the key restoration from kbs and have it start returning the key.
+            kbs.restoreKeysAndBackupMock = { pin, authMethod in
+                XCTAssertEqual(self.scheduler.currentTime, 0)
+                XCTAssertEqual(pin, Stubs.pinCode)
+                XCTAssertEqual(authMethod, .kbsAuth(Stubs.kbsAuthCredential, backup: nil))
+                self.kbs.hasMasterKey = true
+                return self.scheduler.guarantee(resolvingWith: .success, atTime: 1)
+            }
+
+            // At t=1 it should get the latest credentials from kbs.
+            self.kbs.dataGenerator = {
+                XCTAssertEqual(self.scheduler.currentTime, 1)
+                switch $0 {
+                case .registrationRecoveryPassword:
+                    return Stubs.regRecoveryPwData
+                case .registrationLock:
+                    return Stubs.reglockData
+                default:
+                    return nil
+                }
+            }
+
+            // Now still at t=1 it should make a reg recovery pw request, resolve it at t=2.
+            let accountIdentityResponse = Stubs.accountIdentityResponse()
+            var authPassword: String!
+            let expectedRegRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
+                verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+                e164: Stubs.e164,
+                authPassword: "", // Doesn't matter for request generation.
+                accountAttributes: Stubs.accountAttributes(),
+                skipDeviceTransfer: true
+            )
+            self.mockURLSession.addResponse(
+                TSRequestOWSURLSessionMock.Response(
+                    matcher: { request in
+                        XCTAssertEqual(self.scheduler.currentTime, 1)
                         authPassword = request.authPassword
-                        return request.url == expectedRequest.url
+                        return request.url == expectedRegRecoveryPwRequest.url
                     },
                     statusCode: 200,
                     bodyJson: accountIdentityResponse
                 ),
-                atTime: 8,
+                atTime: 2,
                 on: self.scheduler
             )
-        }
 
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(aci: accountIdentityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
-        }
+            func expectedAuthedAccount() -> AuthedAccount {
+                return .explicit(aci: accountIdentityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
+            }
 
-        // Once we are registered at t=8, we should try and sync push tokens
-        // with the credentials we got in the identity response.
-        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
-            XCTAssertEqual(self.scheduler.currentTime, 8)
-            XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-            return self.scheduler.guarantee(resolvingWith: .success, atTime: 9)
-        }
-
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.createPreKeysMock = { auth in
-            XCTAssertEqual(self.scheduler.currentTime, 9)
-            XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-            return .value(())
-        }
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 9)
-
-        // Now we should ask to create a PIN.
-        XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegCreate()))
-
-        // Confirm the pin first.
-        nextStep = coordinator.setPINCodeForConfirmation(.stub())
-        scheduler.runUntilIdle()
-        XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegConfirm()))
-
-        scheduler.adjustTime(to: 0)
-
-        // When we submit the pin, it should backup with kbs.
-        nextStep = coordinator.submitPINCode(Stubs.pinCode)
-
-        // Finish the validation at t=1.
-        kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
-            XCTAssertEqual(self.scheduler.currentTime, 0)
-            XCTAssertEqual(pin, Stubs.pinCode)
-            XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
-            XCTAssertFalse(rotateMasterKey)
-            return self.scheduler.promise(resolvingWith: (), atTime: 1)
-        }
-
-        // At t=1 once we sync push tokens, we should restore from storage service.
-        accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
-            XCTAssertEqual(self.scheduler.currentTime, 1)
-            XCTAssertEqual(auth, expectedAuthedAccount())
-            return self.scheduler.promise(resolvingWith: (), atTime: 2)
-        }
-
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.createPreKeysMock = { auth in
-            XCTAssertEqual(auth, expectedAuthedAccount())
-            return .value(())
-        }
-
-        // And at t=2 once we do the storage service restore,
-        // we will sync account attributes and then we are finished!
-        let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
-            auth: .implicit() // doesn't matter for url matching
-        )
-        self.mockURLSession.addResponse(
-            matcher: { request in
+            // When registered at t=2, it should try and sync push tokens.
+            // Resolve at t=3.
+            pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
                 XCTAssertEqual(self.scheduler.currentTime, 2)
-                return request.url == expectedAttributesRequest.url
-            },
-            statusCode: 200
-        )
+                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
+                return self.scheduler.guarantee(resolvingWith: .success, atTime: 3)
+            }
 
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 2)
+            // When registered, we should create pre-keys.
+            preKeyManagerMock.createPreKeysMock = { auth in
+                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
+                return .value(())
+            }
 
-        XCTAssertEqual(nextStep.value, .done)
+            // At t=3 once we sync push tokens, we should restore from storage service.
+            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 3)
+                XCTAssertEqual(auth, expectedAuthedAccount())
+                return self.scheduler.promise(resolvingWith: (), atTime: 4)
+            }
+
+            // And at t=4 once we do the storage service restore,
+            // we will sync account attributes and then we are finished!
+            let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+                Stubs.accountAttributes(),
+                auth: .implicit() // doesn't matter for url matching
+            )
+            self.mockURLSession.addResponse(
+                matcher: { request in
+                    XCTAssertEqual(self.scheduler.currentTime, 4)
+                    return request.url == expectedAttributesRequest.url
+                },
+                statusCode: 200
+            )
+
+            for i in 0...2 {
+                scheduler.run(atTime: i) {
+                    XCTAssertNil(nextStepPromise.value)
+                }
+            }
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 4)
+
+            XCTAssertEqual(nextStepPromise.value, .done)
+        }
+    }
+
+    func testKBSAuthCredentialPath_noMatchingCredentials() {
+        executeTest {
+            // Don't care about timing, just start it.
+            scheduler.start()
+
+            // Set profile info so we skip those steps.
+            setupDefaultAccountAttributes()
+
+            // Put some auth credentials in storage.
+            let credentialCandidates: [KBSAuthCredential] = [
+                Stubs.kbsAuthCredential,
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
+            ]
+            kbsAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
+
+            // Get past the opening.
+            goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
+
+            scheduler.stop()
+            scheduler.adjustTime(to: 0)
+
+            // Give it a phone number, which should cause it to check the auth credentials.
+            let nextStep = coordinator.submitE164(Stubs.e164)
+
+            // Don't give back any matches at t=2, which means we will want to create a session as a fallback.
+            let expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
+                e164: Stubs.e164,
+                credentials: credentialCandidates
+            )
+            mockURLSession.addResponse(
+                TSRequestOWSURLSessionMock.Response(
+                    urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
+                    statusCode: 200,
+                    bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
+                        "\(Stubs.kbsAuthCredential.username):\(Stubs.kbsAuthCredential.credential.password)": .notMatch,
+                        "aaaa:abc": .notMatch,
+                        "zzzz:xyz": .invalid,
+                        "0000:123": .unknown
+                    ])
+                ),
+                atTime: 2,
+                on: scheduler
+            )
+
+            // Once the first request fails, at t=2, it should try an start a session.
+            scheduler.run(atTime: 1) {
+                // We'll ask for a push challenge, though we don't need to resolve it in this test.
+                self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                    return Guarantee<String>.pending().0
+                }
+
+                // Resolve with a session at time 3.
+                self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
+                    atTime: 3
+                )
+            }
+
+            // Then when it gets back the session at t=3, it should immediately ask for
+            // a verification code to be sent.
+            scheduler.run(atTime: 3) {
+                // Resolve with an updated session at time 4.
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
+                    atTime: 4
+                )
+            }
+
+            pushRegistrationManagerMock.requestPushTokenMock = { .value(Stubs.apnsToken)}
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 4)
+
+            // Now we should expect to be at verification code entry since we already set the phone number.
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+
+            // We should have wipted the invalid and unknown credentials.
+            let remainingCredentials = kbsAuthCredentialStore.dict
+            XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.username])
+            XCTAssertNotNil(remainingCredentials["aaaa"])
+            XCTAssertNil(remainingCredentials["zzzz"])
+            XCTAssertNil(remainingCredentials["0000"])
+        }
+    }
+
+    // MARK: - Session Path
+
+    public func testSessionPath_happyPath() {
+        executeTest {
+            createSessionAndRequestFirstCode()
+
+            scheduler.tick()
+
+            var nextStep: Guarantee<RegistrationStep>!
+
+            // Submit a code at t=5.
+            scheduler.run(atTime: 5) {
+                nextStep = self.coordinator.submitVerificationCode(Stubs.pinCode)
+            }
+
+            // At t=7, give back a verified session.
+            self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: true,
+                    requestedInformation: [],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: true
+                )),
+                atTime: 7
+            )
+
+            let accountIdentityResponse = Stubs.accountIdentityResponse()
+            var authPassword: String!
+
+            // That means at t=7 it should try and register with the verified
+            // session; be ready for that starting at t=6 (but not before).
+            scheduler.run(atTime: 6) {
+                let expectedRequest = RegistrationRequestFactory.createAccountRequest(
+                    verificationMethod: .sessionId(Stubs.sessionId),
+                    e164: Stubs.e164,
+                    authPassword: "", // Doesn't matter for request generation.
+                    accountAttributes: Stubs.accountAttributes(),
+                    skipDeviceTransfer: true
+                )
+                // Resolve it at t=8
+                self.mockURLSession.addResponse(
+                    TSRequestOWSURLSessionMock.Response(
+                        matcher: { request in
+                            authPassword = request.authPassword
+                            return request.url == expectedRequest.url
+                        },
+                        statusCode: 200,
+                        bodyJson: accountIdentityResponse
+                    ),
+                    atTime: 8,
+                    on: self.scheduler
+                )
+            }
+
+            func expectedAuthedAccount() -> AuthedAccount {
+                return .explicit(aci: accountIdentityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
+            }
+
+            // Once we are registered at t=8, we should try and sync push tokens
+            // with the credentials we got in the identity response.
+            pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 8)
+                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
+                return self.scheduler.guarantee(resolvingWith: .success, atTime: 9)
+            }
+
+            // When registered, we should create pre-keys.
+            preKeyManagerMock.createPreKeysMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 9)
+                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
+                return .value(())
+            }
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 9)
+
+            // Now we should ask to create a PIN.
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegCreate()))
+
+            // Confirm the pin first.
+            nextStep = coordinator.setPINCodeForConfirmation(.stub())
+            scheduler.runUntilIdle()
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegConfirm()))
+
+            scheduler.adjustTime(to: 0)
+
+            // When we submit the pin, it should backup with kbs.
+            nextStep = coordinator.submitPINCode(Stubs.pinCode)
+
+            // Finish the validation at t=1.
+            kbs.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+                XCTAssertEqual(self.scheduler.currentTime, 0)
+                XCTAssertEqual(pin, Stubs.pinCode)
+                XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
+                XCTAssertFalse(rotateMasterKey)
+                return self.scheduler.promise(resolvingWith: (), atTime: 1)
+            }
+
+            // At t=1 once we sync push tokens, we should restore from storage service.
+            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 1)
+                XCTAssertEqual(auth, expectedAuthedAccount())
+                return self.scheduler.promise(resolvingWith: (), atTime: 2)
+            }
+
+            // When registered, we should create pre-keys.
+            preKeyManagerMock.createPreKeysMock = { auth in
+                XCTAssertEqual(auth, expectedAuthedAccount())
+                return .value(())
+            }
+
+            // And at t=2 once we do the storage service restore,
+            // we will sync account attributes and then we are finished!
+            let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+                Stubs.accountAttributes(),
+                auth: .implicit() // doesn't matter for url matching
+            )
+            self.mockURLSession.addResponse(
+                matcher: { request in
+                    XCTAssertEqual(self.scheduler.currentTime, 2)
+                    return request.url == expectedAttributesRequest.url
+                },
+                statusCode: 200
+            )
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 2)
+
+            XCTAssertEqual(nextStep.value, .done)
+        }
     }
 
     public func testSessionPath_invalidE164() {
-        setUpSessionPath()
+        executeTest {
+            setUpSessionPath()
 
-        let badE164 = E164("+15555555555")!
+            let badE164 = E164("+15555555555")!
 
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(badE164)
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(badE164)
 
-        // At t=2, reject for invalid argument (the e164).
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .invalidArgument,
-            atTime: 2
-        )
+            // At t=2, reject for invalid argument (the e164).
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .invalidArgument,
+                atTime: 2
+            )
 
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 2)
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 2)
 
-        // It should put us on the phone number entry screen again
-        // with an error.
-        XCTAssertEqual(
-            nextStep.value,
-            .phoneNumberEntry(
-                Stubs.phoneNumberEntryState(
-                    previouslyEnteredE164: badE164,
-                    withValidationErrorFor: .invalidArgument
+            // It should put us on the phone number entry screen again
+            // with an error.
+            XCTAssertEqual(
+                nextStep.value,
+                .phoneNumberEntry(
+                    Stubs.phoneNumberEntryState(
+                        mode: mode,
+                        previouslyEnteredE164: badE164,
+                        withValidationErrorFor: .invalidArgument
+                    )
                 )
             )
-        )
+        }
     }
 
     public func testSessionPath_rateLimitSessionCreation() {
-        setUpSessionPath()
+        executeTest {
+            setUpSessionPath()
 
-        let retryTimeInterval: TimeInterval = 5
+            let retryTimeInterval: TimeInterval = 5
 
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164)
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
 
-        // At t=2, reject with a rate limit.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .retryAfter(retryTimeInterval),
-            atTime: 2
-        )
+            // At t=2, reject with a rate limit.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .retryAfter(retryTimeInterval),
+                atTime: 2
+            )
 
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 2)
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 2)
 
-        // It should put us on the phone number entry screen again
-        // with an error.
-        XCTAssertEqual(
-            nextStep.value,
-            .phoneNumberEntry(
-                Stubs.phoneNumberEntryState(
-                    previouslyEnteredE164: Stubs.e164,
-                    withValidationErrorFor: .retryAfter(retryTimeInterval)
+            // It should put us on the phone number entry screen again
+            // with an error.
+            XCTAssertEqual(
+                nextStep.value,
+                .phoneNumberEntry(
+                    Stubs.phoneNumberEntryState(
+                        mode: mode,
+                        previouslyEnteredE164: Stubs.e164,
+                        withValidationErrorFor: .retryAfter(retryTimeInterval)
+                    )
                 )
             )
-        )
+        }
     }
 
     public func testSessionPath_cantSendFirstSMSCode() {
-        setUpSessionPath()
+        executeTest {
+            setUpSessionPath()
 
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164)
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
 
-        // At t=2, give back a session, but with SMS code rate limiting already.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 10,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        // It should put us on the phone number entry screen again
-        // with an error.
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 2)
-        XCTAssertEqual(
-            nextStep.value,
-            .phoneNumberEntry(
-                Stubs.phoneNumberEntryState(
-                    previouslyEnteredE164: Stubs.e164,
-                    withValidationErrorFor: .retryAfter(10)
-                )
-            )
-        )
-    }
-
-    public func testSessionPath_rateLimitFirstSMSCode() {
-        setUpSessionPath()
-
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164)
-
-        // We'll ask for a push challenge, though we won't resolve it in this test.
-        self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-            return Guarantee<String>.pending().0
-        }
-
-        // At t=2, give back a session that's ready to go.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        // Once we get that session at t=2, we should try and send a code.
-        // Be ready for that starting at t=1 (but not before).
-        scheduler.run(atTime: 1) {
-            // Reject with a timeout.
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .retryAfterTimeout(RegistrationSession(
+            // At t=2, give back a session, but with SMS code rate limiting already.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
                     e164: Stubs.e164,
-                    receivedDate: self.date,
+                    receivedDate: date,
                     nextSMS: 10,
                     nextCall: 0,
                     nextVerificationAttempt: nil,
@@ -1276,277 +1296,190 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     hasUnknownChallengeRequiringAppUpdate: false,
                     verified: false
                 )),
-                atTime: 3
+                atTime: 2
             )
-        }
 
-        // It should put us on the phone number entry screen again
-        // with an error.
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 3)
-        XCTAssertEqual(
-            nextStep.value,
-            .phoneNumberEntry(
-                Stubs.phoneNumberEntryState(
-                    previouslyEnteredE164: Stubs.e164,
-                    withValidationErrorFor: .retryAfter(10)
+            // It should put us on the phone number entry screen again
+            // with an error.
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 2)
+            XCTAssertEqual(
+                nextStep.value,
+                .phoneNumberEntry(
+                    Stubs.phoneNumberEntryState(
+                        mode: mode,
+                        previouslyEnteredE164: Stubs.e164,
+                        withValidationErrorFor: .retryAfter(10)
+                    )
                 )
             )
-        )
+        }
     }
 
-    public func testSessionPath_captchaChallenge() {
-        setUpSessionPath()
+    public func testSessionPath_rateLimitFirstSMSCode() {
+        executeTest {
+            setUpSessionPath()
 
-        // Give it a phone number, which should cause it to start a session.
-        var nextStep = coordinator.submitE164(Stubs.e164)
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
 
-        // At t=2, give back a session with a captcha challenge.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: false,
-                requestedInformation: [.captcha],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
+            // We'll ask for a push challenge, though we won't resolve it in this test.
+            self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                return Guarantee<String>.pending().0
+            }
 
-        // Once we get that session at t=2, we should get a captcha step back.
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 2)
-        XCTAssertEqual(nextStep.value, .captchaChallenge)
-
-        scheduler.tick()
-
-        // Submit a captcha challenge at t=4.
-        scheduler.run(atTime: 4) {
-            nextStep = self.coordinator.submitCaptcha(Stubs.captchaToken)
-        }
-
-        // At t=6, give back a session without the challenge.
-        self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 6
-        )
-
-        // That means at t=6 it should try and send a code;
-        // be ready for that starting at t=5 (but not before).
-        scheduler.run(atTime: 5) {
-            // Resolve with a session at time 7.
-            // The session has a sent code, but requires a challenge to send
-            // a code again. That should be ignored until we ask to send another code.
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+            // At t=2, give back a session that's ready to go.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
                     e164: Stubs.e164,
-                    receivedDate: self.date,
+                    receivedDate: date,
                     nextSMS: 0,
                     nextCall: 0,
-                    nextVerificationAttempt: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: true,
+                    requestedInformation: [],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            // Once we get that session at t=2, we should try and send a code.
+            // Be ready for that starting at t=1 (but not before).
+            scheduler.run(atTime: 1) {
+                // Reject with a timeout.
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .retryAfterTimeout(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 10,
+                        nextCall: 0,
+                        nextVerificationAttempt: nil,
+                        allowedToRequestCode: true,
+                        requestedInformation: [],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 3
+                )
+            }
+
+            // It should put us on the phone number entry screen again
+            // with an error.
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 3)
+            XCTAssertEqual(
+                nextStep.value,
+                .phoneNumberEntry(
+                    Stubs.phoneNumberEntryState(
+                        mode: mode,
+                        previouslyEnteredE164: Stubs.e164,
+                        withValidationErrorFor: .retryAfter(10)
+                    )
+                )
+            )
+        }
+    }
+
+    public func testSessionPath_captchaChallenge() {
+        executeTest {
+            setUpSessionPath()
+
+            // Give it a phone number, which should cause it to start a session.
+            var nextStep = coordinator.submitE164(Stubs.e164)
+
+            // At t=2, give back a session with a captcha challenge.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
                     allowedToRequestCode: false,
                     requestedInformation: [.captcha],
                     hasUnknownChallengeRequiringAppUpdate: false,
                     verified: false
                 )),
-                atTime: 7
+                atTime: 2
             )
-        }
 
-        // At t=7, we should get back the code entry step.
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 7)
-        XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            // Once we get that session at t=2, we should get a captcha step back.
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 2)
+            XCTAssertEqual(nextStep.value, .captchaChallenge)
 
-        // Now try and resend a code, which should hit us with the captcha challenge immediately.
-        scheduler.start()
-        XCTAssertEqual(coordinator.requestSMSCode().value, .captchaChallenge)
-        scheduler.stop()
+            scheduler.tick()
 
-        // Submit a captcha challenge at t=8.
-        scheduler.run(atTime: 8) {
-            nextStep = self.coordinator.submitCaptcha(Stubs.captchaToken)
-        }
+            // Submit a captcha challenge at t=4.
+            scheduler.run(atTime: 4) {
+                nextStep = self.coordinator.submitCaptcha(Stubs.captchaToken)
+            }
 
-        // At t=10, give back a session without the challenge.
-        self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: 0,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 10
-        )
-
-        // This means at t=10 when we fulfill the challenge, it should
-        // immediately try and send the code that couldn't be sent before because
-        // of the challenge.
-        // Reply to this at t=12.
-        self.date = date.addingTimeInterval(10)
-        let secondCodeDate = date
-        scheduler.run(atTime: 9) {
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(RegistrationSession(
-                    id: Stubs.sessionId,
-                    e164: Stubs.e164,
-                    receivedDate: secondCodeDate,
-                    nextSMS: 0,
-                    nextCall: 0,
-                    nextVerificationAttempt: 0,
-                    allowedToRequestCode: true,
-                    requestedInformation: [],
-                    hasUnknownChallengeRequiringAppUpdate: false,
-                    verified: false
-                )),
-                atTime: 12
-            )
-        }
-
-        // Ensure that at t=11, before we've gotten the request code response,
-        // we don't have a result yet.
-        scheduler.run(atTime: 11) {
-            XCTAssertNil(nextStep.value)
-        }
-
-        // Once all is done, we should have a new code and be back on the code
-        // entry screen.
-        // TODO[Registration]: test that the "next SMS code" state is properly set
-        // given the new sms code date above.
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 12)
-        XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
-    }
-
-    public func testSessionPath_pushChallenge() {
-        setUpSessionPath()
-
-        pushRegistrationManagerMock.requestPushTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 0)
-            return .value(Stubs.apnsToken)
-        }
-
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164)
-
-        // Prepare to provide the challenge token.
-        let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
-        pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 2)
-            return challengeTokenPromise
-        }
-
-        // At t=2, give back a session with a push challenge.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: self.date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: false,
-                requestedInformation: [.pushChallenge],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        // At t=3, give the push challenge token. Also prepare to handle its usage, and the
-        // resulting request for another SMS code.
-        scheduler.run(atTime: 3) {
-            challengeTokenFuture.resolve("a pre-auth challenge token")
-
+            // At t=6, give back a session without the challenge.
             self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
                     e164: Stubs.e164,
-                    receivedDate: self.date,
+                    receivedDate: date,
                     nextSMS: 0,
                     nextCall: 0,
-                    nextVerificationAttempt: 0,
+                    nextVerificationAttempt: nil,
                     allowedToRequestCode: true,
                     requestedInformation: [],
                     hasUnknownChallengeRequiringAppUpdate: false,
                     verified: false
                 )),
-                atTime: 4
+                atTime: 6
             )
 
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(RegistrationSession(
-                    id: Stubs.sessionId,
-                    e164: Stubs.e164,
-                    receivedDate: self.date,
-                    nextSMS: 0,
-                    nextCall: 0,
-                    nextVerificationAttempt: 0,
-                    allowedToRequestCode: false,
-                    requestedInformation: [.pushChallenge],
-                    hasUnknownChallengeRequiringAppUpdate: false,
-                    verified: false
-                )),
-                atTime: 5
-            )
+            // That means at t=6 it should try and send a code;
+            // be ready for that starting at t=5 (but not before).
+            scheduler.run(atTime: 5) {
+                // Resolve with a session at time 7.
+                // The session has a sent code, but requires a challenge to send
+                // a code again. That should be ignored until we ask to send another code.
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: false,
+                        requestedInformation: [.captcha],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 7
+                )
+            }
 
-            // We should still be waiting.
-            XCTAssertNil(nextStep.value)
-        }
+            // At t=7, we should get back the code entry step.
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 7)
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
 
-        // We should then try to fulfill another push challenge. At t=8, reply with a "settled"
-        // session.
-        scheduler.run(atTime: 5) {
+            // Now try and resend a code, which should hit us with the captcha challenge immediately.
+            scheduler.start()
+            XCTAssertEqual(coordinator.requestSMSCode().value, .captchaChallenge)
+            scheduler.stop()
+
+            // Submit a captcha challenge at t=8.
+            scheduler.run(atTime: 8) {
+                nextStep = self.coordinator.submitCaptcha(Stubs.captchaToken)
+            }
+
+            // At t=10, give back a session without the challenge.
             self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
                     e164: Stubs.e164,
-                    receivedDate: self.date,
-                    nextSMS: 0,
-                    nextCall: 0,
-                    nextVerificationAttempt: 0,
-                    allowedToRequestCode: true,
-                    requestedInformation: [],
-                    hasUnknownChallengeRequiringAppUpdate: false,
-                    verified: false
-                )),
-                atTime: 8
-            )
-
-            // We should still be waiting.
-            XCTAssertNil(nextStep.value)
-        }
-
-        // At t=9, we should request another SMS code. Our challenges are complete.
-        scheduler.run(atTime: 9) {
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(RegistrationSession(
-                    id: Stubs.sessionId,
-                    e164: Stubs.e164,
-                    receivedDate: self.date,
+                    receivedDate: date,
                     nextSMS: 0,
                     nextCall: 0,
                     nextVerificationAttempt: 0,
@@ -1557,203 +1490,679 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 )),
                 atTime: 10
             )
+
+            // This means at t=10 when we fulfill the challenge, it should
+            // immediately try and send the code that couldn't be sent before because
+            // of the challenge.
+            // Reply to this at t=12.
+            self.date = date.addingTimeInterval(10)
+            let secondCodeDate = date
+            scheduler.run(atTime: 9) {
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: secondCodeDate,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: true,
+                        requestedInformation: [],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 12
+                )
+            }
+
+            // Ensure that at t=11, before we've gotten the request code response,
+            // we don't have a result yet.
+            scheduler.run(atTime: 11) {
+                XCTAssertNil(nextStep.value)
+            }
+
+            // Once all is done, we should have a new code and be back on the code
+            // entry screen.
+            // TODO[Registration]: test that the "next SMS code" state is properly set
+            // given the new sms code date above.
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 12)
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
         }
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, expectedIdleTime(whenSessionStartedAt: 2))
-
-        XCTAssertEqual(
-            nextStep.value,
-            .verificationCodeEntry(Stubs.verificationCodeEntryState())
-        )
-        XCTAssertEqual(
-            sessionManager.latestChallengeFulfillment,
-            .pushChallenge("a pre-auth challenge token")
-        )
     }
 
-    public func testSessionPath_pushChallengeTimeoutAfterResolutionThatTakesTooLong() {
-        let sessionStartsAt = 2
+    public func testSessionPath_pushChallenge() {
+        executeTest {
+            setUpSessionPath()
 
-        setUpSessionPath()
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 0)
+                return .value(Stubs.apnsToken)
+            }
 
-        dateProvider = { self.date.addingTimeInterval(TimeInterval(self.scheduler.currentTime)) }
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
 
-        pushRegistrationManagerMock.requestPushTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 0)
-            return .value(Stubs.apnsToken)
-        }
+            // Prepare to provide the challenge token.
+            let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
+            pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 2)
+                return challengeTokenPromise
+            }
 
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164)
-
-        // Prepare to provide the challenge token.
-        let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
-        pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, sessionStartsAt)
-            return challengeTokenPromise
-        }
-
-        // At t=2, give back a session with a push challenge.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: self.date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: false,
-                requestedInformation: [.pushChallenge],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: sessionStartsAt
-        )
-
-        // Take too long to resolve with the challenge token.
-        let receiveChallengeTokenTime = sessionStartsAt + Self.pushTokenTimeout + 1
-        scheduler.run(atTime: receiveChallengeTokenTime) {
-            challengeTokenFuture.resolve("challenge token that should be ignored")
-        }
-
-        scheduler.advance(to: sessionStartsAt + Self.pushTokenTimeout - 1)
-        XCTAssertNil(nextStep.value)
-
-        scheduler.tick()
-        XCTAssertEqual(nextStep.value, .showErrorSheet(.sessionInvalidated))
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, receiveChallengeTokenTime)
-    }
-
-    public func testSessionPath_pushChallengeTimeoutAfterNoResolution() {
-        setUpSessionPath()
-
-        pushRegistrationManagerMock.requestPushTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 0)
-            return .value(Stubs.apnsToken)
-        }
-
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164)
-
-        // We'll never provide a challenge token and will just leave it around forever.
-        let (challengeTokenPromise, _) = Guarantee<String>.pending()
-        pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 2)
-            return challengeTokenPromise
-        }
-
-        // At t=2, give back a session with a push challenge.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: self.date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: false,
-                requestedInformation: [.pushChallenge],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, expectedIdleTime(whenSessionStartedAt: 2))
-        XCTAssertEqual(nextStep.value, .showErrorSheet(.sessionInvalidated))
-    }
-
-    public func testSessionPath_pushChallengeWithoutPushNotificationsAvailable() {
-        setUpSessionPath()
-
-        pushRegistrationManagerMock.requestPushTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 0)
-            return .value(nil)
-        }
-
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164)
-
-        // We'll ask for a push challenge, though we don't need to resolve it in this test.
-        self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 2)
-            return Guarantee<String>.pending().0
-        }
-
-        // Require a push challenge, which we won't be able to answer.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: self.date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: false,
-                requestedInformation: [.pushChallenge],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 2)
-        XCTAssertEqual(
-            nextStep.value,
-            .phoneNumberEntry(Stubs.phoneNumberEntryState(previouslyEnteredE164: Stubs.e164))
-        )
-        XCTAssertNil(sessionManager.latestChallengeFulfillment)
-    }
-
-    public func testSessionPath_preferPushChallengesIfWeCanAnswerThemImmediately() {
-        setUpSessionPath()
-
-        pushRegistrationManagerMock.requestPushTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 0)
-            return .value(Stubs.apnsToken)
-        }
-
-        // Be ready to provide the push challenge token as soon as it's needed.
-        pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 2)
-            return .value("a pre-auth challenge token")
-        }
-
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164)
-
-        // At t=2, give back a session with multiple challenges.
-        sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: self.date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: false,
-                requestedInformation: [.captcha, .pushChallenge],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        // Be ready to handle push challenges as soon as we can.
-        scheduler.run(atTime: 2) {
-            self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
+            // At t=2, give back a session with a push challenge.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
                 resolvingWith: .success(RegistrationSession(
                     id: Stubs.sessionId,
                     e164: Stubs.e164,
                     receivedDate: self.date,
                     nextSMS: 0,
                     nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: false,
+                    requestedInformation: [.pushChallenge],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            // At t=3, give the push challenge token. Also prepare to handle its usage, and the
+            // resulting request for another SMS code.
+            scheduler.run(atTime: 3) {
+                challengeTokenFuture.resolve("a pre-auth challenge token")
+
+                self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: true,
+                        requestedInformation: [],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 4
+                )
+
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: false,
+                        requestedInformation: [.pushChallenge],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 5
+                )
+
+                // We should still be waiting.
+                XCTAssertNil(nextStep.value)
+            }
+
+            // We should then try to fulfill another push challenge. At t=8, reply with a "settled"
+            // session.
+            scheduler.run(atTime: 5) {
+                self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: true,
+                        requestedInformation: [],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 8
+                )
+
+                // We should still be waiting.
+                XCTAssertNil(nextStep.value)
+            }
+
+            // At t=9, we should request another SMS code. Our challenges are complete.
+            scheduler.run(atTime: 9) {
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: true,
+                        requestedInformation: [],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 10
+                )
+            }
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, expectedIdleTime(whenSessionStartedAt: 2))
+
+            XCTAssertEqual(
+                nextStep.value,
+                .verificationCodeEntry(Stubs.verificationCodeEntryState())
+            )
+            XCTAssertEqual(
+                sessionManager.latestChallengeFulfillment,
+                .pushChallenge("a pre-auth challenge token")
+            )
+        }
+    }
+
+    public func testSessionPath_pushChallengeTimeoutAfterResolutionThatTakesTooLong() {
+        executeTest {
+            let sessionStartsAt = 2
+
+            setUpSessionPath()
+
+            dateProvider = { self.date.addingTimeInterval(TimeInterval(self.scheduler.currentTime)) }
+
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 0)
+                return .value(Stubs.apnsToken)
+            }
+
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
+
+            // Prepare to provide the challenge token.
+            let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
+            pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, sessionStartsAt)
+                return challengeTokenPromise
+            }
+
+            // At t=2, give back a session with a push challenge.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: self.date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: false,
+                    requestedInformation: [.pushChallenge],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: sessionStartsAt
+            )
+
+            // Take too long to resolve with the challenge token.
+            let receiveChallengeTokenTime = sessionStartsAt + Self.pushTokenTimeout + 1
+            scheduler.run(atTime: receiveChallengeTokenTime) {
+                challengeTokenFuture.resolve("challenge token that should be ignored")
+            }
+
+            scheduler.advance(to: sessionStartsAt + Self.pushTokenTimeout - 1)
+            XCTAssertNil(nextStep.value)
+
+            scheduler.tick()
+            XCTAssertEqual(nextStep.value, .showErrorSheet(.sessionInvalidated))
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, receiveChallengeTokenTime)
+        }
+    }
+
+    public func testSessionPath_pushChallengeTimeoutAfterNoResolution() {
+        executeTest {
+            setUpSessionPath()
+
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 0)
+                return .value(Stubs.apnsToken)
+            }
+
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
+
+            // We'll never provide a challenge token and will just leave it around forever.
+            let (challengeTokenPromise, _) = Guarantee<String>.pending()
+            pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 2)
+                return challengeTokenPromise
+            }
+
+            // At t=2, give back a session with a push challenge.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: self.date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: false,
+                    requestedInformation: [.pushChallenge],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, expectedIdleTime(whenSessionStartedAt: 2))
+            XCTAssertEqual(nextStep.value, .showErrorSheet(.sessionInvalidated))
+        }
+    }
+
+    public func testSessionPath_pushChallengeWithoutPushNotificationsAvailable() {
+        executeTest {
+            setUpSessionPath()
+
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 0)
+                return .value(nil)
+            }
+
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
+
+            // We'll ask for a push challenge, though we don't need to resolve it in this test.
+            self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 2)
+                return Guarantee<String>.pending().0
+            }
+
+            // Require a push challenge, which we won't be able to answer.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: self.date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: false,
+                    requestedInformation: [.pushChallenge],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 2)
+            XCTAssertEqual(
+                nextStep.value,
+                .phoneNumberEntry(Stubs.phoneNumberEntryState(
+                    mode: mode,
+                    previouslyEnteredE164: Stubs.e164
+                ))
+            )
+            XCTAssertNil(sessionManager.latestChallengeFulfillment)
+        }
+    }
+
+    public func testSessionPath_preferPushChallengesIfWeCanAnswerThemImmediately() {
+        executeTest {
+            setUpSessionPath()
+
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 0)
+                return .value(Stubs.apnsToken)
+            }
+
+            // Be ready to provide the push challenge token as soon as it's needed.
+            pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 2)
+                return .value("a pre-auth challenge token")
+            }
+
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
+
+            // At t=2, give back a session with multiple challenges.
+            sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: self.date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: false,
+                    requestedInformation: [.captcha, .pushChallenge],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            // Be ready to handle push challenges as soon as we can.
+            scheduler.run(atTime: 2) {
+                self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: true,
+                        requestedInformation: [],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 4
+                )
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: true,
+                        requestedInformation: [],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 5
+                )
+            }
+
+            // We should still be waiting at t=4.
+            scheduler.run(atTime: 4) {
+                XCTAssertNil(nextStep.value)
+            }
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 5)
+
+            XCTAssertEqual(
+                nextStep.value,
+                .verificationCodeEntry(Stubs.verificationCodeEntryState())
+            )
+            XCTAssertEqual(
+                sessionManager.latestChallengeFulfillment,
+                .pushChallenge("a pre-auth challenge token")
+            )
+        }
+    }
+
+    public func testSessionPath_prefersCaptchaChallengesIfWeCannotAnswerPushChallengeImmediately() {
+        executeTest {
+            setUpSessionPath()
+
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 0)
+                return .value(Stubs.apnsToken)
+            }
+
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
+
+            // Prepare to provide the challenge token.
+            let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
+            pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 2)
+                return challengeTokenPromise
+            }
+
+            // At t=2, give back a session with multiple challenges.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: false,
+                    requestedInformation: [.pushChallenge, .captcha],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            // Take too long to resolve with the challenge token.
+            let receiveChallengeTokenTime = Self.pushTokenTimeout + 1
+            scheduler.run(atTime: receiveChallengeTokenTime - 1) {
+                self.date = self.date.addingTimeInterval(TimeInterval(receiveChallengeTokenTime))
+            }
+            scheduler.run(atTime: receiveChallengeTokenTime) {
+                challengeTokenFuture.resolve("challenge token that should be ignored")
+            }
+
+            // Once we get that session at t=2, we should get a captcha step back, because we haven't
+            // yet received the push challenge token.
+            scheduler.advance(to: 2)
+            XCTAssertEqual(nextStep.value, .captchaChallenge)
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, receiveChallengeTokenTime)
+        }
+    }
+
+    public func testSessionPath_ignoresPushChallengesIfWeCannotEverAnswerThem() {
+        executeTest {
+            setUpSessionPath()
+
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 0)
+                return .value(nil)
+            }
+
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
+
+            // At t=2, give back a session with multiple challenges.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: self.date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: false,
+                    requestedInformation: [.captcha, .pushChallenge],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 2)
+            XCTAssertEqual(nextStep.value, .captchaChallenge)
+            XCTAssertNil(sessionManager.latestChallengeFulfillment)
+        }
+    }
+
+    public func testSessionPath_unknownChallenge() {
+        executeTest {
+            setUpSessionPath()
+
+            // Give it a phone number, which should cause it to start a session.
+            var nextStep = coordinator.submitE164(Stubs.e164)
+
+            // At t=2, give back a session with a captcha challenge and an unknown challenge.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: false,
+                    requestedInformation: [.captcha],
+                    hasUnknownChallengeRequiringAppUpdate: true,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            // Once we get that session at t=2, we should get a captcha step back.
+            // We have an unknown challenge, but we should do known challenges first!
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 2)
+            XCTAssertEqual(nextStep.value, .captchaChallenge)
+
+            scheduler.tick()
+
+            // Submit a captcha challenge at t=4.
+            scheduler.run(atTime: 4) {
+                nextStep = self.coordinator.submitCaptcha(Stubs.captchaToken)
+            }
+
+            // At t=6, give back a session without the captcha but still with the
+            // unknown challenge
+            self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: false,
+                    requestedInformation: [],
+                    hasUnknownChallengeRequiringAppUpdate: true,
+                    verified: false
+                )),
+                atTime: 6
+            )
+
+            // This means at t=6 we should get the app update banner.
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 6)
+            XCTAssertEqual(nextStep.value, .appUpdateBanner)
+        }
+    }
+
+    public func testSessionPath_wrongVerificationCode() {
+        executeTest {
+            createSessionAndRequestFirstCode()
+
+            // Now try and send the wrong code.
+            let badCode = "garbage"
+
+            // At t=1, give back a rejected argument response, its the wrong code.
+            self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
+                resolvingWith: .rejectedArgument(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
                     nextVerificationAttempt: 0,
+                    allowedToRequestCode: true,
+                    requestedInformation: [],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 1
+            )
+
+            let nextStep = coordinator.submitVerificationCode(badCode)
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 1)
+            XCTAssertEqual(
+                nextStep.value,
+                .verificationCodeEntry(Stubs.verificationCodeEntryState(
+                    validationError: .invalidVerificationCode(invalidCode: badCode)
+                ))
+            )
+        }
+    }
+
+    public func testSessionPath_verificationCodeTimeouts() {
+        executeTest {
+            createSessionAndRequestFirstCode()
+
+            // At t=1, give back a retry response.
+            self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
+                resolvingWith: .retryAfterTimeout(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: 10,
+                    allowedToRequestCode: true,
+                    requestedInformation: [],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 1
+            )
+
+            var nextStep = coordinator.submitVerificationCode(Stubs.verificationCode)
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 1)
+            XCTAssertEqual(
+                nextStep.value,
+                .verificationCodeEntry(Stubs.verificationCodeEntryState(
+                    nextVerificationAttempt: 10,
+                    validationError: .submitCodeTimeout
+                ))
+            )
+
+            // Resend an sms code, time that out too at t=2.
+            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                resolvingWith: .retryAfterTimeout(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 7,
+                    nextCall: 0,
+                    nextVerificationAttempt: 9,
+                    allowedToRequestCode: true,
+                    requestedInformation: [],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            nextStep = coordinator.requestSMSCode()
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 2)
+            XCTAssertEqual(
+                nextStep.value,
+                .verificationCodeEntry(Stubs.verificationCodeEntryState(
+                    nextSMS: 7,
+                    nextVerificationAttempt: 9,
+                    validationError: .smsResendTimeout
+                ))
+            )
+
+            // Resend an voice code, time that out too at t=4.
+            // Make the timeout SO short that it retries at t=4.
+            self.sessionManager.didRequestCode = false
+            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                resolvingWith: .retryAfterTimeout(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 6,
+                    nextCall: 0.1,
+                    nextVerificationAttempt: 8,
                     allowedToRequestCode: true,
                     requestedInformation: [],
                     hasUnknownChallengeRequiringAppUpdate: false,
@@ -1761,492 +2170,207 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 )),
                 atTime: 4
             )
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(RegistrationSession(
-                    id: Stubs.sessionId,
-                    e164: Stubs.e164,
-                    receivedDate: self.date,
-                    nextSMS: 0,
-                    nextCall: 0,
-                    nextVerificationAttempt: 0,
-                    allowedToRequestCode: true,
-                    requestedInformation: [],
-                    hasUnknownChallengeRequiringAppUpdate: false,
-                    verified: false
-                )),
-                atTime: 5
-            )
-        }
 
-        // We should still be waiting at t=4.
-        scheduler.run(atTime: 4) {
-            XCTAssertNil(nextStep.value)
-        }
+            // Be ready for the retry at t=4
+            scheduler.run(atTime: 3) {
+                // Ensure we called it the first time.
+                XCTAssert(self.sessionManager.didRequestCode)
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .retryAfterTimeout(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 5,
+                        nextCall: 4,
+                        nextVerificationAttempt: 8,
+                        allowedToRequestCode: true,
+                        requestedInformation: [],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 5
+                )
+            }
 
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 5)
+            nextStep = coordinator.requestVoiceCode()
 
-        XCTAssertEqual(
-            nextStep.value,
-            .verificationCodeEntry(Stubs.verificationCodeEntryState())
-        )
-        XCTAssertEqual(
-            sessionManager.latestChallengeFulfillment,
-            .pushChallenge("a pre-auth challenge token")
-        )
-    }
-
-    public func testSessionPath_prefersCaptchaChallengesIfWeCannotAnswerPushChallengeImmediately() {
-        setUpSessionPath()
-
-        pushRegistrationManagerMock.requestPushTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 0)
-            return .value(Stubs.apnsToken)
-        }
-
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164)
-
-        // Prepare to provide the challenge token.
-        let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
-        pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 2)
-            return challengeTokenPromise
-        }
-
-        // At t=2, give back a session with multiple challenges.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: false,
-                requestedInformation: [.pushChallenge, .captcha],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        // Take too long to resolve with the challenge token.
-        let receiveChallengeTokenTime = Self.pushTokenTimeout + 1
-        scheduler.run(atTime: receiveChallengeTokenTime - 1) {
-            self.date = self.date.addingTimeInterval(TimeInterval(receiveChallengeTokenTime))
-        }
-        scheduler.run(atTime: receiveChallengeTokenTime) {
-            challengeTokenFuture.resolve("challenge token that should be ignored")
-        }
-
-        // Once we get that session at t=2, we should get a captcha step back, because we haven't
-        // yet received the push challenge token.
-        scheduler.advance(to: 2)
-        XCTAssertEqual(nextStep.value, .captchaChallenge)
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, receiveChallengeTokenTime)
-    }
-
-    public func testSessionPath_ignoresPushChallengesIfWeCannotEverAnswerThem() {
-        setUpSessionPath()
-
-        pushRegistrationManagerMock.requestPushTokenMock = {
-            XCTAssertEqual(self.scheduler.currentTime, 0)
-            return .value(nil)
-        }
-
-        // Give it a phone number, which should cause it to start a session.
-        let nextStep = coordinator.submitE164(Stubs.e164)
-
-        // At t=2, give back a session with multiple challenges.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: self.date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: false,
-                requestedInformation: [.captcha, .pushChallenge],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 2)
-        XCTAssertEqual(nextStep.value, .captchaChallenge)
-        XCTAssertNil(sessionManager.latestChallengeFulfillment)
-    }
-
-    public func testSessionPath_unknownChallenge() {
-        setUpSessionPath()
-
-        // Give it a phone number, which should cause it to start a session.
-        var nextStep = coordinator.submitE164(Stubs.e164)
-
-        // At t=2, give back a session with a captcha challenge and an unknown challenge.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: false,
-                requestedInformation: [.captcha],
-                hasUnknownChallengeRequiringAppUpdate: true,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        // Once we get that session at t=2, we should get a captcha step back.
-        // We have an unknown challenge, but we should do known challenges first!
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 2)
-        XCTAssertEqual(nextStep.value, .captchaChallenge)
-
-        scheduler.tick()
-
-        // Submit a captcha challenge at t=4.
-        scheduler.run(atTime: 4) {
-            nextStep = self.coordinator.submitCaptcha(Stubs.captchaToken)
-        }
-
-        // At t=6, give back a session without the captcha but still with the
-        // unknown challenge
-        self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: false,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: true,
-                verified: false
-            )),
-            atTime: 6
-        )
-
-        // This means at t=6 we should get the app update banner.
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 6)
-        XCTAssertEqual(nextStep.value, .appUpdateBanner)
-    }
-
-    public func testSessionPath_wrongVerificationCode() {
-        createSessionAndRequestFirstCode()
-
-        // Now try and send the wrong code.
-        let badCode = "garbage"
-
-        // At t=1, give back a rejected argument response, its the wrong code.
-        self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
-            resolvingWith: .rejectedArgument(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: 0,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 1
-        )
-
-        let nextStep = coordinator.submitVerificationCode(badCode)
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 1)
-        XCTAssertEqual(
-            nextStep.value,
-            .verificationCodeEntry(Stubs.verificationCodeEntryState(
-                validationError: .invalidVerificationCode(invalidCode: badCode)
-            ))
-        )
-    }
-
-    public func testSessionPath_verificationCodeTimeouts() {
-        createSessionAndRequestFirstCode()
-
-        // At t=1, give back a retry response.
-        self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
-            resolvingWith: .retryAfterTimeout(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: 10,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 1
-        )
-
-        var nextStep = coordinator.submitVerificationCode(Stubs.verificationCode)
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 1)
-        XCTAssertEqual(
-            nextStep.value,
-            .verificationCodeEntry(Stubs.verificationCodeEntryState(
-                nextVerificationAttempt: 10,
-                validationError: .submitCodeTimeout
-            ))
-        )
-
-        // Resend an sms code, time that out too at t=2.
-        self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-            resolvingWith: .retryAfterTimeout(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 7,
-                nextCall: 0,
-                nextVerificationAttempt: 9,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        nextStep = coordinator.requestSMSCode()
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 2)
-        XCTAssertEqual(
-            nextStep.value,
-            .verificationCodeEntry(Stubs.verificationCodeEntryState(
-                nextSMS: 7,
-                nextVerificationAttempt: 9,
-                validationError: .smsResendTimeout
-            ))
-        )
-
-        // Resend an voice code, time that out too at t=4.
-        // Make the timeout SO short that it retries at t=4.
-        self.sessionManager.didRequestCode = false
-        self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-            resolvingWith: .retryAfterTimeout(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 6,
-                nextCall: 0.1,
-                nextVerificationAttempt: 8,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 4
-        )
-
-        // Be ready for the retry at t=4
-        scheduler.run(atTime: 3) {
-            // Ensure we called it the first time.
-            XCTAssert(self.sessionManager.didRequestCode)
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .retryAfterTimeout(RegistrationSession(
-                    id: Stubs.sessionId,
-                    e164: Stubs.e164,
-                    receivedDate: self.date,
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 5)
+            XCTAssertEqual(
+                nextStep.value,
+                .verificationCodeEntry(Stubs.verificationCodeEntryState(
                     nextSMS: 5,
                     nextCall: 4,
                     nextVerificationAttempt: 8,
-                    allowedToRequestCode: true,
-                    requestedInformation: [],
-                    hasUnknownChallengeRequiringAppUpdate: false,
-                    verified: false
-                )),
-                atTime: 5
+                    validationError: .voiceResendTimeout
+                ))
             )
         }
-
-        nextStep = coordinator.requestVoiceCode()
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 5)
-        XCTAssertEqual(
-            nextStep.value,
-            .verificationCodeEntry(Stubs.verificationCodeEntryState(
-                nextSMS: 5,
-                nextCall: 4,
-                nextVerificationAttempt: 8,
-                validationError: .voiceResendTimeout
-            ))
-        )
     }
 
     public func testSessionPath_disallowedVerificationCode() {
-        createSessionAndRequestFirstCode()
+        executeTest {
+            createSessionAndRequestFirstCode()
 
-        // At t=1, give back a disallowed response when submitting a code.
-        self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
-            resolvingWith: .disallowed(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 1
-        )
-
-        var nextStep = coordinator.submitVerificationCode(Stubs.verificationCode)
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 1)
-        XCTAssertEqual(
-            nextStep.value,
-            .showErrorSheet(.verificationCodeSubmissionUnavailable)
-        )
-        nextStep = coordinator.nextStep()
-        scheduler.runUntilIdle()
-        XCTAssertEqual(
-            nextStep.value,
-            .phoneNumberEntry(Stubs.phoneNumberEntryState(
-                previouslyEnteredE164: Stubs.e164
-            ))
-        )
-    }
-
-    public func testSessionPath_timedOutVerificationCodeWithoutRetries() {
-        createSessionAndRequestFirstCode()
-
-        // At t=1, give back a retry response when submitting a code,
-        // but with no ability to resubmit.
-        self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
-            resolvingWith: .retryAfterTimeout(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 1
-        )
-
-        var nextStep = coordinator.submitVerificationCode(Stubs.verificationCode)
-
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 1)
-        XCTAssertEqual(
-            nextStep.value,
-            .showErrorSheet(.verificationCodeSubmissionUnavailable)
-        )
-        nextStep = coordinator.nextStep()
-        scheduler.runUntilIdle()
-        XCTAssertEqual(
-            nextStep.value,
-            .phoneNumberEntry(Stubs.phoneNumberEntryState(
-                previouslyEnteredE164: Stubs.e164
-            ))
-        )
-    }
-
-    public func testSessionPath_expiredSession() {
-       setUpSessionPath()
-
-        // Give it a phone number, which should cause it to start a session.
-        var nextStep = coordinator.submitE164(Stubs.e164)
-
-        // At t=2, give back a session thats ready to go.
-        self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
-            resolvingWith: .success(RegistrationSession(
-                id: Stubs.sessionId,
-                e164: Stubs.e164,
-                receivedDate: date,
-                nextSMS: 0,
-                nextCall: 0,
-                nextVerificationAttempt: nil,
-                allowedToRequestCode: true,
-                requestedInformation: [],
-                hasUnknownChallengeRequiringAppUpdate: false,
-                verified: false
-            )),
-            atTime: 2
-        )
-
-        // Once we get that session at t=2, we should try and send a verification code.
-        // Have that ready to go at t=1.
-        scheduler.run(atTime: 1) {
-            // We'll ask for a push challenge, though we won't resolve it.
-            self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-                return Guarantee<String>.pending().0
-            }
-
-            // Resolve with a session at time 3.
-            self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                resolvingWith: .success(RegistrationSession(
+            // At t=1, give back a disallowed response when submitting a code.
+            self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
+                resolvingWith: .disallowed(RegistrationSession(
                     id: Stubs.sessionId,
                     e164: Stubs.e164,
-                    receivedDate: self.date,
+                    receivedDate: date,
                     nextSMS: 0,
                     nextCall: 0,
-                    nextVerificationAttempt: 0,
+                    nextVerificationAttempt: nil,
                     allowedToRequestCode: true,
                     requestedInformation: [],
                     hasUnknownChallengeRequiringAppUpdate: false,
                     verified: false
                 )),
-                atTime: 3
+                atTime: 1
+            )
+
+            var nextStep = coordinator.submitVerificationCode(Stubs.verificationCode)
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 1)
+            XCTAssertEqual(
+                nextStep.value,
+                .showErrorSheet(.verificationCodeSubmissionUnavailable)
+            )
+            nextStep = coordinator.nextStep()
+            scheduler.runUntilIdle()
+            XCTAssertEqual(
+                nextStep.value,
+                .phoneNumberEntry(Stubs.phoneNumberEntryState(
+                    mode: mode,
+                    previouslyEnteredE164: Stubs.e164
+                ))
             )
         }
+    }
 
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 3)
+    public func testSessionPath_timedOutVerificationCodeWithoutRetries() {
+        executeTest {
+            createSessionAndRequestFirstCode()
 
-        // Now we should expect to be at verification code entry since we sent the code.
-        XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            // At t=1, give back a retry response when submitting a code,
+            // but with no ability to resubmit.
+            self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
+                resolvingWith: .retryAfterTimeout(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: true,
+                    requestedInformation: [],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 1
+            )
 
-        scheduler.tick()
+            var nextStep = coordinator.submitVerificationCode(Stubs.verificationCode)
 
-        // Submit a code at t=5.
-        scheduler.run(atTime: 5) {
-            nextStep = self.coordinator.submitVerificationCode(Stubs.pinCode)
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 1)
+            XCTAssertEqual(
+                nextStep.value,
+                .showErrorSheet(.verificationCodeSubmissionUnavailable)
+            )
+            nextStep = coordinator.nextStep()
+            scheduler.runUntilIdle()
+            XCTAssertEqual(
+                nextStep.value,
+                .phoneNumberEntry(Stubs.phoneNumberEntryState(
+                    mode: mode,
+                    previouslyEnteredE164: Stubs.e164
+                ))
+            )
         }
+    }
 
-        // At t=7, give back an expired session.
-        self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
-            resolvingWith: .invalidSession,
-            atTime: 7
-        )
+    public func testSessionPath_expiredSession() {
+        executeTest {
+            setUpSessionPath()
 
-        // That means at t=7 it should show an error, and then phone number entry.
-        scheduler.runUntilIdle()
-        XCTAssertEqual(scheduler.currentTime, 7)
-        XCTAssertEqual(nextStep.value, .showErrorSheet(.sessionInvalidated))
-        nextStep = coordinator.nextStep()
-        scheduler.runUntilIdle()
-        XCTAssertEqual(nextStep.value, .phoneNumberEntry(Stubs.phoneNumberEntryState(previouslyEnteredE164: Stubs.e164)))
+            // Give it a phone number, which should cause it to start a session.
+            var nextStep = coordinator.submitE164(Stubs.e164)
+
+            // At t=2, give back a session thats ready to go.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: true,
+                    requestedInformation: [],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            // Once we get that session at t=2, we should try and send a verification code.
+            // Have that ready to go at t=1.
+            scheduler.run(atTime: 1) {
+                // We'll ask for a push challenge, though we won't resolve it.
+                self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                    return Guarantee<String>.pending().0
+                }
+
+                // Resolve with a session at time 3.
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: true,
+                        requestedInformation: [],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: 3
+                )
+            }
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 3)
+
+            // Now we should expect to be at verification code entry since we sent the code.
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+
+            scheduler.tick()
+
+            // Submit a code at t=5.
+            scheduler.run(atTime: 5) {
+                nextStep = self.coordinator.submitVerificationCode(Stubs.pinCode)
+            }
+
+            // At t=7, give back an expired session.
+            self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
+                resolvingWith: .invalidSession,
+                atTime: 7
+            )
+
+            // That means at t=7 it should show an error, and then phone number entry.
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 7)
+            XCTAssertEqual(nextStep.value, .showErrorSheet(.sessionInvalidated))
+            nextStep = coordinator.nextStep()
+            scheduler.runUntilIdle()
+            XCTAssertEqual(nextStep.value, .phoneNumberEntry(Stubs.phoneNumberEntryState(
+                mode: mode,
+                previouslyEnteredE164: Stubs.e164
+            )))
+        }
     }
 
     // MARK: - Profile Setup Path
@@ -2272,10 +2396,16 @@ public class RegistrationCoordinatorTest: XCTestCase {
             contactsStore.doesNeedContactsAuthorization = true
             pushRegistrationManagerMock.doesNeedNotificationAuthorization = true
 
-            // Gotta get the splash out of the way.
-            var nextStep = coordinator.nextStep()
-            scheduler.runUntilIdle()
-            XCTAssertEqual(nextStep.value, .splash)
+            var nextStep: Guarantee<RegistrationStep>!
+            switch mode {
+            case .registering:
+                // Gotta get the splash out of the way.
+                nextStep = coordinator.nextStep()
+                scheduler.runUntilIdle()
+                XCTAssertEqual(nextStep.value, .splash)
+            case .reRegistering, .changingNumber:
+                break
+            }
 
             // Now we should show the permissions.
             nextStep = coordinator.continueFromSplash()
@@ -2301,7 +2431,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // so that we immediately go to the session flow.
 
         // Get past the opening.
-        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState()))
+        goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
     }
 
     private func createSessionAndRequestFirstCode() {
@@ -2480,6 +2610,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         static func phoneNumberEntryState(
+            mode: RegistrationMode,
             previouslyEnteredE164: E164? = nil,
             withValidationErrorFor response: Registration.BeginSessionResponse = .success(Stubs.session(hasSentVerificationCode: false))
         ) -> RegistrationPhoneNumberState {
@@ -2496,9 +2627,17 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 validationError = nil
             }
 
+            let phoneNumberMode: RegistrationPhoneNumberState.RegistrationPhoneNumberMode
+            switch mode {
+            case .registering:
+                phoneNumberMode = .initialRegistration(previouslyEnteredE164: previouslyEnteredE164)
+            case .reRegistering(let e164):
+                phoneNumberMode = .reregistration(e164: e164)
+            case .changingNumber(let changeNumberParams):
+                phoneNumberMode = .changingPhoneNumber(oldE164: changeNumberParams.oldE164)
+            }
             return RegistrationPhoneNumberState(
-                // TODO[Registration]: test other modes (re-registration, change number)
-                mode: .initialRegistration(previouslyEnteredE164: previouslyEnteredE164),
+                mode: phoneNumberMode,
                 validationError: validationError
             )
         }
@@ -2542,6 +2681,20 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 operation: .confirmingNewPin(.stub()),
                 error: error
             )
+        }
+    }
+}
+
+extension RegistrationMode {
+
+    var testDescription: String {
+        switch self {
+        case .registering:
+            return "registering"
+        case .reRegistering:
+            return "re-registering"
+        case .changingNumber:
+            return "changing number"
         }
     }
 }

@@ -22,6 +22,8 @@ public struct RegistrationPhoneNumberState: Equatable {
         /// Will be used to pre-populate the entry field.
         case initialRegistration(previouslyEnteredE164: E164?)
         case reregistration(e164: E164)
+        // TODO[Registration]: should also take a previously entered e164.
+        // we also shouldn't default to the old e164.
         case changingPhoneNumber(oldE164: E164)
     }
 
