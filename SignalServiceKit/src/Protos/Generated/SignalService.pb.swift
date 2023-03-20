@@ -691,6 +691,15 @@ struct SignalServiceProtos_Content {
   /// Clears the value of `pniSignatureMessage`. Subsequent reads from it will return its default value.
   mutating func clearPniSignatureMessage() {self._pniSignatureMessage = nil}
 
+  var editMessage: SignalServiceProtos_EditMessage {
+    get {return _editMessage ?? SignalServiceProtos_EditMessage()}
+    set {_editMessage = newValue}
+  }
+  /// Returns true if `editMessage` has been explicitly set.
+  var hasEditMessage: Bool {return self._editMessage != nil}
+  /// Clears the value of `editMessage`. Subsequent reads from it will return its default value.
+  mutating func clearEditMessage() {self._editMessage = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -705,6 +714,7 @@ struct SignalServiceProtos_Content {
   fileprivate var _decryptionErrorMessage: Data? = nil
   fileprivate var _storyMessage: SignalServiceProtos_StoryMessage? = nil
   fileprivate var _pniSignatureMessage: SignalServiceProtos_PniSignatureMessage? = nil
+  fileprivate var _editMessage: SignalServiceProtos_EditMessage? = nil
 }
 
 struct SignalServiceProtos_CallMessage {
@@ -2876,6 +2886,15 @@ struct SignalServiceProtos_SyncMessage {
 
     var storyMessageRecipients: [SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient] = []
 
+    var editMessage: SignalServiceProtos_EditMessage {
+      get {return _editMessage ?? SignalServiceProtos_EditMessage()}
+      set {_editMessage = newValue}
+    }
+    /// Returns true if `editMessage` has been explicitly set.
+    var hasEditMessage: Bool {return self._editMessage != nil}
+    /// Clears the value of `editMessage`. Subsequent reads from it will return its default value.
+    mutating func clearEditMessage() {self._editMessage = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     struct UnidentifiedDeliveryStatus {
@@ -2961,6 +2980,7 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _expirationStartTimestamp: UInt64? = nil
     fileprivate var _isRecipientUpdate: Bool? = nil
     fileprivate var _storyMessage: SignalServiceProtos_StoryMessage? = nil
+    fileprivate var _editMessage: SignalServiceProtos_EditMessage? = nil
   }
 
   struct Contacts {
@@ -4906,6 +4926,37 @@ extension SignalServiceProtos_BodyRange.Style: CaseIterable {
 
 #endif  // swift(>=4.2)
 
+struct SignalServiceProtos_EditMessage {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var targetSentTimestamp: UInt64 {
+    get {return _targetSentTimestamp ?? 0}
+    set {_targetSentTimestamp = newValue}
+  }
+  /// Returns true if `targetSentTimestamp` has been explicitly set.
+  var hasTargetSentTimestamp: Bool {return self._targetSentTimestamp != nil}
+  /// Clears the value of `targetSentTimestamp`. Subsequent reads from it will return its default value.
+  mutating func clearTargetSentTimestamp() {self._targetSentTimestamp = nil}
+
+  var dataMessage: SignalServiceProtos_DataMessage {
+    get {return _dataMessage ?? SignalServiceProtos_DataMessage()}
+    set {_dataMessage = newValue}
+  }
+  /// Returns true if `dataMessage` has been explicitly set.
+  var hasDataMessage: Bool {return self._dataMessage != nil}
+  /// Clears the value of `dataMessage`. Subsequent reads from it will return its default value.
+  mutating func clearDataMessage() {self._dataMessage = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _targetSentTimestamp: UInt64? = nil
+  fileprivate var _dataMessage: SignalServiceProtos_DataMessage? = nil
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension SignalServiceProtos_Envelope: @unchecked Sendable {}
 extension SignalServiceProtos_Envelope.TypeEnum: @unchecked Sendable {}
@@ -5008,6 +5059,7 @@ extension SignalServiceProtos_DecryptionErrorMessage: @unchecked Sendable {}
 extension SignalServiceProtos_PniSignatureMessage: @unchecked Sendable {}
 extension SignalServiceProtos_BodyRange: @unchecked Sendable {}
 extension SignalServiceProtos_BodyRange.Style: @unchecked Sendable {}
+extension SignalServiceProtos_EditMessage: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -5540,6 +5592,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     8: .same(proto: "decryptionErrorMessage"),
     9: .same(proto: "storyMessage"),
     10: .same(proto: "pniSignatureMessage"),
+    11: .same(proto: "editMessage"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5558,6 +5611,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
       case 8: try { try decoder.decodeSingularBytesField(value: &self._decryptionErrorMessage) }()
       case 9: try { try decoder.decodeSingularMessageField(value: &self._storyMessage) }()
       case 10: try { try decoder.decodeSingularMessageField(value: &self._pniSignatureMessage) }()
+      case 11: try { try decoder.decodeSingularMessageField(value: &self._editMessage) }()
       default: break
       }
     }
@@ -5598,6 +5652,9 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     try { if let v = self._pniSignatureMessage {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     } }()
+    try { if let v = self._editMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5612,6 +5669,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if lhs._decryptionErrorMessage != rhs._decryptionErrorMessage {return false}
     if lhs._storyMessage != rhs._storyMessage {return false}
     if lhs._pniSignatureMessage != rhs._pniSignatureMessage {return false}
+    if lhs._editMessage != rhs._editMessage {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7903,6 +7961,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     6: .same(proto: "isRecipientUpdate"),
     8: .same(proto: "storyMessage"),
     9: .same(proto: "storyMessageRecipients"),
+    10: .same(proto: "editMessage"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7920,6 +7979,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
       case 7: try { try decoder.decodeSingularStringField(value: &self._destinationUuid) }()
       case 8: try { try decoder.decodeSingularMessageField(value: &self._storyMessage) }()
       case 9: try { try decoder.decodeRepeatedMessageField(value: &self.storyMessageRecipients) }()
+      case 10: try { try decoder.decodeSingularMessageField(value: &self._editMessage) }()
       default: break
       }
     }
@@ -7957,6 +8017,9 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     if !self.storyMessageRecipients.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.storyMessageRecipients, fieldNumber: 9)
     }
+    try { if let v = self._editMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -7970,6 +8033,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     if lhs._isRecipientUpdate != rhs._isRecipientUpdate {return false}
     if lhs._storyMessage != rhs._storyMessage {return false}
     if lhs.storyMessageRecipients != rhs.storyMessageRecipients {return false}
+    if lhs._editMessage != rhs._editMessage {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -9932,4 +9996,46 @@ extension SignalServiceProtos_BodyRange.Style: SwiftProtobuf._ProtoNameProviding
     4: .same(proto: "STRIKETHROUGH"),
     5: .same(proto: "MONOSPACE"),
   ]
+}
+
+extension SignalServiceProtos_EditMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".EditMessage"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "targetSentTimestamp"),
+    2: .same(proto: "dataMessage"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._targetSentTimestamp) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._dataMessage) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._targetSentTimestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._dataMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_EditMessage, rhs: SignalServiceProtos_EditMessage) -> Bool {
+    if lhs._targetSentTimestamp != rhs._targetSentTimestamp {return false}
+    if lhs._dataMessage != rhs._dataMessage {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }

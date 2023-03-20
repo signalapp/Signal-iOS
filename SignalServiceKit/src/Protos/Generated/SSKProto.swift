@@ -1788,6 +1788,9 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
     public let pniSignatureMessage: SSKProtoPniSignatureMessage?
 
     @objc
+    public let editMessage: SSKProtoEditMessage?
+
+    @objc
     public var senderKeyDistributionMessage: Data? {
         guard hasSenderKeyDistributionMessage else {
             return nil
@@ -1827,7 +1830,8 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
                  receiptMessage: SSKProtoReceiptMessage?,
                  typingMessage: SSKProtoTypingMessage?,
                  storyMessage: SSKProtoStoryMessage?,
-                 pniSignatureMessage: SSKProtoPniSignatureMessage?) {
+                 pniSignatureMessage: SSKProtoPniSignatureMessage?,
+                 editMessage: SSKProtoEditMessage?) {
         self.proto = proto
         self.dataMessage = dataMessage
         self.syncMessage = syncMessage
@@ -1837,6 +1841,7 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
         self.typingMessage = typingMessage
         self.storyMessage = storyMessage
         self.pniSignatureMessage = pniSignatureMessage
+        self.editMessage = editMessage
     }
 
     @objc
@@ -1891,6 +1896,11 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
             pniSignatureMessage = SSKProtoPniSignatureMessage(proto.pniSignatureMessage)
         }
 
+        var editMessage: SSKProtoEditMessage?
+        if proto.hasEditMessage {
+            editMessage = try SSKProtoEditMessage(proto.editMessage)
+        }
+
         self.init(proto: proto,
                   dataMessage: dataMessage,
                   syncMessage: syncMessage,
@@ -1899,7 +1909,8 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
                   receiptMessage: receiptMessage,
                   typingMessage: typingMessage,
                   storyMessage: storyMessage,
-                  pniSignatureMessage: pniSignatureMessage)
+                  pniSignatureMessage: pniSignatureMessage,
+                  editMessage: editMessage)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -1977,6 +1988,9 @@ extension SSKProtoContent {
         }
         if let _value = pniSignatureMessage {
             builder.setPniSignatureMessage(_value)
+        }
+        if let _value = editMessage {
+            builder.setEditMessage(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -2101,6 +2115,17 @@ public class SSKProtoContentBuilder: NSObject {
 
     public func setPniSignatureMessage(_ valueParam: SSKProtoPniSignatureMessage) {
         proto.pniSignatureMessage = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setEditMessage(_ valueParam: SSKProtoEditMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.editMessage = valueParam.proto
+    }
+
+    public func setEditMessage(_ valueParam: SSKProtoEditMessage) {
+        proto.editMessage = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -10358,6 +10383,9 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
     public let storyMessageRecipients: [SSKProtoSyncMessageSentStoryMessageRecipient]
 
     @objc
+    public let editMessage: SSKProtoEditMessage?
+
+    @objc
     public var destinationE164: String? {
         guard hasDestinationE164 else {
             return nil
@@ -10427,12 +10455,14 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
                  message: SSKProtoDataMessage?,
                  unidentifiedStatus: [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus],
                  storyMessage: SSKProtoStoryMessage?,
-                 storyMessageRecipients: [SSKProtoSyncMessageSentStoryMessageRecipient]) {
+                 storyMessageRecipients: [SSKProtoSyncMessageSentStoryMessageRecipient],
+                 editMessage: SSKProtoEditMessage?) {
         self.proto = proto
         self.message = message
         self.unidentifiedStatus = unidentifiedStatus
         self.storyMessage = storyMessage
         self.storyMessageRecipients = storyMessageRecipients
+        self.editMessage = editMessage
 
         let hasDestinationUuid = proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
         let hasDestinationE164 = proto.hasDestinationE164 && !proto.destinationE164.isEmpty
@@ -10501,11 +10531,17 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
         var storyMessageRecipients: [SSKProtoSyncMessageSentStoryMessageRecipient] = []
         storyMessageRecipients = proto.storyMessageRecipients.map { SSKProtoSyncMessageSentStoryMessageRecipient($0) }
 
+        var editMessage: SSKProtoEditMessage?
+        if proto.hasEditMessage {
+            editMessage = try SSKProtoEditMessage(proto.editMessage)
+        }
+
         self.init(proto: proto,
                   message: message,
                   unidentifiedStatus: unidentifiedStatus,
                   storyMessage: storyMessage,
-                  storyMessageRecipients: storyMessageRecipients)
+                  storyMessageRecipients: storyMessageRecipients,
+                  editMessage: editMessage)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -10577,6 +10613,9 @@ extension SSKProtoSyncMessageSent {
             builder.setStoryMessage(_value)
         }
         builder.setStoryMessageRecipients(storyMessageRecipients)
+        if let _value = editMessage {
+            builder.setEditMessage(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -10677,6 +10716,17 @@ public class SSKProtoSyncMessageSentBuilder: NSObject {
     @objc
     public func setStoryMessageRecipients(_ wrappedItems: [SSKProtoSyncMessageSentStoryMessageRecipient]) {
         proto.storyMessageRecipients = wrappedItems.map { $0.proto }
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setEditMessage(_ valueParam: SSKProtoEditMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.editMessage = valueParam.proto
+    }
+
+    public func setEditMessage(_ valueParam: SSKProtoEditMessage) {
+        proto.editMessage = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -19024,6 +19074,176 @@ extension SSKProtoBodyRangeBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoBodyRange? {
         return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoEditMessage
+
+@objc
+public class SSKProtoEditMessage: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_EditMessage
+
+    @objc
+    public let dataMessage: SSKProtoDataMessage?
+
+    @objc
+    public var targetSentTimestamp: UInt64 {
+        return proto.targetSentTimestamp
+    }
+    @objc
+    public var hasTargetSentTimestamp: Bool {
+        return proto.hasTargetSentTimestamp
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_EditMessage,
+                 dataMessage: SSKProtoDataMessage?) {
+        self.proto = proto
+        self.dataMessage = dataMessage
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_EditMessage(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_EditMessage) throws {
+        var dataMessage: SSKProtoDataMessage?
+        if proto.hasDataMessage {
+            dataMessage = try SSKProtoDataMessage(proto.dataMessage)
+        }
+
+        self.init(proto: proto,
+                  dataMessage: dataMessage)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoEditMessage {
+    @objc
+    public static func builder() -> SSKProtoEditMessageBuilder {
+        return SSKProtoEditMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoEditMessageBuilder {
+        let builder = SSKProtoEditMessageBuilder()
+        if hasTargetSentTimestamp {
+            builder.setTargetSentTimestamp(targetSentTimestamp)
+        }
+        if let _value = dataMessage {
+            builder.setDataMessage(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoEditMessageBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_EditMessage()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func setTargetSentTimestamp(_ valueParam: UInt64) {
+        proto.targetSentTimestamp = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setDataMessage(_ valueParam: SSKProtoDataMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.dataMessage = valueParam.proto
+    }
+
+    public func setDataMessage(_ valueParam: SSKProtoDataMessage) {
+        proto.dataMessage = valueParam.proto
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> SSKProtoEditMessage {
+        return try SSKProtoEditMessage(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoEditMessage(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoEditMessage {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoEditMessageBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoEditMessage? {
+        return try! self.build()
     }
 }
 

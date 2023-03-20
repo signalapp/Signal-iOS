@@ -118,6 +118,7 @@ message Content {
   optional bytes               decryptionErrorMessage        = 8;    // Serialized decryption error
   optional StoryMessage        storyMessage                  = 9;
   optional PniSignatureMessage pniSignatureMessage           = 10;
+  optional EditMessage         editMessage                   = 11;
 }
 
 message CallMessage {
@@ -479,6 +480,7 @@ message SyncMessage {
     optional bool                       isRecipientUpdate        = 6 [default = false];
     optional StoryMessage               storyMessage             = 8;
     repeated StoryMessageRecipient      storyMessageRecipients   = 9;
+    optional EditMessage                editMessage              = 10;
   }
 
   message Contacts {
@@ -830,4 +832,9 @@ message BodyRange {
     optional string mentionUuid = 3;
     optional Style style = 4;
   // }
+}
+
+message EditMessage {
+  optional uint64 targetSentTimestamp = 1;
+  optional DataMessage dataMessage = 2;
 }
