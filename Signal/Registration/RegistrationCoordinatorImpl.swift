@@ -1797,14 +1797,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.db.write { self.resetSession($0) }
                     return .value(.showErrorSheet(.sessionInvalidated))
                 }
-                .recover(on: schedulers.sharedBackground) { error in
-                    // We never expect to hit this code because no part of it should fail. In the
-                    // long term, we should fix this by making `Guarantee#nilTimeout` return a
-                    // `Guarantee`, not a `Promise`.
-                    owsFailBeta("Unexpected error: \(error)")
-                    self.db.write { self.resetSession($0) }
-                    return .value(.showErrorSheet(.sessionInvalidated))
-                }
         }
 
         // We're out of luck.

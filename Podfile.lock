@@ -192,7 +192,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalCoreKit:
-    :commit: 941fbecc3dd60ab5514f14dad94e5bb8172a53d1
+    :commit: 75f61972e02f114cd747bbbbd1d7f887bcfe95e7
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
@@ -231,6 +231,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 4776b3d3e50ac0b8a1d23b9c3cf09eed760446f5
+PODFILE CHECKSUM: 6c24176bef517f894100dee64f2b014494e11fe5
 
 COCOAPODS: 1.11.3

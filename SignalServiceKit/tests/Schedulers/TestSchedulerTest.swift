@@ -614,7 +614,7 @@ public class TestSchedulerTest: XCTestCase {
         XCTAssert(didObserve)
     }
 
-    func test_race() {
+    func test_promiseRace() {
         let scheduler = TestScheduler()
 
         var promises = [Promise<Int>]()
@@ -627,6 +627,48 @@ public class TestSchedulerTest: XCTestCase {
         let racePromise: Promise<Int> = Promise.race(on: scheduler, promises)
         var didObserve = false
         racePromise.observe(on: scheduler) { result in
+            // 7 won the race
+            XCTAssertEqual(try? result.get(), 7)
+            // Should have early exited at time 1.
+            XCTAssertEqual(scheduler.currentTime, 1)
+            didObserve = true
+        }
+
+        // Let 7 win the race at time 1
+        scheduler.run(atTime: 1) {
+            futures[7].resolve(7)
+        }
+        // Resolve all the others later on.
+        for i in 0...6 {
+            scheduler.run(atTime: i + 10) {
+                futures[i].resolve(i)
+            }
+        }
+        for i in 8...10 {
+            scheduler.run(atTime: i + 10) {
+                futures[i].resolve(i)
+            }
+        }
+
+        // Advance to 100, but expect the observe to have
+        // happened at 1 above, when 7 wins the race.
+        scheduler.advance(to: 100)
+        XCTAssert(didObserve)
+    }
+
+    func test_guaranteeRace() {
+        let scheduler = TestScheduler()
+
+        var guarantees = [Guarantee<Int>]()
+        var futures = [GuaranteeFuture<Int>]()
+        for _ in 0...10 {
+            let (promise, future) = Guarantee<Int>.pending()
+            guarantees.append(promise)
+            futures.append(future)
+        }
+        let raceGuarantee: Guarantee<Int> = Guarantee<Int>.race(on: scheduler, guarantees)
+        var didObserve = false
+        raceGuarantee.observe(on: scheduler) { result in
             // 7 won the race
             XCTAssertEqual(try? result.get(), 7)
             // Should have early exited at time 1.
