@@ -3,10 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import BonMot
 import UIKit
+import SafariServices
 
 @objc
 open class ActionSheetController: OWSViewController {
+    private enum Message {
+        case text(String)
+        case attributedText(NSAttributedString)
+    }
 
     private let contentView = UIView()
     private let stackView = UIStackView()
@@ -62,6 +68,12 @@ open class ActionSheetController: OWSViewController {
         return stackView.height + view.safeAreaInsets.bottom
     }
 
+    public static var messageLabelFont: UIFont { .ows_dynamicTypeSubheadlineClamped }
+
+    public static var messageBaseStyle: BonMot.StringStyle {
+        return BonMot.StringStyle(.font(messageLabelFont), .alignment(.center))
+    }
+
     public init(theme: Theme.ActionSheet = .default) {
         self.theme = theme
         super.init()
@@ -81,7 +93,19 @@ open class ActionSheetController: OWSViewController {
 
     public convenience init(title: String? = nil, message: String? = nil, theme: Theme.ActionSheet = .default) {
         self.init(theme: theme)
-        createHeader(title: title, message: message)
+        createHeader(title: title, message: {
+            guard let message else { return nil }
+            return .text(message)
+        }())
+    }
+
+    public convenience init(
+        title: String? = nil,
+        message: NSAttributedString,
+        theme: Theme.ActionSheet = .default
+    ) {
+        self.init(theme: theme)
+        createHeader(title: title, message: .attributedText(message))
     }
 
     var firstCancelAction: ActionSheetAction? {
@@ -233,7 +257,7 @@ open class ActionSheetController: OWSViewController {
         }
     }
 
-    func createHeader(title: String? = nil, message: String? = nil) {
+    private func createHeader(title: String? = nil, message: Message? = nil) {
         guard title != nil || message != nil else { return }
 
         let headerStack = UIStackView()
@@ -267,16 +291,32 @@ open class ActionSheetController: OWSViewController {
 
         // Message
         if let message = message {
-            let messageLabel = UILabel()
-            messageLabel.numberOfLines = 0
-            messageLabel.textAlignment = .center
-            messageLabel.lineBreakMode = .byWordWrapping
-            messageLabel.textColor = theme.headerMessageColor
-            messageLabel.font = .ows_dynamicTypeSubheadlineClamped
-            messageLabel.text = message
-            messageLabel.setCompressionResistanceVerticalHigh()
+            let messageView: UIView = {
+                switch message {
+                case let .text(text):
+                    let result = UILabel()
+                    result.numberOfLines = 0
+                    result.lineBreakMode = .byWordWrapping
+                    result.textAlignment = .center
+                    result.textColor = theme.headerMessageColor
+                    result.font = Self.messageLabelFont
+                    result.text = text
+                    return result
+                case let .attributedText(attributedText):
+                    let result = LinkingTextView()
+                    result.textContainer.lineBreakMode = .byWordWrapping
+                    result.textAlignment = .center
+                    result.textColor = theme.headerMessageColor
+                    result.font = Self.messageLabelFont
+                    result.attributedText = attributedText
+                    result.delegate = self
+                    return result
+                }
+            }()
 
-            headerStack.addArrangedSubview(messageLabel)
+            messageView.setCompressionResistanceVerticalHigh()
+
+            headerStack.addArrangedSubview(messageView)
         }
 
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -548,5 +588,22 @@ private class ActionSheetPresentationController: UIPresentationController {
 extension ActionSheetController: UIViewControllerTransitioningDelegate {
     public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         return ActionSheetPresentationController(presentedViewController: presented, presenting: presenting)
+    }
+}
+
+extension ActionSheetController: UITextViewDelegate {
+    public func textView(
+        _ textView: UITextView,
+        shouldInteractWith url: URL,
+        in characterRange: NSRange,
+        interaction: UITextItemInteraction
+    ) -> Bool {
+        // Because of our modal presentation style, we can't present another controller over this
+        // one. We must dismiss it first.
+        dismiss(animated: true) {
+            let vc = SFSafariViewController(url: url)
+            CurrentAppContext().frontmostViewController()?.present(vc, animated: true)
+        }
+        return false
     }
 }

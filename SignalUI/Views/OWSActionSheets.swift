@@ -26,12 +26,19 @@ public enum OWSActionSheets {
         fromViewController: UIViewController? = nil
     ) {
         let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.addOkayAction(title: buttonTitle, action: buttonAction)
+        showActionSheet(actionSheet, fromViewController: fromViewController)
+    }
 
-        let actionTitle = buttonTitle ?? CommonStrings.okButton
-        let okAction = ActionSheetAction(title: actionTitle, style: .default, handler: buttonAction)
-        okAction.accessibilityIdentifier = "OWSActionSheets.\("ok")"
-        actionSheet.addAction(okAction)
-
+    public static func showActionSheet(
+        title: String? = nil,
+        message: NSAttributedString,
+        buttonTitle: String? = nil,
+        buttonAction: ActionSheetAction.Handler? = nil,
+        fromViewController: UIViewController? = nil
+    ) {
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.addOkayAction(title: buttonTitle, action: buttonAction)
         showActionSheet(actionSheet, fromViewController: fromViewController)
     }
 
@@ -147,6 +154,15 @@ public enum OWSActionSheets {
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         OWSActionSheets.showActionSheet(actionSheet)
+    }
+}
+
+fileprivate extension ActionSheetController {
+    func addOkayAction(title: String? = nil, action: ActionSheetAction.Handler? = nil) {
+        let actionTitle = title ?? CommonStrings.okButton
+        let okAction = ActionSheetAction(title: actionTitle, style: .default, handler: action)
+        okAction.accessibilityIdentifier = "OWSActionSheets.\("ok")"
+        addAction(okAction)
     }
 }
 
