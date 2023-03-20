@@ -754,7 +754,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     )
                 }
                 if let error {
-                    Logger.error("Failed account attributes update, finishing registration anyway: \(error)")
+                    Logger.warn("Failed account attributes update, finishing registration anyway: \(error)")
                 }
                 // We are done! Wipe everything
                 self.inMemoryState = InMemoryState()
