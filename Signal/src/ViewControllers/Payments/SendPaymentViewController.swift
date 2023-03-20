@@ -421,7 +421,9 @@ public class SendPaymentViewController: OWSViewController {
     @objc
     private func isPaymentsVersionOutdatedDidChange() {
         guard UIApplication.shared.frontmostViewController == self else { return }
-        OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired)
+        if paymentsHelper.isPaymentsVersionOutdated {
+            OWSActionSheets.showPaymentsOutdatedClientSheet(title: .updateRequired)
+        }
     }
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {

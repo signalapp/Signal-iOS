@@ -359,15 +359,7 @@ public extension TSPaymentModel {
 }
 
 extension OWSActionSheets {
-
-    @discardableResult
-    public class func showPaymentsOutdatedClientSheetIfNeeded(title: OutdatedTitleType) -> Bool {
-        guard self.paymentsHelper.isPaymentsVersionOutdated else { return false }
-        OWSActionSheets.showPaymentsOutdatedClientSheet(title: title)
-        return true
-    }
-
-    public class func showPaymentsOutdatedClientSheet(title: OutdatedTitleType) {
+    public static func showPaymentsOutdatedClientSheet(title: OutdatedTitleType) {
 
         OWSActionSheets.showConfirmationWithNotNowAlert(title: title.localizedTitle,
                                               message: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE",
@@ -379,7 +371,6 @@ extension OWSActionSheets {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
     }
-
 }
 
 public enum OutdatedTitleType {

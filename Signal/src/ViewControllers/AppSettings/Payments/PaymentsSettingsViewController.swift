@@ -320,8 +320,11 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         paymentsCurrencies.updateConversationRatesIfStale()
 
         startUpdateBalanceTimer()
-        let clientOutdated = OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired)
-        if clientOutdated { createOutdatedClientReminderView() }
+        let clientOutdated = paymentsHelper.isPaymentsVersionOutdated
+        if clientOutdated {
+            OWSActionSheets.showPaymentsOutdatedClientSheet(title: .updateRequired)
+            createOutdatedClientReminderView()
+        }
         outdatedClientReminderView?.isHidden = !clientOutdated
     }
 
@@ -383,7 +386,9 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     @objc
     private func isPaymentsVersionOutdatedDidChange() {
         guard UIApplication.shared.frontmostViewController == self else { return }
-        OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired)
+        if paymentsHelper.isPaymentsVersionOutdated {
+            OWSActionSheets.showPaymentsOutdatedClientSheet(title: .updateRequired)
+        }
     }
 
     @objc
@@ -1059,7 +1064,10 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             return
         }
 
-        guard !OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired) else { return }
+        if paymentsHelper.isPaymentsVersionOutdated {
+            OWSActionSheets.showPaymentsOutdatedClientSheet(title: .updateRequired)
+            return
+        }
 
         databaseStorage.asyncWrite { transaction in
             Self.paymentsHelperSwift.enablePayments(transaction: transaction)
@@ -1169,7 +1177,10 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
      }
 
     private func didTapTransferToExchangeButton() {
-        guard !OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired) else { return }
+        if paymentsHelper.isPaymentsVersionOutdated {
+            OWSActionSheets.showPaymentsOutdatedClientSheet(title: .updateRequired)
+            return
+        }
         let view = PaymentsTransferOutViewController(transferAmount: nil)
         let navigationController = OWSNavigationController(rootViewController: view)
         present(navigationController, animated: true, completion: nil)
@@ -1199,7 +1210,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                                       comment: "Error message indicating that payments cannot be sent because the feature is not currently available."))
             return
         }
-        guard !OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired) else { return }
+
+        if paymentsHelper.isPaymentsVersionOutdated {
+            OWSActionSheets.showPaymentsOutdatedClientSheet(title: .updateRequired)
+            return
+        }
+
         PaymentsSendRecipientViewController.presentAsFormSheet(fromViewController: self,
                                                                isOutgoingTransfer: false,
                                                                paymentRequestModel: nil)
