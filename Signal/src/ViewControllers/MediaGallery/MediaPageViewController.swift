@@ -80,11 +80,7 @@ class MediaPageViewController: UIPageViewController {
     private var footerBarHeight: CGFloat { topBarHeight }
     private var footerBarHeightConstraint: NSLayoutConstraint?
 
-    private lazy var captionContainerView: CaptionContainerView = {
-        let view = CaptionContainerView()
-        view.delegate = self
-        return view
-    }()
+    private lazy var captionView = MediaCaptionView()
     private lazy var galleryRailView: GalleryRailView = {
         let view = GalleryRailView()
         view.delegate = self
@@ -189,7 +185,7 @@ class MediaPageViewController: UIPageViewController {
         footerBar.tintColor = Theme.darkThemePrimaryColor
         footerBarHeightConstraint = footerBar.autoSetDimension(.height, toSize: footerBarHeight)
 
-        let bottomStack = UIStackView(arrangedSubviews: [captionContainerView, galleryRailView, footerBar])
+        let bottomStack = UIStackView(arrangedSubviews: [captionView, galleryRailView, footerBar])
         bottomStack.axis = .vertical
         bottomStack.preservesSuperviewLayoutMargins = true
         bottomPanel.addSubview(bottomStack)
@@ -197,9 +193,8 @@ class MediaPageViewController: UIPageViewController {
         bottomStack.autoPinEdge(toSuperviewEdge: .top, withInset: 16)
         bottomStack.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
-        updateCaption(item: currentItem)
-        updateCaptionContainerVisibility()
         updateTitle()
+        updateCaption(item: currentItem)
         updateMediaRail(animated: false)
         updateContextMenuActions()
         updateBottomPanelControls(isPlayingVideo: true)
@@ -208,6 +203,8 @@ class MediaPageViewController: UIPageViewController {
         let verticalSwipe = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeView))
         verticalSwipe.direction = [.up, .down]
         view.addGestureRecognizer(verticalSwipe)
+
+        captionView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toggleCaptionBoxIsExpanded)))
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -290,12 +287,12 @@ class MediaPageViewController: UIPageViewController {
             return
         }
 
-        let width = pagerScrollView.frame.size.width
-        guard width > 0 else {
-            return
-        }
+        guard pagerScrollView.isTracking || pagerScrollView.isDecelerating else { return }
+
+        let width = pagerScrollView.frame.width
+        guard width > 0 else { return }
         let ratioComplete = abs((newValue.x - width) / width)
-        captionContainerView.updatePagerTransition(ratioComplete: ratioComplete)
+        captionView.updateTransitionProgress(ratioComplete)
     }
 
     // MARK: View Helpers
@@ -727,10 +724,6 @@ class MediaPageViewController: UIPageViewController {
         updateTitle(item: currentItem)
     }
 
-    private func updateCaption(item: MediaGalleryItem) {
-        captionContainerView.currentText = item.captionForDisplay
-    }
-
     private func updateTitle(item: MediaGalleryItem) {
         let name = senderName(message: item.message)
         headerNameLabel.text = name
@@ -739,10 +732,31 @@ class MediaPageViewController: UIPageViewController {
         let date = Date(timeIntervalSince1970: Double(item.message.timestamp) / 1000)
         headerDateLabel.text = dateFormatter.string(from: date)
     }
+
+    // MARK: Caption Box
+
+    private func updateCaption(item: MediaGalleryItem) {
+        captionView.text = item.captionForDisplay
+    }
+
+    @objc
+    private func toggleCaptionBoxIsExpanded(_ gestureRecognizer: UITapGestureRecognizer) {
+        guard !captionView.isTransitionInProgress, captionView.canBeExpanded else { return }
+
+        let animator = UIViewPropertyAnimator(duration: 0.25, springDamping: 0.645, springResponse: 0.25)
+        animator.addAnimations {
+            self.captionView.isExpanded = !self.captionView.isExpanded
+            self.view.layoutIfNeeded()
+        }
+        animator.startAnimation()
+    }
 }
 
 extension MediaPageViewController: UIPageViewControllerDelegate {
-    func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+    func pageViewController(
+        _ pageViewController: UIPageViewController,
+        willTransitionTo pendingViewControllers: [UIViewController]
+    ) {
         Logger.debug("")
 
         owsAssert(pendingViewControllers.count == 1)
@@ -751,7 +765,7 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
             return
         }
 
-        captionContainerView.pendingText = pendingViewController.galleryItem.captionForDisplay?.nilIfEmpty
+        captionView.beginInteractiveTransition(text: pendingViewController.galleryItem.captionForDisplay?.nilIfEmpty)
 
         // Ensure upcoming page respects current toolbar status
         pendingViewController.setShouldHideToolbars(shouldHideToolbars)
@@ -771,22 +785,15 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
             return
         }
 
-        // Do any cleanup for the no-longer visible view controller
-        if transitionCompleted {
-            // This can happen when trying to page past the last (or first) view controller
-            // In that case, we don't want to change the captionView.
-            if previousPage != currentViewController {
-                captionContainerView.completePagerTransition()
-            }
+        captionView.finishInteractiveTransition(transitionCompleted)
 
+        if transitionCompleted {
             updateTitle()
             updateMediaRail(animated: true)
             previousPage.zoomOut(animated: false)
             previousPage.stopVideoIfPlaying()
             updateContextMenuActions()
             updateBottomPanelControls(isPlayingVideo: false)
-        } else {
-            captionContainerView.pendingText = nil
         }
     }
 }
@@ -956,26 +963,6 @@ extension MediaPageViewController: GalleryRailViewDelegate {
         let direction: UIPageViewController.NavigationDirection
         direction = currentItem.albumIndex < targetItem.albumIndex ? .forward : .reverse
         setCurrentItem(targetItem, direction: direction, animated: true)
-    }
-}
-
-extension MediaPageViewController: CaptionContainerViewDelegate {
-    func captionContainerViewDidUpdateText(_ captionContainerView: CaptionContainerView) {
-        updateCaptionContainerVisibility()
-    }
-
-    fileprivate func updateCaptionContainerVisibility() {
-        if let currentText = captionContainerView.currentText, !currentText.isEmpty {
-            captionContainerView.isHidden = false
-            return
-        }
-
-        if let pendingText = captionContainerView.pendingText, !pendingText.isEmpty {
-            captionContainerView.isHidden = false
-            return
-        }
-
-        captionContainerView.isHidden = true
     }
 }
 
