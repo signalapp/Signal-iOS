@@ -176,7 +176,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 case .success:
                     return .value(())
                 case .invalidPin(remainingAttempts: let remainingAttempts):
-                    throw KBS.KBSError.invalidPin(triesRemaining: UInt32(remainingAttempts))
+                    throw KBS.KBSError.invalidPin(remainingAttempts: remainingAttempts)
                 case .backupMissing:
                     throw KBS.KBSError.backupMissing
                 case .networkError(let error):
@@ -323,7 +323,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
             case .assertion:
                 return .value(.genericError(error))
             case .invalidPin(let remainingAttempts):
-                return .value(.invalidPin(remainingAttempts: Int(remainingAttempts)))
+                return .value(.invalidPin(remainingAttempts: remainingAttempts))
             case .backupMissing:
                 return .value(.backupMissing)
             }
@@ -383,7 +383,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 owsFailDebug("attempted restore with spent token")
                 throw KBS.KBSError.assertion
             case .pinMismatch:
-                throw KBS.KBSError.invalidPin(triesRemaining: response.tries)
+                throw KBS.KBSError.invalidPin(remainingAttempts: response.tries)
             case .missing:
                 throw KBS.KBSError.backupMissing
             case .notYetValid:

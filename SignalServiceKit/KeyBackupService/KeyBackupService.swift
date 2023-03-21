@@ -9,7 +9,7 @@ public enum KBS {
 
     public enum KBSError: Error, Equatable {
         case assertion
-        case invalidPin(triesRemaining: UInt32)
+        case invalidPin(remainingAttempts: UInt32)
         case backupMissing
     }
 
@@ -84,7 +84,7 @@ public enum KBS {
 
     public enum RestoreKeysResult {
         case success
-        case invalidPin(remainingAttempts: Int)
+        case invalidPin(remainingAttempts: UInt32)
         // This could mean there was never a backup, or it's been
         // deleted due to using up all pin attempts.
         case backupMissing

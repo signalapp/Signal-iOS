@@ -454,7 +454,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// How many times the user has tried making guesses against the PIN
         /// we have locally? This happens when we have a local KBS master key
         /// and want to confirm the user knows their PIN before using it to register.
-        var numLocalPinGuesses = 0
+        var numLocalPinGuesses: UInt = 0
 
         /// There are a few times we ask for the PIN that are skippable:
         ///
@@ -2867,7 +2867,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // then we reuse it to register. We make the user guess the PIN before proceeding,
         // though. This is how many tries they have before we wipe our local state and make
         // them go through re-registration.
-        static let maxLocalPINGuesses = 10
+        static let maxLocalPINGuesses: UInt = 10
 
         /// How long we block waiting for a push challenge after requesting one.
         /// We might still fulfill the challenge after this, but we won't opportunistically block proceeding.
