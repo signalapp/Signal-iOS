@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 // MARK: - RegistrationVerificationValidationError
 
@@ -25,7 +26,6 @@ public struct RegistrationVerificationState: Equatable {
     let nextCallDate: Date?
     // TODO[Registration]: use this state to render a countdown.
     let nextVerificationAttemptDate: Date
-    // TODO[Registration]: use this state to render error UI.
     let validationError: RegistrationVerificationValidationError?
 }
 
@@ -87,6 +87,8 @@ class RegistrationVerificationViewController: OWSViewController {
         guard let nextDate = state.nextCallDate else { return false }
         return nextDate <= now
     }
+
+    private var previouslyRenderedValidationError: RegistrationVerificationValidationError?
 
     // MARK: Rendering
 
@@ -239,6 +241,8 @@ class RegistrationVerificationViewController: OWSViewController {
             )
         )
 
+        showValidationErrorUiIfNecessary()
+
         view.backgroundColor = Theme.backgroundColor
         titleLabel.textColor = .colorForRegistrationTitleLabel
         explanationLabel.textColor = .colorForRegistrationExplanationLabel
@@ -281,6 +285,42 @@ class RegistrationVerificationViewController: OWSViewController {
                 titleColor: Theme.secondaryTextAndIconColor
             )
         }
+    }
+
+    private func showValidationErrorUiIfNecessary() {
+        let oldError = previouslyRenderedValidationError
+        let newError = state.validationError
+
+        previouslyRenderedValidationError = newError
+
+        guard let newError, oldError != newError else { return }
+
+        let title: String?
+        let message: String
+        switch newError {
+        case .invalidVerificationCode:
+            title = nil
+            message = OWSLocalizedString(
+                "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE",
+                comment: "During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message."
+            )
+        case .smsResendTimeout, .voiceResendTimeout:
+            // This isn't the best error message but this should be a rare case. The UI would have
+            // to allow the user to request a code that the server would not allow. It could happen
+            // if the user changes their clock.
+            title = nil
+            message = CommonStrings.somethingWentWrongTryAgainLaterError
+        case .submitCodeTimeout:
+            title = OWSLocalizedString(
+                "REGISTRATION_NETWORK_ERROR_TITLE",
+                comment: "A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet."
+            )
+            message = OWSLocalizedString(
+                "REGISTRATION_NETWORK_ERROR_BODY",
+                comment: "A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet."
+            )
+        }
+        OWSActionSheets.showActionSheet(title: title, message: message)
     }
 
     // MARK: Events

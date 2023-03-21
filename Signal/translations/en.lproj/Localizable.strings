@@ -5320,6 +5320,9 @@
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
 
+/* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "The code you entered is not valid. Please resend the code and try again.";
+
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verification Failed";
 
