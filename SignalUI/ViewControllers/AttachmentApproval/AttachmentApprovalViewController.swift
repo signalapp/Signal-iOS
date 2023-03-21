@@ -429,6 +429,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         attachmentApprovalItemCollection.remove(item: attachmentApprovalItem)
         approvalDelegate?.attachmentApproval(self, didRemoveAttachment: attachmentApprovalItem.attachment)
+
+        // If media rail needs to be hidden, do it immediately.
+        if attachmentApprovalItems.count < 2 {
+            updateMediaRail(animated: true)
+        }
     }
 
     lazy var pagerScrollView: UIScrollView? = {
