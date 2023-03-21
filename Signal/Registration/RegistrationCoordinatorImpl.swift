@@ -2141,7 +2141,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )))
         }
 
-        if !inMemoryState.hasDefinedIsDiscoverableByPhoneNumber {
+        if !inMemoryState.hasDefinedIsDiscoverableByPhoneNumber, FeatureFlags.phoneNumberDiscoverability {
             return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(
                 e164: accountIdentity.e164,
                 isDiscoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber

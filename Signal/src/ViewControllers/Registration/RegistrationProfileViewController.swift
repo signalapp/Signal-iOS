@@ -266,14 +266,7 @@ class RegistrationProfileViewController: OWSViewController {
         scrollView.autoPinEdge(toSuperviewEdge: .top)
         scrollView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            explanationView,
-            avatarContainerView,
-            nameStackView,
-            phoneNumberDisclosureView,
-            UIView.vStretchingSpacer()
-        ])
+        let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.distribution = .fill
         stackView.spacing = 24
@@ -281,6 +274,15 @@ class RegistrationProfileViewController: OWSViewController {
         scrollView.addSubview(stackView)
         stackView.autoPinWidth(toWidthOf: scrollView)
         stackView.autoPinHeightToSuperview()
+
+        stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(explanationView)
+        stackView.addArrangedSubview(avatarContainerView)
+        stackView.addArrangedSubview(nameStackView)
+        if FeatureFlags.phoneNumberDiscoverability {
+            stackView.addArrangedSubview(phoneNumberDisclosureView)
+        }
+        stackView.addArrangedSubview(UIView.vStretchingSpacer())
 
         scrollView.addSubview(cameraImageWrapperView)
         cameraImageWrapperView.autoPinEdge(.bottom, to: .bottom, of: avatarView)
