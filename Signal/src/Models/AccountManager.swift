@@ -249,7 +249,6 @@ public class AccountManager: NSObject, Dependencies {
         }
     }
 
-    // TODO[Registration]: Modernize this.
     private struct ChangePhoneNumberResponse: Decodable {
         private enum CodingKeys: String, CodingKey {
             case aci = "uuid"

@@ -16,7 +16,6 @@ class RegistrationLoadingViewController: OWSViewController {
         spinnerView = AnimatedProgressView(loadingText: {
             switch mode {
             case .initialLoad:
-                // TODO[Registration]: should this be blank?
                 return ""
             case let .submittingPhoneNumber(e164):
                 let format = OWSLocalizedString(
