@@ -2123,7 +2123,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     .then(on: schedulers.main) { [weak self] (error) -> Guarantee<RegistrationStep> in
                         guard let self else {
-                            return .value(.showErrorSheet(.todo))
+                            return unretainedSelfError()
                         }
                         guard error == nil else {
                             // TODO[Registration]: should we differentiate errors?
