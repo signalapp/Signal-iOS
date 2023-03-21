@@ -38,7 +38,11 @@ public struct RegistrationPinState: Equatable {
     public enum RegistrationPinOperation: Equatable {
         case creatingNewPin
         case confirmingNewPin(RegistrationPinConfirmationBlob)
-        case enteringExistingPin(canSkip: Bool)
+        case enteringExistingPin(
+            canSkip: Bool,
+            /// The number of PIN attempts that the user has. If `nil`, the count is unknown.
+            remainingAttempts: UInt?
+        )
     }
 
     let operation: RegistrationPinOperation
@@ -100,6 +104,8 @@ class RegistrationPinViewController: OWSViewController {
     private var pin: String { pinTextField.text ?? "" }
 
     private var canSubmit: Bool { pin.count >= kMin2FAv2PinLength }
+
+    private var previouslyWarnedAboutAttemptCount: UInt?
 
     // MARK: Rendering
 
@@ -321,7 +327,8 @@ class RegistrationPinViewController: OWSViewController {
             ])
         case .confirmingNewPin:
             navigationItem.leftBarButtonItem = backBarButton
-        case let .enteringExistingPin(canSkip):
+        case let .enteringExistingPin(canSkip, remainingAttempts):
+            let showAttemptWarningsAt: Set<UInt>
             if canSkip {
                 navigationItem.leftBarButtonItem = moreBarButton
                 moreButton.contextMenu = ContextMenu([.init(
@@ -334,9 +341,16 @@ class RegistrationPinViewController: OWSViewController {
                         self?.presenter?.submitWithSkippedPin()
                     }
                 )])
+                showAttemptWarningsAt = [3, 1]
             } else {
                 navigationItem.leftBarButtonItem = nil
+                showAttemptWarningsAt = [5, 3, 1]
             }
+            showAttemptWarningIfNecessary(
+                remainingAttempts: remainingAttempts,
+                warnAt: showAttemptWarningsAt,
+                canSkip: canSkip
+            )
         }
 
         navigationItem.rightBarButtonItem = canSubmit ? nextBarButton : nil
@@ -392,6 +406,72 @@ class RegistrationPinViewController: OWSViewController {
         pinTextField.keyboardAppearance = Theme.keyboardAppearance
         pinValidationLabel.textColor = .colorForRegistrationExplanationLabel
         togglePinCharacterSetButton.setTitleColor(Theme.accentBlueColor)
+    }
+
+    private func showAttemptWarningIfNecessary(
+        remainingAttempts: UInt?,
+        warnAt: Set<UInt>,
+        canSkip: Bool
+    ) {
+        guard
+            let remainingAttempts,
+            warnAt.contains(remainingAttempts),
+            remainingAttempts < (previouslyWarnedAboutAttemptCount ?? UInt.max)
+        else { return }
+
+        defer {
+            previouslyWarnedAboutAttemptCount = remainingAttempts
+        }
+
+        let title: String?
+        if state.error == nil {
+            // It's unlikely, but we could hit this case if we return to this screen without
+            // recently guessing a PIN. We don't want to show an "incorrect PIN" title because you
+            // didn't just enter one, but we do still want to tell the user that they don't have
+            // many guesses left.
+            title = nil
+        } else {
+            title = OWSLocalizedString(
+                "REGISTER_2FA_INVALID_PIN_ALERT_TITLE",
+                comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'."
+            )
+        }
+
+        let message: NSAttributedString = {
+            let attemptRemainingFormat = OWSLocalizedString(
+                "REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d",
+                tableName: "PluralAware",
+                comment: "If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they may be warned that they only have a certain number of attempts remaining. That warning will tell the user how many attempts they have in bold text. This is that bold text, which is inserted into the larger string."
+            )
+            let attemptRemainingString = String.localizedStringWithFormat(
+                attemptRemainingFormat,
+                remainingAttempts
+            )
+
+            let format: String
+            if canSkip {
+                format = OWSLocalizedString(
+                    "REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT",
+                    comment: "If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\"."
+                )
+            } else {
+                format = OWSLocalizedString(
+                    "REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT",
+                    comment: "If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\"."
+                )
+            }
+
+            return NSAttributedString.make(
+                fromFormat: format,
+                attributedFormatArgs: [.string(
+                    attemptRemainingString,
+                    attributes: [.font: ActionSheetController.messageLabelFont.ows_semibold]
+                )],
+                defaultAttributes: [.font: ActionSheetController.messageLabelFont]
+            )
+        }()
+
+        OWSActionSheets.showActionSheet(title: title, message: message)
     }
 
     // MARK: Sheets

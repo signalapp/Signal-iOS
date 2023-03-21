@@ -400,7 +400,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // Give it the wrong PIN, it should reject and give us the same step again.
             nextStep = coordinator.submitPINCode(wrongPinCode).value
-            XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(error: .wrongPin(wrongPin: wrongPinCode))))
+            XCTAssertEqual(
+                nextStep,
+                .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(
+                    error: .wrongPin(wrongPin: wrongPinCode),
+                    remainingAttempts: 9
+                ))
+            )
 
             // Give it the right pin code, which should make it try and register.
             let expectedRequest = RegistrationRequestFactory.createAccountRequest(
@@ -2598,15 +2604,22 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         static func pinEntryStateForRegRecoveryPath(
-            error: RegistrationPinValidationError? = nil
+            error: RegistrationPinValidationError? = nil,
+            remainingAttempts: UInt? = nil
         ) -> RegistrationPinState {
-            return RegistrationPinState(operation: .enteringExistingPin(canSkip: true), error: error)
+            return RegistrationPinState(
+                operation: .enteringExistingPin(canSkip: true, remainingAttempts: remainingAttempts),
+                error: error
+            )
         }
 
         static func pinEntryStateForKBSAuthCredentialPath(
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
-            return RegistrationPinState(operation: .enteringExistingPin(canSkip: true), error: error)
+            return RegistrationPinState(
+                operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
+                error: error
+            )
         }
 
         static func phoneNumberEntryState(
@@ -2661,13 +2674,19 @@ public class RegistrationCoordinatorTest: XCTestCase {
         static func pinEntryStateForSessionPathReglock(
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
-            return RegistrationPinState(operation: .enteringExistingPin(canSkip: false), error: error)
+            return RegistrationPinState(
+                operation: .enteringExistingPin(canSkip: false, remainingAttempts: nil),
+                error: error
+            )
         }
 
         static func pinEntryStateForPostRegRestore(
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
-            return RegistrationPinState(operation: .enteringExistingPin(canSkip: true), error: error)
+            return RegistrationPinState(
+                operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
+                error: error
+            )
         }
 
         static func pinEntryStateForPostRegCreate() -> RegistrationPinState {

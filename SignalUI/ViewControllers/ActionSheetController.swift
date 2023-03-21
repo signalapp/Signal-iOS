@@ -305,10 +305,10 @@ open class ActionSheetController: OWSViewController {
                 case let .attributedText(attributedText):
                     let result = LinkingTextView()
                     result.textContainer.lineBreakMode = .byWordWrapping
-                    result.textAlignment = .center
                     result.textColor = theme.headerMessageColor
                     result.font = Self.messageLabelFont
                     result.attributedText = attributedText
+                    result.textAlignment = .center
                     result.delegate = self
                     return result
                 }

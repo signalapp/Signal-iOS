@@ -227,8 +227,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.wipeInMemoryStateToPreventKBSPathAttempts()
                     return .value(.showErrorSheet(.pinGuessesExhausted))
                 } else {
+                    let remainingAttempts = Constants.maxLocalPINGuesses - numberOfWrongGuesses
                     return .value(.pinEntry(RegistrationPinState(
-                        operation: .enteringExistingPin(canSkip: true),
+                        operation: .enteringExistingPin(
+                            canSkip: true,
+                            remainingAttempts: remainingAttempts
+                        ),
                         error: .wrongPin(wrongPin: code)
                     )))
                 }
@@ -908,7 +912,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // We need the user to confirm their pin.
             return .value(.pinEntry(RegistrationPinState(
                 // We can skip which will stop trying to use reg recovery.
-                operation: .enteringExistingPin(canSkip: true),
+                operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
                 error: nil
             )))
         }
@@ -919,7 +923,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         {
             Logger.warn("PIN mismatch; should be prevented at submission time.")
             return .value(.pinEntry(RegistrationPinState(
-                operation: .enteringExistingPin(canSkip: true),
+                operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
                 error: .wrongPin(wrongPin: pinFromUser)
             )))
         }
@@ -1077,7 +1081,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         guard let pin = inMemoryState.pinFromUser else {
             // We don't have a pin at all, ask the user for it.
             return .value(.pinEntry(RegistrationPinState(
-                operation: .enteringExistingPin(canSkip: true),
+                operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
                 error: nil
             )))
         }
@@ -1104,9 +1108,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.inMemoryState.hasBackedUpToKBS = true
                     self.db.read { self.loadLocalMasterKey($0) }
                     return self.nextStep()
-                case .invalidPin:
+                case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
-                        operation: .enteringExistingPin(canSkip: true),
+                        operation: .enteringExistingPin(
+                            canSkip: true,
+                            remainingAttempts: UInt(remainingAttempts)
+                        ),
                         error: .wrongPin(wrongPin: pin)
                     )))
                 case .backupMissing:
@@ -1262,7 +1269,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 )
             } else {
                 return .value(.pinEntry(RegistrationPinState(
-                    operation: .enteringExistingPin(canSkip: false),
+                    operation: .enteringExistingPin(canSkip: false, remainingAttempts: nil),
                     error: .none
                 )))
             }
@@ -1995,9 +2002,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         }
                     }
                     return self.nextStep()
-                case .invalidPin:
+                case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
-                        operation: .enteringExistingPin(canSkip: false),
+                        operation: .enteringExistingPin(
+                            canSkip: false,
+                            remainingAttempts: UInt(remainingAttempts)
+                        ),
                         error: .wrongPin(wrongPin: pin)
                     )))
                 case .backupMissing:
@@ -2221,7 +2231,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
                 if isRestoringPinBackup {
                     return .value(.pinEntry(RegistrationPinState(
-                        operation: .enteringExistingPin(canSkip: true),
+                        operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
                         error: nil
                     )))
                 } else if let blob = inMemoryState.unconfirmedPinBlob {
@@ -2280,9 +2290,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // This backs up too, no need to do that again after.
                     self.inMemoryState.hasBackedUpToKBS = true
                     return self.nextStep()
-                case .invalidPin:
+                case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
-                        operation: .enteringExistingPin(canSkip: true),
+                        operation: .enteringExistingPin(
+                            canSkip: true,
+                            remainingAttempts: UInt(remainingAttempts)
+                        ),
                         error: .wrongPin(wrongPin: pin)
                     )))
                 case .backupMissing:
