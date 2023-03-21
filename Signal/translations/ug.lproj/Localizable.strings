@@ -3569,7 +3569,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "بۇ ئاي";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
-"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "ئۆچۈرۈش";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "كېيىنچە ئەسكەرتىڭ";
@@ -5201,13 +5201,13 @@
 "REGISTRATION_BODY" = "تەۋسىيە ئۇقتۇرۇشنى قايتا تىزىملىتالمىدى.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "يېڭىلاش";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Signal نىڭ ئەڭ يېڭى نەشرىگە يېڭىلاپ تىزىملىتىشنى داۋاملاشتۇرۇڭ.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "يېڭىلاش كېرەك";
 
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "سىزنىڭ ئادەم ئىكەنلىكىڭىزنى دەلىللىشىمىز كېرەك";
@@ -5237,22 +5237,22 @@
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "باغلىنىشنى تەكشۈر";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "ھېساباتىڭىز شەخسىي مەخپىيەتلىكىڭىز ۋە بىخەتەرلىكىڭىزنى قوغداش ئۈچۈن قۇلۇپلاندى. ھېساباتىڭىزدا %1$@ كۈنگىچە مەشغۇلات ئېلىپ بېرىلمىغاندىن كېيىن بۇ تېلېفون نومۇرىڭىز ئارقىلىق PIN ئىشلەتمەي قايتا تىزىملىتالايسىز. بارلىق مەزمۇنلار ئۆچۈرۈلىدۇ.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
-"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "قۇلۇپلانغان ھېساباتلار ھەققىدىكى تەپسىلاتلار";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
-"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "باشقا نومۇر ئىشلىتىش";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
-"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "ھېسابات قۇلۇپلاندى";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+"REGISTRATION_NETWORK_ERROR_BODY" = "تېلېفونىڭىزنىڭ تور ئۇلىنىشىنى تەكشۈرۈپ ۋە قايتا سىناپ داۋاملاشتۇرۇڭ.";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
+"REGISTRATION_NETWORK_ERROR_TITLE" = "ئۇلىنىشنى تەكشۈرۈڭ";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "بۇ تېلېفون نومۇر پىچىمىنى قوللىمايدۇ، قوللاش مۇلازىمىتى بىلەن ئالاقە قىلىڭ.";
@@ -7142,7 +7142,7 @@
 "UNREAD_ACTION" = "ئوقۇلمىدى قىلىڭ";
 
 /* Label warning the user that the validation of their username has failed. */
-"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"UNREGISTERED_USERNAME_WARNING" = "ئىشلەتكۈچى نامىڭىزدا خاتالىق كۆرۈلگەن بولۇپ، ئۇ ئەمدى سىزنىڭ ھېساباتىڭىزغا تەۋە ئەمەس. ئۇنى قايتا تەڭشەپ سىناپ باقسىڭىز ياكى يېڭى بىر نام تاللىسىڭىز بولىدۇ.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "قوللىمايدىغان قوشۇمچە تىپى تاپشۇرۇۋېلىندى.";

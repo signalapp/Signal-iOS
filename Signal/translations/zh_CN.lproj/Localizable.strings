@@ -3569,7 +3569,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "这个月";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
-"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "删除";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "设置提醒事项";
@@ -5201,13 +5201,13 @@
 "REGISTRATION_BODY" = "重新注册推送失败.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "更新";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "如要继续注册，请将 Signal 更新到最新版本。";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "需要更新";
 
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "我们需要验证您是真正的用户";
@@ -5237,22 +5237,22 @@
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "检查连接";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "您的账户已经锁定以保护您的安全及隐私。在账户维持 %1$@不活跃之后，您即可在不需要密码的情况下用此手机号码重新注册。不过所有的数据将会被删除。";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
-"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "了解有关被锁账户的更多信息";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
-"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "使用另一个手机号码";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
-"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "账户已被锁定";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+"REGISTRATION_NETWORK_ERROR_BODY" = "如要继续，请检查您的网络连接然后再试。";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
+"REGISTRATION_NETWORK_ERROR_TITLE" = "检查连接";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "不支持这个电话号码格式，请联系支持。";
@@ -7142,7 +7142,7 @@
 "UNREAD_ACTION" = "标为未读";
 
 /* Label warning the user that the validation of their username has failed. */
-"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"UNREGISTERED_USERNAME_WARNING" = "您的用户名出了点问题，它已不再分配给您的账户。您可以尝试重新设置，或选择一个新的用户名。";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "收到了不支持的附件类型。";

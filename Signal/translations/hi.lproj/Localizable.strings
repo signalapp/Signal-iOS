@@ -3569,7 +3569,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "इस महीने";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
-"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "डिलीट करें";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "मुझे बाद में याद दिलाना";
@@ -5201,13 +5201,13 @@
 "REGISTRATION_BODY" = "पुश अधिसूचनाएँ को पुनः पंजिकृत करना असफल रहा।";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "अपडेट करें";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "पंजीकरण जारी रखने के लिए, कृपया Signal के नवीनतम संस्करण में अपडेट करें।";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "अपडेट आवश्यक है";
 
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "हमें ये निशचित करना होगा कि आप इंसान हैं";
@@ -5237,22 +5237,22 @@
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "कनेक्शन जाँचें";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "आपकी निजता और सुरक्षा की रक्षा के लिए आपका अकाउंट लॉक कर दिया गया है। आपके अकाउंट में निष्क्रियता के %1$@ के बाद आप अपने पिन की आवश्यकता के बिना इस फोन नंबर को फिर से रजिस्टर करने में सक्षम होंगे। सभी सामग्री डिलीट कर दी जाएगी।";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
-"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "लॉक्ड अकाउंट के बारे में और जानें";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
-"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "अलग नंबर का प्रयोग करें";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
-"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "अकाउंट लॉक कर दिया गया";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+"REGISTRATION_NETWORK_ERROR_BODY" = "आगे बढ़ने के लिए, अपने फ़ोन के इंटरनेट कनेक्शन की जाँच करें और दोबारा प्रयास करें।";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
+"REGISTRATION_NETWORK_ERROR_TITLE" = "कनेक्शन जाँचें";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "यह नंबर का फार्मेट समर्थित नहीं है, कृपया Signal समर्थन से संपर्क करें|";
@@ -7142,7 +7142,7 @@
 "UNREAD_ACTION" = "अनपढ़ा करें";
 
 /* Label warning the user that the validation of their username has failed. */
-"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"UNREGISTERED_USERNAME_WARNING" = "आपके यूज़रनेम में कुछ गलत है, यह अब आपके अकाउंट के लिए असाइन नहीं है। आप इसे फिर से सेट करने की कोशिश कर सकते हैं या एक नया चुन सकते हैं।";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "असमर्थित अटैचमेंट प्रकार प्राप्त हुआ है।";

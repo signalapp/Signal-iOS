@@ -3569,7 +3569,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Luna aceasta";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
-"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Șterge";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Amintește-mi mai târziu";
@@ -5201,13 +5201,13 @@
 "REGISTRATION_BODY" = "Eroare la re-înregistrare pentru notificările push.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Actualizează";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Ca să continui cu înregistrarea, actualizează la cea mai recentă versiune de Signal.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Actualizare Necesară";
 
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "Trebuie să verificăm dacă ești om";
@@ -5237,22 +5237,22 @@
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Verificare conexiune";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Contul tău a fost blocat pentru a-ți proteja confidențialitatea și securitatea. După %1$@ de inactivitate în contul tău vei putea să reînregistrezi acest număr de telefon fără a avea nevoie de PIN-ul tău. Tot conținutul va fi șters.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
-"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Află mai multe despre conturi blocate";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
-"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Folosește un număr de telefon diferit";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
-"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Cont blocat";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+"REGISTRATION_NETWORK_ERROR_BODY" = "Pentru a continua, verifică conexiunea la internet a telefonului și încearcă din nou.";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
+"REGISTRATION_NETWORK_ERROR_TITLE" = "Verificare conexiune";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Acest format de număr de telefon nu este suportat, te rog contactează suportul tehnic.";
@@ -7142,7 +7142,7 @@
 "UNREAD_ACTION" = "Necitit";
 
 /* Label warning the user that the validation of their username has failed. */
-"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"UNREGISTERED_USERNAME_WARNING" = "Ceva nu a funcționat corect cu numele tău de utilizator, nu mai este atribuit contului tău. Poți încerca să îl stabilești din nou sau să alegi unul nou.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "A fost primit un tip de atașament care nu e suportat.";
