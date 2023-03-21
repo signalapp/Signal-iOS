@@ -390,6 +390,24 @@ class MediaItemViewController: OWSViewController {
         if isVideo { stopVideo() }
     }
 
+    func rewind(_ seconds: TimeInterval) {
+        owsAssertDebug(isVideo)
+        guard let videoPlayer else {
+            owsFailBeta("videoPlayer is nil")
+            return
+        }
+        videoPlayer.rewind(seconds)
+    }
+
+    func fastForward(_ seconds: TimeInterval) {
+        owsAssertDebug(isVideo)
+        guard let videoPlayer else {
+            owsFailBeta("videoPlayer is nil")
+            return
+        }
+        videoPlayer.fastForward(seconds)
+    }
+
     // MARK: - Tap Gestures
 
     private func addTapGestureRecognizers(to view: UIView) {

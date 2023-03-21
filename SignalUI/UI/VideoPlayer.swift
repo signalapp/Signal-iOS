@@ -86,13 +86,25 @@ public class VideoPlayer: NSObject {
 
     public func seek(to time: CMTime) {
         // Seek with a tolerance (or precision) of a hundredth of a second.
-        let tolerance = CMTime(seconds: 0.01, preferredTimescale: 1000)
+        let tolerance = CMTime(seconds: 0.01, preferredTimescale: Self.preferredTimescale)
         avPlayer.seek(to: time, toleranceBefore: tolerance, toleranceAfter: tolerance)
+    }
+
+    public func rewind(_ seconds: TimeInterval) {
+        let newTime = avPlayer.currentTime() - CMTime(seconds: seconds, preferredTimescale: Self.preferredTimescale)
+        seek(to: newTime)
+    }
+
+    public func fastForward(_ seconds: TimeInterval) {
+        let newTime = avPlayer.currentTime() + CMTime(seconds: seconds, preferredTimescale: Self.preferredTimescale)
+        seek(to: newTime)
     }
 
     public var currentTimeSeconds: Double {
         return avPlayer.currentTime().seconds
     }
+
+    private static var preferredTimescale: CMTimeScale { 1000 }
 
     // MARK: private
 

@@ -202,7 +202,7 @@ class MediaPageViewController: UIPageViewController {
         updateTitle()
         updateMediaRail(animated: false)
         updateContextMenuActions()
-        updateFooterBarButtonItems(isPlayingVideo: true)
+        updateBottomPanelControls(isPlayingVideo: true)
 
         // Gestures
         let verticalSwipe = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeView))
@@ -274,7 +274,7 @@ class MediaPageViewController: UIPageViewController {
         updateTitle(item: item)
         updateCaption(item: item)
         setViewControllers([galleryPage], direction: direction, animated: isAnimated)
-        updateFooterBarButtonItems(isPlayingVideo: false)
+        updateBottomPanelControls(isPlayingVideo: false)
         updateMediaRail(animated: isAnimated)
         updateContextMenuActions()
     }
@@ -301,7 +301,7 @@ class MediaPageViewController: UIPageViewController {
     // MARK: View Helpers
 
     func willBePresentedAgain() {
-        updateFooterBarButtonItems(isPlayingVideo: false)
+        updateBottomPanelControls(isPlayingVideo: false)
     }
 
     func wasPresented() {
@@ -378,7 +378,7 @@ class MediaPageViewController: UIPageViewController {
         return UIBarButtonItem(customView: contextButton)
     }()
 
-    private lazy var shareBarButton = UIBarButtonItem(
+    private lazy var buttonShareMedia = UIBarButtonItem(
         image: UIImage(imageLiteralResourceName: "share-outline-24"),
         landscapeImagePhone: UIImage(imageLiteralResourceName: "share-outline-20"),
         style: .plain,
@@ -386,7 +386,7 @@ class MediaPageViewController: UIPageViewController {
         action: #selector(didPressShare)
     )
 
-    private lazy var forwardBarButton: UIBarButtonItem = {
+    private lazy var buttonForwardMedia: UIBarButtonItem = {
         let barButton: UIBarButtonItem
         if #available(iOS 13, *) {
             let imageName: String
@@ -403,46 +403,100 @@ class MediaPageViewController: UIPageViewController {
             )
         } else {
             barButton = UIBarButtonItem(
-               image: UIImage(imageLiteralResourceName: "forward-outline-24"),
-               landscapeImagePhone: UIImage(imageLiteralResourceName: "forward-outline-20"),
-               style: .plain,
-               target: self,
-               action: #selector(didPressForward)
-           )
+                image: UIImage(imageLiteralResourceName: "forward-outline-24"),
+                landscapeImagePhone: UIImage(imageLiteralResourceName: "forward-outline-20"),
+                style: .plain,
+                target: self,
+                action: #selector(didPressForward)
+            )
         }
         return barButton
     }()
 
     private func buildFlexibleSpace() -> UIBarButtonItem {
+        if #available(iOS 14, *) {
+            return UIBarButtonItem.flexibleSpace()
+        }
         return UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     }
 
-    private lazy var videoPlayBarButton: UIBarButtonItem = {
-        let videoPlayBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(didPressPlayBarButton))
-        videoPlayBarButton.tintColor = Theme.darkThemePrimaryColor
-        return videoPlayBarButton
-    }()
+    private func buildFixedSpace(_ width: CGFloat) -> UIBarButtonItem {
+        if #available(iOS 14, *) {
+            return UIBarButtonItem.fixedSpace(width)
+        }
+        let item = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+        item.width = width
+        return item
+    }
 
-    private lazy var videoPauseBarButton: UIBarButtonItem = {
-        let videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action: #selector(didPressPauseBarButton))
-        videoPauseBarButton.tintColor = Theme.darkThemePrimaryColor
-        return videoPauseBarButton
-    }()
+    private lazy var buttonPlay = UIBarButtonItem(
+        barButtonSystemItem: .play,
+        target: self,
+        action: #selector(didTapVideoPlay)
+    )
 
-    private func updateFooterBarButtonItems(isPlayingVideo: Bool) {
+    private lazy var buttonPause = UIBarButtonItem(
+        barButtonSystemItem: .pause,
+        target: self,
+        action: #selector(didTapVideoPause)
+    )
+
+    private lazy var buttonRewind = UIBarButtonItem(
+        image: UIImage(imageLiteralResourceName: "video_rewind_15"),
+        style: .plain,
+        target: self,
+        action: #selector(didTapVideoRewind)
+    )
+
+    private lazy var buttonFastForward = UIBarButtonItem(
+        image: UIImage(imageLiteralResourceName: "video_forward_15"),
+        style: .plain,
+        target: self,
+        action: #selector(didTapVideoFastForward)
+    )
+
+    private func updateBottomPanelControls(isPlayingVideo: Bool, videoDuration: TimeInterval? = nil) {
+        guard let currentItem else { return }
+
         var toolbarItems: [UIBarButtonItem] = [
-            shareBarButton,
+            buttonShareMedia,
             buildFlexibleSpace()
         ]
 
         if currentItem.isVideo {
-            toolbarItems += [
-                isPlayingVideo ? videoPauseBarButton : videoPlayBarButton,
-                buildFlexibleSpace()
-            ]
+            let mediaItem = currentItem
+
+            let addRewindAndFF: Bool
+            if let videoDuration = videoDuration ?? currentItem.attachmentStream.videoDuration as? TimeInterval {
+                addRewindAndFF = videoDuration >= 30
+            } else {
+                addRewindAndFF = false
+
+                VideoDurationHelper.shared.promisedDuration(attachment: mediaItem.attachmentStream).observe { [weak self] result in
+                    guard let self, self.currentItem == mediaItem, case .success(let duration) = result else { return }
+                    self.updateBottomPanelControls(isPlayingVideo: isPlayingVideo, videoDuration: duration)
+                }
+            }
+            if addRewindAndFF {
+                toolbarItems += [
+                    buttonRewind,
+                    buildFixedSpace(32)
+                ]
+            }
+
+            toolbarItems.append(isPlayingVideo ? buttonPause : buttonPlay)
+
+            if addRewindAndFF {
+                toolbarItems += [
+                    buildFixedSpace(32),
+                    buttonFastForward
+                ]
+            }
+
+            toolbarItems.append(buildFlexibleSpace())
         }
 
-        toolbarItems.append(forwardBarButton)
+        toolbarItems.append(buttonForwardMedia)
 
         footerBar.setItems(toolbarItems, animated: false)
     }
@@ -585,13 +639,23 @@ class MediaPageViewController: UIPageViewController {
     }
 
     @objc
-    private func didPressPlayBarButton(_ sender: Any) {
+    private func didTapVideoPlay(_ sender: Any) {
         currentViewController?.playVideo()
     }
 
     @objc
-    private func didPressPauseBarButton(_ sender: Any) {
+    private func didTapVideoPause(_ sender: Any) {
         currentViewController?.pauseVideo()
+    }
+
+    @objc
+    private func didTapVideoRewind(_ sender: Any) {
+        currentViewController?.rewind(15)
+    }
+
+    @objc
+    private func didTapVideoFastForward(_ sender: Any) {
+        currentViewController?.fastForward(15)
     }
 
     // MARK: Dynamic Header
@@ -720,7 +784,7 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
             previousPage.zoomOut(animated: false)
             previousPage.stopVideoIfPlaying()
             updateContextMenuActions()
-            updateFooterBarButtonItems(isPlayingVideo: false)
+            updateBottomPanelControls(isPlayingVideo: false)
         } else {
             captionContainerView.pendingText = nil
         }
@@ -863,7 +927,7 @@ extension MediaPageViewController: MediaItemViewControllerDelegate {
             return
         }
         shouldHideToolbars = isPlaying
-        updateFooterBarButtonItems(isPlayingVideo: isPlaying)
+        updateBottomPanelControls(isPlayingVideo: isPlaying)
     }
 }
 
