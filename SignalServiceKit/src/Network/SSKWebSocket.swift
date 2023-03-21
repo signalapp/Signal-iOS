@@ -149,7 +149,7 @@ public class WebSocketFactoryMock: NSObject, WebSocketFactory {
 @objc
 public class WebSocketFactoryNative: NSObject, WebSocketFactory {
     public var canBuildWebSocket: Bool {
-        if FeatureFlags.canUseNativeWebsocket, #available(iOS 13, *) {
+        if #available(iOS 13, *) {
             return true
         } else {
             return false
@@ -157,7 +157,7 @@ public class WebSocketFactoryNative: NSObject, WebSocketFactory {
     }
 
     public func buildSocket(request: WebSocketRequest, callbackQueue: DispatchQueue) -> SSKWebSocket? {
-        guard FeatureFlags.canUseNativeWebsocket, #available(iOS 13, *) else {
+        guard #available(iOS 13, *) else {
             return nil
         }
         return SSKWebSocketNative(request: request, signalService: signalService, callbackQueue: callbackQueue)

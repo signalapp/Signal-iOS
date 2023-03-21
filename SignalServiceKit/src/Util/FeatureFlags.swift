@@ -88,9 +88,6 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let deprecateREST = false
 
-    @objc
-    public static let canUseNativeWebsocket = true
-
     public static let shouldUseRemoteConfigForReceivingGiftBadges = true
 
     public static let isPrerelease = build.includes(.beta)

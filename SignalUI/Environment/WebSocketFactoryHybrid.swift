@@ -16,7 +16,7 @@ public class WebSocketFactoryHybrid: WebSocketFactory, Dependencies {
 
     public func buildSocket(request: WebSocketRequest, callbackQueue: DispatchQueue) -> SSKWebSocket? {
         let webSocketType: SSKWebSocket.Type
-        if FeatureFlags.canUseNativeWebsocket, #available(iOS 13, *) {
+        if #available(iOS 13, *) {
             webSocketType = SSKWebSocketNative.self
         } else {
             webSocketType = SSKWebSocketStarScream.self
