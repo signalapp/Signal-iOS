@@ -59,10 +59,8 @@ extension ConversationViewController {
     func cancelRecordingVoiceMessage() {
         AssertIsOnMainThread()
 
-        guard let inProgressVoiceMessage = viewState.inProgressVoiceMessage else { return }
+        viewState.inProgressVoiceMessage?.stopRecordingAsync()
         viewState.inProgressVoiceMessage = nil
-
-        inProgressVoiceMessage.stopRecordingAsync()
 
         NotificationHapticFeedback().notificationOccurred(.warning)
 
