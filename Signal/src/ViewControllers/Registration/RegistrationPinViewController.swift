@@ -103,33 +103,6 @@ class RegistrationPinViewController: OWSViewController {
 
     // MARK: Rendering
 
-    private func moreButtonContextMenu(canSkip: Bool) -> ContextMenu {
-        var actions: [ContextMenuAction] = [.init(
-            title: OWSLocalizedString(
-                "PIN_CREATION_LEARN_MORE",
-                comment: "Learn more action on the pin creation view"
-            ),
-            handler: { [weak self] _ in
-                self?.showLearnMoreUi()
-            }
-        )]
-
-        if canSkip {
-            actions.append(.init(
-                title: OWSLocalizedString(
-                    "PIN_CREATION_SKIP",
-                    comment: "Skip action on the pin creation view"
-                ),
-                handler: { [weak self] _ in
-                    Logger.info("")
-                    self?.presenter?.submitWithSkippedPin()
-                }
-            ))
-        }
-
-        return ContextMenu(actions)
-    }
-
     private lazy var moreButton: ContextMenuButton = {
         let result = ContextMenuButton()
         result.showsContextMenuAsPrimaryAction = true
@@ -188,29 +161,33 @@ class RegistrationPinViewController: OWSViewController {
 
     private lazy var explanationView: LinkingTextView = {
         let result = LinkingTextView()
-        result.attributedText = .composed(of: [
-            {
+        result.attributedText = NSAttributedString.composed(
+            of: {
                 switch state.operation {
                 case .creatingNewPin:
-                    return OWSLocalizedString(
-                        "REGISTRATION_PIN_CREATE_SUBTITLE",
-                        comment: "During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string."
-                    )
+                    return [
+                        OWSLocalizedString(
+                            "REGISTRATION_PIN_CREATE_SUBTITLE",
+                            comment: "During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string."
+                        ),
+                        CommonStrings.learnMore.styled(
+                            with: StringStyle.Part.link(learnMoreAboutPinsURL)
+                        )
+                    ]
                 case .confirmingNewPin:
-                    return OWSLocalizedString(
+                    return [OWSLocalizedString(
                         "REGISTRATION_PIN_CONFIRM_SUBTITLE",
                         comment: "During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens."
-                    )
+                    )]
                 case .enteringExistingPin:
-                    return OWSLocalizedString(
+                    return [OWSLocalizedString(
                         "REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE",
                         comment: "During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string."
-                    )
+                    )]
                 }
             }(),
-            " ",
-            CommonStrings.learnMore.styled(with: StringStyle.Part.link(learnMoreAboutPinsURL))
-        ])
+            separator: " "
+        )
         result.font = .fontForRegistrationExplanationLabel
         result.textAlignment = .center
         result.delegate = self
@@ -322,12 +299,44 @@ class RegistrationPinViewController: OWSViewController {
         switch state.operation {
         case .creatingNewPin:
             navigationItem.leftBarButtonItem = moreBarButton
-            moreButton.contextMenu = moreButtonContextMenu(canSkip: true)
+            moreButton.contextMenu = ContextMenu([
+                .init(
+                    title: OWSLocalizedString(
+                        "PIN_CREATION_LEARN_MORE",
+                        comment: "Learn more action on the pin creation view"
+                    ),
+                    handler: { [weak self] _ in
+                        self?.showCreatingNewPinLearnMoreUi()
+                    }
+                ),
+                .init(
+                    title: OWSLocalizedString(
+                        "PIN_CREATION_SKIP",
+                        comment: "Skip action on the pin creation view"
+                    ),
+                    handler: { [weak self] _ in
+                        self?.showSkipCreatingNewPinUi()
+                    }
+                )
+            ])
         case .confirmingNewPin:
             navigationItem.leftBarButtonItem = backBarButton
         case let .enteringExistingPin(canSkip):
-            navigationItem.leftBarButtonItem = moreBarButton
-            moreButton.contextMenu = moreButtonContextMenu(canSkip: canSkip)
+            if canSkip {
+                navigationItem.leftBarButtonItem = moreBarButton
+                moreButton.contextMenu = ContextMenu([.init(
+                    title: OWSLocalizedString(
+                        "PIN_ENTER_EXISTING_SKIP",
+                        comment: "If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this."
+                    ),
+                    handler: { [weak self] _ in
+                        // TODO[Registration] This should show a confirmation dialog.
+                        self?.presenter?.submitWithSkippedPin()
+                    }
+                )])
+            } else {
+                navigationItem.leftBarButtonItem = nil
+            }
         }
 
         navigationItem.rightBarButtonItem = canSubmit ? nextBarButton : nil
@@ -383,6 +392,57 @@ class RegistrationPinViewController: OWSViewController {
         pinTextField.keyboardAppearance = Theme.keyboardAppearance
         pinValidationLabel.textColor = .colorForRegistrationExplanationLabel
         togglePinCharacterSetButton.setTitleColor(Theme.accentBlueColor)
+    }
+
+    // MARK: Sheets
+
+    private func showCreatingNewPinLearnMoreUi() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "PIN_CREATION_LEARN_MORE_TITLE",
+                comment: "Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet."
+            ),
+            message: OWSLocalizedString(
+                "PIN_CREATION_LEARN_MORE_TEXT",
+                comment: "Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet."
+            )
+        )
+
+        actionSheet.addAction(.init(title: CommonStrings.learnMore) { [weak self] _ in
+            guard let self else { return }
+            self.present(SFSafariViewController(url: self.learnMoreAboutPinsURL), animated: true)
+        })
+
+        actionSheet.addAction(.init(title: CommonStrings.okayButton))
+
+        OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
+    }
+
+    private func showSkipCreatingNewPinUi() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "PIN_CREATION_DISABLE_CONFIRMATION_TITLE",
+                comment: "Title of the 'pin disable' action sheet."
+            ),
+            message: OWSLocalizedString(
+                "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE",
+                comment: "Message of the 'pin disable' action sheet."
+            )
+        )
+
+        actionSheet.addAction(.init(
+            title: OWSLocalizedString(
+                "PIN_CREATION_DISABLE_CONFIRMATION_ACTION",
+                comment: "Action of the 'pin disable' action sheet."
+            ),
+            style: .destructive
+        ) { [weak self] _ in
+            self?.presenter?.submitWithSkippedPin()
+        })
+
+        actionSheet.addAction(.init(title: CommonStrings.cancelButton, style: .cancel))
+
+        OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
     }
 
     // MARK: Events
@@ -482,13 +542,14 @@ extension RegistrationPinViewController: UITextViewDelegate {
         interaction: UITextItemInteraction
     ) -> Bool {
         if textView == explanationView {
-            showLearnMoreUi()
+            switch state.operation {
+            case .creatingNewPin:
+                showCreatingNewPinLearnMoreUi()
+            case .confirmingNewPin, .enteringExistingPin:
+                owsFailBeta("There shouldn't be links during these operations")
+            }
         }
         return false
-    }
-
-    private func showLearnMoreUi() {
-        present(SFSafariViewController(url: learnMoreAboutPinsURL), animated: true)
     }
 }
 
