@@ -176,6 +176,19 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     ))
                 }
             }
+            if FeatureFlags.canRequestAccountData {
+                accountSection.add(.actionItem(
+                    // TODO[ADE]: Localize this string
+                    withText: "Request Account Data",
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(
+                        in: self,
+                        name: "request_account_data"
+                    ),
+                    actionBlock: { [weak self] in
+                        self?.requestAccountData()
+                    }
+                ))
+            }
             accountSection.add(.actionItem(
                 withText: NSLocalizedString("SETTINGS_DELETE_ACCOUNT_BUTTON", comment: ""),
                 textColor: .ows_accentRed,
@@ -232,6 +245,11 @@ class AccountSettingsViewController: OWSTableViewController2 {
         ) { _ in
             SignalApp.resetAppDataWithUI()
         }
+    }
+
+    private func requestAccountData() {
+        let vc = RequestAccountDataViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     private func deprecated_changePhoneNumber() {
