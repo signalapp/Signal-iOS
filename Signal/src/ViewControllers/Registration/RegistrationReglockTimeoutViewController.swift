@@ -156,6 +156,8 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
     }()
 
     private func initialRender() {
+        navigationItem.setHidesBackButton(true, animated: false)
+
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.layoutMargins = UIEdgeInsets.layoutMarginsForRegistration(

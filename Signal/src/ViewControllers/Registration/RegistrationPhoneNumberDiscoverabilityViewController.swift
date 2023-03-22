@@ -144,6 +144,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     }
 
     private func initialRender() {
+        navigationItem.setHidesBackButton(true, animated: false)
         if !(presenter?.presentedAsModal ?? true) {
             navigationItem.rightBarButtonItem = nextBarButton
         }

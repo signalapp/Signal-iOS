@@ -59,6 +59,8 @@ class RegistrationLoadingViewController: OWSViewController {
     }
 
     private func initialRender() {
+        navigationItem.setHidesBackButton(true, animated: false)
+
         spinnerView.alpha = 1
 
         view.addSubview(spinnerView)

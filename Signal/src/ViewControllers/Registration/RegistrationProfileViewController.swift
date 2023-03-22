@@ -260,6 +260,8 @@ class RegistrationProfileViewController: OWSViewController {
     }
 
     private func initialRender() {
+        navigationItem.setHidesBackButton(true, animated: false)
+
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
         scrollView.autoPinWidthToSuperviewMargins()

@@ -130,7 +130,7 @@ extension RegistrationUtils {
                 transaction: $0.asV2Write
             )
         }
-        let navController = RegistrationNavigationController(coordinator: coordinator)
+        let navController = RegistrationNavigationController.withCoordinator(coordinator)
         let window: UIWindow = CurrentAppContext().mainWindow!
         window.rootViewController = navController
     }

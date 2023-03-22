@@ -8,11 +8,36 @@ import SignalMessaging
 
 public class RegistrationNavigationController: OWSNavigationController {
 
-    private let coordinator: RegistrationCoordinator
+    private var coordinator: RegistrationCoordinator!
 
-    public init(coordinator: RegistrationCoordinator) {
+    public static func withCoordinator(_ coordinator: RegistrationCoordinator) -> RegistrationNavigationController {
+        let vc = RegistrationNavigationController(coordinator: coordinator)
+        vc.coordinator = coordinator
+        return vc
+    }
+
+    private init(coordinator: RegistrationCoordinator) {
         self.coordinator = coordinator
         super.init()
+    }
+
+    // On iOS 12, init(navigationBarClass:toolbarClass:) calls
+    // init(nibName:bundle:). In the latest iOS SDK, these are both marked as
+    // designated initializers, so that shouldn't be allowed. In Objective-C,
+    // this resolves to the superclass implementation and behaves properly, but
+    // in Swift, it results in a crash. A no-op implementation avoids the crash
+    // and results in the same behavior as in Objective-C.
+    //
+    // Subclass are required to implement this initializer if they implement
+    // any other initializer. However, the initializer should *always* be an
+    // empty shim that calls `super`. The compiler will force you to initialize
+    // all ivars before calling `super` -- don’t do that. Instead, make ivars
+    // `var` or optional so they don’t need to be modified in this initializer.
+    required init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        if #available(iOS 13, *) {
+            owsFailDebug("This initializer should never be explicitly executed.")
+        }
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -245,11 +270,6 @@ public class RegistrationNavigationController: OWSNavigationController {
         }
     }
 
-    @available(*, unavailable)
-    required init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        fatalError("init(nibName:bundle:) has not been implemented")
-    }
-
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         let superOrientations = super.supportedInterfaceOrientations
         let onboardingOrientations: UIInterfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait
@@ -327,7 +347,12 @@ extension RegistrationNavigationController: RegistrationPinPresenter {
 extension RegistrationNavigationController: RegistrationTransferChoicePresenter {
 
     func transferDevice() {
-        // TODO[Registration]: hand off to the device transfer flow.
+        // We push these controllers right onto the same navigation stack, even though they
+        // are not coordinator "steps". They have their own internal logic to proceed and go
+        // back (direct calls to push and pop) and, when they complete, they will have _totally_
+        // overwriten our local database, thus wiping any in progress reg coordinator state
+        // and putting us into the chat list.
+        pushViewController(RegistrationTransferQRCodeViewController(), animated: true, completion: nil)
     }
 
     func continueRegistration() {

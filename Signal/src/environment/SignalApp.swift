@@ -73,7 +73,7 @@ extension SignalApp {
                 let coordinator = databaseStorage.write { tx in
                     return registrationLoader.coordinator(forDesiredMode: desiredMode, transaction: tx.asV2Write)
                 }
-                let navController = RegistrationNavigationController(coordinator: coordinator)
+                let navController = RegistrationNavigationController.withCoordinator(coordinator)
 
                 appDelegate.window??.rootViewController = navController
 

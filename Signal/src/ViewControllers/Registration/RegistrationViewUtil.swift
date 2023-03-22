@@ -87,6 +87,21 @@ extension OWSFlatButton {
         result.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
         return result
     }
+
+    static func linkButtonForRegistration(title: String, target: Any, selector: Selector) -> OWSFlatButton {
+        let button = OWSFlatButton.button(
+            title: title,
+            font: UIFont.ows_dynamicTypeSubheadlineClamped,
+            titleColor: Theme.accentBlueColor,
+            backgroundColor: .clear,
+            target: target,
+            selector: selector
+        )
+        button.enableMultilineLabel()
+        button.button.layer.cornerRadius = 8
+        button.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 8)
+        return button
+    }
 }
 
 // MARK: - Action sheets
