@@ -1085,6 +1085,22 @@
 			<string>آپ کی %1$d کوششیں بقایا ہیں۔ اگر آپ کی کوششیں ختم ہو گئیں تو آپ کا اکاؤنٹ لاک کر دیا جائے گا۔ غیر فعالیت کے 7 دنوں کے بعد، آپ اپنے پِن کے بغیر دوبارہ رجسٹر ہو سکتے ہیں۔ آپ کا اکاؤنٹ صاف اور تمام مواد ڈیلیٹ کر دیا جائے گا۔</string>
 		</dict>
 	</dict>
+	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d attempt</string>
+			<key>other</key>
+			<string>%1$d attempts</string>
+		</dict>
+	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

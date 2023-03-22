@@ -1085,6 +1085,22 @@
 			<string>%1$d próbálkozásod maradt. Ha mindet elrontod, a fiókod zárolásra kerül, majd 7 inaktív nap után a fiókod mindenestül törlésre kerül, ami után már újraregisztrálhatsz - immár PIN-kód nélkül.</string>
 		</dict>
 	</dict>
+	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d attempt</string>
+			<key>other</key>
+			<string>%1$d attempts</string>
+		</dict>
+	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

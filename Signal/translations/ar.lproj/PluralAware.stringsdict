@@ -1629,6 +1629,30 @@
 			<string>تبقت لديك %1$d محاولة. إذا استنفذتَ جميع المُحاولات، سَيُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال رمز PIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
 		</dict>
 	</dict>
+	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>%1$d attempts</string>
+			<key>one</key>
+			<string>%1$d attempt</string>
+			<key>two</key>
+			<string>%1$d attempts</string>
+			<key>few</key>
+			<string>%1$d attempts</string>
+			<key>many</key>
+			<string>%1$d attempts</string>
+			<key>other</key>
+			<string>%1$d attempts</string>
+		</dict>
+	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

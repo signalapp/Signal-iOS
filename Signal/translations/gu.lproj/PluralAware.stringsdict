@@ -1085,6 +1085,22 @@
 			<string>તમારી પાસે %1$d પ્રયાસો બાકી છે. જો તમારા પ્રયાસો પૂરા થઈ જાય તો તમારું એકાઉન્ટ લૉક થઈ જશે. 7 દિવસની નિષ્ક્રિયતા પછી, તમે તમારા પિન વિના ફરીથી રજીસ્ટર કરી શકો છો. તમારું એકાઉન્ટ સાફ થઈ જશે અને તમામ કન્ટેન્ટ ડિલીટ થઈ જશે.</string>
 		</dict>
 	</dict>
+	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d attempt</string>
+			<key>other</key>
+			<string>%1$d attempts</string>
+		</dict>
+	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

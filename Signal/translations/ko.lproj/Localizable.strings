@@ -3569,7 +3569,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "이번 달";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
-"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
+"MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "삭제";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "나중에 알림 받기";
@@ -4784,7 +4784,13 @@
 "PIN_CREATION_EXPLANATION" = "PIN 번호는 Signal에 저장된 정보를 암호화하여 오직 나만 접근할 수 있게 만듭니다. 내 프로필, 설정, 그리고 연락처는 Signal을 다시 설치할 때 복원됩니다.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "PIN에 대해 더 알아보기";
+"PIN_CREATION_LEARN_MORE" = "More About PINs";
+
+/* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
+"PIN_CREATION_LEARN_MORE_TEXT" = "PINs keep your information stored with Signal encrypted so only you can access it. Your profile, settings and contacts will restore when you reinstall.";
+
+/* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
+"PIN_CREATION_LEARN_MORE_TITLE" = "About Signal PINs";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN이 일치하지 않습니다. 다시 시도해 주세요.";
@@ -4839,6 +4845,9 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PIN 끄기 실패";
+
+/* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
+"PIN_ENTER_EXISTING_SKIP" = "Skip PIN";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "PIN 생성 실패";
@@ -5201,13 +5210,13 @@
 "REGISTRATION_BODY" = "푸시 알림 재등록에 실패했습니다.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Update";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "업데이트";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "To continue with registration, please update to the latest version of Signal.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "등록을 계속하려면 최신 버전 Signal로 업데이트해 주세요.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update Required";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "업데이트 필요";
 
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
 "REGISTRATION_CAPTCHA_TITLE" = "사람 인증";
@@ -5237,22 +5246,22 @@
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "연결 확인";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Your account has been locked to protect your privacy and security. After %1$@ of inactivity in your account you’ll be able to reregister this phone number without needing your PIN. All content will be deleted.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "개인 정보를 보호하고 보안을 지키기 위해 계정을 잠갔습니다. %1$@ 동안 계정을 사용하지 않을 경우 PIN 없이 이 전화번호를 다시 등록할 수 있습니다. 모든 내용은 삭제됩니다.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
-"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Learn more about locked accounts";
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "잠긴 계정에 관해 자세히 알아보기";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
-"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Use a different number";
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "다른 번호 사용";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
-"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Account Locked";
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "계정 잠김";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_BODY" = "To continue, check your phone's Internet connection and try again.";
+"REGISTRATION_NETWORK_ERROR_BODY" = "계속하려면 휴대전화의 인터넷 연결을 확인한 후 다시 시도해 주세요.";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_TITLE" = "Check Connection";
+"REGISTRATION_NETWORK_ERROR_TITLE" = "연결 확인";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "지원되지 않는 전화번호 형식입니다. 지원 팀에 문의하세요.";
@@ -5311,6 +5320,9 @@
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "이전에 이 번호로 등록한 전달에 사용할 수 있는 계정이 있습니다.";
 
+/* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "The code you entered is not valid. Please resend the code and try again.";
+
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "검증 실패";
 
@@ -5358,6 +5370,12 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "푸시 알림 재등록";
+
+/* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+
+/* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, your account will be locked for 7 days. After 7 days of inactivity, you can re-register without your PIN. All content will be deleted.";
 
 /* Configure reactions reset button text */
 "RESET" = "초기화";
@@ -7142,7 +7160,7 @@
 "UNREAD_ACTION" = "읽지 않음";
 
 /* Label warning the user that the validation of their username has failed. */
-"UNREGISTERED_USERNAME_WARNING" = "Something went wrong with your username and it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"UNREGISTERED_USERNAME_WARNING" = "사용자 이름에 문제가 생겨 이 사용자 이름이 더 이상 계정에 사용되지 않습니다. 다시 설정하려고 시도하거나 새로운 사용자 이름을 선택할 수 있습니다.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "지원되지 않는 첨부 파일 유형입니다.";
