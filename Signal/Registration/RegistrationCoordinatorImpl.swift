@@ -1760,28 +1760,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
         }
 
-        // Our second choice: a CAPTCHA challenge.
-        if requestsCaptchaChallenge {
-            Logger.info("Showing the CAPTCHA challenge to the user")
-            return .value(.captchaChallenge)
-        }
-
-        // Our third choice: a push challenge where we're still waiting for the challenge token.
-        let isWaitingForPushChallengeToken: Bool = {
-            switch persistedState.sessionState?.pushChallengeState {
-            case nil, .notRequested, .ineligible, .unfulfilledPush, .fulfilled:
-                return false
-            case let .waitingForPush(requestedAt):
-                let deadline = requestedAt.addingTimeInterval(Constants.pushTokenTimeout)
-                return deps.dateProvider() < deadline
-            }
-        }()
-        if requestsPushChallenge, isWaitingForPushChallengeToken {
+        func waitForPushTokenChallenge(
+            timeout: TimeInterval,
+            failChallengeIfTimedOut: Bool
+        ) -> Guarantee<RegistrationStep> {
             Logger.info("Attempting to fulfill push challenge with a token we don't have yet")
             return deps.pushRegistrationManager
                 .receivePreAuthChallengeToken()
                 .map { $0 }
-                .nilTimeout(on: schedulers.sharedBackground, seconds: Constants.pushTokenTimeout)
+                .nilTimeout(on: schedulers.sharedBackground, seconds: timeout)
                 .then(on: schedulers.sharedBackground) { [weak self] (challengeToken: String?) -> Guarantee<RegistrationStep> in
                     guard let self else {
                         return unretainedSelfError()
@@ -1799,24 +1786,69 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             challengeFulfillment: .pushChallenge(challengeToken),
                             for: session
                         )
+                    } else if failChallengeIfTimedOut {
+                        Logger.warn("No challenge token received in time. Resetting")
+                        self.db.write { self.resetSession($0) }
+                        return .value(.showErrorSheet(.sessionInvalidated))
+                    } else {
+                        Logger.warn("No challenge token received in time, falling back to next challenge")
+                        return tryNonImmediatePushChallenge()
                     }
-
-                    Logger.warn("No challenge token received in time. Resetting")
-                    self.db.write { self.resetSession($0) }
-                    return .value(.showErrorSheet(.sessionInvalidated))
                 }
         }
 
-        // We're out of luck.
-        if session.hasUnknownChallengeRequiringAppUpdate {
-            Logger.warn("An unknown challenge was found")
-            inMemoryState.pendingCodeTransport = nil
-            return .value(.appUpdateBanner)
-        } else {
-            Logger.warn("Couldn't fulfill any challenges. Resetting the session")
-            db.write { resetSession($0) }
-            return nextStep()
+        func tryNonImmediatePushChallenge() -> Guarantee<RegistrationStep> {
+            // Our third choice: a captcha challenge
+            if requestsCaptchaChallenge {
+                Logger.info("Showing the CAPTCHA challenge to the user")
+                return .value(.captchaChallenge)
+            }
+
+            // Our fourth choice: a push challenge where we're still waiting for the challenge token.
+            if
+                requestsPushChallenge,
+                let timeToWaitUntil = pushChallengeRequestDate?.addingTimeInterval(Constants.pushTokenTimeout),
+                deps.dateProvider() < timeToWaitUntil
+            {
+                let timeout = timeToWaitUntil.timeIntervalSince(deps.dateProvider())
+                return waitForPushTokenChallenge(
+                    timeout: timeout,
+                    failChallengeIfTimedOut: true
+                )
+            }
+
+            // We're out of luck.
+            if session.hasUnknownChallengeRequiringAppUpdate {
+                Logger.warn("An unknown challenge was found")
+                inMemoryState.pendingCodeTransport = nil
+                return .value(.appUpdateBanner)
+            } else {
+                Logger.warn("Couldn't fulfill any challenges. Resetting the session")
+                db.write { resetSession($0) }
+                return nextStep()
+            }
         }
+
+        // Our second choice: a very recent push challenge.
+        let pushChallengeRequestDate: Date? = {
+            switch persistedState.sessionState?.pushChallengeState {
+            case nil, .notRequested, .ineligible, .unfulfilledPush, .fulfilled:
+                return nil
+            case let .waitingForPush(requestedAt):
+                return requestedAt
+            }
+        }()
+        if
+            requestsPushChallenge,
+            let timeToWaitUntil = pushChallengeRequestDate?.addingTimeInterval(Constants.pushTokenMinWaitTime),
+            deps.dateProvider() < timeToWaitUntil
+        {
+            let timeout = timeToWaitUntil.timeIntervalSince(deps.dateProvider())
+            return waitForPushTokenChallenge(timeout: timeout, failChallengeIfTimedOut: false)
+        }
+
+        // Try the next choices.
+        return tryNonImmediatePushChallenge()
     }
 
     private func submit(
@@ -2883,6 +2915,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // them go through re-registration.
         static let maxLocalPINGuesses: UInt = 10
 
+        /// How long we wait for a push challenge to the exclusion of all else after requesting one.
+        /// Even if we have another challenge to fulfill, we will wait this long before proceeding.
+        static let pushTokenMinWaitTime: TimeInterval = 3
         /// How long we block waiting for a push challenge after requesting one.
         /// We might still fulfill the challenge after this, but we won't opportunistically block proceeding.
         static let pushTokenTimeout: TimeInterval = 30

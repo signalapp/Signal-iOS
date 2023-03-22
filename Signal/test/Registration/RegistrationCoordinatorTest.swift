@@ -9,9 +9,6 @@ import Foundation
 import XCTest
 
 public class RegistrationCoordinatorTest: XCTestCase {
-    private static var pushTokenTimeout: Int {
-        Int(RegistrationCoordinatorImpl.Constants.pushTokenTimeout)
-    }
 
     // If we just use the force unwrap optional, switches are forced
     // to handle the none case.
@@ -1846,57 +1843,15 @@ public class RegistrationCoordinatorTest: XCTestCase {
                         hasUnknownChallengeRequiringAppUpdate: false,
                         verified: false
                     )),
-                    atTime: 5
+                    atTime: 6
                 )
 
                 // We should still be waiting.
                 XCTAssertNil(nextStep.value)
-            }
-
-            // We should then try to fulfill another push challenge. At t=8, reply with a "settled"
-            // session.
-            scheduler.run(atTime: 5) {
-                self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
-                    resolvingWith: .success(RegistrationSession(
-                        id: Stubs.sessionId,
-                        e164: Stubs.e164,
-                        receivedDate: self.date,
-                        nextSMS: 0,
-                        nextCall: 0,
-                        nextVerificationAttempt: 0,
-                        allowedToRequestCode: true,
-                        requestedInformation: [],
-                        hasUnknownChallengeRequiringAppUpdate: false,
-                        verified: false
-                    )),
-                    atTime: 8
-                )
-
-                // We should still be waiting.
-                XCTAssertNil(nextStep.value)
-            }
-
-            // At t=9, we should request another SMS code. Our challenges are complete.
-            scheduler.run(atTime: 9) {
-                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
-                    resolvingWith: .success(RegistrationSession(
-                        id: Stubs.sessionId,
-                        e164: Stubs.e164,
-                        receivedDate: self.date,
-                        nextSMS: 0,
-                        nextCall: 0,
-                        nextVerificationAttempt: 0,
-                        allowedToRequestCode: true,
-                        requestedInformation: [],
-                        hasUnknownChallengeRequiringAppUpdate: false,
-                        verified: false
-                    )),
-                    atTime: 10
-                )
             }
 
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, expectedIdleTime(whenSessionStartedAt: 2))
+            XCTAssertEqual(scheduler.currentTime, 6)
 
             XCTAssertEqual(
                 nextStep.value,
@@ -1927,8 +1882,18 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // Prepare to provide the challenge token.
             let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
+            var receivePreAuthChallengeTokenCount = 0
             pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-                XCTAssertEqual(self.scheduler.currentTime, sessionStartsAt)
+                switch receivePreAuthChallengeTokenCount {
+                case 0, 1:
+                    XCTAssertEqual(self.scheduler.currentTime, sessionStartsAt)
+                case 2:
+                    let minWaitTime = Int(RegistrationCoordinatorImpl.Constants.pushTokenMinWaitTime / self.scheduler.secondsPerTick)
+                    XCTAssertEqual(self.scheduler.currentTime, sessionStartsAt + minWaitTime)
+                default:
+                    XCTFail("Calling preAuthChallengeToken too many times")
+                }
+                receivePreAuthChallengeTokenCount += 1
                 return challengeTokenPromise
             }
 
@@ -1950,12 +1915,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
 
             // Take too long to resolve with the challenge token.
-            let receiveChallengeTokenTime = sessionStartsAt + Self.pushTokenTimeout + 1
+            let pushChallengeTimeout = Int(RegistrationCoordinatorImpl.Constants.pushTokenTimeout / scheduler.secondsPerTick)
+            let receiveChallengeTokenTime = sessionStartsAt + pushChallengeTimeout + 1
             scheduler.run(atTime: receiveChallengeTokenTime) {
                 challengeTokenFuture.resolve("challenge token that should be ignored")
             }
 
-            scheduler.advance(to: sessionStartsAt + Self.pushTokenTimeout - 1)
+            scheduler.advance(to: sessionStartsAt + pushChallengeTimeout - 1)
             XCTAssertNil(nextStep.value)
 
             scheduler.tick()
@@ -1963,11 +1929,19 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             scheduler.runUntilIdle()
             XCTAssertEqual(scheduler.currentTime, receiveChallengeTokenTime)
+
+            // One time to set up, one time for the min wait time, one time
+            // for the full timeout.
+            XCTAssertEqual(receivePreAuthChallengeTokenCount, 3)
         }
     }
 
     public func testSessionPath_pushChallengeTimeoutAfterNoResolution() {
         executeTest {
+            let pushChallengeMinTime = Int(RegistrationCoordinatorImpl.Constants.pushTokenMinWaitTime / scheduler.secondsPerTick)
+            let pushChallengeTimeout = Int(RegistrationCoordinatorImpl.Constants.pushTokenTimeout / scheduler.secondsPerTick)
+
+            let sessionStartsAt = 2
             setUpSessionPath()
 
             pushRegistrationManagerMock.requestPushTokenMock = {
@@ -1980,8 +1954,17 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // We'll never provide a challenge token and will just leave it around forever.
             let (challengeTokenPromise, _) = Guarantee<String>.pending()
+            var receivePreAuthChallengeTokenCount = 0
             pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
-                XCTAssertEqual(self.scheduler.currentTime, 2)
+                switch receivePreAuthChallengeTokenCount {
+                case 0, 1:
+                    XCTAssertEqual(self.scheduler.currentTime, sessionStartsAt)
+                case 2:
+                    XCTAssertEqual(self.scheduler.currentTime, sessionStartsAt + pushChallengeMinTime)
+                default:
+                    XCTFail("Calling preAuthChallengeToken too many times")
+                }
+                receivePreAuthChallengeTokenCount += 1
                 return challengeTokenPromise
             }
 
@@ -2003,8 +1986,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
 
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, expectedIdleTime(whenSessionStartedAt: 2))
+            XCTAssertEqual(scheduler.currentTime, 2 + pushChallengeMinTime + pushChallengeTimeout)
             XCTAssertEqual(nextStep.value, .showErrorSheet(.sessionInvalidated))
+
+            // One time to set up, one time for the min wait time, one time
+            // for the full timeout.
+            XCTAssertEqual(receivePreAuthChallengeTokenCount, 3)
         }
     }
 
@@ -2144,7 +2131,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
     }
 
-    public func testSessionPath_prefersCaptchaChallengesIfWeCannotAnswerPushChallengeImmediately() {
+    public func testSessionPath_prefersCaptchaChallengesIfWeCannotAnswerPushChallengeQuickly() {
         executeTest {
             setUpSessionPath()
 
@@ -2181,7 +2168,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
 
             // Take too long to resolve with the challenge token.
-            let receiveChallengeTokenTime = Self.pushTokenTimeout + 1
+            let pushChallengeTimeout = Int(RegistrationCoordinatorImpl.Constants.pushTokenTimeout / scheduler.secondsPerTick)
+            let receiveChallengeTokenTime = pushChallengeTimeout + 1
             scheduler.run(atTime: receiveChallengeTokenTime - 1) {
                 self.date = self.date.addingTimeInterval(TimeInterval(receiveChallengeTokenTime))
             }
@@ -2189,13 +2177,116 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 challengeTokenFuture.resolve("challenge token that should be ignored")
             }
 
-            // Once we get that session at t=2, we should get a captcha step back, because we haven't
+            // Once we get that session at t=2, we should wait a short time for the
+            // push challenge token.
+            let pushChallengeMinTime = Int(RegistrationCoordinatorImpl.Constants.pushTokenMinWaitTime / scheduler.secondsPerTick)
+
+            // After that, we should get a captcha step back, because we haven't
             // yet received the push challenge token.
-            scheduler.advance(to: 2)
+            scheduler.advance(to: 2 + pushChallengeMinTime)
             XCTAssertEqual(nextStep.value, .captchaChallenge)
 
             scheduler.runUntilIdle()
             XCTAssertEqual(scheduler.currentTime, receiveChallengeTokenTime)
+        }
+    }
+
+    public func testSessionPath_pushChallengeFastResolution() {
+        executeTest {
+            setUpSessionPath()
+
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 0)
+                return .value(Stubs.apnsToken)
+            }
+
+            // Give it a phone number, which should cause it to start a session.
+            let nextStep = coordinator.submitE164(Stubs.e164)
+
+            // Prepare to provide the challenge token.
+            let pushChallengeMinTime = Int(RegistrationCoordinatorImpl.Constants.pushTokenMinWaitTime / scheduler.secondsPerTick)
+            let receiveChallengeTokenTime = 2 + pushChallengeMinTime - 1
+
+            let (challengeTokenPromise, challengeTokenFuture) = Guarantee<String>.pending()
+            var receivePreAuthChallengeTokenCount = 0
+            pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
+                switch receivePreAuthChallengeTokenCount {
+                case 0, 1:
+                    XCTAssertEqual(self.scheduler.currentTime, 2)
+                default:
+                    XCTFail("Calling preAuthChallengeToken too many times")
+                }
+                receivePreAuthChallengeTokenCount += 1
+                return challengeTokenPromise
+            }
+
+            // At t=2, give back a session with multiple challenges.
+            self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: false,
+                    requestedInformation: [.pushChallenge, .captcha],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: false
+                )),
+                atTime: 2
+            )
+
+            // Don't resolve the captcha token immediately, but quickly enough.
+            scheduler.run(atTime: receiveChallengeTokenTime - 1) {
+                self.date = self.date.addingTimeInterval(TimeInterval(pushChallengeMinTime - 1))
+            }
+            scheduler.run(atTime: receiveChallengeTokenTime) {
+                // Also prep for the token's submission.
+                self.sessionManager.fulfillChallengeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: true,
+                        requestedInformation: [],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: receiveChallengeTokenTime + 1
+                )
+
+                self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
+                    resolvingWith: .success(RegistrationSession(
+                        id: Stubs.sessionId,
+                        e164: Stubs.e164,
+                        receivedDate: self.date,
+                        nextSMS: 0,
+                        nextCall: 0,
+                        nextVerificationAttempt: 0,
+                        allowedToRequestCode: false,
+                        requestedInformation: [.pushChallenge],
+                        hasUnknownChallengeRequiringAppUpdate: false,
+                        verified: false
+                    )),
+                    atTime: receiveChallengeTokenTime + 2
+                )
+
+                challengeTokenFuture.resolve("challenge token")
+            }
+
+            // Once we get that session, we should wait a short time for the
+            // push challenge token and fulfill it.
+            scheduler.advance(to: receiveChallengeTokenTime + 2)
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, receiveChallengeTokenTime + 2)
+
+            XCTAssertEqual(receivePreAuthChallengeTokenCount, 2)
         }
     }
 
@@ -2763,10 +2854,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
             AccountAttributes.self,
             from: accountAttributesData
         )
-    }
-
-    private func expectedIdleTime(whenSessionStartedAt sessionStartedAt: Int) -> Int {
-        return Self.pushTokenTimeout + sessionStartedAt
     }
 
     // MARK: - Stubs
