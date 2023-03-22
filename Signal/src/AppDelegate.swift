@@ -240,6 +240,48 @@ extension AppDelegate {
         }
     }
 
+    /// The user must unlock the device once after reboot before the database encryption key can be accessed.
+    @objc
+    func verifyDBKeysAvailableBeforeBackgroundLaunch() {
+        guard UIApplication.shared.applicationState == .background else {
+            return
+        }
+        if StorageCoordinator.hasGrdbFile && GRDBDatabaseStorageAdapter.isKeyAccessible {
+            return
+        }
+
+        Logger.warn("Exiting because we are in the background and the database password is not accessible.")
+
+        let notificationContent = UNMutableNotificationContent()
+        notificationContent.body = String(
+            format: NSLocalizedString(
+                "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
+                comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')"
+            ),
+            UIDevice.current.localizedModel
+        )
+
+        let notificationRequest = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: notificationContent,
+            trigger: nil
+        )
+
+        let application: UIApplication = .shared
+        let userNotificationCenter: UNUserNotificationCenter = .current()
+
+        userNotificationCenter.removeAllPendingNotificationRequests()
+        application.applicationIconBadgeNumber = 0
+
+        userNotificationCenter.add(notificationRequest)
+        application.applicationIconBadgeNumber = 1
+
+        // Wait a few seconds for XPC calls to finish and for rate limiting purposes.
+        Thread.sleep(forTimeInterval: 3)
+        Logger.flush()
+        exit(0)
+    }
+
     // MARK: - Launch failures
 
     @objc
