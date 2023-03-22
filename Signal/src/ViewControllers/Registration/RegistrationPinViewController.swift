@@ -337,8 +337,7 @@ class RegistrationPinViewController: OWSViewController {
                         comment: "If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this."
                     ),
                     handler: { [weak self] _ in
-                        // TODO[Registration] This should show a confirmation dialog.
-                        self?.presenter?.submitWithSkippedPin()
+                        self?.didRequestToSkipEnteringExistingPin()
                     }
                 )])
                 showAttemptWarningsAt = [3, 1]
@@ -555,6 +554,40 @@ class RegistrationPinViewController: OWSViewController {
         pinTextField.text = ""
 
         render()
+    }
+
+    private func didRequestToSkipEnteringExistingPin() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE",
+                comment: "Title for the skip pin entry action sheet during onboarding."
+            ),
+            message: NSAttributedString.composed(
+                of: [
+                    OWSLocalizedString(
+                        "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE",
+                        comment: "Explanation for the skip pin entry action sheet during onboarding."
+                    ),
+                    CommonStrings.learnMore.styled(with: .link(learnMoreAboutPinsURL))
+                ],
+                baseStyle: ActionSheetController.messageBaseStyle,
+                separator: " "
+            )
+        )
+
+        actionSheet.addAction(.init(
+            title: OWSLocalizedString(
+                "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN",
+                comment: "Label for the 'skip and create new pin' button when reglock is disabled during onboarding."
+            ),
+            style: .destructive
+        ) { [weak self] _ in
+            self?.presenter?.submitWithSkippedPin()
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
     }
 
     private func submit() {
