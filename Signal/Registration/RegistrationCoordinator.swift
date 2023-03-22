@@ -46,6 +46,12 @@ public protocol RegistrationCoordinator {
     /// This gives the user a chance to change it before any automatic steps are taken.
     func submitE164(_ e164: E164) -> Guarantee<RegistrationStep>
 
+    /// Wipes any previously submitted E164 so the user can enter a new one.
+    ///
+    /// May also blow away in progress registration steps and require redoing them;
+    /// a new number is essentially a new registration.
+    func requestChangeE164() -> Guarantee<RegistrationStep>
+
     /// Request an SMS code be sent, returning the next step to take.
     /// If requesting a code is disallowed for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the reason.

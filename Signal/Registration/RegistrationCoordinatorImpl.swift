@@ -102,32 +102,29 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func submitE164(_ e164: E164) -> Guarantee<RegistrationStep> {
-        // TODO[Registration] do some validation on the e164 format?
-        // maybe we trust the view controller to do that.
         db.write { tx in
             updatePersistedState(tx) {
                 $0.e164 = e164
             }
         }
         inMemoryState.hasEnteredE164 = true
-        switch getPathway() {
-        case .opening:
-            // Now we transition to the session path since
-            // we are submitting an e164.
-            return self.startSession(e164: e164)
-        case .registrationRecoveryPassword(let password):
-            return nextStepForRegRecoveryPasswordPath(regRecoveryPw: password)
-        case .kbsAuthCredential:
-            owsFailBeta("Shouldn't be submitting an e164 for a known valid kbs auth credential")
-            return nextStep()
-        case .kbsAuthCredentialCandidates:
-            return nextStep()
-        case .session:
-            return self.startSession(e164: e164)
-        case .profileSetup:
-            owsFailBeta("Shouldn't be submitting an e164 in profile setup")
-            return nextStep()
+        return nextStep()
+    }
+
+    public func requestChangeE164() -> Guarantee<RegistrationStep> {
+        db.write { tx in
+            updatePersistedState(tx) {
+                $0.e164 = nil
+            }
+            // Reset the session; it is e164 dependent.
+            resetSession(tx)
+            // Reload auth credential candidates; we might not have
+            // had a credential for the old e164 but might have one for
+            // the new e164!
+            loadkbsAuthCredentialCandidates(tx)
         }
+        inMemoryState.hasEnteredE164 = false
+        return nextStep()
     }
 
     public func requestSMSCode() -> Guarantee<RegistrationStep> {
@@ -606,10 +603,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 inMemoryState.isV12faUser = true
             }
 
-            let kbsAuthCredentialCandidates = deps.kbsAuthCredentialStore.getAuthCredentials(tx)
-            if kbsAuthCredentialCandidates.isEmpty.negated {
-                inMemoryState.kbsAuthCredentialCandidates = kbsAuthCredentialCandidates
-            }
+            loadkbsAuthCredentialCandidates(tx)
             inMemoryState.isManualMessageFetchEnabled = deps.tsAccountManager.isManualMessageFetchEnabled(tx)
             inMemoryState.registrationId = deps.tsAccountManager.getOrGenerateRegistrationId(tx)
             inMemoryState.pniRegistrationId = deps.tsAccountManager.getOrGeneratePniRegistrationId(tx)
@@ -1055,6 +1049,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         case .genericError:
             return .value(.showErrorSheet(.genericError))
+        }
+    }
+
+    private func loadkbsAuthCredentialCandidates(_ tx: DBReadTransaction) {
+        let kbsAuthCredentialCandidates = deps.kbsAuthCredentialStore.getAuthCredentials(tx)
+        if kbsAuthCredentialCandidates.isEmpty.negated {
+            inMemoryState.kbsAuthCredentialCandidates = kbsAuthCredentialCandidates
         }
     }
 

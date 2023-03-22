@@ -279,7 +279,7 @@ extension RegistrationNavigationController: RegistrationCaptchaPresenter {
 extension RegistrationNavigationController: RegistrationVerificationPresenter {
 
     func returnToPhoneNumberEntry() {
-        // TODO[Registration]: figure out our story on going back.
+        pushNextController(coordinator.requestChangeE164())
     }
 
     func requestSMSCode() {
