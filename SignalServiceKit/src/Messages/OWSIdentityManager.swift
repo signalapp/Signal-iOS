@@ -280,10 +280,15 @@ extension OWSIdentityManager {
 
     @objc(shouldSharePhoneNumberWithAddress:transaction:)
     func shouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        guard let recipientUuid = recipient.uuidString else {
+        guard let serviceId = recipient.serviceId else {
             return false
         }
-        return shareMyPhoneNumberStore.getBool(recipientUuid, defaultValue: false, transaction: transaction)
+        return shouldSharePhoneNumber(with: serviceId, transaction: transaction)
+    }
+
+    func shouldSharePhoneNumber(with serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> Bool {
+        let uuidString = serviceId.uuidValue.uuidString
+        return shareMyPhoneNumberStore.getBool(uuidString, defaultValue: false, transaction: transaction)
     }
 
     func setShouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {

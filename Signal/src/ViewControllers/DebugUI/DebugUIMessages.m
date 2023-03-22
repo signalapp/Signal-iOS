@@ -4235,6 +4235,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
     SignalServiceAddress *address = incomingSenderAddress;
 
+    ServiceIdObjC *_Nullable incomingSenderServiceId = incomingSenderAddress.serviceIdObjC;
+    if (incomingSenderServiceId == nil) {
+        OWSFailDebug(@"Missing incomingSenderServiceId.");
+        return;
+    }
+    ServiceIdObjC *serviceId = incomingSenderServiceId;
+
     DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         for (NSNumber *timestamp in timestamps) {
             NSString *randomText = [self randomText];
@@ -4256,7 +4263,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 TSOutgoingMessage *message = [messageBuilder buildWithTransaction:transaction];
                 [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
-                [message updateWithSentRecipient:address wasSentByUD:NO transaction:transaction];
+                [message updateWithSentRecipient:serviceId wasSentByUD:NO transaction:transaction];
                 [message updateWithDeliveredRecipient:address
                                     recipientDeviceId:0
                                     deliveryTimestamp:timestamp.unsignedLongLongValue

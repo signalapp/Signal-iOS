@@ -89,11 +89,12 @@ public class SSKSessionStore: NSObject {
         keyValueStore.setObject(dictionary, key: accountId, transaction: transaction)
     }
 
-    @objc(containsActiveSessionForAddress:deviceId:transaction:)
-    public func containsActiveSession(for address: SignalServiceAddress,
-                                      deviceId: Int32,
-                                      transaction: SDSAnyReadTransaction) -> Bool {
-        owsAssertDebug(address.isValid)
+    public func containsActiveSession(
+        for serviceId: ServiceId,
+        deviceId: Int32,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
+        let address = SignalServiceAddress(serviceId)
         guard let accountId = OWSAccountIdFinder.accountId(forAddress: address, transaction: transaction) else {
             Logger.info("No accountId for: \(address). There must not be a stored session.")
             return false

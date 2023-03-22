@@ -143,7 +143,7 @@ public class SMKSecretSessionCipher: NSObject {
     // MARK: - Public
 
     public func encryptMessage(
-        recipient: SignalServiceAddress,
+        for serviceId: ServiceId,
         deviceId: Int32,
         paddedPlaintext: Data,
         contentHint: UnidentifiedSenderMessageContent.ContentHint,
@@ -155,7 +155,7 @@ public class SMKSecretSessionCipher: NSObject {
         guard deviceId > 0 else {
             throw SMKError.assertionError(description: "\(logTag) invalid deviceId")
         }
-        let recipientAddress = try ProtocolAddress(from: recipient, deviceId: UInt32(bitPattern: deviceId))
+        let recipientAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: UInt32(bitPattern: deviceId))
 
         let ciphertextMessage = try signalEncrypt(
             message: paddedPlaintext,
@@ -318,30 +318,5 @@ public class SMKSecretSessionCipher: NSObject {
                 description: "\(logTag) Not prepared to handle this message type: \(unknownType.rawValue)")
         }
         return Data(plaintextData)
-    }
-}
-
-// MARK: - Internal for testing
-
-extension SMKSecretSessionCipher {
-
-    // Only allow nil contexts for testing
-    func encryptMessage(
-        recipient: SignalServiceAddress,
-        deviceId: Int32,
-        paddedPlaintext: Data,
-        contentHint: UnidentifiedSenderMessageContent.ContentHint = .default,
-        groupId: Data? = nil,
-        senderCertificate: SenderCertificate,
-        protocolContext: StoreContext? = nil
-    ) throws -> Data {
-        try encryptMessage(
-            recipient: recipient,
-            deviceId: deviceId,
-            paddedPlaintext: paddedPlaintext,
-            contentHint: contentHint,
-            groupId: groupId,
-            senderCertificate: senderCertificate,
-            protocolContext: protocolContext ?? NullContext())
     }
 }

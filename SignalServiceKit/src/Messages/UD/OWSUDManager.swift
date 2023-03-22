@@ -150,12 +150,14 @@ public protocol OWSUDManager: AnyObject {
     func udAccess(forAddress address: SignalServiceAddress, requireSyncAccess: Bool) -> OWSUDAccess?
 
     @objc
-    func udSendingAccess(forAddress address: SignalServiceAddress,
-                         requireSyncAccess: Bool,
-                         senderCertificates: SenderCertificates) -> OWSUDSendingAccess?
+    func udSendingAccess(
+        for serviceId: ServiceIdObjC,
+        requireSyncAccess: Bool,
+        senderCertificates: SenderCertificates
+    ) -> OWSUDSendingAccess?
 
     @objc
-    func storySendingAccess(forAddress address: SignalServiceAddress, senderCertificates: SenderCertificates) -> OWSUDSendingAccess
+    func storySendingAccess(for serviceId: ServiceIdObjC, senderCertificates: SenderCertificates) -> OWSUDSendingAccess
 
     // MARK: Sender Certificate
 
@@ -518,36 +520,43 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // Returns the UD access key and appropriate sender certificate for sending to a given recipient
     @objc
-    public func udSendingAccess(forAddress address: SignalServiceAddress,
-                                requireSyncAccess: Bool,
-                                senderCertificates: SenderCertificates) -> OWSUDSendingAccess? {
+    public func udSendingAccess(
+        for serviceId: ServiceIdObjC,
+        requireSyncAccess: Bool,
+        senderCertificates: SenderCertificates
+    ) -> OWSUDSendingAccess? {
+        let address = SignalServiceAddress(serviceId.wrappedValue)
         guard let udAccess = self.udAccess(forAddress: address, requireSyncAccess: requireSyncAccess) else {
             return nil
         }
-
-        return udSendingAccess(for: address, udAccess: udAccess, senderCertificates: senderCertificates)
+        return udSendingAccess(for: serviceId.wrappedValue, udAccess: udAccess, senderCertificates: senderCertificates)
     }
 
     @objc
-    public func storySendingAccess(forAddress address: SignalServiceAddress, senderCertificates: SenderCertificates) -> OWSUDSendingAccess {
+    public func storySendingAccess(for serviceId: ServiceIdObjC, senderCertificates: SenderCertificates) -> OWSUDSendingAccess {
         let udAccess = OWSUDAccess(udAccessKey: randomUDAccessKey(), udAccessMode: .unrestricted, isRandomKey: true)
-        return udSendingAccess(for: address, udAccess: udAccess, senderCertificates: senderCertificates)
+        return udSendingAccess(for: serviceId.wrappedValue, udAccess: udAccess, senderCertificates: senderCertificates)
     }
 
-    private func udSendingAccess(for address: SignalServiceAddress, udAccess: OWSUDAccess, senderCertificates: SenderCertificates) -> OWSUDSendingAccess {
+    private func udSendingAccess(
+        for serviceId: ServiceId,
+        udAccess: OWSUDAccess,
+        senderCertificates: SenderCertificates
+    ) -> OWSUDSendingAccess {
         databaseStorage.read { transaction in
             let senderCertificate: SenderCertificate
             switch phoneNumberSharingMode {
             case .everybody:
                 senderCertificate = senderCertificates.defaultCert
             case .contactsOnly:
+                let address = SignalServiceAddress(serviceId)
                 if Self.contactsManager.isSystemContact(address: address, transaction: transaction) {
                     senderCertificate = senderCertificates.defaultCert
                     break
                 }
                 fallthrough
             case .nobody:
-                if identityManager.shouldSharePhoneNumber(with: address, transaction: transaction) {
+                if identityManager.shouldSharePhoneNumber(with: serviceId, transaction: transaction) {
                     senderCertificate = senderCertificates.defaultCert
                     break
                 }

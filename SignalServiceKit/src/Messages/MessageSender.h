@@ -111,17 +111,17 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 /// could not be built due to an invalid device ID.
 - (nullable DeviceMessage *)buildDeviceMessageForMessagePlaintextContent:(nullable NSData *)messagePlaintextContent
                                                   messageEncryptionStyle:(EncryptionStyle)messageEncryptionStyle
-                                                        recipientAddress:(SignalServiceAddress *)recipientAddress
-                                                      recipientAccountId:(NSString *)recipientAccountId
-                                                       recipientDeviceId:(NSNumber *)recipientDeviceId
+                                                             recipientId:(NSString *)recipientId
+                                                               serviceId:(ServiceIdObjC *)serviceId
+                                                                deviceId:(NSNumber *)deviceId
                                                          isOnlineMessage:(BOOL)isOnlineMessage
                                  isTransientSenderKeyDistributionMessage:(BOOL)isTransientSenderKeyDistributionMessage
-                                                      isStorySendMessage:(BOOL)isStorySendMessage
+                                                          isStoryMessage:(BOOL)isStoryMessage
                                                   isResendRequestMessage:(BOOL)isResendRequestMessage
                                                  udSendingParamsProvider:
                                                      (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
-                                                                   error:(NSError **)errorHandle;
-__attribute__((swift_error(nonnull_error)));
+                                                                   error:(NSError **)errorHandle
+    __attribute__((swift_error(nonnull_error)));
 
 + (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message;
 

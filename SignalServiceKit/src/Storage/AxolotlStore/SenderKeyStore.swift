@@ -43,30 +43,35 @@ public class SenderKeyStore: NSObject {
     @objc
     public func recipientsInNeedOfSenderKey(
         for thread: TSThread,
-        addresses: [SignalServiceAddress],
+        serviceIds: [ServiceIdObjC],
         readTx: SDSAnyReadTransaction
-    ) -> [SignalServiceAddress] {
-        var addressesNeedingSenderKey = Set(addresses)
+    ) -> [ServiceIdObjC] {
+        var serviceIdsNeedingSenderKey = Set(serviceIds)
 
         storageLock.withLock {
             // If we haven't saved a distributionId yet, then there's no way we have any keyMetadata cached
             // All intended recipients will certainly need an SKDM (if they even support sender key)
-            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
-                  let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx) else {
+            guard
+                let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
+                let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx)
+            else {
                 return
             }
 
             // Iterate over each cached recipient. If no new devices or reregistrations have occurred since
             // we last recorded an SKDM send, we can skip sending to them.
             for (address, sendInfo) in keyMetadata.sentKeyInfo {
+                guard let serviceId = address.serviceIdObjC else {
+                    continue
+                }
                 do {
                     let priorSendRecipientState = sendInfo.keyRecipient
 
                     // Only remove the recipient in question from our send targets if the cached state contains
                     // every device from the current state. Any new devices mean we need to re-send.
-                    let currentRecipientState = try KeyRecipient.currentState(for: address, transaction: readTx)
+                    let currentRecipientState = try KeyRecipient.currentState(for: serviceId.wrappedValue, transaction: readTx)
                     if priorSendRecipientState.containsEveryDevice(from: currentRecipientState) {
-                        addressesNeedingSenderKey.remove(address)
+                        serviceIdsNeedingSenderKey.remove(serviceId)
                     }
                 } catch {
                     // It's likely there's no session for the current recipient. Maybe it was cleared?
@@ -79,23 +84,25 @@ public class SenderKeyStore: NSObject {
                 }
             }
         }
-        return Array(addressesNeedingSenderKey)
+        return Array(serviceIdsNeedingSenderKey)
     }
 
     /// Records that the current sender key for the `thread` has been sent to `participant`
     @objc
     public func recordSenderKeySent(
         for thread: TSThread,
-        to address: SignalServiceAddress,
+        to serviceId: ServiceIdObjC,
         timestamp: UInt64,
         writeTx: SDSAnyWriteTransaction) throws {
         try storageLock.withLock {
-            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
-                  let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx) else {
+            guard
+                let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
+                let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx)
+            else {
                 throw OWSAssertionError("Failed to look up key metadata")
             }
             var updatedMetadata = existingMetadata
-            try updatedMetadata.recordSKDMSent(at: timestamp, address: address, transaction: writeTx)
+            try updatedMetadata.recordSKDMSent(at: timestamp, serviceId: serviceId.wrappedValue, transaction: writeTx)
             setMetadata(updatedMetadata, writeTx: writeTx)
         }
     }
@@ -422,35 +429,46 @@ private struct KeyRecipient: Codable, Dependencies {
         }
 
         static func == (lhs: Device, rhs: Device) -> Bool {
-            // We can only be sure that a device hasn't changed if the registrationIds are the same
-            // If either registrationId is nil, that means the Device was constructed before we had a session
-            // established for the device.
+            // We can only be sure that a device hasn't changed if the registrationIds
+            // are the same. If either registrationId is nil, that means the Device was
+            // constructed before we had a session established for the device.
             //
-            // If we end up trying to send a SenderKey message to a device without a session, this ensures that
-            // this ensures that we will always send an SKDM to that device. A session will be created in order to
-            // send the SKDM, so by the time we're ready to mark success we should have something to store.
+            // If we end up trying to send a SenderKey message to a device without a
+            // session, this ensures that we will always send an SKDM to that device. A
+            // session will be created in order to send the SKDM, so by the time we're
+            // ready to mark success we should have something to store.
             guard lhs.registrationId != nil, rhs.registrationId != nil else { return false }
             return lhs.registrationId == rhs.registrationId && lhs.deviceId == rhs.deviceId
         }
     }
 
-    let ownerAddress: SignalServiceAddress
+    enum CodingKeys: String, CodingKey {
+        case devices
+
+        // We previously stored "ownerAddress" on the recipient. This is redundant
+        // because "sentKeyInfo" stores the same value, and that's the one we use.
+    }
+
     let devices: Set<Device>
-    private init(ownerAddress: SignalServiceAddress, devices: Set<Device>) {
-        self.ownerAddress = ownerAddress
+
+    private init(devices: Set<Device>) {
         self.devices = devices
     }
 
     /// Build a KeyRecipient for the given address by fetching all of the devices and corresponding registrationIds
-    static func currentState(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) throws -> KeyRecipient {
+    static func currentState(for serviceId: ServiceId, transaction: SDSAnyReadTransaction) throws -> KeyRecipient {
         guard
-            let recipient = SignalRecipient.get(address: address, mustHaveDevices: false, transaction: transaction),
+            let recipient = SignalRecipient.get(
+                address: SignalServiceAddress(serviceId),
+                mustHaveDevices: false,
+                transaction: transaction
+            ),
             let deviceIds = recipient.deviceIds
         else {
             throw OWSAssertionError("Invalid device array")
         }
 
-        let protocolAddresses = try deviceIds.map { try ProtocolAddress(from: address, deviceId: $0) }
+        let protocolAddresses = try deviceIds.map { try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: $0) }
         let sessionStore = signalProtocolStore(for: .aci).sessionStore
         let devices: [Device] = try protocolAddresses.map {
             // We have to fetch the registrationId since deviceIds can be reused.
@@ -464,16 +482,11 @@ private struct KeyRecipient: Codable, Dependencies {
 
             return Device(deviceId: $0.deviceId, registrationId: registrationId)
         }
-        return KeyRecipient(ownerAddress: address, devices: Set(devices))
+        return KeyRecipient(devices: Set(devices))
     }
 
     /// Returns `true` as long as the argument does not contain any devices that are unknown to the receiver
     func containsEveryDevice(from other: KeyRecipient) -> Bool {
-        guard ownerAddress == other.ownerAddress else {
-            owsFailDebug("Address mismatch")
-            return false
-        }
-
         let newDevices = other.devices.subtracting(self.devices)
         return newDevices.isEmpty
     }
@@ -541,10 +554,10 @@ private struct KeyMetadata {
         sentKeyInfo[address] = nil
     }
 
-    mutating func recordSKDMSent(at timestamp: UInt64, address: SignalServiceAddress, transaction: SDSAnyReadTransaction) throws {
-        let recipient = try KeyRecipient.currentState(for: address, transaction: transaction)
+    mutating func recordSKDMSent(at timestamp: UInt64, serviceId: ServiceId, transaction: SDSAnyReadTransaction) throws {
+        let recipient = try KeyRecipient.currentState(for: serviceId, transaction: transaction)
         let sendInfo = SKDMSendInfo(skdmTimestamp: timestamp, keyRecipient: recipient)
-        sentKeyInfo[address] = sendInfo
+        sentKeyInfo[SignalServiceAddress(serviceId)] = sendInfo
     }
 }
 
