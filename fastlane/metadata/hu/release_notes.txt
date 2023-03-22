@@ -1,9 +1,1 @@
-• Ossz meg több dolgot több helyről! A megosztási bővítmény most jobban támogatja a különféle népszerű híralkalmazások által alapértelmezetten használt szövegformátumot. Egy olyan hibát is elhárítottunk, ami miatt az első megosztási kísérlet olykor kudarcot vallott.
-
-• Ha már a megosztásnál tartunk, kijavítottunk egy olyan hibát is, amely megnehezítette a szöveges tartalmak más alkalmazásokból (például Apple Notes) Signal Történetként történő megosztását. Az idők során az írott szöveg mindig is vitathatatlanul fontos szerepet játszott, éppen ezért örülünk, hogy pontot tehetünk ennek a történetnek a végére!
-
-• Az új animációs fejlesztések a média- és avatár-nézegetőben lehetővé teszik, hogy zökkenőmentesen átlásd a képet.
-
-• Kijavítottunk néhány olyan elrendezési hibát, amelyek miatt a gombok időnként rossz helyen jelennek meg az új iPhone-okon, mintha az Apple értesítések számkivetettjei lennének.
-
-• A frissítés részeként a kantoni nyelv támogatása is megérkezett.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

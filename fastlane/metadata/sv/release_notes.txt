@@ -1,9 +1,1 @@
-• Dela fler saker från fler platser. Delningstillägget har nu bättre stöd för textformatet som populära nyhetsappar delar som standard. Vi har också fixat ett fel som ibland fick ditt första försök att dela något att misslyckas.
-
-• På tal om delning, en annan bugg gjorde det svårt att dela textinnehåll från andra appar (t ex Apple Notes) som Signal Stories. Text har utan tvekan varit en viktig del av några av de bästa stories genom tiderna, så vi är glada att kunna avsluta kapitlet om just detta problem.
-
-• Nya animationsförbättringar i media- och avatartittarna låter dig smidigt gå tillbaka och se helheten.
-
-• Vi fixade ett par layoutproblem som kunde få knappar att dyka upp på fel plats på nya iPhones, som osynliga skeppsbrutna strandsatta under Apples Dynamic Island.
-
-• Den här uppdateringen innehåller även stöd för kantonesiska och uiguriska.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

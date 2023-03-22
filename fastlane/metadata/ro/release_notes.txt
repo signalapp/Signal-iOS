@@ -1,9 +1,1 @@
-• Distribuie mai multe lucruri din mai multe locuri. Extensia de distribuire are acum o susținere mai bună pentru formatul de text pe care diferite aplicații populare de știri le distribuie în mod standard. Am înlăturat și o eroare care uneori a făcut ca prima încercare de a distribui ceva să eșueze.
-
-• Și tot la capitolul distribuire, exista o eroare care îngreuna distribuirea conținutului text din alte aplicații (cum ar fi Apple Notes) ca Povești Signal. Textul a fost, fără îndoială, o componentă importantă a unora dintre cele mai bune povești de-a lungul istoriei, așa că suntem încântați să închidem capitolul despre această problemă specială.
-
-• Noi îmbunătățiri ale animației în vizualizatori media și avatar te lasă să te dai un pas înapoi și să vezi imaginea de ansamblu.
-
-• Am reparat câteva probleme care pot uneori să facă butoanele să apară în locurile greșite pe noi iPhone-uri, cum ar fi naufragiații invizibili abandonați sub Insula dinamică a Apple.
-
-• Această actualizare include și suport pentru cantoneză și uigură.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

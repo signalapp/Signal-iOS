@@ -1,9 +1,1 @@
-• Udostępniaj więcej rzeczy z większej liczby miejsc. Od teraz rozszerzenie udostępniania lepiej obsługuje format tekstu stosowany domyślnie przez różne popularne aplikacje informacyjne. Rozprawiliśmy się także z błędem, który powodował, że pierwsza próba udostępnienia czegoś była niepomyślna.
-
-• A skoro mowa o udostępnianiu – naprawiliśmy błąd, który utrudniał udostępnianie treści z innych aplikacji (np. Notatek Apple) jako relacji Signal. Tekst był od zawsze najważniejszym elementem przekazywanych na przestrzeni dziejów relacji, dlatego cieszymy się, że w końcu rozprawiliśmy się z tym problemem.
-
-• Nowe ulepszenia animacji w przeglądarkach mediów i awatarów pozwalają spojrzeć na świat z szerszej perspektywy.
-
-• Usunęliśmy kilka błędów w układzie, które mogły czasem powodować, że na nowych iPhone'ach przyciski pojawiały się w niewłaściwym miejscu — trochę jak niewidzialni rozbitkowie wyrzuceni na brzeg dynamicznej wyspy Apple.
-
-• Ta aktualizacja wspiera również język kantoński i ujgurski.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

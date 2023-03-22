@@ -1,9 +1,1 @@
-• Daha fazla yerde daha fazla şey paylaş. Paylaşım uzantısı artık çeşitli popüler haber uygulamalarının varsayılan olarak paylaştığı metin biçimi için daha iyi bir şekilde destekleniyor. Ayrıca bazen ilk kez paylaşma girişiminin başarısız olmasına neden olan bir hatayı da ortadan kaldırdık.
-
-• Paylaşmaktan bahsetmişken, başka bir hata da Apple Notes gibi diğer uygulamalardaki metin içeriklerinin Signal Hikayeler olarak paylaşılmasını zorlaştırıyordu. Yazılar, tarih boyunca daima en güzel hikayelerin önemli bir parçası olmuştur, bu yüzden bu sorunu çözüp rafa kaldırmış olmaktan mutluluk duyuyoruz.
-
-• Medya ve avatar görüntüleyicilerdeki yeni animasyon iyileştirmeleri, sorunsuz bir şekilde geri adım atmanı ve büyük resmi görmeni sağlar.
-
-• Yeni iPhone'larda düğmelerin yanlış yerde görünmesine neden olabilecek birkaç düzen sorununu da düzelttik.
-
-• Bu güncelleme Kantonca ve Uygurca desteği de içerir.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

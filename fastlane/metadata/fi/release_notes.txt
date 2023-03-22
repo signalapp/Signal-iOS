@@ -1,9 +1,1 @@
-• Jaa enemmän useammasta paikasta. Jakamislaajennus tukee nyt paremmin tekstimuotoa, jonka monet suositut uutissovellukset jakavat oletusarvoisesti. Korjasimme myös virheen, jonka takia ensimmäinen jakamisyritys saattoi joskus epäonnistua.
-
-• Jakamisesta puheen ollen, toinen virhe vaikeutti tekstisisällön jakamista muista sovelluksista, kuten Apple Notesista, Signal-tarinoina. Teksti on aina ollut parhaiden tarinoiden keskiössä, joten meistä on hienoa saada tätä kyseistä ongelmaa koskeva luku päätökseen.
-
-• Uusia animaatioparannuksia mediasisältöjen ja avatarien katseluohjelmassa – toivottavasti nautit näkemästäsi.
-
-• Korjasimme muutaman asetteluongelman, joiden takia painikkeet saattoivat ilmestyä väärään paikkaan uusissa iPhoneissa – ikään kuin ajelehtimaan Applen Dynamic Islandin liepeille.
-
-• Tämä päivitys sisältää myös kantoninkiinan ja uiguurin kielen tuen.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

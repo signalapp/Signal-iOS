@@ -1,9 +1,1 @@
-• Zdieľajte viac vecí z viacerých miest. Rozšírenie na zdieľanie má teraz lepšiu podporu pre textový formát, ktorý predvolene zdieľajú rôzne populárne spravodajské aplikácie. Odstránili sme tiež chybu, ktorá občas spôsobila, že váš prvý pokus o zdieľanie zlyhal.
-
-• Čo sa týka zdieľania, vyskytla sa ďalšia chyba, ktorá komplikovala zdieľanie textového obsahu z iných aplikácií (napríklad Apple Poznámky) ako príbehov Signal. Text bol vždy dôležitou súčasťou tých najlepších príbehov histórie, takže vám s radosťou oznamujeme, že sme kapitolu tohto problému navždy uzavreli.
-
-• Nové vylepšenia animácií v prehliadačoch médií a avatarov vám umožnia pozerať sa na všetko z úplne inej perspektívy.
-
-• Opravili sme niekoľko problémov s rozložením, ktoré by mohli spôsobiť, že sa tlačidlá na nových iPhonoch zobrazujú na nesprávnom mieste, ako takí neviditeľní stroskotanci opustení na Dynamic Islande spoločnosti Apple.
-
-• Táto aktualizácia taktiež zahŕňa podporu pre kantončinu a ujgurčinu.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

@@ -1,9 +1,1 @@
-• もっと多くのものを、もっと多くの場所から共有できます。Share extensionが、さまざまな人気ニュースアプリがデフォルトで共有する、テキスト形式のサポートをさらに強化しました。また、共有の一度目の試みが時々失敗するというバグも解消しました。
-
-• 共有といえば、もう一つ、他のアプリ (Apple Notesなど) のテキストコンテンツをSignalストーリーとして共有できないというバグがありました。テキストは、思い出を最高のストーリーとして作り上げる重要な要素であることは言うまでもありません。この特定の問題を解決できたことは大きな喜びです。
-
-• メディアやアバターの新しい表示アニメーションの改良によって、Signalはより分かりやすく、そして使いやすくなりました。
-
-• 新型 iPhoneでのボタンの配置に関する問題をいくつか修正しました。AppleのDynamic Islandという島の下に見えない漂流物が流れ着いたみたいになっていましたから。
-
-• 今回のアップデートでは、広東語とウイグル語のサポートも行われました。
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

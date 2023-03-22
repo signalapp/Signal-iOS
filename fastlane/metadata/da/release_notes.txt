@@ -1,9 +1,1 @@
-• Del flere ting fra flere steder. Delingsudvidelsen har nu bedre understøttelse for det standard tekstformat, som forskellige populære nyhedsapps bruger. Vi har også fjernet en fejl, som gjorde at det første forsøg på at dele noget mislykkedes.
-
-• Apropos deling, så var der en anden fejl, som gjorde det svært at dele tekstindhold fra andre apps, såsom Apple Noter, som Signal-historier. Tekst har uden tvivl været en vigtig del af nogle af de bedste historier gennem historien, så vi er glade for at kunne afslutte kapitlet om dette særlige problem.
-
-• Forbedret animation i medie- og avatarvisninger giver dig mulighed for at træde et skridt tilbage og se det store perspektiv.
-
-• Vi har rettet et par layoutfejl, som nogle gange fik knapper til at blive vist på det forkerte sted på nye iPhones, som usynlige skibbrudne strandede på Apples dynamiske ø.
-
-• Denne opdatering indeholder også understøttelse af kantonesisk og uigurisk.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

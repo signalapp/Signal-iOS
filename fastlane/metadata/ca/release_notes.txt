@@ -1,9 +1,1 @@
-• Comparteix més coses des de més llocs. L'extensió per compartir ara té un millor suport per al format de text on es comparteix de manera predeterminada diverses aplicacions de notícies populars. També hem eliminat un error que de vegades feia que fallés el teu primer intent de compartir alguna cosa.
-
-• Parlant de compartir, hem corregit un error en què dificultava compartir text d'altres aplicacions (per exemple, Apple Notes) a Històries de Signal. Sens dubte, el text ha estat en una peça clau per explicar algunes de les millors històries de la humanitat, així que estem emocionats de poder tancar el capítol sobre aquest problema en particular.
-
-• Les noves millores d'animació en la visualització d'arxius multimèdia i avatars et permeten retrocedir sense problemes i veure-ho tot molt més clar.
-
-• Hem solucionat un parell d'errors de disseny que de vegades provocava que els botons apareguessin sempre en el lloc equivocat als nous iPhone, com nàufrags atrapats a sota de la Dynamic Island d'Apple.
-
-• Aquesta actualització també inclou suport per al cantonès i uigur.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

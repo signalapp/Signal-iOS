@@ -1,9 +1,1 @@
-• 더 다양한 출처에서 더 다양한 항목을 공유하세요. 이제 기본적으로 다양한 인기 뉴스 앱을 공유하는 공유 확장 텍스트 형식 지원이 개선되었습니다. 때로 처음 뭔가를 공유하려고 할 때 오류가 발생하게 했던 버그도 퇴치했습니다.
-
-• 공유 얘기가 나왔으니 말인데, Apple Notes 등 다른 앱에서 Signal 스토리로 텍스트 콘텐츠를 공유하기 어렵게 만들었던 버그가 하나 더 있었죠. 역사의 수많은 위대한 이야기는 주로 텍스트를 통해 전달되어왔습니다. 텍스트는 이야기 전달에서 빼먹을 수 없는 중요한 요소인 만큼 이 문제를 해결하게 되어 무척 기쁩니다.
-
-• 미디어와 아바타 뷰어의 애니메이션을 개선하여 큰 그림으로 원활하게 전환할 수 있도록 만들었습니다.
-
-• 마치 Apple의 다이나믹 아일랜드 아래에 고립되어 보이지 않는 난파선처럼 때때로 새 iPhone에서 버튼이 잘못된 장소에 나타나게 만들었던 몇몇 레이아웃 문제를 수정했습니다.
-
-• 이 업데이트는 광둥어와 위구르어 대한 지원도 포함합니다.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

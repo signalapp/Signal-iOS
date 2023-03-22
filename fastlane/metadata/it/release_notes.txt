@@ -1,9 +1,1 @@
-• Condividi tutto ciò che vuoi, da dove vuoi. La funzione di condivisione ora supporta meglio il formato dei contenuti testuali che molte app di notizie usano come impostazione predefinita. Abbiamo anche risolto un bug che impediva la condivisione di un contenuto al primo tentativo.
-
-• Rimanendo in tema di condivisione, abbiamo risolto un bug che rendeva difficile la condivisione di contenuti testuali da altre app (come Note di Apple) nelle Storie di Signal. D'altronde, è vero che un'immagine vale più di mille parole, ma senza parole non si possono descrivere le immagini.
-
-• Prendi un pacco di popcorn prima di visualizzare i tuoi avatar e media, perché ormai l'animazione e la risoluzione dei contenuti sull'app sono degne delle sale cinematografiche.
-
-• Abbiamo risolto un paio di bug legati all'interfaccia dell'app: a volte i pulsanti venivano mostrati in modo errato sugli ultimi modelli iPhone, complicando la vita agli utenti Apple.
-
-• Questo aggiornamento aggiunge il cantonese e l'uiguro fra le lingue supportate.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

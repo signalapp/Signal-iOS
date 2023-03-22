@@ -1,9 +1,1 @@
-• Deel meer dingen van meer plekken. De deelfunctie heeft nu betere ondersteuning voor het tekstformaat dat verschillende populaire nieuws-apps standaard gebruiken. We hebben ook een bug verholpen die er soms voor zorgde dat je eerste poging om iets te delen mislukte.
-
-• Over delen gesproken, een andere bug maakte het moeilijk om tekstinhoud van andere apps (zoals Apple Notes) te delen als Signal-verhalen. We weten natuurlijk hoe essentieel tekst is om een mooi verhaal te vertellen, dus we zijn blij om het dossier van dit specifieke probleem af te sluiten.
-
-• Nieuwe animatieverbeteringen in de media en avatar-viewers laten je soepel een stapje terug doen en het grote geheel zien.
-
-• We hebben een aantal fouten in de lay-out verholpen die er soms voor zorgden dat knoppen op nieuwe iPhones op de verkeerde plek werden weergegeven, als onzichtbare schipbreukelingen die vastzaten onder Apples Dynamic Island.
-
-• Deze update bevat ook ondersteuning voor Kantonees en Oeigoers.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

@@ -1,9 +1,1 @@
-• Del flere ting fra flere steder. Nå kan du dele tekst i enda flere av formatene som brukes av ulike populære nyhetsapper. Vi fikset også en feil som førte til at det ikke alltid gikk an å dele innhold på første forsøk.
-
-• Apropos deling, en annen feil gjorde det vanskelig å dele tekst fra andre apper (som Apple Notes) i Signal-storyer. Tekst har spilt en viktig rolle i mange av de beste storyene så langt, så vi er veldig glade for å endelig ha løst dette problemet.
-
-• Nye, animerte visninger av medier og ikoner gjør at du kan lene deg tilbake og se hele bildet.
-
-• Vi har rettet opp et par oppsettsproblemer som førte til at knapper dukket opp på feil sted på nye iPhone-telefoner – som forliste skip på Apples nye Dynamic Island.
-
-• Denne oppdateringen gjør det også mulig å bruke appen på kantonesisk og uigurisk.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

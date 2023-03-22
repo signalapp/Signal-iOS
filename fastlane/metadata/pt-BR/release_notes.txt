@@ -1,9 +1,1 @@
-• Compartilhe mais conteúdo de mais lugares. A extensão de compartilhamento está com um suporte melhor para o formato de texto que vários apps de notícias populares compartilham como padrão. Também corrigimos um bug que emitia uma mensagem de erro quando você tentava compartilhar alguma coisa pela primeira vez.
-
-• Por falar em compartilhamento, outro bug estava dificultando o compartilhamento de conteúdo de texto de outros apps, por exemplo o Apple Notes, como Stories do Signal. Sem dúvida, o texto tem sido um componente importante de alguns dos melhores stories ao longo da história. Por isso, estamos felizes por encerrar a discussão sobre esse problema específico.
-
-• Com as novas melhorias de animação nos visualizadores de mídia e avatar, você pode voltar e ver a foto ampliada facilmente.
-
-• Corrigimos alguns problemas de layout que, às vezes, faziam botões aparecerem no lugar errado nos novos iPhones, presos e isolados na Ilha Dinâmica da Apple.
-
-• Esta atualização também inclui suporte para cantonês e uigur.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

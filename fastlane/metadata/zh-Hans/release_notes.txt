@@ -1,9 +1,1 @@
-• 轻松分享来自更多平台的内容。分享扩展现在可以更好地支持多个热门新闻应用默认通用的文本格式。我们还修复了一个漏洞，解决了首次尝试分享偶有失败的问题。
-
-• 我们修复的另一个分享漏洞是用户难以从 Apple Notes 等其他应用分享文字内容到 Signal 动态。纵观人类历史中的精彩故事，文字可以说发挥着重要作用，因此我们很高兴能解决这个问题。
-
-• 媒体和头像查看器推出了动画方面的新改进，让您享受更好的查看体验。
-
-• 我们解决了几个布局上的问题，这些问题会导致新 iPhone 上的按钮出现在错误的位置上，就像看不见的漂流者被困在 Apple 的灵动岛下一样。
-
-• 此更新还包含对粤语和维吾尔语的支持。
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

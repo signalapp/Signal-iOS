@@ -1,9 +1,1 @@
-• Podijelite više stvari s više različitih mjesta. Proširenje dijeljenja sada bolje podržava format teksta koji razne popularne aplikacije za vijesti upotrebljavaju prema zadanim postavkama. Ispravili smo i pogrešku zbog koje je prvi pokušaj dijeljenja uvijek bio neuspješan.
-
-• Kad smo već kod toga – još je jedna pogreška otežavala dijeljenje tekstualnog sadržaja iz drugih aplikacija, kao što su Apple Notes, putem Signal priča. Tekst je važna komponenta nekih od najboljih priča u povijesti, stoga smo sretni što smo riješili i taj problem.
-
-• Nova poboljšanja animacija u preglednicima medija i avatara omogućuju vam da se odmaknete i vidite širu sliku.
-
-• Popravili smo nekoliko problema u rasporedu zbog kojih su se gumbi na novim iPhone-ima pojavljivali na krivom mjestu, poput nevidljivih brodolomnika nasukanih ispod Apple Dynamic Islanda.
-
-• Ovo ažuriranje također uključuje podršku za kantonski i ujgurski.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.

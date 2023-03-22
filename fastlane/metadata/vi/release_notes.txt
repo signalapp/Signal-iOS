@@ -1,9 +1,1 @@
-• Chia sẻ nhiều nội dung hơn từ nhiều nền tảng khác nhau. Công cụ chia sẻ giờ đây hỗ trợ tốt hơn nội dung văn bản được các ứng dụng tin tức sử dụng mặc định. Chúng tôi cũng xử lý lỗi đôi khi khiến thao tác chia sẻ của bạn không thành công trong lần đầu tiên thực hiện.
-
-• Cũng liên quan đến việc chia sẻ, một lỗi khác khiến việc chia sẻ nội dung văn bản từ các ứng dụng khác như Apple Notes thành Story trên Signal gặp khó khăn. Văn bản là một phần quan trọng của các Story, chúng tôi rất vui khi thông báo rằng cuối cùng lỗi này cũng đã được giải quyết.
-
-• Các cải thiện cho hiệu ứng động trong trình xem đa phương tiện và ảnh đại diện giúp bạn xem mọi thứ mượt mà hơn.
-
-• Chúng tôi đã sửa một số vấn đề của bố cục có thể khiến các nút thỉnh thoảng xuất hiện sai chỗ trên các phiên bản iPhone mới với sự xuất hiện của Dynamic Island.
-
-• Bản cập nhật này cũng bổ sung hỗ trợ cho tiếng Quảng Đông và Duy Ngô Nhĩ.
+• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.
