@@ -87,23 +87,33 @@ public class MessageProcessor: NSObject {
             if DebugFlags.internalLogging {
                 Logger.info("hasPendingEnvelopes, queuedContentCount: \(self.queuedContentCount)")
             }
+
             return NotificationCenter.default.observe(
                 once: Self.messageProcessorDidDrainQueue
-            ).then { _ in self.processingCompletePromise() }.asVoid()
+            ).then { _ in
+                // Recur, in case we've enqueued messages handled in another block.
+                self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
+            }.asVoid()
         } else if shouldWaitForGV2MessageProcessing {
             if DebugFlags.internalLogging {
                 let pendingJobCount = databaseStorage.read {
                     Self.groupsV2MessageProcessor.pendingJobCount(transaction: $0)
                 }
+
                 Logger.verbose("groupsV2MessageProcessor.hasPendingJobs, pendingJobCount: \(pendingJobCount)")
             }
+
             return NotificationCenter.default.observe(
                 once: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue
-            ).then { _ in self.processingCompletePromise() }.asVoid()
+            ).then { _ in
+                // Recur, in case we've enqueued messages handled in another block.
+                self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
+            }.asVoid()
         } else {
             if DebugFlags.isMessageProcessingVerbose {
                 Logger.verbose("!hasPendingEnvelopes && !hasPendingJobs")
             }
+
             return Promise.value(())
         }
     }
