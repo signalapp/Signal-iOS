@@ -85,7 +85,7 @@ class MediaPageViewController: UIPageViewController {
         let view = GalleryRailView()
         view.delegate = self
         view.itemSize = 40
-        view.layoutMargins.bottom = 0
+        view.layoutMargins.bottom = 12
         view.isScrollEnabled = false
         view.preservesSuperviewLayoutMargins = true
         return view
@@ -182,16 +182,18 @@ class MediaPageViewController: UIPageViewController {
         bottomPanel.autoPinWidthToSuperview()
         bottomPanel.autoPinEdge(toSuperviewEdge: .bottom)
 
-        footerBar.tintColor = Theme.darkThemePrimaryColor
-        footerBarHeightConstraint = footerBar.autoSetDimension(.height, toSize: footerBarHeight)
-
-        let bottomStack = UIStackView(arrangedSubviews: [captionView, galleryRailView, footerBar])
+        let bottomStack = UIStackView(arrangedSubviews: [captionView, galleryRailView])
         bottomStack.axis = .vertical
         bottomStack.preservesSuperviewLayoutMargins = true
         bottomPanel.addSubview(bottomStack)
-        bottomStack.autoPinWidthToSuperview()
-        bottomStack.autoPinEdge(toSuperviewEdge: .top, withInset: 16)
-        bottomStack.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        bottomStack.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+
+        footerBar.tintColor = Theme.darkThemePrimaryColor
+        footerBarHeightConstraint = footerBar.autoSetDimension(.height, toSize: footerBarHeight)
+        bottomPanel.addSubview(footerBar)
+        footerBar.autoPinWidthToSuperview()
+        footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        footerBar.autoPinEdge(.top, to: .bottom, of: bottomStack)
 
         updateTitle()
         updateCaption(item: currentItem)
@@ -514,6 +516,7 @@ class MediaPageViewController: UIPageViewController {
             mostRecentAlbum = mediaGallery.album(for: currentItem)
         }
 
+        galleryRailView.layoutMargins.top = captionView.text.isEmptyOrNil ? 20 : 4
         galleryRailView.configureCellViews(
             itemProvider: mostRecentAlbum!,
             focusedItem: currentItem,

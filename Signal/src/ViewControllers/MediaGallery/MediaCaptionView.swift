@@ -116,7 +116,7 @@ class MediaCaptionView: UIView {
         textView.font = UIFont.ows_dynamicTypeBodyClamped
         textView.textColor = .white
         textView.backgroundColor = .clear
-        textView.textContainerInset = .zero
+        textView.textContainerInset = UIEdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0)
         return textView
     }
     private var captionTextView = MediaCaptionView.buildCaptionTextView()
