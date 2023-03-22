@@ -269,7 +269,7 @@ class RegistrationPinViewController: OWSViewController {
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
         scrollView.autoPinWidthToSuperviewMargins()
-        scrollView.autoPinEdge(toSuperviewEdge: .top)
+        scrollView.autoPinEdge(.top, to: .top, of: keyboardLayoutGuideViewSafeArea)
         scrollView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         let stackView = UIStackView()
@@ -277,9 +277,11 @@ class RegistrationPinViewController: OWSViewController {
         stackView.distribution = .fill
         stackView.spacing = 12
         stackView.setCustomSpacing(24, after: explanationView)
+        stackView.layoutMargins = .init(top: 0, leading: 0, bottom: 16, trailing: 0)
+        stackView.isLayoutMarginsRelativeArrangement = true
         scrollView.addSubview(stackView)
         stackView.autoPinWidth(toWidthOf: scrollView)
-        stackView.autoPinHeightToSuperview()
+        stackView.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor).isActive = true
 
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(explanationView)
