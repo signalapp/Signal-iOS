@@ -7,7 +7,7 @@ import Foundation
 
 class RegistrationLoadingViewController: OWSViewController {
     enum RegistrationLoadingMode {
-        case initialLoad
+        case generic
         case submittingPhoneNumber(e164: String)
         case submittingVerificationCode
     }
@@ -15,7 +15,7 @@ class RegistrationLoadingViewController: OWSViewController {
     public init(mode: RegistrationLoadingMode) {
         spinnerView = AnimatedProgressView(loadingText: {
             switch mode {
-            case .initialLoad:
+            case .generic:
                 return ""
             case let .submittingPhoneNumber(e164):
                 let format = OWSLocalizedString(

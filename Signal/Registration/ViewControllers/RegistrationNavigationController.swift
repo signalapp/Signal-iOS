@@ -25,16 +25,26 @@ public class RegistrationNavigationController: OWSNavigationController {
 
     private var isLoading = false
 
-    private func pushNextController(_ step: Guarantee<RegistrationStep>) {
+    private func pushNextController(
+        _ step: Guarantee<RegistrationStep>,
+        loadingMode: RegistrationLoadingViewController.RegistrationLoadingMode? = .generic
+    ) {
         guard !isLoading else {
             owsFailDebug("Parallel loads not allowed")
             return
         }
 
-        // TODO[Registration]: we want to show loading under other circumstances, too.
-        if self.viewControllers.isEmpty {
-            pushViewController(RegistrationLoadingViewController(mode: .initialLoad), animated: false, completion: nil)
+        if let loadingMode, step.isSealed.negated {
+            isLoading = true
+            pushViewController(RegistrationLoadingViewController(mode: loadingMode), animated: false) { [weak self] in
+                self?._pushNextController(step)
+            }
+        } else {
+            _pushNextController(step)
         }
+    }
+
+    private func _pushNextController(_ step: Guarantee<RegistrationStep>) {
         isLoading = true
         step.done(on: DispatchQueue.main) { [weak self] step in
             guard let self else {
@@ -258,14 +268,14 @@ extension RegistrationNavigationController: RegistrationSplashPresenter {
 extension RegistrationNavigationController: RegistrationPermissionsPresenter {
 
     func requestPermissions() {
-        pushNextController(coordinator.requestPermissions())
+        pushNextController(coordinator.requestPermissions(), loadingMode: nil)
     }
 }
 
 extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
 
     func goToNextStep(withE164 e164: E164) {
-        pushNextController(coordinator.submitE164(e164))
+        pushNextController(coordinator.submitE164(e164), loadingMode: .submittingPhoneNumber(e164: e164.stringValue))
     }
 }
 
@@ -291,7 +301,7 @@ extension RegistrationNavigationController: RegistrationVerificationPresenter {
     }
 
     func submitVerificationCode(_ code: String) {
-        pushNextController(coordinator.submitVerificationCode(code))
+        pushNextController(coordinator.submitVerificationCode(code), loadingMode: .submittingVerificationCode)
     }
 }
 
