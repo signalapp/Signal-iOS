@@ -1257,17 +1257,15 @@ extension SubscriptionManagerImpl: SubscriptionManager {
         var showExpiryOnHomeScreen = Self.showExpirySheetOnHomeScreenKey(transaction: transaction)
         var displayBadgesOnProfile = Self.displayBadgesOnProfile(transaction: transaction)
 
-        if !currentBadges.isEmpty {
-            let isCurrentlyDisplayingBadgesOnProfile = currentBadges.allSatisfy { badge in
-                badge.isVisible ?? {
-                    owsFailDebug("Local user badges should always have a non-nil visibility flag")
-                    return true
-                }()
-            }
-            if displayBadgesOnProfile != isCurrentlyDisplayingBadgesOnProfile {
-                displayBadgesOnProfile = isCurrentlyDisplayingBadgesOnProfile
-                Logger.info("Updating displayBadgesOnProfile to reflect state on profile \(displayBadgesOnProfile)")
-            }
+        let isCurrentlyDisplayingBadgesOnProfile = currentBadges.allSatisfy { badge in
+            badge.isVisible ?? {
+                owsFailDebug("Local user badges should always have a non-nil visibility flag")
+                return true
+            }()
+        }
+        if displayBadgesOnProfile != isCurrentlyDisplayingBadgesOnProfile {
+            displayBadgesOnProfile = isCurrentlyDisplayingBadgesOnProfile
+            Logger.info("Updating displayBadgesOnProfile to reflect state on profile \(displayBadgesOnProfile)")
         }
 
         let newSubscriberBadgeIds = Set(currentSubscriberBadgeIDs).subtracting(persistedSubscriberBadgeIDs)

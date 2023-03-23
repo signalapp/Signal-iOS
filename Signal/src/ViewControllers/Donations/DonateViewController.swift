@@ -246,13 +246,16 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             )
         }
 
+        let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
+
         let vc = CreditOrDebitCardDonationViewController(
             donationAmount: amount,
             donationMode: cardDonationMode
         ) { [weak self] in
             self?.didCompleteDonation(
                 badge: badge,
-                thanksSheetType: donateMode.forBadgeThanksSheet
+                thanksSheetType: donateMode.forBadgeThanksSheet,
+                oldBadgesSnapshot: badgesSnapshot
             )
         }
         navigationController.pushViewController(vc, animated: true)
@@ -377,6 +380,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         switch monthly.lastReceiptRedemptionFailure {
         case .none:
+            let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
                 promise: firstly(on: DispatchQueue.sharedUserInitiated) {
@@ -397,7 +401,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             ).done(on: DispatchQueue.main) {
                 self.didCompleteDonation(
                     badge: selectedSubscriptionLevel.badge,
-                    thanksSheetType: .subscription
+                    thanksSheetType: .subscription,
+                    oldBadgesSnapshot: badgesSnapshot
                 )
             }.catch(on: DispatchQueue.main) { [weak self] error in
                 self?.didFailDonation(
@@ -517,11 +522,16 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
     internal func didCompleteDonation(
         badge: ProfileBadge,
-        thanksSheetType: BadgeThanksSheet.BadgeType
+        thanksSheetType: BadgeThanksSheet.BadgeType,
+        oldBadgesSnapshot: ProfileBadgesSnapshot
     ) {
         onFinished(.completedDonation(
             donateSheet: self,
-            badgeThanksSheet: BadgeThanksSheet(badge: badge, type: thanksSheetType)
+            badgeThanksSheet: BadgeThanksSheet(
+                newBadge: badge,
+                newBadgeType: thanksSheetType,
+                oldBadgesSnapshot: oldBadgesSnapshot
+            )
         ))
     }
 

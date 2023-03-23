@@ -9,7 +9,7 @@ import XCTest
 
 class VisibleBadgeResolverTest: XCTestCase {
 
-    typealias Badge = VisibleBadgeResolver.Badge
+    typealias Badge = ProfileBadgesSnapshot.Badge
     typealias SwitchType = VisibleBadgeResolver.SwitchType
 
     func testVisibleBadgeIds() {
@@ -180,9 +180,13 @@ class VisibleBadgeResolverTest: XCTestCase {
         ]
 
         for testCase in testCases {
-            let initialResolver = VisibleBadgeResolver(existingBadges: testCase.profileBadgeIds.map {
-                .init(id: $0, isVisible: testCase.areBadgesVisible)
-            })
+            let initialResolver = VisibleBadgeResolver(
+                badgesSnapshot: ProfileBadgesSnapshot(
+                    existingBadges: testCase.profileBadgeIds.map {
+                        .init(id: $0, isVisible: testCase.areBadgesVisible)
+                    }
+                )
+            )
 
             let switchType = initialResolver.switchType(for: testCase.newBadgeId)
             XCTAssertEqual(switchType, testCase.switchType, "\(testCase)")
@@ -197,9 +201,13 @@ class VisibleBadgeResolverTest: XCTestCase {
 
             // a short while later
 
-            let updateResolver = VisibleBadgeResolver(existingBadges: testCase.profileBadgeIds.map {
-                .init(id: $0, isVisible: testCase.areBadgesVisibleWhenUpdating ?? testCase.areBadgesVisible)
-            })
+            let updateResolver = VisibleBadgeResolver(
+                badgesSnapshot: ProfileBadgesSnapshot(
+                    existingBadges: testCase.profileBadgeIds.map {
+                        .init(id: $0, isVisible: testCase.areBadgesVisibleWhenUpdating ?? testCase.areBadgesVisible)
+                    }
+                )
+            )
 
             let visibleBadgeIds = updateResolver.visibleBadgeIds(
                 adding: testCase.newBadgeId,
@@ -230,7 +238,9 @@ class VisibleBadgeResolverTest: XCTestCase {
         ]
 
         for (existingBadges, visibleBadgeIds) in testCases {
-            let visibleBadgeResolver = VisibleBadgeResolver(existingBadges: existingBadges)
+            let visibleBadgeResolver = VisibleBadgeResolver(
+                badgesSnapshot: ProfileBadgesSnapshot(existingBadges: existingBadges)
+            )
             XCTAssertEqual(visibleBadgeResolver.currentlyVisibleBadgeIds(), visibleBadgeIds)
         }
     }

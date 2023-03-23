@@ -16,6 +16,8 @@ extension DonateViewController {
     ) {
         Logger.info("[Donations] Starting one-time PayPal donation")
 
+        let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
+
         firstly(on: DispatchQueue.main) { [weak self] () -> Promise<URL> in
             guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
@@ -54,7 +56,7 @@ extension DonateViewController {
             guard let self else { return }
 
             Logger.info("[Donations] One-time PayPal donation finished")
-            self.didCompleteDonation(badge: badge, thanksSheetType: .boost)
+            self.didCompleteDonation(badge: badge, thanksSheetType: .boost, oldBadgesSnapshot: badgesSnapshot)
         }.catch(on: DispatchQueue.main) { [weak self] error in
             guard let self else { return }
 

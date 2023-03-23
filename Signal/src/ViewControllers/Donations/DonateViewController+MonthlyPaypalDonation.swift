@@ -23,6 +23,8 @@ extension DonateViewController {
 
         Logger.info("[Donations] Starting monthly PayPal donation")
 
+        let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
+
         firstly(on: DispatchQueue.main) { () -> Promise<(Data, Paypal.SubscriptionAuthorizationParams)> in
             self.preparePaypalSubscriptionBehindActivityIndicator(
                 monthlyState: monthly,
@@ -57,7 +59,8 @@ extension DonateViewController {
 
             self.didCompleteDonation(
                 badge: selectedSubscriptionLevel.badge,
-                thanksSheetType: .subscription
+                thanksSheetType: .subscription,
+                oldBadgesSnapshot: badgesSnapshot
             )
         }.catch(on: DispatchQueue.main) { [weak self] error in
             guard let self else { return }
