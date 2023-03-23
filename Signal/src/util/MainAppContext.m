@@ -255,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isRunningTests
 {
-    return getenv("runningTests_dontStartApp");
+    return getenv("runningTests_dontStartApp") != NULL;
 }
 
 - (CGRect)frame
