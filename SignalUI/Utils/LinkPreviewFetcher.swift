@@ -149,11 +149,6 @@ public class LinkPreviewFetcher {
             self.prependSchemeIfNeeded(to: &filteredText)
         }
 
-        // Don't include link previews for oversize text messages.
-        guard filteredText.lengthOfBytes(using: .utf8) < kOversizeTextMessageSizeThreshold else {
-            return nil
-        }
-
         return LinkValidator.firstLinkPreviewURL(in: filteredText)
     }
 
