@@ -978,12 +978,11 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         if ([exception.name isEqualToString:MessageSenderInvalidDeviceException]) {
             // If we have an invalid device exception, remove this device from
             // the recipient and suppress the error.
-            SignalServiceAddress *recipientAddress = [[SignalServiceAddress alloc] initWithServiceIdObjC:serviceId];
             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                [MessageSender updateDevicesWithAddress:recipientAddress
-                                           devicesToAdd:@[]
-                                        devicesToRemove:@[ deviceId ]
-                                            transaction:transaction];
+                [MessageSender updateDevicesWithServiceId:serviceId
+                                             devicesToAdd:@[]
+                                          devicesToRemove:@[ deviceId ]
+                                              transaction:transaction];
             });
         } else if ([exception.name isEqualToString:NoSessionForTransientMessageException]) {
             // When users re-register, we don't want transient messages (like typing

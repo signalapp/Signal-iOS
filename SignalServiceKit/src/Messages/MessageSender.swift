@@ -145,7 +145,7 @@ extension MessageSender {
                 case MessageSenderError.missingDevice:
                     self.databaseStorage.write { transaction in
                         MessageSender.updateDevices(
-                            address: messageSend.address,
+                            serviceId: messageSend.serviceId,
                             devicesToAdd: [],
                             devicesToRemove: [NSNumber(value: deviceId)],
                             transaction: transaction
@@ -1122,8 +1122,7 @@ extension MessageSender {
 }
 
 extension MessageSender {
-    private func handleMismatchedDevices(_ response: MessageSendFailureResponse,
-                                         messageSend: OWSMessageSend) {
+    private func handleMismatchedDevices(_ response: MessageSendFailureResponse, messageSend: OWSMessageSend) {
         owsAssertDebug(!Thread.isMainThread)
 
         let extraDevices: [Int] = response.extraDevices ?? []
@@ -1132,10 +1131,12 @@ extension MessageSender {
         let devicesToRemove = extraDevices.map { NSNumber(value: $0) }
 
         Self.databaseStorage.write { transaction in
-            MessageSender.updateDevices(address: messageSend.address,
-                                        devicesToAdd: devicesToAdd,
-                                        devicesToRemove: devicesToRemove,
-                                        transaction: transaction)
+            MessageSender.updateDevices(
+                serviceId: messageSend.serviceId,
+                devicesToAdd: devicesToAdd,
+                devicesToRemove: devicesToRemove,
+                transaction: transaction
+            )
         }
     }
 
@@ -1163,10 +1164,12 @@ extension MessageSender {
     }
 
     @objc
-    public static func updateDevices(address: SignalServiceAddress,
-                                     devicesToAdd: [NSNumber],
-                                     devicesToRemove: [NSNumber],
-                                     transaction: SDSAnyWriteTransaction) {
+    public static func updateDevices(
+        serviceId: ServiceIdObjC,
+        devicesToAdd: [NSNumber],
+        devicesToRemove: [NSNumber],
+        transaction: SDSAnyWriteTransaction
+    ) {
         owsAssertDebug(!Thread.isMainThread)
         guard !devicesToAdd.isEmpty || !devicesToRemove.isEmpty else {
             owsFailDebug("No devices to add or remove.")
@@ -1174,22 +1177,27 @@ extension MessageSender {
         }
         owsAssertDebug(Set(devicesToAdd).isDisjoint(with: devicesToRemove))
 
-        if !devicesToAdd.isEmpty, address.isLocalAddress {
+        if !devicesToAdd.isEmpty, SignalServiceAddress(serviceId.wrappedValue).isLocalAddress {
             deviceManager.setMayHaveLinkedDevices()
         }
 
-        SignalRecipient.update(
-            with: address,
-            devicesToAdd: devicesToAdd,
-            devicesToRemove: devicesToRemove,
+        let recipient = SignalRecipient.fetchOrCreate(
+            for: SignalServiceAddress(serviceId.wrappedValue),
+            trustLevel: .low,
             transaction: transaction
         )
 
+        recipient.updateWithDevices(toAdd: devicesToAdd, devicesToRemove: devicesToRemove, transaction: transaction)
+
         if !devicesToRemove.isEmpty {
-            Logger.info("Archiving sessions for extra devices: \(devicesToRemove), \(devicesToRemove)")
+            Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")
             let sessionStore = signalProtocolStore(for: .aci).sessionStore
             for deviceId in devicesToRemove {
-                sessionStore.archiveSession(for: address, deviceId: deviceId.int32Value, transaction: transaction)
+                sessionStore.archiveSession(
+                    for: SignalServiceAddress(serviceId.wrappedValue),
+                    deviceId: deviceId.int32Value,
+                    transaction: transaction
+                )
             }
         }
     }

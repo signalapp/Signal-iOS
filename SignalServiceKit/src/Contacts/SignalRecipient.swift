@@ -51,7 +51,6 @@ extension SignalRecipient {
 
     // MARK: -
 
-    @objc
     @discardableResult
     public class func fetchOrCreate(
         for address: SignalServiceAddress,

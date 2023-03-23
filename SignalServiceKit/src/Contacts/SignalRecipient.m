@@ -202,22 +202,8 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
     }
 }
 
-+ (void)updateWithAddress:(SignalServiceAddress *)address
-             devicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
-          devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
-              transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-    OWSAssertDebug(devicesToAdd.count > 0 || devicesToRemove.count > 0);
-
-    SignalRecipient *recipient = [self fetchOrCreateFor:address
-                                             trustLevel:SignalRecipientTrustLevelLow
-                                            transaction:transaction];
-    [recipient updateWithDevicesToAdd:devicesToAdd devicesToRemove:devicesToRemove transaction:transaction];
-}
-
-- (void)updateWithDevicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
-               devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
+- (void)updateWithDevicesToAdd:(NSArray<NSNumber *> *)devicesToAdd
+               devicesToRemove:(NSArray<NSNumber *> *)devicesToRemove
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);

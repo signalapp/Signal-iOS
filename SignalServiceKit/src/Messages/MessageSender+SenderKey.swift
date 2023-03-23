@@ -647,10 +647,11 @@ extension MessageSender {
                     self.databaseStorage.write { writeTx in
                         for account in responseBody {
                             MessageSender.updateDevices(
-                                address: SignalServiceAddress(uuid: account.uuid),
+                                serviceId: ServiceIdObjC(uuidValue: account.uuid),
                                 devicesToAdd: account.devices.missingDevices.map { NSNumber(value: $0) },
                                 devicesToRemove: account.devices.extraDevices.map { NSNumber(value: $0) },
-                                transaction: writeTx)
+                                transaction: writeTx
+                            )
                         }
                     }
                     throw SenderKeyError.deviceUpdate

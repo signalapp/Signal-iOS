@@ -80,13 +80,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPh
                                     transaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(get(address:mustHaveDevices:transaction:));
 
-+ (void)updateWithAddress:(SignalServiceAddress *)address
-             devicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
-          devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
-              transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)updateWithDevicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
-               devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
+- (void)updateWithDevicesToAdd:(NSArray<NSNumber *> *)devicesToAdd
+               devicesToRemove:(NSArray<NSNumber *> *)devicesToRemove
                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, nullable) NSString *recipientPhoneNumber;
