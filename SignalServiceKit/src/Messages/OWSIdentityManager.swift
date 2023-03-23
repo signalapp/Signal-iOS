@@ -138,12 +138,27 @@ extension OWSIdentityManager {
     @objc
     public func processIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber,
+        updatedPni updatedPniString: String?,
         transaction: SDSAnyWriteTransaction
     ) {
+        guard
+            let updatedPniString,
+            let updatedPni = UUID(uuidString: updatedPniString)
+        else {
+            owsFailDebug("Missing or invalid updated PNI string while processing incoming PNI change-number sync message!")
+            return
+        }
+
+        guard let localAci = tsAccountManager.localUuid(with: transaction) else {
+            owsFailDebug("Missing ACI while processing incoming PNI change-number sync message!")
+            return
+        }
+
         guard let (
             pniIdentityKeyPair,
             pniSignedPreKey,
-            pniRegistrationId
+            pniRegistrationId,
+            newE164
         ) = deserializeIncomingPniChangePhoneNumber(proto: proto) else {
             return
         }
@@ -170,6 +185,14 @@ extension OWSIdentityManager {
             transaction: transaction
         )
 
+        tsAccountManager.updateLocalPhoneNumber(
+            newE164.stringValue,
+            aci: localAci,
+            pni: updatedPni,
+            shouldUpdateStorageService: false, // Updated by the primary
+            transaction: transaction
+        )
+
         // Clean up thereafter
 
         // We need to refresh our one-time pre-keys, and should also refresh
@@ -183,11 +206,12 @@ extension OWSIdentityManager {
 
     private func deserializeIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber
-    ) -> (ECKeyPair, SignalServiceKit.SignedPreKeyRecord, UInt32)? {
+    ) -> (ECKeyPair, SignalServiceKit.SignedPreKeyRecord, UInt32, E164)? {
         guard
             let pniIdentityKeyPairData = proto.identityKeyPair,
             let pniSignedPreKeyData = proto.signedPreKey,
-            proto.hasRegistrationID, proto.registrationID > 0
+            proto.hasRegistrationID, proto.registrationID > 0,
+            let newE164 = E164(proto.newE164)
         else {
             owsFailDebug("Invalid PNI change number proto, missing fields!")
             return nil
@@ -201,7 +225,8 @@ extension OWSIdentityManager {
             return (
                 pniIdentityKeyPair,
                 pniSignedPreKey,
-                pniRegistrationId
+                pniRegistrationId,
+                newE164
             )
         } catch let error {
             owsFailDebug("Error while deserializing PNI change-number proto: \(error)")

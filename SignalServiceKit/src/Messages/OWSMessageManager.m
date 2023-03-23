@@ -1876,6 +1876,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      transaction:transaction];
     } else if (syncMessage.pniChangeNumber) {
         [self.identityManager processIncomingPniChangePhoneNumberWithProto:syncMessage.pniChangeNumber
+                                                                updatedPni:envelope.updatedPni
                                                                transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");

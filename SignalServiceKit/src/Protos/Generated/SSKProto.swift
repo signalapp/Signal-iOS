@@ -162,6 +162,18 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
+    public var updatedPni: String? {
+        guard hasUpdatedPni else {
+            return nil
+        }
+        return proto.updatedPni
+    }
+    @objc
+    public var hasUpdatedPni: Bool {
+        return proto.hasUpdatedPni
+    }
+
+    @objc
     public var story: Bool {
         return proto.story
     }
@@ -321,6 +333,9 @@ extension SSKProtoEnvelope {
         if let _value = sourceUuid {
             builder.setSourceUuid(_value)
         }
+        if let _value = updatedPni {
+            builder.setUpdatedPni(_value)
+        }
         if hasStory {
             builder.setStory(story)
         }
@@ -422,6 +437,17 @@ public class SSKProtoEnvelopeBuilder: NSObject {
 
     public func setSourceUuid(_ valueParam: String) {
         proto.sourceUuid = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdatedPni(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.updatedPni = valueParam
+    }
+
+    public func setUpdatedPni(_ valueParam: String) {
+        proto.updatedPni = valueParam
     }
 
     @objc
@@ -14613,6 +14639,18 @@ public class SSKProtoSyncMessagePniChangeNumber: NSObject, Codable, NSSecureCodi
         return proto.hasRegistrationID
     }
 
+    @objc
+    public var newE164: String? {
+        guard hasNewE164 else {
+            return nil
+        }
+        return proto.newE164
+    }
+    @objc
+    public var hasNewE164: Bool {
+        return proto.hasNewE164 && !proto.newE164.isEmpty
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -14695,6 +14733,9 @@ extension SSKProtoSyncMessagePniChangeNumber {
         if hasRegistrationID {
             builder.setRegistrationID(registrationID)
         }
+        if let _value = newE164 {
+            builder.setNewE164(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -14735,6 +14776,25 @@ public class SSKProtoSyncMessagePniChangeNumberBuilder: NSObject {
     @objc
     public func setRegistrationID(_ valueParam: UInt32) {
         proto.registrationID = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNewE164(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        if let valueParam = valueParam.nilIfEmpty {
+            owsAssertDebug(valueParam.isStructurallyValidE164)
+        }
+
+        proto.newE164 = valueParam
+    }
+
+    public func setNewE164(_ valueParam: String) {
+        if let valueParam = valueParam.nilIfEmpty {
+            owsAssertDebug(valueParam.isStructurallyValidE164)
+        }
+
+        proto.newE164 = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

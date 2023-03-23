@@ -123,6 +123,17 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `sourceUuid`. Subsequent reads from it will return its default value.
   mutating func clearSourceUuid() {self._sourceUuid = nil}
 
+  /// On change-number sync messages delivered to linked devices, this will
+  /// contain the account's new PNI.
+  var updatedPni: String {
+    get {return _updatedPni ?? String()}
+    set {_updatedPni = newValue}
+  }
+  /// Returns true if `updatedPni` has been explicitly set.
+  var hasUpdatedPni: Bool {return self._updatedPni != nil}
+  /// Clears the value of `updatedPni`. Subsequent reads from it will return its default value.
+  mutating func clearUpdatedPni() {self._updatedPni = nil}
+
   var story: Bool {
     get {return _story ?? false}
     set {_story = newValue}
@@ -198,6 +209,7 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _serverGuid: String? = nil
   fileprivate var _serverTimestamp: UInt64? = nil
   fileprivate var _sourceUuid: String? = nil
+  fileprivate var _updatedPni: String? = nil
   fileprivate var _story: Bool? = nil
   fileprivate var _spamReportingToken: Data? = nil
 }
@@ -3888,6 +3900,15 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `registrationID`. Subsequent reads from it will return its default value.
     mutating func clearRegistrationID() {self._registrationID = nil}
 
+    var newE164: String {
+      get {return _newE164 ?? String()}
+      set {_newE164 = newValue}
+    }
+    /// Returns true if `newE164` has been explicitly set.
+    var hasNewE164: Bool {return self._newE164 != nil}
+    /// Clears the value of `newE164`. Subsequent reads from it will return its default value.
+    mutating func clearNewE164() {self._newE164 = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -3895,6 +3916,7 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _identityKeyPair: Data? = nil
     fileprivate var _signedPreKey: Data? = nil
     fileprivate var _registrationID: UInt32? = nil
+    fileprivate var _newE164: String? = nil
   }
 
   init() {}
@@ -4946,6 +4968,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     9: .same(proto: "serverGuid"),
     10: .same(proto: "serverTimestamp"),
     11: .same(proto: "sourceUuid"),
+    15: .same(proto: "updatedPni"),
     16: .same(proto: "story"),
     17: .same(proto: "spamReportingToken"),
   ]
@@ -4965,6 +4988,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 10: try { try decoder.decodeSingularUInt64Field(value: &self._serverTimestamp) }()
       case 11: try { try decoder.decodeSingularStringField(value: &self._sourceUuid) }()
       case 13: try { try decoder.decodeSingularStringField(value: &self._destinationUuid) }()
+      case 15: try { try decoder.decodeSingularStringField(value: &self._updatedPni) }()
       case 16: try { try decoder.decodeSingularBoolField(value: &self._story) }()
       case 17: try { try decoder.decodeSingularBytesField(value: &self._spamReportingToken) }()
       default: break
@@ -5004,6 +5028,9 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     try { if let v = self._destinationUuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 13)
     } }()
+    try { if let v = self._updatedPni {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 15)
+    } }()
     try { if let v = self._story {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 16)
     } }()
@@ -5023,6 +5050,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._serverGuid != rhs._serverGuid {return false}
     if lhs._serverTimestamp != rhs._serverTimestamp {return false}
     if lhs._sourceUuid != rhs._sourceUuid {return false}
+    if lhs._updatedPni != rhs._updatedPni {return false}
     if lhs._story != rhs._story {return false}
     if lhs._spamReportingToken != rhs._spamReportingToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -8871,6 +8899,7 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
     1: .same(proto: "identityKeyPair"),
     2: .same(proto: "signedPreKey"),
     3: .same(proto: "registrationId"),
+    4: .same(proto: "newE164"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8882,6 +8911,7 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
       case 1: try { try decoder.decodeSingularBytesField(value: &self._identityKeyPair) }()
       case 2: try { try decoder.decodeSingularBytesField(value: &self._signedPreKey) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self._registrationID) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._newE164) }()
       default: break
       }
     }
@@ -8901,6 +8931,9 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
     try { if let v = self._registrationID {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
     } }()
+    try { if let v = self._newE164 {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -8908,6 +8941,7 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
     if lhs._identityKeyPair != rhs._identityKeyPair {return false}
     if lhs._signedPreKey != rhs._signedPreKey {return false}
     if lhs._registrationID != rhs._registrationID {return false}
+    if lhs._newE164 != rhs._newE164 {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
