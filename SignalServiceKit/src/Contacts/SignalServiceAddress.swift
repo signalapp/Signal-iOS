@@ -375,7 +375,11 @@ public class SignalServiceAddressCache: NSObject {
 
         databaseStorage.read { transaction in
             if let localAddress = tsAccountManager.localAddress(with: transaction) {
-                self.updateRecipient(SignalRecipient(address: localAddress))
+                let localRecipient = SignalRecipient(
+                    serviceId: localAddress.serviceIdObjC,
+                    phoneNumber: localAddress.phoneNumber
+                )
+                self.updateRecipient(localRecipient)
             }
 
             SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in

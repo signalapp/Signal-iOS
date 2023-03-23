@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
+@class ServiceIdObjC;
 @class SignalServiceAddress;
 
 typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientTrustLevel) {
@@ -44,8 +45,8 @@ extern const uint64_t SignalRecipientDistantPastUnregisteredTimestamp;
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 // exposed for Swift interop
-- (instancetype)initWithAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithUUIDString:(NSString *)uuidString NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithServiceId:(nullable ServiceIdObjC *)serviceId
+                      phoneNumber:(nullable NSString *)phoneNumber NS_DESIGNATED_INITIALIZER;
 - (void)addDevices:(NSSet<NSNumber *> *)devices source:(SignalRecipientSource)source;
 - (void)removeAllDevicesWithUnregisteredAtTimestamp:(uint64_t)unregisteredAtTimestamp
                                              source:(SignalRecipientSource)source;

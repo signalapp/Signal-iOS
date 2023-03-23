@@ -327,9 +327,6 @@ public class DebugFlags: BaseFlags {
     public static let verboseNotificationLogging = build.includes(.internal)
 
     @objc
-    public static let verboseSignalRecipientLogging = build.includes(.internal)
-
-    @objc
     public static let deviceTransferVerboseProgressLogging = build.includes(.internal)
 
     @objc

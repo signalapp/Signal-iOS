@@ -773,6 +773,9 @@
 		505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */; };
 		505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */; };
 		505C2EDB29974D2000C23FB2 /* StorageServiceContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */; };
+		506695E129C296D500B6D8D0 /* RecipientMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */; };
+		506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */; };
+		506695E529C29C2F00B6D8D0 /* RecipientDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E429C29C2F00B6D8D0 /* RecipientDataStore.swift */; };
 		506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */; };
 		506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */; };
 		506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
@@ -3231,6 +3234,9 @@
 		505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLimitExceededError.swift; sourceTree = "<group>"; };
 		505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentityTest.swift; sourceTree = "<group>"; };
 		505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceContactTest.swift; sourceTree = "<group>"; };
+		506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientMergerTest.swift; sourceTree = "<group>"; };
+		506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientMerger.swift; sourceTree = "<group>"; };
+		506695E429C29C2F00B6D8D0 /* RecipientDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientDataStore.swift; sourceTree = "<group>"; };
 		506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManager.swift; sourceTree = "<group>"; };
 		506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerContainerViewController.swift; sourceTree = "<group>"; };
 		507CD5E429660D5100E47DAC /* ServiceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceId.swift; sourceTree = "<group>"; };
@@ -7873,6 +7879,7 @@
 				F9426209289B1B5500460798 /* PhoneNumberTest.swift */,
 				F9426207289B1B5500460798 /* PhoneNumberUtilTest.m */,
 				F942620C289B1B5500460798 /* PhoneNumberUtilTest.swift */,
+				506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */,
 				F9426213289B1B5500460798 /* SignalRecipientTest.swift */,
 				F972180128DCFDF100113D9F /* TSContactThreadTest.swift */,
 				F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */,
@@ -8527,6 +8534,8 @@
 				F9C5C9F6289453B100548EEE /* PhoneNumberUtil.h */,
 				F9C5C9D3289453B100548EEE /* PhoneNumberUtil.m */,
 				F9C5C9F0289453B100548EEE /* PhoneNumberUtil.swift */,
+				506695E429C29C2F00B6D8D0 /* RecipientDataStore.swift */,
+				506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */,
 				F9C5C9DF289453B100548EEE /* SignalAccount+SDS.swift */,
 				F9C5C9D0289453B100548EEE /* SignalAccount.h */,
 				F9C5C9F3289453B100548EEE /* SignalAccount.m */,
@@ -11965,6 +11974,8 @@
 				F9C5CC3C289453B300548EEE /* ReactionFinder.swift in Sources */,
 				F9C5CC3D289453B300548EEE /* ReactionManager.swift in Sources */,
 				F9C5CE14289453B400548EEE /* ReadyFlag.swift in Sources */,
+				506695E529C29C2F00B6D8D0 /* RecipientDataStore.swift in Sources */,
+				506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
 				F9C5CCAD289453B300548EEE /* RefreshPreKeysOperation.swift in Sources */,
 				66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */,
@@ -12274,6 +12285,7 @@
 				F9426277289B1B5600460798 /* PhoneNumberUtilTest.swift in Sources */,
 				F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */,
 				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,
+				506695E129C296D500B6D8D0 /* RecipientMergerTest.swift in Sources */,
 				F942625D289B1B5500460798 /* RefineryTest.swift in Sources */,
 				6600F351298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift in Sources */,
 				6600F367298D9D1100B1EDB7 /* RegistrationSessionManagerTest.swift in Sources */,

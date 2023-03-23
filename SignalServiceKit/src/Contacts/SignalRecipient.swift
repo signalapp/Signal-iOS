@@ -63,289 +63,29 @@ extension SignalRecipient {
         trustLevel: SignalRecipientTrustLevel,
         transaction: SDSAnyWriteTransaction
     ) -> SignalRecipient {
-        owsAssertDebug(address.isValid)
-
-        switch trustLevel {
-        case .low:
-            return lowTrustRecipient(for: address, transaction: transaction)
-        case .high:
-            return highTrustRecipient(for: address, transaction: transaction)
-        }
-    }
-
-    /// Fetches (or creates) a low-trust recipient.
-    ///
-    /// Low trust fetches don't indicate any relation between the UUID and phone
-    /// number that are part of the address. They might be the same account, but
-    /// they also may refer to different accounts.
-    ///
-    /// In this method, we first try to fetch based on the UUID. If there's a
-    /// recipient for the UUID, we return it as-is, even if it has a different
-    /// phone number than `address`. If there's no recipient for the UUID (but
-    /// there is a UUID), we'll create a UUID-only recipient (i.e., we ignore
-    /// the phone number on `address`).
-    ///
-    /// Otherwise, we try to fetch based on the phone number. If there's a
-    /// recipient for the phone number, we return it as-is (even if it already
-    /// has a UUID specified). If there's not a recipient, we'll create a phone
-    /// number-only recipient (b/c the address has no UUID).
-    private static func lowTrustRecipient(
-        for address: SignalServiceAddress,
-        transaction: SDSAnyWriteTransaction
-    ) -> SignalRecipient {
-        owsAssertDebug(address.isValid)
-
-        let finder = AnySignalRecipientFinder()
-
-        if let uuidInstance = finder.signalRecipientForUUID(address.uuid, transaction: transaction) {
-            return uuidInstance
-        }
-        if let uuidString = address.uuidString {
-            Logger.debug("creating new low trust recipient with UUID: \(uuidString)")
-
-            let newInstance = SignalRecipient(uuidString: uuidString)
-            newInstance.anyInsert(transaction: transaction)
-
-            return newInstance
-        }
-        if let phoneNumberInstance = finder.signalRecipientForPhoneNumber(address.phoneNumber, transaction: transaction) {
-            return phoneNumberInstance
-        }
-        owsAssertDebug(address.phoneNumber != nil)
-        Logger.debug("creating new low trust recipient with phoneNumber: \(String(describing: address.phoneNumber))")
-
-        let newInstance = SignalRecipient(address: address)
-        newInstance.anyInsert(transaction: transaction)
-
-        return newInstance
-    }
-
-    private static func highTrustRecipient(
-        for address: SignalServiceAddress,
-        transaction: SDSAnyWriteTransaction
-    ) -> SignalRecipient {
-        let result = _highTrustRecipient(for: address, transaction: transaction)
-        signalServiceAddressCache.updateRecipient(result)
-        return result
-    }
-
-    /// Fetches (or creates) a high-trust recipient.
-    ///
-    /// High trust fetches indicate that the uuid & phone number represented by
-    /// `address` refer to the same account. As part of the fetch, the database
-    /// will be updated to reflect that relationship.
-    ///
-    /// In general, the rules we follow when applying changes are:
-    ///
-    /// * ACIs are immutable and representative of an account. We never change
-    ///   the ACI of a SignalRecipient from one ACI to another; instead we
-    ///   create a new SignalRecipient. (However, the ACI *may* change from a
-    ///   nil value to a nonnil value.)
-    ///
-    /// * Phone numbers are transient and can move freely between UUIDs. When
-    ///   they do, we must backfill the database to reflect the change.
-    private static func _highTrustRecipient(
-        for address: SignalServiceAddress,
-        transaction: SDSAnyWriteTransaction
-    ) -> SignalRecipient {
-        owsAssertDebug(address.isValid)
-
-        let phoneNumberInstance = AnySignalRecipientFinder()
-            .signalRecipientForPhoneNumber(address.phoneNumber, transaction: transaction)
-        let uuidInstance = AnySignalRecipientFinder()
-            .signalRecipientForUUID(address.uuid, transaction: transaction)
-
-        var shouldUpdate = false
-        let existingInstance: SignalRecipient?
-
-        if let uuidInstance, let phoneNumberInstance {
-            if uuidInstance.uniqueId == phoneNumberInstance.uniqueId {
-                // These are the same and both fully complete; we have no extra work to do.
-                existingInstance = phoneNumberInstance
-
-            } else if phoneNumberInstance.recipientUUID == nil && uuidInstance.recipientPhoneNumber == nil {
-                // These are the same, but not fully complete; we need to merge them.
-                existingInstance = merge(
-                    uuidInstance: uuidInstance,
-                    phoneNumberInstance: phoneNumberInstance,
-                    transaction: transaction
-                )
-                shouldUpdate = true
-            } else {
-                // The UUID differs between the two records; we need to migrate the phone
-                // number to the UUID instance.
-                Logger.warn("Learned phoneNumber (\(String(describing: address.phoneNumber))) now belongs to uuid (\(String(describing: address.uuid)).")
-
-                // Ordering is critical here. We must remove the phone number from the old
-                // recipient *before* we assign the phone number to the new recipient in
-                // case there are any legacy phone number-only records in the database.
-
-                shouldUpdate = true
-
-                phoneNumberInstance.changePhoneNumber(nil, transaction: transaction.unwrapGrdbWrite)
-                phoneNumberInstance.anyOverwritingUpdate(transaction: transaction)
-
-                // We've already used phoneNumberInstance.changePhoneNumber() above to
-                // ensure that phoneNumberInstance does not use address.phoneNumber.
-                //
-                // However, phoneNumberInstance.changePhoneNumber() will only update
-                // mappings in other database tables that exactly match the address
-                // components of phoneNumberInstance.
-                //
-                // The mappings in other tables might not exactly match the mappings in the
-                // SignalRecipient table. Therefore, to avoid crashes and other mapping
-                // problems, we need to ensure that no other db tables have a mapping that
-                // uses address.phoneNumber _before_ we use
-                // uuidInstance.changePhoneNumber() with address.phoneNumber.
-
-                // Since phoneNumberInstance is nonnil, we must have fetched it with a
-                // nonnil phone number, but the type system doesn't (currently) know this.
-                guard let addressPhoneNumber = address.phoneNumber else {
-                    owsFail("Missing phone number with non-nil result")
-                }
-
-                Self.clearDBMappings(forPhoneNumber: addressPhoneNumber, transaction: transaction)
-
-                uuidInstance.changePhoneNumber(address.phoneNumber, transaction: transaction.unwrapGrdbWrite)
-
-                existingInstance = uuidInstance
-            }
-        } else if let phoneNumberInstance {
-            if let uuid = address.uuid {
-                // There is no instance of SignalRecipient for the new uuid, but other db
-                // tables might have mappings for the new uuid. We need to clear that out.
-                Self.clearDBMappings(forUuid: uuid, transaction: transaction)
-            }
-
-            if address.uuidString != nil, phoneNumberInstance.recipientUUID != nil {
-                Logger.warn("Learned phoneNumber (\(String(describing: address.phoneNumber))) now belongs to uuid (\(String(describing: address.uuid)).")
-
-                // The UUID associated with this phone number has changed, we must clear
-                // the phone number from this instance and create a new instance.
-                phoneNumberInstance.changePhoneNumber(nil, transaction: transaction.unwrapGrdbWrite)
-                phoneNumberInstance.anyOverwritingUpdate(transaction: transaction)
-                // phoneNumberInstance is no longer associated with the phone number. We
-                // will create a "newInstance" for the new (uuid, phone number) below.
-                existingInstance = nil
-            } else {
-                if let uuid = address.uuid {
-                    Logger.warn("Learned uuid (\(uuid.uuidString)) is associated with phoneNumber (\(String(describing: address.phoneNumber)).")
-
-                    shouldUpdate = true
-                    phoneNumberInstance.recipientUUID = uuid.uuidString
-                }
-
-                existingInstance = phoneNumberInstance
-            }
-        } else if let uuidInstance {
-            if let phoneNumber = address.phoneNumber {
-                // We need to update the phone number on uuidInstance.
-
-                // There is no instance of SignalRecipient for the new phone number, but
-                // other db tables might have mappings for the new phone number. We need to
-                // clear that out.
-                Self.clearDBMappings(forPhoneNumber: phoneNumber, transaction: transaction)
-
-                if let oldPhoneNumber = uuidInstance.recipientPhoneNumber {
-                    Logger.warn("Learned uuid (\(String(describing: address.uuidString)) changed from old phoneNumber (\(oldPhoneNumber)) to new phoneNumber (\(phoneNumber))")
-                } else {
-                    Logger.warn("Learned uuid (\(String(describing: address.uuidString)) is associated with phoneNumber (\(phoneNumber)).")
-                }
-
-                shouldUpdate = true
-                uuidInstance.changePhoneNumber(address.phoneNumber, transaction: transaction.unwrapGrdbWrite)
-            } else {
-                // No work is necessary.
-            }
-
-            existingInstance = uuidInstance
-        } else {
-            existingInstance = nil
-        }
-
-        guard let existingInstance else {
-            Logger.debug("creating new high trust recipient with address: \(address)")
-
-            let newInstance = SignalRecipient(address: address)
-            newInstance.anyInsert(transaction: transaction)
-
-            return newInstance
-        }
-
-        // Record the updated contact in the social graph
-        if shouldUpdate {
-            existingInstance.anyOverwritingUpdate(transaction: transaction)
-            storageServiceManager.recordPendingUpdates(
-                updatedAccountIds: [existingInstance.accountId],
-                authedAccount: .implicit()
-            )
-        }
-
-        return existingInstance
-    }
-
-    private static func merge(
-        uuidInstance: SignalRecipient,
-        phoneNumberInstance: SignalRecipient,
-        transaction: SDSAnyWriteTransaction
-    ) -> SignalRecipient {
-        owsAssertDebug(uuidInstance.recipientPhoneNumber == nil || uuidInstance.recipientPhoneNumber == phoneNumberInstance.recipientPhoneNumber)
-        owsAssertDebug(phoneNumberInstance.recipientUUID == nil || phoneNumberInstance.recipientUUID == uuidInstance.recipientUUID)
-
-        // We have separate recipients in the db for the uuid and phone number.
-        // There isn't an ideal way to do this, but we need to converge on one
-        // recipient and discard the other.
-        //
-        // TODO: Should we clean up any state related to the discarded recipient?
-
-        // We try to preserve the recipient that has a session.
-        // (Note that we don't check for PNI sessions; we always prefer the ACI session there.)
-        let sessionStore = signalProtocolStore(for: .aci).sessionStore
-        let hasSessionForUuid = sessionStore.containsActiveSession(
-            forAccountId: uuidInstance.accountId,
-            deviceId: Int32(OWSDevicePrimaryDeviceId),
-            transaction: transaction
+        let recipientMerger = RecipientMergerImpl(
+            temporaryShims: SignalRecipientMergerTemporaryShims(
+                sessionStore: Self.signalProtocolStore(for: .aci).sessionStore
+            ),
+            dataStore: RecipientDataStoreImpl(),
+            storageServiceManager: Self.storageServiceManager
         )
-        let hasSessionForPhoneNumber = sessionStore.containsActiveSession(
-            forAccountId: phoneNumberInstance.accountId,
-            deviceId: Int32(OWSDevicePrimaryDeviceId),
-            transaction: transaction
+        let result = recipientMerger.merge(
+            trustLevel: trustLevel,
+            serviceId: address.serviceId,
+            phoneNumber: address.phoneNumber,
+            transaction: transaction.asV2Write
         )
-
-        if DebugFlags.verboseSignalRecipientLogging {
-            Logger.info("phoneNumberInstance: \(phoneNumberInstance)")
-            Logger.info("uuidInstance: \(uuidInstance)")
-            Logger.info("hasSessionForUuid: \(hasSessionForUuid)")
-            Logger.info("hasSessionForPhoneNumber: \(hasSessionForPhoneNumber)")
+        if let result {
+            signalServiceAddressCache.updateRecipient(result)
+            return result
         }
-
-        let winningInstance: SignalRecipient
-
-        // We want to retain the phone number recipient only if it has a session
-        // and the UUID recipient doesn't. Historically, we tried to be clever and
-        // pick the session that had seen more use, but merging sessions should
-        // only happen in exceptional circumstances these days.
-        if !hasSessionForUuid && hasSessionForPhoneNumber {
-            Logger.warn("Discarding uuid recipient in favor of phone number recipient.")
-            winningInstance = phoneNumberInstance
-            uuidInstance.anyRemove(transaction: transaction)
-        } else {
-            Logger.warn("Discarding phone number recipient in favor of uuid recipient.")
-            winningInstance = uuidInstance
-            phoneNumberInstance.anyRemove(transaction: transaction)
-        }
-
-        // Make sure the winning instance is fully qualified.
-        winningInstance.recipientPhoneNumber = phoneNumberInstance.recipientPhoneNumber
-        winningInstance.recipientUUID = uuidInstance.recipientUUID
-
-        OWSUserProfile.mergeUserProfilesIfNecessary(
-            for: winningInstance.address,
-            authedAccount: .implicit(),
-            transaction: transaction
-        )
-
-        return winningInstance
+        // If we reach this point, `address` is invalid and has neither a ServiceId
+        // nor a phone number. Insert an empty recipient (the old behavior).
+        owsFailDebug("Inserting recipient without any identifier.")
+        let emptyRecipient = SignalRecipient(serviceId: nil, phoneNumber: nil)
+        emptyRecipient.anyInsert(transaction: transaction)
+        return emptyRecipient
     }
 
     // MARK: -
@@ -354,50 +94,32 @@ extension SignalRecipient {
     public static let notificationKeyPhoneNumber = "phoneNumber"
     public static let notificationKeyUUID = "UUID"
 
-    private func changePhoneNumber(_ newPhoneNumber: String?, transaction: GRDBWriteTransaction) {
-        let oldPhoneNumber = recipientPhoneNumber?.nilIfEmpty
-        let oldUuidString = recipientUUID
-        let oldAddress = {
-            let oldDynamicAddress = self.address
-            return SignalServiceAddress(
-                uuid: oldDynamicAddress.uuid,
-                phoneNumber: oldDynamicAddress.phoneNumber,
-                ignoreCache: true
-            )
-        }()
+    fileprivate static func didUpdatePhoneNumber(
+        oldServiceIdString: String?,
+        oldPhoneNumber: String?,
+        newServiceIdString: String?,
+        newPhoneNumber: String?,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        let oldServiceId = ServiceId(uuidString: oldServiceIdString)
+        let newServiceId = ServiceId(uuidString: newServiceIdString)
+
+        let oldAddress = SignalServiceAddress(
+            uuid: oldServiceId?.uuidValue,
+            phoneNumber: oldPhoneNumber,
+            ignoreCache: true
+        )
+        let newAddress = SignalServiceAddress(
+            uuid: newServiceId?.uuidValue,
+            phoneNumber: newPhoneNumber,
+            ignoreCache: true
+        )
 
         // The "obsolete" address is the address with *only* the just-removed phone
         // number. (We *just* removed it, so we don't know its serviceId.)
         let obsoleteAddress = oldPhoneNumber.map { SignalServiceAddress(uuid: nil, phoneNumber: $0, ignoreCache: true) }
 
-        let isWhitelisted = profileManager.isUser(inProfileWhitelist: oldAddress, transaction: transaction.asAnyRead)
-
-        let newPhoneNumber = newPhoneNumber?.nilIfEmpty
-
-        if newPhoneNumber == nil && oldUuidString == nil {
-            Logger.warn("Clearing out the phone number on a recipient with no UUID. uuid: \(String(describing: oldUuidString)), phoneNumber: \(String(describing: oldPhoneNumber)) -> \(String(describing: newPhoneNumber)) ")
-            // Fill in a random UUID, so we can complete the change and maintain a common
-            // association for all the records and not leave them dangling. This should
-            // in general never happen.
-            recipientUUID = UUID().uuidString
-        } else {
-            Logger.info("uuid: \(String(describing: oldUuidString)), phoneNumber: \(String(describing: oldPhoneNumber)) -> \(String(describing: newPhoneNumber))")
-        }
-
-        recipientPhoneNumber = newPhoneNumber
-
-        let newUuidString = recipientUUID
-        let newUuid: UUID? = newUuidString.flatMap { UUID(uuidString: $0) }
-        let newAddress = {
-            let newDynamicAddress = self.address
-            return SignalServiceAddress(
-                uuid: newDynamicAddress.uuid,
-                phoneNumber: newDynamicAddress.phoneNumber,
-                ignoreCache: true
-            )
-        }()
-
-        Logger.info("uuid: \(String(describing: oldUuidString)) ->  \(String(describing: newUuidString)), phoneNumber: \(String(describing: oldPhoneNumber)) -> \(String(describing: newPhoneNumber))")
+        let isWhitelisted = profileManager.isUser(inProfileWhitelist: oldAddress, transaction: transaction)
 
         transaction.addAsyncCompletion(queue: .global()) {
             let phoneNumbers: [String] = [oldPhoneNumber, newPhoneNumber].compactMap { $0 }
@@ -405,8 +127,8 @@ extension SignalRecipient {
                 var userInfo: [AnyHashable: Any] = [
                     Self.notificationKeyPhoneNumber: phoneNumber
                 ]
-                if let newUuidString {
-                    userInfo[Self.notificationKeyUUID] = newUuidString
+                if let newServiceIdString {
+                    userInfo[Self.notificationKeyUUID] = newServiceIdString
                 }
                 NotificationCenter.default.postNotificationNameAsync(Self.phoneNumberDidChange,
                                                                      object: nil,
@@ -416,16 +138,16 @@ extension SignalRecipient {
 
         Self.updateDBTableMappings(newPhoneNumber: newPhoneNumber,
                                    oldPhoneNumber: oldPhoneNumber,
-                                   newUuid: newUuidString,
-                                   transaction: transaction)
+                                   newUuid: newServiceIdString,
+                                   transaction: transaction.unwrapGrdbWrite)
 
-        if let newUuid,
-           let localUuid = tsAccountManager.localUuid,
-           localUuid != newUuid,
+        if let newServiceId,
+           let localAci = tsAccountManager.localUuid(with: transaction).map({ ServiceId($0) }),
+           localAci != newServiceId,
            let oldPhoneNumber,
            let newPhoneNumber {
             let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = [
-                .changePhoneNumberUuid: newUuid.uuidString,
+                .changePhoneNumberUuid: newServiceId.uuidValue.uuidString,
                 .changePhoneNumberOld: oldPhoneNumber,
                 .changePhoneNumberNew: newPhoneNumber
             ]
@@ -435,8 +157,7 @@ extension SignalRecipient {
                     // Skip if thread is soft deleted or otherwise not user visible.
                     return
                 }
-                let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread,
-                                                                                  transaction: transaction.asAnyRead)
+                let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
                 guard !threadAssociatedData.isArchived else {
                     // Skip if thread is archived.
                     return
@@ -445,14 +166,11 @@ extension SignalRecipient {
                                                 messageType: .phoneNumberChange,
                                                 infoMessageUserInfo: infoMessageUserInfo)
                 infoMessage.wasRead = true
-                infoMessage.anyInsert(transaction: transaction.asAnyWrite)
+                infoMessage.anyInsert(transaction: transaction)
             }
 
-            TSGroupThread.enumerateGroupThreads(
-                with: newAddress,
-                transaction: transaction.asAnyRead
-            ) { thread, _ in
-                guard thread.groupMembership.isFullMember(newUuid) else {
+            TSGroupThread.enumerateGroupThreads(with: newAddress, transaction: transaction ) { thread, _ in
+                guard thread.groupMembership.isFullMember(newServiceId.uuidValue) else {
                     // Only insert "change phone number" interactions for
                     // full members.
                     return
@@ -461,8 +179,7 @@ extension SignalRecipient {
             }
 
             // Only insert "change phone number" interaction in 1:1 thread if it already exists.
-            if let thread = TSContactThread.getWithContactAddress(newAddress,
-                                                                  transaction: transaction.asAnyRead) {
+            if let thread = TSContactThread.getWithContactAddress(newAddress, transaction: transaction) {
                 insertPhoneNumberChangeInteraction(thread)
             }
         }
@@ -472,18 +189,18 @@ extension SignalRecipient {
 
         ModelReadCaches.shared.evacuateAllCaches()
 
-        if let contactThread = AnyContactThreadFinder().contactThread(for: newAddress, transaction: transaction.asAnyRead) {
-            SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction.asAnyWrite)
+        if let contactThread = AnyContactThreadFinder().contactThread(for: newAddress, transaction: transaction) {
+            SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction)
         }
-        TSGroupMember.enumerateGroupMembers(for: newAddress, transaction: transaction.asAnyRead) { member, _ in
-            GRDBFullTextSearchFinder.modelWasUpdated(model: member, transaction: transaction)
+        TSGroupMember.enumerateGroupMembers(for: newAddress, transaction: transaction) { member, _ in
+            GRDBFullTextSearchFinder.modelWasUpdated(model: member, transaction: transaction.unwrapGrdbWrite)
         }
 
-        if let newUuid {
+        if let newServiceId {
             if !newAddress.isLocalAddress {
                 self.versionedProfiles.clearProfileKeyCredential(
-                    for: ServiceIdObjC(uuidValue: newUuid),
-                    transaction: transaction.asAnyWrite
+                    for: ServiceIdObjC(newServiceId),
+                    transaction: transaction
                 )
 
                 if let obsoleteAddress {
@@ -492,7 +209,7 @@ extension SignalRecipient {
                         fromProfileWhitelist: obsoleteAddress,
                         userProfileWriter: .changePhoneNumber,
                         authedAccount: .implicit(),
-                        transaction: transaction.asAnyWrite
+                        transaction: transaction
                     )
                 }
 
@@ -502,14 +219,14 @@ extension SignalRecipient {
                         toProfileWhitelist: newAddress,
                         userProfileWriter: .changePhoneNumber,
                         authedAccount: .implicit(),
-                        transaction: transaction.asAnyWrite
+                        transaction: transaction
                     )
                 } else {
                     profileManager.removeUser(
                         fromProfileWhitelist: newAddress,
                         userProfileWriter: .changePhoneNumber,
                         authedAccount: .implicit(),
-                        transaction: transaction.asAnyWrite
+                        transaction: transaction
                     )
                 }
             }
@@ -518,14 +235,14 @@ extension SignalRecipient {
         }
 
         if let obsoleteAddress {
-            ProfileFetcherJob.clearProfileState(address: obsoleteAddress, transaction: transaction.asAnyWrite)
+            ProfileFetcherJob.clearProfileState(address: obsoleteAddress, transaction: transaction)
 
             transaction.addAsyncCompletion(queue: .global()) {
                 Self.udManager.setUnidentifiedAccessMode(.unknown, address: obsoleteAddress)
             }
         }
 
-        if newUuid != nil {
+        if newServiceId != nil {
             transaction.addAsyncCompletion(queue: .global()) {
                 Self.udManager.setUnidentifiedAccessMode(.unknown, address: newAddress)
 
@@ -542,11 +259,12 @@ extension SignalRecipient {
         }
     }
 
-    private static func updateDBTableMappings(newPhoneNumber: String?,
-                                              oldPhoneNumber: String?,
-                                              newUuid: String?,
-                                              transaction: GRDBWriteTransaction) {
-
+    private static func updateDBTableMappings(
+        newPhoneNumber: String?,
+        oldPhoneNumber: String?,
+        newUuid: String?,
+        transaction: GRDBWriteTransaction
+    ) {
         guard newUuid != nil || newPhoneNumber != nil else {
             owsFailDebug("Missing newUuid and newPhoneNumber.")
             return
@@ -572,7 +290,7 @@ extension SignalRecipient {
     // There is no instance of SignalRecipient for the new uuid,
     // but other db tables might have mappings for the new uuid.
     // We need to clear that out.
-    private static func clearDBMappings(forUuid uuid: UUID, transaction: SDSAnyWriteTransaction) {
+    fileprivate static func clearDBMappings(forUuid uuid: UUID, transaction: SDSAnyWriteTransaction) {
         Logger.info("uuid: \(uuid)")
 
         let mockUuid = UUID().uuidString
@@ -610,7 +328,7 @@ extension SignalRecipient {
     // There is no instance of SignalRecipient for the new phone number,
     // but other db tables might have mappings for the new phone number.
     // We need to clear that out.
-    private static func clearDBMappings(forPhoneNumber phoneNumber: String, transaction: SDSAnyWriteTransaction) {
+    fileprivate static func clearDBMappings(forPhoneNumber phoneNumber: String, transaction: SDSAnyWriteTransaction) {
         guard let phoneNumber = phoneNumber.nilIfEmpty else {
             owsFailDebug("Invalid phoneNumber.")
             return
@@ -689,5 +407,53 @@ extension SignalRecipient {
     public var addressComponentsDescription: String {
         SignalServiceAddress.addressComponentsDescription(uuidString: recipientUUID,
                                                           phoneNumber: recipientPhoneNumber)
+    }
+}
+
+class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
+    private let sessionStore: SSKSessionStore
+
+    init(sessionStore: SSKSessionStore) {
+        self.sessionStore = sessionStore
+    }
+
+    func clearMappings(phoneNumber: String, transaction: DBWriteTransaction) {
+        SignalRecipient.clearDBMappings(forPhoneNumber: phoneNumber, transaction: SDSDB.shimOnlyBridge(transaction))
+    }
+
+    func clearMappings(serviceId: ServiceId, transaction: DBWriteTransaction) {
+        SignalRecipient.clearDBMappings(forUuid: serviceId.uuidValue, transaction: SDSDB.shimOnlyBridge(transaction))
+    }
+
+    func didUpdatePhoneNumber(
+        oldServiceIdString: String?,
+        oldPhoneNumber: String?,
+        newServiceIdString: String?,
+        newPhoneNumber: String?,
+        transaction: DBWriteTransaction
+    ) {
+        SignalRecipient.didUpdatePhoneNumber(
+            oldServiceIdString: oldServiceIdString,
+            oldPhoneNumber: oldPhoneNumber,
+            newServiceIdString: newServiceIdString,
+            newPhoneNumber: newPhoneNumber,
+            transaction: SDSDB.shimOnlyBridge(transaction)
+        )
+    }
+
+    func mergeUserProfilesIfNecessary(serviceId: ServiceId, phoneNumber: String, transaction: DBWriteTransaction) {
+        OWSUserProfile.mergeUserProfilesIfNecessary(
+            for: SignalServiceAddress(uuid: serviceId.uuidValue, phoneNumber: phoneNumber),
+            authedAccount: .implicit(),
+            transaction: SDSDB.shimOnlyBridge(transaction)
+        )
+    }
+
+    func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool {
+        sessionStore.containsActiveSession(
+            forAccountId: recipientId,
+            deviceId: deviceId,
+            transaction: SDSDB.shimOnlyBridge(transaction)
+        )
     }
 }
