@@ -112,130 +112,126 @@ class RecipientMergerImpl: RecipientMerger {
     /// * Phone numbers are transient and can move freely between ACIs. When
     /// they do, we must backfill the database to reflect the change.
     private func mergeHighTrust(serviceId: ServiceId?, phoneNumber: String?, transaction: DBWriteTransaction) -> SignalRecipient? {
-        var shouldUpdate = false
+        // If we don't have both identifiers, we can't merge anything, so just
+        // fetch or create a recipient with whichever identifier was provided.
+        guard let serviceId, let phoneNumber else {
+            return mergeLowTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
+        }
 
-        let serviceIdRecipient = serviceId.flatMap { dataStore.fetchRecipient(serviceId: $0, transaction: transaction) }
-        let phoneNumberRecipient = phoneNumber.flatMap { dataStore.fetchRecipient(phoneNumber: $0, transaction: transaction) }
-        let existingRecipient: SignalRecipient?
+        let serviceIdRecipient = dataStore.fetchRecipient(serviceId: serviceId, transaction: transaction)
 
-        if let serviceId, let serviceIdRecipient, let phoneNumber, let phoneNumberRecipient {
-            if serviceIdRecipient.uniqueId == phoneNumberRecipient.uniqueId {
-                // These are the same and both fully complete; we have no extra work to do.
-                existingRecipient = phoneNumberRecipient
+        // If these values have already been merged, we can return the result
+        // without any modifications. This will be the path taken in 99% of cases
+        // (ie, we'll hit this path every time a recipient sends you a message,
+        // assuming they haven't changed their phone number).
+        if let serviceIdRecipient, serviceIdRecipient.recipientPhoneNumber == phoneNumber {
+            return serviceIdRecipient
+        }
 
-            } else if phoneNumberRecipient.recipientUUID == nil && serviceIdRecipient.recipientPhoneNumber == nil {
-                // These are the same, but not fully complete; we need to merge them.
-                shouldUpdate = true
-                existingRecipient = mergeRecipients(
-                    serviceId: serviceId,
-                    serviceIdRecipient: serviceIdRecipient,
-                    phoneNumber: phoneNumber,
-                    phoneNumberRecipient: phoneNumberRecipient,
-                    transaction: transaction
-                )
+        // In every other case, we need to change *something*. The goal of the
+        // remainder of this method is to ensure there's a `SignalRecipient` such
+        // that calling this method again, immediately, with the same parameters
+        // would match the the prior `if` check and return early without making any
+        // modifications.
 
-            } else {
-                // The UUID differs between the two records; we need to migrate the phone
-                // number to the UUID instance.
-                Logger.warn("Learned phoneNumber (\(phoneNumber))) now belongs to serviceId (\(serviceId)")
+        let mergedRecipient: SignalRecipient
+
+        switch _mergeHighTrust(
+            serviceId: serviceId,
+            phoneNumber: phoneNumber,
+            serviceIdRecipient: serviceIdRecipient,
+            transaction: transaction
+        ) {
+        case .some(let updatedRecipient):
+            mergedRecipient = updatedRecipient
+            dataStore.updateRecipient(mergedRecipient, transaction: transaction)
+            storageServiceManager.recordPendingUpdates(
+                updatedAccountIds: [mergedRecipient.accountId],
+                authedAccount: .implicit()
+            )
+        case .none:
+            mergedRecipient = SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: phoneNumber)
+            dataStore.insertRecipient(mergedRecipient, transaction: transaction)
+        }
+
+        return mergedRecipient
+    }
+
+    private func _mergeHighTrust(
+        serviceId: ServiceId,
+        phoneNumber: String,
+        serviceIdRecipient: SignalRecipient?,
+        transaction: DBWriteTransaction
+    ) -> SignalRecipient? {
+        let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber, transaction: transaction)
+
+        if let serviceIdRecipient {
+            if let phoneNumberRecipient {
+                if phoneNumberRecipient.recipientUUID == nil && serviceIdRecipient.recipientPhoneNumber == nil {
+                    // These are the same, but not fully complete; we need to merge them.
+                    return mergeRecipients(
+                        serviceId: serviceId,
+                        serviceIdRecipient: serviceIdRecipient,
+                        phoneNumber: phoneNumber,
+                        phoneNumberRecipient: phoneNumberRecipient,
+                        transaction: transaction
+                    )
+                }
 
                 // Ordering is critical here. We must remove the phone number from the old
                 // recipient *before* we assign the phone number to the new recipient in
                 // case there are any legacy phone number-only records in the database.
 
-                shouldUpdate = true
-
                 updateRecipient(phoneNumberRecipient, phoneNumber: nil, transaction: transaction)
                 dataStore.updateRecipient(phoneNumberRecipient, transaction: transaction)
 
-                // We've already used phoneNumberInstance.changePhoneNumber() above to
-                // ensure that phoneNumberInstance does not use address.phoneNumber.
-                //
-                // However, phoneNumberInstance.changePhoneNumber() will only update
-                // mappings in other database tables that exactly match the address
-                // components of phoneNumberInstance.
-                //
-                // The mappings in other tables might not exactly match the mappings in the
-                // SignalRecipient table. Therefore, to avoid crashes and other mapping
-                // problems, we need to ensure that no other db tables have a mapping that
-                // uses address.phoneNumber _before_ we use
-                // uuidInstance.changePhoneNumber() with address.phoneNumber.
-
-                temporaryShims.clearMappings(phoneNumber: phoneNumber, transaction: transaction)
-                updateRecipient(serviceIdRecipient, phoneNumber: phoneNumber, transaction: transaction)
-
-                existingRecipient = serviceIdRecipient
+                // Fall through now that we've cleaned up `phoneNumberRecipient`.
             }
-        } else if let phoneNumber, let phoneNumberRecipient {
-            if let serviceId {
-                // There is no instance of SignalRecipient for the new uuid, but other db
-                // tables might have mappings for the new uuid. We need to clear that out.
-                temporaryShims.clearMappings(serviceId: serviceId, transaction: transaction)
 
-                if phoneNumberRecipient.recipientUUID != nil {
-                    Logger.warn("Learned phoneNumber \(phoneNumber) now belongs to serviceId \(serviceId)")
+            // We've already used `updateRecipient(_:phoneNumber:…)` (if necessary) to
+            // ensure that `phoneNumberInstance` doesn't use `phoneNumber`.
+            //
+            // However, that will only update mappings in other database tables that
+            // exactly match the address components of `phoneNumberInstance`. (?)
+            //
+            // The mappings in other tables might not exactly match the mappings in the
+            // `SignalRecipient` table. Therefore, to avoid crashes and other mapping
+            // problems, we need to ensure that no other tables have mappings that use
+            // `phoneNumber` _before_ we update `serviceIdRecipient`'s phone number.
+            temporaryShims.clearMappings(phoneNumber: phoneNumber, transaction: transaction)
 
-                    // The UUID associated with this phone number has changed, we must clear
-                    // the phone number from this instance and create a new instance.
-                    updateRecipient(phoneNumberRecipient, phoneNumber: nil, transaction: transaction)
-                    dataStore.updateRecipient(phoneNumberRecipient, transaction: transaction)
-                    // phoneNumberInstance is no longer associated with the phone number. We
-                    // will create a "newInstance" for the new (uuid, phone number) below.
-                    existingRecipient = nil
-                } else {
-                    Logger.info("Learned serviceId \(serviceId) is associated with phoneNumber \(phoneNumber)")
-
-                    shouldUpdate = true
-                    phoneNumberRecipient.recipientUUID = serviceId.uuidValue.uuidString
-                    existingRecipient = phoneNumberRecipient
-                }
+            if let oldPhoneNumber = serviceIdRecipient.recipientPhoneNumber {
+                Logger.info("Learned serviceId \(serviceId) changed from old phoneNumber \(oldPhoneNumber) to new phoneNumber \(phoneNumber)")
             } else {
-                existingRecipient = phoneNumberRecipient
-            }
-        } else if let serviceId, let serviceIdRecipient {
-            if let phoneNumber {
-                // We need to update the phone number on uuidInstance.
-
-                // There is no instance of SignalRecipient for the new phone number, but
-                // other db tables might have mappings for the new phone number. We need to
-                // clear that out.
-                temporaryShims.clearMappings(phoneNumber: phoneNumber, transaction: transaction)
-
-                if let oldPhoneNumber = serviceIdRecipient.recipientPhoneNumber {
-                    Logger.info("Learned serviceId \(serviceId) changed from old phoneNumber \(oldPhoneNumber) to new phoneNumber \(phoneNumber)")
-                } else {
-                    Logger.info("Learned serviceId \(serviceId) is associated with phoneNumber \(phoneNumber)")
-                }
-
-                shouldUpdate = true
-
-                updateRecipient(serviceIdRecipient, phoneNumber: phoneNumber, transaction: transaction)
-            } else {
-                // No work is necessary.
+                Logger.info("Learned serviceId \(serviceId) is associated with phoneNumber \(phoneNumber)")
             }
 
-            existingRecipient = serviceIdRecipient
-        } else {
-            existingRecipient = nil
+            updateRecipient(serviceIdRecipient, phoneNumber: phoneNumber, transaction: transaction)
+            return serviceIdRecipient
         }
 
-        guard let existingRecipient else {
-            Logger.debug("creating new high trust recipient: \(String(describing: serviceId)), \(String(describing: phoneNumber))")
-            let newInstance = SignalRecipient(serviceId: serviceId.map { ServiceIdObjC($0) }, phoneNumber: phoneNumber)
-            dataStore.insertRecipient(newInstance, transaction: transaction)
-            return newInstance
+        if let phoneNumberRecipient {
+            // There is no SignalRecipient for the new ServiceId, but other db tables
+            // might have mappings for the new ServiceId. We need to clear that out.
+            temporaryShims.clearMappings(serviceId: serviceId, transaction: transaction)
+
+            if phoneNumberRecipient.recipientUUID != nil {
+                // We can't change the ServiceId because it's non-empty. Instead, we must
+                // create a new SignalRecipient. We clear the phone number here since it
+                // will belong to the new SignalRecipient.
+                Logger.info("Learned phoneNumber \(phoneNumber) transferred to serviceId \(serviceId)")
+                updateRecipient(phoneNumberRecipient, phoneNumber: nil, transaction: transaction)
+                dataStore.updateRecipient(phoneNumberRecipient, transaction: transaction)
+                return nil
+            }
+
+            Logger.info("Learned serviceId \(serviceId) is associated with phoneNumber \(phoneNumber)")
+            phoneNumberRecipient.recipientUUID = serviceId.uuidValue.uuidString
+            return phoneNumberRecipient
         }
 
-        // Record the updated contact in the social graph
-        if shouldUpdate {
-            dataStore.updateRecipient(existingRecipient, transaction: transaction)
-            storageServiceManager.recordPendingUpdates(
-                updatedAccountIds: [existingRecipient.accountId],
-                authedAccount: .implicit()
-            )
-        }
-
-        return existingRecipient
+        // We couldn't find a recipient, so create a new one.
+        return nil
     }
 
     private func updateRecipient(
