@@ -12,7 +12,7 @@ class UsernameSelectionCoordinator {
         let databaseStorage: SDSDatabaseStorage
         let usernameLookupManager: UsernameLookupManager
         let schedulers: Schedulers
-        let storageServiceManager: StorageServiceManagerProtocol
+        let storageServiceManager: StorageServiceManager
     }
 
     private let localAci: UUID

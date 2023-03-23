@@ -938,7 +938,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let preferences: OWSPreferences
     private let profileManager: OWSProfileManager
     private let receiptManager: OWSReceiptManager
-    private let storageServiceManager: StorageServiceManagerProtocol
+    private let storageServiceManager: StorageServiceManager
     private let subscriptionManager: SubscriptionManager
     private let systemStoryManager: SystemStoryManagerProtocol
     private let tsAccountManager: TSAccountManager
@@ -956,7 +956,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         preferences: OWSPreferences,
         profileManager: OWSProfileManager,
         receiptManager: OWSReceiptManager,
-        storageServiceManager: StorageServiceManagerProtocol,
+        storageServiceManager: StorageServiceManager,
         subscriptionManager: SubscriptionManager,
         systemStoryManager: SystemStoryManagerProtocol,
         tsAccountManager: TSAccountManager,

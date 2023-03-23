@@ -326,8 +326,8 @@ public protocol _UsernameValidationManager_StorageServiceManagerShim {
 }
 
 internal class _UsernameValidationManager_StorageServiceManagerWrapper: Usernames.Validation.Shims.StorageServiceManager {
-    private let storageServiceManager: StorageServiceManagerProtocol
-    public init(_ storageServiceManager: StorageServiceManagerProtocol) {
+    private let storageServiceManager: StorageServiceManager
+    public init(_ storageServiceManager: StorageServiceManager) {
         self.storageServiceManager = storageServiceManager
     }
 

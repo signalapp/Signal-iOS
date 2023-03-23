@@ -439,7 +439,7 @@ public class AccountManager: NSObject, Dependencies {
             let storageServiceRestorePromise = firstly {
                 NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
             }.then {
-                StorageServiceManager.shared.restoreOrCreateManifestIfNecessary(authedAccount: .implicit()).asVoid()
+                StorageServiceManagerImpl.shared.restoreOrCreateManifestIfNecessary(authedAccount: .implicit()).asVoid()
             }.ensure {
                 BenchEventComplete(eventId: "initial-storage-service-restore")
             }.timeout(seconds: 60)

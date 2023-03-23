@@ -61,7 +61,7 @@ public class DependenciesBridge {
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
         signalService: OWSSignalServiceProtocol,
-        storageServiceManager: StorageServiceManagerProtocol,
+        storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager
     ) {
@@ -92,7 +92,7 @@ public class DependenciesBridge {
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
         signalService: OWSSignalServiceProtocol,
-        storageServiceManager: StorageServiceManagerProtocol,
+        storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol
@@ -177,7 +177,7 @@ public class DependenciesBridgeSetup: NSObject {
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
         signalService: OWSSignalServiceProtocol,
-        storageServiceManager: StorageServiceManagerProtocol,
+        storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager
     ) {

@@ -24,7 +24,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         let databaseStorage: SDSDatabaseStorage
         let usernameLookupManager: UsernameLookupManager
         let schedulers: Schedulers
-        let storageServiceManager: StorageServiceManagerProtocol
+        let storageServiceManager: StorageServiceManager
     }
 
     enum Constants {

@@ -61,7 +61,7 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol ProfileManagerProtocol;
 @protocol RemoteConfigManager;
 @protocol SSKReachabilityManager;
-@protocol StorageServiceManagerProtocol;
+@protocol StorageServiceManager;
 @protocol SubscriptionManager;
 @protocol SyncManagerProtocol;
 @protocol SystemStoryManagerProtocolObjc;
@@ -104,7 +104,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                           signalService:(id<OWSSignalServiceProtocol>)signalService
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
-                  storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
+                  storageServiceManager:(id<StorageServiceManager>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
                          sskPreferences:(SSKPreferences *)sskPreferences
                                groupsV2:(id<GroupsV2>)groupsV2
@@ -164,7 +164,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) SignalServiceAddressCache *signalServiceAddressCacheRef;
 @property (nonatomic, readonly) id<OWSSignalServiceProtocol> signalServiceRef;
 @property (nonatomic, readonly) AccountServiceClient *accountServiceClientRef;
-@property (nonatomic, readonly) id<StorageServiceManagerProtocol> storageServiceManagerRef;
+@property (nonatomic, readonly) id<StorageServiceManager> storageServiceManagerRef;
 @property (nonatomic, readonly) id<GroupsV2> groupsV2Ref;
 @property (nonatomic, readonly) id<GroupV2Updates> groupV2UpdatesRef;
 @property (nonatomic, readonly) StickerManager *stickerManagerRef;

@@ -29,7 +29,7 @@ public struct RegistrationCoordinatorDependencies {
     public let signalRecipientShim: RegistrationCoordinatorImpl.Shims.SignalRecipient
     public let sessionManager: RegistrationSessionManager
     public let signalService: OWSSignalServiceProtocol
-    public let storageServiceManager: StorageServiceManagerProtocol
+    public let storageServiceManager: StorageServiceManager
     public let tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager
     public let udManager: RegistrationCoordinatorImpl.Shims.UDManager
 

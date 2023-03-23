@@ -1151,7 +1151,7 @@
 		88DF819D28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819C28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift */; };
 		88DF81A128E1538000F8BA80 /* ProxyLinkSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF81A028E1538000F8BA80 /* ProxyLinkSheetViewController.swift */; };
 		88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF81A228E15D1600F8BA80 /* ProxySettingsViewController.swift */; };
-		88E34F2722F269E900966CC2 /* StorageServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2622F269E900966CC2 /* StorageServiceManager.swift */; };
+		88E34F2722F269E900966CC2 /* StorageServiceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2622F269E900966CC2 /* StorageServiceManagerImpl.swift */; };
 		88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */; };
 		88E728FF25F0241100A2E4A4 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */; };
 		88E8BEF028D53C3700509CE2 /* indeterminate_spinner_20.json in Resources */ = {isa = PBXBuildFile; fileRef = 88E8BEEF28D53C3700509CE2 /* indeterminate_spinner_20.json */; };
@@ -3659,7 +3659,7 @@
 		88E1EACA26BB283D00AD0C2D /* bn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bn; path = translations/bn.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88E1EACB26BB285700AD0C2D /* gu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gu; path = translations/gu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88E1EACD26BB28A400AD0C2D /* zh_HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_HK; path = translations/zh_HK.lproj/Localizable.strings; sourceTree = "<group>"; };
-		88E34F2622F269E900966CC2 /* StorageServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceManager.swift; sourceTree = "<group>"; };
+		88E34F2622F269E900966CC2 /* StorageServiceManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceManagerImpl.swift; sourceTree = "<group>"; };
 		88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageServiceProto+Sync.swift"; sourceTree = "<group>"; };
 		88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewController.swift; sourceTree = "<group>"; };
 		88E8BEEF28D53C3700509CE2 /* indeterminate_spinner_20.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_20.json; sourceTree = "<group>"; };
@@ -7264,7 +7264,7 @@
 		88E34F2522F269B600966CC2 /* Storage Service */ = {
 			isa = PBXGroup;
 			children = (
-				88E34F2622F269E900966CC2 /* StorageServiceManager.swift */,
+				88E34F2622F269E900966CC2 /* StorageServiceManagerImpl.swift */,
 				88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */,
 			);
 			path = "Storage Service";
@@ -10824,7 +10824,7 @@
 				454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */,
 				D9668B35291B088200665298 /* SignalMessagingJobQueues.swift in Sources */,
 				340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */,
-				88E34F2722F269E900966CC2 /* StorageServiceManager.swift in Sources */,
+				88E34F2722F269E900966CC2 /* StorageServiceManagerImpl.swift in Sources */,
 				88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */,
 				F9B3A92B2935472F0071EB95 /* Stripe+3DSecure.swift in Sources */,
 				F98ED2D629255E92008483DC /* Stripe+PaymentMethod.swift in Sources */,

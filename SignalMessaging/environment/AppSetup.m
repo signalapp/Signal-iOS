@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWS2FAManager *ows2FAManager = [OWS2FAManager new];
         SignalProtocolStore *pniSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityPNI];
         id<OWSSignalServiceProtocol> signalService = [OWSSignalService new];
-        OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
+        OWSStorageServiceManagerImpl *storageServiceManager = OWSStorageServiceManagerImpl.shared;
         id<SyncManagerProtocol> syncManager = (id<SyncManagerProtocol>)[[OWSSyncManager alloc] initDefault];
         TSAccountManager *tsAccountManager = [TSAccountManager new];
 

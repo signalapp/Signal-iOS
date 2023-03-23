@@ -6,7 +6,7 @@
 import Foundation
 
 @objc(OWSFakeStorageServiceManager)
-public class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol {
+public class FakeStorageServiceManager: NSObject, StorageServiceManager {
     public func recordPendingDeletions(deletedGroupV1Ids: [Data]) {}
 
     public func recordPendingUpdates(

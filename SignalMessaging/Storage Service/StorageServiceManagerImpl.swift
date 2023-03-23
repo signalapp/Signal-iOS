@@ -7,13 +7,13 @@ import Foundation
 import SignalServiceKit
 import SwiftProtobuf
 
-@objc(OWSStorageServiceManager)
-public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
+@objc(OWSStorageServiceManagerImpl)
+public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     // TODO: We could convert this into a SSKEnvironment accessor so that we
     // can replace it in tests.
     @objc
-    public static let shared = StorageServiceManager()
+    public static let shared = StorageServiceManagerImpl()
 
     private let operationQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -343,7 +343,7 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         Logger.info("")
 
         let timer = Timer(
-            timeInterval: StorageServiceManager.backupDebounceInterval,
+            timeInterval: StorageServiceManagerImpl.backupDebounceInterval,
             target: self,
             selector: #selector(self.backupTimerFired(_:)),
             userInfo: nil,
@@ -1143,7 +1143,7 @@ class StorageServiceOperation: OWSOperation {
                 mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
 
                 if backupAfterSuccess {
-                    StorageServiceManager.shared.backupPendingChanges(
+                    StorageServiceManagerImpl.shared.backupPendingChanges(
                         authedAccount: authedAccount
                     )
                 }

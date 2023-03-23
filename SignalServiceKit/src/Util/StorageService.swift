@@ -6,7 +6,7 @@
 import Foundation
 
 @objc
-public protocol StorageServiceManagerProtocol {
+public protocol StorageServiceManager {
     func recordPendingDeletions(deletedGroupV1Ids: [Data])
 
     // NOTE: auth used to validate local address, not make requests.

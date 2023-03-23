@@ -67,8 +67,8 @@ public protocol _KeyBackupServiceImpl_StorageServiceManagerShim {
 }
 
 public class _KeyBackupServiceImpl_StorageServiceManagerWrapper: KBS.Shims.StorageServiceManager {
-    private let manager: StorageServiceManagerProtocol
-    public init(_ manager: StorageServiceManagerProtocol) { self.manager = manager }
+    private let manager: StorageServiceManager
+    public init(_ manager: StorageServiceManager) { self.manager = manager }
 
     public func resetLocalData(transaction: DBWriteTransaction) {
         manager.resetLocalData(transaction: SDSDB.shimOnlyBridge(transaction))

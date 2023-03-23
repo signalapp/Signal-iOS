@@ -107,7 +107,7 @@ static SSKEnvironment *sharedSSKEnvironment;
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                           signalService:(id<OWSSignalServiceProtocol>)signalService
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
-                  storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
+                  storageServiceManager:(id<StorageServiceManager>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
                          sskPreferences:(SSKPreferences *)sskPreferences
                                groupsV2:(id<GroupsV2>)groupsV2
