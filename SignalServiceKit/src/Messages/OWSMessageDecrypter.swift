@@ -719,13 +719,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             TSPreKeyManager.checkPreKeysIfNecessary()
         }
 
-        let sourceAddress = decryptResult.senderAddress
-        guard
-            sourceAddress.isValid,
-            let sourceUuid = sourceAddress.uuidString
-        else {
-            return .failure(OWSAssertionError("Invalid UD sender: \(sourceAddress)"))
-        }
+        let sourceAddress = SignalServiceAddress(
+            uuid: decryptResult.senderServiceId.uuidValue,
+            phoneNumber: decryptResult.senderE164,
+            ignoreCache: true
+        )
 
         let rawSourceDeviceId = decryptResult.senderDeviceId
         guard rawSourceDeviceId > 0, rawSourceDeviceId < UInt32.max else {
@@ -743,7 +741,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         let plaintextData = decryptResult.paddedPayload.withoutPadding()
 
         let identifiedEnvelopeBuilder = envelope.asBuilder()
-        identifiedEnvelopeBuilder.setSourceUuid(sourceUuid)
+        identifiedEnvelopeBuilder.setSourceUuid(decryptResult.senderServiceId.uuidValue.uuidString)
         identifiedEnvelopeBuilder.setSourceDevice(sourceDeviceId)
 
         let identifiedEnvelope: SSKProtoEnvelope

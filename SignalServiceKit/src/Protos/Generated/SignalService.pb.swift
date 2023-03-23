@@ -114,7 +114,6 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `serverTimestamp`. Subsequent reads from it will return its default value.
   mutating func clearServerTimestamp() {self._serverTimestamp = nil}
 
-  /// @trustedMapping
   var sourceUuid: String {
     get {return _sourceUuid ?? String()}
     set {_sourceUuid = newValue}
@@ -4318,7 +4317,6 @@ struct SignalServiceProtos_ContactDetails {
   /// Clears the value of `contactE164`. Subsequent reads from it will return its default value.
   mutating func clearContactE164() {self._contactE164 = nil}
 
-  /// @trustedMapping
   var contactUuid: String {
     get {return _contactUuid ?? String()}
     set {_contactUuid = newValue}

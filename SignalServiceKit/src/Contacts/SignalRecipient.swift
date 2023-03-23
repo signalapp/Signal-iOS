@@ -120,6 +120,15 @@ extension SignalRecipient {
         return newInstance
     }
 
+    private static func highTrustRecipient(
+        for address: SignalServiceAddress,
+        transaction: SDSAnyWriteTransaction
+    ) -> SignalRecipient {
+        let result = _highTrustRecipient(for: address, transaction: transaction)
+        signalServiceAddressCache.updateRecipient(result)
+        return result
+    }
+
     /// Fetches (or creates) a high-trust recipient.
     ///
     /// High trust fetches indicate that the uuid & phone number represented by
@@ -135,7 +144,7 @@ extension SignalRecipient {
     ///
     /// * Phone numbers are transient and can move freely between UUIDs. When
     ///   they do, we must backfill the database to reflect the change.
-    private static func highTrustRecipient(
+    private static func _highTrustRecipient(
         for address: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
     ) -> SignalRecipient {
@@ -162,16 +171,6 @@ extension SignalRecipient {
                     transaction: transaction
                 )
                 shouldUpdate = true
-
-                // Since uuidInstance is nonnil, we must have fetched it with a nonnil
-                // uuid, but the type system doesn't (currently) know this.
-                guard let addressUuid = address.uuid else {
-                    owsFail("Missing uuid with non-nil result")
-                }
-
-                // Update the SignalServiceAddressCache mappings with the now fully-qualified recipient.
-                signalServiceAddressCache.updateMapping(uuid: addressUuid, phoneNumber: address.phoneNumber, transaction: transaction)
-
             } else {
                 // The UUID differs between the two records; we need to migrate the phone
                 // number to the UUID instance.
@@ -234,9 +233,6 @@ extension SignalRecipient {
 
                     shouldUpdate = true
                     phoneNumberInstance.recipientUUID = uuid.uuidString
-
-                    // Update the SignalServiceAddressCache mappings with the now fully-qualified recipient.
-                    signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: address.phoneNumber, transaction: transaction)
                 }
 
                 existingInstance = phoneNumberInstance
@@ -272,10 +268,6 @@ extension SignalRecipient {
 
             let newInstance = SignalRecipient(address: address)
             newInstance.anyInsert(transaction: transaction)
-
-            if let uuid = address.uuid {
-                signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: address.phoneNumber, transaction: transaction)
-            }
 
             return newInstance
         }
@@ -333,14 +325,14 @@ extension SignalRecipient {
         // and the UUID recipient doesn't. Historically, we tried to be clever and
         // pick the session that had seen more use, but merging sessions should
         // only happen in exceptional circumstances these days.
-        if hasSessionForUuid {
-            Logger.warn("Discarding phone number recipient in favor of uuid recipient.")
-            winningInstance = uuidInstance
-            phoneNumberInstance.anyRemove(transaction: transaction)
-        } else {
+        if !hasSessionForUuid && hasSessionForPhoneNumber {
             Logger.warn("Discarding uuid recipient in favor of phone number recipient.")
             winningInstance = phoneNumberInstance
             uuidInstance.anyRemove(transaction: transaction)
+        } else {
+            Logger.warn("Discarding phone number recipient in favor of uuid recipient.")
+            winningInstance = uuidInstance
+            phoneNumberInstance.anyRemove(transaction: transaction)
         }
 
         // Make sure the winning instance is fully qualified.
@@ -365,8 +357,18 @@ extension SignalRecipient {
     private func changePhoneNumber(_ newPhoneNumber: String?, transaction: GRDBWriteTransaction) {
         let oldPhoneNumber = recipientPhoneNumber?.nilIfEmpty
         let oldUuidString = recipientUUID
-        let oldUuid: UUID? = oldUuidString.flatMap { UUID(uuidString: $0) }
-        let oldAddress = address
+        let oldAddress = {
+            let oldDynamicAddress = self.address
+            return SignalServiceAddress(
+                uuid: oldDynamicAddress.uuid,
+                phoneNumber: oldDynamicAddress.phoneNumber,
+                ignoreCache: true
+            )
+        }()
+
+        // The "obsolete" address is the address with *only* the just-removed phone
+        // number. (We *just* removed it, so we don't know its serviceId.)
+        let obsoleteAddress = oldPhoneNumber.map { SignalServiceAddress(uuid: nil, phoneNumber: $0, ignoreCache: true) }
 
         let isWhitelisted = profileManager.isUser(inProfileWhitelist: oldAddress, transaction: transaction.asAnyRead)
 
@@ -386,7 +388,14 @@ extension SignalRecipient {
 
         let newUuidString = recipientUUID
         let newUuid: UUID? = newUuidString.flatMap { UUID(uuidString: $0) }
-        let newAddress = address
+        let newAddress = {
+            let newDynamicAddress = self.address
+            return SignalServiceAddress(
+                uuid: newDynamicAddress.uuid,
+                phoneNumber: newDynamicAddress.phoneNumber,
+                ignoreCache: true
+            )
+        }()
 
         Logger.info("uuid: \(String(describing: oldUuidString)) ->  \(String(describing: newUuidString)), phoneNumber: \(String(describing: oldPhoneNumber)) -> \(String(describing: newPhoneNumber))")
 
@@ -471,82 +480,48 @@ extension SignalRecipient {
         }
 
         if let newUuid {
-
-            // If we're removing the phone number from a phone-number-only
-            // recipient (e.g. assigning a mock uuid), remove any old mapping
-            // from the SignalServiceAddressCache.
-            if newPhoneNumber == nil, let oldPhoneNumber, oldUuid == nil {
-                Self.signalServiceAddressCache.removeMapping(phoneNumber: oldPhoneNumber)
-            }
-
-            Self.signalServiceAddressCache.updateMapping(uuid: newUuid, phoneNumber: newPhoneNumber, transaction: transaction.asAnyWrite)
-
-            // Verify the mapping change worked as expected.
-            owsAssertDebug(SignalServiceAddress(uuid: newUuid).phoneNumber == newPhoneNumber)
-            if let newPhoneNumber {
-                owsAssertDebug(SignalServiceAddress(phoneNumber: newPhoneNumber).uuid == newUuid)
-            }
-            if let oldPhoneNumber {
-                // SignalServiceAddressCache's mapping may have already been updated,
-                // So the uuid for the oldPhoneNumber may already be associated with
-                // a new uuid.
-                owsAssertDebug(SignalServiceAddress(phoneNumber: oldPhoneNumber).uuid != newUuid)
-            }
-
             if !newAddress.isLocalAddress {
                 self.versionedProfiles.clearProfileKeyCredential(
                     for: ServiceIdObjC(uuidValue: newUuid),
                     transaction: transaction.asAnyWrite
                 )
 
-                if let oldPhoneNumber {
-                    // The "obsolete" address is the address the old phone number.
-                    // It is _NOT_ the old (uuid, phone number) pair for this uuid.
-                    let obsoleteAddress = SignalServiceAddress(uuidString: nil, phoneNumber: oldPhoneNumber)
-                    owsAssertDebug(newAddress.uuid != obsoleteAddress.uuid)
-                    owsAssertDebug(newAddress.phoneNumber != obsoleteAddress.phoneNumber)
-
+                if let obsoleteAddress {
                     // Remove old address from profile whitelist.
-                    profileManager.removeUser(fromProfileWhitelist: obsoleteAddress,
-                                              userProfileWriter: .changePhoneNumber,
-                                              authedAccount: .implicit(),
-                                              transaction: transaction.asAnyWrite)
+                    profileManager.removeUser(
+                        fromProfileWhitelist: obsoleteAddress,
+                        userProfileWriter: .changePhoneNumber,
+                        authedAccount: .implicit(),
+                        transaction: transaction.asAnyWrite
+                    )
                 }
 
-                // Ensure new address reflect's old address' profile whitelist state.
+                // Ensure new address reflects old address' profile whitelist state.
                 if isWhitelisted {
-                    profileManager.addUser(toProfileWhitelist: newAddress,
-                                           userProfileWriter: .changePhoneNumber,
-                                           authedAccount: .implicit(),
-                                           transaction: transaction.asAnyWrite)
+                    profileManager.addUser(
+                        toProfileWhitelist: newAddress,
+                        userProfileWriter: .changePhoneNumber,
+                        authedAccount: .implicit(),
+                        transaction: transaction.asAnyWrite
+                    )
                 } else {
-                    profileManager.removeUser(fromProfileWhitelist: newAddress,
-                                              userProfileWriter: .changePhoneNumber,
-                                              authedAccount: .implicit(),
-                                              transaction: transaction.asAnyWrite)
+                    profileManager.removeUser(
+                        fromProfileWhitelist: newAddress,
+                        userProfileWriter: .changePhoneNumber,
+                        authedAccount: .implicit(),
+                        transaction: transaction.asAnyWrite
+                    )
                 }
             }
         } else {
             owsFailDebug("Missing or invalid UUID")
         }
 
-        if let oldPhoneNumber {
-            // The "obsolete" address is the address the old phone number.
-            // It is _NOT_ the old (uuid, phone number) pair for this uuid.
-            let obsoleteAddress = SignalServiceAddress(uuidString: nil, phoneNumber: oldPhoneNumber)
-            if newUuid != nil {
-                owsAssertDebug(newAddress.uuid != obsoleteAddress.uuid)
-                owsAssertDebug(newAddress.phoneNumber != obsoleteAddress.phoneNumber)
-            }
-
+        if let obsoleteAddress {
             ProfileFetcherJob.clearProfileState(address: obsoleteAddress, transaction: transaction.asAnyWrite)
 
             transaction.addAsyncCompletion(queue: .global()) {
                 Self.udManager.setUnidentifiedAccessMode(.unknown, address: obsoleteAddress)
-
-                if !CurrentAppContext().isRunningTests {
-                    ProfileFetcherJob.fetchProfile(address: obsoleteAddress, ignoreThrottling: true)
-                }
             }
         }
 

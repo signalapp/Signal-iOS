@@ -7,22 +7,27 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class SignalServiceAddressTest: SSKBaseTestSwift {
-    var cache: SignalServiceAddressCache {
-        return Self.signalServiceAddressCache
-    }
+class SignalServiceAddressTest: XCTestCase {
+
+    private lazy var cache = SignalServiceAddressCache()
 
     private func makeAddress(uuid: UUID? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
-        SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
+        SignalServiceAddress(
+            uuid: uuid,
+            phoneNumber: phoneNumber,
+            cache: cache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
     }
 
     private func makeHighTrustAddress(uuid: UUID? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
-        SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber, trustLevel: .high)
+        cache.updateRecipient(SignalRecipient(phoneNumber: phoneNumber, uuid: uuid, devices: []))
+        return makeAddress(uuid: uuid, phoneNumber: phoneNumber)
     }
 
     @discardableResult
     private func updateMapping(uuid: UUID, phoneNumber: String? = nil) -> SignalServiceAddress {
-        write { cache.updateMapping(uuid: uuid, phoneNumber: phoneNumber, transaction: $0) }
+        return makeHighTrustAddress(uuid: uuid, phoneNumber: phoneNumber)
     }
 
     func test_isEqualPermissive() {
@@ -257,10 +262,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         // uuid2, phoneNumber1
         let hash3 = updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
 
-        // There should not be hash continuity for uuid2, since the uuid has changed.
+        // There should be hash continuity for uuid2, even though the uuid has changed.
         XCTAssertEqual(hash1, hash2)
-        XCTAssertNotEqual(hash1, hash3)
-        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertEqual(hash2, hash3)
         XCTAssertEqual(hash2, makeAddress(uuid: uuid1).hash)
         XCTAssertEqual(hash3, makeAddress(uuid: uuid2).hash)
         XCTAssertEqual(hash3, makeAddress(phoneNumber: phoneNumber1).hash)
@@ -288,9 +293,11 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
 
         // uuid1 -> uuid2, phoneNumber1
+        _ = makeAddress(uuid: uuid2)
         let hash2 = makeHighTrustAddress(uuid: uuid2, phoneNumber: phoneNumber1).hash
 
-        // There should not be hash continuity for uuid2, since the phone number has been transferred between two uuids.
+        // There should not be hash continuity for uuid2 since the phone number was
+        // transferred to a UUID that already existed.
         XCTAssertNotEqual(hash1, hash2)
         XCTAssertEqual(hash1, makeAddress(uuid: uuid1).hash)
         XCTAssertEqual(hash2, makeAddress(uuid: uuid2).hash)
@@ -337,9 +344,11 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
 
         // uuid1 -> uuid2, phoneNumber1
+        _ = makeAddress(uuid: uuid2)
         let hash2 = updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
 
-        // There should not be hash continuity for uuid2, since the phone number has been transferred between two uuids.
+        // There should not be hash continuity for uuid2 since the phone number was
+        // transferred to a UUID that already existed.
         XCTAssertNotEqual(hash1, hash2)
         XCTAssertEqual(hash1, makeAddress(uuid: uuid1).hash)
         XCTAssertEqual(hash2, makeAddress(uuid: uuid2).hash)

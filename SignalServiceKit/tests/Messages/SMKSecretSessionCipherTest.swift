@@ -66,10 +66,9 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // assertEquals(plaintext.first().getName(), "+14151111111");
         // assertEquals(plaintext.first().getDeviceId(), 1);
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "smert za smert")
-        XCTAssertEqual(bobPlaintext.senderAddress, aliceMockClient.address)
         XCTAssertEqual(bobPlaintext.senderDeviceId, Int(aliceMockClient.deviceId))
-        XCTAssertEqual(bobPlaintext.senderAddress.uuid, aliceMockClient.address.uuid)
-        XCTAssertEqual(bobPlaintext.senderAddress.phoneNumber, aliceMockClient.address.phoneNumber)
+        XCTAssertEqual(bobPlaintext.senderServiceId.uuidValue, aliceMockClient.address.uuid)
+        XCTAssertEqual(bobPlaintext.senderE164, aliceMockClient.address.phoneNumber)
     }
 
     // public void testEncryptDecryptUntrusted() throws Exception {
@@ -357,7 +356,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
 
         // Verify
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "beltalowda")
-        XCTAssertEqual(bobPlaintext.senderAddress, aliceMockClient.address)
+        XCTAssertEqual(bobPlaintext.senderServiceId, aliceMockClient.address.serviceIdObjC)
         XCTAssertEqual(bobPlaintext.senderDeviceId, Int(aliceMockClient.deviceId))
         XCTAssertEqual(bobPlaintext.messageType, .senderKey)
     }

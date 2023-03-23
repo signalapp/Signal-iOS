@@ -38,7 +38,6 @@ message Envelope {
   optional string serverGuid         = 9;
   // We may eventually want to make this required.
   optional uint64 serverTimestamp    = 10;
-  // @trustedMapping
   optional string sourceUuid         = 11;
   reserved /* urgent */                14;
   reserved /* update_pni */            15;
@@ -743,7 +742,6 @@ message ContactDetails {
   }
 
   optional string   contactE164 = 1;
-  // @trustedMapping
   optional string   contactUuid = 9;
   optional string   name        = 2;
   optional Avatar   avatar      = 3;

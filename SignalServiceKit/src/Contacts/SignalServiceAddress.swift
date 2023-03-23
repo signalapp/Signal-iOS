@@ -6,33 +6,15 @@
 import Foundation
 import LibSignalClient
 
+// MARK: -
+
 @objc
 public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable {
-    public static let supportsSecureCoding: Bool = true
+    private let cachedAddress: CachedAddress
 
-    private static var cache: SignalServiceAddressCache {
-        return Self.signalServiceAddressCache
-    }
-
-    private static var propertyLock: UnfairLock = UnfairLock()
-
-    private var backingPhoneNumberUnsynchronized: String?
     @objc
     public var phoneNumber: String? {
-        guard let phoneNumber = Self.propertyLock.withLock({backingPhoneNumberUnsynchronized}) else {
-            // If we weren't initialized with a phone number, but the phone number exists in the cache, use it
-            guard let uuid = Self.propertyLock.withLock({backingUuidUnsynchronized}),
-                let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid)
-            else {
-                return nil
-            }
-            Self.propertyLock.withLock {
-                backingPhoneNumberUnsynchronized = cachedPhoneNumber
-            }
-            return cachedPhoneNumber
-        }
-
-        return phoneNumber
+        cachedAddress.identifiers.get().phoneNumber
     }
 
     public var e164: E164? { phoneNumber.flatMap { E164($0) } }
@@ -40,41 +22,28 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     @objc
     public var e164ObjC: E164ObjC? { phoneNumber.flatMap { E164ObjC($0) } }
 
-    /// Optional, since while in *most* cases we can be sure this is present
-    /// we cannot be positive. Some examples:
+    /// The "service id" (could be an ACI or PNI).
     ///
-    /// * A really old recipient, who you may have message history with, may not have re-registered since UUIDs were added.
-    /// * When doing "find by phone number", there will be a window of time where all we know about a recipient is their e164.
-    /// * Syncing from another device via Storage Service could have an e164-only contact record.
-    @objc
-    public var uuid: UUID? {
-        guard let uuid = Self.propertyLock.withLock({backingUuidUnsynchronized}) else {
-            // If we weren't initialized with a uuid, but the uuid exists in the cache, use it
-            guard let phoneNumber = Self.propertyLock.withLock({backingPhoneNumberUnsynchronized}),
-                let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber)
-            else {
-                return nil
-            }
-            Self.propertyLock.withLock {
-                backingUuidUnsynchronized = cachedUuid
-            }
-            observeMappingChanges(forUuid: cachedUuid)
-            return cachedUuid
-        }
-
-        return uuid
+    /// This value is optional since it may not be present in all cases. Some
+    /// examples:
+    ///
+    /// * A really old recipient, who you may have message history with, may not
+    /// have re-registered since UUIDs were added.
+    ///
+    /// * When doing "find by phone number", there will be a window of time
+    /// where all we know about a recipient is their e164.
+    public var serviceId: ServiceId? {
+        cachedAddress.identifiers.get().serviceId
     }
-    private var backingUuidUnsynchronized: UUID?
-
-    public var serviceId: ServiceId? { uuid.map { ServiceId($0) } }
 
     @objc
-    public var serviceIdObjC: ServiceIdObjC? { uuid.map { ServiceIdObjC(uuidValue: $0) } }
+    public var serviceIdObjC: ServiceIdObjC? { serviceId.map { ServiceIdObjC($0) } }
 
     @objc
-    public var uuidString: String? {
-        return uuid?.uuidString
-    }
+    public var uuid: UUID? { serviceId?.uuidValue }
+
+    @objc
+    public var uuidString: String? { uuid?.uuidString }
 
     // MARK: - Initializers
 
@@ -113,28 +82,21 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public convenience init(uuidString: String?, phoneNumber: String?) {
-        self.init(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
-    }
-
-    @objc
-    public convenience init(uuidString: String?, phoneNumber: String?, trustLevel: SignalRecipientTrustLevel) {
         let uuid: UUID?
 
-        if let uuidString = uuidString {
+        if let uuidString {
             uuid = UUID(uuidString: uuidString)
-            if uuid == nil {
-                owsFailDebug("Unexpectedly initialized signal service address with invalid uuid")
-            }
+            owsAssertDebug(uuid != nil, "Unexpectedly initialized signal service address with invalid uuid")
         } else {
             uuid = nil
         }
 
-        self.init(uuid: uuid, phoneNumber: phoneNumber, trustLevel: trustLevel)
+        self.init(uuid: uuid, phoneNumber: phoneNumber)
     }
 
     @objc
     public convenience init(uuid: UUID?, phoneNumber: String?) {
-        self.init(uuid: uuid, phoneNumber: phoneNumber, trustLevel: .low)
+        self.init(uuid: uuid, phoneNumber: phoneNumber, ignoreCache: false)
     }
 
     public convenience init(uuid: UUID?, e164: E164?) {
@@ -150,37 +112,49 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         }
     }
 
+    private convenience init(decodedUuid: UUID?, decodedPhoneNumber: String?) {
+        self.init(
+            uuid: decodedUuid,
+            phoneNumber: decodedPhoneNumber,
+            cache: Self.signalServiceAddressCache,
+            // If we know the UUID, let the cache fill in the phone number when
+            // possible. (This avoids decoding stale mappings that may exist.)
+            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+        )
+    }
+
     @objc
-    public init(uuid: UUID?, phoneNumber: String?, trustLevel: SignalRecipientTrustLevel) {
-        if let phoneNumber {
-            if phoneNumber.isEmpty {
-                owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
-            }
-            backingPhoneNumberUnsynchronized = phoneNumber
-        } else if let uuid, let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
-            backingPhoneNumberUnsynchronized = cachedPhoneNumber
+    public convenience init(uuid: UUID?, phoneNumber: String?, ignoreCache: Bool) {
+        self.init(
+            uuid: uuid,
+            phoneNumber: phoneNumber,
+            cache: Self.signalServiceAddressCache,
+            cachePolicy: ignoreCache ? .ignoreCache : .preferInitialPhoneNumberAndListenForUpdates
+        )
+    }
+
+    public init(
+        uuid: UUID?,
+        phoneNumber: String?,
+        cache: SignalServiceAddressCache,
+        cachePolicy: SignalServiceAddressCache.CachePolicy
+    ) {
+        if let phoneNumber, phoneNumber.isEmpty {
+            owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
         }
 
-        if let uuid {
-            backingUuidUnsynchronized = uuid
-        } else if let phoneNumber, let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber) {
-            backingUuidUnsynchronized = cachedUuid
-        }
-
-        backingHashValue = SignalServiceAddress.cache.hashAndCache(
-            uuid: backingUuidUnsynchronized,
-            phoneNumber: backingPhoneNumberUnsynchronized,
-            trustLevel: trustLevel
+        self.cachedAddress = cache.registerAddress(
+            proposedIdentifiers: CachedAddress.Identifiers(
+                serviceId: uuid.map { ServiceId($0) },
+                phoneNumber: phoneNumber
+            ),
+            cachePolicy: cachePolicy
         )
 
         super.init()
 
         if !isValid {
             owsFailDebug("Unexpectedly initialized address with no identifier")
-        }
-
-        if let backingUuid = backingUuidUnsynchronized {
-            observeMappingChanges(forUuid: backingUuid)
         }
     }
 
@@ -192,104 +166,67 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        let (backingUuid, backingPhoneNumber) = Self.propertyLock.withLock {
-            (backingUuidUnsynchronized, backingPhoneNumberUnsynchronized)
-        }
-        try container.encode(backingUuid, forKey: .backingUuid)
+        let identifiers = cachedAddress.identifiers.get()
+        try container.encode(identifiers.serviceId?.uuidValue, forKey: .backingUuid)
         // Only encode the backingPhoneNumber if we don't know the UUID
-        try container.encode(backingUuid == nil ? backingPhoneNumber : nil, forKey: .backingPhoneNumber)
+        try container.encode(identifiers.serviceId != nil ? nil : identifiers.phoneNumber, forKey: .backingPhoneNumber)
     }
 
     public required convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        let uuid: UUID? = try container.decodeIfPresent(UUID.self, forKey: .backingUuid)
-
-        let phoneNumber: String?
-        if let decodedPhoneNumber = try container.decodeIfPresent(String.self, forKey: .backingPhoneNumber) {
-            // If we know the uuid, always rely on the cached phone number
-            // and discard any decoded phone number that may relate to a
-            // stale mapping.
-            if let uuid = uuid, let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
-                phoneNumber = cachedPhoneNumber
-            } else {
-                phoneNumber = decodedPhoneNumber
-            }
-        } else {
-            phoneNumber = nil
-        }
-
-        self.init(uuid: uuid, phoneNumber: phoneNumber, trustLevel: .low)
+        let decodedUuid: UUID? = try container.decodeIfPresent(UUID.self, forKey: .backingUuid)
+        let decodedPhoneNumber = try container.decodeIfPresent(String.self, forKey: .backingPhoneNumber)
+        self.init(decodedUuid: decodedUuid, decodedPhoneNumber: decodedPhoneNumber)
     }
 
     // MARK: - NSSecureCoding
 
-    public func encode(with aCoder: NSCoder) {
-        let (backingUuid, backingPhoneNumber) = Self.propertyLock.withLock {
-            (backingUuidUnsynchronized, backingPhoneNumberUnsynchronized)
-        }
-        aCoder.encode(backingUuid, forKey: "backingUuid")
+    public static let supportsSecureCoding: Bool = true
 
+    public func encode(with aCoder: NSCoder) {
+        let identifiers = cachedAddress.identifiers.get()
+        aCoder.encode(identifiers.serviceId?.uuidValue, forKey: "backingUuid")
         // Only encode the backingPhoneNumber if we don't know the UUID
-        aCoder.encode(backingUuid == nil ? backingPhoneNumber : nil, forKey: "backingPhoneNumber")
+        aCoder.encode(identifiers.serviceId != nil ? nil : identifiers.phoneNumber, forKey: "backingPhoneNumber")
     }
 
     public convenience required init?(coder aDecoder: NSCoder) {
-        let uuid = aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?
-
-        let phoneNumber: String?
-        if let decodedPhoneNumber = aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String? {
-            // If we know the uuid, always rely on the cached phone number
-            // and discard any decoded phone number that may relate to a
-            // stale mapping.
-            if let uuid = uuid, let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
-                phoneNumber = cachedPhoneNumber
-            } else {
-                phoneNumber = decodedPhoneNumber
-            }
-        } else {
-            phoneNumber = nil
-        }
-
-        self.init(uuid: uuid, phoneNumber: phoneNumber, trustLevel: .low)
+        let decodedUuid = aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?
+        let decodedPhoneNumber = aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?
+        self.init(decodedUuid: decodedUuid, decodedPhoneNumber: decodedPhoneNumber)
     }
 
     // MARK: -
 
     @objc
-    public func copy(with zone: NSZone? = nil) -> Any {
-        return SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
-    }
+    public func copy(with zone: NSZone? = nil) -> Any { return self }
 
     public override func isEqual(_ object: Any?) -> Bool {
         guard let otherAddress = object as? SignalServiceAddress else {
             return false
         }
 
-        return isEqualToAddress(otherAddress)
+        let result = isEqualToAddress(otherAddress)
+        if result, cachedAddress.hashValue != otherAddress.cachedAddress.hashValue {
+            Logger.warn("Equal addresses have different hashes: \(self), other: \(otherAddress).")
+        }
+        return result
     }
 
     @objc
     public func isEqualToAddress(_ otherAddress: SignalServiceAddress?) -> Bool {
-        guard let otherAddress = otherAddress else {
+        guard let otherAddress else {
             return false
         }
 
-        if let thisUuid = uuid,
-            let otherUuid = otherAddress.uuid {
-            let isEqual = thisUuid == otherUuid
-            if isEqual, self.hash != otherAddress.hash {
-                Logger.warn("Equal addresses have different hashes: \(self), other: \(otherAddress).")
-            }
-            return isEqual
+        let this = cachedAddress.identifiers.get()
+        let other = otherAddress.cachedAddress.identifiers.get()
+
+        if let thisServiceId = this.serviceId, let otherServiceId = other.serviceId {
+            return thisServiceId == otherServiceId
         }
-        if phoneNumber != nil ||
-            otherAddress.phoneNumber != nil {
-            let isEqual = otherAddress.phoneNumber == phoneNumber
-            if isEqual, self.hash != otherAddress.hash {
-                Logger.warn("Equal addresses have different hashes: \(self), other: \(otherAddress).")
-            }
-            return isEqual
+        if let thisPhoneNumber = this.phoneNumber, let otherPhoneNumber = other.phoneNumber {
+            return thisPhoneNumber == otherPhoneNumber
         }
         return false
     }
@@ -300,8 +237,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     // This allows us to dynamically update the backing values to maintain
     // the most complete address object as we learn phone <-> UUID mapping,
     // while also allowing addresses to live in hash tables.
-    private let backingHashValue: Int
-    public override var hash: Int { return backingHashValue }
+    public override var hash: Int { return cachedAddress.hashValue }
 
     @objc
     public func compare(_ otherAddress: SignalServiceAddress) -> ComparisonResult {
@@ -312,11 +248,13 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public var isValid: Bool {
-        if uuid != nil {
+        let identifiers = cachedAddress.identifiers.get()
+
+        if identifiers.serviceId != nil {
             return true
         }
 
-        if let phoneNumber = phoneNumber {
+        if let phoneNumber = identifiers.phoneNumber {
             return !phoneNumber.isEmpty
         }
 
@@ -330,10 +268,12 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public var stringForDisplay: String {
-        if let phoneNumber = phoneNumber {
+        let identifiers = cachedAddress.identifiers.get()
+
+        if let phoneNumber = identifiers.phoneNumber {
             return phoneNumber
-        } else if let uuid = uuid {
-            return uuid.uuidString
+        } else if let serviceId = identifiers.serviceId {
+            return serviceId.uuidValue.uuidString
         }
 
         owsFailDebug("unexpectedly have no backing value")
@@ -343,10 +283,12 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public var serviceIdentifier: String? {
-        if let uuid = uuid {
-            return uuid.uuidString
+        let identifiers = cachedAddress.identifiers.get()
+
+        if let serviceId = identifiers.serviceId {
+            return serviceId.uuidValue.uuidString
         }
-        if let phoneNumber = phoneNumber {
+        if let phoneNumber = identifiers.phoneNumber {
             return phoneNumber
         }
         if !CurrentAppContext().isRunningTests {
@@ -366,318 +308,274 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     override public var description: String {
-        return "<SignalServiceAddress phoneNumber: \(phoneNumber ?? "nil"), uuid: \(uuid?.uuidString ?? "nil")>"
+        let identifiers = cachedAddress.identifiers.get()
+        return Self.addressComponentsDescription(
+            uuidString: identifiers.serviceId?.uuidValue.uuidString,
+            phoneNumber: identifiers.phoneNumber
+        )
     }
 
-    // MARK: - Mapping Changes
-
-    // The "observer" is a weak array of addresses with the
-    // same UUID observing changes to that UUID.
-    private typealias AddressMappingObserver = NSHashTable<SignalServiceAddress>
-
-    // Every address retains a strong reference to its observer.
-    private var mappingObserverUnsynchronized: AddressMappingObserver?
-
-    private static let observerLock = UnfairLock()
-    private static let mappingObserverCache = NSMapTable<NSUUID, AddressMappingObserver>(keyOptions: .strongMemory,
-                                                                                         valueOptions: .weakMemory)
-
-    private func observeMappingChanges(forUuid uuid: UUID) {
-        let needsObserver: Bool = Self.propertyLock.withLock {
-            owsAssertDebug(backingUuidUnsynchronized == uuid)
-
-            guard mappingObserverUnsynchronized == nil else {
-                owsFailDebug("There's shouldn't be an existing observer.")
-                return false
-            }
-            return true
-        }
-        guard needsObserver else {
-            return
-        }
-
-        let observer = Self.observerLock.withLock { () -> AddressMappingObserver in
-            let observer = { () -> AddressMappingObserver in
-                if let observer = Self.mappingObserverCache.object(forKey: uuid as NSUUID) {
-                    return observer
-                } else {
-                    // * Use weak references to addresses.
-                    // * Use .objectPointerPersonality; this NSHashTable will contain
-                    //   a list of addresses that are all "equal".
-                    let observer = NSHashTable<SignalServiceAddress>(options: [
-                        .weakMemory,
-                        .objectPointerPersonality
-                    ])
-                    Self.mappingObserverCache.setObject(observer, forKey: uuid as NSUUID)
-                    return observer
-                }
-            }()
-            observer.add(self)
-            return observer
-        }
-        // We could race in this method, but in practice it should never happen.
-        // If it did, it wouldn't have any adverse side effects.
-        Self.propertyLock.withLock {
-            owsAssertDebug(mappingObserverUnsynchronized == nil)
-            mappingObserverUnsynchronized = observer
-        }
-    }
-
-    fileprivate static func notifyMappingDidChange(forUuid uuid: UUID, toPhoneNumber phoneNumber: String?) {
-        guard let addresses = (Self.observerLock.withLock { () -> [SignalServiceAddress]? in
-            guard let observer = Self.mappingObserverCache.object(forKey: uuid as NSUUID) else {
-                return nil
-            }
-            return observer.allObjects
-        }) else {
-            return
-        }
-        for address in addresses {
-            address.mappingDidChange(forUuid: uuid, toPhoneNumber: phoneNumber)
-        }
-    }
-
-    fileprivate func mappingDidChange(forUuid uuid: UUID, toPhoneNumber phoneNumber: String?) {
-        Self.propertyLock.withLock {
-            owsAssertDebug(uuid == backingUuidUnsynchronized)
-            backingPhoneNumberUnsynchronized = phoneNumber
-        }
-    }
-
-    public static func addressComponentsDescription(uuidString: String?,
-                                                    phoneNumber: String?) -> String {
+    public static func addressComponentsDescription(uuidString: String?, phoneNumber: String?) -> String {
         var splits = [String]()
         if let uuid = uuidString?.nilIfEmpty {
-            splits.append("uuid: " + uuid)
+            splits.append("serviceId: " + uuid)
         }
         if let phoneNumber = phoneNumber?.nilIfEmpty {
             splits.append("phoneNumber: " + phoneNumber)
         }
-        if let uuid = uuidString?.nilIfEmpty,
-           tsAccountManager.localUuid?.uuidString == uuid {
-            splits.append("*local address")
-        }
-        return "[" + splits.joined(separator: ", ") + "]"
+        return "<" + splits.joined(separator: ", ") + ">"
     }
 }
-
-// MARK: -
-
-#if TESTABLE_BUILD
-
-extension SignalServiceAddress {
-    var unresolvedUuid: UUID? {
-        Self.propertyLock.withLock({backingUuidUnsynchronized})
-    }
-
-    var unresolvedPhoneNumber: String? {
-        Self.propertyLock.withLock({backingPhoneNumberUnsynchronized})
-    }
-}
-
-#endif
 
 // MARK: -
 
 public extension Array where Element == SignalServiceAddress {
     func stableSort() -> [SignalServiceAddress] {
         // Use an arbitrary sort but ensure the ordering is stable.
-        self.sorted { (left, right) in
-            left.sortKey < right.sortKey
-        }
+        self.sorted { $0.sortKey < $1.sortKey }
     }
 }
 
 // MARK: -
 
+private class CachedAddress {
+    struct Identifiers {
+        var serviceId: ServiceId?
+        var phoneNumber: String?
+    }
+
+    let hashValue: Int
+
+    let identifiers: AtomicValue<Identifiers>
+
+    init(hashValue: Int, identifiers: Identifiers) {
+        self.hashValue = hashValue
+        self.identifiers = AtomicValue(identifiers, lock: AtomicLock())
+    }
+}
+
 @objc
 public class SignalServiceAddressCache: NSObject {
-    private static let unfairLock = UnfairLock()
+    private let state = AtomicValue(CacheState(), lock: AtomicLock())
 
-    private var uuidToPhoneNumberCache = [UUID: String]()
-    private var phoneNumberToUUIDCache = [String: UUID]()
+    private struct CacheState {
+        var serviceIdHashValues = [ServiceId: Int]()
+        var phoneNumberHashValues = [String: Int]()
 
-    private var uuidToHashValueCache = [UUID: Int]()
-    private var phoneNumberToHashValueCache = [String: Int]()
+        var serviceIdToPhoneNumber = [ServiceId: String]()
+        var phoneNumberToServiceIds = [String: [ServiceId]]()
+
+        var serviceIdAddresses = [ServiceId: WeakArray<CachedAddress>]()
+        var phoneNumberOnlyAddresses = [String: WeakArray<CachedAddress>]()
+    }
 
     @objc
     func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        let localNumber = TSAccountManager.shared.localNumber
-        let localUuid = TSAccountManager.shared.localUuid
+        databaseStorage.read { transaction in
+            if let localAddress = tsAccountManager.localAddress(with: transaction) {
+                self.updateRecipient(SignalRecipient(address: localAddress))
+            }
 
-        if localNumber != nil || localUuid != nil {
-            hashAndCache(uuid: localUuid, phoneNumber: localNumber, trustLevel: .high)
-        }
-
-        SDSDatabaseStorage.shared.read { transaction in
             SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
-                let recipientUuid: UUID?
-                if let uuidString = recipient.recipientUUID {
-                    recipientUuid = UUID(uuidString: uuidString)
-                } else {
-                    recipientUuid = nil
-                }
-                self.hashAndCache(uuid: recipientUuid, phoneNumber: recipient.recipientPhoneNumber, trustLevel: .high)
+                self.updateRecipient(recipient)
             }
-        }
-
-        if DebugFlags.internalLogging {
-            Logger.info("uuidToPhoneNumberCache: \(uuidToPhoneNumberCache.count), phoneNumberToUUIDCache: \(phoneNumberToUUIDCache.count), uuidToHashValueCache: \(uuidToHashValueCache.count), phoneNumberToHashValueCache: \(phoneNumberToHashValueCache.count), ")
         }
     }
 
-    /// Adds a uuid <-> phone number mapping to the cache (if necessary)
-    /// and returns a constant hash value that can be used to represent
-    /// either of these values going forward for the lifetime of the cache.
-    @discardableResult
-    func hashAndCache(uuid: UUID? = nil, phoneNumber: String? = nil, trustLevel: SignalRecipientTrustLevel) -> Int {
-        var phoneNumber = phoneNumber
-
-        // If we have a UUID, don't trust the phone number for mapping
-        // in low trust scenarios.
-        if trustLevel == .low, uuid != nil { phoneNumber = nil }
-
-        return Self.unfairLock.withLock {
-
-            // Generate or fetch the unique hash value for this address.
-
-            let hash: Int = {
-                // If we already have a hash for the UUID, use it.
-                if let uuid = uuid, let uuidHash = uuidToHashValueCache[uuid] {
-                    return uuidHash
-                // Otherwise, if we already have a hash for the phone number, use it
-                // unless we are moving a phone number from one uuid to another.
-                } else if let phoneNumber = phoneNumber,
-                          (phoneNumberToUUIDCache[phoneNumber] == nil ||
-                           phoneNumberToUUIDCache[phoneNumber] == uuid),
-                            let phoneNumberHash = phoneNumberToHashValueCache[phoneNumber] {
-                    return phoneNumberHash
-
-                // Else, create a fresh hash that will be used going forward.
-                } else {
-                    return UUID().hashValue
-                }
-            }()
-
-            // If we have a UUID and a phone number, cache the mapping.
-            if let uuid = uuid, let phoneNumber = phoneNumber {
-
-                // If we previously had a phone number, disassociate it from the UUID.
-                if let oldPhoneNumber = uuidToPhoneNumberCache[uuid],
-                   oldPhoneNumber != phoneNumber {
-                    phoneNumberToUUIDCache[oldPhoneNumber] = nil
-                }
-
-                // If we previously had a UUID, disassociate it from the phone number.
-                if let oldUuid = phoneNumberToUUIDCache[phoneNumber],
-                   oldUuid != uuid {
-                    uuidToPhoneNumberCache[oldUuid] = nil
-                }
-
-                uuidToPhoneNumberCache[uuid] = phoneNumber
-                phoneNumberToUUIDCache[phoneNumber] = uuid
+    func updateRecipient(_ signalRecipient: SignalRecipient) {
+        state.update { cacheState in
+            // This cache associates phone numbers to the other identifiers. If we
+            // don't have a phone number, there's nothing to associate.
+            //
+            // We never remove a phone number from one recipient without *also* adding
+            // it to some other recipient; therefore, we handle the transfer when that
+            // recipient is passed to this method. (This avoids a potential problem
+            // that could occur if we learn about the "delete" after the "update".)
+            guard let phoneNumber = signalRecipient.recipientPhoneNumber else {
+                return
             }
 
-            // Cache the hash we're using to ensure it remains constant across future addresses.
+            let oldServiceIds: [ServiceId] = cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
+            let newServiceIds: [ServiceId] = [
+                ServiceId(uuidString: signalRecipient.recipientUUID),
+                // PNI TODO: Fetch the recipientPNI once that property is available.
+                ServiceId(uuidString: nil)
+            ].compacted()
 
-            if let phoneNumber = phoneNumber {
-                phoneNumberToHashValueCache[phoneNumber] = hash
+            // If this phone number still points at the same ServiceIds, there's
+            // nothing to change.
+            guard newServiceIds != oldServiceIds else {
+                return
             }
 
-            if let uuid = uuid {
-                uuidToHashValueCache[uuid] = hash
+            cacheState.phoneNumberToServiceIds[phoneNumber] = newServiceIds
+
+            // These ServiceIds are no longer associated with `phoneNumber`.
+            for serviceId in Set(oldServiceIds).subtracting(newServiceIds) {
+                cacheState.serviceIdToPhoneNumber[serviceId] = nil
+                cacheState.serviceIdAddresses[serviceId]?.elements.forEach { cachedAddress in
+                    cachedAddress.identifiers.update { $0.phoneNumber = nil }
+                }
             }
 
-            return hash
+            // These ServiceIds are now associated with `phoneNumber`.
+            for serviceId in Set(newServiceIds).subtracting(oldServiceIds) {
+                let oldPhoneNumber = cacheState.serviceIdToPhoneNumber.updateValue(phoneNumber, forKey: serviceId)
+                cacheState.serviceIdAddresses[serviceId]?.elements.forEach { cachedAddress in
+                    cachedAddress.identifiers.update { $0.phoneNumber = phoneNumber }
+                }
+
+                // If this ServiceId was associated with some other phone number, we need
+                // to break that association.
+                if let oldPhoneNumber {
+                    owsAssertDebug(oldPhoneNumber != phoneNumber)
+                    cacheState.phoneNumberToServiceIds[oldPhoneNumber]?.removeAll(where: { $0 == serviceId })
+                }
+
+                // This might be the first time we're learning about this ServiceId or
+                // phone number. If a preferred hash value is available, make sure all
+                // future SignalServiceAddress instances will be able to find it.
+                _ = hashValue(cacheState: &cacheState, serviceId: serviceId, phoneNumber: phoneNumber)
+            }
+
+            // If we're adding a ServiceId to this recipient for the first time, we may
+            // have some addresses with only a phone number. We should add the "best"
+            // ServiceId available to those addresses. Once we add a ServiceId, though,
+            // that value is "sticky" and won't be changed if we get an even better
+            // identifier in the future. This maintains the existing (very useful)
+            // invariant that a nonnil UUID for a SignalServiceAddress remains stable.
+            if let preferredServiceId = newServiceIds.first {
+                let phoneNumberOnlyAddresses = cacheState.phoneNumberOnlyAddresses.removeValue(forKey: phoneNumber)
+                phoneNumberOnlyAddresses?.elements.forEach { cachedAddress in
+                    cachedAddress.identifiers.update { $0.serviceId = preferredServiceId }
+                    // This address has a serviceId now -- track that serviceId for future updates.
+                    cacheState.serviceIdAddresses[preferredServiceId, default: WeakArray()].append(cachedAddress)
+                }
+            }
         }
     }
 
-    func uuid(forPhoneNumber phoneNumber: String) -> UUID? {
-        Self.unfairLock.withLock { phoneNumberToUUIDCache[phoneNumber] }
+    public enum CachePolicy {
+        /// Prefers a nonnil phone number from the initializer. This is useful in
+        /// cases where the initializer has more recent mappings than what's
+        /// available in the cache. If the phone number changes in the future, the
+        /// address will be dynamically updated.
+        case preferInitialPhoneNumberAndListenForUpdates
+
+        /// Prefers a nonnil phone number from the cache. This handles cases where
+        /// "stale" data may be provided in the initializer. If the phone number
+        /// changes in the future, the address will be dynamically updated.
+        case preferCachedPhoneNumberAndListenForUpdates
+
+        /// Never retrieves either value from the cache. Never updated when a new
+        /// mapping is learned. The hash value *is* retrieved from the "cache".
+        /// These addresses shouldn't be put in a Set or used as Dictionary keys.
+        case ignoreCache
     }
 
-    func phoneNumber(forUuid uuid: UUID) -> String? {
-        Self.unfairLock.withLock { uuidToPhoneNumberCache[uuid] }
-    }
-
-    @objc
-    func removeMapping(phoneNumber: String) {
-
-        Logger.info("phoneNumber: \(phoneNumber)")
-
-        Self.unfairLock.withLock {
-            // If we previously had a UUID, disassociate it from the phone number.
-            if let oldUuid = phoneNumberToUUIDCache[phoneNumber] {
-                uuidToPhoneNumberCache[oldUuid] = nil
+    fileprivate func registerAddress(proposedIdentifiers: CachedAddress.Identifiers, cachePolicy: CachePolicy) -> CachedAddress {
+        state.update { cacheState in
+            let resolvedIdentifiers: CachedAddress.Identifiers
+            switch cachePolicy {
+            case .ignoreCache:
+                resolvedIdentifiers = proposedIdentifiers
+            case .preferInitialPhoneNumberAndListenForUpdates:
+                resolvedIdentifiers = resolveIdentifiers(proposedIdentifiers, preferInitialPhoneNumber: true, cacheState: cacheState)
+            case .preferCachedPhoneNumberAndListenForUpdates:
+                resolvedIdentifiers = resolveIdentifiers(proposedIdentifiers, preferInitialPhoneNumber: false, cacheState: cacheState)
             }
 
-            phoneNumberToUUIDCache[phoneNumber] = nil
-        }
-    }
+            // We try our best to share hash values for ServiceIds and phone numbers
+            // that might be associated with one another.
+            let hashValue = hashValue(
+                cacheState: &cacheState,
+                serviceId: resolvedIdentifiers.serviceId,
+                phoneNumber: resolvedIdentifiers.phoneNumber
+            )
 
-    @objc
-    @discardableResult
-    func updateMapping(uuid: UUID, phoneNumber: String?, transaction: SDSAnyWriteTransaction) -> SignalServiceAddress {
+            let cachedAddress = CachedAddress(hashValue: hashValue, identifiers: resolvedIdentifiers)
 
-        Logger.info("phoneNumber: \(String(describing: phoneNumber)), uuid: \(uuid)")
-
-        Self.unfairLock.withLock {
-            // Maintain the existing hash value for the given UUID, or create
-            // a new hash if one is yet to exist.
-            let hashValue: Int = {
-                // If we already have a hash for the UUID, use it.
-                if let oldUUIDHashValue = uuidToHashValueCache[uuid] {
-                    return oldUUIDHashValue
-                } else if let oldPhoneNumber = uuidToPhoneNumberCache[uuid],
-                    phoneNumberToUUIDCache[oldPhoneNumber] == nil,
-                    let oldPhoneNumberHashValue = phoneNumberToHashValueCache[oldPhoneNumber] {
-                    owsFailDebug("Unexpected mapping.")
-                    return oldPhoneNumberHashValue
-                } else {
-                    return UUID().hashValue
-                }
-            }()
-
-            // If we previously had a phone number, disassociate it from the UUID
-            if let oldPhoneNumber = uuidToPhoneNumberCache[uuid] {
-                phoneNumberToUUIDCache[oldPhoneNumber] = nil
-            }
-
-            // If we previously had a UUID, disassociate it from the phone number.
-            if let phoneNumber, let oldUuid = phoneNumberToUUIDCache[phoneNumber], oldUuid != uuid {
-                if uuidToHashValueCache[oldUuid] == hashValue {
-                    owsFailDebug("Unexpectedly using hash for old uuid.")
+            switch cachePolicy {
+            case .ignoreCache:
+                break
+            case .preferInitialPhoneNumberAndListenForUpdates, .preferCachedPhoneNumberAndListenForUpdates:
+                if let serviceId = resolvedIdentifiers.serviceId {
+                    cacheState.serviceIdAddresses[serviceId, default: WeakArray()].append(cachedAddress)
+                } else if let phoneNumber = resolvedIdentifiers.phoneNumber {
+                    cacheState.phoneNumberOnlyAddresses[phoneNumber, default: WeakArray()].append(cachedAddress)
                 }
             }
 
-            // Map the uuid to the new phone number
-            uuidToPhoneNumberCache[uuid] = phoneNumber
-            uuidToHashValueCache[uuid] = hashValue
-
-            if let phoneNumber {
-                // Unmap the previous UUID from this phone number
-                if let oldUuid = phoneNumberToUUIDCache[phoneNumber] {
-                    uuidToPhoneNumberCache[oldUuid] = nil
-                }
-
-                // Map the phone number to the new UUID
-                phoneNumberToUUIDCache[phoneNumber] = uuid
-                phoneNumberToHashValueCache[phoneNumber] = hashValue
-            }
+            return cachedAddress
         }
+    }
 
-        // Notify any existing address objects to update their backing phone number
-        SignalServiceAddress.notifyMappingDidChange(forUuid: uuid, toPhoneNumber: phoneNumber)
+    /// Populates missing/stale identifiers populated from the cache.
+    ///
+    /// - Parameter preferInitialPhoneNumber: If true, the phone number value
+    /// from `proposedIdentifiers` will be used if it's nonnil; if it's nil, the
+    /// value from the cache will be used. If false, the phone number value from
+    /// the cache will be used if it's nonnil; if it's nil, the value from
+    /// `proposedIdentifiers` will be used.
+    private func resolveIdentifiers(
+        _ proposedIdentifiers: CachedAddress.Identifiers,
+        preferInitialPhoneNumber: Bool,
+        cacheState: CacheState
+    ) -> CachedAddress.Identifiers {
+        CachedAddress.Identifiers(
+            serviceId: (
+                // We *always* prefer the provided serviceId.
+                proposedIdentifiers.serviceId
+                ?? proposedIdentifiers.phoneNumber.flatMap { cacheState.phoneNumberToServiceIds[$0]?.first }
+            ),
+            phoneNumber: preferInitialPhoneNumber ? (
+                proposedIdentifiers.phoneNumber
+                ?? proposedIdentifiers.serviceId.flatMap { cacheState.serviceIdToPhoneNumber[$0] }
+            ) : (
+                proposedIdentifiers.serviceId.flatMap { cacheState.serviceIdToPhoneNumber[$0] }
+                ?? proposedIdentifiers.phoneNumber
+            )
+        )
+    }
 
-        transaction.addSyncCompletion {
-            if AppReadiness.isAppReady {
-                Self.bulkProfileFetch.fetchProfile(uuid: uuid)
-            }
+    /// Finds the best hash value for (serviceId, phoneNumber).
+    ///
+    /// In general, we'll return an existing hash value if one exists, and we'll
+    /// generate a new random hash value if one doesn't exist. If we generate a
+    /// random hash value, we associate it with the provided identifier(s) for
+    /// future calls to this method.
+    ///
+    /// Some edge cases worth documenting explicitly:
+    ///
+    /// - If both identifiers are nonnil and have different hash values, the
+    /// hash value for `serviceId` will be returned. The hash value for
+    /// `phoneNumber` won't be updated for future calls to this method.
+    ///
+    /// - If both identifiers are nonnil and only one of them has a hash value,
+    /// that value will be returned. The returned hash value will also be
+    /// associated with the other identifier for future calls to this method.
+    ///
+    /// - If both identifiers are nil, this method is equivalent to
+    /// `Int.random(in: Int.min...Int.max)`. An address must have at least one
+    /// identifier to be considered valid, and addresses without identifiers
+    /// always return `false` from `isEqual:`, so it's perfectly acceptable for
+    /// each of these addresses to have its own hash value.
+    private func hashValue(cacheState: inout CacheState, serviceId: ServiceId?, phoneNumber: String?) -> Int {
+        let hashValue = (
+            serviceId.flatMap { cacheState.serviceIdHashValues[$0] }
+            ?? phoneNumber.flatMap { cacheState.phoneNumberHashValues[$0] }
+            ?? Int.random(in: Int.min...Int.max)
+        )
+        // We *never* change a hash value once it's been generated.
+        if let serviceId, cacheState.serviceIdHashValues[serviceId] == nil {
+            cacheState.serviceIdHashValues[serviceId] = hashValue
         }
-
-        return SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
+        if let phoneNumber, cacheState.phoneNumberHashValues[phoneNumber] == nil {
+            cacheState.phoneNumberHashValues[phoneNumber] = hashValue
+        }
+        return hashValue
     }
 }
 

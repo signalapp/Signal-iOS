@@ -25,6 +25,11 @@ reserved_regex = re.compile(r'^reserved\s+(?:/*[^*]*\*/)?\s*\d+;$')
 syntax_regex = re.compile(r'^syntax\s+=\s+"(.+)";')
 validation_start_regex = re.compile(r'// MARK: - Begin Validation Logic for ([^ ]+) -')
 
+skip_signal_service_address_types = [
+    "StorageServiceProtoContactRecord",
+    "SSKProtoContactDetails",
+]
+
 proto_syntax = None
 
 def lower_camel_case(name):
@@ -444,7 +449,7 @@ public enum %s: Error {
 
 
 class MessageField:
-    def __init__(self, name, index, rules, proto_type, default_value, sort_index, is_required, is_trusted_mapping):
+    def __init__(self, name, index, rules, proto_type, default_value, sort_index, is_required):
         self.name = name
         self.index = index
         self.rules = rules
@@ -452,7 +457,6 @@ class MessageField:
         self.default_value = default_value
         self.sort_index = sort_index
         self.is_required = is_required
-        self.is_trusted_mapping = is_trusted_mapping
 
     def has_accessor_name(self):
         name = 'has' + self.name_swift[0].upper() + self.name_swift[1:]
@@ -555,7 +559,9 @@ class MessageContext(BaseContext):
                 implict_fields.append(field)
 
             # See if we need to add SignalServiceAddress helpers
-            if field.name.endswith('Uuid') and field.proto_type == 'string':
+            if self.swift_name in skip_signal_service_address_types:
+                pass
+            elif field.name.endswith('Uuid') and field.proto_type == 'string':
                 uuid_field = field
             elif field.name.endswith('E164') and field.proto_type == 'string':
                 e164_field = field
@@ -803,8 +809,7 @@ class MessageContext(BaseContext):
                 writer.add("let address = SignalServiceAddress(")
                 writer.push_indent()
                 writer.add("uuidString: uuidString,")
-                writer.add("phoneNumber: phoneNumber,")
-                writer.add(f"trustLevel: .{'high' if uuid_field.is_trusted_mapping else 'low'}")
+                writer.add("phoneNumber: phoneNumber")
                 writer.pop_indent()
                 writer.add(")")
             else:
@@ -1781,7 +1786,7 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
                 oneof_context = parse_oneof(args, proto_file_path, parser, context, oneof_name)
                 oneof_index = oneof_context.last_index()
                 oneof_type = oneof_context.derive_swift_name()
-                context.field_map[oneof_index] = MessageField(oneof_name, oneof_index, 'optional', oneof_type, None, sort_index, False, False)
+                context.field_map[oneof_index] = MessageField(oneof_name, oneof_index, 'optional', oneof_type, None, sort_index, False)
                 sort_index = sort_index + 1
                 continue
 
@@ -1844,9 +1849,7 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             #     print 'is_required:', item_name
             # print 'item_name:', item_name, 'item_type:', item_type
 
-            is_trusted_mapping = '@trustedMapping' in field_comments
-
-            context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default, sort_index, is_required, is_trusted_mapping)
+            context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default, sort_index, is_required)
 
             sort_index = sort_index + 1
 

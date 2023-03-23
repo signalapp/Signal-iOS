@@ -517,11 +517,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
             [self.keyValueStore setString:localPniString key:TSAccountManager_RegisteredPNIKey transaction:transaction];
         }
 
-        // Update the address cache mapping for the local user.
-        [SSKEnvironment.shared.signalServiceAddressCache updateMappingWithUuid:localAci
-                                                                   phoneNumber:localNumber
-                                                                   transaction:transaction];
-
         [self.keyValueStore removeValueForKey:TSAccountManager_IsDeregisteredKey transaction:transaction];
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringUUIDKey transaction:transaction];
@@ -543,7 +538,9 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         self.pniAwaitingVerification = nil;
     }
 
-    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuid:localAci phoneNumber:localNumber];
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuid:localAci
+                                                                   phoneNumber:localNumber
+                                                                   ignoreCache:YES];
     SignalRecipient *recipient = [SignalRecipient fetchOrCreateFor:address
                                                         trustLevel:SignalRecipientTrustLevelHigh
                                                        transaction:transaction];

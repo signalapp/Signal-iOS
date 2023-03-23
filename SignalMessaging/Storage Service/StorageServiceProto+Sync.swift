@@ -354,21 +354,28 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         _ record: StorageServiceProtoContactRecord,
         transaction: SDSAnyWriteTransaction
     ) -> StorageServiceMergeResult<AccountId> {
-        guard let address = record.serviceAddress, let contact = StorageServiceContact(record) else {
+        let immutableAddress = SignalServiceAddress(
+            uuid: ServiceId(uuidString: record.serviceUuid)?.uuidValue,
+            phoneNumber: E164(record.serviceE164)?.stringValue,
+            ignoreCache: true
+        )
+        guard immutableAddress.isValid, let contact = StorageServiceContact(record) else {
             owsFailDebug("address unexpectedly missing for contact")
             return .invalid
         }
-        guard !address.isLocalAddress && !authedAccount.isAddressForLocalUser(address) else {
+        guard !immutableAddress.isLocalAddress && !authedAccount.isAddressForLocalUser(immutableAddress) else {
             owsFailDebug("Unexpectedly merging contact record for local user.")
             return .invalid
         }
 
-        let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
+        let recipient = SignalRecipient.fetchOrCreate(for: immutableAddress, trustLevel: .high, transaction: transaction)
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
             recipient.markAsUnregistered(at: unregisteredAtTimestamp, source: .storageService, transaction: transaction)
         } else {
             recipient.markAsRegistered(source: .storageService, transaction: transaction)
         }
+
+        let address = recipient.address
 
         var needsUpdate = false
 

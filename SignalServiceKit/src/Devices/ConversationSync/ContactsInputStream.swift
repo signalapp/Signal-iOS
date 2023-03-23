@@ -46,16 +46,23 @@ public class ContactsInputStream {
             try inputStream.decodeData(value: &decodedData, count: Int(avatar.length))
         }
 
-        guard let address = contactDetails.contactAddress, address.isValid else {
+        let immutableAddress = SignalServiceAddress(
+            uuid: ServiceId(uuidString: contactDetails.contactUuid)?.uuidValue,
+            phoneNumber: E164(contactDetails.contactE164)?.stringValue,
+            ignoreCache: true
+        )
+        guard immutableAddress.isValid else {
             throw OWSAssertionError("address was unexpectedly invalid")
         }
 
-        return ContactDetails(address: address,
-                              verifiedProto: contactDetails.verified,
-                              profileKey: contactDetails.profileKey,
-                              isBlocked: contactDetails.blocked,
-                              expireTimer: contactDetails.expireTimer,
-                              isArchived: contactDetails.hasArchived ? contactDetails.archived : nil,
-                              inboxSortOrder: contactDetails.hasInboxPosition ? contactDetails.inboxPosition : nil)
+        return ContactDetails(
+            address: immutableAddress,
+            verifiedProto: contactDetails.verified,
+            profileKey: contactDetails.profileKey,
+            isBlocked: contactDetails.blocked,
+            expireTimer: contactDetails.expireTimer,
+            isArchived: contactDetails.hasArchived ? contactDetails.archived : nil,
+            inboxSortOrder: contactDetails.hasInboxPosition ? contactDetails.inboxPosition : nil
+        )
     }
 }

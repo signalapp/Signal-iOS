@@ -231,13 +231,15 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             recipient.markAsRegistered(transaction: transaction)
         }
 
+        let address = recipient.address
+
         let contactThread: TSContactThread
         let isNewThread: Bool
-        if let existingThread = TSContactThread.getWithContactAddress(contactDetails.address, transaction: transaction) {
+        if let existingThread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
             contactThread = existingThread
             isNewThread = false
         } else {
-            let newThread = TSContactThread(contactAddress: contactDetails.address)
+            let newThread = TSContactThread(contactAddress: address)
             newThread.shouldThreadBeVisible = true
 
             contactThread = newThread
@@ -268,7 +270,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         if let profileKey = contactDetails.profileKey {
             self.profileManager.setProfileKeyData(
                 profileKey,
-                for: contactDetails.address,
+                for: address,
                 userProfileWriter: .syncMessage,
                 authedAccount: .implicit(),
                 transaction: transaction
@@ -276,16 +278,12 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         }
 
         if contactDetails.isBlocked {
-            if !self.blockingManager.isAddressBlocked(contactDetails.address, transaction: transaction) {
-                self.blockingManager.addBlockedAddress(contactDetails.address,
-                                                       blockMode: .remote,
-                                                       transaction: transaction)
+            if !self.blockingManager.isAddressBlocked(address, transaction: transaction) {
+                self.blockingManager.addBlockedAddress(address, blockMode: .remote, transaction: transaction)
             }
         } else {
-            if self.blockingManager.isAddressBlocked(contactDetails.address, transaction: transaction) {
-                self.blockingManager.removeBlockedAddress(contactDetails.address,
-                                                          wasLocallyInitiated: false,
-                                                          transaction: transaction)
+            if self.blockingManager.isAddressBlocked(address, transaction: transaction) {
+                self.blockingManager.removeBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
             }
         }
     }

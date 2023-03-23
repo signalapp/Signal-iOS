@@ -132,22 +132,19 @@ class SignalRecipientTest: SSKBaseTestSwift {
     }
 
     func testHighTrustMergeWithInvestedPhoneNumber() {
-        // If there is a UUID only contact and a phone number only contact,
-        // and then we later find out they are the same user we must merge
-        // the two recipients together.
+        // If there is a UUID-only contact and a phone number-only contact, and if
+        // we later find out they are the same user, we must merge them.
         let uuidOnlyAddress = CommonGenerator.address(hasPhoneNumber: false)
         let phoneNumberOnlyAddress = CommonGenerator.address(hasUUID: false)
-        let address = SignalServiceAddress(uuid: uuidOnlyAddress.uuid!, phoneNumber: phoneNumberOnlyAddress.phoneNumber!)
+        let mergedAddress = SignalServiceAddress(uuid: uuidOnlyAddress.uuid!, phoneNumber: phoneNumberOnlyAddress.phoneNumber!)
 
         write { transaction in
             let uuidRecipient = createHighTrustRecipient(for: uuidOnlyAddress, transaction: transaction)
             let phoneNumberRecipient = createHighTrustRecipient(for: phoneNumberOnlyAddress, transaction: transaction)
-            let mergedRecipient = createHighTrustRecipient(for: address, transaction: transaction)
-
-            // TODO: test this more thoroughly. right now just confirming we prefer
-            // the UUID recipient when no other info is available
+            let mergedRecipient = createHighTrustRecipient(for: mergedAddress, transaction: transaction)
 
             XCTAssertEqual(mergedRecipient.uniqueId, uuidRecipient.uniqueId)
+            XCTAssertNil(SignalRecipient.anyFetch(uniqueId: phoneNumberRecipient.uniqueId, transaction: transaction))
         }
     }
 

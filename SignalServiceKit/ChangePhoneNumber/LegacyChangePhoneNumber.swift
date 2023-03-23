@@ -308,7 +308,8 @@ public class LegacyChangePhoneNumber: NSObject {
 
         let addressFromServiceParams = SignalServiceAddress(
             uuid: serviceAci,
-            e164: serviceE164
+            phoneNumber: serviceE164.stringValue,
+            ignoreCache: true
         )
 
         SignalRecipient.fetchOrCreate(
