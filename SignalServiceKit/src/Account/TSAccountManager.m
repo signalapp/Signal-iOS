@@ -103,7 +103,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
             [self.databaseStorage appendDatabaseChangeDelegate:self];
         }
     });
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self updateAccountAttributesIfNecessary]; });
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
+        [self updateAccountAttributesIfNecessary];
+
+        [self cleanUpDiscoverableByPhoneNumberForInternalUsers];
+    });
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged)

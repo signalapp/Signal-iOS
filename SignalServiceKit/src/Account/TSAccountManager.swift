@@ -528,13 +528,14 @@ public extension TSAccountManager {
     }
 
     func setIsDiscoverableByPhoneNumber(
-        _ isDiscoverableByPhoneNumber: Bool,
+        _ isDiscoverableByPhoneNumberParam: Bool,
         updateStorageService: Bool,
         authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard FeatureFlags.phoneNumberDiscoverability else {
-            return
+        var isDiscoverableByPhoneNumber = isDiscoverableByPhoneNumberParam
+        if FeatureFlags.phoneNumberDiscoverability.negated {
+            isDiscoverableByPhoneNumber = true
         }
 
         performWithSynchronizedSelf {
@@ -558,6 +559,16 @@ public extension TSAccountManager {
 
             if updateStorageService {
                 self.storageServiceManager.recordPendingLocalAccountUpdates()
+            }
+        }
+    }
+
+    @objc
+    func cleanUpDiscoverableByPhoneNumberForInternalUsers() {
+        if self.isDiscoverableByPhoneNumber().negated, FeatureFlags.phoneNumberDiscoverability.negated, isPrimaryDevice {
+            // Not discoverable, but feature flag disabled. Correct by making discoverable.
+            self.databaseStorage.write { tx in
+                self.setIsDiscoverableByPhoneNumber(true, updateStorageService: true, authedAccount: .implicit(), transaction: tx)
             }
         }
     }
