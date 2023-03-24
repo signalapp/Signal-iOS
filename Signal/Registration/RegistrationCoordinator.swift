@@ -124,10 +124,22 @@ public protocol RegistrationCoordinator {
 
     /// The user has hit a reglock timeout and is acknowledging it.
     ///
-    /// If they're doing initial registration, the user should get bonked back to the phone number
-    /// entry screen.
+    /// If they're doing initial registration, the user should get bonked back to
+    /// a previous step. (Typically, the phone number entry screen)
     ///
     /// If they're already using the app (re-registration and change number), we should abort the
-    /// registration process.
-    func acknowledgeReglockTimeout() -> Guarantee<RegistrationStep>
+    /// registration process, exiting back to the main app.
+    func acknowledgeReglockTimeout() -> AcknowledgeReglockResult
+}
+
+public enum AcknowledgeReglockResult {
+    // Only possible during initial registration; lets the user
+    // retry with a different number. Next step should be shown.
+    case restartRegistration(Guarantee<RegistrationStep>)
+    // If re-registering or changing number, exiting out to the main
+    // app is possible.
+    case exitRegistration
+    // Unable to get anywhere; typically we are in re-registration
+    // and state has already been wiped unrecoverably.
+    case cannotExit
 }

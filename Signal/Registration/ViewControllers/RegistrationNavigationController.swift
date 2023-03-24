@@ -471,8 +471,18 @@ extension RegistrationNavigationController: RegistrationPhoneNumberDiscoverabili
 }
 
 extension RegistrationNavigationController: RegistrationReglockTimeoutPresenter {
+
     func acknowledgeReglockTimeout() {
-        pushNextController(coordinator.acknowledgeReglockTimeout())
+        switch coordinator.acknowledgeReglockTimeout() {
+        case .cannotExit:
+            Logger.warn("Tried to exit registration from reglock timeout when unable.")
+            return
+        case .exitRegistration:
+            Logger.info("Exiting registration after reglock timeout")
+            SignalApp.shared().showConversationSplitView()
+        case .restartRegistration(let nextStepGuarantee):
+            pushNextController(nextStepGuarantee)
+        }
     }
 }
 

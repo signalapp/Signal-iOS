@@ -12,6 +12,8 @@ import SignalMessaging
 public enum RegistrationReglockTimeoutAcknowledgeAction {
     case resetPhoneNumber
     case close
+    // Unable to do anything, just stuck here.
+    case none
 }
 
 // MARK: - RegistrationReglockTimeoutState
@@ -114,7 +116,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
         return result
     }()
 
-    private lazy var okayButton: UIView = {
+    private lazy var okayButton: UIView? = {
         let title: String
         switch state.acknowledgeAction {
         case .resetPhoneNumber:
@@ -124,6 +126,8 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
             )
         case .close:
             title = CommonStrings.okayButton
+        case .none:
+            return nil
         }
 
         let result = OWSButton(title: title) { [weak self] in
@@ -175,8 +179,10 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
 
         stackView.addArrangedSubview(UIView.vStretchingSpacer())
 
-        stackView.addArrangedSubview(okayButton)
-        stackView.setCustomSpacing(24, after: okayButton)
+        if let okayButton {
+            stackView.addArrangedSubview(okayButton)
+            stackView.setCustomSpacing(24, after: okayButton)
+        }
 
         stackView.addArrangedSubview(learnMoreButton)
 

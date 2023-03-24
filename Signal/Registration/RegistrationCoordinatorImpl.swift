@@ -317,17 +317,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return self.nextStep()
     }
 
-    public func acknowledgeReglockTimeout() -> Guarantee<RegistrationStep> {
+    public func acknowledgeReglockTimeout() -> AcknowledgeReglockResult {
         switch reglockTimeoutAcknowledgeAction {
         case .resetPhoneNumber:
             db.write { transaction in
                 self.resetSession(transaction)
                 self.updatePersistedState(transaction) { $0.e164 = nil }
             }
-            return nextStep()
+            return .restartRegistration(nextStep())
         case .close:
-            // TODO[Registration] Do mode-specific cleanup.
-            return .value(.done)
+            guard exitRegistration() else {
+                return .cannotExit
+            }
+            return .exitRegistration
+        case .none:
+            return .cannotExit
         }
     }
 
@@ -2660,18 +2664,61 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 e164: e164,
                 verificationMethod: method,
                 changeNumberState: changeNumberState
-            ).then(on: schedulers.main) { accountResponse in
-                return responseHandler(accountResponse)
+            ).then(on: schedulers.main) { [weak self] changeNumberResult in
+                switch changeNumberResult {
+                case .unretainedSelf:
+                    return unretainedSelfError()
+                case .pniStateError:
+                    return .value(.showErrorSheet(.genericError))
+                case .serviceResponse(let accountResponse):
+                    switch accountResponse {
+                    case .success:
+                        // Pni state will get finalized and cleaned up later in
+                        // the normal course of action.
+                        break
+                    case .reglockFailure, .rejectedVerificationMethod, .retryAfter:
+                        // Explicit rejection by the server, we can safely
+                        // wipe our local PNI state and regenerate when we retry.
+                        guard let self else {
+                            return unretainedSelfError()
+                        }
+                        do {
+                            try self.db.write { tx in
+                                self._unsafeToModify_mode = .changingNumber(try self.loader.savePendingChangeNumber(
+                                    oldState: changeNumberState,
+                                    pniState: nil,
+                                    transaction: tx
+                                ))
+                            }
+                        } catch {
+                            return .value(.showErrorSheet(.genericError))
+                        }
+                    case .deviceTransferPossible:
+                        owsFailBeta("Should't get device transfer response on change number request.")
+                    case .networkError, .genericError:
+                        // We don't know what went wrong, so PNI state
+                        // may be set server side. Don't wipe PNI state
+                        // so we try and recover.
+                        Logger.error("Unknown error when changing number; preserving pni state")
+                    }
+                    return responseHandler(accountResponse)
+                }
             }
 
         }
+    }
+
+    private enum ChangeNumberResult {
+        case serviceResponse(AccountResponse)
+        case pniStateError
+        case unretainedSelf
     }
 
     private func generatePniStateAndMakeChangeNumberRequest(
         e164: E164,
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState
-    ) -> Guarantee<AccountResponse> {
+    ) -> Guarantee<ChangeNumberResult> {
         return deps.changeNumberPniManager
             .generatePniIdentity(
                 forNewE164: e164,
@@ -2680,13 +2727,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 localDeviceId: changeNumberState.localDeviceId,
                 localUserAllDeviceIds: changeNumberState.localUserAllDeviceIds
             )
-            .then(on: schedulers.sharedBackground) { [weak self] pniResult -> Guarantee<AccountResponse> in
+            .then(on: schedulers.sharedBackground) { [weak self] pniResult -> Guarantee<ChangeNumberResult> in
                 guard let strongSelf = self else {
-                    return .value(.genericError)
+                    return .value(.unretainedSelf)
                 }
                 switch pniResult {
                 case .failure:
-                    return .value(.genericError)
+                    return .value(.pniStateError)
                 case .success(let pniParams, let pniPendingState):
                     return strongSelf.makeChangeNumberRequest(
                         e164: e164,
@@ -2706,12 +2753,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
         pniPendingState: ChangePhoneNumberPni.PendingState,
         pniParams: ChangePhoneNumberPni.Parameters
-    ) -> Guarantee<AccountResponse> {
+    ) -> Guarantee<ChangeNumberResult> {
         // Process all messages first.
         return deps.messageProcessor.waitForProcessingCompleteAndThenSuspend(for: .pendingChangeNumber)
             .then(on: schedulers.main) { [weak self] in
                 guard let strongSelf = self else {
-                    return .value(.genericError)
+                    return .value(.unretainedSelf)
                 }
                 do {
                     try strongSelf.db.write { tx in
@@ -2722,7 +2769,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         ))
                     }
                 } catch {
-                    return .value(.genericError)
+                    return .value(.pniStateError)
                 }
                 return Service
                     .makeChangeNumberRequest(
@@ -2734,6 +2781,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         signalService: strongSelf.deps.signalService,
                         schedulers: strongSelf.schedulers
                     )
+                    .map(on: strongSelf.schedulers.sync) { .serviceResponse($0) }
             }
     }
 
@@ -2967,7 +3015,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private var reglockTimeoutAcknowledgeAction: RegistrationReglockTimeoutAcknowledgeAction {
         switch mode {
         case .registering: return .resetPhoneNumber
-        case .reRegistering, .changingNumber: return .close
+        case .reRegistering, .changingNumber:
+            if canExitRegistrationFlow() {
+                return .close
+            } else {
+                return .none
+            }
         }
     }
 
