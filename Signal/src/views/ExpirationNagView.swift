@@ -3,20 +3,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
 import UIKit
 
-@objc
 public class ExpirationNagView: ReminderView {
     private static let updateLink = URL(string: "itms-apps://itunes.apple.com/app/id874139669")!
 
-    @objc
     convenience init() {
         self.init(mode: .nag, text: "") {
             UIApplication.shared.open(ExpirationNagView.updateLink, options: [:])
         }
     }
 
-    @objc
     func updateText() {
         if appExpiry.isExpired {
             text = NSLocalizedString("EXPIRATION_ERROR", comment: "Label notifying the user that the app has expired.")
