@@ -143,9 +143,33 @@ public class AudioPlayer: NSObject {
             return
         }
 
+        // In some cases, Android sends audio messages with the "audio/mpeg" content type. This
+        // makes our choice of file extension ambiguous—`.mp3` or `.m4a`? AVFoundation uses the
+        // extension to read the file, and if the extension is wrong, it won't be playable.
+        //
+        // In this case, we use a file type hint to tell AVFoundation to try the other type. This
+        // is brittle but necessary to work around the buggy marriage of Android's content type and
+        // AVFoundation's default behavior.
+        //
+        // Note that we probably still want this code even if Android updates theirs, because
+        // iOS users might have existing attachments.
+        //
+        // See a similar comment in `AudioWaveformManager` and
+        // <https://github.com/signalapp/Signal-iOS/issues/3590>.
+        let fileTypeHint: AVFileType?
+        lazy var isReadable = AVURLAsset(url: mediaUrl).isReadable
+        switch mediaUrl.pathExtension {
+        case "mp3": fileTypeHint = isReadable ? nil : AVFileType.m4a
+        case "m4a": fileTypeHint = isReadable ? nil : AVFileType.mp3
+        default: fileTypeHint = nil
+        }
+
         let audioPlayer: AVAudioPlayer
         do {
-            audioPlayer = try AVAudioPlayer(contentsOf: mediaUrl)
+            audioPlayer = try AVAudioPlayer(
+                contentsOf: mediaUrl,
+                fileTypeHint: fileTypeHint?.rawValue
+            )
         } catch let error as NSError {
             OWSLogger.error("Error: \(error)")
             stop()

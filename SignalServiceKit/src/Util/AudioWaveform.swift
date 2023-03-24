@@ -96,26 +96,45 @@ public class AudioWaveformManager: NSObject {
             }
         }
 
-        var asset = AVURLAsset(url: URL(fileURLWithPath: audioPath))
+        let audioUrl = URL(fileURLWithPath: audioPath)
 
-        // If the asset isn't readable, we may not be able to generate a waveform for this file.
-        //
-        // Android sends voice messages in a hacky m4a container that we can't process
-        // when it has the m4a extension. If we hint to the OS that it's an AAC file with
-        // the file extension, we can. This is pretty brittle and hopefully android will
-        // be able to fix the issue in the future in which case `isReadable` will become
-        // true and this path will no longer be hit.
-        if !asset.isReadable, audioPath.hasSuffix("m4a") {
+        var asset = AVURLAsset(url: audioUrl)
 
-            let symlinkPath = OWSFileSystem.temporaryFilePath(fileExtension: "aac", isAvailableWhileDeviceLocked: true)
-            do {
-                try FileManager.default.createSymbolicLink(atPath: symlinkPath,
-                                                           withDestinationPath: audioPath)
-            } catch {
-                owsFailDebug("Failed to create voice memo symlink: \(error)")
-                return nil
+        if !asset.isReadable {
+            // In some cases, Android sends audio messages with the "audio/mpeg" content type. This
+            // makes our choice of file extension ambiguous—`.mp3` or `.m4a`? AVFoundation uses the
+            // extension to read the file, and if the extension is wrong, it won't be readable.
+            //
+            // We "lie" about the extension to generate the waveform so that AVFoundation may read
+            // it. This is brittle but necessary to work around the buggy marriage of Android's
+            // content type and AVFoundation's behavior.
+            //
+            // Note that we probably still want this code even if Android updates theirs, because
+            // iOS users might have existing attachments.
+            //
+            // See a similar comment in `AudioPlayer` and
+            // <https://github.com/signalapp/Signal-iOS/issues/3590>.
+            let extensionOverride: String?
+            switch audioUrl.pathExtension {
+            case "m4a": extensionOverride = "aac"
+            case "mp3": extensionOverride = "m4a"
+            default: extensionOverride = nil
             }
-            asset = AVURLAsset(url: URL(fileURLWithPath: symlinkPath))
+
+            if let extensionOverride {
+                let symlinkPath = OWSFileSystem.temporaryFilePath(
+                    fileExtension: extensionOverride,
+                    isAvailableWhileDeviceLocked: true
+                )
+                do {
+                    try FileManager.default.createSymbolicLink(atPath: symlinkPath,
+                                                               withDestinationPath: audioPath)
+                } catch {
+                    owsFailDebug("Failed to create voice memo symlink: \(error)")
+                    return nil
+                }
+                asset = AVURLAsset(url: URL(fileURLWithPath: symlinkPath))
+            }
         }
 
         guard asset.isReadable else {
