@@ -168,7 +168,7 @@ extension UIAlertController {
             ),
             style: .default
         ) { _ in
-            UIApplication.shared.open(TSConstants.appStoreUpdateURL)
+            UIApplication.shared.open(TSConstants.appStoreUrl)
         }
         result.addAction(updateAction)
         result.preferredAction = updateAction

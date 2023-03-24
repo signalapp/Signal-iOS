@@ -263,7 +263,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapOutdatedPaymentClientReminder() {
-        let url = TSConstants.appStoreUpdateURL
+        let url = TSConstants.appStoreUrl
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 

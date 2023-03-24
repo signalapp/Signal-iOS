@@ -367,7 +367,7 @@ extension OWSActionSheets {
                                               proceedTitle: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON",
                                                                               comment: "Button for payments outdated sheet."),
                                               proceedStyle: .default) { _ in
-            let url = TSConstants.appStoreUpdateURL
+            let url = TSConstants.appStoreUrl
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
     }

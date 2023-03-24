@@ -733,8 +733,7 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapShowUpgradeAppUI() {
         AssertIsOnMainThread()
 
-        let url = "https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"
-        UIApplication.shared.open(URL(string: url)!, options: [:], completionHandler: nil)
+        UIApplication.shared.open(TSConstants.appStoreUrl, options: [:], completionHandler: nil)
     }
 
     public func didTapUpdateSystemContact(_ address: SignalServiceAddress, newNameComponents: PersonNameComponents) {

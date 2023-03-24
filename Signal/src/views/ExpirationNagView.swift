@@ -7,11 +7,9 @@ import Foundation
 import UIKit
 
 public class ExpirationNagView: ReminderView {
-    private static let updateLink = URL(string: "itms-apps://itunes.apple.com/app/id874139669")!
-
     convenience init() {
         self.init(mode: .nag, text: "") {
-            UIApplication.shared.open(ExpirationNagView.updateLink, options: [:])
+            UIApplication.shared.open(TSConstants.appStoreUrl, options: [:])
         }
     }
 
