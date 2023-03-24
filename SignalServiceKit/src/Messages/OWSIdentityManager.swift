@@ -185,11 +185,10 @@ extension OWSIdentityManager {
             transaction: transaction
         )
 
-        tsAccountManager.legacy_updateLocalPhoneNumber(
-            newE164.stringValue,
+        tsAccountManager.updateLocalPhoneNumber(
+            E164ObjC(newE164),
             aci: localAci,
             pni: updatedPni,
-            shouldUpdateStorageService: false, // Updated by the primary
             transaction: transaction
         )
 

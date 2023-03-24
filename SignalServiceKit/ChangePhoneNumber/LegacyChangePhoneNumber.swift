@@ -250,9 +250,18 @@ public class LegacyChangePhoneNumber: NSObject {
 
     // MARK: - Update the local phone number
 
+    /// Warning: do not use this method.
+    ///
+    /// In a PNI world, it's not safe to update the E164 based on a WhoAmI
+    /// request (which this does), since the E164 is semantically linked to
+    /// data not available in the WhoAmI (such as the PNI identity key).
+    ///
+    /// This method exists to preserve existing behavior in an error scenario
+    /// we should never find ourselves in. When we remove the E164 from the
+    /// StorageService AccountRecord, we should remove this behavior as well.
     @objc
-    public func updateLocalPhoneNumber() {
-        // TODO: [CNPNI] This is no longer a safe thing to do
+    public func deprecated_updateLocalPhoneNumberOnAccountRecordMismatch() {
+        // PNI TODO: Remove this once we've removed the e164 from AccountRecord.
 
         firstly { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
             Self.accountServiceClient.getAccountWhoAmI()
@@ -327,13 +336,14 @@ public class LegacyChangePhoneNumber: NSObject {
                 "Recording new phone number: \(serviceE164), PNI: \(servicePni)"
             )
 
-            self.tsAccountManager.legacy_updateLocalPhoneNumber(
-                serviceE164.stringValue,
+            self.tsAccountManager.updateLocalPhoneNumber(
+               E164ObjC(serviceE164),
                 aci: serviceAci, // Verified equal to `localAci` above
                 pni: servicePni,
-                shouldUpdateStorageService: true,
                 transaction: transaction
             )
+
+            self.storageServiceManager.recordPendingLocalAccountUpdates()
 
             return serviceE164
         } else {

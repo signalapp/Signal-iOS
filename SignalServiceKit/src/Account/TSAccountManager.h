@@ -200,16 +200,14 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 #pragma mark - Change Phone Number
 
-- (void)legacy_updateLocalPhoneNumber:(NSString *)phoneNumber
-                                  aci:(NSUUID *)aci
-                                  pni:(NSUUID *_Nullable)pni
-           shouldUpdateStorageService:(BOOL)shouldUpdateStorageService
-                          transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(legacy_updateLocalPhoneNumber(_:aci:pni:shouldUpdateStorageService:transaction:));
-
+/// Update local state concerning the phone number.
+///
+/// Note that the `pni` parameter is nullable to support legacy behavior.
+///
+// PNI TODO: once all devices are PNI-capable, remove PNI nullability here.
 - (void)updateLocalPhoneNumber:(E164ObjC *)e164
                            aci:(NSUUID *)uuid
-                           pni:(NSUUID *)pni
+                           pni:(NSUUID *_Nullable)pni
                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Manual Message Fetch

@@ -1083,8 +1083,16 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             .fetchOrBuildDefaultUniversalConfiguration(with: transaction)
         builder.setUniversalExpireTimer(dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0)
 
-        if let localPhoneNumber = localAddress.phoneNumber?.strippedOrNil, localPhoneNumber.isStructurallyValidE164 {
-            builder.setE164(localPhoneNumber)
+        if profileManager.localProfileIsPniCapable() {
+            // If we are PNI capable we should no longer use or rely on the
+            // e164 from the AccountRecord since it doesn't store related PNI
+            // material.
+        } else {
+            if let localE164 = E164(localAddress.phoneNumber?.strippedOrNil) {
+                builder.setE164(localE164.stringValue)
+            } else {
+                owsFailDebug("Missing or invalid local E164!")
+            }
         }
 
         if let customEmojiSet = ReactionManager.customEmojiSet(transaction: transaction) {
@@ -1339,39 +1347,50 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             systemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice(transaction: transaction)
         }
 
-        if let serviceLocalE164 = record.e164?.strippedOrNil, serviceLocalE164.isStructurallyValidE164 {
-            // If the local phone number doesn't match the "local phone number" in the storage service...
-            if localAddress.phoneNumber != serviceLocalE164 {
-                Logger.warn("localAddress.phoneNumber: \(String(describing: localAddress.phoneNumber)) != serviceLocalE164: \(serviceLocalE164)")
-                if tsAccountManager.isPrimaryDevice {
+        if profileManager.localProfileIsPniCapable() {
+            // If we are PNI capable we should no longer use or rely on the
+            // e164 from the AccountRecord since it doesn't store related PNI
+            // material.
+        } else if let serviceLocalE164 = E164(record.e164?.strippedOrNil) {
+            if localAddress.e164 != serviceLocalE164 {
+                Logger.warn("localAddress.e164: \(String(describing: localAddress.e164)) != serviceLocalE164: \(serviceLocalE164)")
+
+                if tsAccountManager.isPrimaryDevice(transaction: transaction) {
+                    // It's not clear how we got into this scenario, but if we
+                    // do it's bad. Once all clients are PNI-capable we can
+                    // ignore the AccountRecord's e164 entirely, and remove
+                    // this attempt to heal.
+                    //
+                    // PNI TODO: remove this logic after all clients are known PNI-capable.
+
                     transaction.addAsyncCompletionOffMain {
+                        owsFailDebug("Attempting to heal from primary-device e164 mismatch with AccountRecord.")
+
                         // Consult "whoami" service endpoint; the service is the source of truth
                         // for the local phone number.  This ensures that the primary will always
                         // reflect the latest value.
-                        self.legacyChangePhoneNumber.updateLocalPhoneNumber()
+                        self.legacyChangePhoneNumber.deprecated_updateLocalPhoneNumberOnAccountRecordMismatch()
 
                         // The primary should always reflect the latest value.
                         // If local db state doesn't agree with the storage service state,
                         // the primary needs to update the storage service.
                         self.storageServiceManager.recordPendingLocalAccountUpdates()
                     }
+                } else if let localAci = tsAccountManager.localUuid(with: transaction) {
+                    // If we're a linked device, we should always take the e164
+                    // from StorageService.
+                    tsAccountManager.updateLocalPhoneNumber(
+                        E164ObjC(serviceLocalE164),
+                        aci: localAci,
+                        pni: tsAccountManager.localPni(with: transaction),
+                        transaction: transaction
+                    )
                 } else {
-                    // Linked devices should always take changes from the storage service.
-                    if let uuid = localAddress.uuid {
-                        tsAccountManager.legacy_updateLocalPhoneNumber(
-                            serviceLocalE164,
-                            aci: uuid,
-                            pni: tsAccountManager.localPni,
-                            shouldUpdateStorageService: false,
-                            transaction: transaction
-                        )
-                    } else {
-                        owsFailDebug("Missing uuid.")
-                    }
+                    owsFailDebug("Linked device missing local ACI!")
                 }
             }
         } else {
-            // If no "local phone number" has been written to the storage service yet, do so now.
+            // If we don't have an e164 in StorageService yet, do so now.
             needsUpdate = true
         }
 

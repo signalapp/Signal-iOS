@@ -170,37 +170,9 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }
 }
 
-- (void)legacy_updateLocalPhoneNumber:(NSString *)phoneNumber
-                                  aci:(NSUUID *)uuid
-                                  pni:(NSUUID *_Nullable)pni
-           shouldUpdateStorageService:(BOOL)shouldUpdateStorageService
-                          transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(phoneNumber.isStructurallyValidE164);
-    OWSAssertDebug([NSObject isNullableObject:self.localUuid equalTo:uuid]);
-
-    [self storeLocalNumber:phoneNumber aci:uuid pni:pni transaction:transaction];
-
-    [transaction addAsyncCompletionOffMain:^{
-        [self updateAccountAttributes].catch(^(NSError *error) { OWSLogError(@"Error: %@.", error); });
-
-        if (shouldUpdateStorageService) {
-            [self.storageServiceManager recordPendingLocalAccountUpdates];
-        }
-
-        [self.legacyChangePhoneNumber updateLocalPhoneNumber];
-
-        [self postRegistrationStateDidChangeNotification];
-
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameLocalNumberDidChange
-                                                                 object:nil
-                                                               userInfo:nil];
-    }];
-}
-
 - (void)updateLocalPhoneNumber:(E164ObjC *)e164
                            aci:(NSUUID *)uuid
-                           pni:(NSUUID *)pni
+                           pni:(NSUUID *_Nullable)pni
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self storeLocalNumber:e164.stringValue aci:uuid pni:pni transaction:transaction];
