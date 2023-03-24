@@ -9,6 +9,7 @@ import Foundation
 class AllMediaViewController: OWSViewController {
     private let tileViewController: MediaTileViewController
     private let name: String?
+    private let accessoriesHelper = MediaGalleryAccessoriesHelper()
 
     override var navigationItem: UINavigationItem {
         return tileViewController.navigationItem
@@ -16,8 +17,9 @@ class AllMediaViewController: OWSViewController {
 
     init(thread: TSThread, name: String?) {
         self.name = name
-        tileViewController = MediaTileViewController(thread: thread)
+        tileViewController = MediaTileViewController(thread: thread, accessoriesHelper: accessoriesHelper)
         super.init()
+        accessoriesHelper.viewController = tileViewController
     }
 
     override func viewDidLoad() {

@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalUI
 
 fileprivate extension IndexSet {
     func shifted(startingAt index: Int? = nil, by amount: Int) -> IndexSet {
@@ -55,17 +56,18 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
         if numberOfSectionsBefore == 0 && numberOfSectionsAfter > 0 {
             // Adding a "load newer" section. It goes at the end.
             collectionView?.insertSections(IndexSet(integer: localSection(numberOfSectionsAfter)))
-            updateFooterBarState()
+            accessoriesHelper.updateFooterBarState()
         } else if numberOfSectionsBefore > 0 && numberOfSectionsAfter == 0 {
             // Remove "load newer" section from the end.
             collectionView?.deleteSections(IndexSet(integer: 1))
-            updateFooterBarState()
+            accessoriesHelper.updateFooterBarState()
         }
     }
 }
 
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
     private let thread: TSThread
+    private let accessoriesHelper: MediaGalleryAccessoriesHelper
     private lazy var mediaGallery: MediaGallery = {
         let mediaGallery = MediaGallery(thread: thread)
         mediaGallery.addDelegate(self)
@@ -76,10 +78,12 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     /// This is used to avoid running two animations concurrently. It doesn't look good on iOS 16 (and probably all other versions).
     private var activeAnimationCount = 0
 
-    public init(thread: TSThread) {
+    public init(thread: TSThread, accessoriesHelper: MediaGalleryAccessoriesHelper) {
         self.thread = thread
+        self.accessoriesHelper = accessoriesHelper
         let layout: MediaTileViewLayout = type(of: self).buildLayout()
         self.mediaTileViewLayout = layout
+
         super.init(collectionViewLayout: layout)
     }
 
@@ -88,91 +92,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     // MARK: Subviews
-
-    lazy var footerBar: UIToolbar = {
-        let footerBar = UIToolbar()
-        return footerBar
-    }()
-
-    lazy var deleteButton: UIBarButtonItem = {
-        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash,
-                                           target: self,
-                                           action: #selector(didPressDelete),
-                                           accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_button"))
-
-        return deleteButton
-    }()
-
-    lazy var shareButton: UIBarButtonItem = {
-        let shareButton = UIBarButtonItem(barButtonSystemItem: .action,
-                                          target: self,
-                                          action: #selector(didPressShare),
-                                          accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share_button"))
-        return shareButton
-    }()
-
-    lazy var filterButton: UIBarButtonItem? = {
-        if #available(iOS 14, *) {
-            return modernFilterButton()
-        }
-        return legacyFilterButton()
-    }()
-
-    lazy var selectedFilterButton: UIBarButtonItem? = {
-        return UIBarButtonItem(image: selectedAllMediaFilterIcon,
-                               style: .plain,
-                               target: self,
-                               action: #selector(disableFiltering))
-    }()
-
-    private struct MenuAction {
-        var title: String
-        var icon: UIImage?
-        var handler: () -> Void
-
-        @available(iOS 13, *)
-        var uiAction: UIAction {
-            return UIAction(title: title, image: icon) { _ in handler() }
-        }
-
-        @available(iOS, deprecated: 14.0)
-        var uiAlertAction: UIAlertAction {
-            return UIAlertAction(title: title, style: .default) { _ in handler() }
-        }
-    }
-
-    private lazy var filterMenuActions: [MenuAction] = {
-        let batchSize = kLoadBatchSize
-        return [
-            MenuAction(
-                title:
-                    OWSLocalizedString(
-                        "ALL_MEDIA_FILTER_PHOTOS",
-                        comment: "Menu option to limit All Media view to displaying only photos"),
-                icon: UIImage(named: "all-media-filter-photos"),
-                handler: { [weak self] in
-                    self?.filter(.photos)
-                }),
-            MenuAction(
-                title:
-                    OWSLocalizedString(
-                        "ALL_MEDIA_FILTER_VIDEOS",
-                        comment: "Menu option to limit All Media view to displaying only videos"),
-                icon: UIImage(named: "all-media-filter-videos"),
-                handler: { [weak self] in
-                    self?.filter(.videos)
-                }),
-            MenuAction(
-                title:
-                    OWSLocalizedString(
-                        "ALL_MEDIA_FILTER_GIFS",
-                        comment: "Menu option to limit All Media view to displaying only GIFs"),
-                icon: UIImage(named: "all-media-filter-gifs"),
-                handler: { [weak self] in
-                    self?.filter(.gifs)
-                })
-        ]
-    }()
 
     // CV section index to MG section index
     private func mediaGallerySection(_ section: Int) -> Int {
@@ -219,7 +138,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                                                                    loadUntil: maybeDate ?? GalleryDate(date: Date.distantPast),
                                                                    batchSize: kLoadBatchSize,
                                                                    firstVisibleIndexPath: oldestVisibleIndexPath.map { mediaGalleryIndexPath($0) })
-        footerBarState = .filtering
+        accessoriesHelper.footerBarState = .filtering
         if let indexPath = indexPathToScrollTo {
             // Scroll to approximately where you were before.
             collectionView.scrollToItem(at: self.indexPath(indexPath),
@@ -228,69 +147,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }
         eagerLoadingDidComplete = false
         eagerlyLoadMoreIfPossible()
-    }
-
-    private lazy var allMediaFilterIcon: UIImage = {
-        UIImage(named: "all-media-filter")!
-    }()
-
-    private lazy var selectedAllMediaFilterIcon: UIImage = {
-        UIImage(named: "all-media-filter-selected")!
-    }()
-
-    private func legacyFilterButton() -> UIBarButtonItem {
-        return UIBarButtonItem(image: allMediaFilterIcon,
-                               style: .plain,
-                               target: self,
-                               action: #selector(showFilterMenu))
-    }
-
-    @available(iOS, deprecated: 14.0)
-    @objc
-    func showFilterMenu(_ sender: Any) {
-        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        for action in filterMenuActions.map({ $0.uiAlertAction}) {
-            menu.addAction(action)
-        }
-        present(menu, animated: true, completion: nil)
-    }
-
-    @objc
-    func disableFiltering(_ sender: Any) {
-        let date: GalleryDate?
-        if let indexPath = oldestVisibleIndexPath?.shiftingSection(by: -1) {
-            date = mediaGallery.galleryDates[indexPath.section]
-        } else {
-            date = nil
-        }
-        let indexPathToScrollTo = mediaGallery.setAllowedMediaType(
-            nil,
-            loadUntil: date ?? GalleryDate(date: .distantFuture),
-            batchSize: kLoadBatchSize,
-            firstVisibleIndexPath: oldestVisibleIndexPath.map { mediaGalleryIndexPath($0) })
-        updateFooterBarState()
-
-        if date == nil {
-            if mediaGallery.galleryDates.isEmpty {
-                _ = self.mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize)
-            }
-            if eagerLoadingDidComplete {
-                // Filtering removed everything so we must restart eager loading.
-                eagerLoadingDidComplete = false
-                eagerlyLoadMoreIfPossible()
-            }
-        }
-        if let indexPath = indexPathToScrollTo {
-            collectionView.scrollToItem(at: self.indexPath(indexPath),
-                                        at: .top,
-                                        animated: false)
-        }
-    }
-
-    @available(iOS 14, *)
-    private func modernFilterButton() -> UIBarButtonItem {
-        let menu = UIMenu(title: "", children: filterMenuActions.map { $0.uiAction })
-        return UIBarButtonItem(image: allMediaFilterIcon, menu: menu)
     }
 
     // MARK: View Lifecycle Overrides
@@ -314,12 +170,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         // feels a bit weird to have content smashed all the way to the bottom edge.
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
 
-        self.view.addSubview(self.footerBar)
-        footerBar.autoPinWidthToSuperview()
-        footerBar.autoSetDimension(.height, toSize: kFooterBarHeight)
-        self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)
-
-        updateSelectButton()
+        accessoriesHelper.add(toView: self.view)
 
         self.mediaTileViewLayout.invalidateLayout()
 
@@ -367,11 +218,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     @objc
     func applyTheme() {
-        footerBar.barTintColor = Theme.navbarBackgroundColor
-        footerBar.tintColor = Theme.primaryIconColor
-
-        deleteButton.tintColor = Theme.primaryIconColor
-        shareButton.tintColor = Theme.primaryIconColor
+        accessoriesHelper.applyTheme()
 
         collectionView.backgroundColor = Theme.backgroundColor
     }
@@ -633,9 +480,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return
         }
 
-        if isInBatchSelectMode {
-            updateDeleteButton()
-            updateShareButton()
+        if accessoriesHelper.isInBatchSelectMode {
+            accessoriesHelper.didModifySelection()
         } else {
             collectionView.deselectItem(at: indexPath, animated: true)
 
@@ -650,10 +496,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         Logger.debug("")
 
-        if isInBatchSelectMode {
-            updateDeleteButton()
-            updateShareButton()
-        }
+        accessoriesHelper.didModifySelection()
     }
 
     // MARK: UICollectionViewDataSource
@@ -893,266 +736,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return kMonthHeaderSize
         }
     }
-
-    // MARK: Batch Selection
-
-    var isInBatchSelectMode = false {
-        didSet {
-            let didChange = isInBatchSelectMode != oldValue
-            if didChange {
-                collectionView!.allowsMultipleSelection = isInBatchSelectMode
-                updateVisibleCells()
-                updateSelectButton()
-                updateDeleteButton()
-                updateShareButton()
-            }
-        }
-    }
-
-    func updateDeleteButton() {
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        if let count = collectionView.indexPathsForSelectedItems?.count, count > 0 {
-            self.deleteButton.isEnabled = true
-        } else {
-            self.deleteButton.isEnabled = false
-        }
-    }
-
-    func updateShareButton() {
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        if let count = collectionView.indexPathsForSelectedItems?.count, count > 0 {
-            self.shareButton.isEnabled = true
-        } else {
-            self.shareButton.isEnabled = false
-        }
-    }
-
-    func updateSelectButton() {
-        if isInBatchSelectMode {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelSelect),
-                                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "cancel_select_button"))
-        } else {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode"),
-                                                                     style: .plain,
-                                                                     target: self,
-                                                                     action: #selector(didTapSelect),
-                                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "select_button"))
-        }
-    }
-
-    @objc
-    func didTapSelect(_ sender: Any) {
-        isInBatchSelectMode = true
-
-        footerBarState = mediaGallery.allowedMediaType != nil ? .selectionFiltering : .selection
-
-        // Disabled until at least one item is selected.
-        self.deleteButton.isEnabled = false
-        self.shareButton.isEnabled = false
-
-        // Don't allow the user to leave mid-selection, so they realized they have
-        // to cancel (lose) their selection if they leave.
-        self.navigationItem.hidesBackButton = true
-    }
-
-    private func showToolbar() {
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
-            NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
-            self.footerBarBottomConstraint = self.footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-
-            self.footerBar.superview?.layoutIfNeeded()
-
-            // ensure toolbar doesn't cover bottom row.
-            self.collectionView.contentInset.bottom += self.kFooterBarHeight
-            self.collectionView.scrollIndicatorInsets.bottom += self.kFooterBarHeight
-        }, completion: nil)
-    }
-
-    private func hideToolbar() {
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
-            NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
-            self.footerBarBottomConstraint = self.footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -self.kFooterBarHeight)
-            self.footerBar.superview?.layoutIfNeeded()
-
-            // Undo "ensure toolbar doesn't cover bottom row.".
-            self.collectionView.contentInset.bottom -= self.kFooterBarHeight
-            self.collectionView.scrollIndicatorInsets.bottom -= self.kFooterBarHeight
-        }, completion: nil)
-    }
-
-    @objc
-    func didCancelSelect(_ sender: Any) {
-        endSelectMode()
-    }
-
-    func endSelectMode() {
-        isInBatchSelectMode = false
-
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        // hide toolbar
-        updateFooterBarState()
-
-        self.navigationItem.hidesBackButton = false
-
-        // deselect any selected
-        collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
-    }
-
-    @objc
-    func didPressDelete(_ sender: Any) {
-        Logger.debug("")
-
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        guard let indexPaths = collectionView.indexPathsForSelectedItems else {
-            owsFailDebug("indexPaths was unexpectedly nil")
-            return
-        }
-
-        let items: [MediaGalleryItem] = indexPaths.compactMap { return self.galleryItem(at: $0) }
-        guard items.count == indexPaths.count else {
-            owsFailDebug("trying to delete an item that never loaded")
-            return
-        }
-
-        let format = NSLocalizedString("MEDIA_GALLERY_DELETE_MESSAGES_%d", tableName: "PluralAware",
-                                       comment: "Confirmation button text to delete selected media message(s) from the gallery")
-        let confirmationTitle = String.localizedStringWithFormat(format, indexPaths.count)
-
-        let deleteAction = ActionSheetAction(title: confirmationTitle, style: .destructive) { _ in
-            let galleryIndexPaths = indexPaths.map { self.mediaGalleryIndexPath($0) }
-            self.mediaGallery.delete(items: items, atIndexPaths: galleryIndexPaths, initiatedBy: self)
-            self.endSelectMode()
-        }
-
-        let actionSheet = ActionSheetController(title: nil, message: nil)
-        actionSheet.addAction(deleteAction)
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-
-        presentActionSheet(actionSheet)
-    }
-
-    @objc
-    func didPressShare(_ sender: Any) {
-        Logger.debug("")
-
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        guard let indexPaths = collectionView.indexPathsForSelectedItems else {
-            owsFailDebug("indexPaths was unexpectedly nil")
-            return
-        }
-
-        let items: [TSAttachmentStream] = indexPaths.compactMap { return self.galleryItem(at: $0)?.attachmentStream }
-        guard items.count == indexPaths.count else {
-            owsFailDebug("trying to delete an item that never loaded")
-            return
-        }
-
-        AttachmentSharing.showShareUI(forAttachments: items, sender: sender)
-    }
-
-    var footerBarBottomConstraint: NSLayoutConstraint!
-    let kFooterBarHeight: CGFloat = 40
-
-    enum FooterBarState {
-        // No footer bar.
-        case hidden
-
-        // Filter and other features when not in selection mode.
-        case regular
-
-        // Highlighted filter button shown, indicating highlighting is active.
-        case filtering
-
-        // In selection mode but not filtering.
-        case selection
-
-        // In selection mode and filtering.
-        case selectionFiltering
-    }
-
-    var footerBarState = FooterBarState.hidden {
-        willSet {
-            let wasHidden = footerBarState == .hidden
-            let willBeHidden = newValue == .hidden
-            if wasHidden && !willBeHidden {
-                showToolbar()
-            } else if !wasHidden && willBeHidden {
-                hideToolbar()
-            }
-            switch newValue {
-            case .hidden:
-                break
-            case .selection, .selectionFiltering:
-                let footerItems = [
-                    shareButton,
-                    UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                    deleteButton
-                ]
-                footerBar.setItems(footerItems, animated: false)
-            case .regular:
-                let footerItems = [
-                    filterButton!,
-                    UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                    deleteButton
-                ]
-                footerBar.setItems(footerItems, animated: false)
-            case .filtering:
-                let footerItems = [
-                    selectedFilterButton!,
-                    UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                    deleteButton
-                ]
-                footerBar.setItems(footerItems, animated: false)
-            }
-        }
-    }
-
-    private func updateFooterBarState() {
-        footerBarState = {
-            if isInBatchSelectMode {
-                if mediaGallery.allowedMediaType != nil {
-                    return .selectionFiltering
-                }
-                return .selection
-            }
-            if mediaGallery.allowedMediaType != nil {
-                return .filtering
-            }
-            if mediaGallery.galleryDates.isEmpty {
-                return .hidden
-            }
-            let allowed = FeatureFlags.isPrerelease
-            guard allowed else {
-                return .hidden
-            }
-            if #unavailable(iOS 13) {
-                return .hidden
-            }
-            return .regular
-        }()
-    }
-
-    // MARK: Update
 
     // MARK: MediaGalleryDelegate
 
@@ -1443,5 +1026,140 @@ class GalleryGridCellItem: PhotoGridItem {
     private var videoDurationPromise: Promise<TimeInterval> {
         owsAssert(galleryItem.isVideo)
         return VideoDurationHelper.shared.promisedDuration(attachment: galleryItem.attachmentStream)
+    }
+}
+
+extension MediaTileViewController: MediaGalleryPrimaryViewController {
+    typealias MenuAction = MediaGalleryAccessoriesHelper.MenuAction
+
+    var isFiltering: Bool {
+        return mediaGallery.allowedMediaType != nil
+    }
+
+    var isEmpty: Bool {
+        return mediaGallery.galleryDates.isEmpty
+    }
+
+    var hasSelection: Bool {
+        if let count = collectionView.indexPathsForSelectedItems?.count, count > 0 {
+            return true
+        }
+        return false
+    }
+
+    var mediaGalleryFilterMenuActions: [MediaGalleryAccessoriesHelper.MenuAction] {
+        return [
+            MenuAction(
+                title:
+                    OWSLocalizedString(
+                        "ALL_MEDIA_FILTER_PHOTOS",
+                        comment: "Menu option to limit All Media view to displaying only photos"),
+                icon: UIImage(named: "all-media-filter-photos"),
+                handler: { [weak self] in
+                    self?.filter(.photos)
+                }),
+            MenuAction(
+                title:
+                    OWSLocalizedString(
+                        "ALL_MEDIA_FILTER_VIDEOS",
+                        comment: "Menu option to limit All Media view to displaying only videos"),
+                icon: UIImage(named: "all-media-filter-videos"),
+                handler: { [weak self] in
+                    self?.filter(.videos)
+                }),
+            MenuAction(
+                title:
+                    OWSLocalizedString(
+                        "ALL_MEDIA_FILTER_GIFS",
+                        comment: "Menu option to limit All Media view to displaying only GIFs"),
+                icon: UIImage(named: "all-media-filter-gifs"),
+                handler: { [weak self] in
+                    self?.filter(.gifs)
+                })
+        ]
+    }
+
+    func disableFiltering() {
+        let date: GalleryDate?
+        if let indexPath = oldestVisibleIndexPath?.shiftingSection(by: -1) {
+            date = mediaGallery.galleryDates[indexPath.section]
+        } else {
+            date = nil
+        }
+        let indexPathToScrollTo = mediaGallery.setAllowedMediaType(
+            nil,
+            loadUntil: date ?? GalleryDate(date: .distantFuture),
+            batchSize: kLoadBatchSize,
+            firstVisibleIndexPath: oldestVisibleIndexPath.map { mediaGalleryIndexPath($0) })
+
+        if date == nil {
+            if mediaGallery.galleryDates.isEmpty {
+                _ = self.mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize)
+            }
+            if eagerLoadingDidComplete {
+                // Filtering removed everything so we must restart eager loading.
+                eagerLoadingDidComplete = false
+                eagerlyLoadMoreIfPossible()
+            }
+        }
+        if let indexPath = indexPathToScrollTo {
+            collectionView.scrollToItem(at: self.indexPath(indexPath),
+                                        at: .top,
+                                        animated: false)
+        }
+    }
+
+    func batchSelectionModeDidChange(isInBatchSelectMode: Bool) {
+        collectionView!.allowsMultipleSelection = isInBatchSelectMode
+        updateVisibleCells()
+    }
+
+    func didEndSelectMode() {
+        // deselect any selected
+        collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
+    }
+
+    func deleteSelectedItems() {
+        guard let indexPaths = collectionView.indexPathsForSelectedItems else {
+            owsFailDebug("indexPaths was unexpectedly nil")
+            return
+        }
+
+        let items: [MediaGalleryItem] = indexPaths.compactMap { return self.galleryItem(at: $0) }
+        guard items.count == indexPaths.count else {
+            owsFailDebug("trying to delete an item that never loaded")
+            return
+        }
+
+        let format = NSLocalizedString("MEDIA_GALLERY_DELETE_MESSAGES_%d", tableName: "PluralAware",
+                                       comment: "Confirmation button text to delete selected media message(s) from the gallery")
+        let confirmationTitle = String.localizedStringWithFormat(format, indexPaths.count)
+
+        let deleteAction = ActionSheetAction(title: confirmationTitle, style: .destructive) { _ in
+            let galleryIndexPaths = indexPaths.map { self.mediaGalleryIndexPath($0) }
+            self.mediaGallery.delete(items: items, atIndexPaths: galleryIndexPaths, initiatedBy: self)
+            self.accessoriesHelper.endSelectMode()
+        }
+
+        let actionSheet = ActionSheetController(title: nil, message: nil)
+        actionSheet.addAction(deleteAction)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(actionSheet)
+    }
+
+    func shareSelectedItems(_ sender: Any) {
+        guard let indexPaths = collectionView.indexPathsForSelectedItems else {
+            owsFailDebug("indexPaths was unexpectedly nil")
+            return
+        }
+
+        let items: [TSAttachmentStream] = indexPaths.compactMap { return self.galleryItem(at: $0)?.attachmentStream }
+        guard items.count == indexPaths.count else {
+            owsFailDebug("trying to delete an item that never loaded")
+            return
+        }
+
+        AttachmentSharing.showShareUI(forAttachments: items, sender: sender)
     }
 }
