@@ -21,7 +21,7 @@ class Deprecated_OnboardingModeSwitchConfirmationViewController: Deprecated_Onbo
         let nextButtonText: String
         let image: UIImage?
 
-        switch Deprecated_OnboardingController.defaultOnboardingMode {
+        switch onboardingController.onboardingMode {
         case .registering:
             titleText = NSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_REGISTERING",
                                           comment: "header text indicating to the user they're switching from registering to linking flow")

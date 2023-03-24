@@ -33,6 +33,8 @@ public class Deprecated_OnboardingNavigationController: OWSNavigationController 
 
 // MARK: -
 
+// TODO[Registration]: pull out the parts of this related to secondary device
+// linking into simpler classes and delete the rest once once new registration rolls out.
 @objc
 public class Deprecated_OnboardingController: NSObject {
 
@@ -217,6 +219,12 @@ public class Deprecated_OnboardingController: NSObject {
         AssertIsOnMainThread()
 
         Logger.info("")
+
+        if FeatureFlags.useNewRegistrationFlow, onboardingMode == .provisioning {
+            let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
+            signalApp.showRegistration(loader: loader, desiredMode: .registering)
+            return
+        }
 
         switch Self.defaultOnboardingMode {
         case .registering:

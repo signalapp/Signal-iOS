@@ -9,6 +9,12 @@ import Foundation
 /// including re-registration and change number.
 public protocol RegistrationCoordinator {
 
+    /// Prepare to switch to secondary device linking, if allowed.
+    /// If this returns true, state will have been appropriately cleared
+    /// in order to proceed to seconday device linking; if not the
+    /// user/device is not allowed and should stay in primary registration.
+    func switchToSecondaryDeviceLinking() -> Bool
+
     /// Attempt to exit registration, returning true if allowed.
     ///
     /// When allowed differs by `RegistrationMode`:

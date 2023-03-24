@@ -94,10 +94,16 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        // Whenever this view appears, we should switch back to the default
-        // registration mode. If the user wants to use the other one, they need to
-        // tap the link icon and confirm their selection.
-        onboardingController.onboardingMode = Deprecated_OnboardingController.defaultOnboardingMode
+        if !FeatureFlags.useNewRegistrationFlow {
+            // Whenever this view appears, we should switch back to the default
+            // registration mode. If the user wants to use the other one, they need to
+            // tap the link icon and confirm their selection.
+            onboardingController.onboardingMode = Deprecated_OnboardingController.defaultOnboardingMode
+        }
+    }
+
+    override func shouldShowBackButton() -> Bool {
+        return false
     }
 
     // MARK: - Events

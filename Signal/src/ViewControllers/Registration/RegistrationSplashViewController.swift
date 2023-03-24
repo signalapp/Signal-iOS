@@ -12,6 +12,8 @@ import SignalMessaging
 
 public protocol RegistrationSplashPresenter: AnyObject {
     func continueFromSplash()
+
+    func switchToDeviceLinkingMode()
 }
 
 // MARK: - RegistrationSplashViewController
@@ -126,7 +128,8 @@ public class RegistrationSplashViewController: OWSViewController {
     @objc
     private func didTapModeSwitch() {
         Logger.info("")
-        owsFail("TODO[Registration] Not implemented")
+
+        presenter?.switchToDeviceLinkingMode()
     }
 
     @objc

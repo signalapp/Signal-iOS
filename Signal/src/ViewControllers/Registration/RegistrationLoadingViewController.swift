@@ -50,7 +50,9 @@ class RegistrationLoadingViewController: OWSViewController {
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        spinnerView.startAnimating()
+        if spinnerView.isAnimating.negated {
+            spinnerView.startAnimating()
+        }
     }
 
     public override func themeDidChange() {

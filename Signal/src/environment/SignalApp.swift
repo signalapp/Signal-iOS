@@ -59,25 +59,20 @@ extension SignalApp {
         let onboardingController = Deprecated_OnboardingController()
 
         if FeatureFlags.useNewRegistrationFlow {
-            var desiredMode: RegistrationMode? = DependenciesBridge.shared.db.read {
+            if let lastMode = DependenciesBridge.shared.db.read(block: {
                 return registrationLoader.restoreLastMode(transaction: $0)
-            }
-            if desiredMode == nil {
-                // Check for legacy state.
-                // TODO[Registration]: use a db migration to move this state to reg coordinator.
-                if !onboardingController.isComplete {
-                    desiredMode = .registering
+            }) {
+                showRegistration(loader: registrationLoader, desiredMode: lastMode)
+                AppReadiness.setUIIsReady()
+            // TODO[Registration]: use a db migration to move isComplete state to reg coordinator.
+            } else if !onboardingController.isComplete {
+                if UIDevice.current.isIPad {
+                    showDeprecatedOnboardingView(onboardingController)
+                    AppReadiness.setUIIsReady()
+                } else {
+                    showRegistration(loader: registrationLoader, desiredMode: .registering)
+                    AppReadiness.setUIIsReady()
                 }
-            }
-            if let desiredMode {
-                let coordinator = databaseStorage.write { tx in
-                    return registrationLoader.coordinator(forDesiredMode: desiredMode, transaction: tx.asV2Write)
-                }
-                let navController = RegistrationNavigationController.withCoordinator(coordinator)
-
-                appDelegate.window??.rootViewController = navController
-
-                conversationSplitViewController = nil
             } else {
                 onboardingController.markAsOnboarded()
                 showConversationSplitView()
@@ -88,7 +83,6 @@ extension SignalApp {
                 showConversationSplitView()
             } else {
                 showDeprecatedOnboardingView(onboardingController)
-                AppReadiness.setUIIsReady()
             }
         }
 
@@ -103,6 +97,17 @@ extension SignalApp {
             return
         }
         conversationSplitViewController.showAppSettingsWithMode(mode)
+    }
+
+    func showRegistration(loader: RegistrationCoordinatorLoader, desiredMode: RegistrationMode) {
+        let coordinator = databaseStorage.write { tx in
+            return loader.coordinator(forDesiredMode: desiredMode, transaction: tx.asV2Write)
+        }
+        let navController = RegistrationNavigationController.withCoordinator(coordinator)
+
+        UIApplication.shared.delegate?.window??.rootViewController = navController
+
+        conversationSplitViewController = nil
     }
 }
 

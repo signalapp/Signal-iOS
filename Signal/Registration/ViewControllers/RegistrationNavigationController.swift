@@ -326,6 +326,22 @@ extension RegistrationNavigationController: RegistrationSplashPresenter {
     public func continueFromSplash() {
         pushNextController(coordinator.continueFromSplash())
     }
+
+    public func switchToDeviceLinkingMode() {
+        let controller = RegistrationConfirmModeSwitchViewController(presenter: self)
+        pushViewController(controller, animated: true, completion: nil)
+    }
+}
+
+extension RegistrationNavigationController: RegistrationConfimModeSwitchPresenter {
+
+    public func confirmSwitchToDeviceLinkingMode() {
+        guard coordinator.switchToSecondaryDeviceLinking() else {
+            owsFailBeta("Can't switch to secondary device linking")
+            return
+        }
+        SignalApp.shared().showDeprecatedOnboardingView(.init(context: .shared, onboardingMode: .provisioning))
+    }
 }
 
 extension RegistrationNavigationController: RegistrationChangeNumberSplashPresenter {}

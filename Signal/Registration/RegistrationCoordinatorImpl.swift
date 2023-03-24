@@ -33,6 +33,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Public API
 
+    public func switchToSecondaryDeviceLinking() -> Bool {
+        switch mode {
+        case .registering:
+            if persistedState.hasShownSplash {
+                // Once we are past the splash, no going back.
+                return false
+            } else {
+                self.wipePersistedState()
+                return true
+            }
+        case .reRegistering, .changingNumber:
+            return false
+        }
+    }
+
     public func exitRegistration() -> Bool {
         guard canExitRegistrationFlow() else {
             return false
