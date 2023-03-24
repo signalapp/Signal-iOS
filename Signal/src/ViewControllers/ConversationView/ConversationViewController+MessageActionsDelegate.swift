@@ -56,6 +56,41 @@ extension ConversationViewController: MessageActionsDelegate {
         populateReplyForMessage(itemViewModel)
     }
 
+    public func addOrRemoveEmojiFromDoubleTap(_ itemViewModel: CVItemViewModelImpl) {
+        var firstEmoji: String? = nil
+        var isRemoving: Bool = false
+        SDSDatabaseStorage.shared.read { transaction in
+            firstEmoji = ReactionManager.getFirstEmojiFromEmojiSet(transaction: transaction)
+            isRemoving = false
+            if let localUserEmoji = itemViewModel.reactionState?.localUserEmoji, localUserEmoji == firstEmoji {
+                isRemoving = true
+            }
+        }
+
+        guard let firstEmoji = firstEmoji else {
+            owsFailDebug("Could not read emoji from database")
+            return
+        }
+        if thread.canSendReactionToThread {
+            let reactionBarAccessory = ContextMenuRectionBarAccessory(thread: self.thread, itemViewModel: itemViewModel)
+            reactionBarAccessory.didSelectReactionHandler = { [weak self] (message: TSMessage, reaction: String, isRemoving: Bool) in
+                guard let self = self else {
+                    owsFailDebug("conversationViewController was unexpectedly nil")
+                    return
+                }
+                self.databaseStorage.asyncWrite { transaction in
+                    ReactionManager.localUserReacted(
+                        to: message,
+                        emoji: reaction,
+                        isRemoving: isRemoving,
+                        transaction: transaction
+                    )
+                }
+            }
+            reactionBarAccessory.didSelectReaction(reaction: firstEmoji, isRemoving: isRemoving, inPosition: 0)
+        }
+    }
+
     public func populateReplyForMessage(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 

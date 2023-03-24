@@ -1612,6 +1612,16 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let subcomponent = subcomponentAndView.component
             let subcomponentView = subcomponentAndView.componentView
             Logger.verbose("key: \(subcomponentAndView.key)")
+            if sender.numberOfTapsRequired == 2 {
+                switch subcomponentAndView.key {
+                case .bodyText, .bodyMedia, .sticker, .quotedReply, .linkPreview, .contactShare, .audioAttachment, .viewOnce, .genericAttachment:
+                    let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+                    componentDelegate.didDoubleTapGeneralMessageItem(itemViewModel)
+                    return true
+                default:
+                    break
+                }
+            }
             if subcomponent.handleTap(sender: sender,
                                       componentDelegate: componentDelegate,
                                       componentView: subcomponentView,

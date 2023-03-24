@@ -928,6 +928,9 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func didTapSystemMessageItem(_ item: CVTextLabel.Item) {}
 
+    // MARK: - Double tap
+    func didDoubleTapGeneralMessageItem(_ itemViewModel: CVItemViewModelImpl) {}
+
     // MARK: - Long Press
 
     // TODO:

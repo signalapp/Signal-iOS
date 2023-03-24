@@ -25,6 +25,14 @@ extension ConversationViewController: CVComponentDelegate {
         self.loadCoordinator.enqueueReloadWithoutCaches()
     }
 
+    // MARK: - Double tap
+
+    public func didDoubleTapGeneralMessageItem(_ itemViewModel: CVItemViewModelImpl) {
+        AssertIsOnMainThread()
+
+        addOrRemoveEmojiFromDoubleTap(itemViewModel)
+    }
+
     // MARK: - Long Press
 
     public func didLongPressTextViewItem(_ cell: CVCell,

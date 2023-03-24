@@ -120,6 +120,7 @@ public class CVViewState: NSObject {
     // MARK: - Gestures
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
+    public let collectionViewDoubleTapGestureRecognizer = UITapGestureRecognizer()
     public let collectionViewLongPressGestureRecognizer = UILongPressGestureRecognizer()
     public let collectionViewContextMenuGestureRecognizer = UILongPressGestureRecognizer()
     public var collectionViewContextMenuSecondaryClickRecognizer: UITapGestureRecognizer?
@@ -284,6 +285,9 @@ public extension ConversationViewController {
 
     var collectionViewTapGestureRecognizer: UITapGestureRecognizer {
         viewState.collectionViewTapGestureRecognizer
+    }
+    var collectionViewDoubleTapGestureRecognizer: UITapGestureRecognizer {
+        viewState.collectionViewDoubleTapGestureRecognizer
     }
     var collectionViewLongPressGestureRecognizer: UILongPressGestureRecognizer {
         viewState.collectionViewLongPressGestureRecognizer

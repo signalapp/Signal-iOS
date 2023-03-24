@@ -284,6 +284,8 @@ extension MockConversationView: CVComponentDelegate {
 
     func didTapSystemMessageItem(_ item: CVTextLabel.Item) {}
 
+    func didDoubleTapGeneralMessageItem(_ itemViewModel: CVItemViewModelImpl) {}
+
     func didLongPressTextViewItem(_ cell: CVCell,
                                   itemViewModel: CVItemViewModelImpl,
                                   shouldAllowReply: Bool) {}

@@ -21,6 +21,14 @@ public class ReactionManager: NSObject {
         return emojiSetKVS.getObject(forKey: emojiSetKey, transaction: transaction) as? [String]
     }
 
+    public class func getFirstEmojiFromEmojiSet(transaction: SDSAnyReadTransaction) -> String {
+        if let emojiArray = emojiSetKVS.getObject(forKey: emojiSetKey, transaction: transaction) as? [String], !emojiArray.isEmpty {
+            return emojiArray.first!
+        } else {
+            return defaultEmojiSet.first!
+        }
+    }
+
     public class func setCustomEmojiSet(_ emojis: [String]?, transaction: SDSAnyWriteTransaction) {
         emojiSetKVS.setObject(emojis, key: emojiSetKey, transaction: transaction)
     }

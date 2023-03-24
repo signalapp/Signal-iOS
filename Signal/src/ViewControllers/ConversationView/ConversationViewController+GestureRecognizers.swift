@@ -15,6 +15,11 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         collectionViewTapGestureRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewTapGestureRecognizer)
 
+        collectionViewDoubleTapGestureRecognizer.addTarget(self, action: #selector(handleTapGesture))
+        collectionViewDoubleTapGestureRecognizer.delegate = self
+        collectionViewDoubleTapGestureRecognizer.numberOfTapsRequired = 2
+        collectionView.addGestureRecognizer(collectionViewDoubleTapGestureRecognizer)
+
         collectionViewLongPressGestureRecognizer.addTarget(self, action: #selector(handleLongPressGesture))
         collectionViewLongPressGestureRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewLongPressGestureRecognizer)
@@ -37,8 +42,14 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         collectionViewPanGestureRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewPanGestureRecognizer)
 
+        // Double tap should require pan and long press to fail first
+        collectionViewDoubleTapGestureRecognizer.require(toFail: collectionViewPanGestureRecognizer)
+        collectionViewDoubleTapGestureRecognizer.require(toFail: collectionViewLongPressGestureRecognizer)
+
+        // Tap should require pan, long press, and double tap to fail first
         collectionViewTapGestureRecognizer.require(toFail: collectionViewPanGestureRecognizer)
         collectionViewTapGestureRecognizer.require(toFail: collectionViewLongPressGestureRecognizer)
+        collectionViewTapGestureRecognizer.require(toFail: collectionViewDoubleTapGestureRecognizer)
 
         // Allow panning with trackpad
         if #available(iOS 13.4, *) { collectionViewPanGestureRecognizer.allowedScrollTypesMask = .continuous }
