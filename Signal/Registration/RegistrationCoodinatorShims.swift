@@ -477,6 +477,12 @@ public protocol _RegistrationCoordinator_TSAccountManagerShim {
         _ transaction: DBWriteTransaction
     )
 
+    func resetForReregistration(
+        e164: E164,
+        aci: UUID,
+        _ tx: DBWriteTransaction
+    )
+
     func didRegister(
         e164: E164,
         aci: UUID,
@@ -535,6 +541,19 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
             updateStorageService: updateStorageService,
             authedAccount: authedAccount,
             transaction: SDSDB.shimOnlyBridge(transaction)
+        )
+    }
+
+    public func resetForReregistration(
+        e164: E164,
+        aci: UUID,
+        _ tx: DBWriteTransaction
+    ) {
+        manager.resetForReregistration(
+            withLocalPhoneNumber: .init(e164),
+            localAci: aci,
+            wasPrimaryDevice: true,
+            transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
 

@@ -19,21 +19,33 @@ public extension RegistrationUtils {
             return
         }
 
-        guard tsAccountManager.resetForReregistration(),
-              let phoneNumber = Self.tsAccountManager.reregistrationPhoneNumber()?.nilIfEmpty,
-              let e164 = E164(phoneNumber)
-        else {
-            owsFailDebug("could not reset for re-registration.")
-            return
-        }
-
-        Logger.info("phoneNumber: \(phoneNumber)")
-
-        Self.preferences.unsetRecordedAPNSTokens()
-
         if FeatureFlags.useNewRegistrationFlow {
-            showReRegistration(e164: e164)
+            guard
+                let localAddress = tsAccountManager.localAddress,
+                let e164 = localAddress.e164,
+                let aci = localAddress.uuid
+            else {
+                owsFailDebug("could not get local address for re-registration.")
+                return
+            }
+
+            Logger.info("phoneNumber: \(e164)")
+
+            Self.preferences.unsetRecordedAPNSTokens()
+
+            showReRegistration(e164: e164, aci: aci)
         } else {
+            guard tsAccountManager.resetForReregistration(),
+                  let phoneNumber = Self.tsAccountManager.reregistrationPhoneNumber()?.nilIfEmpty
+            else {
+                owsFailDebug("could not reset for re-registration.")
+                return
+            }
+
+            Logger.info("phoneNumber: \(phoneNumber)")
+
+            Self.preferences.unsetRecordedAPNSTokens()
+
             showLegacyReRegistration(fromViewController: fromViewController, e164: phoneNumber)
         }
     }
@@ -120,9 +132,9 @@ public extension RegistrationUtils {
 
 extension RegistrationUtils {
 
-    fileprivate static func showReRegistration(e164: E164) {
+    fileprivate static func showReRegistration(e164: E164, aci: UUID) {
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
-        let desiredMode = RegistrationMode.reRegistering(e164: e164)
+        let desiredMode = RegistrationMode.reRegistering(e164: e164, aci: aci)
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
         let coordinator = databaseStorage.write {
             return loader.coordinator(

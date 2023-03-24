@@ -190,6 +190,10 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 // Returns YES on success.
 - (BOOL)resetForReregistration;
+- (void)resetForReregistrationWithLocalPhoneNumber:(E164ObjC *)localPhoneNumber
+                                          localAci:(NSUUID *)localAci
+                                  wasPrimaryDevice:(BOOL)wasPrimaryDevice
+                                       transaction:(SDSAnyWriteTransaction *)transaction;
 - (nullable NSString *)reregistrationPhoneNumber;
 - (nullable NSUUID *)reregistrationUUID;
 @property (nonatomic, readonly) BOOL isReregistering;

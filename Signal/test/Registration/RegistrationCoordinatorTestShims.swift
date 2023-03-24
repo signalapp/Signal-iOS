@@ -337,6 +337,19 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
         setIsManualMessageFetchEnabledMock?(isEnabled)
     }
 
+    public var resetForReregistrationMock: ((
+        _ e164: E164,
+        _ aci: UUID
+    ) -> Void)?
+
+    public func resetForReregistration(
+        e164: E164,
+        aci: UUID,
+        _ tx: DBWriteTransaction
+    ) {
+        resetForReregistrationMock?(e164, aci)
+    }
+
     public var didRegisterMock: ((
         _ e164: E164,
         _ aci: UUID,

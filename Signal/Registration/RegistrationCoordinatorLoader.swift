@@ -37,9 +37,11 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
 
         public struct ReRegisteringState: Codable, Equatable {
             public let e164: E164
+            public let aci: UUID
 
-            fileprivate init(e164: E164) {
+            fileprivate init(e164: E164, aci: UUID) {
                 self.e164 = e164
+                self.aci = aci
             }
         }
 
@@ -190,8 +192,8 @@ extension RegistrationMode {
         switch self {
         case .registering:
             return .registering(.init())
-        case .reRegistering(let e164):
-            return .reRegistering(.init(e164: e164))
+        case .reRegistering(let e164, let aci):
+            return .reRegistering(.init(e164: e164, aci: aci))
         case .changingNumber(let params):
             return .changingNumber(.init(
                 oldE164: params.oldE164,
@@ -213,7 +215,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode {
         case .registering:
             return .registering
         case .reRegistering(let state):
-            return .reRegistering(e164: state.e164)
+            return .reRegistering(e164: state.e164, aci: state.aci)
         case .changingNumber(let state):
             return .changingNumber(.init(
                 oldE164: state.oldE164,

@@ -123,7 +123,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     public override class var defaultTestSuite: XCTestSuite {
         let testSuite = XCTestSuite(name: NSStringFromClass(self))
         addTests(to: testSuite, mode: .registering)
-        addTests(to: testSuite, mode: .reRegistering(e164: Stubs.e164))
+        addTests(to: testSuite, mode: .reRegistering(e164: Stubs.e164, aci: Stubs.aci))
         return testSuite
     }
 
@@ -570,7 +570,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 4)
 
             // Now we should expect to be at verification code entry since we already set the phone number.
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
+            // No exit allowed since we've already started trying to create the account.
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(
+                Stubs.verificationCodeEntryState(mode: self.mode, exitConfigOverride: .noExitAllowed)
+            ))
             // We want to have kept the master key; we failed the reg recovery pw check
             // but that could happen even if the key is valid. Once we finish session based
             // re-registration we want to be able to recover the key.
@@ -675,7 +678,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 4)
 
             // Now we should expect to be at verification code entry since we already set the phone number.
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
+            // No exit allowed since we've already started trying to create the account.
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(
+                Stubs.verificationCodeEntryState(mode: self.mode, exitConfigOverride: .noExitAllowed)
+            ))
             // We want to have wiped our master key; we failed reglock, which means the key itself is
             // wrong.
             XCTAssertFalse(kbs.hasMasterKey)
@@ -1268,12 +1274,18 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 9)
 
             // Now we should ask to create a PIN.
-            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegCreate(mode: self.mode)))
+            // No exit allowed since we've already started trying to create the account.
+            XCTAssertEqual(nextStep.value, .pinEntry(
+                Stubs.pinEntryStateForPostRegCreate(mode: self.mode, exitConfigOverride: .noExitAllowed)
+            ))
 
             // Confirm the pin first.
             nextStep = coordinator.setPINCodeForConfirmation(.stub())
             scheduler.runUntilIdle()
-            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegConfirm(mode: self.mode)))
+            // No exit allowed since we've already started trying to create the account.
+            XCTAssertEqual(nextStep.value, .pinEntry(
+                Stubs.pinEntryStateForPostRegConfirm(mode: self.mode, exitConfigOverride: .noExitAllowed)
+            ))
 
             scheduler.adjustTime(to: 0)
 
@@ -2866,6 +2878,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private enum Stubs {
 
         static let e164 = E164("+17875550100")!
+        static let aci = UUID()
         static let pinCode = "1234"
 
         static let regRecoveryPwData = Data(repeating: 8, count: 8)
@@ -2905,7 +2918,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         static func accountIdentityResponse() -> RegistrationServiceResponses.AccountIdentityResponse {
             return RegistrationServiceResponses.AccountIdentityResponse(
-                aci: UUID(),
+                aci: aci,
                 pni: UUID(),
                 e164: e164,
                 username: nil,
@@ -2984,7 +2997,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     previouslyEnteredE164: previouslyEnteredE164,
                     validationError: validationError
                 )))
-            case .reRegistering(let e164):
+            case .reRegistering(let e164, _):
                 return .registration(.reregistration(.init(e164: e164, validationError: validationError)))
             case .changingNumber(let changeNumberParams):
                 switch validationError {
@@ -3026,7 +3039,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
             nextSMS: TimeInterval? = 0,
             nextCall: TimeInterval? = 0,
             nextVerificationAttempt: TimeInterval = 0,
-            validationError: RegistrationVerificationValidationError? = nil
+            validationError: RegistrationVerificationValidationError? = nil,
+            exitConfigOverride: RegistrationVerificationState.ExitConfiguration? = nil
         ) -> RegistrationVerificationState {
 
             return RegistrationVerificationState(
@@ -3035,7 +3049,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 nextCallDate: nextCall.map { date.addingTimeInterval($0) },
                 nextVerificationAttemptDate: date.addingTimeInterval(nextVerificationAttempt),
                 validationError: validationError,
-                exitConfiguration: mode.verificationExitConfig
+                exitConfiguration: exitConfigOverride ?? mode.verificationExitConfig
             )
         }
 
@@ -3062,19 +3076,25 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         static func pinEntryStateForPostRegCreate(
-            mode: RegistrationMode
+            mode: RegistrationMode,
+            exitConfigOverride: RegistrationPinState.ExitConfiguration? = nil
         ) -> RegistrationPinState {
-            return RegistrationPinState(operation: .creatingNewPin, error: nil, exitConfiguration: mode.pinExitConfig)
+            return RegistrationPinState(
+                operation: .creatingNewPin,
+                error: nil,
+                exitConfiguration: exitConfigOverride ?? mode.pinExitConfig
+            )
         }
 
         static func pinEntryStateForPostRegConfirm(
             mode: RegistrationMode,
-            error: RegistrationPinValidationError? = nil
+            error: RegistrationPinValidationError? = nil,
+            exitConfigOverride: RegistrationPinState.ExitConfiguration? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
                 operation: .confirmingNewPin(.stub()),
                 error: error,
-                exitConfiguration: mode.pinExitConfig
+                exitConfiguration: exitConfigOverride ?? mode.pinExitConfig
             )
         }
     }

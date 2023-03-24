@@ -686,6 +686,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     TSAccountState *oldAccountState = [self getOrLoadAccountStateWithSneakyTransaction];
     NSString *_Nullable localNumber = oldAccountState.localNumber;
     if (!localNumber) {
+        OWSFailDebug(@"can't re-register without local number.");
+        return NO;
+    }
+    E164ObjC *_Nullable localE164 = [[E164ObjC alloc] init:localNumber];
+    if (!localE164) {
         OWSFailDebug(@"can't re-register without valid local number.");
         return NO;
     }
@@ -694,50 +699,64 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         OWSFailDebug(@"can't re-register without valid uuid.");
         return NO;
     }
+
     BOOL wasPrimaryDevice = oldAccountState.deviceId == OWSDevicePrimaryDeviceId;
 
+
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        @synchronized(self) {
-            self.phoneNumberAwaitingVerification = nil;
-            self.uuidAwaitingVerification = nil;
-            self.pniAwaitingVerification = nil;
-
-            [self.keyValueStore removeAllWithTransaction:transaction];
-
-            [[self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore resetSessionStore:transaction];
-            [[self signalProtocolStoreForIdentity:OWSIdentityPNI].sessionStore resetSessionStore:transaction];
-            [self.senderKeyStore resetSenderKeyStoreWithTransaction:transaction];
-
-            [self.udManager removeSenderCertificatesWithTransaction:transaction];
-
-            [self.versionedProfiles clearProfileKeyCredentialsWithTransaction:transaction];
-
-            [self.groupsV2 clearTemporalCredentialsWithTransaction:transaction];
-
-            [self.keyValueStore setObject:localNumber
-                                      key:TSAccountManager_ReregisteringPhoneNumberKey
-                              transaction:transaction];
-            [self.keyValueStore setObject:localUUID.UUIDString
-                                      key:TSAccountManager_ReregisteringUUIDKey
-                              transaction:transaction];
-
-            [self.keyValueStore setBool:NO key:TSAccountManager_IsOnboardedKey transaction:transaction];
-
-            if (wasPrimaryDevice) {
-                // Don't reset payments state at this time.
-            } else {
-                // PaymentsEvents will dispatch this event to the appropriate singletons.
-                [self.paymentsEvents clearStateWithTransaction:transaction];
-            }
-
-            [self loadAccountStateWithTransaction:transaction];
-        }
+        [self resetForReregistrationWithLocalPhoneNumber:localE164
+                                                localAci:localUUID
+                                        wasPrimaryDevice:wasPrimaryDevice
+                                             transaction:transaction];
     });
-
-    [self postRegistrationStateDidChangeNotification];
-    [self postOnboardingStateDidChangeNotification];
-
     return YES;
+}
+
+- (void)resetForReregistrationWithLocalPhoneNumber:(E164ObjC *)localPhoneNumber
+                                          localAci:(NSUUID *)localAci
+                                  wasPrimaryDevice:(BOOL)wasPrimaryDevice
+                                       transaction:(SDSAnyWriteTransaction *)transaction
+{
+    @synchronized(self) {
+        self.phoneNumberAwaitingVerification = nil;
+        self.uuidAwaitingVerification = nil;
+        self.pniAwaitingVerification = nil;
+
+        [self.keyValueStore removeAllWithTransaction:transaction];
+
+        [[self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore resetSessionStore:transaction];
+        [[self signalProtocolStoreForIdentity:OWSIdentityPNI].sessionStore resetSessionStore:transaction];
+        [self.senderKeyStore resetSenderKeyStoreWithTransaction:transaction];
+
+        [self.udManager removeSenderCertificatesWithTransaction:transaction];
+
+        [self.versionedProfiles clearProfileKeyCredentialsWithTransaction:transaction];
+
+        [self.groupsV2 clearTemporalCredentialsWithTransaction:transaction];
+
+        [self.keyValueStore setObject:localPhoneNumber.stringValue
+                                  key:TSAccountManager_ReregisteringPhoneNumberKey
+                          transaction:transaction];
+        [self.keyValueStore setObject:localAci.UUIDString
+                                  key:TSAccountManager_ReregisteringUUIDKey
+                          transaction:transaction];
+
+        [self.keyValueStore setBool:NO key:TSAccountManager_IsOnboardedKey transaction:transaction];
+
+        if (wasPrimaryDevice) {
+            // Don't reset payments state at this time.
+        } else {
+            // PaymentsEvents will dispatch this event to the appropriate singletons.
+            [self.paymentsEvents clearStateWithTransaction:transaction];
+        }
+
+        [self loadAccountStateWithTransaction:transaction];
+    }
+
+    [transaction addAsyncCompletionOnMain:^(void) {
+        [self postRegistrationStateDidChangeNotification];
+        [self postOnboardingStateDidChangeNotification];
+    }];
 }
 
 - (nullable NSString *)reregistrationPhoneNumber

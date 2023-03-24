@@ -7,7 +7,7 @@ import Foundation
 
 public enum RegistrationMode {
     case registering
-    case reRegistering(e164: E164)
+    case reRegistering(e164: E164, aci: UUID)
     case changingNumber(ChangeNumberParams)
 
     public struct ChangeNumberParams: Codable, Equatable {
