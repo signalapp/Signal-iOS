@@ -272,6 +272,7 @@
     "UserProfileRecord.bioEmoji": 12,
     "UserProfileRecord.canReceiveGiftBadges": 15,
     "UserProfileRecord.familyName": 8,
+    "UserProfileRecord.isPniCapable": 16,
     "UserProfileRecord.isStoriesCapable": 14,
     "UserProfileRecord.lastFetchDate": 9,
     "UserProfileRecord.lastMessagingDate": 10,

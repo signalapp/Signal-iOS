@@ -119,11 +119,13 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 @property (atomic, nullable) NSString *familyName;
 @property (atomic, nullable) NSString *bio;
 @property (atomic, nullable) NSString *bioEmoji;
-@property (atomic) BOOL isStoriesCapable;
 @property (atomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
-@property (atomic) BOOL canReceiveGiftBadges;
 @property (atomic, nullable) NSDate *lastFetchDate;
 @property (atomic, nullable) NSDate *lastMessagingDate;
+
+@property (atomic) BOOL isStoriesCapable;
+@property (atomic) BOOL canReceiveGiftBadges;
+@property (atomic) BOOL isPniCapable;
 
 @property (atomic, readonly) NSUInteger userProfileSchemaVersion;
 @property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
@@ -154,6 +156,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                         bioEmoji:(nullable NSString *)bioEmoji
             canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                       familyName:(nullable NSString *)familyName
+                    isPniCapable:(BOOL)isPniCapable
                 isStoriesCapable:(BOOL)isStoriesCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
                lastMessagingDate:(nullable NSDate *)lastMessagingDate
@@ -176,6 +179,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     _bioEmoji = bioEmoji;
     _canReceiveGiftBadges = canReceiveGiftBadges;
     _familyName = familyName;
+    _isPniCapable = isPniCapable;
     _isStoriesCapable = isStoriesCapable;
     _lastFetchDate = lastFetchDate;
     _lastMessagingDate = lastMessagingDate;
@@ -544,14 +548,18 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     if (changes.bioEmoji != nil) {
         profile.bioEmoji = changes.bioEmoji.value;
     }
+    if (changes.badges != nil) {
+        profile.profileBadgeInfo = changes.badges;
+    }
+
     if (changes.isStoriesCapable != nil) {
         profile.isStoriesCapable = changes.isStoriesCapable.value;
     }
     if (changes.canReceiveGiftBadges != nil) {
         profile.canReceiveGiftBadges = changes.canReceiveGiftBadges.value;
     }
-    if (changes.badges != nil) {
-        profile.profileBadgeInfo = changes.badges;
+    if (changes.isPniCapable != nil) {
+        profile.isPniCapable = changes.isPniCapable.value;
     }
 
     BOOL canUpdateAvatarUrlPath

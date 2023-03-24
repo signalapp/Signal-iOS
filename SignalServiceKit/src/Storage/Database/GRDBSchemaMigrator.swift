@@ -219,6 +219,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addUsernameLookupRecordsTable
         case dropUsernameColumnFromOWSUserProfile
         case migrateVoiceMessageDrafts
+        case addIsPniCapableColumnToOWSUserProfile
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2140,6 +2141,14 @@ public class GRDBSchemaMigrator: NSObject {
                 appSharedDataUrl: URL(fileURLWithPath: CurrentAppContext().appSharedDataDirectoryPath()),
                 copyItem: FileManager.default.copyItem(at:to:)
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addIsPniCapableColumnToOWSUserProfile) { transaction in
+            try transaction.database.alter(table: "model_OWSUserProfile") { table in
+                table.add(column: "isPniCapable", .boolean).notNull().defaults(to: false)
+            }
+
             return .success(())
         }
 

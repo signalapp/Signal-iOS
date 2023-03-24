@@ -51,10 +51,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 @property (atomic, readonly, nullable) NSString *fullName;
 @property (atomic, readonly, nullable) NSString *bio;
 @property (atomic, readonly, nullable) NSString *bioEmoji;
-@property (atomic, readonly) BOOL isStoriesCapable;
 @property (atomic, readonly, nullable) OWSUserProfileBadgeInfo *primaryBadge;
 @property (atomic, readonly, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
-@property (atomic, readonly) BOOL canReceiveGiftBadges;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (atomic, readonly, nullable) NSString *avatarFileName;
@@ -63,6 +61,13 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 // received a message from this user.  It is coarse;
 // we only update it every N hours.
 @property (atomic, readonly, nullable) NSDate *lastMessagingDate;
+
+/// Does this profile have the Stories capability?
+@property (atomic, readonly) BOOL isStoriesCapable;
+/// Does this profile have the gift badges capability?
+@property (atomic, readonly) BOOL canReceiveGiftBadges;
+/// Does this profile have the PNI capability?
+@property (atomic, readonly) BOOL isPniCapable;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -89,6 +94,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
                         bioEmoji:(nullable NSString *)bioEmoji
             canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                       familyName:(nullable NSString *)familyName
+                    isPniCapable:(BOOL)isPniCapable
                 isStoriesCapable:(BOOL)isStoriesCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
                lastMessagingDate:(nullable NSDate *)lastMessagingDate
@@ -97,7 +103,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:canReceiveGiftBadges:familyName:isStoriesCapable:lastFetchDate:lastMessagingDate:profileBadgeInfo:profileKey:profileName:recipientPhoneNumber:recipientUUID:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:canReceiveGiftBadges:familyName:isPniCapable:isStoriesCapable:lastFetchDate:lastMessagingDate:profileBadgeInfo:profileKey:profileName:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 

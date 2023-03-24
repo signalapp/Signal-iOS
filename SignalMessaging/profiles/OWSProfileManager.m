@@ -347,6 +347,11 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return self.localUserProfile.profileBadgeInfo;
 }
 
+- (BOOL)localProfileIsPniCapable
+{
+    return self.localUserProfile.isPniCapable;
+}
+
 - (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
 {
     return [self profileSnapshotForUserProfile:self.localUserProfile shouldIncludeAvatar:shouldIncludeAvatar];
@@ -1693,12 +1698,13 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                      familyName:(nullable NSString *)familyName
                             bio:(nullable NSString *)bio
                        bioEmoji:(nullable NSString *)bioEmoji
-               isStoriesCapable:(BOOL)isStoriesCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
-           canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                   lastFetchDate:(NSDate *)lastFetchDate
+               isStoriesCapable:(BOOL)isStoriesCapable
+           canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
+                   isPniCapable:(BOOL)isPniCapable
               userProfileWriter:(UserProfileWriter)userProfileWriter
                   authedAccount:(AuthedAccount *)authedAccount
                     transaction:(SDSAnyWriteTransaction *)writeTx
@@ -1726,23 +1732,25 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                                                                     authedAccount:authedAccount
                                                                       transaction:writeTx];
     if (!userProfile.profileKey) {
-        [userProfile updateWithIsStoriesCapable:isStoriesCapable
-                           canReceiveGiftBadges:canReceiveGiftBadges
-                                  lastFetchDate:lastFetchDate
-                              userProfileWriter:userProfileWriter
-                                  authedAccount:authedAccount
-                                    transaction:writeTx];
+        [userProfile updateWithLastFetchDate:lastFetchDate
+                            isStoriesCapable:isStoriesCapable
+                        canReceiveGiftBadges:canReceiveGiftBadges
+                                isPniCapable:isPniCapable
+                           userProfileWriter:userProfileWriter
+                               authedAccount:authedAccount
+                                 transaction:writeTx];
     } else if (optionalAvatarFileUrl.lastPathComponent) {
         [userProfile updateWithGivenName:givenName
                               familyName:familyName
                                      bio:bio
                                 bioEmoji:bioEmoji
-                        isStoriesCapable:isStoriesCapable
                                   badges:profileBadges
-                    canReceiveGiftBadges:canReceiveGiftBadges
                            avatarUrlPath:avatarUrlPath
                           avatarFileName:optionalAvatarFileUrl.lastPathComponent
                            lastFetchDate:lastFetchDate
+                        isStoriesCapable:isStoriesCapable
+                    canReceiveGiftBadges:canReceiveGiftBadges
+                            isPniCapable:isPniCapable
                        userProfileWriter:userProfileWriter
                            authedAccount:authedAccount
                              transaction:writeTx
@@ -1752,11 +1760,12 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                               familyName:familyName
                                      bio:bio
                                 bioEmoji:bioEmoji
-                        isStoriesCapable:isStoriesCapable
                                   badges:profileBadges
-                    canReceiveGiftBadges:canReceiveGiftBadges
                            avatarUrlPath:avatarUrlPath
                            lastFetchDate:lastFetchDate
+                        isStoriesCapable:isStoriesCapable
+                    canReceiveGiftBadges:canReceiveGiftBadges
+                            isPniCapable:isPniCapable
                        userProfileWriter:userProfileWriter
                            authedAccount:authedAccount
                              transaction:writeTx

@@ -55,7 +55,6 @@ extension StorageMode: CustomStringConvertible {
 /// which feature flags are in play.
 @objc(SSKFeatureFlags)
 public class FeatureFlags: BaseFlags {
-    public static let useChangePhoneNumberPniParameters = build.includes(.dev)
 
     @objc
     public static let phoneNumberSharing = build.includes(.internal)
