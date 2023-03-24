@@ -179,40 +179,27 @@ public class MessageFetcherJob: NSObject {
 
     public func fetchingCompletePromise() -> Promise<Void> {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("!shouldProcessIncomingMessages")
-            }
             return Promise.value(())
         }
 
         if Self.shouldUseWebSocket {
             guard !hasCompletedInitialFetch else {
-                if DebugFlags.isMessageProcessingVerbose {
-                    Logger.verbose("hasCompletedInitialFetch")
-                }
                 return Promise.value(())
             }
 
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("!hasCompletedInitialFetch")
-            }
-
-            return NotificationCenter.default.observe(once: OWSWebSocket.webSocketStateDidChange).then { _ in
+            return NotificationCenter.default.observe(
+                once: OWSWebSocket.webSocketStateDidChange
+            ).then { _ in
                 self.fetchingCompletePromise()
             }.asVoid()
         } else {
             guard !areAllFetchCyclesComplete || !hasCompletedInitialFetch else {
-                if DebugFlags.isMessageProcessingVerbose {
-                    Logger.verbose("areAllFetchCyclesComplete && hasCompletedInitialFetch")
-                }
                 return Promise.value(())
             }
 
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("!areAllFetchCyclesComplete || !hasCompletedInitialFetch")
-            }
-
-            return NotificationCenter.default.observe(once: Self.didChangeStateNotificationName).then { _ in
+            return NotificationCenter.default.observe(
+                once: Self.didChangeStateNotificationName
+            ).then { _ in
                 self.fetchingCompletePromise()
             }.asVoid()
         }

@@ -302,9 +302,6 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let groupsV2memberStatusIndicators = build.includes(.internal)
 
-    @objc
-    public static let isMessageProcessingVerbose = false
-
     // Currently this flag is only honored by NetworkManager,
     // but we could eventually honor in other places as well:
     //

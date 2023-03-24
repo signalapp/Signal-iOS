@@ -59,9 +59,6 @@ public class MessageProcessor: NSObject {
         suspensionBehavior: SuspensionBehavior = .alwaysWait
     ) -> Promise<Void> {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("!shouldProcessIncomingMessages")
-            }
             return Promise.value(())
         }
 
@@ -100,7 +97,7 @@ public class MessageProcessor: NSObject {
                     Self.groupsV2MessageProcessor.pendingJobCount(transaction: $0)
                 }
 
-                Logger.verbose("groupsV2MessageProcessor.hasPendingJobs, pendingJobCount: \(pendingJobCount)")
+                Logger.info("groupsV2MessageProcessor.hasPendingJobs, pendingJobCount: \(pendingJobCount)")
             }
 
             return NotificationCenter.default.observe(
@@ -110,10 +107,6 @@ public class MessageProcessor: NSObject {
                 self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
             }.asVoid()
         } else {
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("!hasPendingEnvelopes && !hasPendingJobs")
-            }
-
             return Promise.value(())
         }
     }
