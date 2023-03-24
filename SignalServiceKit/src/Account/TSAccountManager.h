@@ -176,6 +176,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 /// If an account is deregistered due to an HTTP 401/403 error, the user
 /// should complete re-registration to re-mark the account as "registered".
 - (BOOL)isDeregistered;
+- (BOOL)isDeregisteredWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setIsDeregistered:(BOOL)isDeregistered;
 
 #pragma mark - Transfer

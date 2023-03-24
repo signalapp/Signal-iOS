@@ -633,6 +633,12 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     return [self isDeregisteredWithState:state];
 }
 
+- (BOOL)isDeregisteredWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    TSAccountState *state = [self getOrLoadAccountStateWithTransaction:transaction];
+    return [self isDeregisteredWithState:state];
+}
+
 - (BOOL)isDeregisteredWithState:(TSAccountState *)state
 {
     // An in progress transfer is treated as being deregistered.

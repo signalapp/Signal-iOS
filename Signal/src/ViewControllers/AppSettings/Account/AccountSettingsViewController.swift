@@ -145,15 +145,23 @@ class AccountSettingsViewController: OWSTableViewController2 {
             ))
         } else if tsAccountManager.isRegisteredPrimaryDevice {
             if FeatureFlags.useNewRegistrationFlow {
-                if self.changeNumberParams() != nil {
+                switch self.changeNumberState() {
+                case .disallowed:
+                    break
+                case .allowed:
                     accountSection.add(.actionItem(
                         withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
                         accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
                         actionBlock: { [weak self] in
-                            guard let self, let changeNumberParams = self.changeNumberParams() else {
+                            guard let self else {
                                 return
                             }
-                            self.changePhoneNumber(changeNumberParams)
+                            switch self.changeNumberState() {
+                            case .disallowed:
+                                return
+                            case .allowed(let changeNumberParams):
+                                self.changePhoneNumber(changeNumberParams)
+                            }
                         }
                     ))
                 }
@@ -258,13 +266,29 @@ class AccountSettingsViewController: OWSTableViewController2 {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    private func changeNumberParams() -> RegistrationMode.ChangeNumberParams? {
+    enum ChangeNumberState {
+        case disallowed
+        case allowed(RegistrationMode.ChangeNumberParams)
+    }
+
+    private func changeNumberState() -> ChangeNumberState {
         guard RemoteConfig.changePhoneNumberUI else {
-            return nil
+            return .disallowed
         }
-        return databaseStorage.read { transaction in
+        return databaseStorage.read { transaction -> ChangeNumberState in
             guard self.legacyChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction) else {
-                return nil
+                return .disallowed
+            }
+            guard self.tsAccountManager.isDeregistered(with: transaction).negated else {
+                return .disallowed
+            }
+            let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(NSObject()))
+            switch loader.restoreLastMode(transaction: transaction.asV2Read) {
+            case .none, .changingNumber:
+                break
+            case .registering, .reRegistering:
+                // Don't allow changing number if we are in the middle of registering.
+                return .disallowed
             }
             guard
                 let localAddress = tsAccountManager.localAddress(with: transaction),
@@ -279,18 +303,18 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 let localUserAllDeviceIds = localRecipient.deviceIds,
                 let localAccountId = localRecipient.accountId
             else {
-                return nil
+                return .disallowed
             }
             let localDeviceId = tsAccountManager.storedDeviceId(with: transaction)
 
-            return RegistrationMode.ChangeNumberParams(
+            return .allowed(RegistrationMode.ChangeNumberParams(
                 oldE164: localE164,
                 oldAuthToken: authToken,
                 localAci: localAci,
                 localAccountId: localAccountId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds
-            )
+            ))
         }
     }
 
