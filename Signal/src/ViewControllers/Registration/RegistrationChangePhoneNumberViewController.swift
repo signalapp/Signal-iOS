@@ -1,29 +1,75 @@
 //
-// Copyright 2021 Signal Messenger, LLC
+// Copyright 2023 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SignalServiceKit
 
-class Deprecated_ChangePhoneNumberInputViewController: OWSTableViewController2 {
+// MARK: - RegistrationChangePhoneNumberPresenter
 
-    private let changePhoneNumberController: Deprecated_ChangePhoneNumberController
+protocol RegistrationChangePhoneNumberPresenter: AnyObject {
+
+    func submitProspectiveChangeNumberE164(newE164: E164)
+}
+
+// MARK: - RegistrationChangePhoneNumberViewController
+
+class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
+
+    private var state: RegistrationPhoneNumberViewState.ChangeNumberInitialEntry
+    private weak var presenter: RegistrationChangePhoneNumberPresenter?
+
     private let oldValueViews: ChangePhoneNumberValueViews
     private let newValueViews: ChangePhoneNumberValueViews
 
-    public init(changePhoneNumberController: Deprecated_ChangePhoneNumberController) {
-        self.changePhoneNumberController = changePhoneNumberController
-
-        self.oldValueViews = ChangePhoneNumberValueViews(.oldValue,
-                                                         changePhoneNumberController: changePhoneNumberController)
-        self.newValueViews = ChangePhoneNumberValueViews(.newValue,
-                                                         changePhoneNumberController: changePhoneNumberController)
+    public init(
+        state: RegistrationPhoneNumberViewState.ChangeNumberInitialEntry,
+        presenter: RegistrationChangePhoneNumberPresenter
+    ) {
+        self.state = state
+        self.presenter = presenter
+        if state.hasConfirmed {
+            self.oldValueViews = ChangePhoneNumberValueViews(e164: state.oldE164, type: .oldNumber)
+            self.newValueViews = ChangePhoneNumberValueViews(e164: state.newE164, type: .newNumber)
+        } else {
+            self.oldValueViews = ChangePhoneNumberValueViews(e164: nil, type: .oldNumber)
+            self.newValueViews = ChangePhoneNumberValueViews(e164: nil, type: .newNumber)
+        }
 
         super.init()
 
         oldValueViews.delegate = self
         newValueViews.delegate = self
+    }
+
+    public func updateState(_ newState: RegistrationPhoneNumberViewState.ChangeNumberInitialEntry) {
+        self.state = newState
+        updateTableContents()
+
+        if let invalidNumberError = state.invalidNumberError {
+            showInvalidPhoneNumberAlertIfNecessary(for: invalidNumberError.invalidE164.stringValue)
+        }
+    }
+
+    private var previousInvalidE164: String?
+
+    private func showInvalidPhoneNumberAlertIfNecessary(for e164: String) {
+        let shouldShowAlert = e164 != previousInvalidE164
+        if shouldShowAlert {
+            OWSActionSheets.showActionSheet(
+                title: OWSLocalizedString(
+                    "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
+                    comment: "Title of alert indicating that users needs to enter a valid phone number to register."
+                ),
+                message: OWSLocalizedString(
+                    "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE",
+                    comment: "Message of alert indicating that users needs to enter a valid phone number to register."
+                )
+            )
+        }
+
+        previousInvalidE164 = e164
     }
 
     override func viewDidLoad() {
@@ -94,6 +140,23 @@ class Deprecated_ChangePhoneNumberInputViewController: OWSTableViewController2 {
                           accessoryView: valueViews.phoneNumberTextField,
                           accessibilityIdentifier: valueViews.accessibilityIdentifier_CountryCode))
 
+        switch valueViews.type {
+        case .newNumber:
+            if let invalidNumberError = state.invalidNumberError {
+                section.add(.init(customCellBlock: {
+                    let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                        itemName: invalidNumberError.warningLabelText,
+                        textColor: .ows_accentRed,
+                        accessoryType: .none
+                    )
+                    cell.isUserInteractionEnabled = false
+                    return cell
+                }))
+            }
+        case .oldNumber:
+            break
+        }
+
         // The purpose of the example phone number is to indicate to the user that they should enter
         // their phone number _without_ a country calling code (e.g. +1 or +44) but _with_ area code, etc.
         func tryToFormatPhoneNumber(_ phoneNumber: String) -> String? {
@@ -133,14 +196,11 @@ class Deprecated_ChangePhoneNumberInputViewController: OWSTableViewController2 {
 
     // MARK: -
 
-    private struct PhoneNumbers {
-        let oldPhoneNumber: PhoneNumber
-        let newPhoneNumber: PhoneNumber
-    }
-
-    private func tryToParse() -> PhoneNumbers? {
-        func tryToParse(_ valueViews: ChangePhoneNumberValueViews,
-                        isOldValue: Bool) -> PhoneNumber? {
+    private func tryToParseNewE164() -> E164? {
+        func tryToParse(
+            _ valueViews: ChangePhoneNumberValueViews,
+            isOldValue: Bool
+        ) -> E164? {
             switch valueViews.tryToParse() {
             case .noNumber:
                 showInvalidPhoneNumberAlert(isOldValue: isOldValue)
@@ -148,48 +208,48 @@ class Deprecated_ChangePhoneNumberInputViewController: OWSTableViewController2 {
             case .invalidNumber:
                 showInvalidPhoneNumberAlert(isOldValue: isOldValue)
                 return nil
-            case .validNumber(let phoneNumber):
-                return phoneNumber
+            case .validNumber(let e164):
+
+                return e164
             }
         }
 
-        guard let oldPhoneNumber = tryToParse(oldValueViews, isOldValue: true) else {
+        guard let oldE164 = tryToParse(oldValueViews, isOldValue: true) else {
             return nil
         }
-        guard let newPhoneNumber = tryToParse(newValueViews, isOldValue: false) else {
+        guard let newE164 = tryToParse(newValueViews, isOldValue: false) else {
             return nil
         }
 
-        guard oldPhoneNumber.toE164() == tsAccountManager.localNumber else {
+        guard oldE164 == state.oldE164 else {
             showIncorrectOldPhoneNumberAlert()
             return nil
         }
 
-        guard oldPhoneNumber.toE164() != newPhoneNumber.toE164() else {
+        guard newE164 != state.oldE164 else {
             showIdenticalPhoneNumbersAlert()
             return nil
         }
 
-        Logger.verbose("oldPhoneNumber: \(oldPhoneNumber.toE164())")
-        Logger.verbose("newPhoneNumber: \(newPhoneNumber.toE164())")
+        guard state.invalidNumberError?.canSubmit(e164: newE164) != false else {
+            showInvalidPhoneNumberAlert(isOldValue: false)
+            return nil
+        }
 
-        return PhoneNumbers(oldPhoneNumber: oldPhoneNumber, newPhoneNumber: newPhoneNumber)
+        return newE164
     }
 
     private func tryToContinue() {
         AssertIsOnMainThread()
 
-        guard let phoneNumbers = tryToParse() else {
+        guard let newE164 = tryToParseNewE164() else {
             return
         }
 
         oldValueViews.phoneNumberTextField.resignFirstResponder()
         newValueViews.phoneNumberTextField.resignFirstResponder()
 
-        let vc = Deprecated_ChangePhoneNumberConfirmViewController(changePhoneNumberController: changePhoneNumberController,
-                                                        oldPhoneNumber: phoneNumbers.oldPhoneNumber,
-                                                        newPhoneNumber: phoneNumbers.newPhoneNumber)
-        self.navigationController?.pushViewController(vc, animated: true)
+        presenter?.submitProspectiveChangeNumberE164(newE164: newE164)
     }
 
     private func showInvalidPhoneNumberAlert(isOldValue: Bool) {
@@ -223,7 +283,7 @@ class Deprecated_ChangePhoneNumberInputViewController: OWSTableViewController2 {
     private func didPressCancel() {
         AssertIsOnMainThread()
 
-        changePhoneNumberController.cancelFlow(viewController: self)
+        // TODO
     }
 
     @objc
@@ -236,7 +296,7 @@ class Deprecated_ChangePhoneNumberInputViewController: OWSTableViewController2 {
 
 // MARK: -
 
-extension Deprecated_ChangePhoneNumberInputViewController: ChangePhoneNumberValueViewsDelegate {
+extension RegistrationChangePhoneNumberViewController: ChangePhoneNumberValueViewsDelegate {
     fileprivate func valueDidChange(valueViews: ChangePhoneNumberValueViews) {
         AssertIsOnMainThread()
 
@@ -265,17 +325,22 @@ private class ChangePhoneNumberValueViews: NSObject {
 
     weak var delegate: ChangePhoneNumberValueViewsDelegate?
 
-    enum Value {
-        case oldValue
-        case newValue
+    var phoneNumber: RegistrationPhoneNumber
+
+    enum `Type` {
+        case oldNumber
+        case newNumber
     }
-    let value: Value
 
-    private let changePhoneNumberController: Deprecated_ChangePhoneNumberController
+    fileprivate let type: `Type`
 
-    public init(_ value: Value, changePhoneNumberController: Deprecated_ChangePhoneNumberController) {
-        self.value = value
-        self.changePhoneNumberController = changePhoneNumberController
+    public init(e164: E164?, type: `Type`) {
+        if let e164, let number = RegistrationPhoneNumber(e164: e164) {
+            self.phoneNumber = number
+        } else {
+            self.phoneNumber = RegistrationPhoneNumber(countryState: .defaultValue, nationalNumber: "")
+        }
+        self.type = type
 
         super.init()
 
@@ -285,44 +350,15 @@ private class ChangePhoneNumberValueViews: NSObject {
         phoneNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidBegin)
         phoneNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidEnd)
 
-        phoneNumberString = phoneNumber?.withoutCountryCallingCode
+        phoneNumberString = phoneNumber.nationalNumber
     }
 
     var countryState: RegistrationCountryState {
         get {
-            switch value {
-            case .oldValue:
-                return changePhoneNumberController.oldCountryState
-            case .newValue:
-                return changePhoneNumberController.newCountryState
-            }
+            return phoneNumber.countryState
         }
         set {
-            switch value {
-            case .oldValue:
-                changePhoneNumberController.oldCountryState = newValue
-            case .newValue:
-                changePhoneNumberController.newCountryState = newValue
-            }
-        }
-    }
-
-    var phoneNumber: Deprecated_RegistrationPhoneNumber? {
-        get {
-            switch value {
-            case .oldValue:
-                return changePhoneNumberController.oldPhoneNumber
-            case .newValue:
-                return changePhoneNumberController.newPhoneNumber
-            }
-        }
-        set {
-            switch value {
-            case .oldValue:
-                changePhoneNumberController.oldPhoneNumber = newValue
-            case .newValue:
-                changePhoneNumberController.newPhoneNumber = newValue
-            }
+            phoneNumber = RegistrationPhoneNumber(countryState: newValue, nationalNumber: phoneNumber.nationalNumber)
         }
     }
 
@@ -380,21 +416,21 @@ private class ChangePhoneNumberValueViews: NSObject {
     }
 
     var sectionHeaderTitle: String {
-        switch value {
-        case .oldValue:
+        switch type {
+        case .oldNumber:
             return NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE",
                                      comment: "Title for the 'old phone number' section in the 'change phone number' settings.")
-        case .newValue:
+        case .newNumber:
             return NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE",
                                      comment: "Title for the 'new phone number' section in the 'change phone number' settings.")
         }
     }
 
     var accessibilityIdentifierPrefix: String {
-        switch value {
-        case .oldValue:
+        switch type {
+        case .oldNumber:
             return "old"
-        case .newValue:
+        case .newNumber:
             return "new"
         }
     }
@@ -414,28 +450,27 @@ private class ChangePhoneNumberValueViews: NSObject {
     enum ParsedValue {
         case noNumber
         case invalidNumber
-        case validNumber(phoneNumber: PhoneNumber)
+        case validNumber(e164: E164)
     }
 
     func tryToParse() -> ParsedValue {
         guard let phoneNumberWithoutCallingCode = phoneNumberString?.strippedOrNil else {
-            self.phoneNumber = nil
             return .noNumber
         }
 
-        guard let phoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: phoneNumberWithoutCallingCode,
-                                                                callingCode: callingCode),
-              let e164 = phoneNumber.toE164().strippedOrNil,
-              PhoneNumberValidator().isValidForRegistration(phoneNumber: phoneNumber) else {
-                  self.phoneNumber = nil
-                  return .invalidNumber
-              }
+        guard
+            let phoneNumber = PhoneNumber.tryParsePhoneNumber(
+                fromUserSpecifiedText: phoneNumberWithoutCallingCode,
+                callingCode: callingCode
+            ),
+            let e164String = phoneNumber.toE164().strippedOrNil,
+            let e164 = E164(e164String),
+            PhoneNumberValidator().isValidForRegistration(phoneNumber: phoneNumber)
+        else {
+            return .invalidNumber
+        }
 
-        self.phoneNumber = Deprecated_RegistrationPhoneNumber(
-            e164: e164,
-            userInput: phoneNumberWithoutCallingCode
-        )
-        return .validNumber(phoneNumber: phoneNumber)
+        return .validNumber(e164: e164)
     }
 }
 
@@ -483,27 +518,5 @@ extension ChangePhoneNumberValueViews: CountryCodeViewControllerDelegate {
                                           didSelectCountry countryState: RegistrationCountryState) {
         self.countryState = countryState
         delegate?.valueDidUpdateCountryState(valueViews: self)
-    }
-}
-
-// MARK: -
-
-extension Deprecated_RegistrationPhoneNumber {
-
-    var withoutCountryCallingCode: String? {
-        guard let countryState = RegistrationCountryState.countryState(forE164: e164) else {
-            owsFailDebug("Missing countryState.")
-            return nil
-        }
-        let prefix = countryState.callingCode
-        guard e164.hasPrefix(prefix) else {
-            owsFailDebug("Unexpected callingCode: \(prefix) for e164: \(e164).")
-            return nil
-        }
-        guard let result = String(e164.dropFirst(prefix.count)).strippedOrNil else {
-            owsFailDebug("Could not remove callingCode: \(prefix) from e164: \(e164).")
-            return nil
-        }
-        return result
     }
 }

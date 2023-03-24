@@ -101,6 +101,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
+    public func submitProspectiveChangeNumberE164(_ e164: E164) -> Guarantee<RegistrationStep> {
+        self.inMemoryState.changeNumberProspectiveE164 = e164
+        return nextStep()
+    }
+
     public func submitE164(_ e164: E164) -> Guarantee<RegistrationStep> {
         db.write { tx in
             updatePersistedState(tx) {
@@ -124,6 +129,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             loadkbsAuthCredentialCandidates(tx)
         }
         inMemoryState.hasEnteredE164 = false
+        inMemoryState.changeNumberProspectiveE164 = nil
         return nextStep()
     }
 
@@ -352,6 +358,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // we get to that step without asking again.
         var hasEnteredE164 = false
 
+        // When changing number, we ask the user to confirm old number and
+        // enter the new number before confirming the new number.
+        // This tracks that first check before the confirm.
+        var changeNumberProspectiveE164: E164?
+
         var shouldRestoreKBSMasterKeyAfterRegistration = false
         // base64 encoded data
         var regRecoveryPw: String?
@@ -443,9 +454,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// Note: `mode` is kept separate; it has a different lifecycle than the rest
     /// of PersistedState even though it is also persisted to disk.
     private struct PersistedState: Codable {
-        /// We only ever want to show the splash once, and only
-        /// for flows possible from new devices.
+        /// We only ever want to show the splash once.
         var hasShownSplash = false
+        var shouldSkipRegistrationSplash = false
 
         /// The e164 the user has entered for this attempt at registration.
         /// Initially the e164 in the UI may be pre-populated (e.g. in re-reg)
@@ -625,37 +636,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         return Guarantee.when(resolved: sessionGuarantee, permissionsGuarantee).asVoid()
             .done(on: schedulers.main) { [weak self] in
-                defer {
-                    self?.inMemoryState.hasRestoredState = true
-                }
-
-                if self?.persistedState.hasShownSplash == false {
-                    var showSplashIfUnshown: Bool
-                    switch self?.mode {
-                    case .reRegistering, .changingNumber:
-                        // For these flows starting from a registered client,
-                        // don't show the splash.
-                        showSplashIfUnshown = false
-                    case .none, .registering:
-                        showSplashIfUnshown = true
-                    }
-                    if self?.inMemoryState.regRecoveryPw != nil {
-                        // If we have a reg recovery pw, it means either
-                        // this is re-reg on a device that already had it,
-                        // or we got past the splash already anyway.
-                        showSplashIfUnshown = false
-                    }
-                    if !showSplashIfUnshown {
-                        // If we won't show it, set it as "shown".
-                        // It was "shown" on this device before we even
-                        // started registration.
-                        self?.db.write { tx in
-                            self?.updatePersistedState(tx) {
-                                $0.hasShownSplash = true
-                            }
-                        }
-                    }
-                }
+                self?.inMemoryState.hasRestoredState = true
             }
     }
 
@@ -801,7 +782,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func getPathway() -> Pathway {
-        if !persistedState.hasShownSplash || inMemoryState.needsSomePermissions {
+        if splashStepToShow() != nil || inMemoryState.needsSomePermissions {
             return .opening
         }
         if let session = inMemoryState.session {
@@ -871,8 +852,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     // MARK: - Opening Pathway
 
     private func nextStepForOpeningPath() -> Guarantee<RegistrationStep> {
-        if persistedState.hasShownSplash.negated {
-            return .value(.splash)
+        if let splashStep = splashStepToShow() {
+            return .value(splashStep)
         }
         if inMemoryState.needsSomePermissions {
             // This class is only used for primary device registration
@@ -882,10 +863,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         if inMemoryState.hasEnteredE164, let e164 = persistedState.e164 {
             return self.startSession(e164: e164)
         }
-        return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
-            mode: phoneNumberEntryStateMode(),
-            validationError: nil
-        )))
+        return .value(.phoneNumberEntry(phoneNumberEntryState()))
+    }
+
+    private func splashStepToShow() -> RegistrationStep? {
+        if persistedState.hasShownSplash {
+            return nil
+        }
+        switch mode {
+        case .registering:
+            if persistedState.shouldSkipRegistrationSplash {
+                return nil
+            }
+            return .splash
+        case .changingNumber:
+            return .changeNumberSplash
+        case .reRegistering:
+            return nil
+        }
     }
 
     // MARK: - Registration Recovery Password Pathway
@@ -896,10 +891,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func nextStepForRegRecoveryPasswordPath(regRecoveryPw: String) -> Guarantee<RegistrationStep> {
         // We need a phone number to proceed; ask the user if unavailable.
         guard let e164 = persistedState.e164 else {
-            return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
-                mode: phoneNumberEntryStateMode(),
-                validationError: nil
-            )))
+            return .value(.phoneNumberEntry(phoneNumberEntryState()))
         }
 
         guard let pinFromUser = inMemoryState.pinFromUser else {
@@ -1107,7 +1099,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .success:
                     // This step also backs up, no need to do that again later.
                     self.inMemoryState.hasBackedUpToKBS = true
-                    self.db.read { self.loadLocalMasterKey($0) }
+                    self.db.write { self.loadLocalMasterKey($0) }
                     return self.nextStep()
                 case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
@@ -1143,9 +1135,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
-    private func loadLocalMasterKey(_ tx: DBReadTransaction) {
+    private func loadLocalMasterKey(_ tx: DBWriteTransaction) {
         // The hex vs base64 different here is intentional.
-        inMemoryState.regRecoveryPw = deps.kbs.data(for: .registrationRecoveryPassword, transaction: tx)?.base64EncodedString()
+        let regRecoveryPw = deps.kbs.data(for: .registrationRecoveryPassword, transaction: tx)?.base64EncodedString()
+        inMemoryState.regRecoveryPw = regRecoveryPw
+        if regRecoveryPw != nil {
+            updatePersistedState(tx) { $0.shouldSkipRegistrationSplash = true }
+        }
         inMemoryState.reglockToken = deps.kbs.data(for: .registrationLock, transaction: tx)?.hexadecimalString
         // If we have a local master key, theres no need to restore after registration.
         // (we will still back up though)
@@ -1161,10 +1157,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         guard let e164 = persistedState.e164 else {
             // If we haven't entered a phone number but we have auth
             // credential candidates to check, enter it now.
-            return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
-                mode: phoneNumberEntryStateMode(),
-                validationError: nil
-            )))
+            return .value(.phoneNumberEntry(phoneNumberEntryState()))
         }
         // Check the candidates.
         return makeKBSAuthCredentialCheckRequest(
@@ -1318,9 +1311,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             validationError: .smsResendTimeout
                         )))
                     } else if let nextSMSDate = session.nextSMSDate {
-                        return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
-                            mode: self.phoneNumberEntryStateMode(),
-                            validationError: .rateLimited(expiration: nextSMSDate)
+                        return .value(.phoneNumberEntry(phoneNumberEntryState(
+                            validationError: .rateLimited(.init(expiration: nextSMSDate))
                         )))
                     } else {
                         return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
@@ -1335,9 +1327,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             validationError: .voiceResendTimeout
                         )))
                     } else if let nextSMSDate = session.nextSMSDate {
-                        return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
-                            mode: self.phoneNumberEntryStateMode(),
-                            validationError: .rateLimited(expiration: nextSMSDate)
+                        return .value(.phoneNumberEntry(phoneNumberEntryState(
+                            validationError: .rateLimited(.init(expiration: nextSMSDate))
                         )))
                     } else {
                         return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
@@ -1355,10 +1346,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         // Otherwise we have no code awaiting submission and aren't
         // trying to send one yet, so just go to phone number entry.
-        return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
-            mode: phoneNumberEntryStateMode(),
-            validationError: nil
-        )))
+        return .value(.phoneNumberEntry(phoneNumberEntryState()))
     }
 
     private func processSession(_ session: RegistrationSession?, _ transaction: DBWriteTransaction) {
@@ -1536,9 +1524,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
                         return strongSelf.nextStep()
                     case .invalidArgument:
-                        return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
-                            mode: strongSelf.phoneNumberEntryStateMode(),
-                            validationError: .invalidNumber(invalidE164: e164)
+                        return .value(.phoneNumberEntry(strongSelf.phoneNumberEntryState(
+                            validationError: .invalidNumber(.init(invalidE164: e164))
                         )))
                     case .retryAfter(let timeInterval):
                         if timeInterval < Constants.autoRetryInterval {
@@ -1553,9 +1540,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                                     )
                                 }
                         }
-                        return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
-                            mode: strongSelf.phoneNumberEntryStateMode(),
-                            validationError: .rateLimited(expiration: strongSelf.deps.dateProvider().addingTimeInterval(timeInterval))
+                        return .value(.phoneNumberEntry(strongSelf.phoneNumberEntryState(
+                            validationError: .rateLimited(.init(
+                                expiration: strongSelf.deps.dateProvider().addingTimeInterval(timeInterval))
+                            )
                         )))
                     case .networkFailure:
                         if retriesLeft > 0 {
@@ -1649,10 +1637,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         )))
                     } else if let timeInterval {
                         // We were trying to resend from the phone number screen.
-                        return .value(.phoneNumberEntry(RegistrationPhoneNumberState(
-                            mode: self.phoneNumberEntryStateMode(),
-                            validationError: .rateLimited(expiration: self.deps.dateProvider().addingTimeInterval(timeInterval))
-                        )))
+                        return .value(.phoneNumberEntry(self.phoneNumberEntryState(
+                            validationError: .rateLimited(.init(
+                                expiration: self.deps.dateProvider().addingTimeInterval(timeInterval)
+                            )
+                        ))))
                     } else {
                         // Can't send a code, session is useless.
                         self.db.write { self.resetSession($0) }
@@ -2419,7 +2408,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             reglockToken = token
         } else {
             // Try loading from KBS.
-            db.read { tx in
+            db.write { tx in
                 loadLocalMasterKey(tx)
             }
             reglockToken = inMemoryState.reglockToken
@@ -2845,14 +2834,49 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Step State Generation Helpers
 
-    private func phoneNumberEntryStateMode() -> RegistrationPhoneNumberState.RegistrationPhoneNumberMode {
+    private func phoneNumberEntryState(
+        validationError: RegistrationPhoneNumberViewState.ValidationError? = nil
+    ) -> RegistrationPhoneNumberViewState {
         switch mode {
         case .registering:
-            return .initialRegistration(previouslyEnteredE164: persistedState.e164)
+            return .registration(.initialRegistration(.init(
+                previouslyEnteredE164: persistedState.e164,
+                validationError: validationError
+            )))
         case .reRegistering(let state):
-            return .reregistration(e164: state.e164)
+            return .registration(.reregistration(.init(
+                e164: state.e164,
+                validationError: validationError
+            )))
         case .changingNumber(let state):
-            return .changingPhoneNumber(oldE164: state.oldE164)
+            var rateLimitedError: RegistrationPhoneNumberViewState.ValidationError.RateLimited?
+            switch validationError {
+            case .none:
+                break
+            case .rateLimited(let error):
+                rateLimitedError = error
+            case .invalidNumber(let invalidNumberError):
+                return .changingNumber(.initialEntry(.init(
+                    oldE164: state.oldE164,
+                    newE164: inMemoryState.changeNumberProspectiveE164,
+                    hasConfirmed: inMemoryState.changeNumberProspectiveE164 != nil,
+                    invalidNumberError: invalidNumberError
+                )))
+            }
+            if let newE164 = inMemoryState.changeNumberProspectiveE164 {
+                return .changingNumber(.confirmation(.init(
+                    oldE164: state.oldE164,
+                    newE164: newE164,
+                    rateLimitedError: rateLimitedError
+                )))
+            } else {
+                return .changingNumber(.initialEntry(.init(
+                    oldE164: state.oldE164,
+                    newE164: nil,
+                    hasConfirmed: false,
+                    invalidNumberError: nil
+                )))
+            }
         }
     }
 

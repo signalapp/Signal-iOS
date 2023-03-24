@@ -9,6 +9,7 @@ public enum RegistrationStep: Equatable {
 
     // MARK: - Opening Steps
     case splash
+    case changeNumberSplash
     case permissions(RegistrationPermissionsState)
 
     // MARK: - Actually registering
@@ -18,7 +19,7 @@ public enum RegistrationStep: Equatable {
     /// the user to confirm the number at least once before proceeding.
     /// The number may be used to send an SMS or as a way to identify the
     /// account being registered for via KBS backup info.
-    case phoneNumberEntry(RegistrationPhoneNumberState)
+    case phoneNumberEntry(RegistrationPhoneNumberViewState)
 
     /// If registering via session, the step to enter the verification code.
     case verificationCodeEntry(RegistrationVerificationState)

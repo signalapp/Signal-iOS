@@ -132,6 +132,15 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
+        case .changeNumberSplash:
+            return Controller(
+                type: RegistrationChangeNumberSplashViewController.self,
+                make: { presenter in
+                    return RegistrationChangeNumberSplashViewController(presenter: presenter)
+                },
+                // No state to update.
+                update: nil
+            )
         case .permissions(let state):
             return Controller(
                 type: RegistrationPermissionsViewController.self,
@@ -144,16 +153,50 @@ public class RegistrationNavigationController: OWSNavigationController {
                 update: nil
             )
         case .phoneNumberEntry(let state):
-            return Controller(
-                type: RegistrationPhoneNumberViewController.self,
-                make: { presenter in
-                    return RegistrationPhoneNumberViewController(state: state, presenter: presenter)
-                },
-                update: { controller in
-                    controller.updateState(state)
-                    return nil
+            switch state {
+            case .registration(let registrationMode):
+                return Controller(
+                    type: RegistrationPhoneNumberViewController.self,
+                    make: { presenter in
+                        return RegistrationPhoneNumberViewController(state: registrationMode, presenter: presenter)
+                    },
+                    update: { controller in
+                        controller.updateState(registrationMode)
+                        return nil
+                    }
+                )
+            case .changingNumber(let changingNumberMode):
+                switch changingNumberMode {
+                case .initialEntry(let initialEntryState):
+                    return Controller(
+                        type: RegistrationChangePhoneNumberViewController.self,
+                        make: { presenter in
+                            return RegistrationChangePhoneNumberViewController(
+                                state: initialEntryState,
+                                presenter: presenter
+                            )
+                        },
+                        update: { controller in
+                            controller.updateState(initialEntryState)
+                            return nil
+                        }
+                    )
+                case .confirmation(let confirmationState):
+                    return Controller(
+                        type: RegistrationChangePhoneNumberConfirmationViewController.self,
+                        make: { presenter in
+                            return RegistrationChangePhoneNumberConfirmationViewController(
+                                state: confirmationState,
+                                presenter: presenter
+                            )
+                        },
+                        update: { controller in
+                            controller.updateState(confirmationState)
+                            return nil
+                        }
+                    )
                 }
-            )
+            }
         case .verificationCodeEntry(let state):
             return Controller(
                 type: RegistrationVerificationViewController.self,
@@ -296,6 +339,19 @@ extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
 
     func goToNextStep(withE164 e164: E164) {
         pushNextController(coordinator.submitE164(e164), loadingMode: .submittingPhoneNumber(e164: e164.stringValue))
+    }
+}
+
+extension RegistrationNavigationController: RegistrationChangePhoneNumberPresenter {
+    func submitProspectiveChangeNumberE164(newE164: E164) {
+        pushNextController(coordinator.submitProspectiveChangeNumberE164(newE164), loadingMode: .submittingPhoneNumber(e164: newE164.stringValue))
+    }
+}
+
+extension RegistrationNavigationController: RegistrationChangePhoneNumberConfirmationPresenter {
+
+    func confirmChangeNumber(newE164: E164) {
+        pushNextController(coordinator.submitE164(newE164), loadingMode: .submittingPhoneNumber(e164: newE164.stringValue))
     }
 }
 

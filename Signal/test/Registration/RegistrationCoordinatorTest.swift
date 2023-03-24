@@ -2955,33 +2955,60 @@ public class RegistrationCoordinatorTest: XCTestCase {
             mode: RegistrationMode,
             previouslyEnteredE164: E164? = nil,
             withValidationErrorFor response: Registration.BeginSessionResponse = .success(Stubs.session(hasSentVerificationCode: false))
-        ) -> RegistrationPhoneNumberState {
-            let validationError: RegistrationPhoneNumberValidationError?
+        ) -> RegistrationPhoneNumberViewState {
+            let validationError: RegistrationPhoneNumberViewState.ValidationError?
             switch response {
             case .success:
                 validationError = nil
             case .invalidArgument:
-                validationError = .invalidNumber(invalidE164: previouslyEnteredE164 ?? Stubs.e164)
+                validationError = .invalidNumber(.init(invalidE164: previouslyEnteredE164 ?? Stubs.e164))
             case .retryAfter(let timeInterval):
-                validationError = .rateLimited(expiration: self.date.addingTimeInterval(timeInterval))
+                validationError = .rateLimited(.init(expiration: self.date.addingTimeInterval(timeInterval)))
             case .networkFailure, .genericError:
                 XCTFail("Should not be generating phone number state for error responses.")
                 validationError = nil
             }
 
-            let phoneNumberMode: RegistrationPhoneNumberState.RegistrationPhoneNumberMode
             switch mode {
             case .registering:
-                phoneNumberMode = .initialRegistration(previouslyEnteredE164: previouslyEnteredE164)
+                return .registration(.initialRegistration(.init(
+                    previouslyEnteredE164: previouslyEnteredE164,
+                    validationError: validationError
+                )))
             case .reRegistering(let e164):
-                phoneNumberMode = .reregistration(e164: e164)
+                return .registration(.reregistration(.init(e164: e164, validationError: validationError)))
             case .changingNumber(let changeNumberParams):
-                phoneNumberMode = .changingPhoneNumber(oldE164: changeNumberParams.oldE164)
+                switch validationError {
+                case .none:
+                    if let newE164 = previouslyEnteredE164 {
+                        return .changingNumber(.confirmation(.init(
+                            oldE164: changeNumberParams.oldE164,
+                            newE164: newE164,
+                            rateLimitedError: nil
+                        )))
+                    } else {
+                        return .changingNumber(.initialEntry(.init(
+                            oldE164: changeNumberParams.oldE164,
+                            newE164: nil,
+                            hasConfirmed: false,
+                            invalidNumberError: nil
+                        )))
+                    }
+                case .rateLimited(let error):
+                    return .changingNumber(.confirmation(.init(
+                        oldE164: changeNumberParams.oldE164,
+                        newE164: previouslyEnteredE164!,
+                        rateLimitedError: error
+                    )))
+                case .invalidNumber(let error):
+                    return .changingNumber(.initialEntry(.init(
+                        oldE164: changeNumberParams.oldE164,
+                        newE164: previouslyEnteredE164,
+                        hasConfirmed: previouslyEnteredE164 != nil,
+                        invalidNumberError: error
+                    )))
+                }
             }
-            return RegistrationPhoneNumberState(
-                mode: phoneNumberMode,
-                validationError: validationError
-            )
         }
 
         static func verificationCodeEntryState(

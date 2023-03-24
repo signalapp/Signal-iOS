@@ -37,6 +37,11 @@ public protocol RegistrationCoordinator {
     /// but which attached metadata giving more info on the rejection.
     func requestPermissions() -> Guarantee<RegistrationStep>
 
+    /// Submit an e164 to confirm for change number, returning the next step to take.
+    /// If the e164 is rejected for any reason, the next step will be the same current step
+    /// but with attached metadata giving more info on the rejection.
+    func submitProspectiveChangeNumberE164(_ e164: E164) -> Guarantee<RegistrationStep>
+
     /// Submit an e164 to use, returning the next step to take.
     /// If the e164 is rejected for any reason, the next step will be the same current step
     /// but with attached metadata giving more info on the rejection.
