@@ -2554,6 +2554,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         pni: accountIdentity.pni,
                         tx
                     )
+                    // Make sure we update our local account.
+                    strongSelf.deps.storageServiceManager.recordPendingLocalAccountUpdates()
                 }
                 return .success
             } catch {

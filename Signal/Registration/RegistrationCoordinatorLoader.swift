@@ -133,9 +133,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
         } catch {
             // Failed to parse, even though we know there is something there.
             // This is BAD. We might've been in the middle of change number, which NEEDS to recover.
-            // TODO[Registration]: this should probably de-register you.
-            owsFailBeta("Unable to restore in-progress registration mode: \(error)")
-            return nil
+            owsFail("Unable to restore in-progress registration mode: \(error)")
         }
     }
 
