@@ -8,11 +8,19 @@ import SignalServiceKit
 import UIKit
 import SignalMessaging
 
+// MARK: - RegistrationChangeNumberSplashPresenter
+
+protocol RegistrationChangeNumberSplashPresenter: AnyObject {
+    func continueFromSplash()
+
+    func exitRegistration()
+}
+
 class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNavigationChildController {
 
-    private weak var presenter: RegistrationSplashPresenter?
+    private weak var presenter: RegistrationChangeNumberSplashPresenter?
 
-    public init(presenter: RegistrationSplashPresenter) {
+    public init(presenter: RegistrationChangeNumberSplashPresenter) {
         self.presenter = presenter
         super.init()
     }
@@ -37,6 +45,12 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
     }
 
     private func createContents() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(didPressCancel)
+        )
+
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
         scrollView.autoPinEdge(toSuperviewSafeArea: .leading)
@@ -129,6 +143,11 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
         bottomContainer.removeAllSubviews()
         bottomContainer.addSubview(continueButton)
         continueButton.autoPinEdgesToSuperviewMargins()
+    }
+
+    @objc
+    private func didPressCancel() {
+        presenter?.exitRegistration()
     }
 
     @objc

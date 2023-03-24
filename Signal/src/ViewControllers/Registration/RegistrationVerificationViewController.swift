@@ -27,6 +27,14 @@ public struct RegistrationVerificationState: Equatable {
     // TODO[Registration]: use this state to render a countdown.
     let nextVerificationAttemptDate: Date
     let validationError: RegistrationVerificationValidationError?
+
+    public enum ExitConfiguration: Equatable {
+        case noExitAllowed
+        case exitReRegistration
+        case exitChangeNumber
+    }
+
+    let exitConfiguration: ExitConfiguration
 }
 
 // MARK: - RegistrationVerificationPresenter
@@ -36,6 +44,7 @@ protocol RegistrationVerificationPresenter: AnyObject {
     func requestSMSCode()
     func requestVoiceCode()
     func submitVerificationCode(_ code: String)
+    func exitRegistration()
 }
 
 // MARK: - RegistrationVerificationViewController
@@ -175,6 +184,14 @@ class RegistrationVerificationViewController: OWSViewController {
         verificationCodeView.becomeFirstResponder()
     }
 
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if contextButton.isShowingContextMenu {
+            contextButton.dismissContextMenu(animated: animated)
+        }
+    }
+
     public override func themeDidChange() {
         super.themeDidChange()
         render()
@@ -213,6 +230,40 @@ class RegistrationVerificationViewController: OWSViewController {
     }
 
     private func render() {
+        switch state.exitConfiguration {
+        case .noExitAllowed:
+            navigationItem.leftBarButtonItem = nil
+        case .exitReRegistration:
+            navigationItem.leftBarButtonItem = contextBarButton
+            contextButton.contextMenu = ContextMenu([
+                .init(
+                    title: OWSLocalizedString(
+                        "EXIT_REREGISTRATION",
+                        comment: "Button to exit re-registration, shown in context menu."
+                    ),
+                    handler: { [weak self] _ in
+                        self?.presenter?.exitRegistration()
+                    }
+                )
+            ])
+        case .exitChangeNumber:
+            navigationItem.leftBarButtonItem = contextBarButton
+            contextButton.contextMenu = ContextMenu([
+                .init(
+                    title: OWSLocalizedString(
+                        "EXIT_CHANGE_NUMBER",
+                        comment: "Button to exit change number, shown in context menu."
+                    ),
+                    handler: { [weak self] _ in
+                        self?.presenter?.exitRegistration()
+                    }
+                )
+            ])
+        }
+
+        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.tintColor = Theme.accentBlueColor
+
         renderResendButton(
             button: resendSMSCodeButton,
             date: state.nextSMSDate,
@@ -359,6 +410,18 @@ class RegistrationVerificationViewController: OWSViewController {
             didRequestEdit: { [weak self] in self?.presenter?.returnToPhoneNumberEntry() }
         ))
     }
+
+    private lazy var contextButton: ContextMenuButton = {
+        let result = ContextMenuButton()
+        result.showsContextMenuAsPrimaryAction = true
+        result.autoSetDimensions(to: .square(40))
+        return result
+    }()
+
+    private lazy var contextBarButton = UIBarButtonItem(
+        customView: contextButton,
+        accessibilityIdentifier: "registration.verificationCode.contextButton"
+    )
 }
 
 // MARK: - RegistrationVerificationCodeViewDelegate

@@ -328,6 +328,8 @@ extension RegistrationNavigationController: RegistrationSplashPresenter {
     }
 }
 
+extension RegistrationNavigationController: RegistrationChangeNumberSplashPresenter {}
+
 extension RegistrationNavigationController: RegistrationPermissionsPresenter {
 
     func requestPermissions() {
@@ -339,6 +341,15 @@ extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
 
     func goToNextStep(withE164 e164: E164) {
         pushNextController(coordinator.submitE164(e164), loadingMode: .submittingPhoneNumber(e164: e164.stringValue))
+    }
+
+    func exitRegistration() {
+        guard coordinator.exitRegistration() else {
+            owsFailBeta("Unable to exit registration")
+            return
+        }
+        Logger.info("Early exiting registration")
+        SignalApp.shared().showConversationSplitView()
     }
 }
 

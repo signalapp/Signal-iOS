@@ -43,14 +43,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // come back and pick up where they left off, probably on next app launch.
             return true
         case .changingNumber(let state):
-            if state.pniState != nil {
-                // Not allowed to exit once we have in progress pni state.
-                return false
-            } else {
+            if state.canExitRegistrationFlow {
                 // Wipe in progress state; presumably the user decided not
                 // to change number.
                 self.wipePersistedState()
                 return true
+            } else {
+                // Not allowed to exit once we have in progress pni state.
+                return false
             }
         }
     }
@@ -236,7 +236,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             canSkip: true,
                             remainingAttempts: remainingAttempts
                         ),
-                        error: .wrongPin(wrongPin: code)
+                        error: .wrongPin(wrongPin: code),
+                        exitConfiguration: pinCodeEntryExitConfiguration()
                     )))
                 }
             }
@@ -899,7 +900,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(.pinEntry(RegistrationPinState(
                 // We can skip which will stop trying to use reg recovery.
                 operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
-                error: nil
+                error: nil,
+                exitConfiguration: pinCodeEntryExitConfiguration()
             )))
         }
 
@@ -910,7 +912,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             Logger.warn("PIN mismatch; should be prevented at submission time.")
             return .value(.pinEntry(RegistrationPinState(
                 operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
-                error: .wrongPin(wrongPin: pinFromUser)
+                error: .wrongPin(wrongPin: pinFromUser),
+                exitConfiguration: pinCodeEntryExitConfiguration()
             )))
         }
 
@@ -1075,7 +1078,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // We don't have a pin at all, ask the user for it.
             return .value(.pinEntry(RegistrationPinState(
                 operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
-                error: nil
+                error: nil,
+                exitConfiguration: pinCodeEntryExitConfiguration()
             )))
         }
 
@@ -1107,7 +1111,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             canSkip: true,
                             remainingAttempts: UInt(remainingAttempts)
                         ),
-                        error: .wrongPin(wrongPin: pin)
+                        error: .wrongPin(wrongPin: pin),
+                        exitConfiguration: self.pinCodeEntryExitConfiguration()
                     )))
                 case .backupMissing:
                     // If we are unable to talk to KBS, it got wiped and we can't
@@ -1264,7 +1269,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else {
                 return .value(.pinEntry(RegistrationPinState(
                     operation: .enteringExistingPin(canSkip: false, remainingAttempts: nil),
-                    error: .none
+                    error: .none,
+                    exitConfiguration: pinCodeEntryExitConfiguration()
                 )))
             }
         case .waitingTimeout(let reglockExpirationDate):
@@ -2030,7 +2036,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             canSkip: false,
                             remainingAttempts: UInt(remainingAttempts)
                         ),
-                        error: .wrongPin(wrongPin: pin)
+                        error: .wrongPin(wrongPin: pin),
+                        exitConfiguration: self.pinCodeEntryExitConfiguration()
                     )))
                 case .backupMissing:
                     // If we are unable to talk to KBS, it got wiped, probably
@@ -2254,17 +2261,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 if isRestoringPinBackup {
                     return .value(.pinEntry(RegistrationPinState(
                         operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
-                        error: nil
+                        error: nil,
+                        exitConfiguration: pinCodeEntryExitConfiguration()
                     )))
                 } else if let blob = inMemoryState.unconfirmedPinBlob {
                     return .value(.pinEntry(RegistrationPinState(
                         operation: .confirmingNewPin(blob),
-                        error: nil
+                        error: nil,
+                        exitConfiguration: pinCodeEntryExitConfiguration()
                     )))
                 } else {
                     return .value(.pinEntry(RegistrationPinState(
                         operation: .creatingNewPin,
-                        error: nil
+                        error: nil,
+                        exitConfiguration: pinCodeEntryExitConfiguration()
                     )))
                 }
             }
@@ -2318,7 +2328,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             canSkip: true,
                             remainingAttempts: UInt(remainingAttempts)
                         ),
-                        error: .wrongPin(wrongPin: pin)
+                        error: .wrongPin(wrongPin: pin),
+                        exitConfiguration: self.pinCodeEntryExitConfiguration()
                     )))
                 case .backupMissing:
                     // If we are unable to talk to KBS, it got wiped and we can't
@@ -2885,13 +2896,38 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         nextVerificationAttemptDate: Date,
         validationError: RegistrationVerificationValidationError? = nil
     ) -> RegistrationVerificationState {
+        let exitConfiguration: RegistrationVerificationState.ExitConfiguration
+        switch mode {
+        case .registering:
+            exitConfiguration = .noExitAllowed
+        case .reRegistering:
+            exitConfiguration = .exitReRegistration
+        case .changingNumber:
+            exitConfiguration = .exitChangeNumber
+        }
         return RegistrationVerificationState(
             e164: session.e164,
             nextSMSDate: session.nextSMSDate,
             nextCallDate: session.nextCallDate,
             nextVerificationAttemptDate: nextVerificationAttemptDate,
-            validationError: validationError
+            validationError: validationError,
+            exitConfiguration: exitConfiguration
         )
+    }
+
+    private func pinCodeEntryExitConfiguration() -> RegistrationPinState.ExitConfiguration {
+        switch mode {
+        case .registering:
+            return .noExitAllowed
+        case .reRegistering:
+            return .exitReRegistration
+        case .changingNumber(let state):
+            if state.canExitRegistrationFlow {
+                return .exitChangeNumber
+            } else {
+                return .noExitAllowed
+            }
+        }
     }
 
     private var reglockTimeoutAcknowledgeAction: RegistrationReglockTimeoutAcknowledgeAction {
@@ -2955,4 +2991,11 @@ private func unretainedSelfError() -> Guarantee<RegistrationStep> {
 private func unretainedSelfErrorStep() -> RegistrationStep {
     Logger.warn("Registration coordinator reference lost. Showing generic error")
     return .showErrorSheet(.genericError)
+}
+
+extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState {
+
+    var canExitRegistrationFlow: Bool {
+        return pniState == nil
+    }
 }

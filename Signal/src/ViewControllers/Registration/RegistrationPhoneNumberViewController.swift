@@ -11,6 +11,8 @@ import SignalMessaging
 
 protocol RegistrationPhoneNumberPresenter: AnyObject {
     func goToNextStep(withE164: E164)
+
+    func exitRegistration()
 }
 
 // MARK: - RegistrationPhoneNumberViewController
@@ -118,28 +120,16 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
     // MARK: Rendering
 
-    private lazy var proxyButton: UIButton = {
-        let result = ContextMenuButton(contextMenu: .init([
-            .init(
-                title: OWSLocalizedString(
-                    "USE_PROXY_BUTTON",
-                    comment: "Button to activate the signal proxy"
-                ),
-                handler: { [weak self] _ in
-                    guard let self else { return }
-                    let vc = ProxySettingsViewController()
-                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-                }
-            )
-        ]))
+    private lazy var contextButton: ContextMenuButton = {
+        let result = ContextMenuButton()
         result.showsContextMenuAsPrimaryAction = true
         result.autoSetDimensions(to: .square(40))
         return result
     }()
 
-    private lazy var proxyBarButton = UIBarButtonItem(
-        customView: proxyButton,
-        accessibilityIdentifier: "registration.phonenumber.proxyButton"
+    private lazy var contextBarButton = UIBarButtonItem(
+        customView: contextButton,
+        accessibilityIdentifier: "registration.verificationCode.contextButton"
     )
 
     private lazy var nextBarButton = UIBarButtonItem(
@@ -218,14 +208,20 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         }
     }
 
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if contextButton.isShowingContextMenu {
+            contextButton.dismissContextMenu(animated: animated)
+        }
+    }
+
     public override func themeDidChange() {
         super.themeDidChange()
         render()
     }
 
     private func initialRender() {
-        navigationItem.leftBarButtonItem = proxyBarButton
-
         let stackView = UIStackView()
 
         stackView.axis = .vertical
@@ -249,6 +245,39 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     }
 
     private func render() {
+        var actions: [ContextMenuAction] = [
+            .init(
+                title: OWSLocalizedString(
+                    "USE_PROXY_BUTTON",
+                    comment: "Button to activate the signal proxy"
+                ),
+                handler: { [weak self] _ in
+                    guard let self else { return }
+                    let vc = ProxySettingsViewController()
+                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                }
+            )
+        ]
+        switch state {
+        case .initialRegistration:
+            break
+        case .reregistration:
+            actions.append(.init(
+                title: OWSLocalizedString(
+                    "EXIT_REREGISTRATION",
+                    comment: "Button to exit re-registration, shown in context menu."
+                ),
+                handler: { [weak self] _ in
+                    self?.presenter?.exitRegistration()
+                }
+            ))
+        }
+        contextButton.contextMenu = ContextMenu(actions)
+        navigationItem.leftBarButtonItem = contextBarButton
+
+        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.tintColor = Theme.accentBlueColor
+
         navigationItem.rightBarButtonItem = canSubmit ? nextBarButton : nil
 
         phoneNumberInput.isEnabled = canChangePhoneNumber
@@ -269,8 +298,6 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         }
 
         view.backgroundColor = Theme.backgroundColor
-        proxyButton.setImage(Theme.iconImage(.more24), for: .normal)
-        proxyButton.tintColor = Theme.accentBlueColor
         nextBarButton.tintColor = Theme.accentBlueColor
         titleLabel.textColor = .colorForRegistrationTitleLabel
         explanationLabel.textColor = .colorForRegistrationExplanationLabel

@@ -267,7 +267,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Give it a phone number, which should show the PIN entry step.
         var nextStep = coordinator.submitE164(Stubs.e164).value
         // Now it should ask for the PIN to confirm the user knows it.
-        XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
+        XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: self.mode)))
 
         // Give it the pin code, which should make it try and register.
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
@@ -393,13 +393,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Give it a phone number, which should show the PIN entry step.
             var nextStep = coordinator.submitE164(Stubs.e164).value
             // Now it should ask for the PIN to confirm the user knows it.
-            XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
+            XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: self.mode)))
 
             // Give it the wrong PIN, it should reject and give us the same step again.
             nextStep = coordinator.submitPINCode(wrongPinCode).value
             XCTAssertEqual(
                 nextStep,
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(
+                    mode: self.mode,
                     error: .wrongPin(wrongPin: wrongPinCode),
                     remainingAttempts: 9
                 ))
@@ -509,7 +510,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Give it a phone number, which should show the PIN entry step.
             var nextStep = coordinator.submitE164(Stubs.e164)
             // Now it should ask for the PIN to confirm the user knows it.
-            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: self.mode)))
 
             // Now we want to control timing so we can verify things happened in the right order.
             scheduler.stop()
@@ -569,7 +570,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 4)
 
             // Now we should expect to be at verification code entry since we already set the phone number.
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
             // We want to have kept the master key; we failed the reg recovery pw check
             // but that could happen even if the key is valid. Once we finish session based
             // re-registration we want to be able to recover the key.
@@ -611,7 +612,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Give it a phone number, which should show the PIN entry step.
             var nextStep = coordinator.submitE164(Stubs.e164)
             // Now it should ask for the PIN to confirm the user knows it.
-            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: self.mode)))
 
             // Now we want to control timing so we can verify things happened in the right order.
             scheduler.stop()
@@ -674,7 +675,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 4)
 
             // Now we should expect to be at verification code entry since we already set the phone number.
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
             // We want to have wiped our master key; we failed reglock, which means the key itself is
             // wrong.
             XCTAssertFalse(kbs.hasMasterKey)
@@ -715,7 +716,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Give it a phone number, which should show the PIN entry step.
             var nextStep = coordinator.submitE164(Stubs.e164)
             // Now it should ask for the PIN to confirm the user knows it.
-            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath()))
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: self.mode)))
 
             // Now we want to control timing so we can verify things happened in the right order.
             scheduler.stop()
@@ -874,7 +875,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // At this point, we should be asking for PIN entry so we can use the credential
             // to recover the KBS master key.
-            XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForKBSAuthCredentialPath()))
+            XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForKBSAuthCredentialPath(mode: self.mode)))
             // We should have wipted the invalid and unknown credentials.
             let remainingCredentials = kbsAuthCredentialStore.dict
             XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.username])
@@ -1063,7 +1064,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 4)
 
             // Now we should expect to be at verification code entry since we already set the phone number.
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
 
             // We should have wipted the invalid and unknown credentials.
             let remainingCredentials = kbsAuthCredentialStore.dict
@@ -1147,7 +1148,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 4)
 
             // Now we should expect to be at verification code entry since we already set the phone number.
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
 
             // We should have wiped the invalid and unknown credentials.
             let remainingCredentials = kbsAuthCredentialStore.dict
@@ -1180,7 +1181,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // Now it should ask for PIN entry; we are on the kbs auth credential path.
             scheduler.runUntilIdle()
-            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForKBSAuthCredentialPath()))
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForKBSAuthCredentialPath(mode: self.mode)))
         }
     }
 
@@ -1267,12 +1268,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 9)
 
             // Now we should ask to create a PIN.
-            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegCreate()))
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegCreate(mode: self.mode)))
 
             // Confirm the pin first.
             nextStep = coordinator.setPINCodeForConfirmation(.stub())
             scheduler.runUntilIdle()
-            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegConfirm()))
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForPostRegConfirm(mode: self.mode)))
 
             scheduler.adjustTime(to: 0)
 
@@ -1555,7 +1556,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(
                 nextStep.value,
                 .verificationCodeEntry(
-                    Stubs.verificationCodeEntryState(e164: originalE164)
+                    Stubs.verificationCodeEntryState(mode: self.mode, e164: originalE164)
                 )
             )
 
@@ -1619,7 +1620,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(
                 nextStep.value,
                 .verificationCodeEntry(
-                    Stubs.verificationCodeEntryState(e164: changedE164)
+                    Stubs.verificationCodeEntryState(mode: self.mode, e164: changedE164)
                 )
             )
         }
@@ -1704,7 +1705,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // At t=7, we should get back the code entry step.
             scheduler.runUntilIdle()
             XCTAssertEqual(scheduler.currentTime, 7)
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
 
             // Now try and resend a code, which should hit us with the captcha challenge immediately.
             scheduler.start()
@@ -1769,7 +1770,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // given the new sms code date above.
             scheduler.runUntilIdle()
             XCTAssertEqual(scheduler.currentTime, 12)
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
         }
     }
 
@@ -1855,7 +1856,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             XCTAssertEqual(
                 nextStep.value,
-                .verificationCodeEntry(Stubs.verificationCodeEntryState())
+                .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode))
             )
             XCTAssertEqual(
                 sessionManager.latestChallengeFulfillment,
@@ -2122,7 +2123,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             XCTAssertEqual(
                 nextStep.value,
-                .verificationCodeEntry(Stubs.verificationCodeEntryState())
+                .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode))
             )
             XCTAssertEqual(
                 sessionManager.latestChallengeFulfillment,
@@ -2281,7 +2282,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Once we get that session, we should wait a short time for the
             // push challenge token and fulfill it.
             scheduler.advance(to: receiveChallengeTokenTime + 2)
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
 
             scheduler.runUntilIdle()
             XCTAssertEqual(scheduler.currentTime, receiveChallengeTokenTime + 2)
@@ -2419,6 +2420,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(
                 nextStep.value,
                 .verificationCodeEntry(Stubs.verificationCodeEntryState(
+                    mode: self.mode,
                     validationError: .invalidVerificationCode(invalidCode: badCode)
                 ))
             )
@@ -2453,6 +2455,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(
                 nextStep.value,
                 .verificationCodeEntry(Stubs.verificationCodeEntryState(
+                    mode: self.mode,
                     nextVerificationAttempt: 10,
                     validationError: .submitCodeTimeout
                 ))
@@ -2482,6 +2485,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(
                 nextStep.value,
                 .verificationCodeEntry(Stubs.verificationCodeEntryState(
+                    mode: self.mode,
                     nextSMS: 7,
                     nextVerificationAttempt: 9,
                     validationError: .smsResendTimeout
@@ -2535,6 +2539,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(
                 nextStep.value,
                 .verificationCodeEntry(Stubs.verificationCodeEntryState(
+                    mode: self.mode,
                     nextSMS: 5,
                     nextCall: 4,
                     nextVerificationAttempt: 8,
@@ -2681,7 +2686,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 3)
 
             // Now we should expect to be at verification code entry since we sent the code.
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
 
             scheduler.tick()
 
@@ -2823,7 +2828,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // At t=3 we should get back the code entry step.
             scheduler.runUntilIdle()
             XCTAssertEqual(scheduler.currentTime, 3)
-            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState()))
+            XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
         }
     }
 
@@ -2933,21 +2938,25 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         static func pinEntryStateForRegRecoveryPath(
+            mode: RegistrationMode,
             error: RegistrationPinValidationError? = nil,
             remainingAttempts: UInt? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
                 operation: .enteringExistingPin(canSkip: true, remainingAttempts: remainingAttempts),
-                error: error
+                error: error,
+                exitConfiguration: mode.pinExitConfig
             )
         }
 
         static func pinEntryStateForKBSAuthCredentialPath(
+            mode: RegistrationMode,
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
                 operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
-                error: error
+                error: error,
+                exitConfiguration: mode.pinExitConfig
             )
         }
 
@@ -3012,49 +3021,60 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         static func verificationCodeEntryState(
+            mode: RegistrationMode,
             e164: E164 = Stubs.e164,
             nextSMS: TimeInterval? = 0,
             nextCall: TimeInterval? = 0,
             nextVerificationAttempt: TimeInterval = 0,
             validationError: RegistrationVerificationValidationError? = nil
         ) -> RegistrationVerificationState {
+
             return RegistrationVerificationState(
                 e164: e164,
                 nextSMSDate: nextSMS.map { date.addingTimeInterval($0) },
                 nextCallDate: nextCall.map { date.addingTimeInterval($0) },
                 nextVerificationAttemptDate: date.addingTimeInterval(nextVerificationAttempt),
-                validationError: validationError
+                validationError: validationError,
+                exitConfiguration: mode.verificationExitConfig
             )
         }
 
         static func pinEntryStateForSessionPathReglock(
+            mode: RegistrationMode,
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
                 operation: .enteringExistingPin(canSkip: false, remainingAttempts: nil),
-                error: error
+                error: error,
+                exitConfiguration: mode.pinExitConfig
             )
         }
 
         static func pinEntryStateForPostRegRestore(
+            mode: RegistrationMode,
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
                 operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
-                error: error
+                error: error,
+                exitConfiguration: mode.pinExitConfig
             )
         }
 
-        static func pinEntryStateForPostRegCreate() -> RegistrationPinState {
-            return RegistrationPinState(operation: .creatingNewPin, error: nil)
+        static func pinEntryStateForPostRegCreate(
+            mode: RegistrationMode
+        ) -> RegistrationPinState {
+            return RegistrationPinState(operation: .creatingNewPin, error: nil, exitConfiguration: mode.pinExitConfig)
         }
 
         static func pinEntryStateForPostRegConfirm(
+            mode: RegistrationMode,
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
                 operation: .confirmingNewPin(.stub()),
-                error: error
+                error: error,
+                exitConfiguration: mode.pinExitConfig
             )
         }
     }
@@ -3070,6 +3090,30 @@ extension RegistrationMode {
             return "re-registering"
         case .changingNumber:
             return "changing number"
+        }
+    }
+
+    var pinExitConfig: RegistrationPinState.ExitConfiguration {
+        switch self {
+        case .registering:
+            return .noExitAllowed
+        case .reRegistering:
+            return .exitReRegistration
+        case .changingNumber:
+            // TODO[Registration]: test change number properly
+            return .exitChangeNumber
+        }
+    }
+
+    var verificationExitConfig: RegistrationVerificationState.ExitConfiguration {
+        switch self {
+        case .registering:
+            return .noExitAllowed
+        case .reRegistering:
+            return .exitReRegistration
+        case .changingNumber:
+            // TODO[Registration]: test change number properly
+            return .exitChangeNumber
         }
     }
 }

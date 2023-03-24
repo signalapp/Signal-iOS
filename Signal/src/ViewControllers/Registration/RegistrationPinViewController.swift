@@ -48,6 +48,14 @@ public struct RegistrationPinState: Equatable {
     let operation: RegistrationPinOperation
     // TODO[Registration]: show error UI for this
     let error: RegistrationPinValidationError?
+
+    public enum ExitConfiguration: Equatable {
+        case noExitAllowed
+        case exitReRegistration
+        case exitChangeNumber
+    }
+
+    let exitConfiguration: ExitConfiguration
 }
 
 // MARK: - RegistrationPinPresenter
@@ -60,6 +68,8 @@ protocol RegistrationPinPresenter: AnyObject {
 
     func submitPinCode(_ code: String)
     func submitWithSkippedPin()
+
+    func exitRegistration()
 }
 
 // MARK: - RegistrationPinViewController
@@ -243,6 +253,30 @@ class RegistrationPinViewController: OWSViewController {
         return result
     }()
 
+    private func exitAction() -> ContextMenuAction? {
+        let exitTitle: String
+        switch state.exitConfiguration {
+        case .noExitAllowed:
+            return nil
+        case .exitReRegistration:
+            exitTitle = OWSLocalizedString(
+                "EXIT_REREGISTRATION",
+                comment: "Button to exit re-registration, shown in context menu."
+            )
+        case .exitChangeNumber:
+            exitTitle = OWSLocalizedString(
+                "EXIT_CHANGE_NUMBER",
+                comment: "Button to exit change number, shown in context menu."
+            )
+        }
+        return .init(
+            title: exitTitle,
+            handler: { [weak self] _ in
+                self?.presenter?.exitRegistration()
+            }
+        )
+    }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         initialRender()
@@ -255,6 +289,14 @@ class RegistrationPinViewController: OWSViewController {
             // Small devices may obscure parts of the UI behind the keyboard, especially with larger
             // font sizes.
             pinTextField.becomeFirstResponder()
+        }
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if moreButton.isShowingContextMenu {
+            moreButton.dismissContextMenu(animated: animated)
         }
     }
 
@@ -325,23 +367,27 @@ class RegistrationPinViewController: OWSViewController {
                     handler: { [weak self] _ in
                         self?.showSkipCreatingNewPinUi()
                     }
-                )
-            ])
+                ),
+                exitAction()
+            ].compacted())
         case .confirmingNewPin:
             navigationItem.leftBarButtonItem = backBarButton
         case let .enteringExistingPin(canSkip, remainingAttempts):
             let showAttemptWarningsAt: Set<UInt>
             if canSkip {
                 navigationItem.leftBarButtonItem = moreBarButton
-                moreButton.contextMenu = ContextMenu([.init(
-                    title: OWSLocalizedString(
-                        "PIN_ENTER_EXISTING_SKIP",
-                        comment: "If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this."
+                moreButton.contextMenu = ContextMenu([
+                    .init(
+                        title: OWSLocalizedString(
+                            "PIN_ENTER_EXISTING_SKIP",
+                            comment: "If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this."
+                        ),
+                        handler: { [weak self] _ in
+                            self?.didRequestToSkipEnteringExistingPin()
+                        }
                     ),
-                    handler: { [weak self] _ in
-                        self?.didRequestToSkipEnteringExistingPin()
-                    }
-                )])
+                    exitAction()
+                ].compacted())
                 showAttemptWarningsAt = [3, 1]
             } else {
                 navigationItem.leftBarButtonItem = nil

@@ -11,6 +11,8 @@ import SignalServiceKit
 protocol RegistrationChangePhoneNumberPresenter: AnyObject {
 
     func submitProspectiveChangeNumberE164(newE164: E164)
+
+    func exitRegistration()
 }
 
 // MARK: - RegistrationChangePhoneNumberViewController
@@ -283,7 +285,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
     private func didPressCancel() {
         AssertIsOnMainThread()
 
-        // TODO
+        presenter?.exitRegistration()
     }
 
     @objc
