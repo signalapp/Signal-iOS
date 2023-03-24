@@ -64,13 +64,25 @@ extension SignalApp {
             }) {
                 showRegistration(loader: registrationLoader, desiredMode: lastMode)
                 AppReadiness.setUIIsReady()
-            // TODO[Registration]: use a db migration to move isComplete state to reg coordinator.
+                // TODO[Registration]: use a db migration to move isComplete state to reg coordinator.
             } else if !onboardingController.isComplete {
                 if UIDevice.current.isIPad {
                     showDeprecatedOnboardingView(onboardingController)
                     AppReadiness.setUIIsReady()
                 } else {
-                    showRegistration(loader: registrationLoader, desiredMode: .registering)
+                    let desiredMode: RegistrationMode
+                    if
+                        let reregNumber = tsAccountManager.reregistrationPhoneNumber(),
+                        let reregE164 = E164(reregNumber),
+                        let reregAci = tsAccountManager.reregistrationUUID()
+                    {
+                        // A user who started re-registration before the new
+                        // registration flow shipped; kick them to new re-reg.
+                        desiredMode = .reRegistering(e164: reregE164, aci: reregAci)
+                    } else {
+                        desiredMode = .registering
+                    }
+                    showRegistration(loader: registrationLoader, desiredMode: desiredMode)
                     AppReadiness.setUIIsReady()
                 }
             } else {
