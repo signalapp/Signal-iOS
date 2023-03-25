@@ -29,6 +29,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, RecipientPickerViewControllerSelectionMode) {
 @protocol RecipientPickerDelegate;
 
 @class OWSInviteFlow;
+@class OWSTableViewController2;
 @class PickedRecipient;
 @class SignalAccount;
 
@@ -66,6 +67,10 @@ typedef NS_CLOSED_ENUM(NSUInteger, RecipientPickerViewControllerSelectionMode) {
 - (void)applyThemeToViewController:(UIViewController *)viewController;
 
 // Swift interop
+
+@property (nonatomic, readonly) OWSTableViewController2 *tableViewController;
+
+@property (nonatomic) BOOL isNoContactsModeActive;
 
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 

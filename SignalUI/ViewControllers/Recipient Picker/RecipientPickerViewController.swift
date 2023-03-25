@@ -117,6 +117,141 @@ private extension RecipientPickerViewController {
 
 extension RecipientPickerViewController {
     @objc
+    func createNoSignalContactsView() -> UIView {
+        let heroImageView = UIImageView(image: .init(named: "uiEmptyContact"))
+        heroImageView.layer.minificationFilter = .trilinear
+        heroImageView.layer.magnificationFilter = .trilinear
+        let heroSize = ScaleFromIPhone5To7Plus(100, 150)
+        heroImageView.autoSetDimensions(to: CGSize(square: heroSize))
+
+        let titleLabel = UILabel()
+        titleLabel.text = OWSLocalizedString(
+            "EMPTY_CONTACTS_LABEL_LINE1",
+            comment: "Full width label displayed when attempting to compose message"
+        )
+        titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.font = .ows_semiboldFont(withSize: ScaleFromIPhone5To7Plus(17, 20))
+        titleLabel.textAlignment = .center
+        titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.numberOfLines = 0
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.text = OWSLocalizedString(
+            "EMPTY_CONTACTS_LABEL_LINE2",
+            comment: "Full width label displayed when attempting to compose message"
+        )
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+        subtitleLabel.font = .ows_regularFont(withSize: ScaleFromIPhone5To7Plus(12, 14))
+        subtitleLabel.textAlignment = .center
+        subtitleLabel.lineBreakMode = .byWordWrapping
+        subtitleLabel.numberOfLines = 0
+
+        let headerStack = UIStackView(arrangedSubviews: [
+            heroImageView,
+            titleLabel,
+            subtitleLabel
+        ])
+        headerStack.setCustomSpacing(30, after: heroImageView)
+        headerStack.setCustomSpacing(15, after: titleLabel)
+        headerStack.axis = .vertical
+        headerStack.alignment = .center
+
+        let buttonStack = UIStackView()
+        buttonStack.axis = .vertical
+        buttonStack.alignment = .fill
+        buttonStack.spacing = 16
+
+        func addButton(
+            title: String,
+            selector: Selector,
+            accessibilityIdentifierName: String,
+            icon: ThemeIcon,
+            innerIconSize: CGFloat
+        ) {
+            let button = UIButton(type: .custom)
+            button.addTarget(self, action: selector, for: .touchUpInside)
+            button.accessibilityIdentifier = UIView.accessibilityIdentifier(
+                in: self,
+                name: accessibilityIdentifierName
+            )
+            buttonStack.addArrangedSubview(button)
+
+            let iconView = OWSTableItem.buildIconInCircleView(
+                icon: icon,
+                innerIconSize: innerIconSize
+            )
+            iconView.backgroundColor = tableViewController.cellBackgroundColor
+
+            let label = UILabel()
+            label.text = title
+            label.font = .ows_regularFont(withSize: 17)
+            label.textColor = Theme.primaryTextColor
+            label.lineBreakMode = .byTruncatingTail
+
+            let hStack = UIStackView(arrangedSubviews: [iconView, label])
+            hStack.axis = .horizontal
+            hStack.alignment = .center
+            hStack.spacing = 12
+            hStack.isUserInteractionEnabled = false
+            button.addSubview(hStack)
+            hStack.autoPinEdgesToSuperviewEdges()
+        }
+
+        if shouldShowNewGroup {
+            addButton(
+                title: OWSLocalizedString(
+                    "NEW_GROUP_BUTTON",
+                    comment: "Label for the 'create new group' button."
+                ),
+                selector: #selector(newGroupButtonPressed),
+                accessibilityIdentifierName: "newGroupButton",
+                icon: .composeNewGroupLarge,
+                innerIconSize: 35
+            )
+        }
+
+        if allowsAddByPhoneNumber {
+            addButton(
+                title: OWSLocalizedString(
+                    "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
+                    comment: "Label for a button that lets users search for contacts by phone number"
+                ),
+                selector: #selector(hideBackgroundView),
+                accessibilityIdentifierName: "searchByPhoneNumberButton",
+                icon: .composeFindByPhoneNumberLarge,
+                innerIconSize: 42
+            )
+        }
+
+        if shouldShowInvites {
+            addButton(
+                title: OWSLocalizedString(
+                    "INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                    comment: "Label for the cell that presents the 'invite contacts' workflow."
+                ),
+                selector: #selector(presentInviteFlow),
+                accessibilityIdentifierName: "inviteContactsButton",
+                icon: .composeInviteLarge,
+                innerIconSize: 38
+            )
+        }
+
+        let stackView = UIStackView(arrangedSubviews: [headerStack, buttonStack])
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 50
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = .init(margin: 20)
+
+        let result = UIView()
+        result.backgroundColor = tableViewController.tableBackgroundColor
+        result.addSubview(stackView)
+        stackView.autoPinWidthToSuperview()
+        stackView.autoVCenterInSuperview()
+        return result
+    }
+
+    @objc
     func filteredSignalAccounts() -> [SignalAccount] {
         Array(lazyFilteredSignalAccounts())
     }
@@ -151,7 +286,7 @@ extension RecipientPickerViewController {
     /// prevented Signal from accessing their contacts, we don't show the
     /// special UX and instead allow the banner to be visible.
     @objc
-    func shouldNoContactsModeBeActive() -> Bool {
+    private func shouldNoContactsModeBeActive() -> Bool {
         switch contactsManagerImpl.editingAuthorization {
         case .denied, .restricted:
             // Return false so `contactAccessReminderSection` is invoked.
@@ -173,6 +308,11 @@ extension RecipientPickerViewController {
             }
             return true
         }
+    }
+
+    @objc
+    func showContactAppropriateViews() {
+        isNoContactsModeActive = shouldNoContactsModeBeActive()
     }
 
     /// Returns a section when there's no contacts to show.
@@ -289,6 +429,24 @@ extension RecipientPickerViewController {
                 }
             )
         })
+    }
+
+    @objc
+    func newGroupButtonPressed() {
+        delegate?.recipientPickerNewGroupButtonWasPressed()
+    }
+
+    @objc
+    func hideBackgroundView() {
+        Environment.shared.preferences.setHasDeclinedNoContactsView(true)
+        showContactAppropriateViews()
+    }
+
+    @objc
+    func presentInviteFlow() {
+        let inviteFlow = InviteFlow(presentingViewController: self)
+        self.inviteFlow = inviteFlow
+        inviteFlow.present(isAnimated: true, completion: nil)
     }
 }
 
