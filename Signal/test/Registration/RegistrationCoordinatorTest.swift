@@ -162,11 +162,11 @@ public class RegistrationCoordinatorTest: XCTestCase {
             switch mode {
             case .registering:
                 // With no state set up, should show the splash.
-                XCTAssertEqual(coordinator.nextStep().value, .splash)
+                XCTAssertEqual(coordinator.nextStep().value, .registrationSplash)
                 // Once we show it, don't show it again.
-                XCTAssertNotEqual(coordinator.continueFromSplash().value, .splash)
+                XCTAssertNotEqual(coordinator.continueFromSplash().value, .registrationSplash)
             case .reRegistering, .changingNumber:
-                XCTAssertNotEqual(coordinator.nextStep().value, .splash)
+                XCTAssertNotEqual(coordinator.nextStep().value, .registrationSplash)
             }
         }
     }
@@ -199,7 +199,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             switch mode {
             case .registering:
                 // Gotta get the splash out of the way.
-                XCTAssertEqual(coordinator.nextStep().value, .splash)
+                XCTAssertEqual(coordinator.nextStep().value, .registrationSplash)
                 nextStep = coordinator.continueFromSplash()
             case .reRegistering, .changingNumber:
                 // No splash for these.
@@ -214,7 +214,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Once the state is updated we can proceed.
             nextStep = coordinator.requestPermissions()
             XCTAssertNotNil(nextStep.value)
-            XCTAssertNotEqual(nextStep.value, .splash)
+            XCTAssertNotEqual(nextStep.value, .registrationSplash)
             XCTAssertNotEqual(nextStep.value, .permissions(Stubs.permissionsState()))
         }
     }
@@ -2755,7 +2755,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 // Gotta get the splash out of the way.
                 nextStep = coordinator.nextStep()
                 scheduler.runUntilIdle()
-                XCTAssertEqual(nextStep.value, .splash)
+                XCTAssertEqual(nextStep.value, .registrationSplash)
             case .reRegistering, .changingNumber:
                 break
             }

@@ -150,7 +150,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
                                                   selector: #selector(didTapContinue))
         continueButton.autoSetHeightUsingFont()
         continueButton.cornerRadius = 8
-        continueButton.setEnabled(state.rateLimitedError?.canSubmit() ?? true)
+        continueButton.setEnabled(state.rateLimitedError?.canSubmit(dateProvider: Date.provider) ?? true)
 
         let editButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON",
                                                                          comment: "Label for the 'edit phone number' button in the 'change phone number' views."),
@@ -170,7 +170,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
             phoneNumberStack
         ])
 
-        if let warningLabelText = state.rateLimitedError?.warningLabelText() {
+        if let warningLabelText = state.rateLimitedError?.warningLabelText(dateProvider: Date.provider) {
             let warningLabel = UILabel()
             warningLabel.textColor = .ows_accentRed
             warningLabel.numberOfLines = 0
@@ -201,7 +201,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
     private func didTapContinue(_ sender: UIButton) {
         AssertIsOnMainThread()
 
-        guard state.rateLimitedError?.canSubmit() != false else {
+        guard state.rateLimitedError?.canSubmit(dateProvider: Date.provider) != false else {
             return
         }
 

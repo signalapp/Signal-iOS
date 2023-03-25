@@ -61,21 +61,21 @@ public enum RegistrationPhoneNumberViewState: Equatable {
 
 extension RegistrationPhoneNumberViewState.ValidationError {
 
-    func canSubmit(e164: E164) -> Bool {
+    func canSubmit(e164: E164, dateProvider: DateProvider) -> Bool {
         switch self {
         case let .invalidNumber(error):
             return error.canSubmit(e164: e164)
         case let .rateLimited(error):
-            return error.canSubmit()
+            return error.canSubmit(dateProvider: dateProvider)
         }
     }
 
-    func warningLabelText() -> String? {
+    func warningLabelText(dateProvider: DateProvider) -> String? {
         switch self {
         case .invalidNumber(let error):
             return error.warningLabelText
         case let .rateLimited(error):
-            return error.warningLabelText()
+            return error.warningLabelText(dateProvider: dateProvider)
         }
     }
 }
@@ -96,12 +96,12 @@ extension RegistrationPhoneNumberViewState.ValidationError.InvalidNumber {
 
 extension RegistrationPhoneNumberViewState.ValidationError.RateLimited {
 
-    func canSubmit() -> Bool {
-        return Date() >= expiration
+    func canSubmit(dateProvider: DateProvider) -> Bool {
+        return dateProvider() >= expiration
     }
 
-    func warningLabelText() -> String? {
-        let now = Date()
+    func warningLabelText(dateProvider: DateProvider) -> String? {
+        let now = dateProvider()
         if now >= expiration {
             return nil
         }

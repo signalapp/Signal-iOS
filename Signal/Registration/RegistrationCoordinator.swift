@@ -136,8 +136,8 @@ public enum AcknowledgeReglockResult {
     // Only possible during initial registration; lets the user
     // retry with a different number. Next step should be shown.
     case restartRegistration(Guarantee<RegistrationStep>)
-    // If re-registering or changing number, exiting out to the main
-    // app is possible.
+    // Allowed to exit; the UI may go back to the main app.
+    // Only sometimes possible during re-reg and change number.
     case exitRegistration
     // Unable to get anywhere; typically we are in re-registration
     // and state has already been wiped unrecoverably.

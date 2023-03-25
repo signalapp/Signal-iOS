@@ -111,7 +111,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             return true
         }
 
-        if validationError?.canSubmit(e164: e164) == false {
+        if validationError?.canSubmit(e164: e164, dateProvider: Date.provider) == false {
             return false
         }
 
@@ -284,7 +284,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         phoneNumberInput.render()
 
         // We always render the warning label but sometimes invisibly. This avoids UI jumpiness.
-        if let warningLabelText = validationError?.warningLabelText() {
+        if let warningLabelText = validationError?.warningLabelText(dateProvider: Date.provider) {
             validationWarningLabel.alpha = 1
             validationWarningLabel.text = warningLabelText
         } else {

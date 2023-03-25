@@ -123,7 +123,7 @@ public class RegistrationNavigationController: OWSNavigationController {
 
     private func controller(for step: RegistrationStep) -> AnyController? {
         switch step {
-        case .splash:
+        case .registrationSplash:
             return Controller(
                 type: RegistrationSplashViewController.self,
                 make: { presenter in

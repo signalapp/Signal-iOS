@@ -76,7 +76,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return restoreStateIfNeeded().then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
             guard let self = self else {
                 owsFailBeta("Unretained self lost")
-                return .value(.splash)
+                return .value(.registrationSplash)
             }
             return self.nextStep(pathway: self.getPathway())
         }
@@ -104,7 +104,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             .then(on: schedulers.main) { [weak self] in
                 guard let self else {
                     owsFailBeta("Unretained self lost")
-                    return .value(.splash)
+                    return .value(.registrationSplash)
                 }
                 self.inMemoryState.needsSomePermissions = false
                 return self.nextStep()
@@ -475,7 +475,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         /// When re-registering, just before completing the actual create account
         /// request, we wipe our local state for re-registration. We only do this once,
-        /// and once we do, there is no turning back.
+        /// and once we do, there is no turning back, because we will have wiped
+        /// state thats needed to use the app outside of registration.
         var hasResetForReRegistration = false
 
         /// The e164 the user has entered for this attempt at registration.
@@ -624,7 +625,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.loadProfileState()
 
         db.write { tx in
-            self.loadLocalMasterKey(tx)
+            self.loadLocalMasterKeyAndUpdateState(tx)
             inMemoryState.pinFromDisk = deps.ows2FAManager.pinCode(tx)
             if
                 inMemoryState.pinFromDisk != nil,
@@ -895,7 +896,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if persistedState.shouldSkipRegistrationSplash {
                 return nil
             }
-            return .splash
+            return .registrationSplash
         case .changingNumber:
             return .changeNumberSplash
         case .reRegistering:
@@ -1122,7 +1123,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .success:
                     // This step also backs up, no need to do that again later.
                     self.inMemoryState.hasBackedUpToKBS = true
-                    self.db.write { self.loadLocalMasterKey($0) }
+                    self.db.write { self.loadLocalMasterKeyAndUpdateState($0) }
                     return self.nextStep()
                 case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
@@ -1159,7 +1160,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
-    private func loadLocalMasterKey(_ tx: DBWriteTransaction) {
+    private func loadLocalMasterKeyAndUpdateState(_ tx: DBWriteTransaction) {
         // The hex vs base64 different here is intentional.
         let regRecoveryPw = deps.kbs.data(for: .registrationRecoveryPassword, transaction: tx)?.base64EncodedString()
         inMemoryState.regRecoveryPw = regRecoveryPw
@@ -2042,7 +2043,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // This step also backs up, no need to do that again later.
                     self.inMemoryState.hasBackedUpToKBS = true
                     self.db.write { tx in
-                        self.loadLocalMasterKey(tx)
+                        self.loadLocalMasterKeyAndUpdateState(tx)
                         self.updatePersistedSessionState(session: session, tx) {
                             // Now we have the state we need to get past reglock.
                             $0.reglockState = .none
@@ -2439,7 +2440,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             // Try loading from KBS.
             db.write { tx in
-                loadLocalMasterKey(tx)
+                loadLocalMasterKeyAndUpdateState(tx)
             }
             reglockToken = inMemoryState.reglockToken
         }

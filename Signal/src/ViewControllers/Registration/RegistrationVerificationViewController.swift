@@ -166,6 +166,18 @@ class RegistrationVerificationViewController: OWSViewController {
         accessibilityIdentifierSuffix: "requestVoiceCodeButton"
     )
 
+    private lazy var contextButton: ContextMenuButton = {
+        let result = ContextMenuButton()
+        result.showsContextMenuAsPrimaryAction = true
+        result.autoSetDimensions(to: .square(40))
+        return result
+    }()
+
+    private lazy var contextBarButton = UIBarButtonItem(
+        customView: contextButton,
+        accessibilityIdentifier: "registration.verificationCode.contextButton"
+    )
+
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -410,18 +422,6 @@ class RegistrationVerificationViewController: OWSViewController {
             didRequestEdit: { [weak self] in self?.presenter?.returnToPhoneNumberEntry() }
         ))
     }
-
-    private lazy var contextButton: ContextMenuButton = {
-        let result = ContextMenuButton()
-        result.showsContextMenuAsPrimaryAction = true
-        result.autoSetDimensions(to: .square(40))
-        return result
-    }()
-
-    private lazy var contextBarButton = UIBarButtonItem(
-        customView: contextButton,
-        accessibilityIdentifier: "registration.verificationCode.contextButton"
-    )
 }
 
 // MARK: - RegistrationVerificationCodeViewDelegate

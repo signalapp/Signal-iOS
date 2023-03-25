@@ -733,15 +733,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 - (nullable NSString *)reregistrationPhoneNumber
 {
-    OWSAssertDebug([self isReregistering]);
-
     return [self getOrLoadAccountStateWithSneakyTransaction].reregistrationPhoneNumber;
 }
 
 - (nullable NSUUID *)reregistrationUUID
 {
-    OWSAssertDebug([self isReregistering]);
-
     return [self getOrLoadAccountStateWithSneakyTransaction].reregistrationUUID;
 }
 

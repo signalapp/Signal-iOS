@@ -156,6 +156,8 @@ class AccountSettingsViewController: OWSTableViewController2 {
                             guard let self else {
                                 return
                             }
+                            // Fetch the state again in case it changed from under us
+                            // between when the button was rendered and when it was tapped.
                             switch self.changeNumberState() {
                             case .disallowed:
                                 return
@@ -282,7 +284,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             guard self.tsAccountManager.isDeregistered(with: transaction).negated else {
                 return .disallowed
             }
-            let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(NSObject()))
+            let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
             switch loader.restoreLastMode(transaction: transaction.asV2Read) {
             case .none, .changingNumber:
                 break
