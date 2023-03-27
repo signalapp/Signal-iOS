@@ -601,7 +601,10 @@ class AnySearchIndexer: Dependencies {
     }
 
     private static let groupMemberIndexer: SearchIndexer<TSGroupMember> = SearchIndexer { (groupMember: TSGroupMember, transaction: SDSAnyReadTransaction) in
-        return recipientIndexer.index(groupMember.address, transaction: transaction)
+        return recipientIndexer.index(
+            SignalServiceAddress(uuid: groupMember.serviceId?.uuidValue, phoneNumber: groupMember.phoneNumber),
+            transaction: transaction
+        )
     }
 
     private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread, transaction: SDSAnyReadTransaction) in

@@ -777,10 +777,13 @@
 		506695E129C296D500B6D8D0 /* RecipientMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */; };
 		506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */; };
 		506695E529C29C2F00B6D8D0 /* RecipientDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695E429C29C2F00B6D8D0 /* RecipientDataStore.swift */; };
+		506695EC29C5305900B6D8D0 /* GroupMemberDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695EB29C5305800B6D8D0 /* GroupMemberDataStore.swift */; };
+		506695EF29C533A400B6D8D0 /* GroupMemberUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506695EE29C533A400B6D8D0 /* GroupMemberUpdater.swift */; };
 		506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */; };
 		506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */; };
 		506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
 		5075004628B09CE6001922C9 /* ContactDiscoveryE164CollectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryE164CollectionTest.swift */; };
+		5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */; };
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
 		508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */; };
 		509913BE2913274100F34F8E /* PhoneNumberFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */; };
@@ -3243,8 +3246,11 @@
 		506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientMergerTest.swift; sourceTree = "<group>"; };
 		506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientMerger.swift; sourceTree = "<group>"; };
 		506695E429C29C2F00B6D8D0 /* RecipientDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientDataStore.swift; sourceTree = "<group>"; };
+		506695EB29C5305800B6D8D0 /* GroupMemberDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberDataStore.swift; sourceTree = "<group>"; };
+		506695EE29C533A400B6D8D0 /* GroupMemberUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberUpdater.swift; sourceTree = "<group>"; };
 		506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManager.swift; sourceTree = "<group>"; };
 		506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerContainerViewController.swift; sourceTree = "<group>"; };
+		5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberUpdaterTest.swift; sourceTree = "<group>"; };
 		507CD5E429660D5100E47DAC /* ServiceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceId.swift; sourceTree = "<group>"; };
 		508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellBackgroundColor.swift; sourceTree = "<group>"; };
 		509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberFinderTests.swift; sourceTree = "<group>"; };
@@ -6375,6 +6381,15 @@
 			path = DeviceTransfer;
 			sourceTree = "<group>";
 		};
+		506695ED29C5337700B6D8D0 /* GroupMembers */ = {
+			isa = PBXGroup;
+			children = (
+				506695EB29C5305800B6D8D0 /* GroupMemberDataStore.swift */,
+				506695EE29C533A400B6D8D0 /* GroupMemberUpdater.swift */,
+			);
+			path = GroupMembers;
+			sourceTree = "<group>";
+		};
 		5075004528B09CCC001922C9 /* Discovery */ = {
 			isa = PBXGroup;
 			children = (
@@ -6383,6 +6398,14 @@
 				500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */,
 			);
 			path = Discovery;
+			sourceTree = "<group>";
+		};
+		5075C21529CA1ED500A260D2 /* GroupMembers */ = {
+			isa = PBXGroup;
+			children = (
+				5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */,
+			);
+			path = GroupMembers;
 			sourceTree = "<group>";
 		};
 		6600F352298C8FBB00B1EDB7 /* Registration */ = {
@@ -8086,6 +8109,7 @@
 				666BAB0E2980B76B00867196 /* Dependencies */,
 				F9C5CA09289453B100548EEE /* Devices */,
 				D920487D28EB8201003F5371 /* Experience Upgrades */,
+				506695ED29C5337700B6D8D0 /* GroupMembers */,
 				F9C5CBA3289453B200548EEE /* groups */,
 				D9668B30291B033800665298 /* Jobs */,
 				6673FF6A2978B5B900F96CFD /* KeyBackupService */,
@@ -8122,6 +8146,7 @@
 				F9426205289B1B5500460798 /* Contacts */,
 				F94261C7289B1B5300460798 /* Devices */,
 				F908AA7B28CE628700472E68 /* Fixtures */,
+				5075C21529CA1ED500A260D2 /* GroupMembers */,
 				F94261E2289B1B5400460798 /* Groups */,
 				6673FF732979F7A400F96CFD /* KeyBackupService */,
 				F942621C289B1B5500460798 /* Messages */,
@@ -11708,7 +11733,9 @@
 				D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */,
 				F9A042C8289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift in Sources */,
 				F9C5CE77289453B400548EEE /* GroupManager.swift in Sources */,
+				506695EC29C5305900B6D8D0 /* GroupMemberDataStore.swift in Sources */,
 				F9C5CE72289453B400548EEE /* GroupMembership.swift in Sources */,
+				506695EF29C533A400B6D8D0 /* GroupMemberUpdater.swift in Sources */,
 				F9C5CC90289453B300548EEE /* Groups.pb.swift in Sources */,
 				F9C5CCF4289453B300548EEE /* GroupsInputStream.swift in Sources */,
 				F9C5CC98289453B300548EEE /* GroupsProto.swift in Sources */,
@@ -12259,6 +12286,7 @@
 				F9426254289B1B5500460798 /* FeatureFlagsTests.swift in Sources */,
 				F908179628EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift in Sources */,
 				F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */,
+				5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */,
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
 				F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,

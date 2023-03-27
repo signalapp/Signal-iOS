@@ -333,20 +333,24 @@ class SignalRecipientTest: SSKBaseTestSwift {
             groupThreadFactory.memberAddressesBuilder = { return [] }
             let groupThread = groupThreadFactory.create(transaction: transaction)
             // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(address: SignalServiceAddress(uuid: uuid1,
-                                                                           phoneNumber: phoneNumber1),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember1 = TSGroupMember(
+                serviceId: ServiceId(uuid1),
+                phoneNumber: phoneNumber1,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember1.anyInsert(transaction: transaction)
             // NOTE: This member has a uuid.
-            let groupMember2 = TSGroupMember(address: SignalServiceAddress(uuid: uuid2,
-                                                                           phoneNumber: phoneNumber2),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember2 = TSGroupMember(
+                serviceId: ServiceId(uuid2),
+                phoneNumber: phoneNumber2,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember2.anyInsert(transaction: transaction)
 
             // We should have two group members: (u1, p1) and (u2, p2).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid1,
                                                                                        phoneNumber: phoneNumber1),
@@ -365,7 +369,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2), transaction: transaction)
 
             // We should still have two group members: (u1, p2) and (u2, nil).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
@@ -399,19 +403,24 @@ class SignalRecipientTest: SSKBaseTestSwift {
             groupThreadFactory.memberAddressesBuilder = { return [] }
             let groupThread = groupThreadFactory.create(transaction: transaction)
             // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(address: SignalServiceAddress(uuid: uuid1,
-                                                                           phoneNumber: phoneNumber1),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember1 = TSGroupMember(
+                serviceId: ServiceId(uuid1),
+                phoneNumber: phoneNumber1,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember1.anyInsert(transaction: transaction)
             // NOTE: This member has no uuid.
-            let groupMember2 = TSGroupMember(address: SignalServiceAddress(phoneNumber: phoneNumber2),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember2 = TSGroupMember(
+                serviceId: nil,
+                phoneNumber: phoneNumber2,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember2.anyInsert(transaction: transaction)
 
             // We should have two group members: (u1, p1) and (nil, p2).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid1,
                                                                                        phoneNumber: phoneNumber1),
@@ -429,7 +438,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2), transaction: transaction)
 
             // We should now have two group members: (u1, p2), (fake uuid, nil).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
@@ -464,20 +473,24 @@ class SignalRecipientTest: SSKBaseTestSwift {
             groupThreadFactory.memberAddressesBuilder = { return [] }
             let groupThread = groupThreadFactory.create(transaction: transaction)
             // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(address: SignalServiceAddress(uuid: uuid1,
-                                                                           phoneNumber: phoneNumber1),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember1 = TSGroupMember(
+                serviceId: ServiceId(uuid1),
+                phoneNumber: phoneNumber1,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember1.anyInsert(transaction: transaction)
             // NOTE: This member has a phone number.
-            let groupMember2 = TSGroupMember(address: SignalServiceAddress(uuid: uuid2,
-                                                                           phoneNumber: phoneNumber2),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember2 = TSGroupMember(
+                serviceId: ServiceId(uuid2),
+                phoneNumber: phoneNumber2,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember2.anyInsert(transaction: transaction)
 
             // We should have two group members: (u1, p1) and (u2, p2).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid1,
                                                                                        phoneNumber: phoneNumber1),
@@ -496,7 +509,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1), transaction: transaction)
 
             // We should still have two group members: (u2, p1) and (u1, nil).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
@@ -530,19 +543,24 @@ class SignalRecipientTest: SSKBaseTestSwift {
             groupThreadFactory.memberAddressesBuilder = { return [] }
             let groupThread = groupThreadFactory.create(transaction: transaction)
             // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(address: SignalServiceAddress(uuid: uuid1,
-                                                                           phoneNumber: phoneNumber1),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember1 = TSGroupMember(
+                serviceId: ServiceId(uuid1),
+                phoneNumber: phoneNumber1,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember1.anyInsert(transaction: transaction)
             // NOTE: This member has no phone number.
-            let groupMember2 = TSGroupMember(address: SignalServiceAddress(uuid: uuid2),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember2 = TSGroupMember(
+                serviceId: ServiceId(uuid2),
+                phoneNumber: nil,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember2.anyInsert(transaction: transaction)
 
             // We should have two group members: (u1, p1) and (u2, nil).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid1,
                                                                                        phoneNumber: phoneNumber1),
@@ -560,7 +578,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1), transaction: transaction)
 
             // We should now have two group members: (u2, p1), (fake uuid, nil).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))

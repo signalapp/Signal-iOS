@@ -373,7 +373,7 @@ extension SignalRecipient {
                                uuidColumn: "\(threadColumn: .contactUUID)",
                                phoneNumberColumn: "\(threadColumn: .contactPhoneNumber)"),
                 DBTableMapping(databaseTableName: "\(TSGroupMember.databaseTableName)",
-                               uuidColumn: "\(TSGroupMember.columnName(.uuidString))",
+                               uuidColumn: "\(TSGroupMember.columnName(.serviceId))",
                                phoneNumberColumn: "\(TSGroupMember.columnName(.phoneNumber))"),
                 DBTableMapping(databaseTableName: "\(OWSReaction.databaseTableName)",
                                uuidColumn: "\(OWSReaction.columnName(.reactorUUID))",

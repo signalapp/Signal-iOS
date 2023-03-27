@@ -16,7 +16,7 @@ public class TSGroupModelV2: TSGroupModel {
 
     // These properties TSGroupModel, TSGroupModelV2 is intended to be immutable.
     @objc
-    var membership: GroupMembership = GroupMembership.empty
+    var membership: GroupMembership
     @objc
     public var access: GroupAccess = .defaultForV2
     @objc
@@ -89,11 +89,13 @@ public class TSGroupModelV2: TSGroupModel {
 
     @objc
     required public init?(coder aDecoder: NSCoder) {
+        self.membership = .empty
         super.init(coder: aDecoder)
     }
 
     @objc
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
+        self.membership = .empty
         try super.init(dictionary: dictionaryValue)
     }
 

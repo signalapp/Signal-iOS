@@ -18,25 +18,21 @@ public final class TSGroupMember: NSObject, SDSCodableModel {
         case uniqueId
         case groupThreadId
         case phoneNumber
-        case uuidString
+        case serviceId = "uuidString"
         case lastInteractionTimestamp
     }
 
     public var id: Int64?
-    @objc
     public let uniqueId: String
-
-    @objc
-    public let address: SignalServiceAddress
-    @objc
+    public let serviceId: ServiceId?
+    public let phoneNumber: String?
     public let groupThreadId: String
-    @objc
     public private(set) var lastInteractionTimestamp: UInt64
 
-    @objc
-    required public init(address: SignalServiceAddress, groupThreadId: String, lastInteractionTimestamp: UInt64) {
+    required public init(serviceId: ServiceId?, phoneNumber: String?, groupThreadId: String, lastInteractionTimestamp: UInt64) {
         self.uniqueId = UUID().uuidString
-        self.address = address
+        self.serviceId = serviceId
+        self.phoneNumber = phoneNumber
         self.groupThreadId = groupThreadId
         self.lastInteractionTimestamp = lastInteractionTimestamp
     }
@@ -51,28 +47,20 @@ public final class TSGroupMember: NSObject, SDSCodableModel {
 
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
-
         groupThreadId = try container.decode(String.self, forKey: .groupThreadId)
-
-        let uuid = try container.decodeIfPresent(UUID.self, forKey: .uuidString)
-        let phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
-        address = SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
-
+        serviceId = try container.decodeIfPresent(ServiceId.self, forKey: .serviceId)
+        phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
         lastInteractionTimestamp = try container.decode(UInt64.self, forKey: .lastInteractionTimestamp)
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try id.map { try container.encode($0, forKey: .id) }
+        try container.encodeIfPresent(id, forKey: .id)
         try container.encode(recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
-
         try container.encode(groupThreadId, forKey: .groupThreadId)
-
-        try address.uuid.map { try container.encode($0, forKey: .uuidString) }
-        try address.phoneNumber.map { try container.encode($0, forKey: .phoneNumber) }
-
+        try container.encodeIfPresent(serviceId?.uuidValue, forKey: .serviceId)
+        try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)
         try container.encode(lastInteractionTimestamp, forKey: .lastInteractionTimestamp)
     }
 
@@ -89,9 +77,9 @@ public final class TSGroupMember: NSObject, SDSCodableModel {
     public class func groupMember(for address: SignalServiceAddress, in groupThreadId: String, transaction: SDSAnyReadTransaction) -> TSGroupMember? {
         let sql = """
             SELECT * FROM \(databaseTableName)
-            WHERE (\(columnName(.uuidString)) = ? OR \(columnName(.uuidString)) IS NULL)
+            WHERE (\(columnName(.serviceId)) = ? OR \(columnName(.serviceId)) IS NULL)
             AND (\(columnName(.phoneNumber)) = ? OR \(columnName(.phoneNumber)) IS NULL)
-            AND NOT (\(columnName(.uuidString)) IS NULL AND \(columnName(.phoneNumber)) IS NULL)
+            AND NOT (\(columnName(.serviceId)) IS NULL AND \(columnName(.phoneNumber)) IS NULL)
             AND \(columnName(.groupThreadId)) = ?
             LIMIT 1
         """
@@ -116,9 +104,9 @@ public final class TSGroupMember: NSObject, SDSCodableModel {
     ) -> Void) {
         let sql = """
             SELECT * FROM \(databaseTableName)
-            WHERE (\(columnName(.uuidString)) = ? OR \(columnName(.uuidString)) IS NULL)
+            WHERE (\(columnName(.serviceId)) = ? OR \(columnName(.serviceId)) IS NULL)
             AND (\(columnName(.phoneNumber)) = ? OR \(columnName(.phoneNumber)) IS NULL)
-            AND NOT (\(columnName(.uuidString)) IS NULL AND \(columnName(.phoneNumber)) IS NULL)
+            AND NOT (\(columnName(.serviceId)) IS NULL AND \(columnName(.phoneNumber)) IS NULL)
         """
 
         let cursor = try! fetchCursor(
@@ -133,29 +121,12 @@ public final class TSGroupMember: NSObject, SDSCodableModel {
         }
     }
 
-    @objc(groupMembersInGroupThreadId:transaction:)
-    public class func groupMembers(in groupThreadId: String, transaction: SDSAnyReadTransaction) -> [TSGroupMember] {
-        let sql = """
-            SELECT * FROM \(databaseTableName)
-            WHERE \(columnName(.groupThreadId)) = ?
-            ORDER BY \(columnName(.lastInteractionTimestamp)) DESC
-        """
-        let cursor = try! fetchCursor(
-            transaction.unwrapGrdbRead.database,
-            sql: sql,
-            arguments: [groupThreadId]
-        )
-        var members = [TSGroupMember]()
-        while let member = try! cursor.next() {
-            members.append(member)
-        }
-        return members
-    }
-
     @objc
     var addressComponentsDescription: String {
-        SignalServiceAddress.addressComponentsDescription(uuidString: address.uuidString,
-                                                          phoneNumber: address.phoneNumber)
+        SignalServiceAddress.addressComponentsDescription(
+            uuidString: serviceId?.uuidValue.uuidString,
+            phoneNumber: phoneNumber
+        )
     }
 }
 
@@ -167,9 +138,9 @@ public extension TSGroupThread {
                             transaction: SDSAnyReadTransaction) -> [TSGroupThread] {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId)) FROM \(TSGroupMember.databaseTableName)
-            WHERE (\(TSGroupMember.columnName(.uuidString)) = ? OR \(TSGroupMember.columnName(.uuidString)) IS NULL)
+            WHERE (\(TSGroupMember.columnName(.serviceId)) = ? OR \(TSGroupMember.columnName(.serviceId)) IS NULL)
             AND (\(TSGroupMember.columnName(.phoneNumber)) = ? OR \(TSGroupMember.columnName(.phoneNumber)) IS NULL)
-            AND NOT (\(TSGroupMember.columnName(.uuidString)) IS NULL AND \(TSGroupMember.columnName(.phoneNumber)) IS NULL)
+            AND NOT (\(TSGroupMember.columnName(.serviceId)) IS NULL AND \(TSGroupMember.columnName(.phoneNumber)) IS NULL)
             ORDER BY \(TSGroupMember.columnName(.lastInteractionTimestamp)) DESC
         """
 
@@ -200,9 +171,9 @@ public extension TSGroupThread {
     ) {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId)) FROM \(TSGroupMember.databaseTableName)
-            WHERE (\(TSGroupMember.columnName(.uuidString)) = ? OR \(TSGroupMember.columnName(.uuidString)) IS NULL)
+            WHERE (\(TSGroupMember.columnName(.serviceId)) = ? OR \(TSGroupMember.columnName(.serviceId)) IS NULL)
             AND (\(TSGroupMember.columnName(.phoneNumber)) = ? OR \(TSGroupMember.columnName(.phoneNumber)) IS NULL)
-            AND NOT (\(TSGroupMember.columnName(.uuidString)) IS NULL AND \(TSGroupMember.columnName(.phoneNumber)) IS NULL)
+            AND NOT (\(TSGroupMember.columnName(.serviceId)) IS NULL AND \(TSGroupMember.columnName(.phoneNumber)) IS NULL)
             ORDER BY \(TSGroupMember.columnName(.lastInteractionTimestamp)) DESC
         """
 
@@ -230,9 +201,9 @@ public extension TSGroupThread {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId))
             FROM \(TSGroupMember.databaseTableName)
-            WHERE (\(TSGroupMember.columnName(.uuidString)) = ? OR \(TSGroupMember.columnName(.uuidString)) IS NULL)
+            WHERE (\(TSGroupMember.columnName(.serviceId)) = ? OR \(TSGroupMember.columnName(.serviceId)) IS NULL)
             AND (\(TSGroupMember.columnName(.phoneNumber)) = ? OR \(TSGroupMember.columnName(.phoneNumber)) IS NULL)
-            AND NOT (\(TSGroupMember.columnName(.uuidString)) IS NULL AND \(TSGroupMember.columnName(.phoneNumber)) IS NULL)
+            AND NOT (\(TSGroupMember.columnName(.serviceId)) IS NULL AND \(TSGroupMember.columnName(.phoneNumber)) IS NULL)
             ORDER BY \(TSGroupMember.columnName(.lastInteractionTimestamp)) DESC
         """
 
