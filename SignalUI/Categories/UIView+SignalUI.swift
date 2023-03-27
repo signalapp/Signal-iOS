@@ -749,6 +749,15 @@ public extension UIStackView {
         }
     }
 
+    func removeArrangedSubviewsAfter(_ subview: UIView) {
+        guard let subviewIndex = arrangedSubviews.firstIndex(of: subview) else { return }
+
+        let viewsToRemove = arrangedSubviews.suffix(from: subviewIndex.advanced(by: 1))
+        for view in viewsToRemove {
+            removeArrangedSubview(view)
+        }
+    }
+
     var layoutMarginsWidth: CGFloat {
         guard isLayoutMarginsRelativeArrangement else {
             return 0
