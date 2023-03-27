@@ -22,7 +22,7 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
     }
 }
 
-SSKProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationState verificationState)
+static SSKProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationState verificationState)
 {
     switch (verificationState) {
         case OWSVerificationStateDefault:
