@@ -287,8 +287,6 @@ public class RegistrationNavigationController: OWSNavigationController {
             let title: String?
             let message: String
             switch errorSheet {
-            case .sessionInvalidated:
-                fatalError("Unimplemented")
             case .verificationCodeSubmissionUnavailable:
                 fatalError("Unimplemented")
             case .networkError:
@@ -300,7 +298,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                     "REGISTRATION_NETWORK_ERROR_BODY",
                     comment: "A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet."
                 )
-            case .genericError:
+            case .sessionInvalidated, .genericError:
                 title = nil
                 message = CommonStrings.somethingWentWrongTryAgainLaterError
             case .todo:
