@@ -304,10 +304,14 @@ public class RegistrationNavigationController: OWSNavigationController {
             case .todo:
                 fatalError("TODO[Registration] This should be removed")
             }
-            OWSActionSheets.showActionSheet(title: title, message: message) { [weak self] _ in
+            let actionSheet = ActionSheetController(title: title, message: message)
+            actionSheet.addAction(.init(title: CommonStrings.okButton, style: .default, handler: { [weak self] _ in
                 guard let self else { return }
                 self.pushNextController(self.coordinator.nextStep())
-            }
+            }))
+            // We explicitly don't want the user to be able to dismiss.
+            actionSheet.isCancelable = false
+            self.presentActionSheet(actionSheet)
             return nil
         case .appUpdateBanner:
             present(UIAlertController.registrationAppUpdateBanner(), animated: true)

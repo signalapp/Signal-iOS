@@ -408,7 +408,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var isV12faUser: Bool = false
         var unconfirmedPinBlob: RegistrationPinConfirmationBlob?
 
-        // Wehn we try to register, if we get a response from the server
+        // When we try to register, if we get a response from the server
         // telling us device transfer is possible, we set this to true
         // so the user can explicitly opt out if desired and we retry.
         var needsToAskForDeviceTransfer = false
@@ -984,7 +984,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         pinFromUser: String,
         retriesLeft: Int
     ) -> Guarantee<RegistrationStep> {
-        // TODO[Registration] handle error case for rejected e164.
+        // NOTE: it is not possible for our e164 to be rejected here; the entire request
+        // may be rejected for being malformed, but if the e164 is invalidly formatted
+        // that will just look to the server like our reg recovery password is incorrect.
+        // This shouldn't be possible in practice; we get here either by having had an
+        // e164 from a previously registered account on this device, or by getting
+        // confirmation from the auth credential check endpoint that the e164 was good.
         switch response {
         case .success(let identityResponse):
             // We have succeeded! Set the account identity response
@@ -1278,10 +1283,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return self.makeRegisterOrChangeNumberRequestFromSession(session)
         }
 
-        if inMemoryState.needsToAskForDeviceTransfer {
-            return .value(.transferSelection)
-        }
-
         switch persistedState.sessionState?.reglockState ?? .none {
         case .none:
             break
@@ -1319,11 +1320,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
             return .value(.transferSelection)
-        }
-
-        if session.verified {
-            // We have to complete registration.
-            return self.makeRegisterOrChangeNumberRequestFromSession(session)
         }
 
         if let pendingCodeTransport = inMemoryState.pendingCodeTransport {
@@ -2142,9 +2138,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     return self.nextStep()
                 }
-                .recover(on: schedulers.main) { _ -> Guarantee<RegistrationStep> in
-                    // TODO[Registration]: things just fail here? What do we do?
-                    return .value(.showErrorSheet(.todo))
+                .recover(on: schedulers.main) { error -> Guarantee<RegistrationStep> in
+                    Logger.error("Failed to create prekeys: \(error)")
+                    // Note this is undismissable; the user will be on whatever
+                    // screen they were on but with the error sheet atop which retries
+                    // via `nextStep()` when tapped.
+                    return .value(.showErrorSheet(.genericError))
                 }
         }
 

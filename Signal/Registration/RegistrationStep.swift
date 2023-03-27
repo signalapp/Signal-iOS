@@ -82,6 +82,8 @@ public enum RegistrationStep: Equatable {
 
     /// Special cases; should display an error on the current screen, whatever it is.
     /// (If this is returned as the first step, show the splash and then this error).
+    /// This sheet should be undismissable; the user must ack it to proceed, and doing
+    /// so should call `RegistrationCoordinator.nextStep()`
     case showErrorSheet(ErrorSheet)
 
     /// Special case, should display a banner on the current screen, whatever it is.
