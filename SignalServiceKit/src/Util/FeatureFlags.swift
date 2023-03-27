@@ -106,7 +106,7 @@ public class FeatureFlags: BaseFlags {
             return true
         }
         #endif
-        return false
+        return build.includes(.internal)
     }()
 
     public static let canRequestAccountData: Bool = build.includes(.dev)
