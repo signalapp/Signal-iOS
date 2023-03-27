@@ -343,7 +343,7 @@ private class ContentViewForBlur {
             } else {
                 NSLayoutConstraint.deactivate(layoutConstraints)
             }
-            layoutConstraints = titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
+            layoutConstraints = titleLabel.autoPinEdgesToSuperviewEdges(with: innerStackConfig.layoutMargins)
         }
     }
 

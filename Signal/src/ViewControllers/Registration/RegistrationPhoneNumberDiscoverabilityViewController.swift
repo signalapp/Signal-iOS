@@ -128,7 +128,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         footerView.addSubview(continueButton)
 
         continueButton.contentEdgeInsets = Constants.continueButtonEdgeInsets
-        continueButton.autoPinEdgesToSuperviewEdges(withInsets: Constants.continueButtonInsets)
+        continueButton.autoPinEdgesToSuperviewEdges(with: Constants.continueButtonInsets)
 
         return footerView
     }()

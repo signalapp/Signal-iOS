@@ -87,7 +87,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
         footerView.addSubview(continueButton)
 
         continueButton.contentEdgeInsets = Constants.continueButtonEdgeInsets
-        continueButton.autoPinEdgesToSuperviewEdges(withInsets: Constants.continueButtonInsets)
+        continueButton.autoPinEdgesToSuperviewEdges(with: Constants.continueButtonInsets)
 
         return footerView
     }()

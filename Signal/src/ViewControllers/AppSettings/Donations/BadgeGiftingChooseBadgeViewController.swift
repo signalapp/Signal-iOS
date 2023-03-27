@@ -283,7 +283,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             }
 
             cell.contentView.addSubview(currencyPickerButton)
-            currencyPickerButton.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(top: 0, leading: 0, bottom: 12, trailing: 0))
+            currencyPickerButton.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: 12, trailing: 0))
 
             return cell
         }))

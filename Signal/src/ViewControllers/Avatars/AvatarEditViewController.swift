@@ -416,7 +416,7 @@ private class OptionView: UIView {
     func updateSelectionState() {
         colorViewInsetConstraints?.forEach { $0.isActive = false }
         colorViewInsetConstraints = colorView.autoPinEdgesToSuperviewEdges(
-            withInsets: isSelected ? UIEdgeInsets(margin: 4) : .zero
+            with: isSelected ? UIEdgeInsets(margin: 4) : .zero
         )
 
         if isSelected {

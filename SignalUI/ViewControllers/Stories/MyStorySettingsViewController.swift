@@ -100,7 +100,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
             let footerTextView = makeWhoCanViewThisTextView(for: style)
             let footerContainer = UIView()
             footerContainer.addSubview(footerTextView)
-            footerTextView.autoPinEdgesToSuperviewEdges(withInsets: .init(hMargin: 32, vMargin: 16))
+            footerTextView.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 32, vMargin: 16))
             visibilitySection.customFooterView = footerContainer
         }
         contents.addSection(visibilitySection)

@@ -237,7 +237,7 @@ class DonationReceiptViewController: OWSTableViewController2 {
             containerView.backgroundColor = .white
             containerView.isOpaque = true
             containerView.addSubview(stackView)
-            stackView.autoPinEdgesToSuperviewEdges(withInsets: containerMargins)
+            stackView.autoPinEdgesToSuperviewEdges(with: containerMargins)
 
             return containerView
         }

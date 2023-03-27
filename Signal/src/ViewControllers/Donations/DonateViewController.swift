@@ -689,7 +689,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         databaseStorage.read { [weak self] transaction in
             self?.avatarView.update(transaction) { config in
-                guard let address = tsAccountManager.localAddress(with: transaction) else {
+                guard let address = self?.tsAccountManager.localAddress(with: transaction) else {
                     return
                 }
                 config.dataSource = .address(address)

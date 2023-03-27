@@ -1258,7 +1258,7 @@ class MediaPickerThumbnailButton: UIButton {
         placeholderView.clipsToBounds = true
         placeholderView.isUserInteractionEnabled = false
         insertSubview(placeholderView, at: 0)
-        placeholderView.autoPinEdgesToSuperviewEdges(withInsets: contentEdgeInsets)
+        placeholderView.autoPinEdgesToSuperviewEdges(with: contentEdgeInsets)
 
         var authorizationStatus: PHAuthorizationStatus
         if #available(iOS 14, *) {

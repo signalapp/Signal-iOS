@@ -54,7 +54,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         let view = PillView()
         view.backgroundColor = .ows_gray80
         view.addSubview(textField)
-        textField.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(hMargin: 16, vMargin: 7))
+        textField.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(hMargin: 16, vMargin: 7))
         return view
     }()
     private let doneButton: UIButton = {

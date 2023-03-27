@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalMessaging
 import UIKit
 
 @objc
@@ -255,16 +255,6 @@ public extension UIView {
     @discardableResult
     func autoPinWidth(toWidthOf otherView: UIView) -> NSLayoutConstraint {
         return autoMatch(.width, to: .width, of: otherView)
-    }
-
-    @discardableResult
-    func autoPinEdgesToSuperviewEdges(withInsets insets: UIEdgeInsets) -> [NSLayoutConstraint] {
-        [
-            autoPinEdge(toSuperviewEdge: .top, withInset: insets.top),
-            autoPinEdge(toSuperviewEdge: .bottom, withInset: insets.bottom),
-            autoPinEdge(toSuperviewEdge: .left, withInset: insets.left),
-            autoPinEdge(toSuperviewEdge: .right, withInset: insets.right)
-        ]
     }
 
     @discardableResult
