@@ -2067,7 +2067,6 @@
 		F9C5CDEF289453B400548EEE /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF2289453B400548EEE /* NSString+SSK.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB20289453B200548EEE /* NSString+SSK.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDF3289453B400548EEE /* NSArray+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB21289453B200548EEE /* NSArray+OWS.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF4289453B400548EEE /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB22289453B200548EEE /* Currency.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF5289453B400548EEE /* OWSBackupFragment+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB23289453B200548EEE /* OWSBackupFragment+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF6289453B400548EEE /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB24289453B200548EEE /* LRUCache.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2136,7 +2135,6 @@
 		F9C5CE39289453B400548EEE /* BulkProfileFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB68289453B200548EEE /* BulkProfileFetch.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB69289453B200548EEE /* BadgeAssets.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE3B289453B400548EEE /* VersionedProfiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE3C289453B400548EEE /* NSArray+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6B289453B200548EEE /* NSArray+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6C289453B200548EEE /* NSString+SSK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE3F289453B400548EEE /* FunctionalUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6E289453B200548EEE /* FunctionalUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB6F289453B200548EEE /* AppExpiry.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4620,7 +4618,6 @@
 		F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
 		F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRegularExpression+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB20289453B200548EEE /* NSString+SSK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SSK.m"; sourceTree = "<group>"; };
-		F9C5CB21289453B200548EEE /* NSArray+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+OWS.m"; sourceTree = "<group>"; };
 		F9C5CB22289453B200548EEE /* Currency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		F9C5CB23289453B200548EEE /* OWSBackupFragment+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSBackupFragment+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CB24289453B200548EEE /* LRUCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
@@ -4689,7 +4686,6 @@
 		F9C5CB68289453B200548EEE /* BulkProfileFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BulkProfileFetch.swift; sourceTree = "<group>"; };
 		F9C5CB69289453B200548EEE /* BadgeAssets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BadgeAssets.swift; sourceTree = "<group>"; };
 		F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfiles.swift; sourceTree = "<group>"; };
-		F9C5CB6B289453B200548EEE /* NSArray+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+OWS.h"; sourceTree = "<group>"; };
 		F9C5CB6C289453B200548EEE /* NSString+SSK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SSK.h"; sourceTree = "<group>"; };
 		F9C5CB6E289453B200548EEE /* FunctionalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtil.h; sourceTree = "<group>"; };
 		F9C5CB6F289453B200548EEE /* AppExpiry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppExpiry.swift; sourceTree = "<group>"; };
@@ -9059,8 +9055,6 @@
 				F9C5CB2C289453B200548EEE /* MIMETypeUtil.h */,
 				F9C5CB5E289453B200548EEE /* MIMETypeUtil.m */,
 				F9C5CB57289453B200548EEE /* ModelReadCache.swift */,
-				F9C5CB6B289453B200548EEE /* NSArray+OWS.h */,
-				F9C5CB21289453B200548EEE /* NSArray+OWS.m */,
 				D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */,
 				F9C5CB2E289453B200548EEE /* NSData+Image.h */,
 				F9C5CB7E289453B200548EEE /* NSData+Image.m */,
@@ -9337,7 +9331,6 @@
 				F9C5CDFE289453B400548EEE /* MIMETypeUtil.h in Headers */,
 				F9C5CE55289453B400548EEE /* MockSSKEnvironment.h in Headers */,
 				F9C5CCEB289453B300548EEE /* NotificationsProtocol.h in Headers */,
-				F9C5CE3C289453B400548EEE /* NSArray+OWS.h in Headers */,
 				F9C5CE00289453B400548EEE /* NSData+Image.h in Headers */,
 				F9C5CD31289453B300548EEE /* NSData+keyVersionByte.h in Headers */,
 				F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */,
@@ -11795,7 +11788,6 @@
 				F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */,
 				F9C5CE62289453B400548EEE /* NoopNotificationsManager.swift in Sources */,
 				F9C5CE58289453B400548EEE /* NoopPendingReadReceiptRecorder.swift in Sources */,
-				F9C5CDF3289453B400548EEE /* NSArray+OWS.m in Sources */,
 				D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */,
 				F9C5CE4F289453B400548EEE /* NSData+Image.m in Sources */,
 				F9C5CE09289453B400548EEE /* NSData+Image.swift in Sources */,
