@@ -101,7 +101,7 @@ class RegistrationPinViewController: OWSViewController {
 
     // MARK: Internal state
 
-    private var state: RegistrationPinState {
+    public private(set) var state: RegistrationPinState {
         didSet { render() }
     }
 

@@ -212,6 +212,8 @@ public protocol _RegistrationCoordinator_OWS2FAManagerShim {
 
     func pinCode(_ tx: DBReadTransaction) -> String?
 
+    func clearLocalPinCode(_ tx: DBWriteTransaction)
+
     func isReglockEnabled(_ tx: DBReadTransaction) -> Bool
 
     func markPinEnabled(_ pin: String, _ tx: DBWriteTransaction)
@@ -226,6 +228,10 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
 
     public func pinCode(_ tx: DBReadTransaction) -> String? {
         return manager.pinCode(with: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func clearLocalPinCode(_ tx: DBWriteTransaction) {
+        return manager.clearLocalPinCode(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func isReglockEnabled(_ tx: DBReadTransaction) -> Bool {

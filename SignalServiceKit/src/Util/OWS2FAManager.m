@@ -86,10 +86,10 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     return [OWS2FAManager.keyValueStore getString:kOWS2FAManager_PinCode transaction:transaction];
 }
 
-- (void)setPinCode:(nullable NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction
+- (void)setPinCode:(NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (pin.length == 0) {
-        [OWS2FAManager.keyValueStore removeValueForKey:kOWS2FAManager_PinCode transaction:transaction];
+        [self clearLocalPinCodeWithTransaction:transaction];
         return;
     }
 

@@ -2207,6 +2207,7 @@
 		F9CC66C12937B71E002172D0 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
 		F9D289B6291EDC8D00187394 /* DonationJobError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D289B5291EDC8D00187394 /* DonationJobError.swift */; };
 		F9D3122D298C60E1004ED3D9 /* FullTextSearchFinderForObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D3122C298C60E1004ED3D9 /* FullTextSearchFinderForObjC.swift */; };
+		F9D47A4829D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D47A4729D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift */; };
 		F9D5BFCD2979A017001737E5 /* OWSRequestFactory+Spam.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D5BFCC2979A017001737E5 /* OWSRequestFactory+Spam.swift */; };
 		F9D5BFCF2979AFF4001737E5 /* URLPathComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D5BFCE2979AFF4001737E5 /* URLPathComponents.swift */; };
 		F9D5BFD12979B027001737E5 /* URLPathComponentsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D5BFD02979B027001737E5 /* URLPathComponentsTest.swift */; };
@@ -4762,6 +4763,7 @@
 		F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOrphanDataCleaner.swift; sourceTree = "<group>"; };
 		F9D289B5291EDC8D00187394 /* DonationJobError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationJobError.swift; sourceTree = "<group>"; };
 		F9D3122C298C60E1004ED3D9 /* FullTextSearchFinderForObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullTextSearchFinderForObjC.swift; sourceTree = "<group>"; };
+		F9D47A4729D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift; sourceTree = "<group>"; };
 		F9D5BFCC2979A017001737E5 /* OWSRequestFactory+Spam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+Spam.swift"; sourceTree = "<group>"; };
 		F9D5BFCE2979AFF4001737E5 /* URLPathComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLPathComponents.swift; sourceTree = "<group>"; };
 		F9D5BFD02979B027001737E5 /* URLPathComponentsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLPathComponentsTest.swift; sourceTree = "<group>"; };
@@ -5050,6 +5052,7 @@
 				F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */,
 				F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */,
 				66AAC2C929CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift */,
+				F9D47A4729D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift */,
 				F9E3006029A02D8800DCA219 /* RegistrationPinViewController.swift */,
 				F9EECB00299EC9D8005FDD52 /* RegistrationProfileViewController.swift */,
 				F9440E7129C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift */,
@@ -11427,6 +11430,7 @@
 				F9198485299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift in Sources */,
 				F95A64F529959065007FDBDF /* RegistrationPhoneNumberViewController.swift in Sources */,
 				66AAC2CA29CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift in Sources */,
+				F9D47A4829D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift in Sources */,
 				F9E3006129A02D8800DCA219 /* RegistrationPinViewController.swift in Sources */,
 				F9EECB01299EC9D8005FDD52 /* RegistrationProfileViewController.swift in Sources */,
 				F9440E7229C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift in Sources */,

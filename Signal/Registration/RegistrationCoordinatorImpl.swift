@@ -236,9 +236,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             $0.hasSkippedPinEntry = true
                         }
                         deps.kbs.clearKeys(transaction: tx)
+                        deps.ows2FAManager.clearLocalPinCode(tx)
                     }
+                    inMemoryState.pinFromUser = nil
+                    inMemoryState.pinFromDisk = nil
                     self.wipeInMemoryStateToPreventKBSPathAttempts()
-                    return .value(.showErrorSheet(.pinGuessesExhausted))
+                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin)
                 } else {
                     let remainingAttempts = Constants.maxLocalPINGuesses - numberOfWrongGuesses
                     return .value(.pinEntry(RegistrationPinState(
@@ -507,6 +510,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// they have backups post-registration). This skip applies to _all_ of these; if they
         /// skipped the PIN early on, we won't ask for it again for recovery purposes later.
         var hasSkippedPinEntry = false
+
+        /// Have you exhausted your KBS backup attempts? This can happen if you blow through your
+        /// PIN guesses.
+        var hasExhaustedKBSRestoreAttempts = false
 
         struct SessionState: Codable {
             let sessionId: String
@@ -1144,7 +1151,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             $0.hasSkippedPinEntry = true
                         }
                     }
-                    return .value(.showErrorSheet(.pinGuessesExhausted))
+                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin)
                 case .networkError:
                     if retriesLeft > 0 {
                         return self.restoreKBSMasterSecretForAuthCredentialPath(
@@ -2067,7 +2074,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                         }
                     }
-                    return .value(.showErrorSheet(.pinGuessesExhausted))
+                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin)
                 case .networkError:
                     if retriesLeft > 0 {
                         return self.restoreKBSMasterSecretForSessionPathReglock(
@@ -2275,7 +2282,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // returns nil if no steps needed.
     private func performKBSBackupStepsIfNeeded(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep>? {
-        let isRestoringPinBackup = accountIdentity.hasPreviouslyUsedKBS
+        let isRestoringPinBackup: Bool = (
+            accountIdentity.hasPreviouslyUsedKBS &&
+            !persistedState.hasExhaustedKBSRestoreAttempts
+        )
 
         if !persistedState.hasSkippedPinEntry {
             guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
@@ -2355,8 +2365,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .backupMissing:
                     // If we are unable to talk to KBS, it got wiped and we can't
                     // recover. Keep going like if nothing happened.
+                    self.inMemoryState.pinFromUser = nil
                     self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
-                    return .value(.showErrorSheet(.pinGuessesExhausted))
+                    self.db.write { tx in
+                        self.updatePersistedState(tx) { $0.hasExhaustedKBSRestoreAttempts = true }
+                    }
+                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin)
                 case .networkError:
                     if retriesLeft > 0 {
                         return self.restoreKBSBackupPostRegistration(

@@ -772,7 +772,7 @@ public class Deprecated_OnboardingController: NSObject {
             SDSDatabaseStorage.shared.write { transaction in
                 context.keyBackupService.clearKeys(transaction: transaction.asV2Write)
                 self.ows2FAManager.markRegistrationLockV2Disabled(transaction: transaction)
-                self.ows2FAManager.setPinCode(nil, transaction: transaction)
+                self.ows2FAManager.clearLocalPinCode(transaction: transaction)
             }
 
             completion(.invalid2FAPin)

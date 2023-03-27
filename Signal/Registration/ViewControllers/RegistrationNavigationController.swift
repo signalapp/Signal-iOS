@@ -223,10 +223,30 @@ public class RegistrationNavigationController: OWSNavigationController {
                 make: { presenter in
                     return RegistrationPinViewController(state: state, presenter: presenter)
                 },
-                update: { controller in
-                    controller.updateState(state)
-                    return nil
+                update: { [weak self] controller in
+                    switch (controller.state.operation, state.operation) {
+                    case
+                        (.creatingNewPin, .creatingNewPin),
+                        (.confirmingNewPin, .confirmingNewPin),
+                        (.enteringExistingPin, .enteringExistingPin):
+                        controller.updateState(state)
+                        return nil
+                    default:
+                        guard let self else { return nil }
+                        return RegistrationPinViewController(state: state, presenter: self)
+                    }
                 }
+            )
+        case .pinAttemptsExhaustedAndMustCreateNewPin:
+            return Controller(
+                type: RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.self,
+                make: { presenter in
+                    return RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController(
+                        presenter: presenter
+                    )
+                },
+                // No state to update.
+                update: nil
             )
         case .captchaChallenge:
             return Controller(
@@ -270,8 +290,6 @@ public class RegistrationNavigationController: OWSNavigationController {
             case .sessionInvalidated:
                 fatalError("Unimplemented")
             case .verificationCodeSubmissionUnavailable:
-                fatalError("Unimplemented")
-            case .pinGuessesExhausted:
                 fatalError("Unimplemented")
             case .networkError:
                 title = OWSLocalizedString(
@@ -414,6 +432,12 @@ extension RegistrationNavigationController: RegistrationPinPresenter {
 
     func submitWithSkippedPin() {
         pushNextController(coordinator.skipPINCode())
+    }
+}
+
+extension RegistrationNavigationController: RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter {
+    func acknowledgePinGuessesExhausted() {
+        pushNextController(coordinator.nextStep())
     }
 }
 

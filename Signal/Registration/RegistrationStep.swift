@@ -37,6 +37,10 @@ public enum RegistrationStep: Equatable {
     /// considered part of this same "step" and is just a UI detail.
     case pinEntry(RegistrationPinState)
 
+    /// All PIN attempts have been exhausted. The user can still register,
+    /// but their KBS data should be wiped.
+    case pinAttemptsExhaustedAndMustCreateNewPin
+
     /// At _any_ point during session-based registration, a captcha challenge may be
     /// requested.
     case captchaChallenge
@@ -67,9 +71,6 @@ public enum RegistrationStep: Equatable {
         /// or because they used up their verification code attempts.
         /// In either case, they need to send a new code to proceed.
         case verificationCodeSubmissionUnavailable
-        /// All PIN guesses have been exhausted, locking the user out
-        /// of their KBS backups.
-        case pinGuessesExhausted
         /// A network error occurred. The user can probably fix this by
         /// checking their internet connection.
         case networkError

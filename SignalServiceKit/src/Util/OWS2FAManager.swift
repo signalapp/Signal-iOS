@@ -217,6 +217,11 @@ extension OWS2FAManager {
         return allTheSame || forwardSequential || reverseSequential
     }
 
+    @objc
+    public func clearLocalPinCode(transaction: SDSAnyWriteTransaction) {
+        Self.keyValueStore().removeValue(forKey: kOWS2FAManager_PinCode, transaction: transaction)
+    }
+
     // MARK: - KeyBackupService Wrappers/Helpers
 
     @objc

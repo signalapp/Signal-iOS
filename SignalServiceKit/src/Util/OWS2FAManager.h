@@ -11,6 +11,7 @@ extern const NSUInteger kMin2FAPinLength;
 extern const NSUInteger kMin2FAv2PinLength;
 extern const NSUInteger kMax2FAv1PinLength;
 extern const NSUInteger kLegacyTruncated2FAv1PinLength;
+extern NSString *const kOWS2FAManager_PinCode;
 
 typedef void (^OWS2FASuccess)(void);
 typedef void (^OWS2FAFailure)(NSError *error);
@@ -34,7 +35,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
 
 @property (nullable, nonatomic, readonly) NSString *pinCode;
 - (nullable NSString *)pinCodeWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (void)setPinCode:(nullable NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) OWS2FAMode mode;
 @property (nonatomic, readonly) NSTimeInterval repetitionInterval;
