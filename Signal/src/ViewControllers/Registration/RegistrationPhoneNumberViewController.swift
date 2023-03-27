@@ -253,7 +253,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 ),
                 handler: { [weak self] _ in
                     guard let self else { return }
-                    let vc = ProxySettingsViewController()
+                    let vc = ProxySettingsViewController(shouldWaitForWebsocketOnSave: false)
                     self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
                 }
             )

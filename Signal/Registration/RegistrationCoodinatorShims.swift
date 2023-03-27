@@ -361,7 +361,7 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
     }
 
     public func requestPushToken() -> Guarantee<String?> {
-        return manager.requestPushTokens(forceRotation: false)
+        return manager.requestPushTokens(forceRotation: false, timeOutEventually: true)
             .map { $0.0 }
             .recover { _ in return .value(nil) }
     }

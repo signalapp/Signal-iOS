@@ -9,6 +9,20 @@ import SignalMessaging
 class ProxySettingsViewController: OWSTableViewController2 {
     private var useProxy = SignalProxy.useProxy
 
+    // TODO[Registration]: We should have some alternative way to check
+    // that the proxy actually works, maybe a health check request via REST?
+    // For now this is no worse than it was before.
+    /// Whether we should wait for a websocket to reconnect, or fail to do so,
+    /// when saving proxy info.
+    /// Might be false, for example, if setting up proxy info before any websocket
+    /// connections are established, e.g. during registration.
+    private let shouldWaitForWebsocketOnSave: Bool
+
+    public init(shouldWaitForWebsocketOnSave: Bool = true) {
+        self.shouldWaitForWebsocketOnSave = shouldWaitForWebsocketOnSave
+        super.init()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -187,9 +201,14 @@ class ProxySettingsViewController: OWSTableViewController2 {
             return
         }
 
+        guard shouldWaitForWebsocketOnSave else {
+            self.dismiss(animated: true)
+            return
+        }
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-            ProxyConnectionChecker.checkConnectionAndNotify { connected in
-                modal.dismiss {
+            ProxyConnectionChecker.checkConnectionAndNotify { [weak self] connected in
+                modal.dismiss { [weak self] in
+                    guard let self else { return }
                     if connected {
                         if self.navigationController?.viewControllers.count == 1 {
                             self.presentingViewController?.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
