@@ -75,6 +75,56 @@ public extension TSAccountManager {
         return OWSAccountIdFinder.accountId(forAddress: localAddress, transaction: transaction)
     }
 
+    @objc
+    func storeLocalNumber(
+        _ newLocalNumber: String,
+        aci newAci: ServiceIdObjC,
+        pni newPni: ServiceIdObjC?,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        func setIdentifier(_ newValue: String, for key: String) {
+            let oldValue = keyValueStore.getString(key, transaction: transaction)
+            if oldValue != newValue {
+                Logger.info("\(key): \(oldValue ?? "nil") -> \(newValue)")
+            }
+            keyValueStore.setString(newValue, key: key, transaction: transaction)
+        }
+
+        do {
+            objc_sync_enter(self)
+            defer { objc_sync_exit(self) }
+
+            setIdentifier(newLocalNumber, for: TSAccountManager_RegisteredNumberKey)
+            setIdentifier(newAci.uuidValue.uuidString, for: TSAccountManager_RegisteredUUIDKey)
+            if let newPni {
+                setIdentifier(newPni.uuidValue.uuidString, for: TSAccountManager_RegisteredPNIKey)
+            }
+
+            keyValueStore.setDate(Date(), key: TSAccountManager_RegistrationDateKey, transaction: transaction)
+            keyValueStore.removeValue(forKey: TSAccountManager_IsDeregisteredKey, transaction: transaction)
+            keyValueStore.removeValue(forKey: TSAccountManager_ReregisteringPhoneNumberKey, transaction: transaction)
+            keyValueStore.removeValue(forKey: TSAccountManager_ReregisteringUUIDKey, transaction: transaction)
+
+            // Discard sender certificates whenever local phone number changes.
+            udManager.removeSenderCertificates(transaction: transaction)
+            identityManager.clearShouldSharePhoneNumberForEveryone(transaction: transaction)
+            versionedProfiles.clearProfileKeyCredentials(transaction: transaction)
+            groupsV2.clearTemporalCredentials(transaction: transaction)
+
+            // PNI TODO: Regenerate our PNI identity key and pre-keys.
+
+            loadAccountState(with: transaction)
+
+            phoneNumberAwaitingVerification = nil
+            uuidAwaitingVerification = nil
+            pniAwaitingVerification = nil
+        }
+
+        let localAddress = SignalServiceAddress(uuid: newAci.uuidValue, phoneNumber: newLocalNumber, ignoreCache: true)
+        let localRecipient = SignalRecipient.fetchOrCreate(for: localAddress, trustLevel: .high, transaction: transaction)
+        localRecipient.markAsRegistered(transaction: transaction)
+    }
+
     // MARK: - Account Attributes & Capabilities
 
     private static var aciRegistrationIdKey: String { "TSStorageLocalRegistrationId" }

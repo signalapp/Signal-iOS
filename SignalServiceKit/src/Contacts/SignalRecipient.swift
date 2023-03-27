@@ -29,11 +29,6 @@ extension SignalRecipient {
         }
     }
 
-    @objc
-    public func markAsRegisteredWithLocalSource(transaction: SDSAnyWriteTransaction) {
-        markAsRegistered(transaction: transaction)
-    }
-
     public func markAsRegistered(
         source: SignalRecipientSource = .local,
         deviceId: UInt32 = OWSDevicePrimaryDeviceId,

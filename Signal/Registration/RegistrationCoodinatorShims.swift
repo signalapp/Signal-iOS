@@ -565,7 +565,7 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
         _ tx: DBWriteTransaction
     ) {
         manager.didRegisterPrimary(
-            withE164: e164.stringValue,
+            withE164: E164ObjC(e164),
             aci: aci,
             pni: pni,
             authToken: authToken,
