@@ -1895,9 +1895,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 return self.nextStep()
             case .rejectedArgument(let session):
-                // TODO[Registration] invalid captcha token; show error
                 self.db.write { self.processSession(session, $0) }
-                return self.nextStep()
+                return .value(.showErrorSheet(.genericError))
             case .disallowed(let session):
                 Logger.warn("Disallowed to complete a challenge which should be impossible.")
                 // Don't keep trying to send a code.

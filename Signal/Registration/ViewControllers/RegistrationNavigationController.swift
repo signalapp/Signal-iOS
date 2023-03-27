@@ -254,8 +254,13 @@ public class RegistrationNavigationController: OWSNavigationController {
                 make: { presenter in
                     return RegistrationCaptchaViewController(presenter: presenter)
                 },
-                // No state to update.
-                update: nil
+                update: { [weak self] _ in
+                    guard let self else {
+                        return nil
+                    }
+                    // Show a fresh captcha controller if we get repeated captcha requests.
+                    return RegistrationCaptchaViewController(presenter: self)
+                }
             )
         case .setupProfile(let state):
             return Controller(
