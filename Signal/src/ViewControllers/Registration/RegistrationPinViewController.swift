@@ -487,11 +487,18 @@ class RegistrationPinViewController: OWSViewController {
         case nil:
             break
         case .wrongPin:
-            // TODO[Registration] Show a special string if you only have 1 attempt remaining
-            pinValidationLabel.text = OWSLocalizedString(
-                "ONBOARDING_2FA_INVALID_PIN",
-                comment: "Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view."
-            )
+            switch remainingAttempts {
+            case 1:
+                pinValidationLabel.text = OWSLocalizedString(
+                    "ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT",
+                    comment: "Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt"
+                )
+            default:
+                pinValidationLabel.text = OWSLocalizedString(
+                    "ONBOARDING_2FA_INVALID_PIN",
+                    comment: "Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view."
+                )
+            }
             newViewsAtTheBottom.append(pinValidationLabel)
         }
         pinValidationLabel.textColor = .ows_accentRed
