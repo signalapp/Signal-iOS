@@ -370,16 +370,8 @@ class RegistrationPinViewController: OWSViewController {
         switch pinCharacterSet {
         case .digitsOnly:
             pinTextField.keyboardType = .numberPad
-            togglePinCharacterSetButton.setTitle(title: OWSLocalizedString(
-                "PIN_CREATION_CREATE_ALPHANUMERIC",
-                comment: "Button asking if the user would like to create an alphanumeric PIN"
-            ))
         case .alphanumeric:
             pinTextField.keyboardType = .default
-            togglePinCharacterSetButton.setTitle(title: OWSLocalizedString(
-                "PIN_CREATION_CREATE_NUMERIC",
-                comment: "Button asking if the user would like to create an numeric PIN"
-            ))
         }
         if previousKeyboardType != pinTextField.keyboardType {
             pinTextField.reloadInputViews()
@@ -435,11 +427,19 @@ class RegistrationPinViewController: OWSViewController {
                 "PIN_CREATION_NUMERIC_HINT",
                 comment: "Label indicating the user must use at least 4 digits"
             )
+            togglePinCharacterSetButton.setTitle(title: OWSLocalizedString(
+                "PIN_CREATION_CREATE_ALPHANUMERIC",
+                comment: "Button asking if the user would like to create an alphanumeric PIN"
+            ))
         case .alphanumeric:
             pinValidationLabel.text = OWSLocalizedString(
                 "PIN_CREATION_ALPHANUMERIC_HINT",
                 comment: "Label indicating the user must use at least 4 characters"
             )
+            togglePinCharacterSetButton.setTitle(title: OWSLocalizedString(
+                "PIN_CREATION_CREATE_NUMERIC",
+                comment: "Button asking if the user would like to create an numeric PIN"
+            ))
         }
         pinValidationLabel.textColor = .colorForRegistrationExplanationLabel
 
@@ -497,6 +497,19 @@ class RegistrationPinViewController: OWSViewController {
         pinValidationLabel.textColor = .ows_accentRed
 
         needHelpWithExistingPinButton.setTitleColor(Theme.accentBlueColor)
+
+        switch pinCharacterSet {
+        case .digitsOnly:
+            togglePinCharacterSetButton.setTitle(title: OWSLocalizedString(
+                "ONBOARDING_2FA_ENTER_ALPHANUMERIC",
+                comment: "Button asking if the user would like to enter an alphanumeric PIN"
+            ))
+        case .alphanumeric:
+            togglePinCharacterSetButton.setTitle(title: OWSLocalizedString(
+                "ONBOARDING_2FA_ENTER_NUMERIC",
+                comment: "Button asking if the user would like to enter an numeric PIN"
+            ))
+        }
 
         replaceViewsAfterTextField(with: [
             pinValidationLabel,
