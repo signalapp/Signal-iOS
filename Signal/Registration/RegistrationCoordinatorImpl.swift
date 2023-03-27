@@ -2184,9 +2184,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         guard let self else {
                             return unretainedSelfError()
                         }
-                        guard error == nil else {
-                            // TODO[Registration]: should we differentiate errors?
-                            return .value(.showErrorSheet(.todo))
+                        if let error {
+                            return .value(.showErrorSheet(
+                                error.isNetworkFailureOrTimeout ? .networkError : .genericError
+                            ))
                         }
                         self.inMemoryState.hasProfileName = true
                         self.inMemoryState.pendingProfileInfo = nil
