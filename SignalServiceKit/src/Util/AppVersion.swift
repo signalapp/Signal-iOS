@@ -6,6 +6,17 @@
 import Foundation
 
 extension AppVersion {
+    // MARK: - Properties
+
+    public static var hardwareInfoString: String {
+        let marketingString = UIDevice.current.model
+        let machineString = String(sysctlKey: "hw.machine") ?? "nil"
+        let modelString = String(sysctlKey: "hw.model") ?? "nil"
+        return "\(marketingString) (\(machineString); \(modelString))"
+    }
+
+    // MARK: - Startup logging
+
     @objc
     func startupLogging() {
         Logger.info("firstAppVersion: \(firstAppVersion)")

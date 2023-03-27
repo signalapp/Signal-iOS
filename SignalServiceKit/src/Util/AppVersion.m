@@ -46,14 +46,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     return instance;
 }
 
-+ (NSString *)hardwareInfoString
-{
-    NSString *marketingString = UIDevice.currentDevice.model;
-    NSString *machineString = [NSString stringFromSysctlKey:@"hw.machine"];
-    NSString *modelString = [NSString stringFromSysctlKey:@"hw.model"];
-    return [NSString stringWithFormat:@"%@ (%@; %@)", marketingString, machineString, modelString];
-}
-
 + (NSString *)iOSVersionString
 {
     NSString *majorMinor = UIDevice.currentDevice.systemVersion;

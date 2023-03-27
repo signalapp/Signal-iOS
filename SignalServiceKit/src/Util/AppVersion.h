@@ -8,7 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AppVersion : NSObject
 
 // These properties are global and available immediately
-@property (class, atomic, readonly) NSString *hardwareInfoString;
 @property (class, atomic, readonly) NSString *iOSVersionString;
 
 // The properties are updated immediately after launch.
