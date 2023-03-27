@@ -1984,11 +1984,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return .value(.showErrorSheet(.sessionInvalidated))
             case .serverFailure(let failureResponse):
                 if failureResponse.isPermanent {
-                    // TODO[Registration] show something special here.
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.genericError))
                 } else {
-                    // TODO[Registration] show some particular error here.
-                    return .value(.showErrorSheet(.todo))
+                    return .value(.showErrorSheet(.networkError))
                 }
             case .retryAfterTimeout(let session):
                 self.db.write { self.processSession(session, $0) }
