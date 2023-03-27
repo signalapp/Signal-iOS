@@ -103,7 +103,9 @@ class RegistrationPinViewController: OWSViewController {
 
     // MARK: Internal state
 
-    public let state: RegistrationPinState
+    private var state: RegistrationPinState {
+        didSet { render() }
+    }
 
     private weak var presenter: RegistrationPinPresenter?
 
@@ -116,6 +118,10 @@ class RegistrationPinViewController: OWSViewController {
     private var canSubmit: Bool { pin.count >= kMin2FAv2PinLength }
 
     private var previouslyWarnedAboutAttemptCount: UInt?
+
+    public func updateState(_ state: RegistrationPinState) {
+        self.state = state
+    }
 
     // MARK: Rendering
 

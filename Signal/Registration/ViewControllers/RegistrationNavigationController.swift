@@ -223,19 +223,9 @@ public class RegistrationNavigationController: OWSNavigationController {
                 make: { presenter in
                     return RegistrationPinViewController(state: state, presenter: presenter)
                 },
-                update: { [weak self] oldController in
-                    // TODO[Registration]: apply updates to state.
-                    switch (oldController.state.operation, state.operation) {
-                    case (.confirmingNewPin, .confirmingNewPin):
-                        return nil
-                    case (.creatingNewPin, .creatingNewPin):
-                        return nil
-                    case (.enteringExistingPin, .enteringExistingPin):
-                        return nil
-                    default:
-                        guard let self else { return nil }
-                        return RegistrationPinViewController(state: state, presenter: self)
-                    }
+                update: { controller in
+                    controller.updateState(state)
+                    return nil
                 }
             )
         case .captchaChallenge:
