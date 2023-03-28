@@ -2329,7 +2329,10 @@ public class GRDBSchemaMigrator: NSObject {
                 guard let groupThread = thread as? TSGroupThread else {
                     owsFail("Unexpected thread type \(thread)")
                 }
-                let interactionFinder = InteractionFinder(threadUniqueId: groupThread.uniqueId)
+
+                let groupThreadId = groupThread.uniqueId
+                let interactionFinder = InteractionFinder(threadUniqueId: groupThreadId)
+
                 groupThread.groupMembership.fullMembers.forEach { address in
                     // Group member addresses are low-trust, and the address cache has
                     // not been populated yet at this point in time. We want to record
@@ -2337,6 +2340,17 @@ public class GRDBSchemaMigrator: NSObject {
                     // so defer to the address from the signal recipient (if one exists)
                     let recipient = GRDBSignalRecipientFinder().signalRecipient(for: address, transaction: transaction)
                     let memberAddress = recipient?.address ?? address
+
+                    guard TSGroupMember.groupMember(
+                        for: memberAddress,
+                        in: groupThreadId,
+                        transaction: transaction.asAnyWrite
+                    ) == nil else {
+                        // If we already have a group member populated, for
+                        // example from an earlier data migration, we should
+                        // _not_ try and insert.
+                        return
+                    }
 
                     let latestInteraction = interactionFinder.latestInteraction(from: memberAddress, transaction: transaction.asAnyWrite)
                     let memberRecord = TSGroupMember(
