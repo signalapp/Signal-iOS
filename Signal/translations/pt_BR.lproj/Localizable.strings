@@ -4784,13 +4784,13 @@
 "PIN_CREATION_EXPLANATION" = "O PIN mantém criptografadas as informações armazenadas no Signal, de modo que somente você possa acessá-las. Seu perfil, configurações e contatos serão restaurados quando você reinstalar. Você não precisará do PIN para abrir o app.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Mais sobre PINs";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "PINs keep your information stored with Signal encrypted so only you can access it. Your profile, settings and contacts will restore when you reinstall.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "Os PINs mantêm suas informações armazenadas com criptografia do Signal, assim, só você pode acessar. Seu perfil, configurações e contatos serão restaurados quando você reinstalar.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "About Signal PINs";
+"PIN_CREATION_LEARN_MORE_TITLE" = "Sobre os PINs do Signal";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINs não coincidem. Tente novamente.";
@@ -4847,7 +4847,7 @@
 "PIN_DISABLE_ERROR_TITLE" = "Falha ao Desabilitar PIN";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
-"PIN_ENTER_EXISTING_SKIP" = "Skip PIN";
+"PIN_ENTER_EXISTING_SKIP" = "Ignorar PIN";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "Criação do PIN falhou";
@@ -5321,7 +5321,7 @@
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Uma conta anteriormente registrada com este número está disponível para transferência.";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "The code you entered is not valid. Please resend the code and try again.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "O código que você inseriu é inválido. Reenvie o código e tente novamente.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Falha ao verificar";
@@ -5372,10 +5372,10 @@
 "REREGISTER_FOR_PUSH" = "Reiniciar o envio de notificações";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Você tem %1$@ restante(s). Se suas tentativas acabarem, você poderá criar um novo PIN. Você pode se cadastrar e usar sua conta, mas perderá algumas configurações salvas, como suas informações de perfil.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, your account will be locked for 7 days. After 7 days of inactivity, you can re-register without your PIN. All content will be deleted.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Você tem %1$@ restante(s). Se você esgotar suas tentativas, sua conta será bloqueada por 7 dias. Após 7 dias de inatividade, você poderá se cadastrar novamente com seu PIN. Todo conteúdo será excluído.";
 
 /* Configure reactions reset button text */
 "RESET" = "Redefinir";

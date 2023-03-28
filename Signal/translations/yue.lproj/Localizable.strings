@@ -4784,13 +4784,13 @@
 "PIN_CREATION_EXPLANATION" = "有 PIN 碼，儲存喺 Signal 嘅資訊就安心加密，淨係得您先接觸到。當您重新裝過 Signal 嘅時候，您嘅個人資料、設定同埋聯絡人亦都可以還原。平時開啟個 app 就唔需要用到您個 PIN 碼。";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "More About PINs";
+"PIN_CREATION_LEARN_MORE" = "PIN 碼知多啲";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "PINs keep your information stored with Signal encrypted so only you can access it. Your profile, settings and contacts will restore when you reinstall.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "PIN 碼可以確保你喺 Signal 儲存嘅資料受到加密保護，淨係得你先睇到。當你重新安裝返 Signal 之後，你嘅個人檔案、設定同埋聯絡人都可以還原。";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "About Signal PINs";
+"PIN_CREATION_LEARN_MORE_TITLE" = "關於 Signal PIN 碼";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN 碼唔夾。請再試一次。";
@@ -4847,7 +4847,7 @@
 "PIN_DISABLE_ERROR_TITLE" = "PIN 碼停用唔到";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
-"PIN_ENTER_EXISTING_SKIP" = "Skip PIN";
+"PIN_ENTER_EXISTING_SKIP" = "略過 PIN 碼";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "PIN 碼建立唔到";
@@ -5321,7 +5321,7 @@
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "呢個冧把先前註冊咗個帳戶，可以轉移。";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "The code you entered is not valid. Please resend the code and try again.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "你輸入嘅驗證碼無效。請重新傳送驗證碼，然後再試過啦。";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "驗證失敗";
@@ -5372,10 +5372,10 @@
 "REREGISTER_FOR_PUSH" = "重新註冊推送通知";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "你仲有 %1$@。如果已經用晒所有機會嘅話，你可以建立一個新嘅 PIN 碼。你可以註冊同使用帳戶，但係就會冇咗之前儲存咗嘅設定，例如你嘅個人檔案資料。";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, your account will be locked for 7 days. After 7 days of inactivity, you can re-register without your PIN. All content will be deleted.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "你仲有 %1$@。用晒所有機會之後，你嘅帳戶就會被鎖定 7 日。閒置 7 日之後，你可以喺冇 PIN 碼嘅情況下重新註冊，但所有內容都會刪除晒。";
 
 /* Configure reactions reset button text */
 "RESET" = "重設";

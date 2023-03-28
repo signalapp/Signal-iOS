@@ -1232,11 +1232,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d attempt</string>
+			<string>%1$d încercare</string>
 			<key>few</key>
-			<string>%1$d attempts</string>
+			<string>%1$d încercări</string>
 			<key>other</key>
-			<string>%1$d attempts</string>
+			<string>%1$d de încercări</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

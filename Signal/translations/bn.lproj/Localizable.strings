@@ -4784,13 +4784,13 @@
 "PIN_CREATION_EXPLANATION" = "পিনগুলি এনক্রিপ্ট করা Signal-এর সাথে তথ্য সঞ্চয় করে রাখে যাতে কেবলমাত্র আপনিই সেগুলি পড়তে পারেন। আপনি পুনরায় ইনস্টল করার পর আপনার প্রোফাইল, সেটিংস ও কন্ট্যাক্টগুলি পুনর্বহাল হবে। অ্যাপটি চালু করতে আপনার পিনের দরকার হবে না।";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "More About PINs";
+"PIN_CREATION_LEARN_MORE" = "পিন সম্পর্কে আরো তথ্য";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "PINs keep your information stored with Signal encrypted so only you can access it. Your profile, settings and contacts will restore when you reinstall.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "পিন Signal এনক্রিপ্টেড অবস্থায় আপনার তথ্য সংরক্ষিত রাখে, যাতে শুধুমাত্র আপনিই এতে অ্যাক্সেস করতে পারেবেন। আপনি যখন পুনরায় ইনস্টল করবেন তখন আপনার প্রোফাইল, সেটিংস এবং কন্টাক্ট পুনর্বহাল করা হবে।";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "About Signal PINs";
+"PIN_CREATION_LEARN_MORE_TITLE" = "Signal পিন সম্পর্কে তথ্য";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "পিনগুলি মেলে না। আবার চেষ্টা করুন।";
@@ -4847,7 +4847,7 @@
 "PIN_DISABLE_ERROR_TITLE" = "পিন নিষ্ক্রিয়করণ ব্যর্থ হয়েছে";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
-"PIN_ENTER_EXISTING_SKIP" = "Skip PIN";
+"PIN_ENTER_EXISTING_SKIP" = "পিন এড়িয়ে যান";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "পিন তৈরি করতে ব্যর্থ হয়েছে";
@@ -5321,7 +5321,7 @@
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "এই নম্বরে আগে নিবন্ধিত একটি অ্যাকাউন্ট ছিল যা স্থানান্তরের জন্য সহজলভ্য";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "The code you entered is not valid. Please resend the code and try again.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "আপনি যে কোডটি লিখেছেন তা কার্যকর নয়। অনুগ্রহ করে কোডটি আবার পাঠান এবং আবার চেষ্টা করুন।";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "যাচাইকরন ব্যর্থ";
@@ -5372,10 +5372,10 @@
 "REREGISTER_FOR_PUSH" = "পুশ নোটিফিকেশন পুনরায় রেজিস্টার করুন";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "আপনার %1$@টি চেষ্টা বাকি আছে। আপনার চেষ্টার সংখ্যা যদি ফুরিয়ে যায়, তবে আপনি একটি নতুন পিন তৈরি করতে পারবেন। আপনি আপনার অ্যাকাউন্ট নিবন্ধন করতে ও ব্যবহার করতে পারবেন, তবে আপনি আপনার প্রোফাইলের তথ্যের মতো কিছু সংরক্ষিত সেটিংস হারাবেন।";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, your account will be locked for 7 days. After 7 days of inactivity, you can re-register without your PIN. All content will be deleted.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "আপনার %1$@টি চেষ্টা বাকি আছে। আপনার চেষ্টার সংখ্যা যদি ফুরিয়ে যায়, তবে আপনার একাউন্ট 7 দিনের জন্য লক থাকবে। 7 দিন নিষ্ক্রিয় থাকার পর, আপনি আপনার পিন ছাড়াই পুনরায় নিবন্ধন করতে পারবেন। সব কন্টেন্ট মুছে ফেলা হবে।";
 
 /* Configure reactions reset button text */
 "RESET" = "রিসেট করুন";
