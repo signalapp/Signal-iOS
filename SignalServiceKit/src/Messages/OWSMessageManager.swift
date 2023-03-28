@@ -190,6 +190,54 @@ extension OWSMessageManager {
     }
 
     @objc
+    func handleIncomingSyncRequest(_ request: SSKProtoSyncMessageRequest, transaction: SDSAnyWriteTransaction) {
+        guard tsAccountManager.isRegisteredPrimaryDevice else {
+            // Don't respond to sync requests from a linked device.
+            return
+        }
+        switch request.type {
+        case .contacts:
+            // We respond asynchronously because populating the sync message will
+            // create transactions and it's not practical (due to locking in the
+            // OWSIdentityManager) to plumb our transaction through.
+            //
+            // In rare cases this means we won't respond to the sync request, but
+            // that's acceptable.
+            let pendingTask = Self.buildPendingTask(label: "syncAllContacts")
+            DispatchQueue.global().async {
+                self.syncManager.syncAllContacts().ensure(on: DispatchQueue.global()) {
+                    pendingTask.complete()
+                }.catch(on: DispatchQueue.global()) { error in
+                    Logger.error("Error: \(error)")
+                }
+            }
+
+        case .groups:
+            let pendingTask = Self.buildPendingTask(label: "syncGroups")
+            syncManager.syncGroups(transaction: transaction) { pendingTask.complete() }
+
+        case .blocked:
+            Logger.info("Received request for block list")
+            let pendingTask = Self.buildPendingTask(label: "syncBlockList")
+            blockingManager.syncBlockList { pendingTask.complete() }
+
+        case .configuration:
+            // We send _two_ responses to the "configuration request".
+            syncManager.sendConfigurationSyncMessage()
+            StickerManager.syncAllInstalledPacks(transaction: transaction)
+
+        case .keys:
+            syncManager.sendKeysSyncMessage()
+
+        case .pniIdentity:
+            syncManager.sendPniIdentitySyncMessage()
+
+        case .unknown, .none:
+            owsFailDebug("Ignoring sync request with unexpected type")
+        }
+    }
+
+    @objc
     func handleIncomingEnvelope(
         _ envelope: SSKProtoEnvelope,
         withSenderKeyDistributionMessage skdmData: Data,
