@@ -1244,6 +1244,21 @@ extension AttachmentApprovalViewController {
             }
         }
     }
+    
+    public override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        guard let key = presses.first?.key else{
+            return
+        }
+        
+        if !attachmentTextToolbar.isTextEditingComplete{
+            return
+        }
+        
+        switch key.keyCode{
+        case .keyboardReturnOrEnter: didTapSend()
+        default: return
+        }
+    }
 }
 
 extension AttachmentApprovalViewController: MentionTextViewDelegate {

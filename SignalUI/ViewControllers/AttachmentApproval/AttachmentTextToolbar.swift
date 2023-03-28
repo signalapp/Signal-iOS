@@ -27,6 +27,10 @@ class AttachmentTextToolbar: UIView {
 
     // Forward mention-related calls directly to the view controller.
     weak var mentionTextViewDelegate: MentionTextViewDelegate?
+    
+    //With the first click on the return key the text field is unfocused.
+    //Only with the second click on the return key the message should be send.
+    public var isTextEditingComplete: Bool = true
 
     private var isViewOnceEnabled: Bool = false
     func setIsViewOnce(enabled: Bool, animated: Bool) {
@@ -391,6 +395,8 @@ extension AttachmentTextToolbar: UITextViewDelegate {
                                               invalidatedRange: NSRange(location: 0, length: 0))
         delegate?.attachmentTextToolbarDidBeginEditing(self)
         updateContent(animated: true)
+        
+        isTextEditingComplete = false
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
@@ -398,5 +404,12 @@ extension AttachmentTextToolbar: UITextViewDelegate {
         textView.textContainer.maximumNumberOfLines = 1
         delegate?.attachmentTextToolbarDidEndEditing(self)
         updateContent(animated: true)
+        
+        //After the text field is no longer edited and unfocused it is checked if the "return" or "enter" key
+        //was pressed on a hardware keyboard. This will always be true if the user pressed the "return"
+        //or "enter" key to unfocus the text field
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1){
+            self.isTextEditingComplete = true
+        }
     }
 }
