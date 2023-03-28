@@ -46,6 +46,14 @@ public class RegistrationNavigationController: OWSNavigationController {
         if viewControllers.isEmpty, !isLoading {
             pushNextController(coordinator.nextStep())
         }
+
+        let submitLogsGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(didRequestToSubmitDebugLogs)
+        )
+        submitLogsGesture.numberOfTapsRequired = 8
+        submitLogsGesture.delaysTouchesEnded = false
+        view.addGestureRecognizer(submitLogsGesture)
     }
 
     private var isLoading = false
@@ -364,6 +372,11 @@ public class RegistrationNavigationController: OWSNavigationController {
         let onboardingOrientations: UIInterfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait
 
         return superOrientations.intersection(onboardingOrientations)
+    }
+
+    @objc
+    private func didRequestToSubmitDebugLogs() {
+        DebugLogs.submitLogs(withSupportTag: "Registration")
     }
 }
 
