@@ -5,7 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static inline BOOL OWSIsDebugBuild()
+static inline BOOL OWSIsDebugBuild(void)
 {
 #ifdef DEBUG
     return YES;
@@ -14,7 +14,7 @@ static inline BOOL OWSIsDebugBuild()
 #endif
 }
 
-static inline BOOL OWSIsTestableBuild()
+static inline BOOL OWSIsTestableBuild(void)
 {
 #ifdef TESTABLE_BUILD
     return YES;

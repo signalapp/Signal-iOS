@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 void AssertIsOnDisappearingMessagesQueue(void);
 
-void AssertIsOnDisappearingMessagesQueue()
+void AssertIsOnDisappearingMessagesQueue(void)
 {
 #ifdef DEBUG
     dispatch_assert_queue(OWSDisappearingMessagesJob.serialQueue);

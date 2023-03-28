@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <Foundation/Foundation.h>
+#import "AFQueryString.h"
 
 /**
  Returns a percent-escaped string following RFC 3986 for a query string key or value.
