@@ -180,6 +180,8 @@ class RegistrationVerificationViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        navigationItem.setHidesBackButton(true, animated: false)
+
         initialRender()
 
         // We don't need this timer in all cases but it's simpler to start it in all cases.

@@ -47,6 +47,9 @@ class RegistrationCaptchaViewController: OWSViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+
+        navigationItem.setHidesBackButton(true, animated: false)
+
         initialRender()
     }
 
