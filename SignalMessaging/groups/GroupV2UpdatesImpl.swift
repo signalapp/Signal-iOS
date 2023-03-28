@@ -492,6 +492,10 @@ private extension GroupV2UpdatesImpl {
                         // If the service returns a group state without change protos,
                         // fail over to the snapshot.
                         return true
+                    case GroupsV2Error.groupChangeProtoForIncompatibleRevision:
+                        // If we got change protos for an incompatible revision,
+                        // try and recover using a snapshot.
+                        return true
                     default:
                         owsFailDebugUnlessNetworkFailure(error)
                         return false
@@ -805,13 +809,18 @@ private extension GroupV2UpdatesImpl {
         profileKeysByUuid: inout [UUID: Data],
         transaction: SDSAnyWriteTransaction
     ) throws -> ApplySingleChangeFromServiceResult? {
-
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
         }
-        let changeRevision = groupChange.revision
 
-        let isSingleRevisionUpdate = oldGroupModel.revision + 1 == changeRevision
+        let oldRevision = oldGroupModel.revision
+        let changeRevision = groupChange.revision
+        let isSingleRevisionUpdate = oldRevision + 1 == changeRevision
+
+        let logger = PrefixedLogger(
+            prefix: "ApplySingleChange",
+            suffix: "\(oldRevision) -> \(changeRevision)"
+        )
 
         // We should only replace placeholder models using
         // latest snapshots _except_ in the case where the
@@ -844,6 +853,8 @@ private extension GroupV2UpdatesImpl {
             isSingleRevisionUpdate,
             let changeActionsProto = groupChange.changeActionsProto
         {
+            logger.info("Applying single revision update from change proto.")
+
             let changedGroupModel = try GroupsV2IncomingChanges.applyChangesToGroupModel(
                 groupThread: groupThread,
                 changeActionsProto: changeActionsProto,
@@ -853,12 +864,20 @@ private extension GroupV2UpdatesImpl {
             newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
             newProfileKeys = changedGroupModel.profileKeys
         } else if let snapshot = groupChange.snapshot {
+            logger.info("Applying snapshot.")
+
             var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot,
                                                                      transaction: transaction)
             builder.apply(options: groupModelOptions)
             newGroupModel = try builder.build()
             newDisappearingMessageToken = snapshot.disappearingMessageToken
             newProfileKeys = snapshot.profileKeys
+        } else if groupChange.changeActionsProto != nil {
+            logger.info("Change action proto was not a single revision update.")
+
+            // We had a group change proto with no snapshot, but the change was
+            // not a single revision update.
+            throw GroupsV2Error.groupChangeProtoForIncompatibleRevision
         } else {
             owsFailDebug("neither a snapshot nor a change action (should have been validated earlier)")
             return nil
@@ -890,9 +909,7 @@ private extension GroupV2UpdatesImpl {
                 // group proto's membership). However, as differences only in
                 // "joined via invite link" are ignored when comparing
                 // memberships, getting here is a bug.
-                Logger.verbose("oldGroupModel: \(oldGroupModel.debugDescription)")
-                Logger.verbose("newGroupModel: \(newGroupModel.debugDescription)")
-                Logger.warn("Local and server group models don't match.")
+                logger.warn("Local and server group models don't match.")
             }
         }
 
@@ -1201,9 +1218,9 @@ extension GroupsV2Error: IsRetryableProvider {
                 .groupDowngradeNotAllowed,
                 .missingGroupChangeProtos,
                 .groupBlocked,
-                .localUserBlockedFromJoining:
-            return false
-        case .serviceRequestHitRecoverable400:
+                .localUserBlockedFromJoining,
+                .groupChangeProtoForIncompatibleRevision,
+                .serviceRequestHitRecoverable400:
             return false
         }
     }

@@ -33,6 +33,14 @@ public enum GroupsV2Error: Error {
     case newMemberMissingAnnouncementOnlyCapability
     case localUserBlockedFromJoining
 
+    /// We tried to apply an incremental group change proto but failed due to
+    /// an incompatible revision in the proto.
+    ///
+    /// Note that group change protos can only be applied if they are a
+    /// continuous incremental update, i.e. our local revision is N and the
+    /// proto represents revision N+1.
+    case groupChangeProtoForIncompatibleRevision
+
     /// We hit a 400 while making a service request, but believe it may be
     /// recoverable.
     case serviceRequestHitRecoverable400

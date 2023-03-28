@@ -7,9 +7,11 @@ import Foundation
 
 open class PrefixedLogger {
     private let prefix: String
+    private let suffix: String
 
-    public init(prefix: String) {
+    public init(prefix: String, suffix: String? = nil) {
         self.prefix = prefix
+        self.suffix = suffix ?? ""
     }
 
     open func verbose(
@@ -19,7 +21,7 @@ open class PrefixedLogger {
         line: Int = #line
     ) {
         Logger.verbose(
-            "\(prefix) \(logString())",
+            buildLogString(logString()),
             file: file,
             function: function,
             line: line
@@ -33,7 +35,7 @@ open class PrefixedLogger {
         line: Int = #line
     ) {
         Logger.debug(
-            "\(prefix) \(logString())",
+            buildLogString(logString()),
             file: file,
             function: function,
             line: line
@@ -47,7 +49,7 @@ open class PrefixedLogger {
         line: Int = #line
     ) {
         Logger.info(
-            "\(prefix) \(logString())",
+            buildLogString(logString()),
             file: file,
             function: function,
             line: line
@@ -61,7 +63,7 @@ open class PrefixedLogger {
         line: Int = #line
     ) {
         Logger.warn(
-            "\(prefix) \(logString())",
+            buildLogString(logString()),
             file: file,
             function: function,
             line: line
@@ -75,7 +77,7 @@ open class PrefixedLogger {
         line: Int = #line
     ) {
         Logger.error(
-            "\(prefix) \(logString())",
+            buildLogString(logString()),
             file: file,
             function: function,
             line: line
@@ -84,5 +86,9 @@ open class PrefixedLogger {
 
     open func flush() {
         Logger.flush()
+    }
+
+    private func buildLogString(_ logString: String) -> String {
+        "\(prefix) \(logString) \(suffix)"
     }
 }
