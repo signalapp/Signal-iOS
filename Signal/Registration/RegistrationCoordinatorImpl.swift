@@ -274,7 +274,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     let remainingAttempts = Constants.maxLocalPINGuesses - numberOfWrongGuesses
                     return .value(.pinEntry(RegistrationPinState(
                         operation: .enteringExistingPin(
-                            canSkip: true,
+                            skippability: .canSkip,
                             remainingAttempts: remainingAttempts
                         ),
                         error: .wrongPin(wrongPin: code),
@@ -293,14 +293,32 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func skipPINCode() -> Guarantee<RegistrationStep> {
+        let shouldGiveUpTryingToRestoreWithKBS: Bool = {
+            switch getPathway() {
+            case
+                    .opening,
+                    .registrationRecoveryPassword,
+                    .kbsAuthCredential,
+                    .kbsAuthCredentialCandidates,
+                    .session:
+                return false
+            case .profileSetup:
+                return true
+            }
+        }()
         db.write { tx in
             updatePersistedState(tx) {
                 $0.hasSkippedPinEntry = true
+                if shouldGiveUpTryingToRestoreWithKBS {
+                    $0.hasGivenUpTryingToRestoreWithKBS = true
+                }
             }
             // Whenever we do this, wipe the keys we've got.
             // We don't want to have them and use then implicitly later.
             deps.kbs.clearKeys(transaction: tx)
+            deps.ows2FAManager.clearLocalPinCode(tx)
         }
+        inMemoryState.pinFromUser = nil
         self.wipeInMemoryStateToPreventKBSPathAttempts()
         return nextStep()
     }
@@ -539,9 +557,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// skipped the PIN early on, we won't ask for it again for recovery purposes later.
         var hasSkippedPinEntry = false
 
-        /// Have you exhausted your KBS backup attempts? This can happen if you blow through your
-        /// PIN guesses.
-        var hasExhaustedKBSRestoreAttempts = false
+        /// Have we given up trying to restore with KBS? This can happen if you blow through your
+        /// PIN guesses or decide to give up before exhausting them.
+        var hasGivenUpTryingToRestoreWithKBS = false
 
         struct SessionState: Codable {
             let sessionId: String
@@ -969,7 +987,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // We need the user to confirm their pin.
             return .value(.pinEntry(RegistrationPinState(
                 // We can skip which will stop trying to use reg recovery.
-                operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
+                operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
                 error: nil,
                 exitConfiguration: pinCodeEntryExitConfiguration()
             )))
@@ -981,7 +999,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         {
             Logger.warn("PIN mismatch; should be prevented at submission time.")
             return .value(.pinEntry(RegistrationPinState(
-                operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
+                operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
                 error: .wrongPin(wrongPin: pinFromUser),
                 exitConfiguration: pinCodeEntryExitConfiguration()
             )))
@@ -1152,7 +1170,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         guard let pin = inMemoryState.pinFromUser else {
             // We don't have a pin at all, ask the user for it.
             return .value(.pinEntry(RegistrationPinState(
-                operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
+                operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
                 error: nil,
                 exitConfiguration: pinCodeEntryExitConfiguration()
             )))
@@ -1183,7 +1201,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
                         operation: .enteringExistingPin(
-                            canSkip: true,
+                            skippability: .canSkip,
                             remainingAttempts: UInt(remainingAttempts)
                         ),
                         error: .wrongPin(wrongPin: pin),
@@ -1196,7 +1214,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.inMemoryState.pinFromUser = nil
                     self.db.write { tx in
                         self.updatePersistedState(tx) {
-                            $0.hasExhaustedKBSRestoreAttempts = true
+                            $0.hasGivenUpTryingToRestoreWithKBS = true
                         }
                     }
                     return .value(.pinAttemptsExhaustedAndMustCreateNewPin(
@@ -1341,7 +1359,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 )
             } else {
                 return .value(.pinEntry(RegistrationPinState(
-                    operation: .enteringExistingPin(canSkip: false, remainingAttempts: nil),
+                    operation: .enteringExistingPin(
+                        skippability: .unskippable,
+                        remainingAttempts: nil
+                    ),
                     error: .none,
                     exitConfiguration: pinCodeEntryExitConfiguration()
                 )))
@@ -1547,7 +1568,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nextStep()
         case .reglockFailure(let reglockFailure):
             let reglockExpirationDate = self.deps.dateProvider().addingTimeInterval(TimeInterval(reglockFailure.timeRemainingMs / 1000))
-            guard persistedState.hasExhaustedKBSRestoreAttempts.negated else {
+            guard persistedState.hasGivenUpTryingToRestoreWithKBS.negated else {
                 // If we have already exhausted our kbs backup attempts, we are stuck.
                 db.write { tx in
                     // May as well store credentials, anyway.
@@ -2167,7 +2188,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
                         operation: .enteringExistingPin(
-                            canSkip: false,
+                            skippability: .unskippable,
                             remainingAttempts: UInt(remainingAttempts)
                         ),
                         error: .wrongPin(wrongPin: pin),
@@ -2180,7 +2201,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
                     self.db.write { tx in
                         self.updatePersistedState(tx) {
-                            $0.hasExhaustedKBSRestoreAttempts = true
+                            $0.hasGivenUpTryingToRestoreWithKBS = true
                         }
                         self.updatePersistedSessionState(session: session, tx) {
                             $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
@@ -2418,14 +2439,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func performKBSBackupStepsIfNeeded(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep>? {
         let isRestoringPinBackup: Bool = (
             accountIdentity.hasPreviouslyUsedKBS &&
-            !persistedState.hasExhaustedKBSRestoreAttempts
+            !persistedState.hasGivenUpTryingToRestoreWithKBS
         )
 
         if !persistedState.hasSkippedPinEntry {
             guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
                 if isRestoringPinBackup {
                     return .value(.pinEntry(RegistrationPinState(
-                        operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
+                        operation: .enteringExistingPin(
+                            skippability: .canSkip,
+                            remainingAttempts: nil
+                        ),
                         error: nil,
                         exitConfiguration: pinCodeEntryExitConfiguration()
                     )))
@@ -2490,7 +2514,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
                         operation: .enteringExistingPin(
-                            canSkip: true,
+                            skippability: .canSkipAndCreateNew,
                             remainingAttempts: UInt(remainingAttempts)
                         ),
                         error: .wrongPin(wrongPin: pin),
@@ -2502,7 +2526,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.inMemoryState.pinFromUser = nil
                     self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
                     self.db.write { tx in
-                        self.updatePersistedState(tx) { $0.hasExhaustedKBSRestoreAttempts = true }
+                        self.updatePersistedState(tx) { $0.hasGivenUpTryingToRestoreWithKBS = true }
                     }
                     return .value(.pinAttemptsExhaustedAndMustCreateNewPin(
                         .init(mode: .restoringBackup)

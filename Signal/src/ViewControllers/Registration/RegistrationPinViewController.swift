@@ -34,11 +34,28 @@ public enum RegistrationPinValidationError: Equatable {
 // MARK: - RegistrationPinState
 
 public struct RegistrationPinState: Equatable {
+    public enum Skippability: Equatable {
+        /// The user cannot skip PIN entry due to reglock.
+        case unskippable
+        /// The user can skip PIN entry for now but may require the PIN
+        /// later for registration lock and thus may not be able to create a new one.
+        case canSkip
+        /// The user can skip PIN entry and will be able to create a new PIN.
+        case canSkipAndCreateNew
+
+        public var canSkip: Bool {
+            switch self {
+            case .unskippable: return false
+            case .canSkip, .canSkipAndCreateNew: return true
+            }
+        }
+    }
+
     public enum RegistrationPinOperation: Equatable {
         case creatingNewPin
         case confirmingNewPin(RegistrationPinConfirmationBlob)
         case enteringExistingPin(
-            canSkip: Bool,
+            skippability: Skippability,
             /// The number of PIN attempts that the user has. If `nil`, the count is unknown.
             remainingAttempts: UInt?
         )
@@ -360,8 +377,8 @@ class RegistrationPinViewController: OWSViewController {
             renderForCreatingNewPin()
         case .confirmingNewPin:
             renderForConfirmingNewPin()
-        case let .enteringExistingPin(canSkip, remainingAttempts):
-            renderForEnteringExistingPin(canSkip: canSkip, remainingAttempts: remainingAttempts)
+        case let .enteringExistingPin(skippability, remainingAttempts):
+            renderForEnteringExistingPin(skippability: skippability, remainingAttempts: remainingAttempts)
         }
 
         navigationItem.rightBarButtonItem = canSubmit ? nextBarButton : nil
@@ -456,8 +473,11 @@ class RegistrationPinViewController: OWSViewController {
         replaceViewsAfterTextField(with: [UIView.vStretchingSpacer()])
     }
 
-    private func renderForEnteringExistingPin(canSkip: Bool, remainingAttempts: UInt?) {
-        if canSkip {
+    private func renderForEnteringExistingPin(
+        skippability: RegistrationPinState.Skippability,
+        remainingAttempts: UInt?
+    ) {
+        if skippability.canSkip {
             navigationItem.leftBarButtonItem = moreBarButton
             moreButton.contextMenu = ContextMenu([
                 .init(
@@ -477,8 +497,8 @@ class RegistrationPinViewController: OWSViewController {
 
         showAttemptWarningIfNecessary(
             remainingAttempts: remainingAttempts,
-            warnAt: canSkip ? [3, 1] : [5, 3, 1],
-            canSkip: canSkip
+            warnAt: skippability.canSkip ? [3, 1] : [5, 3, 1],
+            canSkip: skippability.canSkip
         )
 
         var newViewsAtTheBottom: [UIView] = []
@@ -623,36 +643,53 @@ class RegistrationPinViewController: OWSViewController {
 
     @objc
     private func showExistingPinEntryHelpUi() {
-        let canSkip: Bool = {
-            switch state.operation {
-            case .creatingNewPin, .confirmingNewPin:
-                owsFail("Invalid state. This method should not be called")
-            case let .enteringExistingPin(canSkip, _):
-                return canSkip
+        let message: String
+        let skipButtonTitle: String?
+        switch state.operation {
+        case .creatingNewPin, .confirmingNewPin:
+            owsFail("Invalid state. This method should not be called")
+        case let .enteringExistingPin(skippability, _):
+            switch skippability {
+            case .unskippable:
+                message = OWSLocalizedString(
+                    "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE",
+                    comment: "Alert body for a forgotten SVR (V2) PIN"
+                )
+                skipButtonTitle = nil
+            case .canSkip:
+                message = OWSLocalizedString(
+                    "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE",
+                    comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN"
+                )
+                skipButtonTitle = OWSLocalizedString(
+                    "PIN_ENTER_EXISTING_SKIP",
+                    comment: "If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this."
+                )
+            case .canSkipAndCreateNew:
+                message = OWSLocalizedString(
+                    "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE",
+                    comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN"
+                )
+                skipButtonTitle = OWSLocalizedString(
+                    "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN",
+                    comment: "Label for the 'skip and create new pin' button when reglock is disabled during onboarding."
+                )
             }
-        }()
+        }
 
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
                 comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'."
             ),
-            message: {
-                if canSkip {
-                    return OWSLocalizedString(
-                        "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE",
-                        comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock"
-                    )
-                } else {
-                    return OWSLocalizedString(
-                        "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE",
-                        comment: "Alert body for a forgotten SVR (V2) PIN"
-                    )
-                }
-            }()
+            message: message
         )
 
-        // TODO[Registration] Show "Skip and Create New PIN" action
+        if let skipButtonTitle {
+            actionSheet.addAction(.init(title: skipButtonTitle, style: .destructive) { [weak self] _ in
+                self?.presenter?.submitWithSkippedPin()
+            })
+        }
 
         actionSheet.addAction(.init(title: CommonStrings.contactSupport) { [weak self] _ in
             let vc = ContactSupportViewController()

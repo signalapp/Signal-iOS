@@ -2956,7 +2956,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             remainingAttempts: UInt? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
-                operation: .enteringExistingPin(canSkip: true, remainingAttempts: remainingAttempts),
+                operation: .enteringExistingPin(
+                    skippability: .canSkip,
+                    remainingAttempts: remainingAttempts
+                ),
                 error: error,
                 exitConfiguration: mode.pinExitConfig
             )
@@ -2967,7 +2970,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
-                operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
+                operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
                 error: error,
                 exitConfiguration: mode.pinExitConfig
             )
@@ -3058,7 +3061,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
-                operation: .enteringExistingPin(canSkip: false, remainingAttempts: nil),
+                operation: .enteringExistingPin(skippability: .unskippable, remainingAttempts: nil),
                 error: error,
                 exitConfiguration: mode.pinExitConfig
             )
@@ -3069,7 +3072,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
-                operation: .enteringExistingPin(canSkip: true, remainingAttempts: nil),
+                operation: .enteringExistingPin(
+                    skippability: .canSkipAndCreateNew,
+                    remainingAttempts: nil
+                ),
                 error: error,
                 exitConfiguration: mode.pinExitConfig
             )
