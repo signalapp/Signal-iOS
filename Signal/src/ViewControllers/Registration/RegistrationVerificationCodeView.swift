@@ -106,14 +106,13 @@ class RegistrationVerificationCodeView: UIView {
         textfield.delegate = self
         textfield.codeDelegate = self
 
-        textfield.textColor = Theme.primaryTextColor
         textfield.font = UIFont.ows_dynamicTypeLargeTitle1Clamped
         textfield.keyboardType = .numberPad
         textfield.textContentType = .oneTimeCode
 
         var digitViews = [UIView]()
         (0..<digitCount).forEach { (_) in
-            let (digitView, digitLabel, digitStroke) = makeCellView(text: "", hasStroke: true)
+            let (digitView, digitLabel, digitStroke) = makeCellView(text: "")
 
             digitLabels.append(digitLabel)
             digitStrokes.append(digitStroke)
@@ -131,20 +130,30 @@ class RegistrationVerificationCodeView: UIView {
         stackView.autoHCenterInSuperview()
 
         self.addSubview(textfield)
+
+        updateColors()
     }
 
-    private func makeCellView(text: String, hasStroke: Bool) -> (UIView, UILabel, UIView) {
+    public func updateColors() {
+        textfield.textColor = Theme.primaryTextColor
+        digitLabels.forEach { $0.textColor = Theme.primaryTextColor }
+        let strokeColor = (hasError ? UIColor.ows_accentRed : Theme.secondaryTextAndIconColor)
+        for digitStroke in digitStrokes {
+            digitStroke.backgroundColor = strokeColor
+        }
+    }
+
+    private func makeCellView(text: String) -> (UIView, UILabel, UIView) {
         let digitView = UIView()
 
         let digitLabel = UILabel()
         digitLabel.text = text
         digitLabel.font = cellFont
-        digitLabel.textColor = Theme.primaryTextColor
         digitLabel.textAlignment = .center
         digitView.addSubview(digitLabel)
         digitLabel.autoCenterInSuperview()
 
-        let strokeColor = (hasStroke ? Theme.secondaryTextAndIconColor : UIColor.clear)
+        let strokeColor =  Theme.secondaryTextAndIconColor
         let strokeView = digitView.addBottomStroke(color: strokeColor, strokeWidth: strokeWidth)
         strokeView.layer.cornerRadius = strokeWidth / 2
 
@@ -195,11 +204,11 @@ class RegistrationVerificationCodeView: UIView {
         return textfield.resignFirstResponder()
     }
 
+    private var hasError = false
+
     func setHasError(_ hasError: Bool) {
-        let backgroundColor = (hasError ? UIColor.ows_accentRed : Theme.secondaryTextAndIconColor)
-        for digitStroke in digitStrokes {
-            digitStroke.backgroundColor = backgroundColor
-        }
+        self.hasError = hasError
+        updateColors()
     }
 
     func set(verificationCode: String) {

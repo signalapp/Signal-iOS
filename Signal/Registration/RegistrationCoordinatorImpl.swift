@@ -117,38 +117,42 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func submitE164(_ e164: E164) -> Guarantee<RegistrationStep> {
+        let pathway = getPathway()
         db.write { tx in
             updatePersistedState(tx) {
                 $0.e164 = e164
             }
-        }
-        inMemoryState.hasEnteredE164 = true
-        switch getPathway() {
-        case .session(let session):
-            if
-                let sessionState = self.persistedState.sessionState,
-                sessionState.sessionId == session.id
-            {
-                switch sessionState.initialCodeRequestState {
-                case .failedToRequest:
-                    // Reset state so we try again.
-                    db.write { tx in
+            switch pathway {
+            case .session(let session):
+                guard session.e164 == e164 else {
+                    resetSession(tx)
+                    return
+                }
+                if
+                    let sessionState = self.persistedState.sessionState,
+                    sessionState.sessionId == session.id
+                {
+                    switch sessionState.initialCodeRequestState {
+                    case .failedToRequest:
+                        // Reset state so we try again.
                         self.updatePersistedSessionState(session: session, tx) {
                             $0.initialCodeRequestState = .neverRequested
                         }
+                    case .requested, .neverRequested:
+                        break
                     }
-                case .requested, .neverRequested:
-                    break
                 }
+            case
+                    .opening,
+                    .kbsAuthCredential,
+                    .kbsAuthCredentialCandidates,
+                    .registrationRecoveryPassword,
+                    .profileSetup:
+                break
             }
-        case
-                .opening,
-                .kbsAuthCredential,
-                .kbsAuthCredentialCandidates,
-                .registrationRecoveryPassword,
-                .profileSetup:
-            break
         }
+        inMemoryState.hasEnteredE164 = true
+
         return nextStep()
     }
 
@@ -607,6 +611,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             var pushChallengeState: PushChallengeState = .notRequested
+
+            /// If non-nil, we created an account with the session but got rate limited
+            /// and can retry at the provided time.
+            var createAccountTimeout: Date?
         }
 
         var sessionState: SessionState?
@@ -1117,7 +1125,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         )
                     }
             }
-            return .value(.showErrorSheet(.todo))
+            // If we get a long timeout, just give up and fall back to the session
+            // path. Reg recovery password based recovery is best effort anyway.
+            // Besides since this is always our first attempt at registering,
+            // this lockout should never happen.
+            Logger.error("Rate limited when registering via recovery password; falling back to session.")
+            wipeInMemoryStateToPreventKBSPathAttempts()
+            return self.startSession(e164: e164)
 
         case .deviceTransferPossible:
             // Device transfer can happen, let the user pick.
@@ -1444,9 +1458,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+            let validationError: RegistrationVerificationValidationError?
+            if deps.dateProvider() < nextVerificationAttemptDate {
+                validationError = .submitCodeTimeout
+            } else {
+                validationError = nil
+            }
             return .value(.verificationCodeEntry(self.verificationCodeEntryState(
                 session: session,
-                nextVerificationAttemptDate: nextVerificationAttemptDate
+                nextVerificationAttemptDate: nextVerificationAttemptDate,
+                validationError: validationError
             )))
         }
 
@@ -1534,6 +1555,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         _ session: RegistrationSession,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
+        if
+            let timeoutDate = persistedState.sessionState?.createAccountTimeout,
+            deps.dateProvider() < timeoutDate
+        {
+            return .value(.phoneNumberEntry(phoneNumberEntryState(
+                validationError: .rateLimited(.init(expiration: timeoutDate))
+            )))
+        }
         return self.makeRegisterOrChangeNumberRequest(
             .sessionId(session.id),
             e164: session.e164,
@@ -1608,8 +1637,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         )
                     }
             }
-            // TODO[Registration] bubble up the error to the ui properly.
-            return .value(.showErrorSheet(.todo))
+            let timeoutDate = self.deps.dateProvider().addingTimeInterval(timeInterval)
+            self.db.write { tx in
+                self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
+                    $0.createAccountTimeout = timeoutDate
+                }
+            }
+            return nextStep()
         case .deviceTransferPossible:
             inMemoryState.needsToAskForDeviceTransfer = true
             return .value(.transferSelection)

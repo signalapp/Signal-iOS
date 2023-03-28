@@ -24,7 +24,6 @@ public struct RegistrationVerificationState: Equatable {
     let e164: E164
     let nextSMSDate: Date?
     let nextCallDate: Date?
-    // TODO[Registration]: use this state to render a countdown.
     let nextVerificationAttemptDate: Date
     let validationError: RegistrationVerificationValidationError?
 
@@ -287,9 +286,6 @@ class RegistrationVerificationViewController: OWSViewController {
         renderResendButton(
             button: resendSMSCodeButton,
             date: state.nextSMSDate,
-            // TODO: This copy is ambiguous if you request a voice code. Does "resend code" mean
-            // that you'll get a new SMS code or a new voice code? We should update the wording to
-            // make it clearer that it's an SMS code.
             enabledString: OWSLocalizedString(
                 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON",
                 comment: "Label for button to resend SMS verification code."
@@ -320,7 +316,8 @@ class RegistrationVerificationViewController: OWSViewController {
         titleLabel.textColor = .colorForRegistrationTitleLabel
         explanationLabel.textColor = .colorForRegistrationExplanationLabel
         wrongNumberButton.setTitleColor(Theme.accentBlueColor)
-        // TODO: Update colors of `verificationCodeView`, which is relevant if the theme changes.
+
+        verificationCodeView.updateColors()
     }
 
     private lazy var retryAfterFormatter: DateFormatter = {
@@ -378,20 +375,33 @@ class RegistrationVerificationViewController: OWSViewController {
                 comment: "During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message."
             )
         case .smsResendTimeout, .voiceResendTimeout:
-            // This isn't the best error message but this should be a rare case. The UI would have
-            // to allow the user to request a code that the server would not allow. It could happen
-            // if the user changes their clock.
             title = nil
-            message = CommonStrings.somethingWentWrongTryAgainLaterError
-        case .submitCodeTimeout:
-            title = OWSLocalizedString(
-                "REGISTRATION_NETWORK_ERROR_TITLE",
-                comment: "A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet."
-            )
             message = OWSLocalizedString(
-                "REGISTRATION_NETWORK_ERROR_BODY",
-                comment: "A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet."
+                "REGISTER_RATE_LIMITING_ALERT",
+                comment: "Body of action sheet shown when rate-limited during registration."
             )
+        case .submitCodeTimeout:
+            title = nil
+
+            let now = Date()
+            if now >= state.nextVerificationAttemptDate {
+                return
+            }
+            let format = OWSLocalizedString(
+                "REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT",
+                comment: "Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\""
+            )
+
+            let formatter: DateFormatter = {
+                let result = DateFormatter()
+                result.dateFormat = "m:ss"
+                result.timeZone = TimeZone(identifier: "UTC")!
+                return result
+            }()
+
+            let timeRemaining = max(state.nextVerificationAttemptDate.timeIntervalSince(now), 0)
+            let durationString = formatter.string(from: Date(timeIntervalSinceReferenceDate: timeRemaining))
+            message = String(format: format, durationString)
         }
         OWSActionSheets.showActionSheet(title: title, message: message)
     }
