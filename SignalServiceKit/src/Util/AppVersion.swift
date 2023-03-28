@@ -15,6 +15,12 @@ extension AppVersion {
         return "\(marketingString) (\(machineString); \(modelString))"
     }
 
+    public static var iosVersionString: String {
+        let majorMinor = UIDevice.current.systemVersion
+        let buildNumber = String(sysctlKey: "kern.osversion") ?? "nil"
+        return "\(majorMinor) (\(buildNumber))"
+    }
+
     // MARK: - Startup logging
 
     @objc
@@ -38,7 +44,7 @@ extension AppVersion {
         let databaseCorruptionState = DatabaseCorruptionState(userDefaults: userDefaults)
         Logger.info("Database corruption state: \(databaseCorruptionState)")
 
-        Logger.info("iOS Version: \(Self.iOSVersionString)")
+        Logger.info("iOS Version: \(Self.iosVersionString)")
 
         let locale = Locale.current
         Logger.info("Locale Identifier: \(locale.identifier)")

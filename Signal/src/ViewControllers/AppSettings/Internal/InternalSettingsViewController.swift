@@ -171,7 +171,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         }
 
-        infoSection.add(.copyableItem(label: "iOS Version", value: AppVersion.iOSVersionString))
+        infoSection.add(.copyableItem(label: "iOS Version", value: AppVersion.iosVersionString))
         infoSection.add(.copyableItem(label: "Device Model", value: AppVersion.hardwareInfoString))
 
         infoSection.add(.copyableItem(label: "Locale Identifier", value: Locale.current.identifier.nilIfEmpty))

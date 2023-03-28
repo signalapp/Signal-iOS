@@ -46,13 +46,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     return instance;
 }
 
-+ (NSString *)iOSVersionString
-{
-    NSString *majorMinor = UIDevice.currentDevice.systemVersion;
-    NSString *buildNumber = [NSString stringFromSysctlKey:@"kern.osversion"];
-    return [NSString stringWithFormat:@"%@ (%@)", majorMinor, buildNumber];
-}
-
 - (void)configure {
     OWSAssertIsOnMainThread();
 
