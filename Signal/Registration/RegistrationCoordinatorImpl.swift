@@ -123,6 +123,32 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
         inMemoryState.hasEnteredE164 = true
+        switch getPathway() {
+        case .session(let session):
+            if
+                let sessionState = self.persistedState.sessionState,
+                sessionState.sessionId == session.id
+            {
+                switch sessionState.initialCodeRequestState {
+                case .failedToRequest:
+                    // Reset state so we try again.
+                    db.write { tx in
+                        self.updatePersistedSessionState(session: session, tx) {
+                            $0.initialCodeRequestState = .neverRequested
+                        }
+                    }
+                case .requested, .neverRequested:
+                    break
+                }
+            }
+        case
+                .opening,
+                .kbsAuthCredential,
+                .kbsAuthCredentialCandidates,
+                .registrationRecoveryPassword,
+                .profileSetup:
+            break
+        }
         return nextStep()
     }
 
@@ -520,6 +546,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         struct SessionState: Codable {
             let sessionId: String
 
+            enum InitialCodeRequestState: Codable {
+                /// We have never requested a code and should request one when we can.
+                case neverRequested
+                /// We have already requested a code at least once; further requests
+                /// are user driven and not automatic
+                case requested
+                /// We have never requested a code but did try and failed. User action needed.
+                case failedToRequest
+            }
+
+            var initialCodeRequestState: InitialCodeRequestState = .neverRequested
+
             enum ReglockState: Codable {
                 /// No reglock known of preventing registration.
                 case none
@@ -547,6 +585,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case unfulfilledPush(challengeToken: String)
                 /// We've sucessfully submitted a push challenge token.
                 case fulfilled
+                case rejected
             }
 
             var pushChallengeState: PushChallengeState = .notRequested
@@ -762,6 +801,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         retriesLeft: retriesLeft - 1
                     )
                 }
+                // If we have a deregistration erorr, it doesn't matter. we are finished
+                // and cleaning up anyway, the main app will discover the issue.
                 if let error {
                     Logger.warn("Failed account attributes update, finishing registration anyway: \(error)")
                 }
@@ -1326,7 +1367,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(.transferSelection)
         }
 
-        if let pendingCodeTransport = inMemoryState.pendingCodeTransport {
+        var pendingCodeTransport = inMemoryState.pendingCodeTransport
+        if pendingCodeTransport == nil {
+            switch persistedState.sessionState?.initialCodeRequestState {
+            case .none, .requested, .failedToRequest:
+                break
+            case .neverRequested:
+                // Request an sms code when we get a new session.
+                pendingCodeTransport = .sms
+            }
+        }
+
+        if let pendingCodeTransport {
             guard session.allowedToRequestCode else {
                 return attemptToFulfillAvailableChallengesWaitingIfNeeded(for: session)
             }
@@ -1382,12 +1434,36 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return .value(.phoneNumberEntry(phoneNumberEntryState()))
     }
 
-    private func processSession(_ session: RegistrationSession?, _ transaction: DBWriteTransaction) {
+    private func processSession(
+        _ session: RegistrationSession?,
+        initialCodeRequestState: PersistedState.SessionState.InitialCodeRequestState? = nil,
+        _ transaction: DBWriteTransaction
+    ) {
         if session == nil || persistedState.sessionState?.sessionId != session?.id {
             self.updatePersistedState(transaction) {
                 $0.sessionState = session.map { .init(sessionId: $0.id) }
             }
         }
+        var initialCodeRequestState = initialCodeRequestState
+        if session?.nextVerificationAttempt != nil {
+            // If we can submit a code, we must have requested
+            // at least once.
+            initialCodeRequestState = .requested
+        }
+        switch persistedState.sessionState?.initialCodeRequestState {
+        case .none, .failedToRequest, .neverRequested:
+            if let initialCodeRequestState, initialCodeRequestState != persistedState.sessionState?.initialCodeRequestState {
+                self.updatePersistedState(transaction) {
+                    var sessionState = $0.sessionState
+                    sessionState?.initialCodeRequestState = initialCodeRequestState
+                    $0.sessionState = sessionState
+                }
+            }
+        case .requested:
+            // Don't overwrite already requested state under any circumstances.
+            break
+        }
+
         if session?.verified == true {
             // Any verified session is good and we should keep it.
             inMemoryState.session = session
@@ -1563,9 +1639,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             }
                         }
 
-                        // When we get a new session, an SMS code is sent immediately.
-                        strongSelf.inMemoryState.pendingCodeTransport = .sms
-
                         return strongSelf.nextStep()
                     case .invalidArgument:
                         return .value(.phoneNumberEntry(strongSelf.phoneNumberEntryState(
@@ -1619,13 +1692,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             switch result {
             case .success(let session):
                 self.inMemoryState.pendingCodeTransport = nil
-                self.db.write { self.processSession(session, $0) }
+                self.db.write {
+                    self.processSession(session, initialCodeRequestState: .requested, $0)
+                }
                 return self.nextStep()
             case .rejectedArgument(let session):
                 Logger.error("Should never get rejected argument error from requesting code. E164 already set on session.")
                 // Wipe the pending code request, so we don't retry.
                 self.inMemoryState.pendingCodeTransport = nil
-                self.db.write { self.processSession(session, $0) }
+                self.db.write {
+                    self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
+                }
                 return self.nextStep()
             case .disallowed(let session):
                 // Whatever caused this should be represented on the session itself,
@@ -1641,11 +1718,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 self.inMemoryState.pendingCodeTransport = nil
                 if failureResponse.isPermanent {
                     self.db.write { self.resetSession($0) }
+                } else {
+                    self.db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
                 }
                 return .value(.showErrorSheet(.genericError))
             case .retryAfterTimeout(let session):
-                self.db.write { self.processSession(session, $0) }
-
                 let timeInterval: TimeInterval?
                 switch transport {
                 case .sms:
@@ -1654,6 +1731,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     timeInterval = session.nextCall
                 }
                 if let timeInterval, timeInterval < Constants.autoRetryInterval {
+                    self.db.write { self.processSession(session, $0) }
                     return Guarantee
                         .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
                         .then(on: self.schedulers.sync) { [weak self] in
@@ -1668,6 +1746,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 } else {
                     self.inMemoryState.pendingCodeTransport = nil
                     if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                        self.db.write {
+                            self.processSession(session, initialCodeRequestState: .requested, $0)
+                        }
                         // Show an error on the verification code entry screen.
                         return .value(.verificationCodeEntry(self.verificationCodeEntryState(
                             session: session,
@@ -1680,6 +1761,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             }()
                         )))
                     } else if let timeInterval {
+                        self.db.write {
+                            self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
+                        }
                         // We were trying to resend from the phone number screen.
                         return .value(.phoneNumberEntry(self.phoneNumberEntryState(
                             validationError: .rateLimited(.init(
@@ -1700,9 +1784,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         retriesLeft: retriesLeft - 1
                     )
                 }
+                self.inMemoryState.pendingCodeTransport = nil
+                self.db.write {
+                    self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
+                }
                 return .value(.showErrorSheet(.networkError))
             case .genericError:
                 self.inMemoryState.pendingCodeTransport = nil
+                self.db.write {
+                    self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
+                }
                 return .value(.showErrorSheet(.genericError))
             }
         }
@@ -1713,7 +1804,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         transaction: DBWriteTransaction
     ) {
         switch persistedState.sessionState?.pushChallengeState {
-        case nil, .notRequested, .waitingForPush:
+        case nil, .notRequested, .waitingForPush, .rejected:
             Logger.info("No pre-auth challenge token will arrive. Noting that")
             updatePersistedSessionState(session: session, transaction) {
                 $0.pushChallengeState = .ineligible
@@ -1728,7 +1819,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         transaction: DBWriteTransaction
     ) {
         switch persistedState.sessionState?.pushChallengeState {
-        case nil, .notRequested, .ineligible:
+        case nil, .notRequested, .ineligible, .rejected:
             // It's unlikely but possible to go from ineligible -> waiting if the user denied
             // notification permissions, closed the app, re-enabled them in settings, and then
             // relaunched. It's much more likely that we'd be in the "not requested" state.
@@ -1756,6 +1847,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         for session: RegistrationSession,
         transaction: DBWriteTransaction
     ) {
+        deps.pushRegistrationManager.clearPreAuthChallengeToken()
         Logger.info("Received a push challenge token")
         updatePersistedSessionState(session: session, transaction) {
             $0.pushChallengeState = .unfulfilledPush(challengeToken: pushChallengeToken)
@@ -1779,7 +1871,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // Our first choice: a push challenge for which we already have the challenge token.
         let unfulfilledPushChallengeToken: String? = {
             switch persistedState.sessionState?.pushChallengeState {
-            case nil, .notRequested, .ineligible, .waitingForPush, .fulfilled:
+            case nil, .notRequested, .ineligible, .waitingForPush, .fulfilled, .rejected:
                 return nil
             case let .unfulfilledPush(challengeToken):
                 return challengeToken
@@ -1854,6 +1946,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if session.hasUnknownChallengeRequiringAppUpdate {
                 Logger.warn("An unknown challenge was found")
                 inMemoryState.pendingCodeTransport = nil
+                db.write { tx in
+                    self.processSession(session, initialCodeRequestState: .failedToRequest, tx)
+                }
                 return .value(.appUpdateBanner)
             } else {
                 Logger.warn("Couldn't fulfill any challenges. Resetting the session")
@@ -1865,7 +1960,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // Our second choice: a very recent push challenge.
         let pushChallengeRequestDate: Date? = {
             switch persistedState.sessionState?.pushChallengeState {
-            case nil, .notRequested, .ineligible, .unfulfilledPush, .fulfilled:
+            case nil, .notRequested, .ineligible, .unfulfilledPush, .fulfilled, .rejected:
                 return nil
             case let .waitingForPush(requestedAt):
                 return requestedAt
@@ -1910,13 +2005,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 return self.nextStep()
             case .rejectedArgument(let session):
-                self.db.write { self.processSession(session, $0) }
+                self.db.write { tx in
+                    self.processSession(session, tx)
+                    self.updatePersistedSessionState(session: session, tx) {
+                        $0.pushChallengeState = .rejected
+                    }
+                }
                 return .value(.showErrorSheet(.genericError))
             case .disallowed(let session):
                 Logger.warn("Disallowed to complete a challenge which should be impossible.")
                 // Don't keep trying to send a code.
                 self.inMemoryState.pendingCodeTransport = nil
-                self.db.write { self.processSession(session, $0) }
+                self.db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
                 return .value(.showErrorSheet(.todo))
             case .invalidSession:
                 self.db.write { self.resetSession($0) }
@@ -1932,6 +2032,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // Clear the pending code; we want the user to press again
                 // once the timeout expires.
                 self.inMemoryState.pendingCodeTransport = nil
+                self.db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
                 self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
             case .networkFailure:
@@ -2157,7 +2258,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     return self.nextStep()
                 }
-                .recover(on: schedulers.main) { error -> Guarantee<RegistrationStep> in
+                .recover(on: schedulers.main) { [weak self] error -> Guarantee<RegistrationStep> in
+                    guard let self else {
+                        return unretainedSelfError()
+                    }
+                    if error.isPostRegDeregisteredError {
+                        return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+                    }
                     Logger.error("Failed to create prekeys: \(error)")
                     // Note this is undismissable; the user will be on whatever
                     // screen they were on but with the error sheet atop which retries
@@ -2176,15 +2283,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self?.inMemoryState.hasRestoredFromStorageService = true
                     return ()
                 }
-                .recover(on: schedulers.main) { [weak self] _ in
-                    self?.inMemoryState.hasSkippedRestoreFromStorageService = true
-                    return .value(())
-                }
                 .then(on: schedulers.sync) { [weak self] in
                     guard let self else {
                         return unretainedSelfError()
                     }
                     self.loadProfileState()
+                    return self.nextStep()
+                }
+                .recover(on: schedulers.main) { [weak self] error in
+                    guard let self else {
+                        return unretainedSelfError()
+                    }
+                    if error.isPostRegDeregisteredError {
+                        return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+                    }
+                    self.inMemoryState.hasSkippedRestoreFromStorageService = true
                     return self.nextStep()
                 }
         }
@@ -2206,6 +2319,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             return unretainedSelfError()
                         }
                         if let error {
+                            if error.isPostRegDeregisteredError {
+                                return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+                            }
                             return .value(.showErrorSheet(
                                 error.isNetworkFailureOrTimeout ? .networkError : .genericError
                             ))
@@ -2280,6 +2396,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             }
                             return strongSelf.nextStep()
                         }
+
                 case .networkError:
                     if retriesLeft > 0 {
                         return strongSelf.syncPushTokens(
@@ -2288,7 +2405,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         )
                     }
                     return .value(.showErrorSheet(.networkError))
-                case .genericError:
+                case .genericError(let error):
+                    if error.isPostRegDeregisteredError {
+                        return strongSelf.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+                    }
                     return .value(.showErrorSheet(.genericError))
                 }
             }
@@ -2396,7 +2516,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         )
                     }
                     return .value(.showErrorSheet(.networkError))
-                case .genericError:
+                case .genericError(let error):
+                    if error.isPostRegDeregisteredError {
+                        return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+                    }
                     return .value(.showErrorSheet(.genericError))
                 }
             }
@@ -2456,7 +2579,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // We want to let people get through registration even if backups
                 // go wrong. Show an error but let the user continue when they try the next step.
                 self.inMemoryState.didSkipKBSBackup = true
-                return .value(.showErrorSheet(.todo))
+                return .value(.showErrorSheet(.genericError))
             }
     }
 
@@ -2885,6 +3008,41 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    // MARK: - Becoming deregistered while registering
+
+    private func becameDeregisteredBeforeCompleting(
+        accountIdentity: AccountIdentity
+    ) -> Guarantee<RegistrationStep> {
+        let kickBackToReRegistration: () -> Guarantee<RegistrationStep> = { [weak self] in
+            guard let self else {
+                return unretainedSelfError()
+            }
+            Logger.warn("Got deregistered while completing registration; starting over with re-registration.")
+            self.wipePersistedState()
+            return .value(.showErrorSheet(.becameDeregistered(reregParams: .init(
+                e164: accountIdentity.e164,
+                aci: accountIdentity.aci
+            ))))
+        }
+
+        switch mode {
+        case .registering, .reRegistering:
+            return kickBackToReRegistration()
+        case .changingNumber(let changeNumberState):
+            if let pniState = changeNumberState.pniState {
+                return finalizeChangeNumberPniState(
+                    changeNumberState: changeNumberState,
+                    pniState: pniState,
+                    accountIdentity: accountIdentity
+                ).then(on: schedulers.main) { result in
+                    return kickBackToReRegistration()
+                }
+            } else {
+                return kickBackToReRegistration()
+            }
+        }
+    }
+
     // MARK: - Account objects
 
     private func makeAccountAttributes() -> AccountAttributes {
@@ -3123,4 +3281,16 @@ private func unretainedSelfError() -> Guarantee<RegistrationStep> {
 private func unretainedSelfErrorStep() -> RegistrationStep {
     Logger.warn("Registration coordinator reference lost. Showing generic error")
     return .showErrorSheet(.genericError)
+}
+
+extension Error {
+
+    fileprivate var isPostRegDeregisteredError: Bool {
+        guard let statusCode = (self as? OWSHTTPError)?.responseStatusCode else {
+            return false
+        }
+        // We only use REST during registration;
+        // Websocket deregisters with a 403 but that doesn't matter.
+        return statusCode == 401
+    }
 }

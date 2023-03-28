@@ -134,7 +134,7 @@ extension RegistrationUtils {
 
     fileprivate static func showReRegistration(e164: E164, aci: UUID) {
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
-        let desiredMode = RegistrationMode.reRegistering(e164: e164, aci: aci)
+        let desiredMode = RegistrationMode.reRegistering(.init(e164: e164, aci: aci))
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
         let coordinator = databaseStorage.write {
             return loader.coordinator(

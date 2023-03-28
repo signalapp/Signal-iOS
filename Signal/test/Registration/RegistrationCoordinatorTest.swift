@@ -123,7 +123,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     public override class var defaultTestSuite: XCTestSuite {
         let testSuite = XCTestSuite(name: NSStringFromClass(self))
         addTests(to: testSuite, mode: .registering)
-        addTests(to: testSuite, mode: .reRegistering(e164: Stubs.e164, aci: Stubs.aci))
+        addTests(to: testSuite, mode: .reRegistering(.init(e164: Stubs.e164, aci: Stubs.aci)))
         return testSuite
     }
 
@@ -2997,8 +2997,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     previouslyEnteredE164: previouslyEnteredE164,
                     validationError: validationError
                 )))
-            case .reRegistering(let e164, _):
-                return .registration(.reregistration(.init(e164: e164, validationError: validationError)))
+            case .reRegistering(let params):
+                return .registration(.reregistration(.init(e164: params.e164, validationError: validationError)))
             case .changingNumber(let changeNumberParams):
                 switch validationError {
                 case .none:

@@ -78,7 +78,7 @@ extension SignalApp {
                     {
                         // A user who started re-registration before the new
                         // registration flow shipped; kick them to new re-reg.
-                        desiredMode = .reRegistering(e164: reregE164, aci: reregAci)
+                        desiredMode = .reRegistering(.init(e164: reregE164, aci: reregAci))
                     } else {
                         desiredMode = .registering
                     }

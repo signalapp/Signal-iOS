@@ -190,10 +190,16 @@ class RegistrationVerificationViewController: OWSViewController {
         }
     }
 
+    private var isViewAppeared = false
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         verificationCodeView.becomeFirstResponder()
+
+        showValidationErrorUiIfNecessary()
+
+        isViewAppeared = true
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -202,6 +208,8 @@ class RegistrationVerificationViewController: OWSViewController {
         if contextButton.isShowingContextMenu {
             contextButton.dismissContextMenu(animated: animated)
         }
+
+        isViewAppeared = false
     }
 
     public override func themeDidChange() {
@@ -304,7 +312,9 @@ class RegistrationVerificationViewController: OWSViewController {
             )
         )
 
-        showValidationErrorUiIfNecessary()
+        if isViewAppeared {
+            showValidationErrorUiIfNecessary()
+        }
 
         view.backgroundColor = Theme.backgroundColor
         titleLabel.textColor = .colorForRegistrationTitleLabel

@@ -66,16 +66,26 @@ public enum RegistrationStep: Equatable {
         /// We should tell the user their attempt has expired
         /// and they need to start over.
         case sessionInvalidated
+
         /// The user can no longer submit a verification code.
         /// This could be because the previously sent code expired,
         /// or because they used up their verification code attempts.
         /// In either case, they need to send a new code to proceed.
         case verificationCodeSubmissionUnavailable
+
+        /// The user had completed registration, but before finishing
+        /// post-registration steps they were deregistered, likely by
+        /// another device registering on the same number.
+        /// The only path forward is to reset _everything_ and re-register.
+        case becameDeregistered(reregParams: RegistrationMode.ReregistrationParams)
+
         /// A network error occurred. The user can probably fix this by
         /// checking their internet connection.
         case networkError
+
         /// A generic error occurred. Prefer to use other error types.
         case genericError
+
         // TODO[Registration]: define other error types.
         case todo
     }

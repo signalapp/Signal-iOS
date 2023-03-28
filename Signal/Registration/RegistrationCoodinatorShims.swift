@@ -326,7 +326,7 @@ extension Registration {
         case success
         case pushUnsupported(description: String)
         case networkError
-        case genericError
+        case genericError(Error)
     }
 }
 
@@ -388,7 +388,7 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
                 case PushRegistrationError.pushNotSupported(let description):
                     return .value(.pushUnsupported(description: description))
                 default:
-                    return .value(.genericError)
+                    return .value(.genericError(error))
                 }
             }
     }

@@ -309,6 +309,9 @@ public class RegistrationNavigationController: OWSNavigationController {
             case .sessionInvalidated, .genericError:
                 title = nil
                 message = CommonStrings.somethingWentWrongTryAgainLaterError
+            case .becameDeregistered(let reregParams):
+                handleDeregistrationReset(reregParams)
+                return nil
             case .todo:
                 fatalError("TODO[Registration] This should be removed")
             }
@@ -329,6 +332,31 @@ public class RegistrationNavigationController: OWSNavigationController {
             SignalApp.shared().showConversationSplitView()
             return nil
         }
+    }
+
+    private func handleDeregistrationReset(_ reregParams: RegistrationMode.ReregistrationParams) {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "DEREGISTRATION_NOTIFICATION",
+                comment: "Notification warning the user that they have been de-registered."
+            ),
+            message: nil
+        )
+        actionSheet.addAction(.init(
+            title: OWSLocalizedString(
+                "SETTINGS_REREGISTER_BUTTON",
+                comment: "Label for re-registration button."
+            ),
+            style: .default,
+            handler: { [weak self] _ in
+                guard let self else { return }
+                let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
+                SignalApp.shared().showRegistration(loader: loader, desiredMode: .reRegistering(reregParams))
+            }
+        ))
+        // We explicitly don't want the user to be able to dismiss.
+        actionSheet.isCancelable = false
+        self.presentActionSheet(actionSheet)
     }
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {

@@ -190,8 +190,8 @@ extension RegistrationMode {
         switch self {
         case .registering:
             return .registering(.init())
-        case .reRegistering(let e164, let aci):
-            return .reRegistering(.init(e164: e164, aci: aci))
+        case .reRegistering(let params):
+            return .reRegistering(.init(e164: params.e164, aci: params.aci))
         case .changingNumber(let params):
             return .changingNumber(.init(
                 oldE164: params.oldE164,
@@ -213,7 +213,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode {
         case .registering:
             return .registering
         case .reRegistering(let state):
-            return .reRegistering(e164: state.e164, aci: state.aci)
+            return .reRegistering(.init(e164: state.e164, aci: state.aci))
         case .changingNumber(let state):
             return .changingNumber(.init(
                 oldE164: state.oldE164,
