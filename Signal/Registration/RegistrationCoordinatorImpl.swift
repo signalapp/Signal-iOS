@@ -1152,10 +1152,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // If we are unable to talk to KBS, it got wiped and we can't
                     // recover. Give it all up and wipe our KBS info.
                     self.wipeInMemoryStateToPreventKBSPathAttempts()
-                    // "Skip" PIN entry, we can't use it anymore.
+                    self.inMemoryState.pinFromUser = nil
                     self.db.write { tx in
                         self.updatePersistedState(tx) {
-                            $0.hasSkippedPinEntry = true
+                            $0.hasExhaustedKBSRestoreAttempts = true
                         }
                     }
                     return .value(.pinAttemptsExhaustedAndMustCreateNewPin(
@@ -1470,12 +1470,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // the identity response is set.
             return nextStep()
         case .reglockFailure(let reglockFailure):
+            let reglockExpirationDate = self.deps.dateProvider().addingTimeInterval(TimeInterval(reglockFailure.timeRemainingMs / 1000))
+            guard persistedState.hasExhaustedKBSRestoreAttempts.negated else {
+                // If we have already exhausted our kbs backup attempts, we are stuck.
+                db.write { tx in
+                    // May as well store credentials, anyway.
+                    deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                    self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
+                        $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
+                    }
+                }
+                return nextStep()
+            }
             // We need the user to enter their PIN so we can get through reglock.
             // So we set up the state we need (the KBS credential)
             // and go to the next step which should look at the state and take us to the right place.
             db.write { tx in
                 deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
-                let reglockExpirationDate = self.deps.dateProvider().addingTimeInterval(TimeInterval(reglockFailure.timeRemainingMs / 1000))
                 self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                     $0.reglockState = .reglocked(credential: reglockFailure.kbsAuthCredential, expirationDate: reglockExpirationDate)
                 }
@@ -2064,7 +2075,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .backupMissing:
                     // If we are unable to talk to KBS, it got wiped, probably
                     // because we used up our guesses. We can't get past reglock.
+                    self.inMemoryState.pinFromUser = nil
+                    self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
                     self.db.write { tx in
+                        self.updatePersistedState(tx) {
+                            $0.hasExhaustedKBSRestoreAttempts = true
+                        }
                         self.updatePersistedSessionState(session: session, tx) {
                             $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                         }
