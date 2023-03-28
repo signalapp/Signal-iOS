@@ -273,16 +273,22 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    func buildGroupItem(_ groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) -> GroupConversationItem {
-        let isBlocked = self.blockingManager.isThreadBlocked(groupThread, transaction: transaction)
+    private func buildGroupItem(
+        _ groupThread: TSGroupThread,
+        isBlocked: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> GroupConversationItem {
         let dmConfig = groupThread.disappearingMessagesConfiguration(with: transaction)
         return GroupConversationItem(groupThreadId: groupThread.uniqueId,
                                      isBlocked: isBlocked,
                                      disappearingMessagesConfig: dmConfig)
     }
 
-    func buildContactItem(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> ContactConversationItem {
-        let isBlocked = self.blockingManager.isAddressBlocked(address, transaction: transaction)
+    private func buildContactItem(
+        _ address: SignalServiceAddress,
+        isBlocked: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> ContactConversationItem {
         let dmConfig = TSContactThread.getWithContactAddress(address, transaction: transaction)?.disappearingMessagesConfiguration(with: transaction)
 
         let contactName = contactsManager.displayName(for: address,
@@ -320,9 +326,19 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     return
                 }
 
+                let isThreadBlocked = self.blockingManager.isThreadBlocked(thread, transaction: transaction)
+                if isThreadBlocked {
+                    return
+                }
+
                 switch thread {
                 case let contactThread as TSContactThread:
-                    let item = self.buildContactItem(contactThread.contactAddress, transaction: transaction)
+                    let item = self.buildContactItem(
+                        contactThread.contactAddress,
+                        isBlocked: isThreadBlocked,
+                        transaction: transaction
+                    )
+
                     seenAddresses.insert(contactThread.contactAddress)
                     if self.sectionOptions.contains(.recents) && pinnedThreadIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
@@ -337,7 +353,13 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     guard groupThread.isLocalUserFullMember else {
                         return
                     }
-                    let item = self.buildGroupItem(groupThread, transaction: transaction)
+
+                    let item = self.buildGroupItem(
+                        groupThread,
+                        isBlocked: isThreadBlocked,
+                        transaction: transaction
+                    )
+
                     if self.sectionOptions.contains(.recents) && pinnedThreadIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
@@ -367,7 +389,21 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 }
                 seenAddresses.insert(address)
 
-                let contactItem = self.buildContactItem(address, transaction: transaction)
+                let isContactBlocked = self.blockingManager.isAddressBlocked(
+                    address,
+                    transaction: transaction
+                )
+
+                if isContactBlocked {
+                    return
+                }
+
+                let contactItem = self.buildContactItem(
+                    address,
+                    isBlocked: isContactBlocked,
+                    transaction: transaction
+                )
+
                 contactItems.append(contactItem)
             }
             contactItems.sort()
@@ -386,6 +422,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 includeImplicitGroupThreads: true,
                 excludeHiddenContexts: true,
                 prioritizeThreadsCreatedAfter: creationDate,
+                blockingManager: self.blockingManager,
                 transaction: transaction
             )
             if
@@ -412,14 +449,61 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         return firstly(on: DispatchQueue.global()) {
             Self.databaseStorage.read { transaction in
                 let groupItems = searchResults.groupThreads.compactMap { groupThread -> GroupConversationItem? in
-                    guard self.threadFilter(groupThread) else { return nil }
-                    guard groupThread.canSendChatMessagesToThread(ignoreAnnouncementOnly: true) else {
+                    guard
+                        self.threadFilter(groupThread),
+                        groupThread.canSendChatMessagesToThread(ignoreAnnouncementOnly: true)
+                    else {
                         return nil
                     }
-                    return self.buildGroupItem(groupThread, transaction: transaction)
+
+                    let isThreadBlocked = self.blockingManager.isThreadBlocked(
+                        groupThread,
+                        transaction: transaction
+                    )
+
+                    if isThreadBlocked {
+                        return nil
+                    }
+
+                    return self.buildGroupItem(
+                        groupThread,
+                        isBlocked: isThreadBlocked,
+                        transaction: transaction
+                    )
                 }
-                let contactItems = searchResults.signalAccounts.map { self.buildContactItem($0.recipientAddress, transaction: transaction) }
-                let storyItems = searchResults.storyThreads.compactMap { StoryConversationItem.from(thread: $0) }
+
+                let contactItems = searchResults.signalAccounts.compactMap { account -> ContactConversationItem? in
+                    let isAddressBlocked = self.blockingManager.isAddressBlocked(
+                        account.recipientAddress,
+                        transaction: transaction
+                    )
+
+                    if isAddressBlocked {
+                        return nil
+                    }
+
+                    return self.buildContactItem(
+                        account.recipientAddress,
+                        isBlocked: isAddressBlocked,
+                        transaction: transaction
+                    )
+                }
+
+                let storyItems = searchResults.storyThreads.compactMap { storyThread -> StoryConversationItem? in
+                    let isThreadBlocked = self.blockingManager.isThreadBlocked(
+                        storyThread,
+                        transaction: transaction
+                    )
+
+                    if isThreadBlocked {
+                        return nil
+                    }
+
+                    return StoryConversationItem.from(
+                        thread: storyThread,
+                        isBlocked: isThreadBlocked
+                    )
+                }
 
                 return ConversationCollection(
                     contactConversations: contactItems,

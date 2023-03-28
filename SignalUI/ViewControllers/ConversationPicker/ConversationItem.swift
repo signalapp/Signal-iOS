@@ -119,6 +119,25 @@ struct ContactConversationItem: Dependencies {
     let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
     let contactName: String
     let comparableName: String
+
+    init(
+        address: SignalServiceAddress,
+        isBlocked: Bool,
+        disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?,
+        contactName: String,
+        comparableName: String
+    ) {
+        owsAssertBeta(
+            !isBlocked,
+            "Should never get here with a blocked contact!"
+        )
+
+        self.address = address
+        self.isBlocked = isBlocked
+        self.disappearingMessagesConfig = disappearingMessagesConfig
+        self.contactName = contactName
+        self.comparableName = comparableName
+    }
 }
 
 // MARK: -
@@ -173,6 +192,21 @@ public struct GroupConversationItem: Dependencies {
     public let groupThreadId: String
     public let isBlocked: Bool
     public let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
+
+    init(
+        groupThreadId: String,
+        isBlocked: Bool,
+        disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
+    ) {
+        owsAssertBeta(
+            !isBlocked,
+            "Should never get here with a blocked group!"
+        )
+
+        self.groupThreadId = groupThreadId
+        self.isBlocked = isBlocked
+        self.disappearingMessagesConfig = disappearingMessagesConfig
+    }
 
     // We don't want to keep this in memory, because the group model
     // can be very large.
@@ -252,6 +286,7 @@ public struct StoryConversationItem {
         includeImplicitGroupThreads: Bool,
         excludeHiddenContexts: Bool,
         prioritizeThreadsCreatedAfter: Date? = nil,
+        blockingManager: BlockingManager,
         transaction: SDSAnyReadTransaction
     ) -> [StoryConversationItem] {
         func sortTime(
@@ -295,11 +330,26 @@ public struct StoryConversationItem {
             }
             .map(\.0)
             .compactMap { thread -> Self? in
-                return .from(thread: thread)
+                let isThreadBlocked = blockingManager.isThreadBlocked(
+                    thread,
+                    transaction: transaction
+                )
+
+                if isThreadBlocked {
+                    return nil
+                }
+
+                return .from(
+                    thread: thread,
+                    isBlocked: isThreadBlocked
+                )
             }
     }
 
-    public static func from(thread: TSThread) -> Self? {
+    public static func from(
+        thread: TSThread,
+        isBlocked: Bool
+    ) -> Self? {
         let backingItem: StoryConversationItem.ItemType? = {
             if let groupThread = thread as? TSGroupThread {
                 guard groupThread.isLocalUserFullMember else {
@@ -307,7 +357,7 @@ public struct StoryConversationItem {
                 }
                 return .groupStory(GroupConversationItem(
                     groupThreadId: groupThread.uniqueId,
-                    isBlocked: false,
+                    isBlocked: isBlocked,
                     disappearingMessagesConfig: nil
                 ))
             } else if let privateStoryThread = thread as? TSPrivateStoryThread {
@@ -329,7 +379,7 @@ public struct StoryConversationItem {
 
 // MARK: -
 
-extension StoryConversationItem: ConversationItem, Dependencies {
+extension StoryConversationItem: ConversationItem {
     public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
 
     public var limitsVideoAttachmentLengthForStories: Bool { return true }
