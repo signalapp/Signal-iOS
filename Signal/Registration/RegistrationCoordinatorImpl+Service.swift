@@ -307,8 +307,9 @@ extension RegistrationCoordinatorImpl {
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
                 .map(on: schedulers.sync) { response in
                     guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
-                        // TODO[Registration]: what other error codes can come up here?
-                        return OWSAssertionError("Got unexpected response code from update attributes request.")
+                        // Errors are undifferentiated; the only actual error we can get is an unauthenticated
+                        // one and there isn't any way to handle that as different from a, say server 500.
+                        return OWSAssertionError("Got unexpected response code from update attributes request: \(response.responseStatusCode).")
                     }
                     return nil
                 }
