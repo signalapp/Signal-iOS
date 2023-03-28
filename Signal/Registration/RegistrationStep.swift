@@ -37,9 +37,9 @@ public enum RegistrationStep: Equatable {
     /// considered part of this same "step" and is just a UI detail.
     case pinEntry(RegistrationPinState)
 
-    /// All PIN attempts have been exhausted. The user can still register,
-    /// but their KBS data should be wiped.
-    case pinAttemptsExhaustedAndMustCreateNewPin
+    /// All PIN attempts have been exhausted. The user may still be able to register,
+    /// but they cannot recover their kbs backups.
+    case pinAttemptsExhaustedAndMustCreateNewPin(RegistrationPinAttemptsExhaustedViewState)
 
     /// At _any_ point during session-based registration, a captcha challenge may be
     /// requested.

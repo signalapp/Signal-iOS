@@ -237,16 +237,19 @@ public class RegistrationNavigationController: OWSNavigationController {
                     }
                 }
             )
-        case .pinAttemptsExhaustedAndMustCreateNewPin:
+        case .pinAttemptsExhaustedAndMustCreateNewPin(let state):
             return Controller(
                 type: RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.self,
                 make: { presenter in
                     return RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController(
+                        state: state,
                         presenter: presenter
                     )
                 },
-                // No state to update.
-                update: nil
+                update: {
+                    $0.updateState(state)
+                    return nil
+                }
             )
         case .captchaChallenge:
             return Controller(

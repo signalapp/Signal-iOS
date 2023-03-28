@@ -241,7 +241,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     inMemoryState.pinFromUser = nil
                     inMemoryState.pinFromDisk = nil
                     self.wipeInMemoryStateToPreventKBSPathAttempts()
-                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin)
+                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin(
+                        .init(mode: .restoringRegistrationRecoveryPassword)
+                    ))
                 } else {
                     let remainingAttempts = Constants.maxLocalPINGuesses - numberOfWrongGuesses
                     return .value(.pinEntry(RegistrationPinState(
@@ -1156,7 +1158,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             $0.hasSkippedPinEntry = true
                         }
                     }
-                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin)
+                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin(
+                        .init(mode: .restoringRegistrationRecoveryPassword)
+                    ))
                 case .networkError:
                     if retriesLeft > 0 {
                         return self.restoreKBSMasterSecretForAuthCredentialPath(
@@ -2065,7 +2069,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                         }
                     }
-                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin)
+                    return self.nextStep()
                 case .networkError:
                     if retriesLeft > 0 {
                         return self.restoreKBSMasterSecretForSessionPathReglock(
@@ -2364,7 +2368,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.db.write { tx in
                         self.updatePersistedState(tx) { $0.hasExhaustedKBSRestoreAttempts = true }
                     }
-                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin)
+                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin(
+                        .init(mode: .restoringBackup)
+                    ))
                 case .networkError:
                     if retriesLeft > 0 {
                         return self.restoreKBSBackupPostRegistration(

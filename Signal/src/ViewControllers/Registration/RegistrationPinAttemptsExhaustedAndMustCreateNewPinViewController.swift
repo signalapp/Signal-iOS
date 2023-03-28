@@ -5,6 +5,21 @@
 
 import Foundation
 import SafariServices
+import SignalMessaging
+
+public struct RegistrationPinAttemptsExhaustedViewState: Equatable {
+    public enum Mode: Equatable {
+        /// We've already registered and were attempting to restore backups from kbs
+        /// but ran out of guesses; we can proceed without backups.
+        case restoringBackup
+        /// We were attempting to use the PIN to bypass sms-based registration.
+        /// We may or may not need the PIN for reglock later; for now we can fall back
+        /// to sms based verification.
+        case restoringRegistrationRecoveryPassword
+    }
+
+    public let mode: Mode
+}
 
 // MARK: - RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter
 
@@ -17,10 +32,21 @@ protocol RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter: AnyObject
 class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSViewController {
     private var learnMoreURL: URL { URL(string: "https://support.signal.org/hc/articles/360007059792")! }
 
-    public init(presenter: RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter) {
+    private var state: RegistrationPinAttemptsExhaustedViewState
+
+    public init(
+        state: RegistrationPinAttemptsExhaustedViewState,
+        presenter: RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter
+    ) {
+        self.state = state
         self.presenter = presenter
 
         super.init()
+    }
+
+    public func updateState(_ newState: RegistrationPinAttemptsExhaustedViewState) {
+        self.state = newState
+        self.render()
     }
 
     @available(*, unavailable)
@@ -54,20 +80,13 @@ class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSView
     }()
 
     private lazy var explanationLabel: UILabel = {
-        let result = UILabel.explanationLabelForRegistration(text: OWSLocalizedString(
-            "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION",
-            comment: "Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled."
-        ))
+        let result = UILabel.explanationLabelForRegistration(text: "")
         result.accessibilityIdentifier = "registration.pinAttemptsExhausted.explanationLabel"
         return result
     }()
 
-    private lazy var createNewPinButton: UIView = {
-        let title = OWSLocalizedString(
-            "ONBOARDING_2FA_CREATE_NEW_PIN",
-            comment: "Label for the 'create new pin' button when reglock is disabled during onboarding."
-        )
-        let result = OWSButton(title: title) { [weak self] in
+    private lazy var continueButton: OWSButton = {
+        let result = OWSButton(title: "") { [weak self] in
             self?.presenter?.acknowledgePinGuessesExhausted()
         }
         result.dimsWhenHighlighted = true
@@ -116,8 +135,8 @@ class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSView
 
         stackView.addArrangedSubview(UIView.vStretchingSpacer())
 
-        stackView.addArrangedSubview(createNewPinButton)
-        stackView.setCustomSpacing(24, after: createNewPinButton)
+        stackView.addArrangedSubview(continueButton)
+        stackView.setCustomSpacing(24, after: continueButton)
 
         stackView.addArrangedSubview(learnMoreButton)
 
@@ -129,6 +148,27 @@ class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSView
         titleLabel.textColor = Theme.primaryTextColor
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         learnMoreButton.setTitleColor(Theme.accentBlueColor)
+
+        switch state.mode {
+        case .restoringBackup:
+            explanationLabel.text = OWSLocalizedString(
+                "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION",
+                comment: "Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled."
+            )
+            continueButton.setTitle(
+                OWSLocalizedString(
+                    "ONBOARDING_2FA_CREATE_NEW_PIN",
+                    comment: "Label for the 'create new pin' button when reglock is disabled during onboarding."
+                ),
+                for: .normal
+            )
+        case .restoringRegistrationRecoveryPassword:
+            explanationLabel.text = OWSLocalizedString(
+                "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION",
+                comment: "Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled."
+            )
+            continueButton.setTitle(CommonStrings.continueButton, for: .normal)
+        }
     }
 
     // MARK: Events
