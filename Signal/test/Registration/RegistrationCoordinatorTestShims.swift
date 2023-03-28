@@ -146,7 +146,7 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
     public var clearLocalPinCodeMock: (() -> Void)?
 
     public func clearLocalPinCode(_ tx: SignalServiceKit.DBWriteTransaction) {
-        return clearLocalPinCodeMock!()
+        clearLocalPinCodeMock?()
     }
 
     public var isReglockEnabledMock: (() -> Bool)?

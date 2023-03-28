@@ -265,8 +265,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         updatePersistedState(tx) {
                             $0.hasSkippedPinEntry = true
                         }
-                        deps.kbs.clearKeys(transaction: tx)
-                        deps.ows2FAManager.clearLocalPinCode(tx)
+                        switch self.mode {
+                        case .changingNumber:
+                            break
+                        case .registering, .reRegistering:
+                            deps.kbs.clearKeys(transaction: tx)
+                            deps.ows2FAManager.clearLocalPinCode(tx)
+                        }
                     }
                     inMemoryState.pinFromUser = nil
                     inMemoryState.pinFromDisk = nil
@@ -317,10 +322,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     $0.hasGivenUpTryingToRestoreWithKBS = true
                 }
             }
-            // Whenever we do this, wipe the keys we've got.
-            // We don't want to have them and use then implicitly later.
-            deps.kbs.clearKeys(transaction: tx)
-            deps.ows2FAManager.clearLocalPinCode(tx)
+            switch self.mode {
+            case .changingNumber:
+                break
+            case .registering, .reRegistering:
+                // Whenever we do this, wipe the keys we've got.
+                // We don't want to have them and use then implicitly later.
+                deps.kbs.clearKeys(transaction: tx)
+                deps.ows2FAManager.clearLocalPinCode(tx)
+            }
         }
         inMemoryState.pinFromUser = nil
         self.wipeInMemoryStateToPreventKBSPathAttempts()
@@ -1071,18 +1081,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nextStep()
 
         case .reglockFailure(let reglockFailure):
-            // Both the reglock and the reg recovery password are derived from the KBS master key.
-            // Its weird that we'd get this response implying the recovery password is right
-            // but the reglock token is wrong, but lets assume our kbs master secret is just
-            // wrong entirely and reset _all_ KBS state so we go through sms verification.
-            db.write { tx in
-                // Store it and wipe it so we also overwrite any existing credential for the same user.
-                // We want to wipe the credential on disk too; we don't want to retry it on next app launch.
-                deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
-                deps.kbsAuthCredentialStore.deleteInvalidCredentials([reglockFailure.kbsAuthCredential], tx)
-                // Clear the KBS master key locally; we failed reglock so we know its wrong
-                // and useless anyway.
-                deps.kbs.clearKeys(transaction: tx)
+            switch self.mode {
+            case .changingNumber:
+                break
+            case .registering, .reRegistering:
+                // Both the reglock and the reg recovery password are derived from the KBS master key.
+                // Its weird that we'd get this response implying the recovery password is right
+                // but the reglock token is wrong, but lets assume our kbs master secret is just
+                // wrong entirely and reset _all_ KBS state so we go through sms verification.
+                db.write { tx in
+                    // Store it and wipe it so we also overwrite any existing credential for the same user.
+                    // We want to wipe the credential on disk too; we don't want to retry it on next app launch.
+                    deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                    deps.kbsAuthCredentialStore.deleteInvalidCredentials([reglockFailure.kbsAuthCredential], tx)
+                    // Clear the KBS master key locally; we failed reglock so we know its wrong
+                    // and useless anyway.
+                    deps.kbs.clearKeys(transaction: tx)
+                    deps.ows2FAManager.clearLocalPinCode(tx)
+                }
             }
             wipeInMemoryStateToPreventKBSPathAttempts()
 
@@ -2072,7 +2088,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // Don't keep trying to send a code.
                 self.inMemoryState.pendingCodeTransport = nil
                 self.db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
-                return .value(.showErrorSheet(.todo))
+                return .value(.showErrorSheet(.genericError))
             case .invalidSession:
                 self.db.write { self.resetSession($0) }
                 return .value(.showErrorSheet(.sessionInvalidated))
@@ -2440,7 +2456,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             }
                             guard maybeError == nil else {
                                 Logger.error("Unable to update account attributes for manual message fetch with error: \(String(describing: maybeError))")
-                                return .value(.showErrorSheet(.todo))
+                                return .value(.showErrorSheet(.genericError))
                             }
                             strongSelf.db.write { tx in
                                 strongSelf.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx)

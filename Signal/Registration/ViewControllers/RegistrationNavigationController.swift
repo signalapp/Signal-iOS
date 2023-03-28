@@ -320,8 +320,6 @@ public class RegistrationNavigationController: OWSNavigationController {
             case .becameDeregistered(let reregParams):
                 handleDeregistrationReset(reregParams)
                 return nil
-            case .todo:
-                fatalError("TODO[Registration] This should be removed")
             }
             let actionSheet = ActionSheetController(title: title, message: message)
             actionSheet.addAction(.init(title: CommonStrings.okButton, style: .default, handler: { [weak self] _ in

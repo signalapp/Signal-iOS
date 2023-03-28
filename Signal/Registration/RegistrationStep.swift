@@ -85,9 +85,6 @@ public enum RegistrationStep: Equatable {
 
         /// A generic error occurred. Prefer to use other error types.
         case genericError
-
-        // TODO[Registration]: define other error types.
-        case todo
     }
 
     /// Special cases; should display an error on the current screen, whatever it is.
