@@ -37,6 +37,15 @@ public protocol Schedulers {
 
     /// Returns the shared serial queue appropriate for the provided QoS
     func sharedQueue(at qos: DispatchQoS) -> Scheduler
+
+    /// Equivalent to the `DispatchQueue` initializer.
+    func queue(
+        label: String,
+        qos: DispatchQoS,
+        attributes: DispatchQueue.Attributes,
+        autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency,
+        target: DispatchQueue?
+    ) -> Scheduler
 }
 
 extension Schedulers {
@@ -44,5 +53,24 @@ extension Schedulers {
     /// Analogous to `DispatchQueue.global()`.
     public func global() -> Scheduler {
         return global(qos: .default)
+    }
+
+    /// Equivalent to the `DispatchQueue` initializer.
+    public func queue(label: String) -> Scheduler {
+        return queue(label: label, qos: .unspecified)
+    }
+
+    /// Equivalent to the `DispatchQueue` initializer.
+    public func queue(
+        label: String,
+        qos: DispatchQoS
+    ) -> Scheduler {
+        return queue(
+            label: label,
+            qos: qos,
+            attributes: [],
+            autoreleaseFrequency: .inherit,
+            target: nil
+        )
     }
 }

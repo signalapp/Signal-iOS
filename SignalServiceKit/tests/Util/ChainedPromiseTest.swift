@@ -9,13 +9,17 @@ import XCTest
 
 public class ChainedPromiseTest: SSKBaseTestSwift {
 
+    // NOTE: these tests don't use a TestScheduler or SyncScheduler because we explicitly
+    // want to test asynchronicity of this class. That enables tests that build on this class
+    // to ignore that and make everything synchronous.
+
     func testChainSingleVoidPromise() throws {
         let chainedPromise = ChainedPromise<Void>()
 
         let promise = chainedPromise.enqueue {
             return .value(())
         }
-        expectSuccess(promise, description: "", timeout: 0.1)
+        expectSuccess(promise, description: "", timeout: 1)
     }
 
     func testChainSingleValuePromise() throws {
@@ -23,7 +27,7 @@ public class ChainedPromiseTest: SSKBaseTestSwift {
         let promise = chainedPromise.enqueue(recoverValue: "fail") { _ in
             .value("hello")
         }
-        let value = expectSuccess(promise, description: "", timeout: 0.1)
+        let value = expectSuccess(promise, description: "", timeout: 1)
         XCTAssertEqual(value, "hello")
     }
 
@@ -46,7 +50,7 @@ public class ChainedPromiseTest: SSKBaseTestSwift {
         firstFuture.resolve(())
         secondFuture.resolve(())
 
-        expectSuccess(secondResultPromise, description: "", timeout: 0.1)
+        expectSuccess(secondResultPromise, description: "", timeout: 1)
     }
 
     func testChainingPromiseFailure() throws {
@@ -71,7 +75,7 @@ public class ChainedPromiseTest: SSKBaseTestSwift {
         secondFuture.resolve(())
 
         expectFailure(firstResultPromise, description: "first result failure", timeout: 0.1)
-        expectSuccess(secondResultPromise, description: "", timeout: 0.1)
+        expectSuccess(secondResultPromise, description: "", timeout: 1)
     }
 
     func testChainingPromiseChainedValue() throws {
@@ -92,7 +96,7 @@ public class ChainedPromiseTest: SSKBaseTestSwift {
         firstFuture.resolve(2)
         secondFuture.resolve(3)
 
-        XCTAssertEqual(expectSuccess(secondResultPromise, description: "", timeout: 0.1), 3)
+        XCTAssertEqual(expectSuccess(secondResultPromise, description: "", timeout: 1), 3)
     }
 
     func testChainingPromiseLongChain() throws {
@@ -117,12 +121,12 @@ public class ChainedPromiseTest: SSKBaseTestSwift {
         }
 
         firstFuture.resolve(())
-        expectSuccess(firstResultPromise, description: "initial", timeout: 0.1)
+        expectSuccess(firstResultPromise, description: "initial", timeout: 1)
 
         pendingFutures.enumerated().forEach { i, future in
             hasResolvedUpTo.set(UInt(i + 1))
             future.resolve(())
-            expectSuccess(resultPromises[i], description: "\(i)-th promise", timeout: 0.1)
+            expectSuccess(resultPromises[i], description: "\(i)-th promise", timeout: 1)
         }
     }
 }

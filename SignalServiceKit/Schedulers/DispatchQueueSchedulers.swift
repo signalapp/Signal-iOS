@@ -38,4 +38,20 @@ public class DispatchQueueSchedulers: Schedulers {
     public func sharedQueue(at qos: DispatchQoS) -> Scheduler {
         return DispatchQueue.sharedQueue(at: qos)
     }
+
+    public func queue(
+        label: String,
+        qos: DispatchQoS,
+        attributes: DispatchQueue.Attributes,
+        autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency,
+        target: DispatchQueue?
+    ) -> Scheduler {
+        return DispatchQueue(
+            label: label,
+            qos: qos,
+            attributes: attributes,
+            autoreleaseFrequency: autoreleaseFrequency,
+            target: target
+        )
+    }
 }

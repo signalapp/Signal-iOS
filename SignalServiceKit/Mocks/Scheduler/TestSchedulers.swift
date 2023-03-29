@@ -38,6 +38,16 @@ public class TestSchedulers: Schedulers {
     public func global(qos: DispatchQoS.QoSClass) -> Scheduler {
         return scheduler
     }
+
+    public func queue(
+        label: String,
+        qos: DispatchQoS,
+        attributes: DispatchQueue.Attributes,
+        autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency,
+        target: DispatchQueue?
+    ) -> Scheduler {
+        return scheduler
+    }
 }
 
 #endif

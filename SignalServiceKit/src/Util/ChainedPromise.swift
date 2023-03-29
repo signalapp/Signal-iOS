@@ -35,7 +35,7 @@ import Foundation
 ///
 public class ChainedPromise<Value> {
 
-    private let queue: DispatchQueue
+    private let scheduler: Scheduler
     private var currentPromise: Promise<Value>
 
     /// Create a new ChainedPromise.
@@ -44,9 +44,9 @@ public class ChainedPromise<Value> {
     /// blocks of work on it.
     ///
     /// - Parameter initialValue: the value that will be used as the "previous value" input given to the first enqueued block.
-    /// - Parameter queue: The queue to use to serialize all calls. Defaults to a new unique serial background queue.
-    public init(initialValue: Value, queue: DispatchQueue = DispatchQueue(label: UUID().uuidString)) {
-        self.queue = queue
+    /// - Parameter scheduler: The scheduler to use to serialize all calls. Defaults to a new unique serial background queue.
+    public init(initialValue: Value, scheduler: Scheduler = DispatchQueue(label: UUID().uuidString)) {
+        self.scheduler = scheduler
         self.currentPromise = .value(initialValue)
     }
 
@@ -94,9 +94,9 @@ extension ChainedPromise where Value == Void {
     /// Each ChainedPromise is independent; you typically create a single instance and enqueue multiple
     /// blocks of work on it.
     ///
-    /// - Parameter queue: The queue to use to serialize all calls. Defaults to a new unique serial background queue.
-    convenience init(queue: DispatchQueue = DispatchQueue(label: UUID().uuidString)) {
-        self.init(initialValue: (), queue: queue)
+    /// - Parameter scheduler: The scheduler to use to serialize all calls. Defaults to a new unique serial background queue.
+    convenience init(scheduler: Scheduler = DispatchQueue(label: UUID().uuidString)) {
+        self.init(initialValue: (), scheduler: scheduler)
     }
 
     /// Enqueue a block of work to be executed when all previous enqueued work has completed.
@@ -136,13 +136,13 @@ extension ChainedPromise {
         recoverValue: Value
     ) -> Promise<Value> {
         let (returnPromise, returnFuture) = Promise<Value>.pending()
-        queue.async {
-            let newPromise = self.currentPromise.then(on: self.queue) { prevValue in
+        scheduler.asyncIfNecessary {
+            let newPromise = self.currentPromise.then(on: self.scheduler) { prevValue in
                 return nextPromise(prevValue)
             }
-            returnFuture.resolve(with: newPromise)
+            returnFuture.resolve(on: SyncScheduler(), with: newPromise)
             self.currentPromise = newPromise
-                .recover(on: self.queue) { _ -> Promise<Value> in .value(recoverValue) }
+                .recover(on: SyncScheduler()) { _ -> Promise<Value> in .value(recoverValue) }
         }
         return returnPromise
     }
@@ -153,14 +153,14 @@ extension ChainedPromise {
         map: @escaping (T) -> Value
     ) -> Promise<T> {
         let (returnPromise, returnFuture) = Promise<T>.pending()
-        queue.async {
-            let newPromise = self.currentPromise.then(on: self.queue) { prevValue in
+        scheduler.asyncIfNecessary {
+            let newPromise = self.currentPromise.then(on: self.scheduler) { prevValue in
                 return nextPromise(prevValue)
             }
-            returnFuture.resolve(with: newPromise)
+            returnFuture.resolve(on: SyncScheduler(), with: newPromise)
             self.currentPromise = newPromise
-                .map(on: self.queue, map)
-                .recover(on: self.queue) { _ -> Promise<Value> in .value(recoverValue) }
+                .map(on: SyncScheduler(), map)
+                .recover(on: SyncScheduler()) { _ -> Promise<Value> in .value(recoverValue) }
         }
         return returnPromise
     }

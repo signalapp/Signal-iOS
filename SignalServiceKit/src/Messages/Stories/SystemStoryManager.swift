@@ -36,20 +36,28 @@ public class OnboardingStoryManagerFilesystem: NSObject {
 public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProtocol {
 
     private let fileSystem: OnboardingStoryManagerFilesystem.Type
+    private let schedulers: Schedulers
 
     private let kvStore = SDSKeyValueStore(collection: "OnboardingStory")
 
-    private let queue = DispatchQueue(label: "org.signal.story.onboarding", qos: .background)
+    private lazy var queue = schedulers.queue(label: "org.signal.story.onboarding", qos: .background)
 
-    private lazy var chainedPromise = ChainedPromise<Void>(queue: queue)
+    private lazy var chainedPromise = ChainedPromise<Void>(scheduler: queue)
 
     @objc
     public override convenience init() {
-        self.init(fileSystem: OnboardingStoryManagerFilesystem.self)
+        self.init(
+            fileSystem: OnboardingStoryManagerFilesystem.self,
+            schedulers: DispatchQueueSchedulers()
+        )
     }
 
-    init(fileSystem: OnboardingStoryManagerFilesystem.Type) {
+    init(
+        fileSystem: OnboardingStoryManagerFilesystem.Type,
+        schedulers: Schedulers
+    ) {
         self.fileSystem = fileSystem
+        self.schedulers = schedulers
         super.init()
 
         if CurrentAppContext().isMainApp {
@@ -136,7 +144,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     public func setSystemStoriesHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction) {
         var changedRowIds = [Int64]()
         defer {
-            DispatchQueue.main.async {
+            schedulers.main.async {
                 self.stateChangeObservers.forEach { $0.systemStoryHiddenStateDidChange(rowIds: changedRowIds) }
             }
         }
@@ -311,13 +319,14 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 // At this point, we will have synced the AccountRecord, which would call
                 // `SystemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice()` and write
                 // to the database. Read from the database to get whatever the latest value is.
-                return Self.databaseStorage.read(.promise) { transaction in
+                return .value(Self.databaseStorage.read { transaction in
                     return strongSelf.onboardingStoryViewStatus(transaction: transaction)
-                }
+                })
             }
     }
 
     private func downloadOnboardingStoryIfUndownloaded() -> Promise<Void> {
+        let queue = self.queue
         return checkOnboardingStoryDownloadStatus()
             .then(on: queue) { [weak self] (downloadStatus: OnboardingStoryDownloadStatus) -> Promise<Void> in
                 guard !downloadStatus.isDownloaded else {
@@ -329,32 +338,36 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 }
                 let urlSession = Self.signalService.urlSessionForUpdates2()
                 return strongSelf.fetchFilenames(urlSession: urlSession)
-                    .then(on: strongSelf.queue) { [weak self] (fileNames: [String]) -> Promise<[TSAttachmentStream]> in
+                    .then(on: queue) { [weak self] (fileNames: [String]) -> Promise<[TSAttachmentStream]> in
                         let promises = fileNames.compactMap {
                             self?.downloadOnboardingAsset(urlSession: urlSession, url: $0)
                         }
-                        return Promise.when(fulfilled: promises)
+                        return Promise.when(on: SyncScheduler(), fulfilled: promises)
                     }
-                    .then(on: strongSelf.queue) { [weak self] (attachmentStreams: [TSAttachmentStream]) -> Promise<Void> in
+                    .then(on: queue) { [weak self] (attachmentStreams: [TSAttachmentStream]) -> Promise<Void> in
                         guard let strongSelf = self else {
                             return .init(error: OWSAssertionError("SystemStoryManager unretained"))
                         }
-                        return strongSelf.databaseStorage.write(.promise) { transaction in
-                            let uniqueIds = try strongSelf.createStoryMessages(
-                                attachmentStreams: attachmentStreams,
-                                transaction: transaction
-                            )
-                            try strongSelf.markOnboardingStoryDownloaded(
-                                messageUniqueIds: uniqueIds,
-                                transaction: transaction
-                            )
+                        do {
+                            return .value(try strongSelf.databaseStorage.write { transaction in
+                                let uniqueIds = try strongSelf.createStoryMessages(
+                                    attachmentStreams: attachmentStreams,
+                                    transaction: transaction
+                                )
+                                try strongSelf.markOnboardingStoryDownloaded(
+                                    messageUniqueIds: uniqueIds,
+                                    transaction: transaction
+                                )
+                            })
+                        } catch {
+                            return .init(error: error)
                         }
                     }
                 }
     }
 
     private func checkOnboardingStoryDownloadStatus(forceDeletingIfDownloaded: Bool = false) -> Promise<OnboardingStoryDownloadStatus> {
-        return databaseStorage.write(.promise) { transaction -> OnboardingStoryDownloadStatus in
+        let status = databaseStorage.write { transaction -> OnboardingStoryDownloadStatus in
             let status = self.onboardingStoryDownloadStatus(transaction: transaction)
             if status.isDownloaded {
                 // clean up opportunistically.
@@ -365,12 +378,12 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 )
             }
             return status
-        }.map(on: queue) { status -> OnboardingStoryDownloadStatus in
-            DispatchQueue.main.async {
-                self.beginObservingOnboardingStoryEventsIfNeeded(downloadStatus: status)
-            }
-            return status
         }
+
+        schedulers.main.async {
+            self.beginObservingOnboardingStoryEventsIfNeeded(downloadStatus: status)
+        }
+        return .value(status)
     }
 
     // MARK: Story Deletion
@@ -441,6 +454,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         urlSession: OWSURLSessionProtocol
     ) -> Promise<[String]> {
         return urlSession.dataTaskPromise(
+            on: schedulers.global(),
             Constants.manifestPath,
             method: .get
         ).map(on: queue) { (response: HTTPResponse) throws -> [String] in
@@ -470,6 +484,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         url: String
     ) -> Promise<TSAttachmentStream> {
         return urlSession.downloadTaskPromise(
+            on: schedulers.global(),
             url,
             method: .get
         ).map(on: self.queue) { [fileSystem] result in
