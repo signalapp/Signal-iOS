@@ -80,6 +80,8 @@ public class RegistrationNavigationController: OWSNavigationController {
     private func _pushNextController(_ step: Guarantee<RegistrationStep>) {
         isLoading = true
         step.done(on: DispatchQueue.main) { [weak self] step in
+            Logger.info("Pushing registration step: \(step.logSafeString)")
+
             guard let self else {
                 return
             }

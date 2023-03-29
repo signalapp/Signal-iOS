@@ -101,4 +101,26 @@ public enum RegistrationStep: Equatable {
 
     /// Special case; done with the registration flow!
     case done
+
+    // MARK: - Logging
+
+    public var logSafeString: String {
+        switch self {
+        case .registrationSplash: return "registrationSplash"
+        case .changeNumberSplash: return "changeNumberSplash"
+        case .permissions: return "permissions"
+        case .phoneNumberEntry: return "phoneNumberEntry"
+        case .verificationCodeEntry: return "verificationCodeEntry"
+        case .transferSelection: return "transferSelection"
+        case .pinEntry: return "pinEntry"
+        case .pinAttemptsExhaustedAndMustCreateNewPin: return "pinAttemptsExhaustedAndMustCreateNewPin"
+        case .captchaChallenge: return "captchaChallenge"
+        case .reglockTimeout: return "reglockTimeout"
+        case .phoneNumberDiscoverability: return "phoneNumberDiscoverability"
+        case .setupProfile: return "setupProfile"
+        case .showErrorSheet: return "showErrorSheet"
+        case .appUpdateBanner: return "appUpdateBanner"
+        case .done: return "done"
+        }
+    }
 }

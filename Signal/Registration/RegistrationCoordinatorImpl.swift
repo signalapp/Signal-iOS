@@ -34,6 +34,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     // MARK: - Public API
 
     public func switchToSecondaryDeviceLinking() -> Bool {
+        Logger.info("")
+
         switch mode {
         case .registering:
             if persistedState.hasShownSplash {
@@ -49,9 +51,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func exitRegistration() -> Bool {
+        Logger.info("")
+
         guard canExitRegistrationFlow() else {
+            Logger.warn("User can't exit registration now")
             return false
         }
+
         switch mode {
         case .registering, .reRegistering:
             // Preserve all state so they can come back and pick up
@@ -83,6 +89,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func continueFromSplash() -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         db.write { tx in
             self.updatePersistedState(tx) {
                 $0.hasShownSplash = true
@@ -92,6 +100,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func requestPermissions() -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         // Notifications first, then contacts if needed.
         return deps.pushRegistrationManager.registerUserNotificationSettings()
             .then(on: schedulers.main) { [weak self] in
@@ -112,11 +122,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func submitProspectiveChangeNumberE164(_ e164: E164) -> Guarantee<RegistrationStep> {
+        Logger.info("")
         self.inMemoryState.changeNumberProspectiveE164 = e164
         return nextStep()
     }
 
     public func submitE164(_ e164: E164) -> Guarantee<RegistrationStep> {
+        Logger.info("")
         let pathway = getPathway()
         db.write { tx in
             updatePersistedState(tx) {
@@ -157,6 +169,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func requestChangeE164() -> Guarantee<RegistrationStep> {
+        Logger.info("")
         db.write { tx in
             updatePersistedState(tx) {
                 $0.e164 = nil
@@ -174,6 +187,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func requestSMSCode() -> Guarantee<RegistrationStep> {
+        Logger.info("")
         switch getPathway() {
         case
                 .opening,
@@ -190,6 +204,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func requestVoiceCode() -> Guarantee<RegistrationStep> {
+        Logger.info("")
         switch getPathway() {
         case
                 .opening,
@@ -206,6 +221,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func submitVerificationCode(_ code: String) -> Guarantee<RegistrationStep> {
+        Logger.info("")
         switch getPathway() {
         case
                 .opening,
@@ -221,6 +237,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func submitCaptcha(_ token: String) -> Guarantee<RegistrationStep> {
+        Logger.info("")
         switch getPathway() {
         case
                 .opening,
@@ -236,16 +253,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func setPINCodeForConfirmation(_ blob: RegistrationPinConfirmationBlob) -> Guarantee<RegistrationStep> {
+        Logger.info("")
         inMemoryState.unconfirmedPinBlob = blob
         return nextStep()
     }
 
     public func resetUnconfirmedPINCode() -> Guarantee<RegistrationStep> {
+        Logger.info("")
         inMemoryState.unconfirmedPinBlob = nil
         return nextStep()
     }
 
     public func submitPINCode(_ code: String) -> Guarantee<RegistrationStep> {
+        Logger.info("")
         switch getPathway() {
         case .registrationRecoveryPassword:
             if
@@ -302,6 +322,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func skipPINCode() -> Guarantee<RegistrationStep> {
+        Logger.info("")
         let shouldGiveUpTryingToRestoreWithKBS: Bool = {
             switch getPathway() {
             case
@@ -338,6 +359,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func skipDeviceTransfer() -> Guarantee<RegistrationStep> {
+        Logger.info("")
         db.write { tx in
             updatePersistedState(tx) {
                 $0.hasDeclinedTransfer = true
@@ -347,6 +369,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) -> Guarantee<RegistrationStep> {
+        Logger.info("")
         guard let accountIdentity = persistedState.accountIdentity else {
             owsFailBeta("Shouldn't be setting phone number discoverability prior to registration.")
             return .value(.showErrorSheet(.genericError))
@@ -366,10 +389,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         avatarData: Data?,
         isDiscoverableByPhoneNumber: Bool
     ) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         guard let accountIdentity = persistedState.accountIdentity else {
             owsFailBeta("Shouldn't be setting phone number discoverability prior to registration.")
             return .value(.showErrorSheet(.genericError))
         }
+
         inMemoryState.pendingProfileInfo = (givenName: givenName, familyName: familyName, avatarData: avatarData)
 
         updatePhoneNumberDiscoverability(
@@ -381,6 +407,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func acknowledgeReglockTimeout() -> AcknowledgeReglockResult {
+        Logger.info("")
+
         switch reglockTimeoutAcknowledgeAction {
         case .resetPhoneNumber:
             db.write { transaction in
@@ -756,6 +784,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// Once this is done, we can wipe the internal state of this class so that we get a fresh
     /// registration if we ever re-register while in the same app session.
     private func exportAndWipeState(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep> {
+        Logger.info("")
 
         func finalizeRegistration(_ tx: DBWriteTransaction) {
             if inMemoryState.hasBackedUpToKBS {
@@ -828,7 +857,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        updateAccountAttributes(accountIdentity)
+        Logger.info("")
+
+        return updateAccountAttributes(accountIdentity)
             .then(on: schedulers.main) { [weak self] error -> Guarantee<RegistrationStep> in
                 guard let self else {
                     return unretainedSelfError()
@@ -858,6 +889,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func wipePersistedState() {
+        Logger.info("")
+
         self.db.write { tx in
             self.kvStore.removeValue(forKey: Constants.persistedStateKey, transaction: tx)
             self.loader.clearPersistedMode(transaction: tx)
@@ -892,6 +925,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// profile state (which may not be needed). Profile name,
         /// setting up a PIN, etc.
         case profileSetup(AccountIdentity)
+
+        var logSafeString: String {
+            switch self {
+            case .opening: return "opening"
+            case .registrationRecoveryPassword: return "registrationRecoveryPassword"
+            case .kbsAuthCredential: return "kbsAuthCredential"
+            case .kbsAuthCredentialCandidates: return "kbsAuthCredentialCandidates"
+            case .session: return "session"
+            case .profileSetup: return "profileSetup"
+            }
+        }
     }
 
     private func getPathway() -> Pathway {
@@ -946,6 +990,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func nextStep(pathway: Pathway) -> Guarantee<RegistrationStep> {
+        Logger.info("Going to next step for \(pathway.logSafeString) pathway")
+
         switch pathway {
         case .opening:
             return nextStepForOpeningPath()
@@ -2078,6 +2124,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         for session: RegistrationSession,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
+        switch fulfillment {
+        case .captcha:
+            Logger.info("Submitting CAPTCHA challenge fulfillment")
+        case .pushChallenge:
+            Logger.info("Submitting push challenge fulfillment")
+        }
+
         return deps.sessionManager.fulfillChallenge(
             for: session,
             fulfillment: fulfillment
@@ -2149,11 +2202,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         code: String,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         db.write { tx in
             self.updatePersistedSessionState(session: session, tx) {
                 $0.numVerificationCodeSubmissions += 1
             }
         }
+
         return deps.sessionManager.submitVerificationCode(
             for: session,
             code: code
@@ -2244,6 +2300,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         reglockExpirationDate: Date,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         return deps.kbs.restoreKeysAndBackup(
             pin: pin,
             authMethod: .kbsAuth(kbsAuthCredential, backup: nil)
@@ -2454,6 +2512,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         _ accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         return deps.pushRegistrationManager
             .syncPushTokensForcingUpload(
                 auth: accountIdentity.authedAccount.chatServiceAuth
@@ -2516,6 +2576,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // returns nil if no steps needed.
     private func performKBSBackupStepsIfNeeded(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep>? {
+        Logger.info("")
+
         let isRestoringPinBackup: Bool = (
             accountIdentity.hasPreviouslyUsedKBS &&
             !persistedState.hasGivenUpTryingToRestoreWithKBS
@@ -2568,6 +2630,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         let backupAuthMethod = KBS.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
         let authMethod: KBS.AuthMethod
         if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
@@ -2633,6 +2697,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         let authMethod: KBS.AuthMethod
         let backupAuthMethod = KBS.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
         if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
@@ -2687,10 +2753,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func enableReglockIfNeeded() -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         guard inMemoryState.wasReglockEnabled, inMemoryState.hasSetReglock.negated else {
-            // Don't auto-enable reglock unless it was enabled to begin with.
+            Logger.info("Not enabling reglock because it wasn't enabled to begin with")
             return nextStep()
         }
+
+        Logger.info("Attempting to enable reglock")
+
         let reglockToken: String?
         if let token = inMemoryState.reglockToken {
             reglockToken = token
@@ -2733,6 +2804,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func loadProfileState() {
+        Logger.info("")
+
         let profileKey = deps.profileManager.localProfileKey
         inMemoryState.profileKey = profileKey
         let udAccessKey: SMKUDAccessKey
@@ -2754,6 +2827,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func updateAccountAttributes(_ accountIdentity: AccountIdentity) -> Guarantee<Error?> {
+        Logger.info("")
         return Service
             .makeUpdateAccountAttributesRequest(
                 makeAccountAttributes(),
@@ -2764,6 +2838,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func updatePhoneNumberDiscoverability(accountIdentity: AccountIdentity, isDiscoverable: Bool) {
+        Logger.info("")
+
         self.inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = true
         self.inMemoryState.isDiscoverableByPhoneNumber = isDiscoverable
 
@@ -2789,6 +2865,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         pniState: Mode.ChangeNumberState.PendingPniState,
         accountIdentity: AccountIdentity
     ) -> Guarantee<FinalizeChangeNumberResult> {
+        Logger.info("")
+
         // Creating a high strust signal recipient for oneself
         // must happen in a transaction initiated off the main thread.
         return firstly(on: schedulers.sharedBackground) { [weak self] () -> FinalizeChangeNumberResult in
@@ -2873,6 +2951,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         e164: E164,
         responseHandler: @escaping (AccountResponse) -> Guarantee<RegistrationStep>
     ) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         switch mode {
         case .reRegistering(let state):
             if persistedState.hasResetForReRegistration.negated {
@@ -2977,6 +3057,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState
     ) -> Guarantee<ChangeNumberResult> {
+        Logger.info("")
+
         return deps.changeNumberPniManager
             .generatePniIdentity(
                 forNewE164: e164,
@@ -3012,6 +3094,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         pniPendingState: ChangePhoneNumberPni.PendingState,
         pniParams: ChangePhoneNumberPni.Parameters
     ) -> Guarantee<ChangeNumberResult> {
+        Logger.info("")
+
         // Process all messages first.
         return deps.messageProcessor.waitForProcessingCompleteAndThenSuspend(for: .pendingChangeNumber)
             .then(on: schedulers.main) { [weak self] in
@@ -3047,6 +3131,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         changeNumberState: Mode.ChangeNumberState,
         pniState: Mode.ChangeNumberState.PendingPniState
     ) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         return Service
             .makeWhoAmIRequest(
                 auth: ChatServiceAuth.explicit(
@@ -3116,6 +3202,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func becameDeregisteredBeforeCompleting(
         accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
+        Logger.info("")
+
         let kickBackToReRegistration: () -> Guarantee<RegistrationStep> = { [weak self] in
             guard let self else {
                 return unretainedSelfError()
