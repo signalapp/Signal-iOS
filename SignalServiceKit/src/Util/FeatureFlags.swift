@@ -100,14 +100,9 @@ public class FeatureFlags: BaseFlags {
         return false
     }
 
-    public static let useNewRegistrationFlow: Bool = {
-        #if DEBUG
-        if ProcessInfo.processInfo.environment["REG_BRAVO_TESTING"] == "1" {
-            return true
-        }
-        #endif
-        return build.includes(.internal)
-    }()
+    // TODO: remove this once we are confident we won't wanna undo it
+    // with a single line code change.
+    public static let useNewRegistrationFlow: Bool = true
 
     public static let canRequestAccountData: Bool = build.includes(.dev)
 
