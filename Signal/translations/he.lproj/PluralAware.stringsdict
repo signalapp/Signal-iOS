@@ -1368,13 +1368,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d attempt</string>
+			<string>נשאר לך ניסיון %1$d</string>
 			<key>two</key>
-			<string>%1$d attempts</string>
+			<string>נשארו לך %1$d ניסיונות</string>
 			<key>many</key>
-			<string>%1$d attempts</string>
+			<string>נשארו לך %1$d ניסיונות</string>
 			<key>other</key>
-			<string>%1$d attempts</string>
+			<string>נשארו לך %1$d ניסיונות</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

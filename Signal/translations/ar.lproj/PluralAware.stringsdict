@@ -1640,17 +1640,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d attempts</string>
+			<string>%1$d محاولة</string>
 			<key>one</key>
-			<string>%1$d attempt</string>
+			<string>%1$d محاولة</string>
 			<key>two</key>
-			<string>%1$d attempts</string>
+			<string>%1$d محاولتان</string>
 			<key>few</key>
-			<string>%1$d attempts</string>
+			<string>%1$d محاولات</string>
 			<key>many</key>
-			<string>%1$d attempts</string>
+			<string>%1$d محاولة</string>
 			<key>other</key>
-			<string>%1$d attempts</string>
+			<string>%1$d محاولة</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
