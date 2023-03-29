@@ -459,32 +459,53 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    @objc
-    public func countUnreadMessages(beforeSortId: UInt64, transaction: GRDBReadTransaction) -> UInt {
-        do {
-            let sql = """
-                SELECT COUNT(*)
+    /// Do we have any messages to mark read in this thread before a given sort ID?
+    ///
+    /// See also: ``fetchUnreadMessages`` and ``fetchMessagesWithUnreadReactions``.
+    public func hasMessagesToMarkRead(
+        beforeSortId: UInt64,
+        transaction: GRDBReadTransaction
+    ) -> Bool {
+        let hasUnreadMessages = (try? Bool.fetchOne(
+            transaction.database,
+            sql: """
+            SELECT EXISTS (
+                SELECT 1
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .id) <= ?
                 AND \(sqlClauseForAllUnreadInteractions())
-            """
+                LIMIT 1
+            )
+            """,
+            arguments: [threadUniqueId, beforeSortId]
+        )) ?? false
 
-            guard let count = try UInt.fetchOne(transaction.database,
-                                                sql: sql,
-                                                arguments: [threadUniqueId, beforeSortId]) else {
-                    owsFailDebug("count was unexpectedly nil")
-                    return 0
-            }
-            return count
-        } catch {
-            owsFailDebug("error: \(error)")
-            return 0
-        }
+        lazy var hasOutgoingMessagesWithUnreadReactions = (try? Bool.fetchOne(
+            transaction.database,
+            sql: """
+            SELECT EXISTS (
+                SELECT 1
+                FROM \(InteractionRecord.databaseTableName) AS interaction
+                INNER JOIN \(OWSReaction.databaseTableName) AS reaction
+                    ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
+                    AND reaction.\(OWSReaction.columnName(.read)) IS 0
+                WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
+                AND interaction.\(interactionColumn: .threadUniqueId) = ?
+                AND interaction.\(interactionColumn: .id) <= ?
+                LIMIT 1
+            )
+            """,
+            arguments: [threadUniqueId, beforeSortId]
+        )) ?? false
+
+        return hasUnreadMessages || hasOutgoingMessagesWithUnreadReactions
     }
 
     /// Enumerates all the unread interactions in this thread before a given sort id,
     /// sorted by sort id.
+    ///
+    /// See also: ``hasMessagesToMarkRead``.
     public func fetchUnreadMessages(
         beforeSortId: UInt64,
         transaction: GRDBReadTransaction
@@ -512,35 +533,10 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    @objc
-    public func countMessagesWithUnreadReactions(beforeSortId: UInt64, transaction: GRDBReadTransaction) -> UInt {
-        do {
-            let sql = """
-                SELECT COUNT(DISTINCT interaction.\(interactionColumn: .id))
-                FROM \(InteractionRecord.databaseTableName) AS interaction
-                INNER JOIN \(OWSReaction.databaseTableName) AS reaction
-                    ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
-                    AND reaction.\(OWSReaction.columnName(.read)) IS 0
-                WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
-                AND interaction.\(interactionColumn: .threadUniqueId) = ?
-                AND interaction.\(interactionColumn: .id) <= ?
-            """
-
-            guard let count = try UInt.fetchOne(transaction.database,
-                                                sql: sql,
-                                                arguments: [threadUniqueId, beforeSortId]) else {
-                    owsFailDebug("count was unexpectedly nil")
-                    return 0
-            }
-            return count
-        } catch {
-            owsFailDebug("error: \(error)")
-            return 0
-        }
-    }
-
     /// Returns all the messages with unread reactions in this thread before a given sort id,
     /// sorted by sort id.
+    ///
+    /// See also: ``hasMessagesToMarkRead``.
     public func fetchMessagesWithUnreadReactions(
         beforeSortId: UInt64,
         transaction: GRDBReadTransaction

@@ -280,16 +280,13 @@ public extension OWSReceiptManager {
         DispatchQueue.global().async {
             let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
 
-            let (unreadCount, messagesWithUnreadReactionsCount) = self.databaseStorage.read { transaction in
-                (
-                    interactionFinder.countUnreadMessages(beforeSortId: sortId,
-                                                          transaction: transaction.unwrapGrdbRead),
-                    interactionFinder.countMessagesWithUnreadReactions(beforeSortId: sortId,
-                                                                       transaction: transaction.unwrapGrdbRead)
+            let hasMessagesToMarkRead = self.databaseStorage.read { transaction in
+                return interactionFinder.hasMessagesToMarkRead(
+                    beforeSortId: sortId,
+                    transaction: transaction.unwrapGrdbRead
                 )
             }
-
-            if unreadCount == 0 && messagesWithUnreadReactionsCount == 0 {
+            guard hasMessagesToMarkRead else {
                 // Avoid unnecessary writes.
                 DispatchQueue.main.async(execute: completion)
                 return
@@ -308,7 +305,7 @@ public extension OWSReceiptManager {
                 circumstance = .onThisDevice
                 logSuffix = ""
             }
-            Logger.info("Marking \(unreadCount) received messages and \(messagesWithUnreadReactionsCount) sent messages with reactions as read locally\(logSuffix) (in batches of \(maxBatchSize))")
+            Logger.info("Marking received messages and sent messages with reactions as read locally\(logSuffix) (in batches of \(maxBatchSize))")
 
             var batchQuotaRemaining: Int
             repeat {
