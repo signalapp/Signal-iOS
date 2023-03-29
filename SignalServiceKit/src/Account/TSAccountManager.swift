@@ -111,8 +111,6 @@ public extension TSAccountManager {
             versionedProfiles.clearProfileKeyCredentials(transaction: transaction)
             groupsV2.clearTemporalCredentials(transaction: transaction)
 
-            // PNI TODO: Regenerate our PNI identity key and pre-keys.
-
             loadAccountState(with: transaction)
 
             phoneNumberAwaitingVerification = nil
