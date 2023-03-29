@@ -9,7 +9,8 @@ enum ShareActivityUtil {
     public static func present(
         activityItems: [Any],
         from viewController: UIViewController,
-        sourceView: UIView
+        sourceView: UIView,
+        completion: @escaping () -> Void = {}
     ) {
         // HACK: `UIActivityViewController` will sometimes dismiss its parent due to an iOS bug
         // (see links below). To get around this, we present an invisible view controller and
@@ -44,6 +45,7 @@ enum ShareActivityUtil {
         ]
         shareActivityViewController.completionWithItemsHandler = { _, _, _, _ in
             wrapperViewControllerToFixIosBug.dismiss(animated: false)
+            completion()
         }
 
         viewController.present(wrapperViewControllerToFixIosBug, animated: false) {

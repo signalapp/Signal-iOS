@@ -196,16 +196,46 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             }
         }()
 
-        // TODO[ADE] Allow saving text, if available
-        let data: Data = report.formattedJsonData
-
-        // TODO[ADE] Improve this UI by saving a file
-        let activityItem = String(data: data, encoding: .utf8)!
-
+        let (activityItem, cleanup) = prepareForSharing(report: report)
         ShareActivityUtil.present(
             activityItems: [activityItem],
             from: self,
-            sourceView: exportButton
+            sourceView: exportButton,
+            completion: cleanup
         )
+    }
+
+    private func prepareForSharing(
+        report: AccountDataReport
+    ) -> (activityItem: Any, cleanup: () -> Void) {
+        // TODO[ADE] Allow saving text, if available
+        let data: Data = report.formattedJsonData
+        let fileName = "signal_account_data_report.json"
+
+        let temporaryFileUrl = URL(
+            fileURLWithPath: fileName,
+            relativeTo: URL(fileURLWithPath: OWSTemporaryDirectory(), isDirectory: true)
+        )
+
+        let activityItem: Any
+        let cleanup: () -> Void
+
+        do {
+            try data.write(to: temporaryFileUrl, options: .completeFileProtection)
+            activityItem = temporaryFileUrl
+            cleanup = {
+                do {
+                    try OWSFileSystem.deleteFile(url: temporaryFileUrl)
+                } catch {
+                    owsFailBeta("Failed to delete temporary account data report file")
+                }
+            }
+        } catch {
+            owsFailBeta("Failed to write account data report to temporary file. Falling back to plain data")
+            activityItem = data
+            cleanup = {}
+        }
+
+        return (activityItem, cleanup)
     }
 }
