@@ -96,7 +96,8 @@ public class RegistrationNavigationController: OWSNavigationController {
                     if let newController = controller.updateViewController(viewController) {
                         controllerToPush = newController
                     } else {
-                        self.popToViewController(viewController, animated: true)
+                        let animatePop = !(self.topViewController is RegistrationLoadingViewController)
+                        self.popToViewController(viewController, animated: animatePop)
                         return
                     }
                 }
