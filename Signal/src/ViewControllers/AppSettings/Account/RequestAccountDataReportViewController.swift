@@ -112,39 +112,55 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
     // MARK: - Events
 
     private func didRequestDownload() {
-        // TODO[ADE] Show loading indicator to prevent multiple requests
         let request = AccountDataReportRequestFactory.createAccountDataReportRequest()
 
-        signalService.urlSessionForMainSignalService()
-            .promiseForTSRequest(request)
-            .done(on: DispatchQueue.main) { [weak self] response in
-                guard let self else { return }
-
-                let status = response.responseStatusCode
-                guard status == 200 else {
-                    Logger.warn("Received a \(status) status code. The request failed")
-                    self.didRequestFail()
-                    return
-                }
-
-                guard let rawData = response.responseBodyData else {
-                    Logger.error("Received an empty response")
-                    self.didRequestFail()
-                    return
-                }
-
-                guard let report = try? AccountDataReport(rawData: rawData) else {
-                    Logger.error("Couldn't parse account data report, presumably due to a bug")
-                    self.didRequestFail()
-                    return
-                }
-
-                self.state = .hasReport(report: report)
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: true
+        ) { [weak self] modal in
+            guard let self else {
+                modal.dismissIfNotCanceled()
+                return
             }
-            .catch(on: DispatchQueue.main) { [weak self] error in
-                owsFailDebugUnlessNetworkFailure(error)
-                self?.didRequestFail()
-            }
+
+            self.signalService.urlSessionForMainSignalService()
+                .promiseForTSRequest(request)
+                .done(on: DispatchQueue.main) { [weak self] response in
+                    modal.dismissIfNotCanceled()
+                    if modal.wasCancelled { return }
+
+                    guard let self else { return }
+
+                    let status = response.responseStatusCode
+                    guard status == 200 else {
+                        Logger.warn("Received a \(status) status code. The request failed")
+                        self.didRequestFail()
+                        return
+                    }
+
+                    guard let rawData = response.responseBodyData else {
+                        Logger.error("Received an empty response")
+                        self.didRequestFail()
+                        return
+                    }
+
+                    guard let report = try? AccountDataReport(rawData: rawData) else {
+                        Logger.error("Couldn't parse account data report, presumably due to a bug")
+                        self.didRequestFail()
+                        return
+                    }
+
+                    self.state = .hasReport(report: report)
+                }
+                .catch(on: DispatchQueue.main) { [weak self] error in
+                    modal.dismissIfNotCanceled()
+                    if modal.wasCancelled { return }
+
+                    owsFailDebugUnlessNetworkFailure(error)
+
+                    self?.didRequestFail()
+                }
+        }
     }
 
     private func didRequestFail() {
