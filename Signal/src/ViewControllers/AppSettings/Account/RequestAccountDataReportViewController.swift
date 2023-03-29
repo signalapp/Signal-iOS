@@ -11,6 +11,10 @@ import SignalServiceKit
 // TODO[ADE] Localize the strings in this file
 
 class RequestAccountDataReportViewController: OWSTableViewController2 {
+    private var learnMoreUrl: URL {
+        URL(string: "https://support.signal.org/hc/articles/5538911756954")!
+    }
+
     private enum State {
         case initializing
         case hasNoReport
@@ -39,8 +43,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
 
     public override func themeDidChange() {
         super.themeDidChange()
-
-        // TODO[ADE] Handle theme changes
+        updateTableContents()
     }
 
     // MARK: - Rendering
@@ -66,6 +69,8 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
     private func getTableSections() -> [OWSTableSection] {
         var result = [OWSTableSection]()
 
+        result.append(headerSection())
+
         switch state {
         case .initializing:
             owsFailBeta("We don't expect to be in this state.")
@@ -75,6 +80,62 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             result.append(exportButtonSection())
         }
 
+        return result
+    }
+
+    private func headerSection() -> OWSTableSection {
+        let result = OWSTableSection(items: [
+            .init(customCellBlock: { [weak self] in
+                let cell = UITableViewCell()
+                guard let self else { return cell }
+                cell.layoutMargins = OWSTableViewController2.cellOuterInsets(in: self.view)
+                cell.contentView.layoutMargins = .zero
+
+                let iconView = UIImageView(image: .init(named: "account_data_report"))
+                iconView.autoSetDimensions(to: .square(88))
+
+                let titleLabel = UILabel()
+                titleLabel.textAlignment = .center
+                titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+                titleLabel.text = "Your Account Data"
+                titleLabel.numberOfLines = 0
+                titleLabel.lineBreakMode = .byWordWrapping
+
+                let descriptionTextView = LinkingTextView()
+                descriptionTextView.attributedText = .composed(
+                    of: [
+                        "Download and export a report of your Signal account data. This report does not include any messages or media.",
+                        CommonStrings.learnMore.styled(with: .link(self.learnMoreUrl))
+                    ],
+                    baseStyle: .init(.color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody)),
+                    separator: " "
+                )
+                descriptionTextView.linkTextAttributes = [
+                    .foregroundColor: Theme.accentBlueColor,
+                    .underlineColor: UIColor.clear,
+                    .underlineStyle: NSUnderlineStyle.single.rawValue
+                ]
+                descriptionTextView.textAlignment = .center
+
+                let stackView = UIStackView(arrangedSubviews: [
+                    iconView,
+                    titleLabel,
+                    descriptionTextView
+                ])
+                stackView.axis = .vertical
+                stackView.alignment = .center
+                stackView.spacing = 12
+                stackView.setCustomSpacing(24, after: iconView)
+
+                cell.contentView.backgroundColor = .cyan
+
+                cell.contentView.addSubview(stackView)
+                stackView.autoPinEdgesToSuperviewMargins()
+
+                return cell
+            })
+        ])
+        result.hasBackground = false
         return result
     }
 
