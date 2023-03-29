@@ -1,1 +1,2 @@
-• The magic of VHS and Betamax technology from the 1970s is now available in the palm of your hand. Revolutionary new Fast Forward and Rewind buttons will appear on long videos (30 seconds or more) so you can skip to the good parts or get back to something you missed.
+• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
+• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
