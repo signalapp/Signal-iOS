@@ -101,6 +101,14 @@ class RegistrationVerificationCodeView: UIView {
         return digitText
     }
 
+    public func clearLastDigit() {
+        guard isComplete else {
+            return
+        }
+        digitText = String(digitText.dropLast(1))
+        updateViewState()
+    }
+
     private func createSubviews() {
         textfield.textAlignment = .left
         textfield.delegate = self

@@ -2988,7 +2988,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             case .invalidArgument:
                 validationError = .invalidNumber(.init(invalidE164: previouslyEnteredE164 ?? Stubs.e164))
             case .retryAfter(let timeInterval):
-                validationError = .rateLimited(.init(expiration: self.date.addingTimeInterval(timeInterval)))
+                validationError = .rateLimited(.init(
+                    expiration: self.date.addingTimeInterval(timeInterval),
+                    e164: previouslyEnteredE164 ?? Stubs.e164
+                ))
             case .networkFailure, .genericError:
                 XCTFail("Should not be generating phone number state for error responses.")
                 validationError = nil

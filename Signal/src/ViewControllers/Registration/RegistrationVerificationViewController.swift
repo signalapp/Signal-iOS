@@ -370,12 +370,15 @@ class RegistrationVerificationViewController: OWSViewController {
         let title: String?
         let message: String
         switch newError {
-        case .invalidVerificationCode:
+        case .invalidVerificationCode(let code):
             title = nil
             message = OWSLocalizedString(
                 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE",
                 comment: "During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message."
             )
+            if verificationCodeView.verificationCode == code {
+                verificationCodeView.clearLastDigit()
+            }
         case .smsResendTimeout, .voiceResendTimeout:
             title = nil
             message = OWSLocalizedString(
@@ -453,6 +456,8 @@ extension RegistrationVerificationViewController: RegistrationVerificationCodeVi
         if verificationCodeView.isComplete {
             Logger.info("Submitting verification code")
             verificationCodeView.resignFirstResponder()
+            // Clear any errors so we render new ones.
+            previouslyRenderedValidationError = nil
             presenter?.submitVerificationCode(verificationCodeView.verificationCode)
         }
     }

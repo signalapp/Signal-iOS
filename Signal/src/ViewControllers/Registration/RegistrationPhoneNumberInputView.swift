@@ -149,6 +149,8 @@ class RegistrationPhoneNumberInputView: UIStackView {
 
         result.delegate = self
 
+        result.addTarget(delegate, action: #selector(didChange), for: .valueChanged)
+
         return result
     }()
 
@@ -205,8 +207,6 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
             maxDigits: maxNationalNumberDigits,
             format: formatNationalNumber
         )
-
-        delegate?.didChange()
 
         return result
     }

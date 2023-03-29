@@ -5336,6 +5336,9 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
 
+/* Alert shown when running out of attempts at submitting a verification code. */
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "You’ve made too many attempts to enter the code. Please resend the code and try again.";
+
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
 "REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "You’ve made too many attempts to enter the code. Try again in %1$@";
 

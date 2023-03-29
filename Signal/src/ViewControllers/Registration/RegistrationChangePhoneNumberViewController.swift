@@ -144,10 +144,13 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
 
         switch valueViews.type {
         case .newNumber:
-            if let invalidNumberError = state.invalidNumberError {
+            if
+                let e164 = self.state.newE164,
+                let warningLabelText = state.invalidNumberError?.warningLabelText(e164: e164)
+            {
                 section.add(.init(customCellBlock: {
                     let cell = OWSTableItem.buildCellWithAccessoryLabel(
-                        itemName: invalidNumberError.warningLabelText,
+                        itemName: warningLabelText,
                         textColor: .ows_accentRed,
                         accessoryType: .none
                     )

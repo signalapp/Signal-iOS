@@ -303,8 +303,16 @@ public class RegistrationNavigationController: OWSNavigationController {
             let title: String?
             let message: String
             switch errorSheet {
+            case .becameDeregistered(let reregParams):
+                handleDeregistrationReset(reregParams)
+                return nil
+
             case .verificationCodeSubmissionUnavailable:
-                fatalError("Unimplemented")
+                title = nil
+                message = OWSLocalizedString(
+                    "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT",
+                    comment: "Alert shown when running out of attempts at submitting a verification code."
+                )
             case .networkError:
                 title = OWSLocalizedString(
                     "REGISTRATION_NETWORK_ERROR_TITLE",
@@ -317,9 +325,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             case .sessionInvalidated, .genericError:
                 title = nil
                 message = CommonStrings.somethingWentWrongTryAgainLaterError
-            case .becameDeregistered(let reregParams):
-                handleDeregistrationReset(reregParams)
-                return nil
+
             }
             let actionSheet = ActionSheetController(title: title, message: message)
             actionSheet.addAction(.init(title: CommonStrings.okButton, style: .default, handler: { [weak self] _ in

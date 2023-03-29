@@ -133,7 +133,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     sessionState.sessionId == session.id
                 {
                     switch sessionState.initialCodeRequestState {
-                    case .failedToRequest:
+                    case .failedToRequest, .exhaustedCodeAttempts:
                         // Reset state so we try again.
                         self.updatePersistedSessionState(session: session, tx) {
                             $0.initialCodeRequestState = .neverRequested
@@ -586,6 +586,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case requested
                 /// We have never requested a code but did try and failed. User action needed.
                 case failedToRequest
+                /// We sent a code, but submission attempts were exhausted so we should
+                /// send a new code on user input.
+                case exhaustedCodeAttempts
             }
 
             var initialCodeRequestState: InitialCodeRequestState = .neverRequested
@@ -1421,7 +1424,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var pendingCodeTransport = inMemoryState.pendingCodeTransport
         if pendingCodeTransport == nil {
             switch persistedState.sessionState?.initialCodeRequestState {
-            case .none, .requested, .failedToRequest:
+            case .none, .requested, .failedToRequest, .exhaustedCodeAttempts:
                 break
             case .neverRequested:
                 // Request an sms code when we get a new session.
@@ -1448,7 +1451,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         )))
                     } else if let nextSMSDate = session.nextSMSDate {
                         return .value(.phoneNumberEntry(phoneNumberEntryState(
-                            validationError: .rateLimited(.init(expiration: nextSMSDate))
+                            validationError: .rateLimited(.init(
+                                expiration: nextSMSDate,
+                                e164: session.e164
+                            ))
                         )))
                     } else {
                         return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
@@ -1464,7 +1470,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         )))
                     } else if let nextSMSDate = session.nextSMSDate {
                         return .value(.phoneNumberEntry(phoneNumberEntryState(
-                            validationError: .rateLimited(.init(expiration: nextSMSDate))
+                            validationError: .rateLimited(.init(
+                                expiration: nextSMSDate,
+                                e164: session.e164
+                            ))
                         )))
                     } else {
                         return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
@@ -1502,22 +1511,28 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 $0.sessionState = session.map { .init(sessionId: $0.id) }
             }
         }
-        var initialCodeRequestState = initialCodeRequestState
+        var newInitialCodeRequestState = initialCodeRequestState
         if session?.nextVerificationAttempt != nil {
             // If we can submit a code, we must have requested
             // at least once.
-            initialCodeRequestState = .requested
+            newInitialCodeRequestState = .requested
         }
-        switch persistedState.sessionState?.initialCodeRequestState {
-        case .none, .failedToRequest, .neverRequested:
-            if let initialCodeRequestState, initialCodeRequestState != persistedState.sessionState?.initialCodeRequestState {
+        let oldInitialCodeRequestState = persistedState.sessionState?.initialCodeRequestState
+        switch (oldInitialCodeRequestState, newInitialCodeRequestState) {
+        case
+                (.none, _),
+                (.failedToRequest, _),
+                (.neverRequested, _),
+                (.exhaustedCodeAttempts, _),
+                (.requested, .exhaustedCodeAttempts):
+            if let newInitialCodeRequestState, newInitialCodeRequestState != persistedState.sessionState?.initialCodeRequestState {
                 self.updatePersistedState(transaction) {
                     var sessionState = $0.sessionState
-                    sessionState?.initialCodeRequestState = initialCodeRequestState
+                    sessionState?.initialCodeRequestState = newInitialCodeRequestState
                     $0.sessionState = sessionState
                 }
             }
-        case .requested:
+        case (.requested, _):
             // Don't overwrite already requested state under any circumstances.
             break
         }
@@ -1576,7 +1591,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             deps.dateProvider() < timeoutDate
         {
             return .value(.phoneNumberEntry(phoneNumberEntryState(
-                validationError: .rateLimited(.init(expiration: timeoutDate))
+                validationError: .rateLimited(.init(
+                    expiration: timeoutDate,
+                    e164: session.e164
+                ))
             )))
         }
         return self.makeRegisterOrChangeNumberRequest(
@@ -1730,8 +1748,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         }
                         return .value(.phoneNumberEntry(strongSelf.phoneNumberEntryState(
                             validationError: .rateLimited(.init(
-                                expiration: strongSelf.deps.dateProvider().addingTimeInterval(timeInterval))
-                            )
+                                expiration: strongSelf.deps.dateProvider().addingTimeInterval(timeInterval),
+                                e164: e164
+                            ))
                         )))
                     case .networkFailure:
                         if retriesLeft > 0 {
@@ -1838,7 +1857,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         // We were trying to resend from the phone number screen.
                         return .value(.phoneNumberEntry(self.phoneNumberEntryState(
                             validationError: .rateLimited(.init(
-                                expiration: self.deps.dateProvider().addingTimeInterval(timeInterval)
+                                expiration: self.deps.dateProvider().addingTimeInterval(timeInterval),
+                                e164: session.e164
                             )
                         ))))
                     } else {
@@ -2142,8 +2162,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
             case .rejectedArgument(let session):
-                self.db.write { self.processSession(session, $0) }
                 if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                    self.db.write { self.processSession(session, $0) }
                     return .value(.verificationCodeEntry(self.verificationCodeEntryState(
                         session: session,
                         nextVerificationAttemptDate: nextVerificationAttemptDate,
@@ -2151,6 +2171,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     )))
                 } else {
                     // Something went wrong, we can't submit again.
+                    self.db.write { self.processSession(session, initialCodeRequestState: .exhaustedCodeAttempts, $0) }
                     return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
                 }
             case .disallowed(let session):
