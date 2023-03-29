@@ -264,13 +264,16 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
             self.layoutIfNeeded()
         }
 
-        if animated && isHiddenInStackView {
-            UIView.animate(withDuration: duration) {
-                self.isHiddenInStackView = false
-                self.superview?.layoutIfNeeded()
+        // Unhide only if view is hidden automatically.
+        if hidesAutomatically {
+            if animated && isHiddenInStackView {
+                UIView.animate(withDuration: duration) {
+                    self.isHiddenInStackView = false
+                    self.superview?.layoutIfNeeded()
+                }
+            } else {
+                isHiddenInStackView = false
             }
-        } else {
-            isHiddenInStackView = false
         }
 
         updateFocusedItem(focusedItem, animated: animated)
