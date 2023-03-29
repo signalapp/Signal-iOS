@@ -625,6 +625,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             var pushChallengeState: PushChallengeState = .notRequested
 
+            /// The number of times we have attempted to submit a verification code.
+            var numVerificationCodeSubmissions: UInt = 0
+
             /// If non-nil, we created an account with the session but got rate limited
             /// and can retry at the provided time.
             var createAccountTimeout: Date?
@@ -2146,6 +2149,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         code: String,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
+        db.write { tx in
+            self.updatePersistedSessionState(session: session, tx) {
+                $0.numVerificationCodeSubmissions += 1
+            }
+        }
         return deps.sessionManager.submitVerificationCode(
             for: session,
             code: code
@@ -3278,6 +3286,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             nextSMSDate: session.nextSMSDate,
             nextCallDate: session.nextCallDate,
             nextVerificationAttemptDate: nextVerificationAttemptDate,
+            // TODO[Registration]: pass up the number directly here, and test for it.
+            showHelpText: (persistedState.sessionState?.numVerificationCodeSubmissions ?? 0) >= 3,
             validationError: validationError,
             exitConfiguration: exitConfiguration
         )

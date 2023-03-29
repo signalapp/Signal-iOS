@@ -25,6 +25,7 @@ public struct RegistrationVerificationState: Equatable {
     let nextSMSDate: Date?
     let nextCallDate: Date?
     let nextVerificationAttemptDate: Date
+    let showHelpText: Bool
     let validationError: RegistrationVerificationValidationError?
 
     public enum ExitConfiguration: Equatable {
@@ -155,6 +156,15 @@ class RegistrationVerificationViewController: OWSViewController {
         return result
     }()
 
+    private lazy var helpButton: OWSFlatButton = button(
+        title: OWSLocalizedString(
+            "ONBOARDING_VERIFICATION_HELP_LINK",
+            comment: "Label for a button to get help entering a verification code when registering."
+        ),
+        selector: #selector(didTapHelpButton),
+        accessibilityIdentifierSuffix: "helpButton"
+    )
+
     private lazy var resendSMSCodeButton: OWSFlatButton = button(
         selector: #selector(didTapResendSMSCode),
         accessibilityIdentifierSuffix: "resendSMSCodeButton"
@@ -234,10 +244,11 @@ class RegistrationVerificationViewController: OWSViewController {
         stackView.setCustomSpacing(24, after: wrongNumberButton)
 
         stackView.addArrangedSubview(verificationCodeView)
+        stackView.setCustomSpacing(24, after: verificationCodeView)
 
-        // TODO[Registration]: If the user has tried several times, show a "need help" button.
+        stackView.addArrangedSubview(helpButton)
 
-        stackView.addArrangedSubview(UIView.vStretchingSpacer(minHeight: 12))
+        stackView.addArrangedSubview(UIView.vStretchingSpacer())
 
         let resendButtonsContainer = UIStackView(arrangedSubviews: [
             resendSMSCodeButton,
@@ -245,7 +256,29 @@ class RegistrationVerificationViewController: OWSViewController {
         ])
         resendButtonsContainer.axis = .horizontal
         resendButtonsContainer.distribution = .fillEqually
-        stackView.addArrangedSubview(resendButtonsContainer)
+
+        view.addSubview(resendButtonsContainer)
+        resendButtonsContainer.autoPinEdge(
+            .bottom,
+            to: .bottom,
+            of: self.keyboardLayoutGuideView,
+            withOffset: -24
+        )
+        resendButtonsContainer.autoPinEdge(
+            .top,
+            to: .bottom,
+            of: verificationCodeView,
+            withOffset: 12,
+            relation: .greaterThanOrEqual
+        )
+        resendButtonsContainer.autoPinEdge(
+            .top,
+            to: .bottom,
+            of: helpButton,
+            withOffset: 12,
+            relation: .greaterThanOrEqual
+        )
+        resendButtonsContainer.autoPinHorizontalEdges(toEdgesOf: view)
 
         render()
     }
@@ -318,6 +351,8 @@ class RegistrationVerificationViewController: OWSViewController {
         titleLabel.textColor = .colorForRegistrationTitleLabel
         explanationLabel.textColor = .colorForRegistrationExplanationLabel
         wrongNumberButton.setTitleColor(Theme.accentBlueColor)
+        helpButton.setTitleColor(Theme.accentBlueColor)
+        helpButton.isHidden = state.showHelpText.negated
 
         verificationCodeView.updateColors()
     }
@@ -421,6 +456,13 @@ class RegistrationVerificationViewController: OWSViewController {
     }
 
     @objc
+    private func didTapHelpButton() {
+        Logger.info("")
+
+        self.present(RegistrationVerificationHelpSheetViewController(), animated: true)
+    }
+
+    @objc
     private func didTapResendSMSCode() {
         Logger.info("")
 
@@ -460,5 +502,108 @@ extension RegistrationVerificationViewController: RegistrationVerificationCodeVi
             previouslyRenderedValidationError = nil
             presenter?.submitVerificationCode(verificationCodeView.verificationCode)
         }
+    }
+}
+
+// MARK: - RegistrationVerificationHelpSheetViewController
+
+private class RegistrationVerificationHelpSheetViewController: InteractiveSheetViewController {
+
+    private var intrinsicSizeObservation: NSKeyValueObservation?
+
+    public required init() {
+        super.init()
+
+        scrollView.bounces = false
+        scrollView.isScrollEnabled = false
+
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.spacing = 12
+
+        stackView.addArrangedSubview(header)
+        stackView.setCustomSpacing(20, after: header)
+        let bulletPoints = bulletPoints
+        stackView.addArrangedSubviews(bulletPoints)
+
+        // TODO[Registration]: there should be a contact support link here.
+
+        let insets = UIEdgeInsets(top: 20, left: 24, bottom: 80, right: 24)
+        contentView.addSubview(scrollView)
+        scrollView.autoPinEdgesToSuperviewEdges()
+        scrollView.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges(with: insets)
+        stackView.autoConstrainAttribute(.width, to: .width, of: contentView, withOffset: -insets.totalWidth)
+
+        self.allowsExpansion = false
+        intrinsicSizeObservation = stackView.observe(\.bounds, changeHandler: { [weak self] stackView, _ in
+            self?.minimizedHeight = stackView.bounds.height + insets.totalHeight
+            self?.scrollView.isScrollEnabled = (self?.maxHeight ?? 0) < stackView.bounds.height
+        })
+    }
+
+    override public func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        scrollView.isScrollEnabled = self.maxHeight < stackView.bounds.height
+    }
+
+    let scrollView = UIScrollView()
+    let stackView = UIStackView()
+
+    let header: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+        label.text = NSLocalizedString(
+            "ONBOARDING_VERIFICATION_HELP_LINK",
+            comment: "Label for a button to get help entering a verification code when registering."
+        )
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }()
+
+    let bulletPoints: [UIView] = {
+        return [
+            OWSLocalizedString(
+                "ONBOARDING_VERIFICATION_HELP_BULLET_1",
+                comment: "First bullet point for the explainer sheet for registering via verification code."
+            ),
+            OWSLocalizedString(
+                "ONBOARDING_VERIFICATION_HELP_BULLET_2",
+                comment: "Second bullet point for the explainer sheet for registering via verification code."
+            ),
+            OWSLocalizedString(
+                "ONBOARDING_VERIFICATION_HELP_BULLET_3",
+                comment: "Third bullet point for the explainer sheet for registering via verification code."
+            )
+        ].map { text in
+            return RegistrationVerificationHelpSheetViewController.listPointView(text: text)
+        }
+    }()
+
+    private static func listPointView(text: String) -> UIStackView {
+        let stackView = UIStackView(frame: .zero)
+
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 8
+
+        let label = UILabel()
+        label.text = text
+        label.numberOfLines = 0
+        label.textColor = Theme.primaryTextColor
+        label.font = .ows_dynamicTypeBodyClamped
+
+        let bulletPoint = UIView()
+        bulletPoint.backgroundColor = UIColor(rgbHex: 0xC4C4C4)
+
+        stackView.addArrangedSubview(.spacer(withWidth: 4))
+        stackView.addArrangedSubview(bulletPoint)
+        stackView.addArrangedSubview(label)
+
+        bulletPoint.autoSetDimensions(to: .init(width: 4, height: 14))
+        label.setCompressionResistanceHigh()
+        return stackView
     }
 }

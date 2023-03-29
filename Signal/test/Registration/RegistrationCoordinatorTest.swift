@@ -3044,6 +3044,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             e164: E164 = Stubs.e164,
             nextSMS: TimeInterval? = 0,
             nextCall: TimeInterval? = 0,
+            showHelpText: Bool = false,
             nextVerificationAttempt: TimeInterval = 0,
             validationError: RegistrationVerificationValidationError? = nil,
             exitConfigOverride: RegistrationVerificationState.ExitConfiguration? = nil
@@ -3054,6 +3055,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 nextSMSDate: nextSMS.map { date.addingTimeInterval($0) },
                 nextCallDate: nextCall.map { date.addingTimeInterval($0) },
                 nextVerificationAttemptDate: date.addingTimeInterval(nextVerificationAttempt),
+                showHelpText: showHelpText,
                 validationError: validationError,
                 exitConfiguration: exitConfigOverride ?? mode.verificationExitConfig
             )
