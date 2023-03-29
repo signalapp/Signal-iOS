@@ -235,39 +235,29 @@ def should_process_file(file_path: str) -> bool:
     return True
 
 
-def lint_swift_files(file_paths: set[str]) -> None:
+def lint_swift_files(file_paths: set[str]) -> bool:
     swift_file_paths = list(filter(lambda f: get_ext(f) == ".swift", file_paths))
 
     file_count = len(swift_file_paths)
     if file_count < 1:
-        return
+        return True
 
     env = os.environ.copy()
     env["SCRIPT_INPUT_FILE_COUNT"] = str(file_count)
     for i, file_path in enumerate(swift_file_paths):
         env[f"SCRIPT_INPUT_FILE_{i}"] = file_path
 
-    try:
-        lint_output = subprocess.check_output(
-            ["swiftlint", "lint", "--fix", "--use-script-input-files"],
-            env=env,
-            text=True,
-        )
-    except subprocess.CalledProcessError as error:
-        lint_output = error.output
-    print(lint_output)
+    subprocess.run(
+        ["swiftlint", "lint", "--fix", "--use-script-input-files"],
+        env=env,
+    )
 
-    try:
-        lint_output = subprocess.check_output(
-            ["swiftlint", "lint", "--strict", "--use-script-input-files"],
-            env=env,
-            text=True,
-        )
-        print(lint_output)
-    except subprocess.CalledProcessError as error:
-        print(error.output)
-        print("Please fix the above lint errors before committing your changes")
-        sys.exit(1)
+    proc = subprocess.run(
+        ["swiftlint", "lint", "--strict", "--use-script-input-files"],
+        env=env,
+    )
+
+    return proc.returncode == 0
 
 
 def check_diff_for_keywords():
@@ -355,29 +345,45 @@ if __name__ == "__main__":
 
     file_paths = set(filter(should_process_file, all_file_paths))
 
+    result = True
+
     if not args.skip_license_header_checks:
-        try:
-            subprocess.check_output(
-                ["Scripts/lint/lint-license-headers", "--fix"], text=True
-            )
-        except subprocess.CalledProcessError as e:
-            sys.exit(1)
+        proc = subprocess.run(["Scripts/lint/lint-license-headers", "--fix"])
+        if proc.returncode != 0:
+            result = False
 
-    lint_swift_files(file_paths)
+    print("Running SwiftLint...", flush=True)
+    if not lint_swift_files(file_paths):
+        result = False
+    print("")
 
+    print("Sorting forward declarations...", flush=True)
     for file_path in file_paths:
         process(file_path)
+    print("")
 
-    print("Sorting Xcode project...")
-    print(subprocess.getoutput("Scripts/sort-Xcode-project-file Signal.xcodeproj"))
+    print("Sorting Xcode project...", flush=True)
+    subprocess.run(["Scripts/sort-Xcode-project-file", "Signal.xcodeproj"])
+    print("")
 
-    print("git clang-format...")
+    print("Running clang-format...", flush=True)
     # we don't want to format .proto files, so we specify every other supported extension
-    print(
-        subprocess.getoutput(
-            'git clang-format --extensions "c,h,m,mm,cc,cp,cpp,c++,cxx,hh,hxx,cu,java,js,ts,cs" --commit %s'
-            % clang_format_commit
-        )
+    subprocess.run(
+        [
+            "git",
+            "clang-format",
+            "--extensions",
+            "c,h,m,mm,cc,cp,cpp,c++,cxx,hh,hxx,cu,java,js,ts,cs",
+            "--commit",
+            clang_format_commit,
+        ]
     )
+    print("")
 
+    print("Checking for keywords...", flush=True)
     check_diff_for_keywords()
+    print("")
+
+    if not result:
+        print("Some errors couldn't be fixed automatically.")
+        sys.exit(1)
