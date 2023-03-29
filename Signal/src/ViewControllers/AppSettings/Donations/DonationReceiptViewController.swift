@@ -139,42 +139,11 @@ class DonationReceiptViewController: OWSTableViewController2 {
     }
 
     private func showShareReceiptActivity() {
-        // HACK: `UIActivityViewController` will sometimes dismiss its parent due to an iOS bug
-        // (see links below). To get around this, we present an invisible view controller and
-        // have that present the `UIActivityViewController`. Then, when the latter completes,
-        // we dismiss the invisible one.
-        //
-        // - <https://stackoverflow.com/q/56903030>
-        // - <https://stackoverflow.com/q/59413850>
-        // - <https://developer.apple.com/forums/thread/119482>
-        // - <https://github.com/iMacHumphries/TestShareSheet>
-        let wrapperViewControllerToFixIosBug = UIViewController()
-        wrapperViewControllerToFixIosBug.modalPresentationStyle = .overCurrentContext
-        wrapperViewControllerToFixIosBug.view.backgroundColor = .clear
-
-        let image = DonationReceiptImageActivityItemProvider(donationReceipt: model)
-        let shareActivityViewController = UIActivityViewController(activityItems: [image], applicationActivities: [])
-        if let popoverPresentationController = shareActivityViewController.popoverPresentationController {
-            popoverPresentationController.sourceView = self.shareReceiptButton
-        }
-        shareActivityViewController.excludedActivityTypes = [
-            .addToReadingList,
-            .assignToContact,
-            .openInIBooks,
-            .postToFacebook,
-            .postToFlickr,
-            .postToTencentWeibo,
-            .postToTwitter,
-            .postToVimeo,
-            .postToWeibo
-        ]
-        shareActivityViewController.completionWithItemsHandler = { _, _, _, _ in
-            wrapperViewControllerToFixIosBug.dismiss(animated: false)
-        }
-
-        self.present(wrapperViewControllerToFixIosBug, animated: false) {
-            wrapperViewControllerToFixIosBug.present(shareActivityViewController, animated: true)
-        }
+        ShareActivityUtil.present(
+            activityItems: [DonationReceiptImageActivityItemProvider(donationReceipt: model)],
+            from: self,
+            sourceView: shareReceiptButton
+        )
     }
 
     // MARK: - Donation receipt image activity provider

@@ -1303,6 +1303,10 @@
 		F90B731F2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731E2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift */; };
 		F90B7BC02912B8E000F50A59 /* DonationUtilitiesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B42912B8C8004FFFAA /* DonationUtilitiesTest.swift */; };
 		F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B22912B8B7004FFFAA /* DonateViewControllerTest.swift */; };
+		F915A76C29CB669800EB6F68 /* AccountDataReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76B29CB669800EB6F68 /* AccountDataReport.swift */; };
+		F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76D29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift */; };
+		F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76F29CB6D4C00EB6F68 /* ShareActivityUtil.swift */; };
+		F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A77129CB6F6F00EB6F68 /* AccountDataReportTest.swift */; };
 		F9189ABE2947D7C300CD8EF6 /* Stripe+StripeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */; };
 		F9189AC02947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9189ABF2947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift */; };
 		F9198485299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */; };
@@ -1421,7 +1425,7 @@
 		F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C912328FDECC40065DF75 /* DecimalTest.swift */; };
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
-		F952C0A629C8DA5E00D93766 /* RequestAccountDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F952C0A529C8DA5E00D93766 /* RequestAccountDataViewController.swift */; };
+		F952C0A629C8DA5E00D93766 /* RequestAccountDataReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F952C0A529C8DA5E00D93766 /* RequestAccountDataReportViewController.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F95A64F3299589CA007FDBDF /* RegistrationNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */; };
 		F95A64F529959065007FDBDF /* RegistrationPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */; };
@@ -3858,6 +3862,10 @@
 		F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+PaymentInProgressView.swift"; sourceTree = "<group>"; };
 		F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+WaitForSubscriptionJob.swift"; sourceTree = "<group>"; };
 		F90B731E2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+MonthlyReceiptRedemption.swift"; sourceTree = "<group>"; };
+		F915A76B29CB669800EB6F68 /* AccountDataReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataReport.swift; sourceTree = "<group>"; };
+		F915A76D29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataReportRequestFactory.swift; sourceTree = "<group>"; };
+		F915A76F29CB6D4C00EB6F68 /* ShareActivityUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareActivityUtil.swift; sourceTree = "<group>"; };
+		F915A77129CB6F6F00EB6F68 /* AccountDataReportTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataReportTest.swift; sourceTree = "<group>"; };
 		F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+StripeError.swift"; sourceTree = "<group>"; };
 		F9189ABF2947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+LocalizedStripeError.swift"; sourceTree = "<group>"; };
 		F9198484299AA7FC007FD5E4 /* RegistrationPhoneNumberInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberInputView.swift; sourceTree = "<group>"; };
@@ -3976,7 +3984,7 @@
 		F94C912328FDECC40065DF75 /* DecimalTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalTest.swift; sourceTree = "<group>"; };
 		F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
 		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
-		F952C0A529C8DA5E00D93766 /* RequestAccountDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestAccountDataViewController.swift; sourceTree = "<group>"; };
+		F952C0A529C8DA5E00D93766 /* RequestAccountDataReportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestAccountDataReportViewController.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationNavigationController.swift; sourceTree = "<group>"; };
 		F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberViewController.swift; sourceTree = "<group>"; };
@@ -6180,6 +6188,7 @@
 				342FFE67271EF4FF000AC89F /* ConversationSearch.swift */,
 				342FFE68271EF500000AC89F /* OWSWindowManager.h */,
 				342FFE69271EF500000AC89F /* OWSWindowManager.m */,
+				F915A76F29CB6D4C00EB6F68 /* ShareActivityUtil.swift */,
 			);
 			name = UserInterface;
 			sourceTree = "<group>";
@@ -7031,7 +7040,7 @@
 				88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */,
 				88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */,
 				887B6DC825F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift */,
-				F952C0A529C8DA5E00D93766 /* RequestAccountDataViewController.swift */,
+				F952C0A529C8DA5E00D93766 /* RequestAccountDataReportViewController.swift */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -8971,6 +8980,7 @@
 			children = (
 				F9C5CADB289453B200548EEE /* Giphy */,
 				F9C5CAE1289453B200548EEE /* Requests */,
+				F915A76B29CB669800EB6F68 /* AccountDataReport.swift */,
 				505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */,
 				F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */,
 				F9C5CAEF289453B200548EEE /* HTTPEntities.swift */,
@@ -9009,6 +9019,7 @@
 				6645F30629BF8D1000B58EBD /* AccountAttributes */,
 				66A1DF71298C634500C4E4A7 /* Registration */,
 				66533E3529B7B53500E8D928 /* WhoAmI */,
+				F915A76D29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift */,
 				66533E3B29BA8BB200E8D928 /* AuthedAccount.swift */,
 				664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */,
 				D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */,
@@ -9260,6 +9271,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C9610929A90FF9001E4A09 /* Requests */,
+				F915A77129CB6F6F00EB6F68 /* AccountDataReportTest.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -11447,7 +11459,7 @@
 				D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
 				348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */,
-				F952C0A629C8DA5E00D93766 /* RequestAccountDataViewController.swift in Sources */,
+				F952C0A629C8DA5E00D93766 /* RequestAccountDataReportViewController.swift in Sources */,
 				342FFE7E271EF5B2000AC89F /* ReturnToCallViewController.swift in Sources */,
 				348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */,
 				66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */,
@@ -11460,6 +11472,7 @@
 				3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */,
 				8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */,
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
+				F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */,
 				D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
@@ -11616,6 +11629,8 @@
 				6645F30C29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift in Sources */,
 				6645F30829BF8D2000B58EBD /* AccountAttributes.swift in Sources */,
 				6645F30A29BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift in Sources */,
+				F915A76C29CB669800EB6F68 /* AccountDataReport.swift in Sources */,
+				F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */,
 				F9C5CD5F289453B300548EEE /* AccountIdFinder.swift in Sources */,
 				F9C5CCA9289453B300548EEE /* AccountServiceClient.swift in Sources */,
 				F9C5CCE1289453B300548EEE /* AnyThreadFinder.swift in Sources */,
@@ -12265,6 +12280,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
 				F9426261289B1B5500460798 /* AppVersionTests.swift in Sources */,
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,

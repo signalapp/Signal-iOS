@@ -186,16 +186,16 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     ))
                 }
             }
-            if FeatureFlags.canRequestAccountData {
+            if FeatureFlags.canRequestAccountDataReport {
                 accountSection.add(.actionItem(
                     // TODO[ADE]: Localize this string
                     withText: "Request Account Data",
                     accessibilityIdentifier: UIView.accessibilityIdentifier(
                         in: self,
-                        name: "request_account_data"
+                        name: "request_account_data_report"
                     ),
                     actionBlock: { [weak self] in
-                        self?.requestAccountData()
+                        self?.requestAccountDataReport()
                     }
                 ))
             }
@@ -257,8 +257,8 @@ class AccountSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    private func requestAccountData() {
-        let vc = RequestAccountDataViewController()
+    private func requestAccountDataReport() {
+        let vc = RequestAccountDataReportViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
 
