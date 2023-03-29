@@ -155,6 +155,22 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
     }
 
     private func didTapExport() {
+        let actionSheet = ActionSheetController(
+            message: "Only share your Signal account data with people or apps you trust."
+        )
+
+        actionSheet.addAction(.init(
+            title: "Export Report"
+        ) { [weak self] _ in
+            self?.didConfirmExport()
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
+    }
+
+    private func didConfirmExport() {
         let report: AccountDataReport = {
             switch state {
             case .initializing, .hasNoReport:
