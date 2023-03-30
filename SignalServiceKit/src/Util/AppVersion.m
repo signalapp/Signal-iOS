@@ -143,29 +143,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     return self.firstAppVersion != nil;
 }
 
-+ (NSComparisonResult)compareAppVersion:(NSString *)lhs with:(NSString *)rhs
-{
-    // It might be nice to have a first-class version struct that's comparable, but it's not important right now.
-    NSArray<NSString *> *lhsComponents = [lhs componentsSeparatedByString:@"."];
-    NSArray<NSString *> *rhsComponents = [rhs componentsSeparatedByString:@"."];
-
-    NSUInteger largestIdx = MAX(lhsComponents.count, rhsComponents.count);
-    for (NSUInteger idx = 0; idx < largestIdx; idx++) {
-        // If we run off the end of an array, we'll assume zero for the component segment
-        NSString *lhsComponentString = (idx < lhsComponents.count) ? lhsComponents[idx] : nil;
-        NSString *rhsComponentString = (idx < rhsComponents.count) ? rhsComponents[idx] : nil;
-        NSInteger lhsComponent = [lhsComponentString integerValue];
-        NSInteger rhsComponent = [rhsComponentString integerValue];
-
-        if (lhsComponent != rhsComponent) {
-            return (lhsComponent < rhsComponent) ? NSOrderedAscending : NSOrderedDescending;
-        }
-    }
-
-    // If we get here, the versions are effectively equal
-    return NSOrderedSame;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

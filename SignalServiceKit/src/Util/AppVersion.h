@@ -52,12 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isFirstLaunch;
 
-/// Compares the two given version strings. Parses each string as a
-/// dot-separated list of components, and does a pairwise comparison of each
-/// string's corresponding components. If any component is not interpretable as
-/// an integer, the value `0` will be used.
-+ (NSComparisonResult)compareAppVersion:(NSString *)lhs with:(NSString *)rhs;
-
 @end
 
 NS_ASSUME_NONNULL_END

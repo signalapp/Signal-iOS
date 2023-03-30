@@ -80,4 +80,31 @@ extension AppVersion {
 
         Logger.info("Core count: \(LocalDevice.allCoreCount) (active: \(LocalDevice.activeCoreCount)")
     }
+
+    // MARK: - Comparing app versions
+
+    /// Compares the two given version strings. Parses each string as a dot-separated list of
+    /// components, and does a pairwise comparison of each string's corresponding components. If any
+    /// component is not interpretable as an unsigned integer, the value `0` will be used.
+    @objc(compareAppVersion:with:)
+    public static func compare(_ lhs: String, with rhs: String) -> ComparisonResult {
+        let lhsComponents = lhs.components(separatedBy: ".")
+        let rhsComponents = rhs.components(separatedBy: ".")
+
+        let largestCount = max(lhsComponents.count, rhsComponents.count)
+        for index in (0..<largestCount) {
+            let lhsComponent = parseVersionComponent(lhsComponents[index])
+            let rhsComponent = parseVersionComponent(rhsComponents[index])
+            if lhsComponent != rhsComponent {
+                return (lhsComponent < rhsComponent) ? .orderedAscending : .orderedDescending
+            }
+        }
+
+        return .orderedSame
+    }
+
+    private static func parseVersionComponent(_ versionComponent: String?) -> UInt {
+        guard let versionComponent else { return 0 }
+        return UInt(versionComponent) ?? 0
+    }
 }
