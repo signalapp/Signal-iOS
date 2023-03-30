@@ -315,15 +315,9 @@ public class LegacyChangePhoneNumber: NSObject {
             """
         )
 
-        let addressFromServiceParams = SignalServiceAddress(
-            uuid: serviceAci,
-            phoneNumber: serviceE164.stringValue,
-            ignoreCache: true
-        )
-
-        SignalRecipient.fetchOrCreate(
-            for: addressFromServiceParams,
-            trustLevel: .high,
+        SignalRecipient.mergeHighTrust(
+            serviceId: ServiceId(serviceAci),
+            phoneNumber: serviceE164,
             transaction: transaction
         )
         .markAsRegistered(transaction: transaction)

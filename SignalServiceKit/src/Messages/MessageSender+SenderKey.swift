@@ -297,17 +297,15 @@ extension MessageSender {
                             transaction: writeTx
                         )
 
-                        let recipientAddress = SignalServiceAddress(recipient.serviceId)
-
                         // If we're sending a story, we generally get a 200, even if the account
                         // doesn't exist. Therefore, don't use this to mark accounts as registered.
                         if !message.isStorySend {
-                            SignalRecipient.fetchOrCreate(for: recipientAddress, trustLevel: .low, transaction: writeTx)
+                            SignalRecipient.fetchOrCreate(serviceId: recipient.serviceId, transaction: writeTx)
                                 .markAsRegistered(transaction: writeTx)
                         }
 
                         self.profileManager.didSendOrReceiveMessage(
-                            from: recipientAddress,
+                            from: SignalServiceAddress(recipient.serviceId),
                             authedAccount: .implicit(),
                             transaction: writeTx
                         )

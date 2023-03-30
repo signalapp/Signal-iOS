@@ -52,11 +52,35 @@ extension SignalRecipient {
     // MARK: -
 
     @discardableResult
-    public class func fetchOrCreate(
-        for address: SignalServiceAddress,
-        trustLevel: SignalRecipientTrustLevel,
+    public class func mergeHighTrust(
+        serviceId: ServiceId,
+        phoneNumber: E164?,
         transaction: SDSAnyWriteTransaction
     ) -> SignalRecipient {
+        _fetchOrCreate(
+            serviceId: serviceId,
+            phoneNumber: phoneNumber,
+            trustLevel: .high,
+            transaction: transaction
+        )!
+    }
+
+    public class func fetchOrCreate(serviceId: ServiceId, transaction: SDSAnyWriteTransaction) -> SignalRecipient {
+        // Note: The trust level doesn't matter if we provide only one identifier.
+        _fetchOrCreate(serviceId: serviceId, phoneNumber: nil, trustLevel: .low, transaction: transaction)!
+    }
+
+    public class func fetchOrCreate(phoneNumber: E164, transaction: SDSAnyWriteTransaction) -> SignalRecipient {
+        // Note: The trust level doesn't matter if we provide only one identifier.
+        _fetchOrCreate(serviceId: nil, phoneNumber: phoneNumber, trustLevel: .low, transaction: transaction)!
+    }
+
+    private class func _fetchOrCreate(
+        serviceId: ServiceId?,
+        phoneNumber: E164?,
+        trustLevel: SignalRecipientTrustLevel,
+        transaction: SDSAnyWriteTransaction
+    ) -> SignalRecipient? {
         let recipientMerger = RecipientMergerImpl(
             temporaryShims: SignalRecipientMergerTemporaryShims(
                 sessionStore: Self.signalProtocolStore(for: .aci).sessionStore
@@ -66,20 +90,14 @@ extension SignalRecipient {
         )
         let result = recipientMerger.merge(
             trustLevel: trustLevel,
-            serviceId: address.serviceId,
-            phoneNumber: address.phoneNumber,
+            serviceId: serviceId,
+            phoneNumber: phoneNumber,
             transaction: transaction.asV2Write
         )
         if let result {
             signalServiceAddressCache.updateRecipient(result)
-            return result
         }
-        // If we reach this point, `address` is invalid and has neither a ServiceId
-        // nor a phone number. Insert an empty recipient (the old behavior).
-        owsFailDebug("Inserting recipient without any identifier.")
-        let emptyRecipient = SignalRecipient(serviceId: nil, phoneNumber: nil)
-        emptyRecipient.anyInsert(transaction: transaction)
-        return emptyRecipient
+        return result
     }
 
     // MARK: -
@@ -411,8 +429,8 @@ class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
         self.sessionStore = sessionStore
     }
 
-    func clearMappings(phoneNumber: String, transaction: DBWriteTransaction) {
-        SignalRecipient.clearDBMappings(forPhoneNumber: phoneNumber, transaction: SDSDB.shimOnlyBridge(transaction))
+    func clearMappings(phoneNumber: E164, transaction: DBWriteTransaction) {
+        SignalRecipient.clearDBMappings(forPhoneNumber: phoneNumber.stringValue, transaction: SDSDB.shimOnlyBridge(transaction))
     }
 
     func clearMappings(serviceId: ServiceId, transaction: DBWriteTransaction) {
@@ -423,21 +441,21 @@ class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
         oldServiceIdString: String?,
         oldPhoneNumber: String?,
         newServiceIdString: String?,
-        newPhoneNumber: String?,
+        newPhoneNumber: E164?,
         transaction: DBWriteTransaction
     ) {
         SignalRecipient.didUpdatePhoneNumber(
             oldServiceIdString: oldServiceIdString,
             oldPhoneNumber: oldPhoneNumber,
             newServiceIdString: newServiceIdString,
-            newPhoneNumber: newPhoneNumber,
+            newPhoneNumber: newPhoneNumber?.stringValue,
             transaction: SDSDB.shimOnlyBridge(transaction)
         )
     }
 
-    func mergeUserProfilesIfNecessary(serviceId: ServiceId, phoneNumber: String, transaction: DBWriteTransaction) {
+    func mergeUserProfilesIfNecessary(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {
         OWSUserProfile.mergeUserProfilesIfNecessary(
-            for: SignalServiceAddress(uuid: serviceId.uuidValue, phoneNumber: phoneNumber),
+            for: SignalServiceAddress(uuid: serviceId.uuidValue, phoneNumber: phoneNumber.stringValue),
             authedAccount: .implicit(),
             transaction: SDSDB.shimOnlyBridge(transaction)
         )

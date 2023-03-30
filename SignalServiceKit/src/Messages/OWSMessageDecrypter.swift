@@ -719,21 +719,15 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             TSPreKeyManager.checkPreKeysIfNecessary()
         }
 
-        let sourceAddress = SignalServiceAddress(
-            uuid: decryptResult.senderServiceId.uuidValue,
-            phoneNumber: decryptResult.senderE164,
-            ignoreCache: true
-        )
-
         let rawSourceDeviceId = decryptResult.senderDeviceId
         guard rawSourceDeviceId > 0, rawSourceDeviceId < UInt32.max else {
             return .failure(OWSAssertionError("Invalid UD sender device id."))
         }
         let sourceDeviceId = UInt32(rawSourceDeviceId)
 
-        let recipient = SignalRecipient.fetchOrCreate(
-            for: sourceAddress,
-            trustLevel: .high,
+        let recipient = SignalRecipient.mergeHighTrust(
+            serviceId: decryptResult.senderServiceId.wrappedValue,
+            phoneNumber: E164(decryptResult.senderE164),
             transaction: transaction
         )
         recipient.markAsRegistered(deviceId: sourceDeviceId, transaction: transaction)

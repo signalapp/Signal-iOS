@@ -51,13 +51,13 @@ private class MockRecipientDataStore: RecipientDataStore {
 }
 
 private class MockRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
-    func clearMappings(phoneNumber: String, transaction: DBWriteTransaction) {}
+    func clearMappings(phoneNumber: E164, transaction: DBWriteTransaction) {}
 
     func clearMappings(serviceId: ServiceId, transaction: DBWriteTransaction) {}
 
-    func didUpdatePhoneNumber(oldServiceIdString: String?, oldPhoneNumber: String?, newServiceIdString: String?, newPhoneNumber: String?, transaction: DBWriteTransaction) {}
+    func didUpdatePhoneNumber(oldServiceIdString: String?, oldPhoneNumber: String?, newServiceIdString: String?, newPhoneNumber: E164?, transaction: DBWriteTransaction) {}
 
-    func mergeUserProfilesIfNecessary(serviceId: ServiceId, phoneNumber: String, transaction: DBWriteTransaction) {}
+    func mergeUserProfilesIfNecessary(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {}
 
     func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool { false }
 }
@@ -125,23 +125,23 @@ class RecipientMergerTest: XCTestCase {
                 dataStore: mockDataStore,
                 storageServiceManager: MockStorageServiceManager()
             )
-            mockDB.write {
+            func run(transaction: DBWriteTransaction) {
                 for initialRecipient in testCase.initialState {
                     XCTAssertEqual(mockDataStore.nextRowId, initialRecipient.rowId, "\(testCase)")
                     mockDataStore.insertRecipient(
                         SignalRecipient(
                             serviceId: initialRecipient.serviceId.map { ServiceIdObjC($0) },
-                            phoneNumber: initialRecipient.phoneNumber?.stringValue
+                            phoneNumber: initialRecipient.phoneNumber.map { E164ObjC($0) }
                         ),
-                        transaction: $0
+                        transaction: transaction
                     )
                 }
 
                 _ = recipientMerger.merge(
                     trustLevel: testCase.trustLevel,
                     serviceId: testCase.mergeRequest.serviceId,
-                    phoneNumber: testCase.mergeRequest.phoneNumber?.stringValue,
-                    transaction: $0
+                    phoneNumber: testCase.mergeRequest.phoneNumber,
+                    transaction: transaction
                 )
 
                 for finalRecipient in testCase.finalState.reversed() {
@@ -151,6 +151,7 @@ class RecipientMergerTest: XCTestCase {
                 }
                 XCTAssertEqual(mockDataStore.recipientTable, [:], "\(idx)")
             }
+            mockDB.write { run(transaction: $0) }
         }
     }
 }

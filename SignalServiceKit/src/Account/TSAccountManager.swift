@@ -118,8 +118,11 @@ public extension TSAccountManager {
             pniAwaitingVerification = nil
         }
 
-        let localAddress = SignalServiceAddress(uuid: newAci.uuidValue, phoneNumber: newLocalNumber, ignoreCache: true)
-        let localRecipient = SignalRecipient.fetchOrCreate(for: localAddress, trustLevel: .high, transaction: transaction)
+        let localRecipient = SignalRecipient.mergeHighTrust(
+            serviceId: newAci.wrappedValue,
+            phoneNumber: E164(newLocalNumber),
+            transaction: transaction
+        )
         localRecipient.markAsRegistered(transaction: transaction)
     }
 

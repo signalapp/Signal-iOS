@@ -27,14 +27,10 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
         return firstly {
             Self.createContactDiscoveryOperation(for: e164s, mode: mode).perform(on: workQueue)
         }.map(on: workQueue) { (discoveredContacts: Set<DiscoveredContactInfo>) -> Set<SignalRecipient> in
-            let discoveredAddresses = discoveredContacts
-                .map { SignalServiceAddress(uuid: $0.uuid, phoneNumber: $0.e164.stringValue, ignoreCache: true) }
-
             let undiscoverableE164s = e164s.subtracting(discoveredContacts.lazy.map { $0.e164 })
-
             return Self.databaseStorage.write {
                 Self.storeResults(
-                    discoveredAddresses: discoveredAddresses,
+                    discoveredContacts: discoveredContacts,
                     undiscoverableE164s: undiscoverableE164s,
                     transaction: $0
                 )
@@ -47,12 +43,16 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
     }
 
     private static func storeResults(
-        discoveredAddresses: [SignalServiceAddress],
+        discoveredContacts: Set<DiscoveredContactInfo>,
         undiscoverableE164s: Set<E164>,
         transaction: SDSAnyWriteTransaction
     ) -> Set<SignalRecipient> {
-        let registeredRecipients = Set(discoveredAddresses.map { address -> SignalRecipient in
-            let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
+        let registeredRecipients = Set(discoveredContacts.map { discoveredContact -> SignalRecipient in
+            let recipient = SignalRecipient.mergeHighTrust(
+                serviceId: ServiceId(discoveredContact.uuid),
+                phoneNumber: discoveredContact.e164,
+                transaction: transaction
+            )
             recipient.markAsRegistered(transaction: transaction)
             return recipient
         })
@@ -83,7 +83,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
                 continue
             }
 
-            let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
+            let recipient = SignalRecipient.fetchOrCreate(phoneNumber: undiscoverableE164, transaction: transaction)
             recipient.markAsUnregistered(transaction: transaction)
         }
 

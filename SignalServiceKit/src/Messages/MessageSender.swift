@@ -126,8 +126,7 @@ extension MessageSender {
                     // Since we successfully fetched the prekey bundle, we know this device is
                     // registered and can mark it as such to acquire a stable recipientId.
                     let recipient = SignalRecipient.fetchOrCreate(
-                        for: messageSend.address,
-                        trustLevel: .low,
+                        serviceId: messageSend.serviceId.wrappedValue,
                         transaction: transaction
                     )
                     recipient.markAsRegistered(deviceId: deviceId, transaction: transaction)
@@ -895,10 +894,9 @@ extension MessageSender {
     ) {
         owsAssertDebug(!Thread.isMainThread)
 
-        let address: SignalServiceAddress = messageSend.address
         let message: TSOutgoingMessage = messageSend.message
 
-        Logger.info("Successfully sent message: \(type(of: message)), recipient: \(address), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD), wasSentByWebsocket: \(wasSentByWebsocket)")
+        Logger.info("Successfully sent message: \(type(of: message)), serviceId: \(messageSend.serviceId), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD), wasSentByWebsocket: \(wasSentByWebsocket)")
 
         if messageSend.isLocalAddress && deviceMessages.isEmpty {
             Logger.info("Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.")
@@ -941,12 +939,15 @@ extension MessageSender {
             // This is low trust because we don't actually know for sure the fully
             // qualified address is valid.
             if !message.isStorySend {
-                let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
+                let recipient = SignalRecipient.fetchOrCreate(
+                    serviceId: messageSend.serviceId.wrappedValue,
+                    transaction: transaction
+                )
                 recipient.markAsRegistered(transaction: transaction)
             }
 
             Self.profileManager.didSendOrReceiveMessage(
-                from: address,
+                from: messageSend.address,
                 authedAccount: .implicit(),
                 transaction: transaction
             )
@@ -983,10 +984,9 @@ extension MessageSender {
     ) {
         owsAssertDebug(!Thread.isMainThread)
 
-        let address: SignalServiceAddress = messageSend.address
         let message: TSOutgoingMessage = messageSend.message
 
-        Logger.info("Failed to send message: \(type(of: message)), recipient: \(address), timestamp: \(message.timestamp), statusCode: \(statusCode), error: \(responseError)")
+        Logger.warn("Failed to send message: \(type(of: message)), serviceId: \(messageSend.serviceId), timestamp: \(message.timestamp), statusCode: \(statusCode), error: \(responseError)")
 
         let retrySend = {
             if messageSend.remainingAttempts <= 0 {
@@ -1013,7 +1013,7 @@ extension MessageSender {
             return
         case 409:
             // Mismatched devices
-            Logger.warn("Mismatched devices for recipient: \(address) (\(deviceMessages.count))")
+            Logger.warn("Mismatched devices for serviceId: \(messageSend.serviceId) (\(deviceMessages.count))")
 
             guard let response = MessageSendFailureResponse.parse(responseData) else {
                 owsFailDebug("Couldn't parse JSON response.")
@@ -1028,7 +1028,7 @@ extension MessageSender {
 
         case 410:
             // Stale devices
-            Logger.warn("Stale devices for recipient: \(address)")
+            Logger.warn("Stale devices for serviceId: \(messageSend.serviceId)")
 
             guard let response = MessageSendFailureResponse.parse(responseData) else {
                 owsFailDebug("Couldn't parse JSON response.")
@@ -1037,7 +1037,7 @@ extension MessageSender {
                 return
             }
 
-            handleStaleDevices(staleDevices: response.staleDevices, address: address)
+            handleStaleDevices(staleDevices: response.staleDevices, address: messageSend.address)
 
             retrySend()
         case 428:
@@ -1113,7 +1113,7 @@ extension MessageSender {
             return
         }
 
-        let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
+        let recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: transaction)
         recipient.markAsUnregistered(transaction: transaction)
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every
@@ -1181,12 +1181,7 @@ extension MessageSender {
             deviceManager.setMayHaveLinkedDevices()
         }
 
-        let recipient = SignalRecipient.fetchOrCreate(
-            for: SignalServiceAddress(serviceId.wrappedValue),
-            trustLevel: .low,
-            transaction: transaction
-        )
-
+        let recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId.wrappedValue, transaction: transaction)
         recipient.updateWithDevices(toAdd: devicesToAdd, devicesToRemove: devicesToRemove, transaction: transaction)
 
         if !devicesToRemove.isEmpty {

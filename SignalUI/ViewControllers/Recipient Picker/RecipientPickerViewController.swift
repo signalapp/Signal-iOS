@@ -1012,14 +1012,8 @@ extension RecipientPickerViewController {
         withAci aci: UUID,
         forUsername username: String
     ) {
-        let addressForUsername = SignalServiceAddress(uuid: aci)
-
         self.databaseStorage.write { transaction in
-            let recipient = SignalRecipient.fetchOrCreate(
-                for: addressForUsername,
-                trustLevel: .low,
-                transaction: transaction
-            )
+            let recipient = SignalRecipient.fetchOrCreate(serviceId: ServiceId(aci), transaction: transaction)
             recipient.markAsRegistered(transaction: transaction)
 
             let isUsernameBestIdentifier = Usernames.BetterIdentifierChecker.assembleByQuerying(
@@ -1040,7 +1034,7 @@ extension RecipientPickerViewController {
                 )
 
                 self.storageServiceManager.recordPendingUpdates(
-                    updatedAddresses: [addressForUsername],
+                    updatedAccountIds: [recipient.accountId],
                     authedAccount: .implicit()
                 )
             } else {
@@ -1055,6 +1049,6 @@ extension RecipientPickerViewController {
             }
         }
 
-        self.tryToSelectRecipient(.for(address: addressForUsername))
+        self.tryToSelectRecipient(.for(address: SignalServiceAddress(uuid: aci)))
     }
 }

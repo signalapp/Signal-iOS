@@ -199,8 +199,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             }
             try databaseStorage.write { transaction in
                 for contact in contacts {
-                    try self.process(contactDetails: contact, transaction: transaction)
-                    processedAddresses.append(contact.address)
+                    let contactAddress = try self.process(contactDetails: contact, transaction: transaction)
+                    processedAddresses.append(contactAddress)
                 }
             }
             return true
@@ -210,8 +210,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     private static func buildBatch(contactStream: ContactsInputStream) throws -> [ContactDetails]? {
         let batchSize = 8
         var contacts = [ContactDetails]()
-        while contacts.count < batchSize,
-              let contact = try contactStream.decodeContact() {
+        while contacts.count < batchSize, let contact = try contactStream.decodeContact() {
             contacts.append(contact)
         }
         guard !contacts.isEmpty else {
@@ -220,15 +219,23 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         return contacts
     }
 
-    private func process(contactDetails: ContactDetails, transaction: SDSAnyWriteTransaction) throws {
+    private func process(contactDetails: ContactDetails, transaction: SDSAnyWriteTransaction) throws -> SignalServiceAddress {
         Logger.debug("contactDetails: \(contactDetails)")
 
-        let recipient = SignalRecipient.fetchOrCreate(for: contactDetails.address, trustLevel: .high, transaction: transaction)
-
-        // Mark as registered as long as we have a UUID. If we don't have a UUID,
-        // contacts can't be registered.
-        if recipient.recipientUUID != nil {
+        let recipient: SignalRecipient
+        if let serviceId = contactDetails.serviceId {
+            recipient = SignalRecipient.mergeHighTrust(
+                serviceId: serviceId,
+                phoneNumber: contactDetails.phoneNumber,
+                transaction: transaction
+            )
+            // Mark as registered as long as we have a UUID. If we don't have a UUID,
+            // contacts can't be registered.
             recipient.markAsRegistered(transaction: transaction)
+        } else if let phoneNumber = contactDetails.phoneNumber {
+            recipient = SignalRecipient.fetchOrCreate(phoneNumber: phoneNumber, transaction: transaction)
+        } else {
+            throw OWSAssertionError("No identifier in ContactDetails.")
         }
 
         let address = recipient.address
@@ -285,6 +292,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                 self.blockingManager.removeBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
             }
         }
+
+        return address
     }
 
     /// Clear ``SignalAccount``s that weren't part of a complete sync.

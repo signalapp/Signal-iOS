@@ -104,7 +104,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
             receiptManager: receiptManagerMock,
             remoteConfig: RegistrationCoordinatorImpl.TestMocks.RemoteConfig(),
             schedulers: TestSchedulers(scheduler: scheduler),
-            signalRecipientShim: RegistrationCoordinatorImpl.TestMocks.SignalRecipient(),
             sessionManager: sessionManager,
             signalService: mockSignalService,
             storageServiceManager: storageServiceManagerMock,

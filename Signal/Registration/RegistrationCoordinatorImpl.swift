@@ -2898,11 +2898,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
                     // We do these here, and not in export state, so that we don't risk
                     // syncing out-of-date state to storage service.
-                    strongSelf.deps.signalRecipientShim.createHighTrustRecipient(
-                        aci: accountIdentity.aci,
-                        e164: accountIdentity.e164,
-                        transaction: tx
-                    )
                     strongSelf.deps.tsAccountManager.updateLocalPhoneNumber(
                         e164: accountIdentity.e164,
                         aci: accountIdentity.aci,

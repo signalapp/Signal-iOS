@@ -15,6 +15,12 @@ public struct E164: Equatable, Hashable, Codable, CustomDebugStringConvertible {
         self.stringValue = stringValue
     }
 
+    public static func expectNilOrValid(stringValue: String?) -> E164? {
+        let result = E164(stringValue)
+        owsAssertDebug(stringValue == nil || result != nil, "Couldn't parse an E164 that should be valid")
+        return result
+    }
+
     public var uint64Value: UInt64 {
         owsAssert(stringValue.first == "+")
         return UInt64(stringValue.dropFirst())!
@@ -50,7 +56,7 @@ public class E164ObjC: NSObject, NSCopying {
     }
 
     @objc
-    init?(_ stringValue: String?) {
+    public init?(_ stringValue: String?) {
         guard let stringValue, let wrappedValue = E164(stringValue) else {
             return nil
         }

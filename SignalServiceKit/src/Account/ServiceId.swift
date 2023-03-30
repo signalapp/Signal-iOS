@@ -28,6 +28,12 @@ public struct ServiceId: Equatable, Hashable, Codable, CustomDebugStringConverti
         self.init(uuidValue)
     }
 
+    public static func expectNilOrValid(uuidString: String?) -> ServiceId? {
+        let result = ServiceId(uuidString: uuidString)
+        owsAssertDebug(uuidString == nil || result != nil, "Couldn't parse a ServiceId that should be valid")
+        return result
+    }
+
     public enum KnownValue {
         case myStory
         case systemStory

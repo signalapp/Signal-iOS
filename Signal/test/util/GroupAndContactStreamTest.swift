@@ -58,8 +58,8 @@ class GroupAndContactStreamTest: SignalBaseTest {
 
         do {
             let contact = contacts[0]
-            XCTAssertEqual("+13231111111", contact.address.phoneNumber)
-            XCTAssertNil(contact.address.uuid)
+            XCTAssertEqual("+13231111111", contact.phoneNumber?.stringValue)
+            XCTAssertNil(contact.serviceId)
             XCTAssertNil(contact.verifiedProto)
             XCTAssertNil(contact.profileKey)
             XCTAssertEqual(false, contact.isBlocked)
@@ -70,8 +70,8 @@ class GroupAndContactStreamTest: SignalBaseTest {
 
         do {
             let contact = contacts[1]
-            XCTAssertNil(contact.address.phoneNumber)
-            XCTAssertEqual("31CE1412-9A28-4E6F-B4EE-222222222222", contact.address.uuid?.uuidString)
+            XCTAssertNil(contact.phoneNumber)
+            XCTAssertEqual("31CE1412-9A28-4E6F-B4EE-222222222222", contact.serviceId?.uuidValue.uuidString)
             XCTAssertNil(contact.verifiedProto)
             XCTAssertNil(contact.profileKey)
             XCTAssertEqual(false, contact.isBlocked)
@@ -82,8 +82,8 @@ class GroupAndContactStreamTest: SignalBaseTest {
 
         do {
             let contact = contacts[2]
-            XCTAssertEqual("+13213333333", contact.address.phoneNumber)
-            XCTAssertEqual("1D4AB045-88FB-4C4E-9F6A-333333333333", contact.address.uuid?.uuidString)
+            XCTAssertEqual("+13213333333", contact.phoneNumber?.stringValue)
+            XCTAssertEqual("1D4AB045-88FB-4C4E-9F6A-333333333333", contact.serviceId?.uuidValue.uuidString)
             XCTAssertNil(contact.verifiedProto)
             XCTAssertNil(contact.profileKey)
             XCTAssertEqual(false, contact.isBlocked)

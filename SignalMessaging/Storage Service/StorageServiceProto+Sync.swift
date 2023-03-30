@@ -368,7 +368,11 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             return .invalid
         }
 
-        let recipient = SignalRecipient.fetchOrCreate(for: immutableAddress, trustLevel: .high, transaction: transaction)
+        let recipient = SignalRecipient.mergeHighTrust(
+            serviceId: ServiceId(contact.serviceId),
+            phoneNumber: E164(contact.serviceE164),
+            transaction: transaction
+        )
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
             recipient.markAsUnregistered(at: unregisteredAtTimestamp, source: .storageService, transaction: transaction)
         } else {

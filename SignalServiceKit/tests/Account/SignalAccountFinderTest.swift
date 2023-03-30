@@ -17,87 +17,66 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
                                           uuid: localAddress.uuid!)
     }
 
-    private func createRecipientsAndAccounts(_ addresses: [SignalServiceAddress]) -> [SignalAccount] {
-        let accounts = addresses.map { SignalAccount(address: $0) }
-        // Create recipients and accounts.
-        write { transaction in
-            for address in addresses {
-                SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
-                    .markAsRegistered(transaction: transaction)
-            }
-            for account in accounts {
-                account.anyInsert(transaction: transaction)
-            }
+    private func createAccount(serviceId: ServiceId, phoneNumber: E164?) -> SignalAccount {
+        let account = SignalAccount(
+            address: SignalServiceAddress(uuid: serviceId.uuidValue, phoneNumber: phoneNumber?.stringValue)
+        )
+        write {
+            let recipient = SignalRecipient.mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: $0)
+            recipient.markAsRegistered(transaction: $0)
+            account.anyInsert(transaction: $0)
         }
-        return accounts
+        return account
     }
 
-    func testReadManyValues() {
-        let addresses = [SignalServiceAddress(phoneNumber: "+17035559901"),
-                         SignalServiceAddress(phoneNumber: "+17035559902"),
-                         SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
-        let accounts = createRecipientsAndAccounts(addresses)
+    func testFetchAccounts() {
+        let sid1 = ServiceId(UUID())
+        let pn1 = E164("+16505550100")!
+        let account1 = createAccount(serviceId: sid1, phoneNumber: pn1)
+
+        let sid2 = ServiceId(UUID())
+        let account2 = createAccount(serviceId: sid2, phoneNumber: nil)
+
+        // Nothing prevents us from creating multiple accounts for the same recipient.
+        let sid3 = ServiceId(UUID())
+        let pn3 = E164("+16505550101")!
+        let account3a = createAccount(serviceId: sid3, phoneNumber: pn3)
+        _ = createAccount(serviceId: sid3, phoneNumber: pn3)
+
+        // Create an account but don't fetch it.
+        let sid4 = ServiceId(UUID())
+        _ = createAccount(serviceId: sid4, phoneNumber: nil)
+
+        // Create a ServiceId without an account.
+        let sid5 = ServiceId(UUID())
+
+        let addressesToFetch: [SignalServiceAddress] = [
+            SignalServiceAddress(sid1),
+            SignalServiceAddress(sid2),
+            SignalServiceAddress(sid3),
+            SignalServiceAddress(sid5),
+
+            // In practice, every SignalAccount has a UUID, and we should be populating
+            // the UUID for phone number-only addresses. However, keep this around for
+            // historical purposes (for now).
+            SignalServiceAddress(uuid: nil, phoneNumber: pn1.stringValue, ignoreCache: true)
+        ]
+
+        let expectedAccounts: [SignalAccount?] = [
+            account1,
+            account2,
+            account3a,
+            nil,
+            account1
+        ]
 
         read { transaction in
             let accountFinder = AnySignalAccountFinder()
-            let actual = accountFinder.signalAccounts(for: addresses, transaction: transaction)
-            XCTAssertEqual(actual.map { $0?.recipientAddress },
-                           accounts.map { $0.recipientAddress })
-        }
-    }
-
-    func testReadPhoneNumbersAndBogus() {
-        let addresses = [SignalServiceAddress(phoneNumber: "+17035559901"),
-                         SignalServiceAddress(phoneNumber: "+17035550000")]
-        let accounts = createRecipientsAndAccounts(addresses)
-
-        read { transaction in
-            let accountFinder = AnySignalAccountFinder()
-            let bogus = [SignalServiceAddress(uuid: UUID())]
-            let actual = accountFinder.signalAccounts(for: addresses + bogus, transaction: transaction)
-            XCTAssertEqual(actual.map { $0?.recipientAddress },
-                           accounts.map { $0.recipientAddress } + [ nil ])
-        }
-    }
-
-    func testMixOfRealAndBogusAddresses() {
-        let addresses = [SignalServiceAddress(phoneNumber: "+17035559901"),
-                         SignalServiceAddress(phoneNumber: "+17035550000")]  // no account for this one
-        let accounts = createRecipientsAndAccounts([addresses[0]])
-
-        read { transaction in
-            let accountFinder = AnySignalAccountFinder()
-            let actual = accountFinder.signalAccounts(for: addresses, transaction: transaction)
-            XCTAssertEqual(actual.map { $0?.recipientAddress },
-                           accounts.map { $0.recipientAddress } + [ nil ])
-        }
-    }
-
-    func testTwoAccountsWithSamePhoneNumber() {
-        let addresses = [SignalServiceAddress(phoneNumber: "+17035559901"),
-                         SignalServiceAddress(phoneNumber: "+17035559901")]
-        let accounts = createRecipientsAndAccounts(addresses)
-
-        read { transaction in
-            let accountFinder = AnySignalAccountFinder()
-            let actual = accountFinder.signalAccounts(for: addresses, transaction: transaction)
-            XCTAssertEqual(actual.map { $0?.recipientAddress },
-                           accounts.map { $0.recipientAddress })
-        }
-    }
-
-    func testTwoAccountsWithSameUUID() {
-        let uuid = UUID()
-        let addresses = [SignalServiceAddress(uuid: uuid),
-                         SignalServiceAddress(uuid: uuid)]
-        let accounts = createRecipientsAndAccounts(addresses)
-
-        read { transaction in
-            let accountFinder = AnySignalAccountFinder()
-            let actual = accountFinder.signalAccounts(for: addresses, transaction: transaction)
-            XCTAssertEqual(actual.map { $0?.recipientAddress },
-                           accounts.map { $0.recipientAddress })
+            let actualAccounts = accountFinder.signalAccounts(for: addressesToFetch, transaction: transaction)
+            XCTAssertEqual(
+                actualAccounts.map { $0?.recipientAddress },
+                expectedAccounts.map { $0?.recipientAddress }
+            )
         }
     }
 }

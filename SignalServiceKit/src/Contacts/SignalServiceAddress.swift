@@ -375,11 +375,16 @@ public class SignalServiceAddressCache: NSObject {
 
         databaseStorage.read { transaction in
             if let localAddress = tsAccountManager.localAddress(with: transaction) {
-                let localRecipient = SignalRecipient(
-                    serviceId: localAddress.serviceIdObjC,
+                updateRecipient(
+                    serviceIdString: localAddress.serviceIdObjC?.uuidValue.uuidString,
+                    // PNI TODO: Fetch our own PNI once it's stored on our SignalRecipient.
+                    //
+                    // (Even though our own PNI may be available at this point, we should have
+                    // a recipient for ourselves, so we'd immediately overwrite it during the
+                    // `anyEnumerate` below.)
+                    pniString: nil,
                     phoneNumber: localAddress.phoneNumber
                 )
-                self.updateRecipient(localRecipient)
             }
 
             SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
@@ -389,6 +394,15 @@ public class SignalServiceAddressCache: NSObject {
     }
 
     func updateRecipient(_ signalRecipient: SignalRecipient) {
+        updateRecipient(
+            serviceIdString: signalRecipient.recipientUUID,
+            // PNI TODO: Fetch the recipientPNI once that property is available.
+            pniString: nil,
+            phoneNumber: signalRecipient.recipientPhoneNumber
+        )
+    }
+
+    private func updateRecipient(serviceIdString: String?, pniString: String?, phoneNumber: String?) {
         state.update { cacheState in
             // This cache associates phone numbers to the other identifiers. If we
             // don't have a phone number, there's nothing to associate.
@@ -397,15 +411,14 @@ public class SignalServiceAddressCache: NSObject {
             // it to some other recipient; therefore, we handle the transfer when that
             // recipient is passed to this method. (This avoids a potential problem
             // that could occur if we learn about the "delete" after the "update".)
-            guard let phoneNumber = signalRecipient.recipientPhoneNumber else {
+            guard let phoneNumber else {
                 return
             }
 
             let oldServiceIds: [ServiceId] = cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
             let newServiceIds: [ServiceId] = [
-                ServiceId(uuidString: signalRecipient.recipientUUID),
-                // PNI TODO: Fetch the recipientPNI once that property is available.
-                ServiceId(uuidString: nil)
+                ServiceId(uuidString: serviceIdString),
+                ServiceId(uuidString: pniString)
             ].compacted()
 
             // If this phone number still points at the same ServiceIds, there's

@@ -26,7 +26,6 @@ public struct RegistrationCoordinatorDependencies {
     public let receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager
     public let remoteConfig: RegistrationCoordinatorImpl.Shims.RemoteConfig
     public let schedulers: Schedulers
-    public let signalRecipientShim: RegistrationCoordinatorImpl.Shims.SignalRecipient
     public let sessionManager: RegistrationSessionManager
     public let signalService: OWSSignalServiceProtocol
     public let storageServiceManager: StorageServiceManager
@@ -55,7 +54,6 @@ public struct RegistrationCoordinatorDependencies {
             receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(object.receiptManager),
             remoteConfig: RegistrationCoordinatorImpl.Wrappers.RemoteConfig(),
             schedulers: DependenciesBridge.shared.schedulers,
-            signalRecipientShim: RegistrationCoordinatorImpl.Wrappers.SignalRecipient(),
             sessionManager: DependenciesBridge.shared.registrationSessionManager,
             signalService: object.signalService,
             storageServiceManager: object.storageServiceManager,

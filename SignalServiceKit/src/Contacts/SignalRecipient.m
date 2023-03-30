@@ -27,7 +27,7 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
 
 @implementation SignalRecipient
 
-- (instancetype)initWithServiceId:(nullable ServiceIdObjC *)serviceId phoneNumber:(nullable NSString *)phoneNumber
+- (instancetype)initWithServiceId:(nullable ServiceIdObjC *)serviceId phoneNumber:(nullable E164ObjC *)phoneNumber
 {
     self = [super init];
 
@@ -36,7 +36,7 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
     }
 
     _recipientUUID = serviceId.uuidValue.UUIDString;
-    _recipientPhoneNumber = phoneNumber;
+    _recipientPhoneNumber = phoneNumber.stringValue;
     _recipientSchemaVersion = SignalRecipientSchemaVersion;
     // New recipients start out as "unregistered in the distant past"
     _unregisteredAtTimestamp = @(SignalRecipientDistantPastUnregisteredTimestamp);

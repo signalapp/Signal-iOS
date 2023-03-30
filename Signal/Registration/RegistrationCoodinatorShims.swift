@@ -24,7 +24,6 @@ extension RegistrationCoordinatorImpl {
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
         public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigShim
-        public typealias SignalRecipient = _RegistrationCoordinator_SignalRecipientShim
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerShim
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
     }
@@ -42,7 +41,6 @@ extension RegistrationCoordinatorImpl {
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
         public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigWrapper
-        public typealias SignalRecipient = _RegistrationCoordinator_SignalRecipientWrapper
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
     }
@@ -428,40 +426,6 @@ public class _RegistrationCoordinator_RemoteConfigWrapper: _RegistrationCoordina
     public init() {}
 
     public var canReceiveGiftBadges: Bool { RemoteConfig.canSendGiftBadges }
-}
-
-// MARK: - SignalRecipient
-
-public protocol _RegistrationCoordinator_SignalRecipientShim {
-
-    func createHighTrustRecipient(
-        aci: UUID,
-        e164: E164,
-        transaction: DBWriteTransaction
-    )
-}
-
-public class _RegistrationCoordinator_SignalRecipientWrapper: _RegistrationCoordinator_SignalRecipientShim {
-
-    public init() {}
-
-    public func createHighTrustRecipient(
-        aci: UUID,
-        e164: E164,
-        transaction: DBWriteTransaction
-    ) {
-        let address = SignalServiceAddress(
-            uuid: aci,
-            e164: e164
-        )
-        let transaction = SDSDB.shimOnlyBridge(transaction)
-        SignalRecipient.fetchOrCreate(
-            for: address,
-            trustLevel: .high,
-            transaction: transaction
-        )
-        .markAsRegistered(transaction: transaction)
-    }
 }
 
 // MARK: - TSAccountManager

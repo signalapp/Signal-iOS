@@ -39,10 +39,10 @@ class OWSContactsManagerTest: SignalBaseTest {
         return contactsManager
     }
 
-    private func createRecipients(_ addresses: [SignalServiceAddress]) {
+    private func createRecipients(_ serviceIds: [ServiceId]) {
         write { transaction in
-            for address in addresses {
-                let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
+            for serviceId in serviceIds {
+                let recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: transaction)
                 recipient.markAsRegistered(transaction: transaction)
             }
         }
@@ -140,15 +140,17 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     func testGetPhoneNumbersFromProfiles() {
-        let aliceAddress = SignalServiceAddress(uuid: UUID())
+        let aliceServiceId = ServiceId(UUID())
+        let aliceAddress = SignalServiceAddress(aliceServiceId)
         let aliceAccount = makeAccount(address: aliceAddress, phoneNumber: "+17035559901")
 
-        let bobAddress = SignalServiceAddress(uuid: UUID())
+        let bobServiceId = ServiceId(UUID())
+        let bobAddress = SignalServiceAddress(bobServiceId)
         let bobAccount = makeAccount(address: bobAddress, phoneNumber: "+17035559902")
 
         let bogusAddress = SignalServiceAddress(uuid: UUID())
 
-        createRecipients([aliceAddress, bobAddress])
+        createRecipients([aliceServiceId, bobServiceId])
         createAccounts([aliceAccount, bobAccount])
 
         read { transaction in
@@ -165,9 +167,10 @@ class OWSContactsManagerTest: SignalBaseTest {
     // MARK: - Display Names
 
     func testGetDisplayNamesWithCachedContactNames() {
-        let addresses = [SignalServiceAddress(uuid: UUID()), SignalServiceAddress(uuid: UUID())]
-        createRecipients(addresses)
+        let serviceIds = [ServiceId(UUID()), ServiceId(UUID())]
+        let addresses = serviceIds.map { SignalServiceAddress($0) }
 
+        createRecipients(serviceIds)
         let accounts = [
             makeAccount(address: addresses[0], phoneNumber: nil, name: "Alice Aliceson"),
             makeAccount(address: addresses[1], phoneNumber: nil, name: "Bob Bobson")
@@ -251,9 +254,10 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     func testGetDisplayNamesMixed() {
-        let aliceAddress = SignalServiceAddress(uuid: UUID())
+        let aliceServiceId = ServiceId(UUID())
+        let aliceAddress = SignalServiceAddress(aliceServiceId)
         let aliceAccount = makeAccount(address: aliceAddress, phoneNumber: nil, name: "Alice Aliceson")
-        createRecipients([aliceAddress])
+        createRecipients([aliceServiceId])
         createAccounts([aliceAccount])
 
         let bobAddress = SignalServiceAddress(uuid: UUID())
@@ -279,8 +283,9 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     func testSinglePartName() {
-        let addresses = [SignalServiceAddress(uuid: UUID()), SignalServiceAddress(uuid: UUID())]
-        createRecipients(addresses)
+        let serviceIds = [ServiceId(UUID()), ServiceId(UUID())]
+        let addresses = serviceIds.map { SignalServiceAddress($0) }
+        createRecipients(serviceIds)
         let accounts = [
             makeAccount(address: addresses[0], phoneNumber: nil, name: "Alice"),
             makeAccount(address: addresses[1], phoneNumber: nil, name: "Bob")
@@ -298,8 +303,9 @@ class OWSContactsManagerTest: SignalBaseTest {
     // MARK: - Cached Contact Names
 
     func testCachedContactNamesWithAccounts() {
-        let addresses = [SignalServiceAddress(uuid: UUID()), SignalServiceAddress(uuid: UUID())]
-        createRecipients(addresses)
+        let serviceIds = [ServiceId(UUID()), ServiceId(UUID())]
+        let addresses = serviceIds.map { SignalServiceAddress($0) }
+        createRecipients(serviceIds)
         let accounts = [
             makeAccount(address: addresses[0], phoneNumber: nil, name: "Alice Aliceson"),
             makeAccount(address: addresses[1], phoneNumber: nil, name: "Bob Bobson")
@@ -340,9 +346,10 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     func testCachedContactNameMixed() {
         // Register alice with an account that has a full name.
-        let aliceAddress = SignalServiceAddress(uuid: UUID())
+        let aliceServiceId = ServiceId(UUID())
+        let aliceAddress = SignalServiceAddress(aliceServiceId)
         let aliceAccount = makeAccount(address: aliceAddress, phoneNumber: nil, name: "Alice Aliceson")
-        createRecipients([aliceAddress])
+        createRecipients([aliceServiceId])
         createAccounts([aliceAccount])
 
         // Register bob as a non-Signal contact.

@@ -9,28 +9,28 @@ protocol RecipientMerger {
     func merge(
         trustLevel: SignalRecipientTrustLevel,
         serviceId: ServiceId?,
-        phoneNumber: String?,
+        phoneNumber: E164?,
         transaction: DBWriteTransaction
     ) -> SignalRecipient?
 }
 
 protocol RecipientMergerTemporaryShims {
-    func clearMappings(phoneNumber: String, transaction: DBWriteTransaction)
+    func clearMappings(phoneNumber: E164, transaction: DBWriteTransaction)
     func clearMappings(serviceId: ServiceId, transaction: DBWriteTransaction)
     func didUpdatePhoneNumber(
         oldServiceIdString: String?,
         oldPhoneNumber: String?,
         newServiceIdString: String?,
-        newPhoneNumber: String?,
+        newPhoneNumber: E164?,
         transaction: DBWriteTransaction
     )
-    func mergeUserProfilesIfNecessary(serviceId: ServiceId, phoneNumber: String, transaction: DBWriteTransaction)
+    func mergeUserProfilesIfNecessary(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction)
     func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool
 }
 
 class RecipientMergerImpl: RecipientMerger {
-    private let dataStore: RecipientDataStore
     private let temporaryShims: RecipientMergerTemporaryShims
+    private let dataStore: RecipientDataStore
     private let storageServiceManager: StorageServiceManager
 
     init(
@@ -46,7 +46,7 @@ class RecipientMergerImpl: RecipientMerger {
     func merge(
         trustLevel: SignalRecipientTrustLevel,
         serviceId: ServiceId?,
-        phoneNumber: String?,
+        phoneNumber: E164?,
         transaction: DBWriteTransaction
     ) -> SignalRecipient? {
         guard serviceId != nil || phoneNumber != nil else {
@@ -76,7 +76,7 @@ class RecipientMergerImpl: RecipientMerger {
     /// recipient for the phone number, we return it as-is (even if it already
     /// has a different ServiceId specified). If there's not a recipient, we'll
     /// create a phone number-only recipient (b/c `serviceId` is nil).
-    private func mergeLowTrust(serviceId: ServiceId?, phoneNumber: String?, transaction: DBWriteTransaction) -> SignalRecipient? {
+    private func mergeLowTrust(serviceId: ServiceId?, phoneNumber: E164?, transaction: DBWriteTransaction) -> SignalRecipient? {
         if let serviceId {
             if let serviceIdRecipient = dataStore.fetchRecipient(serviceId: serviceId, transaction: transaction) {
                 return serviceIdRecipient
@@ -86,10 +86,10 @@ class RecipientMergerImpl: RecipientMerger {
             return newInstance
         }
         if let phoneNumber {
-            if let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber, transaction: transaction) {
+            if let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: transaction) {
                 return phoneNumberRecipient
             }
-            let newInstance = SignalRecipient(serviceId: nil, phoneNumber: phoneNumber)
+            let newInstance = SignalRecipient(serviceId: nil, phoneNumber: E164ObjC(phoneNumber))
             dataStore.insertRecipient(newInstance, transaction: transaction)
             return newInstance
         }
@@ -111,7 +111,7 @@ class RecipientMergerImpl: RecipientMerger {
     ///
     /// * Phone numbers are transient and can move freely between ACIs. When
     /// they do, we must backfill the database to reflect the change.
-    private func mergeHighTrust(serviceId: ServiceId?, phoneNumber: String?, transaction: DBWriteTransaction) -> SignalRecipient? {
+    private func mergeHighTrust(serviceId: ServiceId?, phoneNumber: E164?, transaction: DBWriteTransaction) -> SignalRecipient? {
         // If we don't have both identifiers, we can't merge anything, so just
         // fetch or create a recipient with whichever identifier was provided.
         guard let serviceId, let phoneNumber else {
@@ -124,7 +124,7 @@ class RecipientMergerImpl: RecipientMerger {
         // without any modifications. This will be the path taken in 99% of cases
         // (ie, we'll hit this path every time a recipient sends you a message,
         // assuming they haven't changed their phone number).
-        if let serviceIdRecipient, serviceIdRecipient.recipientPhoneNumber == phoneNumber {
+        if let serviceIdRecipient, serviceIdRecipient.recipientPhoneNumber == phoneNumber.stringValue {
             return serviceIdRecipient
         }
 
@@ -150,7 +150,7 @@ class RecipientMergerImpl: RecipientMerger {
                 authedAccount: .implicit()
             )
         case .none:
-            mergedRecipient = SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: phoneNumber)
+            mergedRecipient = SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: E164ObjC(phoneNumber))
             dataStore.insertRecipient(mergedRecipient, transaction: transaction)
         }
 
@@ -159,11 +159,11 @@ class RecipientMergerImpl: RecipientMerger {
 
     private func _mergeHighTrust(
         serviceId: ServiceId,
-        phoneNumber: String,
+        phoneNumber: E164,
         serviceIdRecipient: SignalRecipient?,
         transaction: DBWriteTransaction
     ) -> SignalRecipient? {
-        let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber, transaction: transaction)
+        let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: transaction)
 
         if let serviceIdRecipient {
             if let phoneNumberRecipient {
@@ -236,13 +236,13 @@ class RecipientMergerImpl: RecipientMerger {
 
     private func updateRecipient(
         _ recipient: SignalRecipient,
-        phoneNumber: String?,
+        phoneNumber: E164?,
         transaction: DBWriteTransaction
     ) {
         let oldPhoneNumber = recipient.recipientPhoneNumber?.nilIfEmpty
         let oldServiceIdString = recipient.recipientUUID
 
-        recipient.recipientPhoneNumber = phoneNumber?.nilIfEmpty
+        recipient.recipientPhoneNumber = phoneNumber?.stringValue
 
         if recipient.recipientPhoneNumber == nil && oldServiceIdString == nil {
             Logger.warn("Clearing out the phone number on a recipient with no serviceId; old phone number: \(String(describing: oldPhoneNumber))")
@@ -258,7 +258,7 @@ class RecipientMergerImpl: RecipientMerger {
             oldServiceIdString: oldServiceIdString,
             oldPhoneNumber: oldPhoneNumber,
             newServiceIdString: recipient.recipientUUID,
-            newPhoneNumber: recipient.recipientPhoneNumber,
+            newPhoneNumber: phoneNumber,
             transaction: transaction
         )
     }
@@ -266,13 +266,13 @@ class RecipientMergerImpl: RecipientMerger {
     private func mergeRecipients(
         serviceId: ServiceId,
         serviceIdRecipient: SignalRecipient,
-        phoneNumber: String,
+        phoneNumber: E164,
         phoneNumberRecipient: SignalRecipient,
         transaction: DBWriteTransaction
     ) -> SignalRecipient {
         owsAssertDebug(
             serviceIdRecipient.recipientPhoneNumber == nil
-            || serviceIdRecipient.recipientPhoneNumber == phoneNumber
+            || serviceIdRecipient.recipientPhoneNumber == phoneNumber.stringValue
         )
         owsAssertDebug(
             phoneNumberRecipient.recipientUUID == nil
@@ -315,7 +315,7 @@ class RecipientMergerImpl: RecipientMerger {
         owsAssertBeta(winningRecipient !== losingRecipient)
 
         // Make sure the winning recipient is fully qualified.
-        winningRecipient.recipientPhoneNumber = phoneNumber
+        winningRecipient.recipientPhoneNumber = phoneNumber.stringValue
         winningRecipient.recipientUUID = serviceId.uuidValue.uuidString
 
         // Discard the losing recipient.

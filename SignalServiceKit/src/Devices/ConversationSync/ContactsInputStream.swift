@@ -6,7 +6,8 @@
 import Foundation
 
 public struct ContactDetails {
-    public let address: SignalServiceAddress
+    public let serviceId: ServiceId?
+    public let phoneNumber: E164?
     public let verifiedProto: SSKProtoVerified?
     public let profileKey: Data?
     public let isBlocked: Bool
@@ -46,17 +47,12 @@ public class ContactsInputStream {
             try inputStream.decodeData(value: &decodedData, count: Int(avatar.length))
         }
 
-        let immutableAddress = SignalServiceAddress(
-            uuid: ServiceId(uuidString: contactDetails.contactUuid)?.uuidValue,
-            phoneNumber: E164(contactDetails.contactE164)?.stringValue,
-            ignoreCache: true
-        )
-        guard immutableAddress.isValid else {
-            throw OWSAssertionError("address was unexpectedly invalid")
-        }
+        let serviceId = ServiceId.expectNilOrValid(uuidString: contactDetails.contactUuid)
+        let phoneNumber = E164.expectNilOrValid(stringValue: contactDetails.contactE164)
 
         return ContactDetails(
-            address: immutableAddress,
+            serviceId: serviceId,
+            phoneNumber: phoneNumber,
             verifiedProto: contactDetails.verified,
             profileKey: contactDetails.profileKey,
             isBlocked: contactDetails.blocked,

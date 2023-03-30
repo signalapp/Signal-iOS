@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class E164ObjC;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class ServiceIdObjC;
@@ -46,7 +47,7 @@ extern const uint64_t SignalRecipientDistantPastUnregisteredTimestamp;
 
 // exposed for Swift interop
 - (instancetype)initWithServiceId:(nullable ServiceIdObjC *)serviceId
-                      phoneNumber:(nullable NSString *)phoneNumber NS_DESIGNATED_INITIALIZER;
+                      phoneNumber:(nullable E164ObjC *)phoneNumber NS_DESIGNATED_INITIALIZER;
 - (void)addDevices:(NSSet<NSNumber *> *)devices source:(SignalRecipientSource)source;
 - (void)removeAllDevicesWithUnregisteredAtTimestamp:(uint64_t)unregisteredAtTimestamp
                                              source:(SignalRecipientSource)source;

@@ -24,7 +24,6 @@ extension RegistrationCoordinatorImpl {
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
         public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigMock
-        public typealias SignalRecipient = _RegistrationCoordinator_SignalRecipientMock
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
     }
@@ -287,19 +286,6 @@ public class _RegistrationCoordinator_RemoteConfigMock: _RegistrationCoordinator
     public var canReceiveGiftBadgesMock: (() -> Bool) = { true }
 
     public var canReceiveGiftBadges: Bool { canReceiveGiftBadgesMock() }
-}
-
-// MARK: - SignalRecipient
-
-public class _RegistrationCoordinator_SignalRecipientMock: _RegistrationCoordinator_SignalRecipientShim {
-
-    public init() {}
-
-    public var createHighTrustRecipientMock: ((_ aci: UUID, _ e164: E164) -> Void)?
-
-    public func createHighTrustRecipient(aci: UUID, e164: E164, transaction: DBWriteTransaction) {
-        createHighTrustRecipientMock?(aci, e164)
-    }
 }
 
 // MARK: - TSAccountManager
