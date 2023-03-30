@@ -11,7 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MessageManagerRequest;
 @class SDSAnyWriteTransaction;
+@class SSKProtoDataMessage;
 @class SSKProtoEnvelope;
+@class SSKProtoSyncMessage;
 
 typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
 {
@@ -29,17 +31,14 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
 
 @interface OWSMessageManager : OWSMessageHandler
 
-// processEnvelope: can be called from any thread.
-//
-// Returns YES on success.
-- (BOOL)processEnvelope:(SSKProtoEnvelope *)envelope
+- (void)processEnvelope:(SSKProtoEnvelope *)envelope
                    plaintextData:(NSData *_Nullable)plaintextData
                  wasReceivedByUD:(BOOL)wasReceivedByUD
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
     shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
                      transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (BOOL)handleRequest:(MessageManagerRequest *)request
+- (void)handleRequest:(MessageManagerRequest *)request
               context:(id<DeliveryReceiptContext>)context
           transaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -59,6 +58,25 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
 - (void)handleDeliveryReceipt:(SSKProtoEnvelope *)envelope
                       context:(id<DeliveryReceiptContext>)context
                   transaction:(SDSAnyWriteTransaction *)transaction;
+
+#if TESTABLE_BUILD
+// exposed for testing
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+               withSyncMessage:(SSKProtoSyncMessage *)syncMessage
+                 plaintextData:(NSData *)plaintextData
+               wasReceivedByUD:(BOOL)wasReceivedByUD
+       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                   transaction:(SDSAnyWriteTransaction *)transaction;
+
+// exposed for testing
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+                 withDataMessage:(SSKProtoDataMessage *)dataMessage
+                   plaintextData:(NSData *)plaintextData
+                 wasReceivedByUD:(BOOL)wasReceivedByUD
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+    shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
+                     transaction:(SDSAnyWriteTransaction *)transaction;
+#endif
 
 @end
 
