@@ -525,7 +525,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // OWS2FAManager state
         // If we are re-registering or changing number and
         // reglock was enabled, we should enable it again when done.
-        var wasReglockEnabled = false
+        var wasReglockEnabledBeforeStarting = false
         var hasSetReglock = false
 
         var pendingProfileInfo: (givenName: String, familyName: String?, avatarData: Data?)?
@@ -574,6 +574,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// Initially the e164 in the UI may be pre-populated (e.g. in re-reg)
         /// but this value is not set until the user accepts it or enters their own value.
         var e164: E164?
+
+        /// If we ever get a response from a server where we failed reglock,
+        /// we know the e164 the request was for has reglock enabled.
+        /// Note that so we always include the reglock token in requests.
+        /// (Note that we can't blindly include it because if it wasn't enabled
+        /// and we sent it up, that would enable reglock.)
+        var e164WithKnownReglockEnabled: E164?
 
         /// How many times the user has tried making guesses against the PIN
         /// we have locally? This happens when we have a local KBS master key
@@ -760,7 +767,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             inMemoryState.allowUnrestrictedUD = deps.udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
 
-            inMemoryState.wasReglockEnabled = deps.ows2FAManager.isReglockEnabled(tx)
+            inMemoryState.wasReglockEnabledBeforeStarting = deps.ows2FAManager.isReglockEnabled(tx)
         }
 
         let sessionGuarantee: Guarantee<Void> = deps.sessionManager.restoreSession()
@@ -1093,15 +1100,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         pinFromUser: String,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
+        let twoFAMode = self.attributes2FAMode(e164: e164)
         return self.makeRegisterOrChangeNumberRequest(
             .recoveryPassword(regRecoveryPw),
             e164: e164,
+            twoFAMode: twoFAMode,
             responseHandler: { [weak self] accountResponse in
                 return self?.handleCreateAccountResponseFromRegRecoveryPassword(
                     accountResponse,
                     regRecoveryPw: regRecoveryPw,
                     e164: e164,
                     pinFromUser: pinFromUser,
+                    twoFaModeUsedInRequest: twoFAMode,
                     retriesLeft: retriesLeft
                 ) ?? unretainedSelfError()
             }
@@ -1113,6 +1123,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         regRecoveryPw: String,
         e164: E164,
         pinFromUser: String,
+        twoFaModeUsedInRequest: AccountAttributes.TwoFactorAuthMode,
         retriesLeft: Int
     ) -> Guarantee<RegistrationStep> {
         // NOTE: it is not possible for our e164 to be rejected here; the entire request
@@ -1133,30 +1144,56 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nextStep()
 
         case .reglockFailure(let reglockFailure):
-            switch self.mode {
-            case .changingNumber:
-                break
-            case .registering, .reRegistering:
-                // Both the reglock and the reg recovery password are derived from the KBS master key.
-                // Its weird that we'd get this response implying the recovery password is right
-                // but the reglock token is wrong, but lets assume our kbs master secret is just
-                // wrong entirely and reset _all_ KBS state so we go through sms verification.
+            switch twoFaModeUsedInRequest {
+            case .none, .v1:
+                // We failed reglock because we didn't even try it!
+                // Try again with reglock included this time.
                 db.write { tx in
-                    // Store it and wipe it so we also overwrite any existing credential for the same user.
-                    // We want to wipe the credential on disk too; we don't want to retry it on next app launch.
-                    deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
-                    deps.kbsAuthCredentialStore.deleteInvalidCredentials([reglockFailure.kbsAuthCredential], tx)
-                    // Clear the KBS master key locally; we failed reglock so we know its wrong
-                    // and useless anyway.
-                    deps.kbs.clearKeys(transaction: tx)
-                    deps.ows2FAManager.clearLocalPinCode(tx)
+                    self.updatePersistedState(tx) {
+                        $0.e164WithKnownReglockEnabled = e164
+                    }
                 }
-            }
-            wipeInMemoryStateToPreventKBSPathAttempts()
+                return nextStep()
+            case .v2:
+                // We tried out reglock token and it failed.
+                switch self.mode {
+                case .registering, .reRegistering:
+                    // Both the reglock and the reg recovery password are derived from the KBS master key.
+                    // Its weird that we'd get this response implying the recovery password is right
+                    // but the reglock token is wrong, but lets assume our kbs master secret is just
+                    // wrong entirely and reset _all_ KBS state so we go through sms verification.
+                    db.write { tx in
+                        // Store it and wipe it so we also overwrite any existing credential for the same user.
+                        // We want to wipe the credential on disk too; we don't want to retry it on next app launch.
+                        deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                        deps.kbsAuthCredentialStore.deleteInvalidCredentials([reglockFailure.kbsAuthCredential], tx)
+                        // Clear the KBS master key locally; we failed reglock so we know its wrong
+                        // and useless anyway.
+                        deps.kbs.clearKeys(transaction: tx)
+                        deps.ows2FAManager.clearLocalPinCode(tx)
+                        self.updatePersistedState(tx) {
+                            $0.e164WithKnownReglockEnabled = e164
+                        }
+                    }
+                case .changingNumber:
+                    db.write { tx in
+                        // If changing number we don't wanna wipe our kbs data;
+                        // its still good for the previous number. just note the reglock
+                        // and keep going.
+                        self.updatePersistedState(tx) {
+                            $0.e164WithKnownReglockEnabled = e164
+                        }
+                    }
+                }
+                // If changing number, we never want to wipe local our kbs secret.
+                // Just pretend we don't have it by wiping
 
-            // Start a session so we go down that path to recovery, challenging
-            // the reglock we just failed so we can eventually get in.
-            return startSession(e164: e164)
+                wipeInMemoryStateToPreventKBSPathAttempts()
+
+                // Start a session so we go down that path to recovery, challenging
+                // the reglock we just failed so we can eventually get in.
+                return startSession(e164: e164)
+            }
 
         case .rejectedVerificationMethod:
             // The reg recovery password was wrong. This can happen for two reasons:
@@ -1230,7 +1267,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func wipeInMemoryStateToPreventKBSPathAttempts() {
-        inMemoryState.reglockToken = nil
         inMemoryState.regRecoveryPw = nil
         inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = true
         // Wiping auth credential state too; if we failed with the local
@@ -1423,11 +1459,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     // MARK: - RegistrationSession Pathway
 
     private func nextStepForSessionPath(_ session: RegistrationSession) -> Guarantee<RegistrationStep> {
-        if session.verified {
-            // We have to complete registration.
-            return self.makeRegisterOrChangeNumberRequestFromSession(session)
-        }
-
         switch persistedState.sessionState?.reglockState ?? .none {
         case .none:
             break
@@ -1468,6 +1499,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if inMemoryState.needsToAskForDeviceTransfer && !persistedState.hasDeclinedTransfer {
             return .value(.transferSelection)
+        }
+
+        if session.verified {
+            // We have to complete registration.
+            return self.makeRegisterOrChangeNumberRequestFromSession(session)
         }
 
         var pendingCodeTransport = inMemoryState.pendingCodeTransport
@@ -1646,13 +1682,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 ))
             )))
         }
+        let twoFAMode = self.attributes2FAMode(e164: session.e164)
         return self.makeRegisterOrChangeNumberRequest(
             .sessionId(session.id),
             e164: session.e164,
+            twoFAMode: twoFAMode,
             responseHandler: { [weak self] accountResponse in
                 return self?.handleCreateAccountResponseFromSession(
                     accountResponse,
                     sessionFromBeforeRequest: session,
+                    twoFAModeUsedInRequest: twoFAMode,
                     retriesLeft: retriesLeft
                 ) ?? unretainedSelfError()
             }
@@ -1662,6 +1701,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func handleCreateAccountResponseFromSession(
         _ response: AccountResponse,
         sessionFromBeforeRequest: RegistrationSession,
+        twoFAModeUsedInRequest: AccountAttributes.TwoFactorAuthMode,
         retriesLeft: Int
     ) -> Guarantee<RegistrationStep> {
         switch response {
@@ -1688,19 +1728,45 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                     }
+                    self.updatePersistedState(tx) {
+                        $0.e164WithKnownReglockEnabled = sessionFromBeforeRequest.e164
+                    }
                 }
                 return nextStep()
             }
             // We need the user to enter their PIN so we can get through reglock.
             // So we set up the state we need (the KBS credential)
             // and go to the next step which should look at the state and take us to the right place.
-            db.write { tx in
-                deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
-                self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
-                    $0.reglockState = .reglocked(credential: reglockFailure.kbsAuthCredential, expirationDate: reglockExpirationDate)
+            switch twoFAModeUsedInRequest {
+            case .v2:
+                // We were already trying reglock, and the token was wrong.
+                // that means the whole thing is stuck. wait out the reglock.
+                db.write { tx in
+                    // May as well store credentials, anyway.
+                    deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                    self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
+                        $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
+                    }
+                    self.updatePersistedState(tx) {
+                        $0.e164WithKnownReglockEnabled = sessionFromBeforeRequest.e164
+                    }
                 }
+                return nextStep()
+
+            case .none, .v1:
+                db.write { tx in
+                    deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                    self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
+                        $0.reglockState = .reglocked(credential: reglockFailure.kbsAuthCredential, expirationDate: reglockExpirationDate)
+                    }
+                    self.updatePersistedState(tx) {
+                        $0.e164WithKnownReglockEnabled = sessionFromBeforeRequest.e164
+                        // If we skipped for reg recovery, unskip now.
+                        $0.hasSkippedPinEntry = false
+                    }
+                }
+                return nextStep()
             }
-            return nextStep()
 
         case .rejectedVerificationMethod:
             // The session is invalid; we have to wipe it and potentially start again.
@@ -2618,8 +2684,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             }
 
-            if inMemoryState.wasReglockEnabled && inMemoryState.hasSetReglock.negated {
-                return enableReglockIfNeeded()
+            switch attributes2FAMode(e164: accountIdentity.e164) {
+            case .none, .v1:
+                Logger.info("Not enabling reglock because it wasn't enabled to begin with")
+            case .v2(let reglockToken):
+                guard inMemoryState.hasSetReglock.negated else {
+                    break
+                }
+                return enableReglock(accountIdentity: accountIdentity, reglockToken: reglockToken)
             }
         }
         return nil
@@ -2752,34 +2824,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
-    private func enableReglockIfNeeded() -> Guarantee<RegistrationStep> {
-        Logger.info("")
-
-        guard inMemoryState.wasReglockEnabled, inMemoryState.hasSetReglock.negated else {
-            Logger.info("Not enabling reglock because it wasn't enabled to begin with")
-            return nextStep()
-        }
-
+    private func enableReglock(
+        accountIdentity: AccountIdentity,
+        reglockToken: String
+    ) -> Guarantee<RegistrationStep> {
         Logger.info("Attempting to enable reglock")
 
-        let reglockToken: String?
-        if let token = inMemoryState.reglockToken {
-            reglockToken = token
-        } else {
-            // Try loading from KBS.
-            db.write { tx in
-                loadLocalMasterKeyAndUpdateState(tx)
-            }
-            reglockToken = inMemoryState.reglockToken
-        }
-        guard let reglockToken else {
-            owsFailDebug("Unable to generate reglock token when we have a master key.")
-            // Let the user keep going, they still have their old reglock.
-            inMemoryState.hasSetReglock = true
-            return nextStep()
-        }
         return Service.makeEnableReglockRequest(
             reglockToken: reglockToken,
+            auth: accountIdentity.chatServiceAuth,
             signalService: deps.signalService,
             schedulers: schedulers
         ).recover(on: schedulers.sync) { _ -> Guarantee<Void> in
@@ -2795,7 +2848,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return unretainedSelfError()
             }
             self.inMemoryState.hasSetReglock = true
-            self.inMemoryState.wasReglockEnabled = true
+            self.inMemoryState.wasReglockEnabledBeforeStarting = true
             self.db.write { tx in
                 self.deps.ows2FAManager.markRegistrationLockEnabled(tx)
             }
@@ -2830,7 +2883,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         Logger.info("")
         return Service
             .makeUpdateAccountAttributesRequest(
-                makeAccountAttributes(),
+                makeAccountAttributes(twoFAMode: self.attributes2FAMode(e164: accountIdentity.e164)),
                 auth: accountIdentity.chatServiceAuth,
                 signalService: deps.signalService,
                 schedulers: schedulers
@@ -2944,6 +2997,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func makeRegisterOrChangeNumberRequest(
         _ method: RegistrationRequestFactory.VerificationMethod,
         e164: E164,
+        twoFAMode: AccountAttributes.TwoFactorAuthMode,
         responseHandler: @escaping (AccountResponse) -> Guarantee<RegistrationStep>
     ) -> Guarantee<RegistrationStep> {
         Logger.info("")
@@ -2970,7 +3024,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // write it to TSAccountManager when all is said and done, and use
             // it for requests we need to make between now and then.
             let authToken = generateServerAuthToken()
-            let accountAttributes = makeAccountAttributes()
+            let accountAttributes = makeAccountAttributes(twoFAMode: twoFAMode)
             return Service
                 .makeCreateAccountRequest(
                     method,
@@ -2996,6 +3050,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return self.generatePniStateAndMakeChangeNumberRequest(
                 e164: e164,
                 verificationMethod: method,
+                twoFAMode: twoFAMode,
                 changeNumberState: changeNumberState
             ).then(on: schedulers.main) { [weak self] changeNumberResult in
                 switch changeNumberResult {
@@ -3050,6 +3105,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func generatePniStateAndMakeChangeNumberRequest(
         e164: E164,
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
+        twoFAMode: AccountAttributes.TwoFactorAuthMode,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState
     ) -> Guarantee<ChangeNumberResult> {
         Logger.info("")
@@ -3073,6 +3129,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return strongSelf.makeChangeNumberRequest(
                         e164: e164,
                         verificationMethod: verificationMethod,
+                        twoFAMode: twoFAMode,
                         changeNumberState: changeNumberState,
                         pniPendingState: pniPendingState,
                         pniParams: pniParams
@@ -3085,6 +3142,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func makeChangeNumberRequest(
         e164: E164,
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
+        twoFAMode: AccountAttributes.TwoFactorAuthMode,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
         pniPendingState: ChangePhoneNumberPni.PendingState,
         pniParams: ChangePhoneNumberPni.Parameters
@@ -3108,11 +3166,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 } catch {
                     return .value(.pniStateError)
                 }
+                let reglockToken: String?
+                switch twoFAMode {
+                case .v2(let token):
+                    reglockToken = token
+                case .v1, .none:
+                    reglockToken = nil
+                }
                 return Service
                     .makeChangeNumberRequest(
                         verificationMethod,
                         e164: e164,
-                        reglockToken: strongSelf.inMemoryState.reglockToken,
+                        reglockToken: reglockToken,
                         authPassword: changeNumberState.oldAuthToken,
                         pniChangeNumberParameters: pniParams,
                         signalService: strongSelf.deps.signalService,
@@ -3231,18 +3296,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Account objects
 
-    private func makeAccountAttributes() -> AccountAttributes {
-        let twoFAMode: AccountAttributes.TwoFactorAuthMode
-        if inMemoryState.wasReglockEnabled, let reglockToken = inMemoryState.reglockToken {
-            twoFAMode = .v2(reglockToken: reglockToken)
+    private func attributes2FAMode(e164: E164) -> AccountAttributes.TwoFactorAuthMode {
+        if
+            (
+                inMemoryState.wasReglockEnabledBeforeStarting
+                || persistedState.e164WithKnownReglockEnabled == e164
+            ),
+            let reglockToken = inMemoryState.reglockToken
+        {
+            return .v2(reglockToken: reglockToken)
         } else if
             let pinCode = inMemoryState.pinFromDisk,
             inMemoryState.isV12faUser
         {
-            twoFAMode = .v1(pinCode: pinCode)
+            return .v1(pinCode: pinCode)
         } else {
-            twoFAMode = .none
+            return .none
         }
+    }
+
+    private func makeAccountAttributes(twoFAMode: AccountAttributes.TwoFactorAuthMode) -> AccountAttributes {
         return AccountAttributes(
             isManualMessageFetchEnabled: inMemoryState.isManualMessageFetchEnabled,
             registrationId: inMemoryState.registrationId,
