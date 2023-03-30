@@ -700,7 +700,7 @@ public extension OWSAttachmentDownloads {
 
     private static let keyValueStore = SDSKeyValueStore(collection: "MediaBandwidthPreferences")
 
-    static let mediaBandwidthPreferencesDidChange = Notification.Name("PushTokensDidChange")
+    static let mediaBandwidthPreferencesDidChange = Notification.Name("MediaBandwidthPreferencesDidChange")
 
     static func set(mediaBandwidthPreference: MediaBandwidthPreference,
                     forMediaDownloadType mediaDownloadType: MediaDownloadType,

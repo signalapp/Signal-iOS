@@ -12,7 +12,7 @@ open class OWSDevicesService: NSObject {
     private override init() {}
 
     @objc
-    public static let deviceListUpdateSucceeded = Notification.Name("CallServicePreferencesDidChange")
+    public static let deviceListUpdateSucceeded = Notification.Name("deviceListUpdateSucceeded")
     @objc
     public static let deviceListUpdateFailed = Notification.Name("deviceListUpdateFailed")
     @objc
