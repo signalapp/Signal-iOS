@@ -643,39 +643,43 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
             mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
 
-            // Once the first request fails, at t=2, it should try an start a session.
-            scheduler.run(atTime: 1) {
+            // Once the request fails, at t=2, we should try again with the reglock
+            // token, this time.
+            mockURLSession.addResponse(failResponse, atTime: 3, on: scheduler)
+
+            // Once the second request fails, at t=3, it should try an start a session.
+            scheduler.run(atTime: 2) {
                 // We'll ask for a push challenge, though we don't need to resolve it in this test.
                 self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
                     return Guarantee<String>.pending().0
                 }
 
-                // Resolve with a session at time 3.
+                // Resolve with a session at time 4.
                 self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
                     resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
-                    atTime: 3
+                    atTime: 4
                 )
             }
 
-            // Before requesting a session at t=2, it should ask for push tokens to give the session.
+            // Before requesting a session at t=3, it should ask for push tokens to give the session.
             pushRegistrationManagerMock.requestPushTokenMock = {
-                XCTAssertEqual(self.scheduler.currentTime, 2)
+                XCTAssertEqual(self.scheduler.currentTime, 3)
                 return .value(Stubs.apnsToken)
             }
 
-            // Then when it gets back the session at t=3, it should immediately ask for
+            // Then when it gets back the session at t=4, it should immediately ask for
             // a verification code to be sent.
             scheduler.run(atTime: 3) {
-                // Resolve with an updated session at time 4.
+                // Resolve with an updated session at time 5.
                 self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                     resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
-                    atTime: 4
+                    atTime: 5
                 )
             }
 
             XCTAssert(kbs.hasMasterKey)
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 4)
+            XCTAssertEqual(scheduler.currentTime, 5)
 
             // Now we should expect to be at verification code entry since we already set the phone number.
             // No exit allowed since we've already started trying to create the account.

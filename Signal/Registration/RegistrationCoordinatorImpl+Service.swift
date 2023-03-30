@@ -273,16 +273,19 @@ extension RegistrationCoordinatorImpl {
 
         public static func makeEnableReglockRequest(
             reglockToken: String,
+            auth: ChatServiceAuth,
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) -> Promise<Void> {
             let request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
+            request.setAuth(auth)
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request).asVoid()
                 .recover(on: schedulers.sync) { error in
                     if error.isNetworkConnectivityFailure, retriesLeft > 0 {
                         return makeEnableReglockRequest(
                             reglockToken: reglockToken,
+                            auth: auth,
                             signalService: signalService,
                             schedulers: schedulers,
                             retriesLeft: retriesLeft - 1
