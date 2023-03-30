@@ -1305,7 +1305,7 @@ struct SignalServiceProtos_DataMessage {
   /// Clears the value of `delete`. Subsequent reads from it will return its default value.
   mutating func clearDelete() {_uniqueStorage()._delete = nil}
 
-  var bodyRanges: [SignalServiceProtos_DataMessage.BodyRange] {
+  var bodyRanges: [SignalServiceProtos_BodyRange] {
     get {return _storage._bodyRanges}
     set {_uniqueStorage()._bodyRanges = newValue}
   }
@@ -1457,7 +1457,7 @@ struct SignalServiceProtos_DataMessage {
 
     var attachments: [SignalServiceProtos_DataMessage.Quote.QuotedAttachment] = []
 
-    var bodyRanges: [SignalServiceProtos_DataMessage.BodyRange] = []
+    var bodyRanges: [SignalServiceProtos_BodyRange] = []
 
     var type: SignalServiceProtos_DataMessage.Quote.TypeEnum {
       get {return _type ?? .normal}
@@ -2109,52 +2109,6 @@ struct SignalServiceProtos_DataMessage {
     init() {}
 
     fileprivate var _targetSentTimestamp: UInt64? = nil
-  }
-
-  struct BodyRange {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    var start: UInt32 {
-      get {return _start ?? 0}
-      set {_start = newValue}
-    }
-    /// Returns true if `start` has been explicitly set.
-    var hasStart: Bool {return self._start != nil}
-    /// Clears the value of `start`. Subsequent reads from it will return its default value.
-    mutating func clearStart() {self._start = nil}
-
-    var length: UInt32 {
-      get {return _length ?? 0}
-      set {_length = newValue}
-    }
-    /// Returns true if `length` has been explicitly set.
-    var hasLength: Bool {return self._length != nil}
-    /// Clears the value of `length`. Subsequent reads from it will return its default value.
-    mutating func clearLength() {self._length = nil}
-
-    /// oneof commented out because swift generated
-    /// enum with associated values can't be converted
-    /// to objc representation
-    ///
-    /// oneof associatedValue {
-    var mentionUuid: String {
-      get {return _mentionUuid ?? String()}
-      set {_mentionUuid = newValue}
-    }
-    /// Returns true if `mentionUuid` has been explicitly set.
-    var hasMentionUuid: Bool {return self._mentionUuid != nil}
-    /// Clears the value of `mentionUuid`. Subsequent reads from it will return its default value.
-    mutating func clearMentionUuid() {self._mentionUuid = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _start: UInt32? = nil
-    fileprivate var _length: UInt32? = nil
-    fileprivate var _mentionUuid: String? = nil
   }
 
   struct GroupCallUpdate {
@@ -4849,6 +4803,109 @@ struct SignalServiceProtos_PniSignatureMessage {
   fileprivate var _signature: Data? = nil
 }
 
+struct SignalServiceProtos_BodyRange {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var start: UInt32 {
+    get {return _start ?? 0}
+    set {_start = newValue}
+  }
+  /// Returns true if `start` has been explicitly set.
+  var hasStart: Bool {return self._start != nil}
+  /// Clears the value of `start`. Subsequent reads from it will return its default value.
+  mutating func clearStart() {self._start = nil}
+
+  var length: UInt32 {
+    get {return _length ?? 0}
+    set {_length = newValue}
+  }
+  /// Returns true if `length` has been explicitly set.
+  var hasLength: Bool {return self._length != nil}
+  /// Clears the value of `length`. Subsequent reads from it will return its default value.
+  mutating func clearLength() {self._length = nil}
+
+  /// oneof commented out because swift generated
+  /// enum with associated values can't be converted
+  /// to objc representation
+  ///
+  /// oneof associatedValue {
+  var mentionUuid: String {
+    get {return _mentionUuid ?? String()}
+    set {_mentionUuid = newValue}
+  }
+  /// Returns true if `mentionUuid` has been explicitly set.
+  var hasMentionUuid: Bool {return self._mentionUuid != nil}
+  /// Clears the value of `mentionUuid`. Subsequent reads from it will return its default value.
+  mutating func clearMentionUuid() {self._mentionUuid = nil}
+
+  /// }
+  var style: SignalServiceProtos_BodyRange.Style {
+    get {return _style ?? .none}
+    set {_style = newValue}
+  }
+  /// Returns true if `style` has been explicitly set.
+  var hasStyle: Bool {return self._style != nil}
+  /// Clears the value of `style`. Subsequent reads from it will return its default value.
+  mutating func clearStyle() {self._style = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum Style: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case none // = 0
+    case bold // = 1
+    case italic // = 2
+    case spoiler // = 3
+    case strikethrough // = 4
+    case monospace // = 5
+
+    init() {
+      self = .none
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .none
+      case 1: self = .bold
+      case 2: self = .italic
+      case 3: self = .spoiler
+      case 4: self = .strikethrough
+      case 5: self = .monospace
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .none: return 0
+      case .bold: return 1
+      case .italic: return 2
+      case .spoiler: return 3
+      case .strikethrough: return 4
+      case .monospace: return 5
+      }
+    }
+
+  }
+
+  init() {}
+
+  fileprivate var _start: UInt32? = nil
+  fileprivate var _length: UInt32? = nil
+  fileprivate var _mentionUuid: String? = nil
+  fileprivate var _style: SignalServiceProtos_BodyRange.Style? = nil
+}
+
+#if swift(>=4.2)
+
+extension SignalServiceProtos_BodyRange.Style: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension SignalServiceProtos_Envelope: @unchecked Sendable {}
 extension SignalServiceProtos_Envelope.TypeEnum: @unchecked Sendable {}
@@ -4888,7 +4945,6 @@ extension SignalServiceProtos_DataMessage.Contact.Avatar: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Sticker: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Reaction: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Delete: @unchecked Sendable {}
-extension SignalServiceProtos_DataMessage.BodyRange: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.GroupCallUpdate: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Payment: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Payment.Amount: @unchecked Sendable {}
@@ -4950,6 +5006,8 @@ extension SignalServiceProtos_PaymentAddress: @unchecked Sendable {}
 extension SignalServiceProtos_PaymentAddress.MobileCoin: @unchecked Sendable {}
 extension SignalServiceProtos_DecryptionErrorMessage: @unchecked Sendable {}
 extension SignalServiceProtos_PniSignatureMessage: @unchecked Sendable {}
+extension SignalServiceProtos_BodyRange: @unchecked Sendable {}
+extension SignalServiceProtos_BodyRange.Style: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -6054,7 +6112,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _isViewOnce: Bool? = nil
     var _reaction: SignalServiceProtos_DataMessage.Reaction? = nil
     var _delete: SignalServiceProtos_DataMessage.Delete? = nil
-    var _bodyRanges: [SignalServiceProtos_DataMessage.BodyRange] = []
+    var _bodyRanges: [SignalServiceProtos_BodyRange] = []
     var _groupCallUpdate: SignalServiceProtos_DataMessage.GroupCallUpdate? = nil
     var _payment: SignalServiceProtos_DataMessage.Payment? = nil
     var _storyContext: SignalServiceProtos_DataMessage.StoryContext? = nil
@@ -7024,54 +7082,6 @@ extension SignalServiceProtos_DataMessage.Delete: SwiftProtobuf.Message, SwiftPr
 
   static func ==(lhs: SignalServiceProtos_DataMessage.Delete, rhs: SignalServiceProtos_DataMessage.Delete) -> Bool {
     if lhs._targetSentTimestamp != rhs._targetSentTimestamp {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SignalServiceProtos_DataMessage.BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".BodyRange"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "start"),
-    2: .same(proto: "length"),
-    3: .same(proto: "mentionUuid"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self._start) }()
-      case 2: try { try decoder.decodeSingularUInt32Field(value: &self._length) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self._mentionUuid) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._start {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._length {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._mentionUuid {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
-    } }()
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SignalServiceProtos_DataMessage.BodyRange, rhs: SignalServiceProtos_DataMessage.BodyRange) -> Bool {
-    if lhs._start != rhs._start {return false}
-    if lhs._length != rhs._length {return false}
-    if lhs._mentionUuid != rhs._mentionUuid {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -9857,4 +9867,69 @@ extension SignalServiceProtos_PniSignatureMessage: SwiftProtobuf.Message, SwiftP
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".BodyRange"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "start"),
+    2: .same(proto: "length"),
+    3: .same(proto: "mentionUuid"),
+    4: .same(proto: "style"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self._start) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self._length) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._mentionUuid) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self._style) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._start {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._length {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._mentionUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._style {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 4)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_BodyRange, rhs: SignalServiceProtos_BodyRange) -> Bool {
+    if lhs._start != rhs._start {return false}
+    if lhs._length != rhs._length {return false}
+    if lhs._mentionUuid != rhs._mentionUuid {return false}
+    if lhs._style != rhs._style {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_BodyRange.Style: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "NONE"),
+    1: .same(proto: "BOLD"),
+    2: .same(proto: "ITALIC"),
+    3: .same(proto: "SPOILER"),
+    4: .same(proto: "STRIKETHROUGH"),
+    5: .same(proto: "MONOSPACE"),
+  ]
 }

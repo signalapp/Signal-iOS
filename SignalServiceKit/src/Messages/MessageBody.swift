@@ -110,7 +110,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         super.init()
     }
 
-    public convenience init(protos: [SSKProtoDataMessageBodyRange]) {
+    public convenience init(protos: [SSKProtoBodyRange]) {
         var mentions = [NSRange: UUID]()
         for proto in protos {
             guard let mentionUuidString = proto.mentionUuid, let mentionUuid = UUID(uuidString: mentionUuidString) else { continue }

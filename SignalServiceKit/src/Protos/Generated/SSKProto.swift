@@ -4029,7 +4029,7 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
     public let attachments: [SSKProtoDataMessageQuoteQuotedAttachment]
 
     @objc
-    public let bodyRanges: [SSKProtoDataMessageBodyRange]
+    public let bodyRanges: [SSKProtoBodyRange]
 
     @objc
     public var authorUuid: String? {
@@ -4093,7 +4093,7 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
     private init(proto: SignalServiceProtos_DataMessage.Quote,
                  id: UInt64,
                  attachments: [SSKProtoDataMessageQuoteQuotedAttachment],
-                 bodyRanges: [SSKProtoDataMessageBodyRange]) {
+                 bodyRanges: [SSKProtoBodyRange]) {
         self.proto = proto
         self.id = id
         self.attachments = attachments
@@ -4147,8 +4147,8 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
         var attachments: [SSKProtoDataMessageQuoteQuotedAttachment] = []
         attachments = proto.attachments.map { SSKProtoDataMessageQuoteQuotedAttachment($0) }
 
-        var bodyRanges: [SSKProtoDataMessageBodyRange] = []
-        bodyRanges = proto.bodyRanges.map { SSKProtoDataMessageBodyRange($0) }
+        var bodyRanges: [SSKProtoBodyRange] = []
+        bodyRanges = proto.bodyRanges.map { SSKProtoBodyRange($0) }
 
         self.init(proto: proto,
                   id: id,
@@ -4273,12 +4273,12 @@ public class SSKProtoDataMessageQuoteBuilder: NSObject {
     }
 
     @objc
-    public func addBodyRanges(_ valueParam: SSKProtoDataMessageBodyRange) {
+    public func addBodyRanges(_ valueParam: SSKProtoBodyRange) {
         proto.bodyRanges.append(valueParam.proto)
     }
 
     @objc
-    public func setBodyRanges(_ wrappedItems: [SSKProtoDataMessageBodyRange]) {
+    public func setBodyRanges(_ wrappedItems: [SSKProtoBodyRange]) {
         proto.bodyRanges = wrappedItems.map { $0.proto }
     }
 
@@ -6577,233 +6577,6 @@ extension SSKProtoDataMessageDeleteBuilder {
 
 #endif
 
-// MARK: - SSKProtoDataMessageBodyRange
-
-@objc
-public class SSKProtoDataMessageBodyRange: NSObject, Codable, NSSecureCoding {
-
-    fileprivate let proto: SignalServiceProtos_DataMessage.BodyRange
-
-    @objc
-    public var start: UInt32 {
-        return proto.start
-    }
-    @objc
-    public var hasStart: Bool {
-        return proto.hasStart
-    }
-
-    @objc
-    public var length: UInt32 {
-        return proto.length
-    }
-    @objc
-    public var hasLength: Bool {
-        return proto.hasLength
-    }
-
-    @objc
-    public var mentionUuid: String? {
-        guard hasMentionUuid else {
-            return nil
-        }
-        return proto.mentionUuid
-    }
-    @objc
-    public var hasMentionUuid: Bool {
-        return proto.hasMentionUuid && !proto.mentionUuid.isEmpty
-    }
-
-    @objc
-    public var hasValidMention: Bool {
-        return mentionAddress != nil
-    }
-    @objc
-    public let mentionAddress: SignalServiceAddress?
-
-    public var hasUnknownFields: Bool {
-        return !proto.unknownFields.data.isEmpty
-    }
-    public var unknownFields: SwiftProtobuf.UnknownStorage? {
-        guard hasUnknownFields else { return nil }
-        return proto.unknownFields
-    }
-
-    private init(proto: SignalServiceProtos_DataMessage.BodyRange) {
-        self.proto = proto
-
-        let hasMentionUuid = proto.hasMentionUuid && !proto.mentionUuid.isEmpty
-        let mentionUuid: String? = proto.mentionUuid
-        self.mentionAddress = {
-            guard hasMentionUuid else { return nil }
-
-            let uuidString: String? = {
-                guard hasMentionUuid else { return nil }
-
-                guard let mentionUuid = mentionUuid else {
-                    owsFailDebug("mentionUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return mentionUuid
-            }()
-
-            guard let uuidString = uuidString else { return nil }
-
-            let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc
-    public convenience init(serializedData: Data) throws {
-        let proto = try SignalServiceProtos_DataMessage.BodyRange(serializedData: serializedData)
-        self.init(proto)
-    }
-
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.BodyRange) {
-        self.init(proto: proto)
-    }
-
-    public required convenience init(from decoder: Swift.Decoder) throws {
-        let singleValueContainer = try decoder.singleValueContainer()
-        let serializedData = try singleValueContainer.decode(Data.self)
-        try self.init(serializedData: serializedData)
-    }
-    public func encode(to encoder: Swift.Encoder) throws {
-        var singleValueContainer = encoder.singleValueContainer()
-        try singleValueContainer.encode(try serializedData())
-    }
-
-    public static var supportsSecureCoding: Bool { true }
-
-    public required convenience init?(coder: NSCoder) {
-        guard let serializedData = coder.decodeData() else { return nil }
-        do {
-            try self.init(serializedData: serializedData)
-        } catch {
-            owsFailDebug("Failed to decode serialized data \(error)")
-            return nil
-        }
-    }
-
-    public func encode(with coder: NSCoder) {
-        do {
-            coder.encode(try serializedData())
-        } catch {
-            owsFailDebug("Failed to encode serialized data \(error)")
-        }
-    }
-
-    @objc
-    public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-extension SSKProtoDataMessageBodyRange {
-    @objc
-    public static func builder() -> SSKProtoDataMessageBodyRangeBuilder {
-        return SSKProtoDataMessageBodyRangeBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> SSKProtoDataMessageBodyRangeBuilder {
-        let builder = SSKProtoDataMessageBodyRangeBuilder()
-        if hasStart {
-            builder.setStart(start)
-        }
-        if hasLength {
-            builder.setLength(length)
-        }
-        if let _value = mentionUuid {
-            builder.setMentionUuid(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-}
-
-@objc
-public class SSKProtoDataMessageBodyRangeBuilder: NSObject {
-
-    private var proto = SignalServiceProtos_DataMessage.BodyRange()
-
-    @objc
-    fileprivate override init() {}
-
-    @objc
-    public func setStart(_ valueParam: UInt32) {
-        proto.start = valueParam
-    }
-
-    @objc
-    public func setLength(_ valueParam: UInt32) {
-        proto.length = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setMentionUuid(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.mentionUuid = valueParam
-    }
-
-    public func setMentionUuid(_ valueParam: String) {
-        proto.mentionUuid = valueParam
-    }
-
-    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-        proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoDataMessageBodyRange {
-        return SSKProtoDataMessageBodyRange(proto)
-    }
-
-    @objc
-    public func buildInfallibly() -> SSKProtoDataMessageBodyRange {
-        return SSKProtoDataMessageBodyRange(proto)
-    }
-
-    @objc
-    public func buildSerializedData() throws -> Data {
-        return try SSKProtoDataMessageBodyRange(proto).serializedData()
-    }
-}
-
-#if TESTABLE_BUILD
-
-extension SSKProtoDataMessageBodyRange {
-    @objc
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SSKProtoDataMessageBodyRangeBuilder {
-    @objc
-    public func buildIgnoringErrors() -> SSKProtoDataMessageBodyRange? {
-        return self.buildInfallibly()
-    }
-}
-
-#endif
-
 // MARK: - SSKProtoDataMessageGroupCallUpdate
 
 @objc
@@ -8820,7 +8593,7 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
     public let delete: SSKProtoDataMessageDelete?
 
     @objc
-    public let bodyRanges: [SSKProtoDataMessageBodyRange]
+    public let bodyRanges: [SSKProtoBodyRange]
 
     @objc
     public let groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?
@@ -8921,7 +8694,7 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
                  sticker: SSKProtoDataMessageSticker?,
                  reaction: SSKProtoDataMessageReaction?,
                  delete: SSKProtoDataMessageDelete?,
-                 bodyRanges: [SSKProtoDataMessageBodyRange],
+                 bodyRanges: [SSKProtoBodyRange],
                  groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?,
                  payment: SSKProtoDataMessagePayment?,
                  storyContext: SSKProtoDataMessageStoryContext?,
@@ -8994,8 +8767,8 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
             delete = try SSKProtoDataMessageDelete(proto.delete)
         }
 
-        var bodyRanges: [SSKProtoDataMessageBodyRange] = []
-        bodyRanges = proto.bodyRanges.map { SSKProtoDataMessageBodyRange($0) }
+        var bodyRanges: [SSKProtoBodyRange] = []
+        bodyRanges = proto.bodyRanges.map { SSKProtoBodyRange($0) }
 
         var groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?
         if proto.hasGroupCallUpdate {
@@ -9294,12 +9067,12 @@ public class SSKProtoDataMessageBuilder: NSObject {
     }
 
     @objc
-    public func addBodyRanges(_ valueParam: SSKProtoDataMessageBodyRange) {
+    public func addBodyRanges(_ valueParam: SSKProtoBodyRange) {
         proto.bodyRanges.append(valueParam.proto)
     }
 
     @objc
-    public func setBodyRanges(_ wrappedItems: [SSKProtoDataMessageBodyRange]) {
+    public func setBodyRanges(_ wrappedItems: [SSKProtoBodyRange]) {
         proto.bodyRanges = wrappedItems.map { $0.proto }
     }
 
@@ -18961,6 +18734,295 @@ extension SSKProtoPniSignatureMessage {
 extension SSKProtoPniSignatureMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoPniSignatureMessage? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoBodyRangeStyle
+
+@objc
+public enum SSKProtoBodyRangeStyle: Int32 {
+    case none = 0
+    case bold = 1
+    case italic = 2
+    case spoiler = 3
+    case strikethrough = 4
+    case monospace = 5
+}
+
+private func SSKProtoBodyRangeStyleWrap(_ value: SignalServiceProtos_BodyRange.Style) -> SSKProtoBodyRangeStyle {
+    switch value {
+    case .none: return .none
+    case .bold: return .bold
+    case .italic: return .italic
+    case .spoiler: return .spoiler
+    case .strikethrough: return .strikethrough
+    case .monospace: return .monospace
+    }
+}
+
+private func SSKProtoBodyRangeStyleUnwrap(_ value: SSKProtoBodyRangeStyle) -> SignalServiceProtos_BodyRange.Style {
+    switch value {
+    case .none: return .none
+    case .bold: return .bold
+    case .italic: return .italic
+    case .spoiler: return .spoiler
+    case .strikethrough: return .strikethrough
+    case .monospace: return .monospace
+    }
+}
+
+// MARK: - SSKProtoBodyRange
+
+@objc
+public class SSKProtoBodyRange: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_BodyRange
+
+    @objc
+    public var start: UInt32 {
+        return proto.start
+    }
+    @objc
+    public var hasStart: Bool {
+        return proto.hasStart
+    }
+
+    @objc
+    public var length: UInt32 {
+        return proto.length
+    }
+    @objc
+    public var hasLength: Bool {
+        return proto.hasLength
+    }
+
+    @objc
+    public var mentionUuid: String? {
+        guard hasMentionUuid else {
+            return nil
+        }
+        return proto.mentionUuid
+    }
+    @objc
+    public var hasMentionUuid: Bool {
+        return proto.hasMentionUuid && !proto.mentionUuid.isEmpty
+    }
+
+    public var style: SSKProtoBodyRangeStyle? {
+        guard hasStyle else {
+            return nil
+        }
+        return SSKProtoBodyRangeStyleWrap(proto.style)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedStyle: SSKProtoBodyRangeStyle {
+        if !hasStyle {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: BodyRange.style.")
+        }
+        return SSKProtoBodyRangeStyleWrap(proto.style)
+    }
+    @objc
+    public var hasStyle: Bool {
+        return proto.hasStyle
+    }
+
+    @objc
+    public var hasValidMention: Bool {
+        return mentionAddress != nil
+    }
+    @objc
+    public let mentionAddress: SignalServiceAddress?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_BodyRange) {
+        self.proto = proto
+
+        let hasMentionUuid = proto.hasMentionUuid && !proto.mentionUuid.isEmpty
+        let mentionUuid: String? = proto.mentionUuid
+        self.mentionAddress = {
+            guard hasMentionUuid else { return nil }
+
+            let uuidString: String? = {
+                guard hasMentionUuid else { return nil }
+
+                guard let mentionUuid = mentionUuid else {
+                    owsFailDebug("mentionUuid was unexpectedly nil")
+                    return nil
+                }
+
+                return mentionUuid
+            }()
+
+            guard let uuidString = uuidString else { return nil }
+
+            let address = SignalServiceAddress(uuidString: uuidString)
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
+
+            return address
+        }()
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_BodyRange(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_BodyRange) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoBodyRange {
+    @objc
+    public static func builder() -> SSKProtoBodyRangeBuilder {
+        return SSKProtoBodyRangeBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoBodyRangeBuilder {
+        let builder = SSKProtoBodyRangeBuilder()
+        if hasStart {
+            builder.setStart(start)
+        }
+        if hasLength {
+            builder.setLength(length)
+        }
+        if let _value = mentionUuid {
+            builder.setMentionUuid(_value)
+        }
+        if let _value = style {
+            builder.setStyle(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoBodyRangeBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_BodyRange()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func setStart(_ valueParam: UInt32) {
+        proto.start = valueParam
+    }
+
+    @objc
+    public func setLength(_ valueParam: UInt32) {
+        proto.length = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setMentionUuid(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.mentionUuid = valueParam
+    }
+
+    public func setMentionUuid(_ valueParam: String) {
+        proto.mentionUuid = valueParam
+    }
+
+    @objc
+    public func setStyle(_ valueParam: SSKProtoBodyRangeStyle) {
+        proto.style = SSKProtoBodyRangeStyleUnwrap(valueParam)
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> SSKProtoBodyRange {
+        return SSKProtoBodyRange(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoBodyRange {
+        return SSKProtoBodyRange(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoBodyRange(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoBodyRange {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoBodyRangeBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoBodyRange? {
         return self.buildInfallibly()
     }
 }

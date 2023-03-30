@@ -322,19 +322,6 @@ message DataMessage {
     optional uint64 targetSentTimestamp = 1;
   }
 
-  message BodyRange {
-    optional uint32 start  = 1;
-    optional uint32 length = 2;
-
-    // oneof commented out because swift generated
-    // enum with associated values can't be converted
-    // to objc representation
-    //
-    // oneof associatedValue {
-      optional string mentionUuid = 3;
-    // }
-  }
-
   message GroupCallUpdate {
     optional string eraId = 1;
   }
@@ -820,4 +807,27 @@ message PniSignatureMessage {
   optional bytes pni       = 1;
   // Signature *by* the PNI identity key *of* the ACI identity key
   optional bytes signature = 2;
+}
+
+message BodyRange {
+  enum Style {
+    NONE = 0;
+    BOLD = 1;
+    ITALIC = 2;
+    SPOILER = 3;
+    STRIKETHROUGH = 4;
+    MONOSPACE = 5;
+  }
+
+  optional uint32 start = 1;
+  optional uint32 length = 2;
+
+  // oneof commented out because swift generated
+  // enum with associated values can't be converted
+  // to objc representation
+  //
+  // oneof associatedValue {
+    optional string mentionUuid = 3;
+    optional Style style = 4;
+  // }
 }
