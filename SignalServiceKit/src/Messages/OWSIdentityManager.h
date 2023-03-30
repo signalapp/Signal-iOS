@@ -100,15 +100,6 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
                                                      untrustedThreshold:(NSTimeInterval)untrustedThreshold
                                                             transaction:(SDSAnyReadTransaction *)transaction;
 
-// This method can be called from any thread.
-- (void)throws_processIncomingVerifiedProto:(SSKProtoVerified *)verified
-                                transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_UNAVAILABLE("throws objc exceptions");
-
-- (BOOL)processIncomingVerifiedProto:(SSKProtoVerified *)verified
-                         transaction:(SDSAnyWriteTransaction *)transaction
-                               error:(NSError **)error;
-
 - (void)fireIdentityStateChangeNotificationAfterTransaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey

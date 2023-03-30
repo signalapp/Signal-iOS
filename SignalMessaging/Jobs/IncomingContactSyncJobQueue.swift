@@ -263,8 +263,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                                                       transaction: transaction)
 
         if let verifiedProto = contactDetails.verifiedProto {
-            try self.identityManager.processIncomingVerifiedProto(verifiedProto,
-                                                                  transaction: transaction)
+            try self.identityManager.processIncomingVerifiedProto(verifiedProto, transaction: transaction)
         }
 
         if let profileKey = contactDetails.profileKey {

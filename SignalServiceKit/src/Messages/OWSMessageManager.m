@@ -275,16 +275,34 @@ NS_ASSUME_NONNULL_BEGIN
     [self finishProcessingEnvelope:envelope transaction:transaction];
 }
 
+/// Called when we've finished processing an envelope.
+///
+/// If we call this method, we tried to process an envelope. However, the
+/// contents of that envelope may or may not be valid.
+///
+/// Cases where we won't call this method:
+/// - The envelope is missing a sender (or a device ID)
+/// - The envelope has a sender but they're blocked
+/// - The envelope is missing a timestamp
+/// - The user isn't registered
+///
+/// Cases where we will call this method:
+/// - The envelope contains a fully valid message
+/// - The envelope contains a message with an invalid reaction
+/// - The envelope contains a link preview but the URL isn't in the message
+/// - & so on, for many "errors" that are handled elsewhere
 - (void)finishProcessingEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self saveSpamReportingTokenForEnvelope:envelope transaction:transaction];
 
-    // If we reach here, we were able to successfully handle the message.
-    // We need to check to make sure that we clear any placeholders that may have been
-    // inserted for this message. This would happen if:
+    // We need to check to make sure that we clear any placeholders that may
+    // have been inserted for this message. This would happen if:
+    //
     // - This is a resend of a message that we had previously failed to decrypt
-    // - The message does not result in an inserted TSIncomingMessage or TSOutgoingMessage
-    // For example, a read receipt. In that case, we should just clear the placeholder
+    //
+    // - The message does not result in an inserted TSIncomingMessage or
+    // TSOutgoingMessage. For example, a read receipt. In that case, we should
+    // just clear the placeholder.
     if (envelope.timestamp > 0 && envelope.sourceAddress) {
         [self clearLeftoverPlaceholders:envelope.timestamp sender:envelope.sourceAddress transaction:transaction];
     }
@@ -1767,7 +1785,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destinationAddress);
-        [self.identityManager throws_processIncomingVerifiedProto:syncMessage.verified transaction:transaction];
+        NSError *error;
+        if (![self.identityManager processIncomingVerifiedProto:syncMessage.verified
+                                                    transaction:transaction
+                                                          error:&error]) {
+            OWSLogWarn(@"Couldn't process verification state: %@", error);
+            return;
+        }
         [self.identityManager fireIdentityStateChangeNotificationAfterTransaction:transaction];
     } else if (syncMessage.stickerPackOperation.count > 0) {
         OWSLogInfo(@"Received sticker pack operation(s): %d", (int)syncMessage.stickerPackOperation.count);

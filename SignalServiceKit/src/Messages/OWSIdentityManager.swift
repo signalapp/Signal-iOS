@@ -102,6 +102,140 @@ extension OWSIdentityManager {
     }
 }
 
+// MARK: - Verified
+
+extension OWSIdentityManager {
+    @objc
+    public func processIncomingVerifiedProto(_ verified: SSKProtoVerified, transaction: SDSAnyWriteTransaction) throws {
+        guard let address = verified.destinationAddress, address.isValid else {
+            return owsFailDebug("Verification state sync message missing address.")
+        }
+        guard let rawIdentityKey = verified.identityKey, rawIdentityKey.count == kIdentityKeyLength else {
+            return owsFailDebug("Verification state sync message for \(address) with malformed identityKey")
+        }
+        let identityKey = try rawIdentityKey.removeKeyType()
+
+        switch verified.state {
+        case .default:
+            applyVerificationState(
+                .default,
+                address: address,
+                identityKey: identityKey,
+                overwriteOnConflict: false,
+                transaction: transaction
+            )
+        case .verified:
+            applyVerificationState(
+                .verified,
+                address: address,
+                identityKey: identityKey,
+                overwriteOnConflict: true,
+                transaction: transaction
+            )
+        case .unverified:
+            return owsFailDebug("Verification state sync message for \(address) has unverified state")
+        case .none:
+            return owsFailDebug("Verification state sync message for \(address) has no state")
+        }
+    }
+
+    private func applyVerificationState(
+        _ verificationState: OWSVerificationState,
+        address: SignalServiceAddress,
+        identityKey: Data,
+        overwriteOnConflict: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        let recipientId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        var recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: transaction)
+
+        let shouldSaveIdentityKey: Bool
+        let shouldInsertChangeMessages: Bool
+
+        if let recipientIdentity {
+            if recipientIdentity.accountId != recipientId {
+                return owsFailDebug("Unexpected accountId for \(address)")
+            }
+            let didChangeIdentityKey = recipientIdentity.identityKey != identityKey
+            if didChangeIdentityKey, !overwriteOnConflict {
+                // The conflict case where we receive a verification sync message whose
+                // identity key disagrees with the local identity key for this recipient.
+                Logger.warn("Non-matching identityKey for \(address)")
+                return
+            }
+            shouldSaveIdentityKey = didChangeIdentityKey
+            shouldInsertChangeMessages = true
+        } else {
+            if verificationState == .default {
+                // There's no point in creating a new recipient identity just to set its
+                // verification state to default.
+                return
+            }
+            shouldSaveIdentityKey = true
+            shouldInsertChangeMessages = false
+        }
+
+        if shouldSaveIdentityKey {
+            // Ensure a remote identity exists for this key. We may be learning about
+            // it for the first time.
+            saveRemoteIdentity(identityKey, address: address, authedAccount: .implicit(), transaction: transaction)
+            recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: transaction)
+        }
+
+        guard let recipientIdentity else {
+            return owsFailDebug("Missing expected identity for \(address)")
+        }
+        guard recipientIdentity.accountId == recipientId else {
+            return owsFailDebug("Unexpected accountId for \(address)")
+        }
+        guard recipientIdentity.identityKey == identityKey else {
+            return owsFailDebug("Unexpected identityKey for \(address)")
+        }
+
+        if recipientIdentity.verificationState == verificationState {
+            return
+        }
+
+        let oldVerificationState = OWSVerificationStateToString(recipientIdentity.verificationState)
+        let newVerificationState = OWSVerificationStateToString(verificationState)
+        Logger.info("for \(address): \(oldVerificationState) -> \(newVerificationState)")
+
+        recipientIdentity.update(with: verificationState, transaction: transaction)
+
+        if shouldInsertChangeMessages {
+            saveChangeMessages(
+                address: address,
+                verificationState: verificationState,
+                isLocalChange: false,
+                transaction: transaction
+            )
+        }
+    }
+
+    @objc
+    func saveChangeMessages(
+        address: SignalServiceAddress,
+        verificationState: OWSVerificationState,
+        isLocalChange: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        owsAssertDebug(address.isValid)
+
+        var relevantThreads = [TSThread]()
+        relevantThreads.append(TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction))
+        relevantThreads.append(contentsOf: TSGroupThread.groupThreads(with: address, transaction: transaction))
+
+        for thread in relevantThreads {
+            OWSVerificationStateChangeMessage(
+                thread: thread,
+                recipientAddress: address,
+                verificationState: verificationState,
+                isLocalChange: isLocalChange
+            ).anyInsert(transaction: transaction)
+        }
+    }
+}
+
 // MARK: - PNIs
 
 extension OWSIdentityManager {
