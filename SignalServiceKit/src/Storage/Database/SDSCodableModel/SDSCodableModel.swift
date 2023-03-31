@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 
 public protocol SDSCodableModel: Codable, FetchableRecord, PersistableRecord, SDSIndexableModel, SDSIdentifiableModel {
-    associatedtype CodingKeys: RawRepresentable, CodingKey, ColumnExpression, CaseIterable
+    associatedtype CodingKeys: RawRepresentable<String>, CodingKey, ColumnExpression, CaseIterable
     typealias Columns = CodingKeys
     typealias RowId = Int64
 
@@ -67,12 +67,6 @@ public extension SDSCodableModel {
 
     mutating func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
-    }
-}
-
-public extension SDSCodableModel where Columns.RawValue == String {
-    static func columnName(_ column: Columns, fullyQualified: Bool = false) -> String {
-        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 }
 

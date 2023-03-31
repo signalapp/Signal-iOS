@@ -1277,6 +1277,7 @@
 		D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */; };
 		D9E335A42993269100825677 /* MockDBV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAE2982F4C4002E0CFE /* MockDBV2.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
+		D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
@@ -3827,6 +3828,7 @@
 		D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+SSK.swift"; sourceTree = "<group>"; };
 		D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LegacyChangePhoneNumber+ChangeTokens.swift"; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
+		D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+ColumnName.swift"; sourceTree = "<group>"; };
 		DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDBCB034D1DFAF85ADFD5E76 /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
@@ -7708,6 +7710,15 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
+		D9F6553029D6530B002A330A /* SDSCodableModel */ = {
+			isa = PBXGroup;
+			children = (
+				D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */,
+				F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */,
+			);
+			path = SDSCodableModel;
+			sourceTree = "<group>";
+		};
 		E75DD3DC2810CD3500E32C36 /* subscriptions */ = {
 			isa = PBXGroup;
 			children = (
@@ -8748,6 +8759,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CA35289453B100548EEE /* Records */,
+				D9F6553029D6530B002A330A /* SDSCodableModel */,
 				6673FF83297B666500F96CFD /* SDSDatabaseStorage */,
 				6673FF82297B659D00F96CFD /* SDSKeyValueStore */,
 				F9C5CA3C289453B100548EEE /* Snapshots */,
@@ -8756,7 +8768,6 @@
 				F9C5CA48289453B100548EEE /* DeepCopy.swift */,
 				F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */,
 				F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */,
-				F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */,
 				F9C5CA45289453B100548EEE /* SDSCrossProcess.h */,
 				F9C5CA50289453B100548EEE /* SDSCrossProcess.m */,
 				F9C5CA3B289453B100548EEE /* SDSDeserialization.swift */,
@@ -12062,6 +12073,7 @@
 				F9C5CCA6289453B300548EEE /* RotateSignedKeyOperation.swift in Sources */,
 				6600F37E298F27C600B1EDB7 /* Schedulers.swift in Sources */,
 				F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */,
+				D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */,
 				F9C5CD2D289453B300548EEE /* SDSCodableModel.swift in Sources */,
 				F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */,
 				F9C5CD2B289453B300548EEE /* SDSDatabaseStorage+Objc.m in Sources */,
