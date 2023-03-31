@@ -5,7 +5,6 @@
 
 #import "AppDelegate.h"
 #import "ChatListViewController.h"
-#import "MainAppContext.h"
 #import "OWSScreenLockUI.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"

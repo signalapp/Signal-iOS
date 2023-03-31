@@ -510,7 +510,6 @@
 		34ACA7F32733161000E47AD4 /* Deprecated_RegistrationCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7EF2733161000E47AD4 /* Deprecated_RegistrationCaptchaViewController.swift */; };
 		34ACA7F62733183000E47AD4 /* RegistrationValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7F42733183000E47AD4 /* RegistrationValues.swift */; };
 		34ACA7F72733183000E47AD4 /* CountryCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */; };
-		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
 		34B14D8B24F0012100CC3A9A /* GroupsPerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B14D8A24F0012100CC3A9A /* GroupsPerfTest.swift */; };
 		34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B14D8C24F02A9500CC3A9A /* GroupLinkViewController.swift */; };
 		34B14D8F24F41C4300CC3A9A /* GroupLinkQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B14D8E24F41C4200CC3A9A /* GroupLinkQRCodeViewController.swift */; };
@@ -757,6 +756,7 @@
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
+		5033D46929D7951F007FEADA /* MainAppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46829D7951F007FEADA /* MainAppContext.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
 		503AECC529B2A4D300642F66 /* VoiceMessageInProgressDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503AECC429B2A4D300642F66 /* VoiceMessageInProgressDraft.swift */; };
 		503AECC629B2AD6700642F66 /* VoiceMessageInterruptedDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A1271B510500B05242 /* VoiceMessageInterruptedDraft.swift */; };
@@ -2936,8 +2936,6 @@
 		34ACA7EF2733161000E47AD4 /* Deprecated_RegistrationCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_RegistrationCaptchaViewController.swift; sourceTree = "<group>"; };
 		34ACA7F42733183000E47AD4 /* RegistrationValues.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationValues.swift; sourceTree = "<group>"; };
 		34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountryCodeViewController.swift; sourceTree = "<group>"; };
-		34B0796B1FCF46B000E248C2 /* MainAppContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainAppContext.m; sourceTree = "<group>"; };
-		34B0796C1FCF46B000E248C2 /* MainAppContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainAppContext.h; sourceTree = "<group>"; };
 		34B0796E1FD07B1E00E248C2 /* SignalShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SignalShareExtension.entitlements; sourceTree = "<group>"; };
 		34B14D8A24F0012100CC3A9A /* GroupsPerfTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsPerfTest.swift; sourceTree = "<group>"; };
 		34B14D8C24F02A9500CC3A9A /* GroupLinkViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupLinkViewController.swift; sourceTree = "<group>"; };
@@ -3223,6 +3221,7 @@
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
+		5033D46829D7951F007FEADA /* MainAppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppContext.swift; sourceTree = "<group>"; };
 		503614CE282AF657008128B4 /* GiftBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftBadgeView.swift; sourceTree = "<group>"; };
 		503614D0282C5703008128B4 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ro; path = translations/ro.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D1282C5728008128B4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fi; path = translations/fi.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -6714,8 +6713,7 @@
 				3498AC882513896400B1F315 /* Dependencies+MainApp.swift */,
 				34A95500271B503E00B05242 /* DisplayableText.swift */,
 				F9D289B5291EDC8D00187394 /* DonationJobError.swift */,
-				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
-				34B0796B1FCF46B000E248C2 /* MainAppContext.m */,
+				5033D46829D7951F007FEADA /* MainAppContext.swift */,
 				88D23D1123CEBFB200B0E74B /* NotificationActionHandler.swift */,
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
 				34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */,
@@ -11330,7 +11328,7 @@
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
 				88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
-				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
+				5033D46929D7951F007FEADA /* MainAppContext.swift in Sources */,
 				349767E325B8744700ECE1B0 /* ManageStickersViewController.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* MediaCaptionView.swift in Sources */,
