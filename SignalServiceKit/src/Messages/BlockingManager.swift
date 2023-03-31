@@ -249,6 +249,8 @@ extension BlockingManager {
             return isAddressBlocked(contactThread.contactAddress, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
             return isGroupIdBlocked(groupThread.groupModel.groupId, transaction: transaction)
+        } else if thread is TSPrivateStoryThread {
+            return false
         } else {
             owsFailDebug("Invalid thread: \(type(of: thread))")
             return false
