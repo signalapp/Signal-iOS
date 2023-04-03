@@ -296,7 +296,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     inMemoryState.pinFromUser = nil
                     inMemoryState.pinFromDisk = nil
                     self.wipeInMemoryStateToPreventKBSPathAttempts()
-                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin(
+                    return .value(.pinAttemptsExhaustedWithoutReglock(
                         .init(mode: .restoringRegistrationRecoveryPassword)
                     ))
                 } else {
@@ -1335,7 +1335,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             $0.hasGivenUpTryingToRestoreWithKBS = true
                         }
                     }
-                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin(
+                    return .value(.pinAttemptsExhaustedWithoutReglock(
                         .init(mode: .restoringRegistrationRecoveryPassword)
                     ))
                 case .networkError:
@@ -2743,7 +2743,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.db.write { tx in
                         self.updatePersistedState(tx) { $0.hasGivenUpTryingToRestoreWithKBS = true }
                     }
-                    return .value(.pinAttemptsExhaustedAndMustCreateNewPin(
+                    return .value(.pinAttemptsExhaustedWithoutReglock(
                         .init(mode: .restoringBackup)
                     ))
                 case .networkError:

@@ -248,7 +248,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                     }
                 }
             )
-        case .pinAttemptsExhaustedAndMustCreateNewPin(let state):
+        case .pinAttemptsExhaustedWithoutReglock(let state):
             return Controller(
                 type: RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.self,
                 make: { presenter in
