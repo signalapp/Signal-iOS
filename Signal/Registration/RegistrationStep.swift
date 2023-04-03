@@ -113,7 +113,7 @@ public enum RegistrationStep: Equatable {
         case .verificationCodeEntry: return "verificationCodeEntry"
         case .transferSelection: return "transferSelection"
         case .pinEntry: return "pinEntry"
-        case .pinAttemptsExhaustedAndMustCreateNewPin: return "pinAttemptsExhaustedAndMustCreateNewPin"
+        case .pinAttemptsExhaustedWithoutReglock: return "pinAttemptsExhaustedWithoutReglock"
         case .captchaChallenge: return "captchaChallenge"
         case .reglockTimeout: return "reglockTimeout"
         case .phoneNumberDiscoverability: return "phoneNumberDiscoverability"
