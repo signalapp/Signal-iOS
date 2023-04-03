@@ -609,7 +609,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             TSMention *mention = [[TSMention alloc] initWithUniqueMessageId:self.uniqueId
                                                              uniqueThreadId:self.uniqueThreadId
                                                                  uuidString:uuid.UUIDString];
-            [mention anyInsertWithTransaction:transaction];
+            [mention anyInsertObjcWithTransaction:transaction];
         }
     }
 

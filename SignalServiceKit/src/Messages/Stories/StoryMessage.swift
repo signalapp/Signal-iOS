@@ -690,13 +690,12 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     }
 
     @objc
-    public class func anyEnumerate(
+    public static func anyEnumerateObjc(
         transaction: SDSAnyReadTransaction,
-        batched: Bool = false,
+        batched: Bool,
         block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        let batchSize = batched ? Batching.kDefaultBatchSize : 0
-        anyEnumerate(transaction: transaction, batchSize: batchSize, block: block)
+        anyEnumerate(transaction: transaction, batched: batched, block: block)
     }
 
     // MARK: - Codable
@@ -761,8 +760,7 @@ public struct StoryReceivedState: Codable {
 public struct StoryRecipientState: Codable {
     public var allowsReplies: Bool
     public var contexts: [UUID]
-    @DecodableDefault.OutgoingMessageSending
-    public var sendingState: OWSOutgoingMessageRecipientState
+    @DecodableDefault.OutgoingMessageSending public var sendingState: OWSOutgoingMessageRecipientState
     public var sendingErrorCode: Int?
     public var viewedTimestamp: UInt64?
 

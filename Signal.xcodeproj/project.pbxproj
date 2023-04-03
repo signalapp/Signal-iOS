@@ -1278,6 +1278,11 @@
 		D9E335A42993269100825677 /* MockDBV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAE2982F4C4002E0CFE /* MockDBV2.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
 		D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */; };
+		D9F6553B29D6547F002A330A /* SDSCodableModelDatabaseInterface+Remove.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */; };
+		D9F6553C29D6547F002A330A /* SDSCodableModelDatabaseInterface+Save.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */; };
+		D9F6553D29D6547F002A330A /* SDSCodableModelDatabaseInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553729D6547E002A330A /* SDSCodableModelDatabaseInterface.swift */; };
+		D9F6553E29D6547F002A330A /* SDSCodableModelDatabaseInterface+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553829D6547F002A330A /* SDSCodableModelDatabaseInterface+Fetch.swift */; };
+		D9F6554029D65F11002A330A /* SDSCodableModelDatabaseInterface+Enumerate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553F29D65F11002A330A /* SDSCodableModelDatabaseInterface+Enumerate.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
@@ -3828,6 +3833,11 @@
 		D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LegacyChangePhoneNumber+ChangeTokens.swift"; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
 		D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+ColumnName.swift"; sourceTree = "<group>"; };
+		D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Remove.swift"; sourceTree = "<group>"; };
+		D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Save.swift"; sourceTree = "<group>"; };
+		D9F6553729D6547E002A330A /* SDSCodableModelDatabaseInterface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSCodableModelDatabaseInterface.swift; sourceTree = "<group>"; };
+		D9F6553829D6547F002A330A /* SDSCodableModelDatabaseInterface+Fetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Fetch.swift"; sourceTree = "<group>"; };
+		D9F6553F29D65F11002A330A /* SDSCodableModelDatabaseInterface+Enumerate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Enumerate.swift"; sourceTree = "<group>"; };
 		DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDBCB034D1DFAF85ADFD5E76 /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
@@ -7713,6 +7723,11 @@
 			children = (
 				D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */,
 				F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */,
+				D9F6553F29D65F11002A330A /* SDSCodableModelDatabaseInterface+Enumerate.swift */,
+				D9F6553829D6547F002A330A /* SDSCodableModelDatabaseInterface+Fetch.swift */,
+				D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */,
+				D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */,
+				D9F6553729D6547E002A330A /* SDSCodableModelDatabaseInterface.swift */,
 			);
 			path = SDSCodableModel;
 			sourceTree = "<group>";
@@ -12073,6 +12088,11 @@
 				F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */,
 				D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */,
 				F9C5CD2D289453B300548EEE /* SDSCodableModel.swift in Sources */,
+				D9F6554029D65F11002A330A /* SDSCodableModelDatabaseInterface+Enumerate.swift in Sources */,
+				D9F6553E29D6547F002A330A /* SDSCodableModelDatabaseInterface+Fetch.swift in Sources */,
+				D9F6553B29D6547F002A330A /* SDSCodableModelDatabaseInterface+Remove.swift in Sources */,
+				D9F6553C29D6547F002A330A /* SDSCodableModelDatabaseInterface+Save.swift in Sources */,
+				D9F6553D29D6547F002A330A /* SDSCodableModelDatabaseInterface.swift in Sources */,
 				F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */,
 				F9C5CD2B289453B300548EEE /* SDSDatabaseStorage+Objc.m in Sources */,
 				F9C5CD1A289453B300548EEE /* SDSDatabaseStorage.swift in Sources */,

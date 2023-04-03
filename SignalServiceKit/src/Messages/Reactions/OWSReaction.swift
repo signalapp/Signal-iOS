@@ -67,16 +67,13 @@ public final class OWSReaction: NSObject, SDSCodableModel, NSSecureCoding {
         notificationsManager?.cancelNotifications(reactionId: uniqueId)
     }
 
-    // TODO: Figure out how to avoid having to duplicate this implementation
-    // in order to expose the method to ObjC
     @objc
-    public class func anyEnumerate(
+    public static func anyEnumerateObjc(
         transaction: SDSAnyReadTransaction,
-        batched: Bool = false,
+        batched: Bool,
         block: @escaping (OWSReaction, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        let batchSize = batched ? Batching.kDefaultBatchSize : 0
-        anyEnumerate(transaction: transaction, batchSize: batchSize, block: block)
+        anyEnumerate(transaction: transaction, batched: batched, block: block)
     }
 
     // MARK: - Codable

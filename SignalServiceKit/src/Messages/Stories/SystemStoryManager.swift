@@ -444,7 +444,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         }
 
         stories.forEach {
-            $0.sdsRemove(transaction: transaction)
+            $0.anyRemove(transaction: transaction)
         }
     }
 

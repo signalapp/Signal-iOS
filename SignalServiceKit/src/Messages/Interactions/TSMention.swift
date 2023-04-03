@@ -76,20 +76,17 @@ public final class TSMention: NSObject, SDSCodableModel {
         try container.encode(creationDate, forKey: .creationTimestamp)
     }
 
-    // TODO: Figure out how to avoid having to duplicate this implementation
-
     @objc
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .insert, transaction: transaction)
+    public func anyInsertObjc(transaction: SDSAnyWriteTransaction) {
+        anyInsert(transaction: transaction)
     }
 
     @objc
-    public class func anyEnumerate(
+    public static func anyEnumerateObjc(
         transaction: SDSAnyReadTransaction,
-        batched: Bool = false,
+        batched: Bool,
         block: @escaping (TSMention, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        let batchSize = batched ? Batching.kDefaultBatchSize : 0
-        anyEnumerate(transaction: transaction, batchSize: batchSize, block: block)
+        anyEnumerate(transaction: transaction, batched: batched, block: block)
     }
 }
