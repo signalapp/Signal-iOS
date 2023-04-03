@@ -104,7 +104,7 @@ public class FeatureFlags: BaseFlags {
     // with a single line code change.
     public static let useNewRegistrationFlow: Bool = true
 
-    public static let canRequestAccountDataReport: Bool = build.includes(.dev)
+    public static let canRequestAccountDataReport: Bool = build.includes(.internal)
 
     @objc
     public static func logFlags() {
