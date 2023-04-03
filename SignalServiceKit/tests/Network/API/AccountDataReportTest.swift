@@ -16,7 +16,7 @@ final class AccountDataReportTest: XCTestCase {
             return jsonValue as! [String: String]
         }()
         XCTAssertEqual(parsedJson, ["foo": "bar", "text": "baz"])
-        XCTAssertEqual(report.text, "baz")
+        XCTAssertEqual(report.textData, "baz".data(using: .ascii)!)
     }
 
     func testWithValidDataButNoText() throws {
@@ -24,7 +24,7 @@ final class AccountDataReportTest: XCTestCase {
         let report = try XCTUnwrap(AccountDataReport(rawData: rawData))
 
         XCTAssertEqual(report.formattedJsonData, "{\n  \"foo\" : \"bar\"\n}".data(using: .ascii)!)
-        XCTAssertNil(report.text)
+        XCTAssertNil(report.textData)
     }
 
     func testWithValidDataButNonstringText() throws {
@@ -40,7 +40,7 @@ final class AccountDataReportTest: XCTestCase {
             let rawData = jsonString.data(using: .ascii)!
             let report = try XCTUnwrap(AccountDataReport(rawData: rawData))
 
-            XCTAssertNil(report.text)
+            XCTAssertNil(report.textData)
         }
     }
 

@@ -10,10 +10,10 @@ public struct AccountDataReport {
     /// The JSON returned by the server, pretty-printed.
     public let formattedJsonData: Data
 
-    /// The formatted text returned by the server.
+    /// The formatted text data returned by the server.
     ///
     /// If `nil`, the server sent back a response without this text. That indicates a server bug.
-    public let text: String?
+    public let textData: Data?
 
     /// Initializes the requested account data.
     ///
@@ -29,6 +29,9 @@ public struct AccountDataReport {
             options: .prettyPrinted
         )
 
-        self.text = jsonObject["text"] as? String
+        self.textData = (jsonObject["text"] as? String)?.data(using: .utf8)
+        if self.textData == nil {
+            Logger.error("Couldn't parse text from server, indicating a server bug")
+        }
     }
 }

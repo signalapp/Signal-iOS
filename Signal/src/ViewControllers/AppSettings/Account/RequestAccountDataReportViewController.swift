@@ -15,10 +15,25 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
         URL(string: "https://support.signal.org/hc/articles/5538911756954")!
     }
 
+    private enum FileType {
+        case json
+        case text
+    }
+
     private enum State {
         case initializing
         case hasNoReport
-        case hasReport(report: AccountDataReport)
+        case hasReport(report: AccountDataReport, selectedFileType: FileType)
+
+        func selectFileType(_ fileType: FileType) -> State {
+            switch self {
+            case .initializing, .hasNoReport:
+                owsFailBeta("It should be impossible to select a file type in this state")
+                return self
+            case let .hasReport(report, _):
+                return .hasReport(report: report, selectedFileType: fileType)
+            }
+        }
     }
     private var state: State = .initializing {
         didSet { updateTableContents() }
@@ -76,7 +91,10 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             owsFailBeta("We don't expect to be in this state.")
         case .hasNoReport:
             result.append(downloadReportSection())
-        case .hasReport:
+        case let .hasReport(report, selectedFileType):
+            if report.textData != nil {
+                result.append(chooseFileTypeSection(selectedFileType: selectedFileType))
+            }
             result.append(exportButtonSection())
         }
 
@@ -156,6 +174,35 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
         return result
     }
 
+    private func chooseFileTypeSection(selectedFileType: FileType) -> OWSTableSection {
+        return OWSTableSection(items: [
+            .init(
+                customCellBlock: {
+                    return OWSTableItem.buildImageNameCell(
+                        itemName: "Export as TXT",
+                        subtitle: "Easy-to-read text file",
+                        accessoryType: selectedFileType == .text ? .checkmark : .none
+                    )
+                },
+                actionBlock: { [weak self] in
+                    self?.didSelectFileType(.text)
+                }
+            ),
+            .init(
+                customCellBlock: {
+                    return OWSTableItem.buildImageNameCell(
+                        itemName: "Export as JSON",
+                        subtitle: "Machine-readable file",
+                        accessoryType: selectedFileType == .json ? .checkmark : .none
+                    )
+                },
+                actionBlock: { [weak self] in
+                    self?.didSelectFileType(.json)
+                }
+            )
+        ])
+    }
+
     private func exportButtonSection() -> OWSTableSection {
         let result = OWSTableSection(items: [.init(customCellBlock: { [weak self] in
             let cell = UITableViewCell()
@@ -211,7 +258,10 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
                         return
                     }
 
-                    self.state = .hasReport(report: report)
+                    self.state = .hasReport(
+                        report: report,
+                        selectedFileType: report.textData == nil ? .json : .text
+                    )
                 }
                 .catch(on: DispatchQueue.main) { [weak self] error in
                     modal.dismissIfNotCanceled()
@@ -231,6 +281,10 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
         )
     }
 
+    private func didSelectFileType(_ fileType: FileType) {
+        state = state.selectFileType(fileType)
+    }
+
     private func didTapExport() {
         let actionSheet = ActionSheetController(
             message: "Only share your Signal account data with people or apps you trust."
@@ -248,16 +302,18 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
     }
 
     private func didConfirmExport() {
-        let report: AccountDataReport = {
-            switch state {
-            case .initializing, .hasNoReport:
-                owsFail("Nothing to export. This should be prevented in the UI")
-            case let .hasReport(report):
-                return report
-            }
-        }()
+        let report: AccountDataReport
+        let fileType: FileType
+        switch state {
+        case .initializing, .hasNoReport:
+            owsFail("Nothing to export. This should be prevented in the UI")
+        case let .hasReport(reportInState, selectedFileType):
+            report = reportInState
+            fileType = selectedFileType
+        }
 
-        let (activityItem, cleanup) = prepareForSharing(report: report)
+        let (activityItem, cleanup) = prepareForSharing(report: report, fileType: fileType)
+
         ShareActivityUtil.present(
             activityItems: [activityItem],
             from: self,
@@ -267,14 +323,26 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
     }
 
     private func prepareForSharing(
-        report: AccountDataReport
+        report: AccountDataReport,
+        fileType: FileType
     ) -> (activityItem: Any, cleanup: () -> Void) {
-        // TODO[ADE] Allow saving text, if available
-        let data: Data = report.formattedJsonData
-        let fileName = "signal_account_data_report.json"
+        let data: Data
+        let fileExtension: String
+        switch fileType {
+        case .text:
+            guard let textData = report.textData else {
+                owsFail("No text data is available. This should be prevented in the UI")
+            }
+            data = textData
+            fileExtension = "txt"
+        case .json:
+            data = report.formattedJsonData
+            fileExtension = "json"
+        }
 
         let temporaryFileUrl = URL(
-            fileURLWithPath: fileName,
+            // This isn't localized because the report is *also* not localized.
+            fileURLWithPath: "account-data.\(fileExtension)",
             relativeTo: URL(fileURLWithPath: OWSTemporaryDirectory(), isDirectory: true)
         )
 
