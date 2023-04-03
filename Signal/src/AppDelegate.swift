@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalUI
 
 @objc
 enum LaunchFailure: UInt, CustomStringConvertible {
@@ -42,7 +43,157 @@ enum LaunchFailure: UInt, CustomStringConvertible {
 extension AppDelegate {
     // MARK: - App launch
 
-    static func setUpMainAppEnvironment() -> Promise<Void> {
+    @objc
+    func handleDidFinishLaunching(launchOptions: [UIApplication.LaunchOptionsKey: Any]) {
+        // This should be the first thing we do.
+        SetCurrentAppContext(MainAppContext(), false)
+
+        self.launchStartedAt = CACurrentMediaTime()
+        BenchManager.startEvent(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
+
+        InstrumentsMonitor.enable()
+        let monitorId = InstrumentsMonitor.startSpan(category: "appstart", parent: "application", name: "didFinishLaunchingWithOptions")
+        defer { InstrumentsMonitor.stopSpan(category: "appstart", hash: monitorId) }
+
+        enableLoggingIfNeeded()
+
+        #if DEBUG
+        FeatureFlags.logFlags()
+        DebugFlags.logFlags()
+        #endif
+
+        Logger.warn("application: didFinishLaunchingWithOptions.")
+        defer { Logger.info("application: didFinishLaunchingWithOptions completed.") }
+
+        Cryptography.seedRandom()
+
+        // This *must* happen before we try and access or verify the database,
+        // since we may be in a state where the database has been partially
+        // restored from transfer (e.g. the key was replaced, but the database
+        // files haven't been moved into place)
+        let didDeviceTransferRestoreSucceed = Bench(
+            title: "Slow device transfer service launch",
+            logIfLongerThan: 0.01,
+            logInProduction: true,
+            block: { DeviceTransferService.shared.launchCleanup() }
+        )
+
+        // XXX - careful when moving this. It must happen before we load GRDB.
+        verifyDBKeysAvailableBeforeBackgroundLaunch()
+
+        InstrumentsMonitor.trackEvent(name: "AppStart")
+
+        AppVersion.shared()
+
+        // We need to do this _after_ we set up logging, when the keychain is unlocked,
+        // but before we access the database, files on disk, or NSUserDefaults.
+        let launchFailure = launchFailure(didDeviceTransferRestoreSucceed: didDeviceTransferRestoreSucceed)
+
+        guard launchFailure == .none else {
+            showUI(forLaunchFailure: launchFailure)
+            return
+        }
+
+        launchToHomeScreen(launchOptions: launchOptions, isEnvironmentAlreadySetUp: false)
+    }
+
+    private func enableLoggingIfNeeded() {
+        let isLoggingEnabled: Bool
+        #if DEBUG
+        isLoggingEnabled = true
+        DebugLogger.shared().enableTTYLogging()
+        #else
+        isLoggingEnabled = OWSPreferences.isLoggingEnabled()
+        #endif
+        if isLoggingEnabled {
+            DebugLogger.shared().enableFileLogging()
+        }
+        if DebugFlags.audibleErrorLogging {
+            DebugLogger.shared().enableErrorReporting()
+        }
+        DebugLogger.configureSwiftLogging()
+    }
+
+    private func launchToHomeScreen(launchOptions: [UIApplication.LaunchOptionsKey: Any]?, isEnvironmentAlreadySetUp: Bool) {
+        setupNSEInteroperation()
+
+        if CurrentAppContext().isRunningTests {
+            return
+        }
+
+        let userDefaults = CurrentAppContext().appUserDefaults()
+        let appLaunchesAttempted = userDefaults.integer(forKey: kAppLaunchesAttemptedKey)
+        userDefaults.set(appLaunchesAttempted + 1, forKey: kAppLaunchesAttemptedKey)
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { userDefaults.removeObject(forKey: kAppLaunchesAttemptedKey) }
+
+        if !isEnvironmentAlreadySetUp {
+            Self.setUpMainAppEnvironment().done(on: DispatchQueue.main) {
+                self.versionMigrationsDidComplete()
+            }.catch(on: DispatchQueue.main) { error in
+                owsFailDebug("Error: \(error)")
+                self.showUI(forLaunchFailure: .couldNotLoadDatabase)
+            }
+        }
+
+        UIUtil.setupSignalAppearance()
+
+        let mainWindow: UIWindow = self.window ?? {
+            let result = OWSWindow()
+            self.window = result
+            CurrentAppContext().mainWindow = result
+            return result
+        }()
+        // Show LoadingViewController until the async database view registrations are complete.
+        mainWindow.rootViewController = LoadingViewController()
+        mainWindow.makeKeyAndVisible()
+
+        // This must happen in appDidFinishLaunching or earlier to ensure we don't
+        // miss notifications. Setting the delegate also seems to prevent us from
+        // getting the legacy notification notification callbacks upon launch e.g.
+        // 'didReceiveLocalNotification'
+        UNUserNotificationCenter.current().delegate = self
+
+        if let remoteNotification = launchOptions?[.remoteNotification] as? NSDictionary {
+            Logger.info("Application was launched by tapping a push notification.")
+            processRemoteNotification(remoteNotification)
+        }
+
+        let screenLockUI = OWSScreenLockUI.shared()
+        let windowManager = OWSWindowManager.shared
+        screenLockUI.setup(withRootWindow: mainWindow)
+        windowManager.setup(withRootWindow: mainWindow, screenBlockingWindow: screenLockUI.screenBlockingWindow)
+        screenLockUI.startObserving()
+
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(storageIsReady),
+            name: .StorageIsReady,
+            object: nil
+        )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange),
+            name: .registrationStateDidChange,
+            object: nil
+        )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(registrationLockDidChange),
+            name: Notification.Name(NSNotificationName_2FAStateDidChange),
+            object: nil
+        )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(spamChallenge),
+            name: SpamChallengeResolver.NeedsCaptchaNotification,
+            object: nil
+        )
+
+        OWSAnalytics.appLaunchDidBegin()
+    }
+
+    private static func setUpMainAppEnvironment() -> Promise<Void> {
         let (promise, future) = Promise<Void>.pending()
         AppSetup.setupEnvironment(
             paymentsEvents: PaymentsEventsMainApp(),
@@ -64,18 +215,7 @@ extension AppDelegate {
         return promise
     }
 
-    @objc(setUpMainAppEnvironmentWithCompletion:)
-    static func setUpMainAppEnvironment(completion: @escaping (Error?) -> Void) {
-        firstly(on: DispatchQueue.main) {
-            setUpMainAppEnvironment()
-        }.done(on: DispatchQueue.main) {
-            completion(nil)
-        }.catch(on: DispatchQueue.main) { error in
-            completion(error)
-        }
-    }
-
-    func checkSomeDiskSpaceAvailable() -> Bool {
+    private func checkSomeDiskSpaceAvailable() -> Bool {
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent(UUID().uuidString)
             .path
@@ -89,8 +229,7 @@ extension AppDelegate {
         return succeededCreatingDir
     }
 
-    @objc
-    func setupNSEInteroperation() {
+    private func setupNSEInteroperation() {
         Logger.info("")
 
         // We immediately post a notification letting the NSE know the main app has launched.
@@ -116,16 +255,14 @@ extension AppDelegate {
         }
     }
 
-    @objc
-    func versionMigrationsDidComplete() {
+    private func versionMigrationsDidComplete() {
         AssertIsOnMainThread()
         Logger.info("versionMigrationsDidComplete")
         areVersionMigrationsComplete = true
         checkIfAppIsReady()
     }
 
-    @objc
-    func checkIfAppIsReady() {
+    private func checkIfAppIsReady() {
         AssertIsOnMainThread()
 
         // If launch failed, the app will never be ready.
@@ -224,7 +361,6 @@ extension AppDelegate {
         )
     }
 
-    @objc
     func enableBackgroundRefreshIfNecessary() {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             let interval: TimeInterval
@@ -241,8 +377,7 @@ extension AppDelegate {
     }
 
     /// The user must unlock the device once after reboot before the database encryption key can be accessed.
-    @objc
-    func verifyDBKeysAvailableBeforeBackgroundLaunch() {
+    private func verifyDBKeysAvailableBeforeBackgroundLaunch() {
         guard UIApplication.shared.applicationState == .background else {
             return
         }
@@ -284,8 +419,7 @@ extension AppDelegate {
 
     // MARK: - Launch failures
 
-    @objc
-    func launchFailure(didDeviceTransferRestoreSucceed: Bool) -> LaunchFailure {
+    private func launchFailure(didDeviceTransferRestoreSucceed: Bool) -> LaunchFailure {
         guard checkSomeDiskSpaceAvailable() else {
             return .lowStorageSpaceAvailable
         }
@@ -330,8 +464,7 @@ extension AppDelegate {
         return .none
     }
 
-    @objc(showUIForLaunchFailure:)
-    func showUI(forLaunchFailure launchFailure: LaunchFailure) {
+    private func showUI(forLaunchFailure launchFailure: LaunchFailure) {
         Logger.info("launchFailure: \(launchFailure)")
 
         // Disable normal functioning of app.
@@ -414,7 +547,7 @@ extension AppDelegate {
                     // Pretend we didn't fail!
                     self.didAppLaunchFail = false
                     self.versionMigrationsDidComplete()
-                    self.launchToHomeScreen(launchOptions: nil, instrumentsMonitorId: 0, isEnvironmentAlreadySetUp: true)
+                    self.launchToHomeScreen(launchOptions: nil, isEnvironmentAlreadySetUp: true)
                 }
             )
 
@@ -522,7 +655,7 @@ extension AppDelegate {
             // Pretend we didn't fail!
             self.didAppLaunchFail = false
             self.checkIfAppIsReady()
-            self.launchToHomeScreen(launchOptions: nil, instrumentsMonitorId: 0, isEnvironmentAlreadySetUp: false)
+            self.launchToHomeScreen(launchOptions: nil, isEnvironmentAlreadySetUp: false)
         }
 
         for action in actions {
@@ -620,7 +753,15 @@ extension AppDelegate {
     // MARK: - Events
 
     @objc
-    func registrationStateDidChange() {
+    private func storageIsReady() {
+        AssertIsOnMainThread()
+        Logger.info("storageIsReady")
+
+        checkIfAppIsReady()
+    }
+
+    @objc
+    private func registrationStateDidChange() {
         AssertIsOnMainThread()
 
         Logger.info("registrationStateDidChange")
@@ -644,6 +785,16 @@ extension AppDelegate {
         }
 
         Self.updateApplicationShortcutItems(isRegisteredAndReady: isRegisteredAndReady)
+    }
+
+    @objc
+    private func registrationLockDidChange() {
+        enableBackgroundRefreshIfNecessary()
+    }
+
+    @objc
+    private func spamChallenge() {
+        SpamCaptchaViewController.presentActionSheet(from: UIApplication.shared.frontmostViewController!)
     }
 
     // MARK: - Utilities

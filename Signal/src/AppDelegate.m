@@ -83,9 +83,6 @@ static void uncaughtExceptionHandler(NSException *exception)
 }
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
-
-@property (nonatomic, readwrite) NSTimeInterval launchStartedAt;
-
 @end
 
 #pragma mark -
@@ -155,173 +152,12 @@ static void uncaughtExceptionHandler(NSException *exception)
     OWSLogFlush();
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions
 {
     NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
-
-    // This should be the first thing we do.
-    SetCurrentAppContext([MainAppContext new], NO);
-
-    self.launchStartedAt = CACurrentMediaTime();
-    [BenchManager startEventWithTitle:@"Presenting HomeView" eventId:@"AppStart" logInProduction:TRUE];
-
-    BOOL isLoggingEnabled;
-    [InstrumentsMonitor enable];
-    unsigned long long monitorId = [InstrumentsMonitor startSpanWithCategory:@"appstart"
-                                                                      parent:@"application"
-                                                                        name:@"didFinishLaunchingWithOptions"];
-
-#ifdef DEBUG
-    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
-    // the phone directory being looked up during tests.
-    isLoggingEnabled = TRUE;
-    [DebugLogger.shared enableTTYLogging];
-#else
-    isLoggingEnabled = OWSPreferences.isLoggingEnabled;
-#endif
-    if (isLoggingEnabled) {
-        [DebugLogger.shared enableFileLogging];
-    }
-    if (SSKDebugFlags.audibleErrorLogging) {
-        [DebugLogger.shared enableErrorReporting];
-    }
-    [DebugLogger configureSwiftLogging];
-
-#ifdef DEBUG
-    [SSKFeatureFlags logFlags];
-    [SSKDebugFlags logFlags];
-#endif
-
-    OWSLogWarn(@"application: didFinishLaunchingWithOptions.");
-    [Cryptography seedRandom];
-
-    // This *must* happen before we try and access or verify the database, since we
-    // may be in a state where the database has been partially restored from transfer
-    // (e.g. the key was replaced, but the database files haven't been moved into place)
-    __block BOOL didDeviceTransferRestoreSucceed = YES;
-    [BenchManager benchWithTitle:@"Slow device transfer service launch"
-                 logIfLongerThan:0.01
-                 logInProduction:YES
-                           block:^{ didDeviceTransferRestoreSucceed = [DeviceTransferService.shared launchCleanup]; }];
-
-    // XXX - careful when moving this. It must happen before we load GRDB.
-    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
-
-    [InstrumentsMonitor trackEventWithName:@"AppStart"];
-
-    [AppVersion shared];
-
-    // We need to do this _after_ we set up logging, when the keychain is unlocked,
-    // but before we access the database, files on disk, or NSUserDefaults.
-    LaunchFailure launchFailure =
-        [self launchFailureWithDidDeviceTransferRestoreSucceed:didDeviceTransferRestoreSucceed];
-
-    if (launchFailure != LaunchFailureNone) {
-        [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
-        OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");
-        [self showUIForLaunchFailure:launchFailure];
-
-        return YES;
-    }
-
-    [self launchToHomeScreenWithLaunchOptions:launchOptions
-                         instrumentsMonitorId:monitorId
-                    isEnvironmentAlreadySetUp:NO];
+    [self handleDidFinishLaunchingWithLaunchOptions:launchOptions];
     return YES;
-}
-
-- (BOOL)launchToHomeScreenWithLaunchOptions:(NSDictionary *_Nullable)launchOptions
-                       instrumentsMonitorId:(unsigned long long)monitorId
-                  isEnvironmentAlreadySetUp:(BOOL)isEnvironmentAlreadySetUp
-{
-    [self setupNSEInteroperation];
-
-    if (CurrentAppContext().isRunningTests) {
-        [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
-        return YES;
-    }
-
-    NSInteger appLaunchesAttempted = [[CurrentAppContext() appUserDefaults] integerForKey:kAppLaunchesAttemptedKey];
-    [[CurrentAppContext() appUserDefaults] setInteger:appLaunchesAttempted + 1 forKey:kAppLaunchesAttemptedKey];
-    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(
-        ^{ [[CurrentAppContext() appUserDefaults] removeObjectForKey:kAppLaunchesAttemptedKey]; });
-
-    if (!isEnvironmentAlreadySetUp) {
-        [AppDelegate setUpMainAppEnvironmentWithCompletion:^(NSError *_Nullable error) {
-            OWSAssertIsOnMainThread();
-
-            if (error != nil) {
-                OWSFailDebug(@"Error: %@", error);
-                [self showUIForLaunchFailure:LaunchFailureCouldNotLoadDatabase];
-            } else {
-                [self versionMigrationsDidComplete];
-            }
-        }];
-    }
-
-    [UIUtil setupSignalAppearance];
-
-    UIWindow *mainWindow = self.window;
-    if (mainWindow == nil) {
-        mainWindow = [OWSWindow new];
-        self.window = mainWindow;
-        CurrentAppContext().mainWindow = mainWindow;
-    }
-    // Show LoadingViewController until the async database view registrations are complete.
-    mainWindow.rootViewController = [LoadingViewController new];
-    [mainWindow makeKeyAndVisible];
-
-    // This must happen in appDidFinishLaunching or earlier to ensure we don't
-    // miss notifications.
-    // Setting the delegate also seems to prevent us from getting the legacy notification
-    // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
-    UNUserNotificationCenter.currentNotificationCenter.delegate = self;
-
-    // Accept push notification when app is not open
-    NSDictionary *remoteNotification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (remoteNotification) {
-        OWSLogInfo(@"Application was launched by tapping a push notification.");
-        [self processRemoteNotification:remoteNotification];
-    }
-
-    [OWSScreenLockUI.shared setupWithRootWindow:self.window];
-    [[OWSWindowManager shared] setupWithRootWindow:self.window
-                              screenBlockingWindow:OWSScreenLockUI.shared.screenBlockingWindow];
-    [OWSScreenLockUI.shared startObserving];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(storageIsReady)
-                                                 name:StorageIsReadyNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(registrationStateDidChange)
-                                                 name:NSNotificationNameRegistrationStateDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(registrationLockDidChange:)
-                                                 name:NSNotificationName_2FAStateDidChange
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(spamChallenge:)
-                                                 name:SpamChallengeResolver.NeedsCaptchaNotification
-                                               object:nil];
-
-    OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
-
-    OWSLogInfo(@"launchOptions: %@.", launchOptions);
-
-    [OWSAnalytics appLaunchDidBegin];
-
-    [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
-
-    return YES;
-}
-
-- (void)spamChallenge:(NSNotification *)notification
-{
-    UIViewController *fromVC = UIApplication.sharedApplication.frontmostViewController;
-    [SpamCaptchaViewController presentActionSheetFrom:fromVC];
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -881,19 +717,6 @@ static void uncaughtExceptionHandler(NSException *exception)
             });
         });
     });
-}
-
-- (void)storageIsReady
-{
-    OWSAssertIsOnMainThread();
-    OWSLogInfo(@"storageIsReady");
-
-    [self checkIfAppIsReady];
-}
-
-- (void)registrationLockDidChange:(NSNotification *)notification
-{
-    [self enableBackgroundRefreshIfNecessary];
 }
 
 @end
