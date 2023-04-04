@@ -40,6 +40,11 @@ public class RegistrationNavigationController: OWSNavigationController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        interactivePopGestureRecognizer?.isEnabled = false
+    }
+
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
