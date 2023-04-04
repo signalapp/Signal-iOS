@@ -2234,10 +2234,10 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Pengguna tidak terdaftar: %1$@";
 
 /* Button to exit change number, shown in context menu. */
-"EXIT_CHANGE_NUMBER" = "Exit Change Number";
+"EXIT_CHANGE_NUMBER" = "Keluar dari Perubahan Nomor";
 
 /* Button to exit re-registration, shown in context menu. */
-"EXIT_REREGISTRATION" = "Exit Registration";
+"EXIT_REREGISTRATION" = "Keluar dari Pendaftaran";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Versi Signal Anda telah kedaluwarsa! Ketuk untuk pembaruan ke versi terbaru.";
@@ -4160,7 +4160,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "PIN Salah";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "PIN salah. Tersisa 1 kesempatan mencoba.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Lewati dan Buat Pin Baru";
@@ -4244,7 +4244,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN Salah";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "You’ve run out of PIN guesses, but you can still try and access your Signal account by verifying your phone number. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Kesempatan mencoba PIN sudah habis, tetapi Anda tetap dapat mencoba dan mengakses akun Signal Anda dengan memverifikasi nomor telepon. Untuk privasi dan keamanan, akun Anda akan dipulihkan tanpa informasi profil atau pengaturan tersimpan.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "Masukkan PIN yang Anda buat untuk akun Anda. Ini berbeda dari kode verifikasi SMS.";
@@ -4280,16 +4280,16 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Memvalidasi Kode…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Make sure your phone has a cellular signal to receive your SMS or call";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Pastikan ponsel Anda dapat menerima SMS atau panggilan";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Confirm you can receive a phone call to the number";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Pastikan Anda dapat menerima panggilan telepon ke nomor tersebut";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Check that you have entered your phone number correctly";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Periksa apakah Anda telah memasukkan nomor telepon yang benar";
 
 /* Label for a button to get help entering a verification code when registering. */
-"ONBOARDING_VERIFICATION_HELP_LINK" = "Having Trouble Registering?";
+"ONBOARDING_VERIFICATION_HELP_LINK" = "Ada Masalah Saat Mendaftar?";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Kode ini salah";
@@ -5211,10 +5211,10 @@
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock
    Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "PIN Anda adalah kode 4+ digit yang telah Anda buat, bisa berupa numerik atau alfanumerik. Jika tidak ingat PIN Anda, Anda bisa mendaftar dan menggunakan akun Anda tetapi beberapa pengaturan tersimpan, seperti informasi profil, akan hilang.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "PIN Anda adalah kode 4+ digit yang telah Anda buat, bisa berupa numerik atau alfanumerik. Jika tidak ingat PIN Anda, Anda dapat membuat yang baru. Anda bisa mendaftar dan menggunakan akun Anda tetapi beberapa pengaturan tersimpan, seperti informasi profil, akan hilang.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "PIN Anda adalah 4 digit angka. Jika Anda lupa PIN, Anda harus mengunggu selama 7 hari untuk meregister ulang akun Anda.";
@@ -5229,7 +5229,7 @@
 "REGISTER_CONTACTS_WELCOME" = "Selamat Datang!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "You have tried too often. Please wait a few minutes before trying again.";
+"REGISTER_RATE_LIMITING_ALERT" = "Anda mencoba terlalu sering. Mohon tunggu beberapa menit untuk bisa mencoba lagi.";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Anda telah berulang kali mencoba. Mohon tunggu beberapa menit untuk mencoba lagi.";
@@ -5349,10 +5349,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Anda perlu mendaftar sebelum Anda dapat mengirimkan pesan.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "You’ve made too many attempts to enter the code. Please resend the code and try again.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Anda terlalu banyak mencoba memasukkan kode. Kirim ulang kode dan coba lagi.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "You’ve made too many attempts to enter the code. Try again in %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Anda terlalu banyak mencoba memasukkan kode. Coba lagi dalam %1$@";
 
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Terdapat akun yang pernah didaftarkan dengan nomor ini yang tersedia untuk transfer.";

@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• Μετά την εισαγωγή τους στην τελευταία κυκλοφορία, τα εικονίδια Fast Forward και Rewind για μεγάλα βίντεο έχουν ενημερωθεί για να είναι ελαφρώς πιο γρήγορα.
+• Οι μεγάλες λεζάντες στο πρόγραμμα προβολής πολυμέσων μπορούν πλέον να επεκταθούν με ένα πάτημα, το οποίο σου επιτρέπει να βλέπεις περισσότερη εικόνα, εάν ο φίλος ή η φίλη σου, στείλει μια φωτογραφία αξίας χιλίων λέξεων με μια περίεργη λεζάντα που είναι επίσης χίλιες λέξεις.

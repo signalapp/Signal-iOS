@@ -1565,7 +1565,7 @@
 "DEBUG_LOG_INFO_BUTTON" = "Πληροφορίες για αρχείο καταγραφής εντοπισμού σφαλμάτων";
 
 /* info message text in conversation view */
-"DECLINED_AUDIO_CALL" = "Απέρριψες μια βιντεοκλήση";
+"DECLINED_AUDIO_CALL" = "Απέρριψες μια κλήση";
 
 /* info message text in conversation view */
 "DECLINED_VIDEO_CALL" = "Απέρριψες μια βιντεοκλήση";
@@ -2234,10 +2234,10 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Μη εγγεγραμμένος χρήστης/τρια: %1$@";
 
 /* Button to exit change number, shown in context menu. */
-"EXIT_CHANGE_NUMBER" = "Exit Change Number";
+"EXIT_CHANGE_NUMBER" = "Έξοδος από την αλλαγή αριθμού";
 
 /* Button to exit re-registration, shown in context menu. */
-"EXIT_REREGISTRATION" = "Exit Registration";
+"EXIT_REREGISTRATION" = "Έξοδος από την εγγραφή";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Η έκδοση του Signal σου έχει λήξει! Πάτα για να αναβαθμίσεις στην πιο πρόσφατη έκδοση.";
@@ -3347,7 +3347,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Δεν υπάρχουν ακόμα συνομιλίες.\nΣτείλε σε έναν φίλο σου, για να ξεκινήσεις.";
 
 /* info message text in conversation view */
-"INCOMING_AUDIO_CALL" = "Εισερχόμενη βιντεοκλήση";
+"INCOMING_AUDIO_CALL" = "Εισερχόμενη κλήση";
 
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Εισερχόμενη βιντεοκλήση";
@@ -3896,7 +3896,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Νέα μηνύματα";
 
 /* info message text in conversation view */
-"MISSED_AUDIO_CALL" = "Αναπάντητη βιντεοκλήση";
+"MISSED_AUDIO_CALL" = "Αναπάντητη κλήση";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "Αναπάντητη κλήση ενώ βρισκόσασταν στην κατάσταση \"Μην ενοχλείτε\"";
@@ -4160,7 +4160,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Λάθος ΡΙΝ";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Λάθος ΡΙΝ. Απομένει 1 προσπάθεια.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Παράλειψη και δημιουργία νέου PIN";
@@ -4244,7 +4244,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Λάθος ΡΙΝ";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "You’ve run out of PIN guesses, but you can still try and access your Signal account by verifying your phone number. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Σου τέλειωσαν οι απόπειρες για το PIN, αλλά μπορείς να αποκτήσεις πρόσβαση στον λογαριασμό Signal σου επαληθεύοντας τον αριθμό σου. Για το απόρρητο και την ασφάλειά σου ο λογαριασμός δεν θα έχει προϋπάρχουσες πληροφορίες προφίλ και ρυθμίσεις.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "Γράψε το PIN που δημιούργησες για τον λογαριαμό σου. Αυτό είναι διαφορετικό από τον κωδικό επαλήθευσης που έλαβες μέσω SMS.";
@@ -4280,16 +4280,16 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Ο κωδικός επαληθεύεται…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Make sure your phone has a cellular signal to receive your SMS or call";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Επιβεβαίωσε πως το τηλέφωνό σου έχει σήμα κινητής για να λάβεις το SMS ή την κλήση";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Confirm you can receive a phone call to the number";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Επιβεβαίωσε πως μπορείς να δεχτείς εισερχόμενες κλήσεις σε αυτόν τον αριθμό";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Check that you have entered your phone number correctly";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Έλεγξε πως έχεις γράψει τον αριθμό τηλεφώνου σου σωστά";
 
 /* Label for a button to get help entering a verification code when registering. */
-"ONBOARDING_VERIFICATION_HELP_LINK" = "Having Trouble Registering?";
+"ONBOARDING_VERIFICATION_HELP_LINK" = "Αντιμετωπίζεις προβλήματα με την εγγραφή;";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Ο κωδικός είναι λάθος";
@@ -4325,10 +4325,10 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Ενημερώστε το Signal για να συνεχίσεις να χρησιμοποιείς πληρωμές. Το υπόλοιπό σου ενδέχεται να μην είναι ενημερωμένο.";
 
 /* info message text in conversation view */
-"OUTGOING_AUDIO_CALL" = "Εξερχόμενη βιντεοκλήση";
+"OUTGOING_AUDIO_CALL" = "Εξερχόμενη κλήση";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_AUDIO_CALL" = "Αναπάντητη βιντεοκλήση";
+"OUTGOING_MISSED_AUDIO_CALL" = "Αναπάντητη κλήση";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Αναπάντητη βιντεοκλήση";
@@ -5211,10 +5211,10 @@
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock
    Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Το PIN σου είναι ένας κωδικός με 4+ ψηφία που δημιούργησες και μπορεί να αποτελείται από αριθμούς ή αλφαριθμητικά. Αν δεν μπορείς να θυμηθείς το PIN σου, μπορείς να εγγράψεις και να χρησιμοποιήσεις τον λογαριασμό σου, αλλά θα χάσεις κάποιες αποθηκευμένες ρυθμίσεις όπως οι πληροφορίες προφίλ σου.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Το PIN σου είναι ένας κωδικός με 4+ ψηφία, που μπορεί να αποτελείται από αριθμούς ή αλφαριθμητικά. Αν δεν μπορείς να θυμηθείς το PIN σου, μπορείς να δημιουργήσεις ένα νέο. Θα έχεις τη δυνατότητα να εγγράψεις και να χρησιμοποιήσεις τον λογαριασμό σου, αλλά θα χάσεις κάποιες αποθηκευμένες ρυθμίσεις όπως οι πληροφορίες προφίλ σου.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Το PIN σου είναι είναι ένας αριθμητικός κωδικός με 4+ ψηφία. Αν δεν θυμάσαι το PIN σου, θα πρέπει να περιμένεις 7 ημέρες για να εγγράψεις πάλι το λογαριασμό σου.";
@@ -5229,7 +5229,7 @@
 "REGISTER_CONTACTS_WELCOME" = "Καλωσόρισες!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "You have tried too often. Please wait a few minutes before trying again.";
+"REGISTER_RATE_LIMITING_ALERT" = "Έχεις δοκιμάσει πάρα πολλές φορές. Περίμενε μερικά λεπτά πριν ξαναδοκιμάσεις.";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Έχεις δοκιμάσει πάρα πολλές φορές. Παρακαλώ περίμενε ένα λεπτό πριν ξαναδοκιμάσεις.";
@@ -5349,10 +5349,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Θα πρέπει να εγγραφείς πριν μπορέσεις να στείλεις ένα μήνυμα.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "You’ve made too many attempts to enter the code. Please resend the code and try again.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Έχεις προσπαθήσει πάρα πολλές φορές να εισάγεις τον κωδικό. Στείλε ξανά τον κωδικό και δοκίμασε ξανά.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "You’ve made too many attempts to enter the code. Try again in %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Έχεις προσπαθήσει πάρα πολλές φορές να εισάγεις τον κωδικό. Δοκίμασε ξανά σε %1$@";
 
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Υπάρχει ένας λογαριασμός που έχει εγγραφτεί ήδη με αυτό τον αριθμό, ο οποίος είναι διαθέσιμος για μεταφορά.";

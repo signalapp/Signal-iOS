@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• קצת אחרי ההצגה שלהם בעדכון האחרון, עדכנו את הסמלים של כפתורי ההרצה קדימה ואחורה לסרטונים ארוכים למראה וביצוע משופרים.
+• עכשיו אפשר להגדיל כתוביות ארוכות בנגן המדיה בלחיצה, מה שמאפשר לך לראות יותר מהתמונה אם חבר או חברה שולחים תמונה ששווה אלף מילים עם כיתוב באורך הגלות ששווה בעצמו אלף מילים.

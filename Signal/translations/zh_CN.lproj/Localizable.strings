@@ -2234,10 +2234,10 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "用户未注册：%1$@";
 
 /* Button to exit change number, shown in context menu. */
-"EXIT_CHANGE_NUMBER" = "Exit Change Number";
+"EXIT_CHANGE_NUMBER" = "退出更改号码";
 
 /* Button to exit re-registration, shown in context menu. */
-"EXIT_REREGISTRATION" = "Exit Registration";
+"EXIT_REREGISTRATION" = "退出注册";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "您的 Signal 版本已过期！点击升级到最新版本。";
@@ -4160,7 +4160,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "PIN 错误";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "密码输入错误，还剩 1 次机会。";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "跳过并新建 PIN 码";
@@ -4244,7 +4244,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN 错误";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "You’ve run out of PIN guesses, but you can still try and access your Signal account by verifying your phone number. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "您尝试输入密码的次数已超过限定的次数，不过您仍然可以通过验证您的电话号码来登录您的 Signal 账户。出于对您的隐私和安全的考虑，您的账户在恢复时将不保留任何保存过的个人资料信息或设置。";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "请输入您为此账户设置的 PIN 码。这与您收到的短信验证码不同。";
@@ -4280,16 +4280,16 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "正在验证……";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Make sure your phone has a cellular signal to receive your SMS or call";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "确保您的手机网络信号可接收短信或来电";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Confirm you can receive a phone call to the number";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "确认该号码可接收来电";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Check that you have entered your phone number correctly";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "检查您输入了正确的电话号码";
 
 /* Label for a button to get help entering a verification code when registering. */
-"ONBOARDING_VERIFICATION_HELP_LINK" = "Having Trouble Registering?";
+"ONBOARDING_VERIFICATION_HELP_LINK" = "在注册时遇到问题？";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "验证码不正确";
@@ -5211,10 +5211,10 @@
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock
    Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "密码是您创建的一个不少于 4 位数的密码，它可以是纯数字，也可以是数字和字母的组合。您如果忘记了密码，可以注册和使用您的账户，但您会丢失一些保存过的设置，如您的个人资料信息。";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "密码是您创建的一个不少于 4 位数的密码，它可以是纯数字，也可以是数字和字母的组合。您如果忘记了密码，可以创建一个新密码。您可以注册和使用您的账户，但您会丢失一些保存过的设置，如您的个人资料信息。";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "PIN 码是你创建的4位及以上的密码。如果你忘记了你的 PIN 码，你就得等上7天以重注册你的账户";
@@ -5229,7 +5229,7 @@
 "REGISTER_CONTACTS_WELCOME" = "欢迎！";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "You have tried too often. Please wait a few minutes before trying again.";
+"REGISTER_RATE_LIMITING_ALERT" = "您的操作过于频繁。请稍候几分钟后再试。";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "您的尝试过于频繁。请等待一分钟后再重试。";
@@ -5349,10 +5349,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "您需要先注册才能发送消息。";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "You’ve made too many attempts to enter the code. Please resend the code and try again.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "您输入验证码的次数过多。请重新发送验证码并重试。";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "You’ve made too many attempts to enter the code. Try again in %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "您输入验证码的次数过多。请在 %1$@后再试";
 
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "此前有一个帐户已使用此号码注册，可进行转移。";

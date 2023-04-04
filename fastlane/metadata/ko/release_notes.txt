@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• 최신 릴리스에 이어 긴 동영상에 사용할 수 있는 빨리 감기와 되감기 아이콘 디자인이 조금 더 빨리 감기고 조금 더 되감는 듯 보이게 업데이트되었습니다.
+• 이제 화면을 탭하여 미디어 뷰어의 긴 자막을 펼칠 수 있습니다. 친구가 보낸 천 마디 말을 대신하는 이미지를 천 마디 말이 담긴 장황한 자막의 방해 없이 감상하세요.

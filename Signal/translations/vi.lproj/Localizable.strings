@@ -2234,10 +2234,10 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Người dùng Chưa đăng ký: %1$@";
 
 /* Button to exit change number, shown in context menu. */
-"EXIT_CHANGE_NUMBER" = "Exit Change Number";
+"EXIT_CHANGE_NUMBER" = "Thoát Đổi Số Điện Thoại";
 
 /* Button to exit re-registration, shown in context menu. */
-"EXIT_REREGISTRATION" = "Exit Registration";
+"EXIT_REREGISTRATION" = "Thoát Đăng ký";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Phiên bản Signal của bạn đã hết hạn! Nhấn để cập nhật lên phiên bản mới nhất.";
@@ -4160,7 +4160,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Mã PIN không chính xác";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Mã PIN không chính xác. Còn 1 lần thử.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Bỏ qua và Tạo PIN mới";
@@ -4244,7 +4244,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Mã PIN không chính xác";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "You’ve run out of PIN guesses, but you can still try and access your Signal account by verifying your phone number. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Bạn đã hết số lần thử mã PIN, nhưng bạn vẫn có thể thử truy cập tài khoản Signal bằng cách xác minh số điện thoại của mình. Để đảm bảo bảo mật và tính riêng tư, tài khoản mới của bạn sẽ được khôi phục nhưng thông tin hồ sơ và cài đặt thì không.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "Nhập mã PIN bạn đã tạo cho tài khoản. Mã này khác với mã xác minh SMS của bạn.";
@@ -4280,16 +4280,16 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Đang xác thực Mã…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Make sure your phone has a cellular signal to receive your SMS or call";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Đảm bảo là điện thoại của bạn có tín hiệu di động để nhận tin nhắn SMS hoặc cuộc gọi";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Confirm you can receive a phone call to the number";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Xác nhận bạn nhận được cuộc gọi vào số điện thoại";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Check that you have entered your phone number correctly";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Kiểm tra rằng bạn đã nhập đúng số điện thoại";
 
 /* Label for a button to get help entering a verification code when registering. */
-"ONBOARDING_VERIFICATION_HELP_LINK" = "Having Trouble Registering?";
+"ONBOARDING_VERIFICATION_HELP_LINK" = "Bạn gặp vấn đề khi đăng ký?";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Mã này không chính xác";
@@ -5211,10 +5211,10 @@
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock
    Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Mã pin của bạn là một mã có 4+ ký tự bạn đã tạo, có thể là dãy số hoặc có cả số và chữ cái. Nếu bạn không nhớ được mã PIN, bạn có thể đăng ký và dùng tài khoản của bạn nhưng bạn sẽ mất một số cài đặt được lưu lại như thông tin người dùng.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Mã PIN là một mã ít nhất 4 kí tự bạn tạo ra và có thể bao gồm số hoặc chữ và số. Nếu bạn không nhớ được mã PIN, bạn có thể tạo mã mới. Bạn có thể đăng ký và dùng tài khoản của bạn nhưng bạn sẽ mất một số cài đặt được lưu lại như thông tin người dùng.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Mã PIN là một mã ít nhất 4 kí tự bạn tạo ra. Nếu bạn không nhớ được mã PIN, bạn sẽ phải chờ 7 ngày để đăng ký lại tài khoản.";
@@ -5229,7 +5229,7 @@
 "REGISTER_CONTACTS_WELCOME" = "Chào mừng!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "You have tried too often. Please wait a few minutes before trying again.";
+"REGISTER_RATE_LIMITING_ALERT" = "Bạn đã thử quá nhiều lần. Vui lòng chờ ít phút trước khi thử lại.";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Bạn đã thử quá nhiều lần. Vui lòng chờ một phút trước khi thử lại.";
@@ -5349,10 +5349,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Bạn cần đăng ký trước khi có thể gửi tin nhắn.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "You’ve made too many attempts to enter the code. Please resend the code and try again.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Bạn đã thử nhập mã quá nhiều lần. Vui lòng gửi lại mã và thử lại.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "You’ve made too many attempts to enter the code. Try again in %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Bạn đã thử nhập mã quá nhiều lần. Thử lại trong %1$@";
 
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Đã có một tài khoản được đăng ký trước đó với số máy này sẵn sàn để chuyển số.";

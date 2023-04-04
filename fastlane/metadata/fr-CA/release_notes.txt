@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• Suite à leur présentation dans la dernière version, les icônes d’avance rapide et de retour en arrière pour les vidéos longues ont été mises à jour pour être plus visibles.
+• Les longues légendes de photos peuvent désormais être déployées dans la visionneuse de contenus pour que vous puissiez les masquer et vous concentrer sur l’essentiel : la photo ! Pratique si vous avez des amis qui vous envoient des photos qui valent mille mots, accompagnées de légendes ennuyantes de mille mots…

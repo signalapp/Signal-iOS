@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• عقب تقديمِها في آخر إصدار، تم تحديث أيقونات التسريع للأمام والرجوع للفيديوهات الطويلة لتظهر أكثر سرعة وأكثر رجوعًا.
+• يُمكن الآن بسط التسميات التوضيحية في عارض الوسائط بنقرة واحدة، مما يُتيح لك رؤية مزيد من الصورة إذا أرسل لك صديق صورة تساوي ألف كلمة مع تسمية توضيحية هي أيضًا تتكون من ألف كلمة.

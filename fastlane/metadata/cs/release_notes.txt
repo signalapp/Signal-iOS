@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• V návaznosti na jejich zavedení v poslední aktualizaci byly ikony pro rychlé přetáčení vpřed a vzad u dlouhých videí upraveny tak, aby lépe vystihovaly rychlé přetáčení vpřed a vzad.
+• Dlouhé popisky v prohlížeči médií si teď můžete klepnutím roztáhnout, abyste lépe viděli obrázek. To se hodí hlavně v případě, když vám přátelé pošlou obrázek, který vydá za tisíc slov, ale s popiskem o těch tisíci slovech.

@@ -2234,10 +2234,10 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "ผู้ใช้ที่ไม่ได้ลงทะเบียน : %1$@";
 
 /* Button to exit change number, shown in context menu. */
-"EXIT_CHANGE_NUMBER" = "Exit Change Number";
+"EXIT_CHANGE_NUMBER" = "ออกจากหน้าการเปลี่ยนหมายเลข";
 
 /* Button to exit re-registration, shown in context menu. */
-"EXIT_REREGISTRATION" = "Exit Registration";
+"EXIT_REREGISTRATION" = "ออกจากหน้าลงทะเบียน";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Signal รุ่นที่คุณใช้อยู่จะหมดอายุวันนี้ แตะเพื่อปรับปรุงเป็นรุ่นล่าสุด";
@@ -4160,7 +4160,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "PIN ไม่ถูกต้อง";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "PIN ไม่ถูกต้อง ลองได้อีก 1 ครั้ง";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "ข้ามและสร้างรหัส PIN ใหม่";
@@ -4244,7 +4244,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "รหัส PIN ไม่ถูกต้อง";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "You’ve run out of PIN guesses, but you can still try and access your Signal account by verifying your phone number. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "คุณลองใส่ PIN จนครบจำนวนครั้งที่อนุญาตแล้ว แต่คุณยังสามารถลองเข้าถึงบัญชี Signal ของคุณได้ด้วยการยืนยันหมายเลขโทรศัพท์ เพื่อความเป็นส่วนตัวและความปลอดภัยของคุณ บัญชีของคุณจะถูกกู้คืนโดยปราศจากข้อมูลโปรไฟล์หรือการตั้งค่าที่คุณบันทึกไว้";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "ใส่รหัส PIN ที่คุณสร้างขึ้นมาสำหรับบัญชีของคุณ รหัสนี้แตกต่างจากรหัสตรวจยืนยันทาง SMS";
@@ -4280,16 +4280,16 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "กำลังตรวจสอบรหัส…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Make sure your phone has a cellular signal to receive your SMS or call";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "ตรวจสอบว่าโทรศัพท์ของคุณมีสัญญาณมือถือที่จะรับข้อความ SMS หรือสายโทรเข้าได้";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Confirm you can receive a phone call to the number";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "ตรวจสอบว่าหมายเลขโทรศัพท์ของคุณสามารถรับสายโทรเข้าได้";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Check that you have entered your phone number correctly";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "ตรวจสอบว่าคุณใส่หมายเลขโทรศัพท์ถูกต้องแล้ว";
 
 /* Label for a button to get help entering a verification code when registering. */
-"ONBOARDING_VERIFICATION_HELP_LINK" = "Having Trouble Registering?";
+"ONBOARDING_VERIFICATION_HELP_LINK" = "หากประสบปัญหาในการลงทะเบียน";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "รหัสนี้ไม่ถูกต้อง";
@@ -5211,10 +5211,10 @@
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock
    Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "PIN ของคุณคือรหัส 4+ หลักที่คุณสร้างไว้โดยอาจจะเป็นตัวเลขหรือตัวอักษรผสมกับตัวเลข หากจำ PIN ของตัวเองไม่ได้ คุณจะยังสามารถลงทะเบียนและใช้บัญชีได้ แต่จะสูญเสียการตั้งค่าเดิมบางรายการ เช่น ข้อมูลโปรไฟล์";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "PIN ของคุณคือรหัส 4+ หลักที่คุณสร้างไว้โดยอาจจะเป็นตัวเลขหรือตัวอักษรผสมกับตัวเลข หากจำ PIN ของตัวเองไม่ได้ คุณสามารถสร้างขึ้นมาใหม่ได้ คุณจะลงทะเบียนและใช้บัญชีได้ แต่จะสูญเสียการตั้งค่าเดิมบางรายการ เช่น ข้อมูลโปรไฟล์";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "รหัส PIN ของคุณคือรหัส 4+ หลักที่คุณสร้างไว้ ถ้าคุณไม่สามารถจำรหัส PIN ของคุณได้ คุณจะต้องรออีก 7 วันเพื่อลงทะเบียนบัญชีของคุณใหม่";
@@ -5229,7 +5229,7 @@
 "REGISTER_CONTACTS_WELCOME" = "ยินดีต้อนรับ!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "You have tried too often. Please wait a few minutes before trying again.";
+"REGISTER_RATE_LIMITING_ALERT" = "คุณลองหลายครั้งเกินไป กรุณารอสักครู่แล้วลองใหม่อีกครั้ง";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "คุณลองบ่อยครั้งเกินไป กรุณารอสักนาทีก่อนจะลองใหม่";
@@ -5349,10 +5349,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "คุณจำเป็นต้องลงทะเบียนก่อน จึงจะสามารถส่งข้อความได้";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "You’ve made too many attempts to enter the code. Please resend the code and try again.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "คุณพยายามใส่รหัสหลายครั้งเกินไป โปรดส่งรหัสใหม่แล้วลองอีกครั้ง";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "You’ve made too many attempts to enter the code. Try again in %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "คุณพยายามใส่รหัสหลายครั้งเกินไป โปรดลองอีกครั้งใน %1$@";
 
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "มีบัญชีที่ได้ลงทะเบียนก่อนหน้านี้ด้วยหมายเลขนี้ที่สามารถโอนย้ายได้";

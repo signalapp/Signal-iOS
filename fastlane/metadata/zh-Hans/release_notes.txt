@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• 继上一版推出后，长视频的“快进”和“快退”图标又有了更新，这一次的外观更加好看，使用起来也更加流畅。
+• 媒体查看器中的长图现在可以轻触放大了。当您的朋友给您发送一张信息量超大的图片，上面附有超长的文字，您现在可以放大查看啦。

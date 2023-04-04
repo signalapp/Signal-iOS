@@ -2234,10 +2234,10 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "बिना पंजीकरण वाला उपभोगकर्ता: %1$@";
 
 /* Button to exit change number, shown in context menu. */
-"EXIT_CHANGE_NUMBER" = "Exit Change Number";
+"EXIT_CHANGE_NUMBER" = "परिवर्तन संख्या से बाहर निकलें";
 
 /* Button to exit re-registration, shown in context menu. */
-"EXIT_REREGISTRATION" = "Exit Registration";
+"EXIT_REREGISTRATION" = "पंजीकरण से बाहर निकलें";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Signal का आपका वर्ज़न एक्सपायर हो गया है! सबसे नवीनतम वर्ज़न में अपडेट करने के लिए टैप करें।";
@@ -4160,7 +4160,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "ग़लत पिन";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "ग़लत पिन। 1 मौका बचा है।";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "स्किप करके नया पिन बनाएँ";
@@ -4244,7 +4244,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "ग़लत पिन";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "You’ve run out of PIN guesses, but you can still try and access your Signal account by verifying your phone number. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "आपका पिन अनुमान समाप्त हो गया है, लेकिन आप अभी भी अपना फ़ोन नंबर सत्यापित करके अपने Signal अकाउंट तक पहुँचने का प्रयास कर सकते हैं। आपकी निजता और सुरक्षा के लिए आपका अकाउंट बिना किसी सहेजी गई प्रोफ़ाइल जानकारी या सेटिंग के पुनर्स्थापित कर दिया जाएगा।";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "अपने ख़ाते के लिये बनाया गया पिन डालें। ये पिन आपके SMS सत्यापण कोड से अलग है।";
@@ -4280,16 +4280,16 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "कोड प्रमाणित किया जा रहा है…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Make sure your phone has a cellular signal to receive your SMS or call";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "सुनिश्चित करें कि आपके फ़ोन में आपका SMS या कॉल प्राप्त करने के लिए सेल्यूलर सिग्नल है";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Confirm you can receive a phone call to the number";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "पुष्टि करें कि आप नंबर पर एक फोन कॉल प्राप्त कर सकते हैं";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Check that you have entered your phone number correctly";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "जाँच करें कि आपने अपना फ़ोन नंबर सही रूप से दर्ज किया है";
 
 /* Label for a button to get help entering a verification code when registering. */
-"ONBOARDING_VERIFICATION_HELP_LINK" = "Having Trouble Registering?";
+"ONBOARDING_VERIFICATION_HELP_LINK" = "पंजीकरण में परेशानी हो रही है?";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "यह कोड ग़लत है";
@@ -5211,10 +5211,10 @@
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock
    Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "आपका पिन आपके द्वारा बनाया गया 4+अंकों वाला कोड है, जो संख्यात्मक या अल्फ़ान्यूमेरिक हो सकता है। यदि आपको अपना पिन याद नहीं है, तो आप पंजीकरण करा सकते हैं और अपने अकाउंट का उपयोग कर सकते हैं, लेकिन आप अपनी प्रोफ़ाइल जानकारी जैसी कुछ सहेजी गई सेटिंग्स खो देंगे।";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "आपका पिन कम से कम 4 अक्षरों का कोड होता है जो न्यूमेरिक या अल्फ़ान्यूमेरिक हो सकता है। अगर आप अपना पिन याद नहीं कर पा रहे हैं तो, आप नया पिन बना सकते हैं। आप पंजीकरण करके अपना अकाउंट इस्तेमाल कर सकते हैं पर आप कुछ सेटिंग्स खो देंगे जैसे प्रोफ़ाइल की जानकारी।";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "आपका पिन कम से कम 4 अक्षरों का कोड होता है जो न्यूमेरिक या अल्फ़ान्यूमेरिक हो सकता है। अगर आप अपना पिन याद नहीं कर पा रहे हैं तो, आपको 7 दिन रुक कर अपना खाता पुनः पंजीकृत करना होगा।";
@@ -5229,7 +5229,7 @@
 "REGISTER_CONTACTS_WELCOME" = "स्वागत है!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "You have tried too often. Please wait a few minutes before trying again.";
+"REGISTER_RATE_LIMITING_ALERT" = "आपने बहुत बार कोशिश की है। दोबारा प्रयास करने से पहले कृपया कुछ मिनट इंतज़ार करें। (%@)";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "आपने बहुत बार कोशिश कर ली। कृपया थोङी देर रुक कर कोशिश करें।";
@@ -5349,10 +5349,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "आपको कोई मेसेज भेजने से पहले पंजीकृत होना होगाा।";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "You’ve made too many attempts to enter the code. Please resend the code and try again.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "आपने कोड दर्ज करने के लिए बहुत अधिक प्रयास किए हैं। कृपया कोड पुनः भेजकर दोबारा प्रयास करें।";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "You’ve made too many attempts to enter the code. Try again in %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "आपने कोड दर्ज करने के लिए बहुत अधिक प्रयास किए हैं। %1$@ में पुन: प्रयास करें";
 
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "इस नंबर के साथ पहले रजिस्टर किया हुआ एक अकाउंट था जो ट्रांसफ़र के लिए उपलब्ध है.";

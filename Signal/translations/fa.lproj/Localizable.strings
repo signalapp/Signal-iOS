@@ -2234,10 +2234,10 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "کاربر ثبت نشده: %1$@";
 
 /* Button to exit change number, shown in context menu. */
-"EXIT_CHANGE_NUMBER" = "Exit Change Number";
+"EXIT_CHANGE_NUMBER" = "خروج از «تغییر شماره»";
 
 /* Button to exit re-registration, shown in context menu. */
-"EXIT_REREGISTRATION" = "Exit Registration";
+"EXIT_REREGISTRATION" = "خروج از ثبت‌نام";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "نسخه سیگنال شما منقضی شده است! برای به‌روزرسانی به آخرین نسخه، اینجا را ضربه بزنید.";
@@ -4160,7 +4160,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "پین نادرست است";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "پین اشتباه وارد شده . 1 تلاش دیگر باقی مانده است.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "رد شدن و ایجاد یک رمز جدید";
@@ -4244,7 +4244,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "پین نادرست";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "You’ve run out of PIN guesses, but you can still try and access your Signal account by verifying your phone number. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "فرصت شما برای حدس پین تمام شد، ولی همچنان می‌توانید با تأیید شماره تلفن خود، سعی کنید و به حساب سیگنال خود دسترسی پیدا کنید. برای حفظ امنیت و حریم خصوصی، حسابتان بدون هیچ‌گونه اطلاعات یا تنظیمات ذخیره‌شده نمایه بازیابی خواهد شد.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "پین ایجاد شده برای حساب خود را وارد کنید. این با کد تأیید پیام کوتاه شما متفاوت است.";
@@ -4280,16 +4280,16 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "در حال اعتبارسنجی کد…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Make sure your phone has a cellular signal to receive your SMS or call";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "مطمئن شوید تلفن‌تان برای دریافت پیامک یا تماس آنتن دارد";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Confirm you can receive a phone call to the number";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "مطمئن شوید که می‌توانید در این شماره تلفن تماس دریافت کنید";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Check that you have entered your phone number correctly";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "بررسی کنید که شماره تلفن خود را درست وارد کرده باشید";
 
 /* Label for a button to get help entering a verification code when registering. */
-"ONBOARDING_VERIFICATION_HELP_LINK" = "Having Trouble Registering?";
+"ONBOARDING_VERIFICATION_HELP_LINK" = "مشکلی در ثبت‌نام دارید؟";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "کد نادرست می باشد";
@@ -5211,10 +5211,10 @@
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock
    Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "پین شما یک کد بیش از ۴ رقمی است که شما ساخته‌اید و می‌تواند عدد یا حروف باشد. اگر نمی‌توانید پین خود را به یاد بیاورید، می‌توانید ثبت‌نام کنید و از حسابتان استفاده کنید، اما برخی تنظیمات ذخیره‌شده مانند اطلاعات نمایه خود را از دست خواهید داد.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "پین شما یک کد بیش از ۴ رقمی است که خودتان انتخاب کرده‌اید و می‌تواند عدد یا حروف باشد. اگر نمی‌توانید پین خود را به یاد بیاورید، می‌توانید یک پین جدید ایجاد کنید. می‌توانید ثبت‌نام و از حساب‌تان استفاده کنید، اما برخی تنظیمات ذخیره‌شده مانند اطلاعات نمایه خود را از دست خواهید داد.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "رمز شما یک کد عددی 4+ رقمی است که خودتان ایجاد کرده اید. اگر رمز خود را به یاد نمی آورید، باید 7 روز صبر کنید تا دوباره بتوانید حساب کاربری خود را ثبت کنید.";
@@ -5229,7 +5229,7 @@
 "REGISTER_CONTACTS_WELCOME" = "خوش آمدید!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "You have tried too often. Please wait a few minutes before trying again.";
+"REGISTER_RATE_LIMITING_ALERT" = "در مدت زمانی مشخص بیش از حد مجاز امتحان کرده‌اید. لطفاً چند دقیقه صبر کنید و بعد دوباره تلاش کنید.";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "شما چندین بار امتحان کردید. لطفا قبل از امتحان مجدد، یک دقیقه صبر کنید.";
@@ -5349,10 +5349,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "قبل از ارسال پیام نیاز دارید ثبت نام کنید.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "You’ve made too many attempts to enter the code. Please resend the code and try again.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "دفعات تلاش‌تان برای وارد کردن کد بیش‌ از حد مجاز بوده است. لطفاً کد را دوباره بفرستید و مجدداً تلاش کنید.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "You’ve made too many attempts to enter the code. Try again in %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "دفعات تلاش‌تان برای وارد کردن کد بیش‌ از حد مجاز بوده است. تلاش دوباره در %1$@";
 
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "یک حساب کاربری از پیش ثبت‌نام شده با این شماره وجود دارد که برای انتقال در دسترس است.";

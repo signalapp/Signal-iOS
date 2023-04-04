@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• Tak lama setelah diperkenalkan dalam rilis terakhir, ikon Maju Cepat dan Putar Mundur untuk video berdurasi panjang telah diperbarui dengan tampilan yang lebih baik dan fungsi yang lebih optimal.
+• Keterangan teks panjang di penampil media kini bisa diperluas dengan satu ketukan. Dengan begitu, Anda dapat melihat gambar lebih menyeluruh jika teman Anda mengirimkan gambar dengan keterangan teks yang panjang.

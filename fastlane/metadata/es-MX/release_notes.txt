@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• Inmediatamente después de su introducción en la última versión, los iconos de avance rápido y rebobinado para vídeos largos se han actualizado para que se vean aún mejor.
+• Los nombres largos en el visor de archivos multimedia ahora se pueden expandir con un toque, lo que te permite ver mejor la imagen si tu amigx te envía una foto que vale más que mil palabras con un título que también tiene mil palabras.

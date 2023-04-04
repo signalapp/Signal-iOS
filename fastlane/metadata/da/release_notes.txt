@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• I forlængelse af deres introduktion i den seneste version, er ikonerne for hurtig frem- og tilbagespoling i lange videoer blevet opdateret, så de nu ser lidt hurtigere ud.
+• Lange billedtekster i medieviseren kan nu udvides med et klik, så du kan se mere af billedet, hvis din ven sender et billede, der siger mere end tusind ord, med en lang beskrivelse, der også siger mere end tusind ord.

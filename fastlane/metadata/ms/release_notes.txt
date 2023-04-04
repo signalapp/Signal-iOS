@@ -1,2 +1,2 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• Sejurus selepas diperkenalkan dalam keluaran lepas, ikon mara laju dan putar semula untuk video yang panjang telah dikemas kini untuk kelihatan lebih pantas dan sedikit lebih mundur.
+• Kapsyen panjang dalam pemapar media kini boleh dikembangkan dengan satu ketikan, yang membolehkan anda melihat lebih banyak imej jika rakan anda menghantar gambar yang bermakna dengan kapsyen berjela-jela yang juga beribu perkataan.
