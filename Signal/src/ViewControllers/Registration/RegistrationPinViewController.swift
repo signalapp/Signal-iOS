@@ -328,6 +328,8 @@ class RegistrationPinViewController: OWSViewController {
         initialRender()
     }
 
+    private var isViewAppeared = false
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -336,6 +338,10 @@ class RegistrationPinViewController: OWSViewController {
             // font sizes.
             pinTextField.becomeFirstResponder()
         }
+
+        isViewAppeared = true
+
+        render()
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -344,6 +350,8 @@ class RegistrationPinViewController: OWSViewController {
         if moreButton.isShowingContextMenu {
             moreButton.dismissContextMenu(animated: animated)
         }
+
+        isViewAppeared = false
     }
 
     public override func themeDidChange() {
@@ -552,6 +560,7 @@ class RegistrationPinViewController: OWSViewController {
         canSkip: Bool
     ) {
         guard
+            isViewAppeared,
             let remainingAttempts,
             warnAt.contains(remainingAttempts),
             remainingAttempts < (previouslyWarnedAboutAttemptCount ?? UInt.max)
