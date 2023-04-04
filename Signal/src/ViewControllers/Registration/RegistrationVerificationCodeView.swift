@@ -101,11 +101,11 @@ class RegistrationVerificationCodeView: UIView {
         return digitText
     }
 
-    public func clearLastDigit() {
+    public func clear() {
         guard isComplete else {
             return
         }
-        digitText = String(digitText.dropLast(1))
+        digitText = ""
         updateViewState()
     }
 

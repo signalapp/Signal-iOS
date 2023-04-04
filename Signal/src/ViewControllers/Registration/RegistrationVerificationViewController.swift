@@ -412,7 +412,7 @@ class RegistrationVerificationViewController: OWSViewController {
                 comment: "During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message."
             )
             if verificationCodeView.verificationCode == code {
-                verificationCodeView.clearLastDigit()
+                verificationCodeView.clear()
             }
         case .smsResendTimeout, .voiceResendTimeout:
             title = nil
