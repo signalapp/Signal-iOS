@@ -129,6 +129,7 @@ extension MessageBody {
         let filteredAttributedString = attributedString.filterForDisplay
         let mutableAttributedString = NSMutableAttributedString(attributedString: filteredAttributedString)
 
+        // TODO[TextFormatting]: parse out styles as well
         mutableAttributedString.enumerateMentions { mention, subrange, _ in
             guard let mention = mention else { return }
 
@@ -147,7 +148,7 @@ extension MessageBody {
             mentions[placeholderRange] = mention.address.uuid
         }
 
-        self.init(text: mutableAttributedString.string, ranges: .init(mentions: mentions))
+        self.init(text: mutableAttributedString.string, ranges: .init(mentions: mentions, styles: []))
     }
 
     public func textValue(style: Mention.Style,
@@ -205,6 +206,8 @@ extension MessageBodyRanges {
         shouldResolveAddress: (SignalServiceAddress) -> Bool,
         transaction: GRDBReadTransaction
     ) -> NSAttributedString {
+        // TODO[TextFormatting]: this drives the text we display in message bubbles.
+        // update it to render styles as well.
         guard hasMentions else { return NSAttributedString(string: text, attributes: attributes) }
 
         let mutableText = NSMutableAttributedString(string: text, attributes: attributes)

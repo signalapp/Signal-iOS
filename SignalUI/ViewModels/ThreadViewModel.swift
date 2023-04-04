@@ -145,6 +145,7 @@ public class ChatListInfo: Dependencies {
                                                              transaction: transaction) else {
                 return nil
             }
+            // TODO[TextFormatting]: apply styles to snippet
             return draftMessageBody.plaintextBody(transaction: transaction.unwrapGrdbRead)
         }
         func hasVoiceMemoDraft() -> Bool {
@@ -154,6 +155,7 @@ public class ChatListInfo: Dependencies {
             guard let previewable = lastMessageForInbox as? OWSPreviewText else {
                 return nil
             }
+            // TODO[TextFormatting]: apply styles to snippet
             return previewable.previewText(transaction: transaction).filterStringForDisplay()
         }
         func loadLastMessageSenderName() -> String? {

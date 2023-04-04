@@ -496,6 +496,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     if (self.bodyRanges) {
+        // TODO[TextFormatting]: apply styles (except spoiler which gets special treatment in notifications)
         bodyDescription = [self.bodyRanges plaintextBodyWithText:bodyDescription
                                                      transaction:transaction.unwrapGrdbRead];
     }

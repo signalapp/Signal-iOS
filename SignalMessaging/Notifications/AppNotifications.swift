@@ -677,6 +677,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let notificationBody: String
         if let bodyDescription: String = {
+            // TODO[TextFormatting]: apply styles for notification
             if let messageBody = message.plaintextBody(with: transaction.unwrapGrdbRead), !messageBody.isEmpty {
                 return messageBody
             } else {
@@ -896,6 +897,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .noNameNoPreview, .nameNoPreview:
             notificationBody = NotificationStrings.genericIncomingMessageNotification
         case .namePreview:
+            // TODO[TextFormatting]: apply styles (except spoiler which gets a special treatment in notifications)
             notificationBody = previewableInteraction.previewText(transaction: transaction)
         }
 
