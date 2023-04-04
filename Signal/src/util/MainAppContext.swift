@@ -215,8 +215,6 @@ class MainAppContext: NSObject, AppContext {
 
     let hasUI: Bool = true
 
-    var didLastLaunchNotTerminate: Bool { SignalApp.shared().didLastLaunchNotTerminate }
-
     var hasActiveCall: Bool {
         if AppReadiness.isAppReady {
             return AppEnvironment.shared.callService.hasCallInProgress

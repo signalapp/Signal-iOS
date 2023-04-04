@@ -42,45 +42,9 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 
     OWSSingletonAssert();
 
-    [self handleCrashDetection];
-
     AppReadinessRunNowOrWhenUIDidBecomeReadySync(^{ [self warmCachesAsync]; });
 
     return self;
-}
-
-#pragma mark - Crash Detection
-
-- (void)handleCrashDetection
-{
-    NSUserDefaults *userDefaults = CurrentAppContext().appUserDefaults;
-#if TESTABLE_BUILD
-    // Ignore "crashes" in DEBUG builds; applicationWillTerminate
-    // will rarely be called during development.
-#else
-    _didLastLaunchNotTerminate = [userDefaults objectForKey:kNSUserDefaults_DidTerminateKey] != nil;
-#endif
-    // Very soon after every launch, we set this key.
-    // We clear this key when the app terminates in
-    // an orderly way.  Therefore if the key is still
-    // set on any given launch, we know that the last
-    // launch crashed.
-    //
-    // Note that iOS will sometimes kill the app for
-    // reasons other than crashing, so there will be
-    // some false positives.
-    [userDefaults setObject:@(YES) forKey:kNSUserDefaults_DidTerminateKey];
-
-    if (self.didLastLaunchNotTerminate) {
-        OWSLogWarn(@"Last launched crashed.");
-    }
-}
-
-- (void)applicationWillTerminate
-{
-    OWSLogInfo(@"");
-    NSUserDefaults *userDefaults = CurrentAppContext().appUserDefaults;
-    [userDefaults removeObjectForKey:kNSUserDefaults_DidTerminateKey];
 }
 
 #pragma mark -

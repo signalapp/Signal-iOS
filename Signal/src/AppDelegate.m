@@ -146,9 +146,6 @@ static void uncaughtExceptionHandler(NSException *exception)
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     OWSLogInfo(@"applicationWillTerminate.");
-
-    [SignalApp.shared applicationWillTerminate];
-
     OWSLogFlush();
 }
 

@@ -138,8 +138,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (nonatomic, readonly) BOOL hasUI;
 
-@property (nonatomic, readonly) BOOL didLastLaunchNotTerminate;
-
 @property (nonatomic, readonly) NSString *debugLogsDirPath;
 
 @property (nonatomic, readonly) BOOL hasActiveCall;
