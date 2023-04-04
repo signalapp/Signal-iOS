@@ -44,8 +44,11 @@ enum ShareActivityUtil {
             .postToWeibo
         ]
         shareActivityViewController.completionWithItemsHandler = { _, _, _, _ in
+            // If we're sharing to another app and that app crashes, we sometimes fail to dismiss
+            // the invisible sheet. Calling it twice seems to fix this.
             wrapperViewControllerToFixIosBug.dismiss(animated: false)
             completion()
+            wrapperViewControllerToFixIosBug.dismiss(animated: false)
         }
 
         viewController.present(wrapperViewControllerToFixIosBug, animated: false) {
