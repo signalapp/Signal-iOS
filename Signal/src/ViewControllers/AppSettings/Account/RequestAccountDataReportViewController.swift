@@ -209,11 +209,12 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             guard let self else { return cell }
 
             cell.contentView.addSubview(self.exportButton)
-            self.exportButton.autoPinWidthToSuperviewMargins()
+            self.exportButton.autoPinEdgesToSuperviewMargins()
 
             return cell
         })])
         result.hasBackground = false
+        result.footerTitle = "Your report is generated only at the time of export and is not stored by Signal on your device."
         return result
     }
 
