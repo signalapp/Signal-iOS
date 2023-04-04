@@ -188,7 +188,7 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
         if isUsingKBS {
             if hasPendingRestoration {
                 message = NSLocalizedString("REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE",
-                                            comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock")
+                                            comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN")
                 emailSupportFilter = "Signal PIN - iOS (V2 PIN without RegLock)"
 
                 let createNewPinAction = ActionSheetAction(
