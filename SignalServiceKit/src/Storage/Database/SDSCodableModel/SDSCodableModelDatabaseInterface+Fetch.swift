@@ -11,7 +11,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         uniqueId: String,
         transaction: DBReadTransaction
     ) -> Model? {
-        owsAssert(!uniqueId.isEmpty)
+        owsAssertDebug(!uniqueId.isEmpty)
 
         let transaction = SDSDB.shimOnlyBridge(transaction)
 
