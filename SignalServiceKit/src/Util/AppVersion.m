@@ -49,15 +49,9 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 - (void)configure {
     OWSAssertIsOnMainThread();
 
-    if (CurrentAppContext().isRunningTests) {
-        _currentAppReleaseVersion = @"1.2.3";
-        _currentAppBuildVersion = @"4";
-        _currentAppVersion4 = @"1.2.3.4";
-    } else {
-        _currentAppReleaseVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-        _currentAppBuildVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-        _currentAppVersion4 = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"OWSBundleVersion4"];
-    }
+    _currentAppReleaseVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    _currentAppBuildVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    _currentAppVersion4 = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"OWSBundleVersion4"];
     OWSAssert(self.currentAppReleaseVersion.length > 0);
     OWSAssert(self.currentAppBuildVersion.length > 0);
     OWSAssert(self.currentAppVersion4.length > 0);
