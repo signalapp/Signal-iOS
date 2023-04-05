@@ -7,7 +7,6 @@
 #import "Environment.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

@@ -37,7 +37,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 // <SignalServiceKit/PublicHeader.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/BaseModel.h>
 #import <SignalServiceKit/ByteParser.h>
