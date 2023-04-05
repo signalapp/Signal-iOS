@@ -139,7 +139,6 @@ extension AccountAttributes {
             registrationRecoveryPassword: registrationRecoveryPassword,
             encryptedDeviceName: encryptedDeviceName,
             discoverableByPhoneNumber: isDiscoverableByPhoneNumber,
-            canReceiveGiftBadges: RemoteConfig.canReceiveGiftBadges,
             hasKBSBackups: hasKBSBackups)
     }
 }

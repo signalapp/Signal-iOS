@@ -23,7 +23,6 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
-        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigShim
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerShim
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
     }
@@ -40,7 +39,6 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
-        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigWrapper
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
     }
@@ -412,20 +410,6 @@ public class _RegistrationCoordinator_ReceiptManagerWrapper: _RegistrationCoordi
     public func setAreStoryViewedReceiptsEnabled(_ areEnabled: Bool, _ tx: DBWriteTransaction) {
         StoryManager.setAreViewReceiptsEnabled(areEnabled, transaction: SDSDB.shimOnlyBridge(tx))
     }
-}
-
-// MARK: - RemoteConfig
-
-public protocol _RegistrationCoordinator_RemoteConfigShim {
-
-    var canReceiveGiftBadges: Bool { get }
-}
-
-public class _RegistrationCoordinator_RemoteConfigWrapper: _RegistrationCoordinator_RemoteConfigShim {
-
-    public init() {}
-
-    public var canReceiveGiftBadges: Bool { RemoteConfig.canSendGiftBadges }
 }
 
 // MARK: - TSAccountManager

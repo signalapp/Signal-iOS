@@ -8,7 +8,6 @@ import LibSignalClient
 
 public enum GiftBadgeError: Error {
     case noGiftBadge
-    case featureNotEnabled
     case malformed
 }
 
@@ -88,9 +87,6 @@ public class OWSGiftBadge: MTLModel {
     private class func build(from dataMessage: SSKProtoDataMessage) throws -> OWSGiftBadge {
         guard let giftBadge = dataMessage.giftBadge else {
             throw GiftBadgeError.noGiftBadge
-        }
-        guard RemoteConfig.canReceiveGiftBadges else {
-            throw GiftBadgeError.featureNotEnabled
         }
         guard let rcPresentationData = giftBadge.receiptCredentialPresentation else {
             throw GiftBadgeError.malformed

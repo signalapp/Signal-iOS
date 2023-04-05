@@ -23,7 +23,6 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerMock
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
-        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigMock
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
     }
@@ -277,15 +276,6 @@ public class _RegistrationCoordinator_ReceiptManagerMock: _RegistrationCoordinat
         didSetAreStoryViewedReceiptsEnabled = true
         setAreStoryViewedReceiptsEnabledMock?(areEnabled)
     }
-}
-
-// MARK: - Remote Config
-
-public class _RegistrationCoordinator_RemoteConfigMock: _RegistrationCoordinator_RemoteConfigShim {
-
-    public var canReceiveGiftBadgesMock: (() -> Bool) = { true }
-
-    public var canReceiveGiftBadges: Bool { canReceiveGiftBadgesMock() }
 }
 
 // MARK: - TSAccountManager

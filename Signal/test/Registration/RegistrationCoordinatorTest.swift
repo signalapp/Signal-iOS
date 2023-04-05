@@ -102,7 +102,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,
             receiptManager: receiptManagerMock,
-            remoteConfig: RegistrationCoordinatorImpl.TestMocks.RemoteConfig(),
             schedulers: TestSchedulers(scheduler: scheduler),
             sessionManager: sessionManager,
             signalService: mockSignalService,
@@ -2914,7 +2913,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 registrationRecoveryPassword: nil,
                 encryptedDeviceName: nil,
                 discoverableByPhoneNumber: false,
-                canReceiveGiftBadges: false,
                 hasKBSBackups: true
             )
         }

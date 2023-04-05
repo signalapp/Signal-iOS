@@ -214,21 +214,6 @@ public class RemoteConfig: BaseFlags {
         return true
     }
 
-    @objc
-    public static var canReceiveGiftBadges: Bool {
-        FeatureFlags.shouldUseRemoteConfigForReceivingGiftBadges && isEnabled(.canReceiveGiftBadges, defaultValue: true)
-    }
-
-    public static var canSendGiftBadges: Bool {
-        if DebugFlags.internalSettings {
-            return true
-        } else if FeatureFlags.isPrerelease {
-            return isEnabled(.canSendGiftBadgesInPrerelease, defaultValue: false)
-        } else {
-            return isEnabled(.canSendGiftBadgesInProduction, defaultValue: false)
-        }
-    }
-
     public static var inboundGroupRings: Bool {
         DebugFlags.internalSettings || !isEnabled(.inboundGroupRingsKillSwitch)
     }
@@ -500,9 +485,6 @@ private struct Flags {
         case messageResendKillSwitch
         case donorBadgeDisplayKillSwitch
         case changePhoneNumberUI
-        case canSendGiftBadgesInPrerelease
-        case canSendGiftBadgesInProduction
-        case canReceiveGiftBadges
         case groupRings2
         case inboundGroupRingsKillSwitch
         case storiesKillSwitch

@@ -3326,7 +3326,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             registrationRecoveryPassword: inMemoryState.regRecoveryPw,
             encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
             discoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber,
-            canReceiveGiftBadges: deps.remoteConfig.canReceiveGiftBadges,
             hasKBSBackups: true // Always true when registering from this class.
         )
     }

@@ -95,7 +95,6 @@ public struct AccountAttributes: Codable {
         registrationRecoveryPassword: String?,
         encryptedDeviceName: String?,
         discoverableByPhoneNumber: Bool?,
-        canReceiveGiftBadges: Bool = RemoteConfig.canReceiveGiftBadges,
         hasKBSBackups: Bool
     ) {
         self.isManualMessageFetchEnabled = isManualMessageFetchEnabled
@@ -117,10 +116,7 @@ public struct AccountAttributes: Codable {
         self.registrationRecoveryPassword = registrationRecoveryPassword
         self.encryptedDeviceName = encryptedDeviceName
         self.discoverableByPhoneNumber = discoverableByPhoneNumber
-        self.capabilities = Capabilities(
-            canReceiveGiftBadges: canReceiveGiftBadges,
-            hasKBSBackups: hasKBSBackups
-        )
+        self.capabilities = Capabilities(hasKBSBackups: hasKBSBackups)
     }
 
     public struct Capabilities: Codable {
@@ -131,7 +127,7 @@ public struct AccountAttributes: Codable {
         public let announcementGroup = true
         public let senderKey = true
         public let stories = true
-        public let canReceiveGiftBadges: Bool
+        public let canReceiveGiftBadges = true
         public let hasKBSBackups: Bool
         public let changeNumber = true
 

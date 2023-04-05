@@ -301,13 +301,10 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     capabilities[@"transfer"] = @(YES);
     capabilities[@"announcementGroup"] = @(YES);
     capabilities[@"senderKey"] = @(YES);
+    capabilities[@"giftBadges"] = @(YES);
 
     if (RemoteConfig.stories || isSecondaryDevice) {
         capabilities[@"stories"] = @(YES);
-    }
-
-    if (RemoteConfig.canReceiveGiftBadges) {
-        capabilities[@"giftBadges"] = @(YES);
     }
 
     // If the storage service requires (or will require) secondary devices
