@@ -3574,6 +3574,12 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
 
+/* Text explaining that the user will forward all media from a message. */
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "All media in this message will be forwarded.";
+
+/* Text confirming the user wants to forward media. */
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE" = "Forward";
+
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
 

@@ -546,29 +546,6 @@ class MediaPageViewController: UIPageViewController {
         return view
     }
 
-    private func buildRenderItem(forGalleryItem galleryItem: MediaGalleryItem) -> CVRenderItem? {
-        return databaseStorage.read { transaction in
-            let interactionId = galleryItem.message.uniqueId
-            guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
-                                                           transaction: transaction) else {
-                owsFailDebug("Missing interaction.")
-                return nil
-            }
-            guard let thread = TSThread.anyFetch(uniqueId: interaction.uniqueThreadId,
-                                                 transaction: transaction) else {
-                owsFailDebug("Missing thread.")
-                return nil
-            }
-            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread,
-                                                                           transaction: transaction)
-            return CVLoader.buildStandaloneRenderItem(interaction: interaction,
-                                                      thread: thread,
-                                                      threadAssociatedData: threadAssociatedData,
-                                                      containerView: self.view,
-                                                      transaction: transaction)
-        }
-    }
-
     private func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
         guard let currentViewController else { return }
 
@@ -602,24 +579,69 @@ class MediaPageViewController: UIPageViewController {
         AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: sender)
     }
 
+    /// Forwards all media from the message containing the currently gallery
+    /// item.
+    ///
+    /// Skips any media that we do not have downloaded.
     @objc
     private func didPressForward(_ sender: Any) {
-        let galleryItem: MediaGalleryItem = currentItem
+        let messageForCurrentItem = currentItem.message
 
-        guard let renderItem = buildRenderItem(forGalleryItem: galleryItem) else {
-            owsFailDebug("viewItem was unexpectedly nil")
-            return
+        let mediaAttachments: [TSAttachment] = databaseStorage.read { transaction in
+            messageForCurrentItem.bodyAttachments(with: transaction.unwrapGrdbRead)
         }
 
-        // Only forward media.
-        let selectionType: CVSelectionType = .primaryContent
-        let selectionItem = CVSelectionItem(interactionId: renderItem.interaction.uniqueId,
-                                            interactionType: renderItem.interaction.interactionType,
-                                            isForwardable: true,
-                                            selectionType: selectionType)
-        ForwardMessageViewController.present(forSelectionItems: [selectionItem],
-                                             from: self,
-                                             delegate: self)
+        let mediaAttachmentStreams: [TSAttachmentStream] = mediaAttachments.compactMap { attachment in
+            guard let attachmentStream = attachment as? TSAttachmentStream else {
+                // Our current media item should always be an attachment
+                // stream (downloaded). However, we can't guarantee that the
+                // same is true for other media in the message to forward. For
+                // example, another piece of media in this message may have
+                // failed to download.
+                //
+                // If so, we should continue trying to forward the ones we can.
+
+                Logger.warn("Skipping attachment that is not an attachment stream. Did this attachment fail to download?")
+                return nil
+            }
+
+            return attachmentStream
+        }
+
+        switch mediaAttachmentStreams.count {
+        case 0:
+            owsFail("We should always have at least one attachment stream, for the current item.")
+        case 1:
+            ForwardMessageViewController.present(
+                forAttachmentStreams: mediaAttachmentStreams,
+                fromMessage: messageForCurrentItem,
+                from: self,
+                delegate: self
+            )
+        default:
+            // If we are forwarding multiple items, warn the user first.
+
+            OWSActionSheets.showConfirmationAlert(
+                message: OWSLocalizedString(
+                    "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE",
+                    comment: "Text explaining that the user will forward all media from a message."
+                ),
+                proceedTitle: OWSLocalizedString(
+                    "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE",
+                    comment: "Text confirming the user wants to forward media."
+                ),
+                proceedAction: { [weak self] _ in
+                    guard let self else { return }
+
+                    ForwardMessageViewController.present(
+                        forAttachmentStreams: mediaAttachmentStreams,
+                        fromMessage: messageForCurrentItem,
+                        from: self,
+                        delegate: self
+                    )
+                }
+            )
+        }
     }
 
     private func deleteCurrentMedia() {
