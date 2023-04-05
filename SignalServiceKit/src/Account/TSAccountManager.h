@@ -26,10 +26,8 @@ extern NSString *const TSAccountManager_LastSetIsDiscoverableByPhoneNumberKey;
 
 extern NSString *const TSAccountManager_UserAccountCollection;
 extern NSString *const TSAccountManager_ServerAuthTokenKey;
-extern NSString *const TSAccountManager_ServerSignalingKey;
 extern NSString *const TSAccountManager_ManualMessageFetchKey;
 
-extern NSString *const TSAccountManager_DeviceNameKey;
 extern NSString *const TSAccountManager_DeviceIdKey;
 
 @class AnyPromise;
@@ -123,13 +121,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (nullable NSDate *)registrationDateWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
- *  Symmetric key that's used to encrypt message payloads from the server,
- *
- *  @return signaling key
- */
-- (nullable NSString *)storedSignalingKey;
-
-/**
  *  The server auth token allows the Signal client to connect to the Signal server
  *
  *  @return server authentication token
@@ -139,9 +130,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (void)setStoredServerAuthToken:(NSString *)authToken
                         deviceId:(UInt32)deviceId
                      transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (nullable NSString *)storedDeviceName;
-- (void)setStoredDeviceName:(NSString *)deviceName transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (UInt32)storedDeviceId;
 - (UInt32)storedDeviceIdWithTransaction:(SDSAnyReadTransaction *)transaction;

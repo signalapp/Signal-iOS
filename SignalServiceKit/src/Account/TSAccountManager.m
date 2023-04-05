@@ -40,10 +40,8 @@ NSString *const TSAccountManager_LastSetIsDiscoverableByPhoneNumberKey
 
 NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountCollection";
 NSString *const TSAccountManager_ServerAuthTokenKey = @"TSStorageServerAuthToken";
-NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignalingKey";
 NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_ManualMessageFetchKey";
 
-NSString *const TSAccountManager_DeviceNameKey = @"TSAccountManager_DeviceName";
 NSString *const TSAccountManager_DeviceIdKey = @"TSAccountManager_DeviceId";
 
 NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
@@ -274,7 +272,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 - (BOOL)isRegisteredWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
+    return [self getOrLoadAccountStateWithTransaction:transaction].isRegistered;
 }
 
 - (BOOL)isRegisteredAndReady
@@ -293,12 +291,10 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     NSString *phoneNumber;
     NSUUID *aci;
     NSUUID *pni;
-    NSString *authToken;
     @synchronized(self) {
         phoneNumber = self.phoneNumberAwaitingVerification;
         aci = self.uuidAwaitingVerification;
         pni = self.pniAwaitingVerification;
-        authToken = self.storedServerAuthToken;
     }
 
     if (!phoneNumber) {
@@ -432,13 +428,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     TSAccountState *accountState = [self getOrLoadAccountStateWithTransaction:transaction];
-
-    if (accountState.localUuid == nil && accountState.localNumber == nil) {
-        return nil;
-    } else {
-        return [[SignalServiceAddress alloc] initWithUuidString:accountState.localUuid.UUIDString
-                                                    phoneNumber:accountState.localNumber];
-    }
+    return [self localAddressWithAccountState:accountState];
 }
 
 + (nullable SignalServiceAddress *)localAddress
@@ -448,17 +438,19 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 - (nullable SignalServiceAddress *)localAddress
 {
-    // We extract uuid and local number from a single instance of accountState
-    // to avoid races.
     TSAccountState *accountState = [self getOrLoadAccountStateWithSneakyTransaction];
+    return [self localAddressWithAccountState:accountState];
+}
+
+- (nullable SignalServiceAddress *)localAddressWithAccountState:(TSAccountState *)accountState
+{
+    // We extract uuid and local number from a single instance of accountState to avoid races.
     NSUUID *_Nullable localUuid = [self localUuidWithAccountState:accountState];
     NSString *_Nullable localNumber = [self localNumberWithAccountState:accountState];
-
     if (localUuid == nil && localNumber == nil) {
         return nil;
-    } else {
-        return [[SignalServiceAddress alloc] initWithUuid:localUuid phoneNumber:localNumber];
     }
+    return [[SignalServiceAddress alloc] initWithUuid:localUuid phoneNumber:localNumber];
 }
 
 - (nullable NSDate *)registrationDateWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -487,12 +479,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 #pragma mark Server keying material
 
-// NOTE: We no longer set this for new accounts.
-- (nullable NSString *)storedSignalingKey
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].serverSignalingKey;
-}
-
 - (nullable NSString *)storedServerAuthToken
 {
     return [self getOrLoadAccountStateWithSneakyTransaction].serverAuthToken;
@@ -501,11 +487,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (nullable NSString *)storedServerAuthTokenWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self getOrLoadAccountStateWithTransaction:transaction].serverAuthToken;
-}
-
-- (nullable NSString *)storedDeviceName
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].deviceName;
 }
 
 - (UInt32)storedDeviceId
@@ -525,15 +506,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     @synchronized(self) {
         [self.keyValueStore setString:authToken key:TSAccountManager_ServerAuthTokenKey transaction:transaction];
         [self.keyValueStore setUInt32:deviceId key:TSAccountManager_DeviceIdKey transaction:transaction];
-
-        [self loadAccountStateWithTransaction:transaction];
-    }
-}
-
-- (void)setStoredDeviceName:(NSString *)deviceName transaction:(SDSAnyWriteTransaction *)transaction
-{
-    @synchronized(self) {
-        [self.keyValueStore setString:deviceName key:TSAccountManager_DeviceNameKey transaction:transaction];
 
         [self loadAccountStateWithTransaction:transaction];
     }

@@ -20,25 +20,20 @@ class TSAccountState: NSObject {
     let localNumber: String?
     let localUuid: UUID?
     let localPni: UUID?
-    let registrationDate: Date?
+    let deviceId: UInt32
 
+    let isReregistering: Bool
     let reregistrationPhoneNumber: String?
     let reregistrationUUID: UUID?
 
     let isRegistered: Bool
-    let isReregistering: Bool
-
     let isDeregistered: Bool
     let isOnboarded: Bool
+    let registrationDate: Date?
+    let serverAuthToken: String?
 
     let isTransferInProgress: Bool
     let wasTransferred: Bool
-
-    let serverSignalingKey: String?
-    let serverAuthToken: String?
-
-    let deviceName: String?
-    let deviceId: UInt32
 
     let isDiscoverableByPhoneNumber: Bool
     let hasDefinedIsDiscoverableByPhoneNumber: Bool
@@ -77,29 +72,25 @@ class TSAccountState: NSObject {
         // or through normal write transactions. TSAccountManager should be the only code accessing this state anyway.
 
         localNumber = getString(TSAccountManager_RegisteredNumberKey)
-        registrationDate = getDate(TSAccountManager_RegistrationDateKey)
         localUuid = getUuid(TSAccountManager_RegisteredUUIDKey)
         localPni = getUuid(TSAccountManager_RegisteredPNIKey)
+        deviceId = getUInt32(TSAccountManager_DeviceIdKey) ?? 1
 
         reregistrationPhoneNumber = getString(TSAccountManager_ReregisteringPhoneNumberKey)
-        reregistrationUUID = getUuid(TSAccountManager_ReregisteringUUIDKey)
-
-        isRegistered = localNumber != nil
-        // TODO: Support re-registration with only reregistrationUUID.
         // TODO: Eventually require reregistrationUUID during re-registration.
+        reregistrationUUID = getUuid(TSAccountManager_ReregisteringUUIDKey)
+        // TODO: Support re-registration with only reregistrationUUID.
         isReregistering = reregistrationPhoneNumber != nil
 
+        isRegistered = localNumber != nil
         isDeregistered = getBool(TSAccountManager_IsDeregisteredKey) ?? false
         isOnboarded = getBool(TSAccountManager_IsOnboardedKey) ?? false
+        registrationDate = getDate(TSAccountManager_RegistrationDateKey)
 
         isTransferInProgress = getBool(TSAccountManager_IsTransferInProgressKey) ?? false
         wasTransferred = getBool(TSAccountManager_WasTransferredKey) ?? false
 
-        serverSignalingKey = getString(TSAccountManager_ServerSignalingKey)
         serverAuthToken = getString(TSAccountManager_ServerAuthTokenKey)
-
-        deviceName = getString(TSAccountManager_DeviceNameKey)
-        deviceId = getUInt32(TSAccountManager_DeviceIdKey) ?? 1
 
         do {
             let persistedIsDiscoverable = getBool(TSAccountManager_IsDiscoverableByPhoneNumberKey)

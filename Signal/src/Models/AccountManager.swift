@@ -404,9 +404,6 @@ public class AccountManager: NSObject, Dependencies {
                 self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
                                                                deviceId: response.deviceId,
                                                                transaction: transaction)
-
-                self.tsAccountManager.setStoredDeviceName(deviceName,
-                                                          transaction: transaction)
             }
         }.then { _ -> Promise<Void> in
             self.createPreKeys()
