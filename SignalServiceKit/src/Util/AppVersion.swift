@@ -6,6 +6,13 @@
 import Foundation
 
 extension AppVersion {
+    @objc
+    public static let shared: AppVersion = {
+        let result = AppVersion()
+        result.configure()
+        return result
+    }()
+
     // MARK: - Properties
 
     public static var hardwareInfoString: String {

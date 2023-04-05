@@ -47,8 +47,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("")
 
-        _ = AppVersion.shared()
-
         Cryptography.seedRandom()
 
         // We don't need to use DeviceSleepManager in the SAE.
@@ -242,7 +240,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        AppVersion.shared().saeLaunchDidComplete()
+        AppVersion.shared.saeLaunchDidComplete()
 
         ensureRootViewController()
 

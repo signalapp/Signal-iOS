@@ -35,17 +35,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 
 @implementation AppVersion
 
-+ (instancetype)shared
-{
-    static AppVersion *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [AppVersion new];
-        [instance configure];
-    });
-    return instance;
-}
-
 - (void)configure {
     OWSAssertIsOnMainThread();
 

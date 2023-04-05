@@ -31,7 +31,7 @@ extension OWSOrphanDataCleaner {
         }
 
         let kvs = keyValueStore()
-        let currentAppVersion = appVersion.currentAppReleaseVersion
+        let currentAppVersion = AppVersion.shared.currentAppReleaseVersion
 
         return databaseStorage.read { transaction -> Bool in
             guard TSAccountManager.shared.isRegistered(transaction: transaction) else {

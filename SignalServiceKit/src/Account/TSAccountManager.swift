@@ -254,7 +254,7 @@ public extension TSAccountManager {
         let appVersionKey = "appVersion"
 
         let currentDeviceCapabilities: [String: NSNumber] = OWSRequestFactory.deviceCapabilitiesForLocalDevice()
-        let currentAppVersion4 = appVersion.currentAppVersion4
+        let currentAppVersion4 = AppVersion.shared.currentAppVersion4
 
         var lastAttributeRequest: Date?
         let shouldUpdateAttributes = Self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in

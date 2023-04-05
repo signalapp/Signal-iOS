@@ -569,10 +569,10 @@ extension ExperienceUpgradeManifest {
         guard
             AppVersion.compare(
                 megaphone.manifest.minAppVersion,
-                with: appVersion.currentAppVersion4
+                with: AppVersion.shared.currentAppVersion4
             ) != .orderedDescending
         else {
-            Logger.debug("App version \(appVersion.currentAppVersion4) lower than required \(megaphone.manifest.minAppVersion)!")
+            Logger.debug("App version \(AppVersion.shared.currentAppVersion4) lower than required \(megaphone.manifest.minAppVersion)!")
             return false
         }
 

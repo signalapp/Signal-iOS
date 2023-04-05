@@ -42,15 +42,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, nullable, readonly) NSString *lastCompletedLaunchNSEAppVersion;
 
 + (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
-+ (instancetype)shared;
 
 - (void)mainAppLaunchDidComplete;
 - (void)saeLaunchDidComplete;
 - (void)nseLaunchDidComplete;
 
 - (BOOL)isFirstLaunch;
+
+// This is only exposed for Swift.
+- (void)configure;
 
 @end
 

@@ -83,8 +83,6 @@ extension AppDelegate {
 
         InstrumentsMonitor.trackEvent(name: "AppStart")
 
-        AppVersion.shared()
-
         // We need to do this _after_ we set up logging, when the keychain is unlocked,
         // but before we access the database, files on disk, or NSUserDefaults.
         let launchFailure = launchFailure(didDeviceTransferRestoreSucceed: didDeviceTransferRestoreSucceed)
@@ -337,7 +335,7 @@ extension AppDelegate {
         }
 
         DebugLogger.shared().postLaunchLogCleanup()
-        AppVersion.shared().mainAppLaunchDidComplete()
+        AppVersion.shared.mainAppLaunchDidComplete()
 
         Self.updateApplicationShortcutItems(isRegisteredAndReady: tsAccountManager.isRegisteredAndReady)
 
@@ -452,7 +450,7 @@ extension AppDelegate {
             return .databaseCorruptedAndMightBeRecoverable
         }
 
-        let appVersion = AppVersion.shared()
+        let appVersion = AppVersion.shared
         let launchAttemptFailureThreshold = DebugFlags.betaLogging ? 2 : 3
         if
             appVersion.lastAppVersion == appVersion.currentAppReleaseVersion,

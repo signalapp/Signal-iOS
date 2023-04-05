@@ -83,7 +83,7 @@ public class RegistrationSplashViewController: OWSViewController {
                     comment: "Title of the 'onboarding splash' view."
                 )
             } else {
-                return "Internal Staging Build\n\(appVersion.currentAppVersion4)"
+                return "Internal Staging Build\n\(AppVersion.shared.currentAppVersion4)"
             }
         }()
         let titleLabel = UILabel.titleLabelForRegistration(text: titleText)

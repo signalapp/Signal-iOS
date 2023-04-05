@@ -445,14 +445,6 @@ public extension NSObject {
         SSKEnvironment.shared.senderKeyStoreRef
     }
 
-    final var appVersion: AppVersion {
-        AppVersion.shared()
-    }
-
-    static var appVersion: AppVersion {
-        AppVersion.shared()
-    }
-
     final var phoneNumberUtil: PhoneNumberUtil {
         SSKEnvironment.shared.phoneNumberUtilRef
     }
@@ -936,14 +928,6 @@ public extension Dependencies {
 
     static var senderKeyStore: SenderKeyStore {
         SSKEnvironment.shared.senderKeyStoreRef
-    }
-
-    var appVersion: AppVersion {
-        AppVersion.shared()
-    }
-
-    static var appVersion: AppVersion {
-        AppVersion.shared()
     }
 
     var phoneNumberUtil: PhoneNumberUtil {

@@ -137,8 +137,6 @@ class NSEEnvironment: Dependencies {
 
         logger.info("NSEEnvironment setup()", flushImmediately: true)
 
-        _ = AppVersion.shared()
-
         Cryptography.seedRandom()
 
         if let errorContent = Self.verifyDBKeysAvailable(logger: logger) {
@@ -226,6 +224,6 @@ class NSEEnvironment: Dependencies {
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
-        AppVersion.shared().nseLaunchDidComplete()
+        AppVersion.shared.nseLaunchDidComplete()
     }
 }

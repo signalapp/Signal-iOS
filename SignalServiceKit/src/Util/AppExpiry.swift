@@ -26,7 +26,7 @@ public class AppExpiry: NSObject {
         let expirationDate: Date?
 
         init(mode: Mode = .default, expirationDate: Date? = nil) {
-            self.version4 = AppVersion.shared().currentAppVersion4
+            self.version4 = AppVersion.shared.currentAppVersion4
             self.mode = mode
             self.expirationDate = expirationDate
 
@@ -71,7 +71,7 @@ public class AppExpiry: NSObject {
             }
 
             // We only want to restore the persisted state if it's for our current version.
-            guard persistedExpirationState.version4 == appVersion.currentAppVersion4 else {
+            guard persistedExpirationState.version4 == AppVersion.shared.currentAppVersion4 else {
                 return nil
             }
 
