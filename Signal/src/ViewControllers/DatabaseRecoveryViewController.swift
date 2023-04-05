@@ -212,50 +212,94 @@ class DatabaseRecoveryViewController: OWSViewController {
 
         state = .recovering(fractionCompleted: 0)
 
-        let progress = Progress(totalUnitCount: 2)
-        let needsDumpAndRestore: Bool
+        // We might not run all the steps (see comment below). We could use that to adjust the
+        // progress's unit count but that makes the code more complicated, so we just set it to 4
+        // for simplicity.
+        let progress = Progress(totalUnitCount: 4)
 
+        let progressObserver = progress.observe(\.fractionCompleted, options: [.new]) { [weak self] _, _ in
+            self?.didFractionCompletedChange(fractionCompleted: progress.fractionCompleted)
+        }
+
+        // This code is complicated because of (1) progress observation (2) promises. In practice,
+        // we're basically doing this:
+        //
+        // If we previously did a dump-and-restore and were interrupted (unusual but possible):
+        //
+        // 1. Set up the environment.
+        // 2. Do a manual recreate.
+        // 3. Mark the database as recovered.
+        //
+        // Otherwise...
+        //
+        // 1. Try to rebuild the existing database. If that clears corruption, skip steps 2 and 4.
+        // 2. Dump and restore.
+        // 3. Set up the environment.
+        // 4. Do a manual recreate.
+        // 5. Mark the database as recovered.
+        let promise: Promise<Void>
         switch DatabaseCorruptionState(userDefaults: userDefaults).status {
         case .notCorrupted:
             owsFailDebug("Database was not corrupted! Why are we on this screen?")
             state = .recoverySucceeded
             return
         case .corrupted:
-            needsDumpAndRestore = true
-        case .corruptedButAlreadyDumpedAndRestored:
-            needsDumpAndRestore = false
-        }
-
-        let progressObserver = progress.observe(\.fractionCompleted, options: [.new]) { [weak self] _, _ in
-            self?.didFractionCompletedChange(fractionCompleted: progress.fractionCompleted)
-        }
-
-        firstly(on: DispatchQueue.sharedUserInitiated) {
-            if needsDumpAndRestore {
-                let dumpAndRestore = DatabaseRecovery.DumpAndRestore(databaseFileUrl: self.databaseFileUrl)
-                progress.addChild(dumpAndRestore.progress, withPendingUnitCount: 1)
-                do {
-                    try dumpAndRestore.run()
-                } catch {
-                    return Promise<Void>(error: error)
+            promise = firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Bool> in
+                progress.performAsCurrent(withPendingUnitCount: 1) {
+                    DatabaseRecovery.rebuildExistingDatabase(at: self.databaseFileUrl)
                 }
-                DatabaseCorruptionState.flagCorruptedDatabaseAsDumpedAndRestored(userDefaults: self.userDefaults)
-            } else {
-                progress.completedUnitCount += 1
+                let integrity = progress.performAsCurrent(withPendingUnitCount: 1) {
+                    return DatabaseRecovery.integrityCheck(databaseFileUrl: self.databaseFileUrl)
+                }
+
+                let shouldDumpAndRecreate: Bool
+                switch integrity {
+                case .ok: shouldDumpAndRecreate = false
+                case .notOk: shouldDumpAndRecreate = true
+                }
+
+                if shouldDumpAndRecreate {
+                    let dumpAndRestore = DatabaseRecovery.DumpAndRestore(databaseFileUrl: self.databaseFileUrl)
+                    progress.addChild(dumpAndRestore.progress, withPendingUnitCount: 1)
+                    do {
+                        try dumpAndRestore.run()
+                    } catch {
+                        return Promise<Bool>(error: error)
+                    }
+                    DatabaseCorruptionState.flagCorruptedDatabaseAsDumpedAndRestored(userDefaults: self.userDefaults)
+                } else {
+                    progress.completedUnitCount += 1
+                }
+
+                return .value(shouldDumpAndRecreate)
+            }.then(on: DispatchQueue.sharedUserInitiated) { shouldDumpAndRecreate in
+                self.setupSskEnvironment().map { shouldDumpAndRecreate }
+            }.then(on: DispatchQueue.sharedUserInitiated) { shouldDumpAndRecreate in
+                if shouldDumpAndRecreate {
+                    let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: SDSDatabaseStorage.shared)
+                    progress.addChild(manualRecreation.progress, withPendingUnitCount: 1)
+                    manualRecreation.run()
+                } else {
+                    progress.completedUnitCount += 1
+                }
+                return Promise.value(())
             }
-            return Promise.value(())
-        }.then(on: DispatchQueue.sharedUserInitiated) {
-            self.setupSskEnvironment()
-        }.then(on: DispatchQueue.sharedUserInitiated) {
-            let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: SDSDatabaseStorage.shared)
-            progress.addChild(manualRecreation.progress, withPendingUnitCount: 1)
-            manualRecreation.run()
+        case .corruptedButAlreadyDumpedAndRestored:
+            promise = firstly(on: DispatchQueue.sharedUserInitiated) {
+                self.setupSskEnvironment()
+            }.then(on: DispatchQueue.sharedUserInitiated) {
+                let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: SDSDatabaseStorage.shared)
+                progress.addChild(
+                    manualRecreation.progress,
+                    withPendingUnitCount: progress.remainingUnitCount
+                )
+                manualRecreation.run()
+                return Promise.value(())
+            }
+        }
 
+        promise.done(on: DispatchQueue.main) {
             DatabaseCorruptionState.flagDatabaseAsRecoveredFromCorruption(userDefaults: self.userDefaults)
-
-            return Promise.value(())
-        }.done(on: DispatchQueue.main) { [weak self] in
-            guard let self = self else { return }
             self.state = .recoverySucceeded
         }.ensure {
             progressObserver.invalidate()

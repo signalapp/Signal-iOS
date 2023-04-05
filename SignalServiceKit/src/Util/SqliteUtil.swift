@@ -40,6 +40,35 @@ public enum SqliteUtil {
         sqlName.range(of: "^[a-zA-Z][a-zA-Z0-9_]*$", options: .regularExpression) != nil
     }
 
+    public enum IntegrityCheckResult {
+        case ok
+        case notOk
+    }
+
+    /// Run [`PRAGMA quick_check`][0] and report whether the check succeeded.
+    ///
+    /// We don't log much because that *could* log sensitive user data with really bad corruption.
+    ///
+    /// [0]: https://www.sqlite.org/pragma.html#pragma_quick_check
+    public static func quickCheck(db: Database) -> IntegrityCheckResult {
+        let firstQuickCheckLine: String?
+        do {
+            firstQuickCheckLine = try String.fetchOne(db, sql: "PRAGMA quick_check")
+        } catch {
+            Logger.error("PRAGMA quick_check failed to run")
+            return .notOk
+        }
+        let ok = firstQuickCheckLine?.starts(with: "ok") ?? false
+        return ok ? .ok : .notOk
+    }
+
+    /// Run [`REINDEX`][0].
+    ///
+    /// [0]: https://sqlite.org/lang_reindex.html
+    public static func reindex(db: Database) throws {
+        try db.execute(sql: "REINDEX")
+    }
+
     /// A bucket for FTS5 utilities.
     public enum Fts5 {
         public enum IntegrityCheckResult {

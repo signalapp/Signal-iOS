@@ -1094,27 +1094,14 @@ extension GRDBDatabaseStorageAdapter {
                 }
             }
 
-            // Use quick_check (O(N)) instead of integrity_check (O(NlogN)).
-            // This *could* include sensitive data if there's very bad
-            // corruption, so we only log whether it succeeds.
-            let quickCheckSql = "PRAGMA quick_check"
-            Logger.info(quickCheckSql)
-            let firstQuickCheckLine = databaseStorage.read { transaction -> String? in
-                do {
-                    return try String.fetchOne(transaction.unwrapGrdbRead.database, sql: quickCheckSql)
-                } catch {
-                    Logger.error("PRAGMA quick_check failed to run")
-                    return nil
-                }
+            let quickCheckResult = databaseStorage.read { transaction in
+                let db = transaction.unwrapGrdbRead.database
+                return SqliteUtil.quickCheck(db: db)
             }
-            if let firstQuickCheckLine = firstQuickCheckLine {
-                if firstQuickCheckLine.starts(with: "ok") {
-                    Logger.info("ok")
-                } else {
-                    Logger.error("failed (failure redacted)")
-                }
-            } else {
-                Logger.error("PRAGMA quick_check returned no lines")
+            Logger.info("PRAGMA quick_check")
+            switch quickCheckResult {
+            case .ok: Logger.info("ok")
+            case .notOk: Logger.error("failed (failure redacted)")
             }
         }
     }

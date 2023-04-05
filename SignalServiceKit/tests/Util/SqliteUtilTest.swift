@@ -31,6 +31,33 @@ final class SqliteUtilTest: XCTestCase {
         }
     }
 
+    @available(iOS 16.0, *)
+    func testQuickCheck() throws {
+        let databasePath = OWSFileSystem.temporaryFilePath(fileExtension: "sqlite")
+        let databaseUrl = URL(filePath: databasePath)
+
+        let happyResult: SqliteUtil.IntegrityCheckResult = try {
+            let databaseQueue = try DatabaseQueue(path: databasePath)
+            defer { try? databaseQueue.close() }
+
+            try databaseQueue.write { db in
+                try db.create(table: "colors") { $0.column("name", .text).notNull() }
+            }
+            return try databaseQueue.read { SqliteUtil.quickCheck(db: $0) }
+        }()
+        XCTAssertEqual(happyResult, .ok)
+
+        let unhappyResult: SqliteUtil.IntegrityCheckResult = try {
+            let databaseQueue = try DatabaseQueue(path: databasePath)
+            defer { try? databaseQueue.close() }
+
+            try Data([1, 2, 3]).write(to: databaseUrl)
+
+            return try databaseQueue.read { SqliteUtil.quickCheck(db: $0) }
+        }()
+        XCTAssertEqual(unhappyResult, .notOk)
+    }
+
     // MARK: - FTS tests
 
     func testFtsIntegrityCheckNoExternalContent() throws {
