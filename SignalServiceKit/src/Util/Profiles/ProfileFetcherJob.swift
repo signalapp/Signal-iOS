@@ -571,33 +571,6 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
-    public static func clearProfileState(address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-
-        // TODO: We could immediately discard profile state for this address as well.
-
-        self.profileManager.updateProfile(
-            for: address,
-            givenName: nil,
-            familyName: nil,
-            bio: nil,
-            bioEmoji: nil,
-            avatarUrlPath: nil,
-            optionalAvatarFileUrl: nil,
-            profileBadges: nil,
-            lastFetch: Date.distantPast,
-            isStoriesCapable: false,
-            canReceiveGiftBadges: false,
-            isPniCapable: false,
-            userProfileWriter: .profileFetch,
-            authedAccount: .implicit(),
-            transaction: transaction
-        )
-
-        self.paymentsHelper.setArePaymentsEnabled(for: address,
-                                                     hasPaymentsEnabled: false,
-                                                     transaction: transaction)
-    }
-
     private static func updateUnidentifiedAccess(address: SignalServiceAddress,
                                                  verifier: Data?,
                                                  hasUnrestrictedAccess: Bool) {

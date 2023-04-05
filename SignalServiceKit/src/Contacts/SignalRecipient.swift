@@ -135,6 +135,19 @@ extension SignalRecipient {
                                    newUuid: newServiceIdString,
                                    transaction: transaction.unwrapGrdbWrite)
 
+        if let oldPhoneNumber {
+            // If we have an `oldPhoneNumber`, it means that value is now detached from
+            // everything. If there is any profile that refers exclusively to that
+            // phone number, we can delete it. (If there are profiles that refer to
+            // some other ACI, we should keep those since they're for accounts that are
+            // potentially still valid.)
+            let sql = """
+                DELETE FROM \(UserProfileRecord.databaseTableName)
+                WHERE \(userProfileColumn: .recipientPhoneNumber) = ? AND \(userProfileColumn: .recipientUUID) IS NULL
+            """
+            transaction.unwrapGrdbWrite.execute(sql: sql, arguments: [oldPhoneNumber])
+        }
+
         if let newServiceId,
            let localAci = tsAccountManager.localUuid(with: transaction).map({ ServiceId($0) }),
            localAci != newServiceId,
@@ -229,8 +242,6 @@ extension SignalRecipient {
         }
 
         if let obsoleteAddress {
-            ProfileFetcherJob.clearProfileState(address: obsoleteAddress, transaction: transaction)
-
             transaction.addAsyncCompletion(queue: .global()) {
                 Self.udManager.setUnidentifiedAccessMode(.unknown, address: obsoleteAddress)
             }
