@@ -324,6 +324,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         guard FeatureFlags.useNewRegistrationFlow else {
             return
         }
+        Logger.info("Attempting to start change number from settings")
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.changingNumber(params)
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)

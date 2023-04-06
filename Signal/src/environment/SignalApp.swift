@@ -62,6 +62,7 @@ extension SignalApp {
             if let lastMode = DependenciesBridge.shared.db.read(block: {
                 return registrationLoader.restoreLastMode(transaction: $0)
             }) {
+                Logger.info("Found ongoing registration; continuing")
                 showRegistration(loader: registrationLoader, desiredMode: lastMode)
                 AppReadiness.setUIIsReady()
                 // TODO[Registration]: use a db migration to move isComplete state to reg coordinator.
@@ -76,10 +77,12 @@ extension SignalApp {
                         let reregE164 = E164(reregNumber),
                         let reregAci = tsAccountManager.reregistrationUUID()
                     {
+                        Logger.info("Found legacy re-registration; continuing in new registration")
                         // A user who started re-registration before the new
                         // registration flow shipped; kick them to new re-reg.
                         desiredMode = .reRegistering(.init(e164: reregE164, aci: reregAci))
                     } else {
+                        Logger.info("Found legacy initial registration; continuing in new registration")
                         desiredMode = .registering
                     }
                     showRegistration(loader: registrationLoader, desiredMode: desiredMode)
@@ -112,6 +115,14 @@ extension SignalApp {
     }
 
     func showRegistration(loader: RegistrationCoordinatorLoader, desiredMode: RegistrationMode) {
+        switch desiredMode {
+        case .registering:
+            Logger.info("Attempting initial registration on app launch")
+        case .reRegistering:
+            Logger.info("Attempting reregistration on app launch")
+        case .changingNumber:
+            Logger.info("Attempting change number registration on app launch")
+        }
         let coordinator = databaseStorage.write { tx in
             return loader.coordinator(forDesiredMode: desiredMode, transaction: tx.asV2Write)
         }

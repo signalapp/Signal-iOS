@@ -133,6 +133,7 @@ public extension RegistrationUtils {
 extension RegistrationUtils {
 
     fileprivate static func showReRegistration(e164: E164, aci: UUID) {
+        Logger.info("Attempting to start re-registration")
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.reRegistering(.init(e164: e164, aci: aci))
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)

@@ -294,6 +294,7 @@ public class NotificationActionHandler: NSObject {
                     future.resolve()
                     return
                 }
+                Logger.info("Reregistering from deregistered notification")
                 RegistrationUtils.reregister(fromViewController: viewController)
                 future.resolve()
             }
