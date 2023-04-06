@@ -734,4 +734,116 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(address_p1, makeAddress(uuid: nil, phoneNumber: phoneNumber1))
         XCTAssertNotEqual(address_p1.hash, makeAddress(uuid: nil, phoneNumber: phoneNumber1).hash)
     }
+
+    func testInitializers() {
+        let sid_a = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000A")!
+        let pn_a = E164("+16505550101")!
+        let pn_b = E164("+16505550102")!
+
+        cache.updateRecipient(SignalRecipient(serviceId: ServiceIdObjC(sid_a), phoneNumber: E164ObjC(pn_a)))
+
+        let address1 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: nil,
+            cache: cache,
+            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+        )
+        let address2 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_a.stringValue,
+            cache: cache,
+            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+        )
+        let address3 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_b.stringValue,
+            cache: cache,
+            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+        )
+
+        XCTAssertEqual(address1.e164, pn_a)
+        XCTAssertEqual(address2.e164, pn_a)
+        XCTAssertEqual(address3.e164, pn_a)
+
+        let address4 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: nil,
+            cache: cache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
+        let address5 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_a.stringValue,
+            cache: cache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
+        let address6 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_b.stringValue,
+            cache: cache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
+
+        XCTAssertEqual(address4.e164, pn_a)
+        XCTAssertEqual(address5.e164, pn_a)
+        XCTAssertEqual(address6.e164, pn_b)
+
+        let address7 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: nil,
+            cache: cache,
+            cachePolicy: .ignoreCache
+        )
+        let address8 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_a.stringValue,
+            cache: cache,
+            cachePolicy: .ignoreCache
+        )
+        let address9 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_b.stringValue,
+            cache: cache,
+            cachePolicy: .ignoreCache
+        )
+
+        XCTAssertEqual(address7.e164, nil)
+        XCTAssertEqual(address8.e164, pn_a)
+        XCTAssertEqual(address9.e164, pn_b)
+
+        cache.updateRecipient(SignalRecipient(serviceId: ServiceIdObjC(sid_a), phoneNumber: E164ObjC(pn_b)))
+
+        XCTAssertEqual(address1.e164, pn_b)
+        XCTAssertEqual(address2.e164, pn_b)
+        XCTAssertEqual(address3.e164, pn_b)
+        XCTAssertEqual(address4.e164, pn_b)
+        XCTAssertEqual(address5.e164, pn_b)
+        XCTAssertEqual(address6.e164, pn_b)
+        XCTAssertEqual(address7.e164, nil)
+        XCTAssertEqual(address8.e164, pn_a)
+        XCTAssertEqual(address9.e164, pn_b)
+    }
+
+    func testInitializerPerformance() {
+        let iterations = 15_000
+
+        let serviceId = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000A")!
+        let phoneNumber = E164("+16505550101")!
+
+        cache.updateRecipient(SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: E164ObjC(phoneNumber)))
+
+        var addresses = [SignalServiceAddress]()
+        addresses.reserveCapacity(iterations)
+
+        for _ in 0..<iterations {
+            addresses.append(SignalServiceAddress(
+                uuid: serviceId.uuidValue,
+                phoneNumber: phoneNumber.stringValue,
+                cache: cache,
+                cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            ))
+        }
+
+        XCTAssertEqual(addresses.count, iterations)
+    }
 }
