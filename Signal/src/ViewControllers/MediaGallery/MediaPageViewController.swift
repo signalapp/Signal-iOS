@@ -608,7 +608,9 @@ class MediaPageViewController: UIPageViewController {
             return attachmentStream
         }
 
-        switch mediaAttachmentStreams.count {
+        let mediaCount = mediaAttachmentStreams.count
+
+        switch mediaCount {
         case 0:
             owsFail("We should always have at least one attachment stream, for the current item.")
         case 1:
@@ -626,9 +628,12 @@ class MediaPageViewController: UIPageViewController {
                     "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE",
                     comment: "Text explaining that the user will forward all media from a message."
                 ),
-                proceedTitle: OWSLocalizedString(
-                    "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE",
-                    comment: "Text confirming the user wants to forward media."
+                proceedTitle: String(
+                    format: OWSLocalizedString(
+                        "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_FORMAT",
+                        comment: "Text confirming the user wants to forward media. Embeds {{ %1$@ the number of media to be forwarded }}."
+                    ),
+                    OWSFormat.formatInt(mediaCount)
                 ),
                 proceedAction: { [weak self] _ in
                     guard let self else { return }
