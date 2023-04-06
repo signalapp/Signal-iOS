@@ -648,7 +648,7 @@ class AnySearchIndexer: Dependencies {
                 return ""
             }
 
-            guard let digitScalars = phoneNumber.nationalNumber?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
+            guard let digitScalars = phoneNumber.nationalNumberFormatted?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
                 owsFailDebug("unexpected unparsable recipientId: \(recipientId)")
                 return ""
             }
