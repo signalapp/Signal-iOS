@@ -1339,6 +1339,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     public func testSessionPath_invalidE164() {
         executeTest {
+            switch mode {
+            case .registering, .changingNumber:
+                break
+            case .reRegistering:
+                // no changing the number when reregistering
+                return
+            }
+
             setUpSessionPath()
 
             let badE164 = E164("+15555555555")!

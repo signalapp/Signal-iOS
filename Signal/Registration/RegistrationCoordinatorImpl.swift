@@ -42,7 +42,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // Once we are past the splash, no going back.
                 return false
             } else {
-                self.wipePersistedState()
+                self.db.write { tx in
+                    self.wipePersistedState(tx)
+                }
                 return true
             }
         case .reRegistering, .changingNumber:
@@ -66,7 +68,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .changingNumber:
             // Wipe in progress state; presumably the user decided not
             // to change number.
-            self.wipePersistedState()
+            self.db.write { tx in
+                self.wipePersistedState(tx)
+            }
         }
         return true
     }
@@ -129,6 +133,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public func submitE164(_ e164: E164) -> Guarantee<RegistrationStep> {
         Logger.info("")
+
+        var e164 = e164
+        switch mode {
+        case .reRegistering(let reregState):
+            if e164 != reregState.e164 {
+                Logger.debug("Tried to submit a changed e164 during rereg; ignoring and submitting the fixed e164 instead.")
+                e164 = reregState.e164
+            }
+        case .registering, .changingNumber:
+            break
+        }
+
         let pathway = getPathway()
         db.write { tx in
             updatePersistedState(tx) {
@@ -770,6 +786,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.wasReglockEnabledBeforeStarting = deps.ows2FAManager.isReglockEnabled(tx)
         }
 
+        switch mode {
+        case .reRegistering(let reregState):
+            if let persistedE164 = persistedState.e164, reregState.e164 != persistedE164 {
+                // This exists to catch a bug released in version 6.19, where
+                // the phone number view controller would incorrectly inject a
+                // leading 0 into phone numbers from certain national codes.
+                // That new number would then be written to persisted state.
+                // To recover these users, we wipe their entire persisted state
+                // and restart registration from scratch with fresh state.
+                db.write { tx in
+                    self.resetSession(tx)
+                    self.wipePersistedState(tx)
+                }
+                return self.restoreStateIfNeeded()
+            }
+        case .registering, .changingNumber:
+            break
+        }
+
         let sessionGuarantee: Guarantee<Void> = deps.sessionManager.restoreSession()
             .map(on: schedulers.main) { [weak self] session in
                 self?.db.write { self?.processSession(session, $0) }
@@ -888,20 +923,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 // We are done! Wipe everything
                 self.inMemoryState = InMemoryState()
-                self.wipePersistedState()
+                self.db.write { tx in
+                    self.wipePersistedState(tx)
+                }
                 // Do any storage service backups we have pending.
                 self.deps.storageServiceManager.backupPendingChanges(authedAccount: accountIdentity.authedAccount)
                 return .value(.done)
             }
     }
 
-    private func wipePersistedState() {
+    private func wipePersistedState(_ tx: DBWriteTransaction) {
         Logger.info("")
 
-        self.db.write { tx in
-            self.kvStore.removeValue(forKey: Constants.persistedStateKey, transaction: tx)
-            self.loader.clearPersistedMode(transaction: tx)
-        }
+        self.kvStore.removeValue(forKey: Constants.persistedStateKey, transaction: tx)
+        self.loader.clearPersistedMode(transaction: tx)
     }
 
     // MARK: - Pathway
@@ -3269,7 +3304,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return unretainedSelfError()
             }
             Logger.warn("Got deregistered while completing registration; starting over with re-registration.")
-            self.wipePersistedState()
+            self.db.write { tx in
+                self.wipePersistedState(tx)
+            }
             return .value(.showErrorSheet(.becameDeregistered(reregParams: .init(
                 e164: accountIdentity.e164,
                 aci: accountIdentity.aci
