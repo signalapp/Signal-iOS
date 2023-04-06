@@ -3577,9 +3577,6 @@
 /* Text explaining that the user will forward all media from a message. */
 "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "All media in this message will be forwarded.";
 
-/* Text confirming the user wants to forward media. Embeds {{ %1$@ the number of media to be forwarded }}. */
-"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_FORMAT" = "Forward %1$@";
-
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
 

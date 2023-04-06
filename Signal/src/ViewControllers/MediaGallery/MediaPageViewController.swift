@@ -623,17 +623,20 @@ class MediaPageViewController: UIPageViewController {
         default:
             // If we are forwarding multiple items, warn the user first.
 
+            let titleFormatString = OWSLocalizedString(
+                "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_%d",
+                tableName: "PluralAware",
+                comment: "Text confirming the user wants to forward media. Embeds {{ %1$@ the number of media to be forwarded }}."
+            )
+
             OWSActionSheets.showConfirmationAlert(
                 message: OWSLocalizedString(
                     "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE",
                     comment: "Text explaining that the user will forward all media from a message."
                 ),
-                proceedTitle: String(
-                    format: OWSLocalizedString(
-                        "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_FORMAT",
-                        comment: "Text confirming the user wants to forward media. Embeds {{ %1$@ the number of media to be forwarded }}."
-                    ),
-                    OWSFormat.formatInt(mediaCount)
+                proceedTitle: String.localizedStringWithFormat(
+                    titleFormatString,
+                    mediaCount
                 ),
                 proceedAction: { [weak self] _ in
                     guard let self else { return }
