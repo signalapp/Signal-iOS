@@ -1,2 +1,1 @@
-• Hot on the heels of their introduction in the last release, the fast-forward and rewind icons for long videos have been updated to look slightly fast-er and a bit more rewind-er.
-• Long captions in the media viewer can now be expanded with a tap, which lets you see more of the image if your friend sends a picture worth a thousand words with a rambling caption that’s also a thousand words.
+• Now you can quickly see how many images or videos will be included when you forward an album, and you can also choose to cancel the process and wait for a WiFi connection before re-sharing 47 pictures from a recent birthday party. If today is your birthday, happy birthday from Signal.
