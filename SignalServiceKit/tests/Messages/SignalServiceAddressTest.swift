@@ -740,7 +740,7 @@ class SignalServiceAddressTest: XCTestCase {
         let pn_a = E164("+16505550101")!
         let pn_b = E164("+16505550102")!
 
-        cache.updateRecipient(SignalRecipient(serviceId: ServiceIdObjC(sid_a), phoneNumber: E164ObjC(pn_a)))
+        cache.updateRecipient(SignalRecipient(phoneNumber: pn_a.stringValue, uuid: sid_a.uuidValue, devices: []))
 
         let address1 = SignalServiceAddress(
             uuid: sid_a.uuidValue,
@@ -811,7 +811,7 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(address8.e164, pn_a)
         XCTAssertEqual(address9.e164, pn_b)
 
-        cache.updateRecipient(SignalRecipient(serviceId: ServiceIdObjC(sid_a), phoneNumber: E164ObjC(pn_b)))
+        cache.updateRecipient(SignalRecipient(phoneNumber: pn_b.stringValue, uuid: sid_a.uuidValue, devices: []))
 
         XCTAssertEqual(address1.e164, pn_b)
         XCTAssertEqual(address2.e164, pn_b)
@@ -830,7 +830,7 @@ class SignalServiceAddressTest: XCTestCase {
         let serviceId = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000A")!
         let phoneNumber = E164("+16505550101")!
 
-        cache.updateRecipient(SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: E164ObjC(phoneNumber)))
+        cache.updateRecipient(SignalRecipient(phoneNumber: phoneNumber.stringValue, uuid: serviceId.uuidValue, devices: []))
 
         var addresses = [SignalServiceAddress]()
         addresses.reserveCapacity(iterations)
