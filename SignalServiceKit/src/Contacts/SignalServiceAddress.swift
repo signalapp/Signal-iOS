@@ -339,7 +339,7 @@ public extension Array where Element == SignalServiceAddress {
 // MARK: -
 
 private class CachedAddress {
-    struct Identifiers {
+    struct Identifiers: Equatable {
         var serviceId: ServiceId?
         var phoneNumber: String?
     }
@@ -365,8 +365,8 @@ public class SignalServiceAddressCache: NSObject {
         var serviceIdToPhoneNumber = [ServiceId: String]()
         var phoneNumberToServiceIds = [String: [ServiceId]]()
 
-        var serviceIdAddresses = [ServiceId: WeakArray<CachedAddress>]()
-        var phoneNumberOnlyAddresses = [String: WeakArray<CachedAddress>]()
+        var serviceIdCachedAddresses = [ServiceId: [CachedAddress]]()
+        var phoneNumberOnlyCachedAddresses = [String: [CachedAddress]]()
     }
 
     @objc
@@ -419,7 +419,7 @@ public class SignalServiceAddressCache: NSObject {
             // These ServiceIds are no longer associated with `phoneNumber`.
             for serviceId in Set(oldServiceIds).subtracting(newServiceIds) {
                 cacheState.serviceIdToPhoneNumber[serviceId] = nil
-                cacheState.serviceIdAddresses[serviceId]?.elements.forEach { cachedAddress in
+                cacheState.serviceIdCachedAddresses[serviceId]?.forEach { cachedAddress in
                     cachedAddress.identifiers.update { $0.phoneNumber = nil }
                 }
             }
@@ -427,7 +427,7 @@ public class SignalServiceAddressCache: NSObject {
             // These ServiceIds are now associated with `phoneNumber`.
             for serviceId in Set(newServiceIds).subtracting(oldServiceIds) {
                 let oldPhoneNumber = cacheState.serviceIdToPhoneNumber.updateValue(phoneNumber, forKey: serviceId)
-                cacheState.serviceIdAddresses[serviceId]?.elements.forEach { cachedAddress in
+                cacheState.serviceIdCachedAddresses[serviceId]?.forEach { cachedAddress in
                     cachedAddress.identifiers.update { $0.phoneNumber = phoneNumber }
                 }
 
@@ -451,11 +451,10 @@ public class SignalServiceAddressCache: NSObject {
             // identifier in the future. This maintains the existing (very useful)
             // invariant that a nonnil UUID for a SignalServiceAddress remains stable.
             if let preferredServiceId = newServiceIds.first {
-                let phoneNumberOnlyAddresses = cacheState.phoneNumberOnlyAddresses.removeValue(forKey: phoneNumber)
-                phoneNumberOnlyAddresses?.elements.forEach { cachedAddress in
+                cacheState.phoneNumberOnlyCachedAddresses.removeValue(forKey: phoneNumber)?.forEach { cachedAddress in
                     cachedAddress.identifiers.update { $0.serviceId = preferredServiceId }
                     // This address has a serviceId now -- track that serviceId for future updates.
-                    cacheState.serviceIdAddresses[preferredServiceId, default: WeakArray()].append(cachedAddress)
+                    cacheState.serviceIdCachedAddresses[preferredServiceId, default: []].append(cachedAddress)
                 }
             }
         }
@@ -499,20 +498,29 @@ public class SignalServiceAddressCache: NSObject {
                 phoneNumber: resolvedIdentifiers.phoneNumber
             )
 
-            let cachedAddress = CachedAddress(hashValue: hashValue, identifiers: resolvedIdentifiers)
-
-            switch cachePolicy {
-            case .ignoreCache:
-                break
-            case .preferInitialPhoneNumberAndListenForUpdates, .preferCachedPhoneNumberAndListenForUpdates:
-                if let serviceId = resolvedIdentifiers.serviceId {
-                    cacheState.serviceIdAddresses[serviceId, default: WeakArray()].append(cachedAddress)
-                } else if let phoneNumber = resolvedIdentifiers.phoneNumber {
-                    cacheState.phoneNumberOnlyAddresses[phoneNumber, default: WeakArray()].append(cachedAddress)
+            func getOrCreateCachedAddress<T>(key: T, in cachedAddresses: inout [T: [CachedAddress]]) -> CachedAddress {
+                for cachedAddress in cachedAddresses[key, default: []] {
+                    if cachedAddress.hashValue == hashValue && cachedAddress.identifiers.get() == resolvedIdentifiers {
+                        return cachedAddress
+                    }
                 }
+                let result = CachedAddress(hashValue: hashValue, identifiers: resolvedIdentifiers)
+                cachedAddresses[key, default: []].append(result)
+                return result
             }
 
-            return cachedAddress
+            switch cachePolicy {
+            case .preferInitialPhoneNumberAndListenForUpdates, .preferCachedPhoneNumberAndListenForUpdates:
+                if let serviceId = resolvedIdentifiers.serviceId {
+                    return getOrCreateCachedAddress(key: serviceId, in: &cacheState.serviceIdCachedAddresses)
+                }
+                if let phoneNumber = resolvedIdentifiers.phoneNumber {
+                    return getOrCreateCachedAddress(key: phoneNumber, in: &cacheState.phoneNumberOnlyCachedAddresses)
+                }
+                fallthrough
+            case .ignoreCache:
+                return CachedAddress(hashValue: hashValue, identifiers: resolvedIdentifiers)
+            }
         }
     }
 
