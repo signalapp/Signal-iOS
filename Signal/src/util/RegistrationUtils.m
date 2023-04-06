@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         @"Label for button that lets users re-register using the same phone number.")
                               style:ActionSheetActionStyleDestructive
                             handler:^(ActionSheetAction *action) {
+                                OWSLogInfo(@"Reregistering from banner");
                                 [RegistrationUtils reregisterFromViewController:fromViewController];
                             }]];
 

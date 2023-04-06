@@ -120,6 +120,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             deps.messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
         }
         let delegate = CoordinatorDelegate(loader: self)
+        Logger.info("Starting registration, mode: \(mode.logString)")
         return RegistrationCoordinatorImpl(mode: mode, loader: delegate, dependencies: deps)
     }
 
@@ -223,6 +224,17 @@ extension RegistrationCoordinatorLoaderImpl.Mode {
                 localDeviceId: state.localDeviceId,
                 localUserAllDeviceIds: state.localUserAllDeviceIds
             ))
+        }
+    }
+
+    fileprivate var logString: String {
+        switch self {
+        case .registering:
+            return "initial registration"
+        case .reRegistering(let reRegisteringState):
+            return "re-registration aci:\(reRegisteringState.aci.uuidString) e164:\(reRegisteringState.e164.stringValue)"
+        case .changingNumber(let changeNumberState):
+            return "changing number: aci:\(changeNumberState.localAci.uuidString) old e164:\(changeNumberState.oldE164.stringValue)"
         }
     }
 }
