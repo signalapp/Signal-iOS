@@ -375,7 +375,6 @@
 		347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347DE5BB2548967900C32CDC /* BlockingGroupMigrationView.swift */; };
 		348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
-		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
 		34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
 		34848D5E25D43ADD00E5034B /* cash-out.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5A25D43ADD00E5034B /* cash-out.json */; };
 		34848D5F25D43ADD00E5034B /* about-mobilecoin.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5B25D43ADD00E5034B /* about-mobilecoin.json */; };
@@ -1366,7 +1365,6 @@
 		F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */; };
 		F942625B289B1B5500460798 /* OWSFormatTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261EE289B1B5400460798 /* OWSFormatTest.swift */; };
 		F942625D289B1B5500460798 /* RefineryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F0289B1B5400460798 /* RefineryTest.swift */; };
-		F942625E289B1B5500460798 /* JobQueueTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F1289B1B5400460798 /* JobQueueTest.swift */; };
 		F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F2289B1B5400460798 /* LRUCacheTest.swift */; };
 		F9426260289B1B5500460798 /* kbs_storage_service_encryption_vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */; };
 		F9426261289B1B5500460798 /* AppVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F4289B1B5400460798 /* AppVersionTests.swift */; };
@@ -1401,7 +1399,6 @@
 		F942628E289B1B5600460798 /* StickerPackInfoTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426226289B1B5500460798 /* StickerPackInfoTest.swift */; };
 		F942628F289B1B5600460798 /* TypingIndicatorMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426227289B1B5500460798 /* TypingIndicatorMessageTest.swift */; };
 		F9426290289B1B5600460798 /* OWSLinkPreviewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426228289B1B5500460798 /* OWSLinkPreviewTest.swift */; };
-		F9426291289B1B5600460798 /* OWSMessageSenderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426229289B1B5500460798 /* OWSMessageSenderTest.m */; };
 		F9426292289B1B5600460798 /* MessageDecryptionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942622A289B1B5500460798 /* MessageDecryptionTest.swift */; };
 		F9426293289B1B5600460798 /* MessageSendLogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942622B289B1B5500460798 /* MessageSendLogTests.swift */; };
 		F9426294289B1B5600460798 /* OWSOutgoingReceiptManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942622C289B1B5500460798 /* OWSOutgoingReceiptManagerTests.swift */; };
@@ -2689,7 +2686,6 @@
 		348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaceAdminViewController.swift; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
 		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
-		34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanDataCleanerTest.m; sourceTree = "<group>"; };
 		34843B2A214FE295004DED45 /* MockEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MockEnvironment.m; sourceTree = "<group>"; };
 		34843B2B214FE295004DED45 /* MockEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MockEnvironment.h; sourceTree = "<group>"; };
 		34848D5A25D43ADD00E5034B /* cash-out.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "cash-out.json"; sourceTree = "<group>"; };
@@ -3930,7 +3926,6 @@
 		F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteConfigManagerTests.swift; sourceTree = "<group>"; };
 		F94261EE289B1B5400460798 /* OWSFormatTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFormatTest.swift; sourceTree = "<group>"; };
 		F94261F0289B1B5400460798 /* RefineryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefineryTest.swift; sourceTree = "<group>"; };
-		F94261F1289B1B5400460798 /* JobQueueTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobQueueTest.swift; sourceTree = "<group>"; };
 		F94261F2289B1B5400460798 /* LRUCacheTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRUCacheTest.swift; sourceTree = "<group>"; };
 		F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = kbs_storage_service_encryption_vectors.json; sourceTree = "<group>"; };
 		F94261F4289B1B5400460798 /* AppVersionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppVersionTests.swift; sourceTree = "<group>"; };
@@ -3965,7 +3960,6 @@
 		F9426226289B1B5500460798 /* StickerPackInfoTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackInfoTest.swift; sourceTree = "<group>"; };
 		F9426227289B1B5500460798 /* TypingIndicatorMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorMessageTest.swift; sourceTree = "<group>"; };
 		F9426228289B1B5500460798 /* OWSLinkPreviewTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSLinkPreviewTest.swift; sourceTree = "<group>"; };
-		F9426229289B1B5500460798 /* OWSMessageSenderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageSenderTest.m; sourceTree = "<group>"; };
 		F942622A289B1B5500460798 /* MessageDecryptionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageDecryptionTest.swift; sourceTree = "<group>"; };
 		F942622B289B1B5500460798 /* MessageSendLogTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSendLogTests.swift; sourceTree = "<group>"; };
 		F942622C289B1B5500460798 /* OWSOutgoingReceiptManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReceiptManagerTests.swift; sourceTree = "<group>"; };
@@ -7452,7 +7446,6 @@
 				345AE2B52317048200DB6225 /* GRDBFinderTest.swift */,
 				4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */,
 				34C1A93A2656E904004FA478 /* MiscTest.swift */,
-				34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */,
 				F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */,
 				349D21E7268E044700D98870 /* QRCodeParserTest.swift */,
 				F9844C482867936400B16DD4 /* SignalMeTest.swift */,
@@ -7906,7 +7899,6 @@
 				F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */,
 				502B1B54297B28AF00FDB3AE /* ErrorTest.swift */,
 				F94261E7289B1B5400460798 /* FeatureFlagsTests.swift */,
-				F94261F1289B1B5400460798 /* JobQueueTest.swift */,
 				50D5E2422980B53000899660 /* LinkValidatorTest.swift */,
 				F94261F2289B1B5400460798 /* LRUCacheTest.swift */,
 				F94261FC289B1B5400460798 /* MathOWSTests.swift */,
@@ -7984,7 +7976,6 @@
 				F93A76EC29133A4B005FDE4F /* OWSDisappearingMessagesJobTest.swift */,
 				F9426228289B1B5500460798 /* OWSLinkPreviewTest.swift */,
 				F9426232289B1B5500460798 /* OWSMessageManagerTest.m */,
-				F9426229289B1B5500460798 /* OWSMessageSenderTest.m */,
 				F942622C289B1B5500460798 /* OWSOutgoingReceiptManagerTests.swift */,
 				F9426237289B1B5500460798 /* OWSUDManagerTest.swift */,
 				F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */,
@@ -11613,7 +11604,6 @@
 				D925F56B298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */,
 				454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */,
 				45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */,
-				34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */,
 				F963164B291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift in Sources */,
 				4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */,
 				3452851D26DFD12300824983 /* PaymentsFormatTest.swift in Sources */,
@@ -12339,7 +12329,6 @@
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
 				F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
-				F942625E289B1B5500460798 /* JobQueueTest.swift in Sources */,
 				6673FF752979F87500F96CFD /* KBSAuthCredentialStorageTests.swift in Sources */,
 				F9426257289B1B5500460798 /* KeyBackupServiceTests.swift in Sources */,
 				66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */,
@@ -12367,7 +12356,6 @@
 				F9426248289B1B5500460798 /* OWSIdentityManagerTests.swift in Sources */,
 				F9426290289B1B5600460798 /* OWSLinkPreviewTest.swift in Sources */,
 				F942629A289B1B5600460798 /* OWSMessageManagerTest.m in Sources */,
-				F9426291289B1B5600460798 /* OWSMessageSenderTest.m in Sources */,
 				F9426268289B1B5500460798 /* OWSOperationTest.swift in Sources */,
 				F988DC13289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift in Sources */,
 				F9426294289B1B5600460798 /* OWSOutgoingReceiptManagerTests.swift in Sources */,
