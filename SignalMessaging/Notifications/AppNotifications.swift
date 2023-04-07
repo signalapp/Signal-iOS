@@ -584,14 +584,18 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
 
-        let notificationBody: String?
-        switch previewType {
-        case .noNameNoPreview, .nameNoPreview:
-            notificationBody = NotificationStrings.genericIncomingMessageNotification
-        case .namePreview:
-            notificationBody = messageText
-        }
-        assert((notificationBody ?? notificationTitle) != nil)
+        let notificationBody: String = {
+            if thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
+                return NotificationStrings.incomingMessageRequestNotification
+            }
+
+            switch previewType {
+            case .noNameNoPreview, .nameNoPreview:
+                return NotificationStrings.genericIncomingMessageNotification
+            case .namePreview:
+                return messageText
+            }
+        }()
 
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
@@ -637,7 +641,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             let sound = self.requestSound(thread: thread)
             self.presenter.notify(category: category,
                                 title: notificationTitle,
-                                body: notificationBody ?? "",
+                                body: notificationBody,
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
                                 interaction: interaction,

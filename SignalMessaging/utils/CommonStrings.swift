@@ -422,6 +422,14 @@ public class NotificationStrings: NSObject {
         OWSLocalizedString("GENERIC_INCOMING_MESSAGE_NOTIFICATION", comment: "notification title indicating the user generically has a new message")
     }
 
+    /// Body for notification in a thread with a pending message request.
+    static public var incomingMessageRequestNotification: String {
+        OWSLocalizedString(
+            "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST",
+            comment: "Body for a notification representing a message request."
+        )
+    }
+
     /// This is the fallback message used for push notifications
     /// when the NSE or main app is unable to process them. We
     /// don't use it directly in the app, but need to maintain

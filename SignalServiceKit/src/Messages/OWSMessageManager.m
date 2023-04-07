@@ -2188,6 +2188,10 @@ NS_ASSUME_NONNULL_BEGIN
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
     [message insertOrReplacePlaceholderFrom:authorAddress transaction:transaction];
 
+    // Inserting the message may have modified the thread on disk, so reload it.
+    // For example, we may have marked the thread as visible.
+    [thread anyReloadWithTransaction:transaction];
+
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:message];
 
