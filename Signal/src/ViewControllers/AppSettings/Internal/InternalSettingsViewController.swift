@@ -113,7 +113,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         infoSection.add(.copyableItem(label: "Local PNI", value: tsAccountManager.localPni?.uuidString))
 
-        infoSection.add(.copyableItem(label: "Device ID", value: "\(tsAccountManager.storedDeviceId())"))
+        infoSection.add(.copyableItem(label: "Device ID", value: "\(tsAccountManager.storedDeviceId)"))
 
         if let buildDetails = Bundle.main.object(forInfoDictionaryKey: "BuildDetails") as? [String: AnyObject] {
             if let signalCommit = (buildDetails["SignalCommit"] as? String)?.strippedOrNil?.prefix(12) {

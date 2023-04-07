@@ -123,7 +123,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         let accountSection = OWSTableSection()
         accountSection.headerTitle = NSLocalizedString("SETTINGS_ACCOUNT", comment: "Title for the 'account' link in settings.")
 
-        if tsAccountManager.isDeregistered() {
+        if tsAccountManager.isDeregistered {
             accountSection.add(.actionItem(
                 withText: tsAccountManager.isPrimaryDevice
                     ? NSLocalizedString("SETTINGS_REREGISTER_BUTTON", comment: "Label for re-registration button.")
@@ -281,7 +281,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             guard self.legacyChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction) else {
                 return .disallowed
             }
-            guard self.tsAccountManager.isDeregistered(with: transaction).negated else {
+            guard self.tsAccountManager.isDeregistered(transaction: transaction).negated else {
                 return .disallowed
             }
             let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
@@ -296,7 +296,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 let localAddress = tsAccountManager.localAddress(with: transaction),
                 let localAci = localAddress.uuid,
                 let localE164 = localAddress.e164,
-                let authToken = tsAccountManager.storedServerAuthToken(with: transaction),
+                let authToken = tsAccountManager.storedServerAuthToken(transaction: transaction),
                 let localRecipient = SignalRecipient.get(
                     address: localAddress,
                     mustHaveDevices: false,
@@ -307,7 +307,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             else {
                 return .disallowed
             }
-            let localDeviceId = tsAccountManager.storedDeviceId(with: transaction)
+            let localDeviceId = tsAccountManager.storedDeviceId(transaction: transaction)
 
             return .allowed(RegistrationMode.ChangeNumberParams(
                 oldE164: localE164,

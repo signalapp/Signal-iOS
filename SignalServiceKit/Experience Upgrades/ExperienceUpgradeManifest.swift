@@ -437,7 +437,7 @@ extension ExperienceUpgradeManifest {
 extension ExperienceUpgradeManifest {
     func shouldBeShown(transaction: SDSAnyReadTransaction) -> Bool {
         if
-            let registrationDate = tsAccountManager.registrationDate(with: transaction),
+            let registrationDate = tsAccountManager.registrationDate(transaction: transaction),
             Date().timeIntervalSince(registrationDate) < delayAfterRegistration
         {
             // We have not waited long enough after registration to show this

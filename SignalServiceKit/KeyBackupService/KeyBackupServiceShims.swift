@@ -53,7 +53,7 @@ public class _KeyBackupServiceImpl_TSAccountManagerWrapper: KBS.Shims.TSAccountM
     }
 
     public func isRegisteredAndReady(transaction: DBReadTransaction) -> Bool {
-        return accountManager.isRegisteredAndReady(with: SDSDB.shimOnlyBridge(transaction))
+        return accountManager.isRegisteredAndReady(transaction: SDSDB.shimOnlyBridge(transaction))
     }
 }
 

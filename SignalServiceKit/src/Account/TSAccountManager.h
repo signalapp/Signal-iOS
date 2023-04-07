@@ -68,28 +68,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 #pragma mark - Initializers
 
-- (void)warmCaches;
-
 - (TSAccountState *)getOrLoadAccountStateWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (TSAccountState *)getOrLoadAccountStateWithSneakyTransaction;
 
 - (TSAccountState *)loadAccountStateWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (TSAccountState *)loadAccountStateWithSneakyTransaction;
-
-- (OWSRegistrationState)registrationState;
-
-/**
- *  Returns if a user is registered or not
- *
- *  @return registered or not
- */
-@property (readonly) BOOL isRegistered;
-@property (readonly) BOOL isRegisteredAndReady;
-
-// useful before account state has been cached, otherwise you should prefer `isRegistered`
-- (BOOL)isRegisteredWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(isRegistered(transaction:));
-
-- (BOOL)isRegisteredAndReadyWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  *  Returns current phone number for this device, which may not yet have been registered.
@@ -118,25 +101,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(localAddress(with:));
 
-- (nullable NSDate *)registrationDateWithTransaction:(SDSAnyReadTransaction *)transaction;
-
-/**
- *  The server auth token allows the Signal client to connect to the Signal server
- *
- *  @return server authentication token
- */
-- (nullable NSString *)storedServerAuthToken;
-- (nullable NSString *)storedServerAuthTokenWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setStoredServerAuthToken:(NSString *)authToken
                         deviceId:(UInt32)deviceId
                      transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (UInt32)storedDeviceId;
-- (UInt32)storedDeviceIdWithTransaction:(SDSAnyReadTransaction *)transaction;
-
 /// Onboarding state
-- (BOOL)isOnboarded;
-- (BOOL)isOnboardedWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Register with phone number
@@ -153,25 +122,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
                        transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)recordUuidForLegacyUser:(NSUUID *)uuid NS_SWIFT_NAME(recordUuidForLegacyUser(_:));
 
-#pragma mark - De-Registration
-
-/// Checks if the account is "deregistered".
-///
-/// An account is deregistered if a device transfer is in progress, a device
-/// transfer was just completed to another device, or we received an HTTP
-/// 401/403 error that indicates we're no longer registered.
-///
-/// If an account is deregistered due to an HTTP 401/403 error, the user
-/// should complete re-registration to re-mark the account as "registered".
-- (BOOL)isDeregistered;
-- (BOOL)isDeregisteredWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (void)setIsDeregistered:(BOOL)isDeregistered;
-
-#pragma mark - Transfer
-
-@property (nonatomic) BOOL isTransferInProgress;
-@property (nonatomic) BOOL wasTransferred;
-
 #pragma mark - Re-registration
 
 // Re-registration is the process of re-registering _with the same phone number_.
@@ -182,9 +132,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
                                           localAci:(NSUUID *)localAci
                                   wasPrimaryDevice:(BOOL)wasPrimaryDevice
                                        transaction:(SDSAnyWriteTransaction *)transaction;
-- (nullable NSString *)reregistrationPhoneNumber;
-- (nullable NSUUID *)reregistrationUUID;
-@property (nonatomic, readonly) BOOL isReregistering;
 
 #pragma mark - Change Phone Number
 

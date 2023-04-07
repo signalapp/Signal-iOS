@@ -327,7 +327,7 @@ public class AccountManager: NSObject, Dependencies {
         // * Secondary devices _cannot_ be re-linked to primaries with a different uuid.
         if tsAccountManager.isReregistering {
             var canChangePhoneNumbers = false
-            if let oldUUID = tsAccountManager.reregistrationUUID(),
+            if let oldUUID = tsAccountManager.reregistrationUUID,
                let newUUID = provisionMessage.aci {
                 if !tsAccountManager.isPrimaryDevice,
                    oldUUID != newUUID {
@@ -345,7 +345,7 @@ public class AccountManager: NSObject, Dependencies {
             // * Secondary devices _cannot_ be re-linked to primaries with a different phone number
             //   unless the uuid is present and has not changed.
             if !canChangePhoneNumbers,
-               let reregistrationPhoneNumber = tsAccountManager.reregistrationPhoneNumber(),
+               let reregistrationPhoneNumber = tsAccountManager.reregistrationPhoneNumber,
                reregistrationPhoneNumber != provisionMessage.phoneNumber {
                 Logger.verbose("reregistrationPhoneNumber: \(reregistrationPhoneNumber)")
                 Logger.verbose("provisionMessage.phoneNumber: \(provisionMessage.phoneNumber)")

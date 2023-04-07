@@ -69,7 +69,7 @@ public class LegacyChangePhoneNumber: NSObject {
                     forNewE164: newE164,
                     localAci: localAci,
                     localAccountId: localRecipient.accountId,
-                    localDeviceId: tsAccountManager.storedDeviceId(with: transaction),
+                    localDeviceId: tsAccountManager.storedDeviceId(transaction: transaction),
                     localUserAllDeviceIds: localUserAllDeviceIds
                 ).then(on: DispatchQueue.global()) { generatePniIdentityResult -> Promise<(Parameters, PendingState)> in
                     switch generatePniIdentityResult {

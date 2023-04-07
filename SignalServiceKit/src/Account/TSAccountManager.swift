@@ -7,6 +7,17 @@ import Foundation
 
 public extension TSAccountManager {
 
+    // MARK: - Initialization
+
+    @objc
+    internal func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
+        loadAccountStateWithSneakyTransaction().log()
+    }
+
+    // MARK: -
+
     @objc
     private class func getLocalThread(transaction: SDSAnyReadTransaction) -> TSThread? {
         guard let localAddress = self.localAddress(with: transaction) else {
@@ -46,18 +57,61 @@ public extension TSAccountManager {
     }
 
     @objc
+    var registrationState: OWSRegistrationState {
+        registrationState(for: getOrLoadAccountStateWithSneakyTransaction())
+    }
+
+    @objc
+    func registrationState(transaction: SDSAnyReadTransaction) -> OWSRegistrationState {
+        registrationState(for: getOrLoadAccountState(with: transaction))
+    }
+
+    private func registrationState(for state: TSAccountState) -> OWSRegistrationState {
+        if state.isRegistered {
+            if isDeregistered(state: state) {
+                if state.isReregistering {
+                    return .reregistering
+                }
+                return .deregistered
+            }
+            return .registered
+        }
+        return .unregistered
+    }
+
+    @objc
+    var isRegistered: Bool {
+        getOrLoadAccountStateWithSneakyTransaction().isRegistered
+    }
+
+    @objc
+    func isRegistered(transaction: SDSAnyReadTransaction) -> Bool {
+        getOrLoadAccountState(with: transaction).isRegistered
+    }
+
+    @objc
+    var isRegisteredAndReady: Bool {
+        registrationState == .registered
+    }
+
+    @objc
+    func isRegisteredAndReady(transaction: SDSAnyReadTransaction) -> Bool {
+        registrationState(transaction: transaction) == .registered
+    }
+
+    @objc
     var isRegisteredPrimaryDevice: Bool {
         isRegistered && isPrimaryDevice
     }
 
     @objc
     var isPrimaryDevice: Bool {
-        storedDeviceId() == OWSDevicePrimaryDeviceId
+        storedDeviceId == OWSDevicePrimaryDeviceId
     }
 
     @objc
     func isPrimaryDevice(transaction: SDSAnyReadTransaction) -> Bool {
-        storedDeviceId(with: transaction) == OWSDevicePrimaryDeviceId
+        storedDeviceId(transaction: transaction) == OWSDevicePrimaryDeviceId
     }
 
     @objc
@@ -66,13 +120,96 @@ public extension TSAccountManager {
             return nil
         }
 
-        return isRegisteredPrimaryDevice ? serviceId : "\(serviceId).\(storedDeviceId())"
+        return isRegisteredPrimaryDevice ? serviceId : "\(serviceId).\(storedDeviceId)"
     }
 
     @objc
     func localAccountId(transaction: SDSAnyReadTransaction) -> AccountId? {
         guard let localAddress = localAddress else { return nil }
         return OWSAccountIdFinder.accountId(forAddress: localAddress, transaction: transaction)
+    }
+
+    @objc
+    func registrationDate(transaction: SDSAnyReadTransaction) -> Date? {
+        getOrLoadAccountState(with: transaction).registrationDate
+    }
+
+    @objc
+    var isOnboarded: Bool {
+        getOrLoadAccountStateWithSneakyTransaction().isOnboarded
+    }
+
+    @objc
+    func isOnboarded(transaction: SDSAnyReadTransaction) -> Bool {
+        getOrLoadAccountState(with: transaction).isOnboarded
+    }
+
+    @objc
+    var storedServerAuthToken: String? {
+        getOrLoadAccountStateWithSneakyTransaction().serverAuthToken
+    }
+
+    @objc
+    func storedServerAuthToken(transaction: SDSAnyReadTransaction) -> String? {
+        getOrLoadAccountState(with: transaction).serverAuthToken
+    }
+
+    @objc
+    var storedDeviceId: UInt32 {
+        getOrLoadAccountStateWithSneakyTransaction().deviceId
+    }
+
+    @objc
+    func storedDeviceId(transaction: SDSAnyReadTransaction) -> UInt32 {
+        getOrLoadAccountState(with: transaction).deviceId
+    }
+
+    @objc
+    var reregistrationPhoneNumber: String? {
+        getOrLoadAccountStateWithSneakyTransaction().reregistrationPhoneNumber
+    }
+
+    @objc
+    var reregistrationUUID: UUID? {
+        getOrLoadAccountStateWithSneakyTransaction().reregistrationUUID
+    }
+
+    @objc
+    var isReregistering: Bool {
+        getOrLoadAccountStateWithSneakyTransaction().isReregistering
+    }
+
+    @objc
+    var isTransferInProgress: Bool {
+        get { getOrLoadAccountStateWithSneakyTransaction().isTransferInProgress }
+        set {
+            if newValue == isTransferInProgress {
+                return
+            }
+            databaseStorage.write { transaction in
+                objc_sync_enter(self)
+                defer { objc_sync_exit(self) }
+
+                keyValueStore.setBool(newValue, key: TSAccountManager_IsTransferInProgressKey, transaction: transaction)
+                loadAccountState(with: transaction)
+            }
+            postRegistrationStateDidChangeNotification()
+        }
+    }
+
+    @objc
+    var wasTransferred: Bool {
+        get { getOrLoadAccountStateWithSneakyTransaction().wasTransferred }
+        set {
+            databaseStorage.write { transaction in
+                objc_sync_enter(self)
+                defer { objc_sync_exit(self) }
+
+                keyValueStore.setBool(newValue, key: TSAccountManager_WasTransferredKey, transaction: transaction)
+                loadAccountState(with: transaction)
+            }
+            postRegistrationStateDidChangeNotification()
+        }
     }
 
     @objc
@@ -124,6 +261,57 @@ public extension TSAccountManager {
             transaction: transaction
         )
         localRecipient.markAsRegistered(transaction: transaction)
+    }
+
+    // MARK: - Deregistration
+
+    @objc
+    var isDeregistered: Bool {
+        get { isDeregistered(state: getOrLoadAccountStateWithSneakyTransaction()) }
+        set {
+            if newValue && !isRegisteredAndReady {
+                Logger.warn("Ignoring; not registered and ready.")
+                return
+            }
+            if getOrLoadAccountStateWithSneakyTransaction().isDeregistered == newValue {
+                return
+            }
+            Logger.warn("Updating isDeregistered \(newValue)")
+            databaseStorage.write { transaction in
+                objc_sync_enter(self)
+                defer { objc_sync_exit(self) }
+
+                if getOrLoadAccountState(with: transaction).isDeregistered == newValue {
+                    return
+                }
+
+                keyValueStore.setBool(newValue, key: TSAccountManager_IsDeregisteredKey, transaction: transaction)
+                loadAccountState(with: transaction)
+
+                if newValue {
+                    notificationPresenter?.notifyUserOfDeregistration(transaction: transaction)
+                }
+            }
+            postRegistrationStateDidChangeNotification()
+        }
+    }
+
+    /// Checks if the account is "deregistered".
+    ///
+    /// An account is deregistered if a device transfer is in progress, a device
+    /// transfer was just completed to another device, or we received an HTTP
+    /// 401/403 error that indicates we're no longer registered.
+    ///
+    /// If an account is deregistered due to an HTTP 401/403 error, the user
+    /// should complete re-registration to re-mark the account as "registered".
+    @objc
+    func isDeregistered(transaction: SDSAnyReadTransaction) -> Bool {
+        return isDeregistered(state: getOrLoadAccountState(with: transaction))
+    }
+
+    private func isDeregistered(state: TSAccountState) -> Bool {
+        // An in progress transfer is treated as being deregistered.
+        return state.isTransferInProgress || state.wasTransferred || state.isDeregistered
     }
 
     // MARK: - Account Attributes & Capabilities

@@ -164,8 +164,7 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         archiveReminderView.isHidden = chatListMode != .archive
-        deregisteredView.isHidden = (!TSAccountManager.shared.isDeregistered() ||
-                                        TSAccountManager.shared.isTransferInProgress)
+        deregisteredView.isHidden = !tsAccountManager.isDeregistered || tsAccountManager.isTransferInProgress
         outageView.isHidden = !OutageDetection.shared.hasOutage
 
         expiredView.isHidden = !AppExpiry.shared.isExpiringSoon

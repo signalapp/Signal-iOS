@@ -709,7 +709,7 @@ class StorageServiceOperation: OWSOperation {
         let identifiers = StorageService.StorageIdentifier.deduplicate(identifiersParam)
         var manifestBuilder = StorageServiceProtoManifestRecord.builder(version: manifestVersion)
         manifestBuilder.setKeys(try identifiers.map { try $0.buildRecord() })
-        manifestBuilder.setSourceDevice(tsAccountManager.storedDeviceId())
+        manifestBuilder.setSourceDevice(tsAccountManager.storedDeviceId)
         return try manifestBuilder.build()
     }
 
@@ -1569,24 +1569,21 @@ class StorageServiceOperation: OWSOperation {
         fileprivate var localAccountIdentifier: StorageService.StorageIdentifier?
         fileprivate var localAccountRecordWithUnknownFields: StorageServiceProtoAccountRecord?
 
-        @BidirectionalLegacyDecoding
-        fileprivate var accountIdToIdentifierMap: [AccountId: StorageService.StorageIdentifier] = [:]
+        @BidirectionalLegacyDecoding fileprivate var accountIdToIdentifierMap: [AccountId: StorageService.StorageIdentifier] = [:]
         private var _accountIdToRecordWithUnknownFields: [AccountId: StorageServiceProtoContactRecord]?
         var accountIdToRecordWithUnknownFields: [AccountId: StorageServiceProtoContactRecord] {
             get { _accountIdToRecordWithUnknownFields ?? [:] }
             set { _accountIdToRecordWithUnknownFields = newValue }
         }
 
-        @BidirectionalLegacyDecoding
-        fileprivate var groupV1IdToIdentifierMap: [Data: StorageService.StorageIdentifier] = [:]
+        @BidirectionalLegacyDecoding fileprivate var groupV1IdToIdentifierMap: [Data: StorageService.StorageIdentifier] = [:]
         private var _groupV1IdToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV1Record]?
         var groupV1IdToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV1Record] {
             get { _groupV1IdToRecordWithUnknownFields ?? [:] }
             set { _groupV1IdToRecordWithUnknownFields = newValue }
         }
 
-        @BidirectionalLegacyDecoding
-        fileprivate var groupV2MasterKeyToIdentifierMap: [Data: StorageService.StorageIdentifier] = [:]
+        @BidirectionalLegacyDecoding fileprivate var groupV2MasterKeyToIdentifierMap: [Data: StorageService.StorageIdentifier] = [:]
         private var _groupV2MasterKeyToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV2Record]?
         var groupV2MasterKeyToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV2Record] {
             get { _groupV2MasterKeyToRecordWithUnknownFields ?? [:] }

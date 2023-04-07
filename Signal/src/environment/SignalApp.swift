@@ -80,9 +80,9 @@ extension SignalApp {
                 } else {
                     let desiredMode: RegistrationMode
                     if
-                        let reregNumber = tsAccountManager.reregistrationPhoneNumber(),
+                        let reregNumber = tsAccountManager.reregistrationPhoneNumber,
                         let reregE164 = E164(reregNumber),
-                        let reregAci = tsAccountManager.reregistrationUUID()
+                        let reregAci = tsAccountManager.reregistrationUUID
                     {
                         Logger.info("Found legacy re-registration; continuing in new registration")
                         // A user who started re-registration before the new

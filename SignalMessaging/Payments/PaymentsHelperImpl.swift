@@ -219,7 +219,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
     }
 
     private static func loadPaymentsState(transaction: SDSAnyReadTransaction) -> PaymentsState {
-        guard tsAccountManager.isRegisteredAndReady(with: transaction) else {
+        guard tsAccountManager.isRegisteredAndReady(transaction: transaction) else {
             return .disabled
         }
         let paymentsEntropy = keyValueStore.getData(paymentsEntropyKey, transaction: transaction)

@@ -706,7 +706,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private func isValidCertificate(_ certificate: SenderCertificate) -> Bool {
         let sender = certificate.sender
-        guard sender.deviceId == tsAccountManager.storedDeviceId() else {
+        guard sender.deviceId == tsAccountManager.storedDeviceId else {
             Logger.warn("Sender certificate has incorrect device ID")
             return false
         }

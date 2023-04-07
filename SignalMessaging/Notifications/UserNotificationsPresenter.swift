@@ -175,7 +175,7 @@ class UserNotificationPresenter: Dependencies {
         replacingIdentifier: String? = nil,
         completion: NotificationActionCompletion?
     ) {
-        guard tsAccountManager.isOnboarded() else {
+        guard tsAccountManager.isOnboarded else {
             Logger.info("suppressing notification since user hasn't yet completed onboarding.")
             completion?()
             return

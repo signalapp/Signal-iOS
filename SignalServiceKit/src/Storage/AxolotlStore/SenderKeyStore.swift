@@ -633,7 +633,7 @@ extension ProtocolAddress {
             guard let address = SSKEnvironment.shared.tsAccountManager.localAddress else {
                 throw OWSAssertionError("No address for the local account")
             }
-            let deviceId = SSKEnvironment.shared.tsAccountManager.storedDeviceId()
+            let deviceId = SSKEnvironment.shared.tsAccountManager.storedDeviceId
             return try ProtocolAddress(from: address, deviceId: deviceId)
         }
     }
@@ -656,6 +656,6 @@ extension ProtocolAddress {
 
     var isCurrentDevice: Bool {
         let tsAccountManager = SSKEnvironment.shared.tsAccountManager
-        return (uuid == tsAccountManager.localUuid) && (deviceId == tsAccountManager.storedDeviceId())
+        return (uuid == tsAccountManager.localUuid) && (deviceId == tsAccountManager.storedDeviceId)
     }
 }

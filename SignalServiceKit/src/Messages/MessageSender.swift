@@ -75,7 +75,7 @@ extension MessageSender {
 
             // Filter out the current device; we never need a session for it.
             if messageSend.isLocalAddress {
-                let localDeviceId = tsAccountManager.storedDeviceId(with: transaction)
+                let localDeviceId = tsAccountManager.storedDeviceId(transaction: transaction)
                 deviceIds = deviceIds.filter { $0 != localDeviceId }
             }
 

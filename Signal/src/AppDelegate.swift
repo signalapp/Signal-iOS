@@ -291,7 +291,7 @@ extension AppDelegate {
         if tsAccountManager.isRegistered {
             databaseStorage.read { transaction in
                 let localAddress = self.tsAccountManager.localAddress(with: transaction)
-                let deviceId = self.tsAccountManager.storedDeviceId(with: transaction)
+                let deviceId = self.tsAccountManager.storedDeviceId(transaction: transaction)
                 let deviceCount = OWSDevice.anyCount(transaction: transaction)
                 let linkedDeviceMessage = deviceCount > 1 ? "\(deviceCount) devices including the primary" : "no linked devices"
                 Logger.info("localAddress: \(String(describing: localAddress)), deviceId: \(deviceId) (\(linkedDeviceMessage))")

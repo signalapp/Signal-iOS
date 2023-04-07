@@ -113,15 +113,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 #pragma mark -
 
-- (void)warmCaches
-{
-    OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
-
-    TSAccountState *accountState = [self loadAccountStateWithSneakyTransaction];
-
-    [accountState log];
-}
-
 - (nullable NSString *)phoneNumberAwaitingVerification
 {
     @synchronized(self) {
@@ -187,33 +178,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }];
 }
 
-- (OWSRegistrationState)registrationState
-{
-    TSAccountState *state = [self getOrLoadAccountStateWithSneakyTransaction];
-    return [self registrationStateWithState:state];
-}
-
-- (OWSRegistrationState)registrationStateWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    TSAccountState *state = [self loadAccountStateWithTransaction:transaction];
-    return [self registrationStateWithState:state];
-}
-
-- (OWSRegistrationState)registrationStateWithState:(TSAccountState *)state
-{
-    if (!state.isRegistered) {
-        return OWSRegistrationState_Unregistered;
-    } else if ([self isDeregisteredWithState:state]) {
-        if (state.isReregistering) {
-            return OWSRegistrationState_Reregistering;
-        } else {
-            return OWSRegistrationState_Deregistered;
-        }
-    } else {
-        return OWSRegistrationState_Registered;
-    }
-}
-
 - (TSAccountState *)loadAccountStateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSLogVerbose(@"");
@@ -263,26 +227,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
         return self.cachedAccountState;
     }
-}
-
-- (BOOL)isRegistered
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].isRegistered;
-}
-
-- (BOOL)isRegisteredWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self getOrLoadAccountStateWithTransaction:transaction].isRegistered;
-}
-
-- (BOOL)isRegisteredAndReady
-{
-    return self.registrationState == OWSRegistrationState_Registered;
-}
-
-- (BOOL)isRegisteredAndReadyWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self registrationStateWithTransaction:transaction] == OWSRegistrationState_Registered;
 }
 
 - (void)didRegister
@@ -453,21 +397,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     return [[SignalServiceAddress alloc] initWithUuid:localUuid phoneNumber:localNumber];
 }
 
-- (nullable NSDate *)registrationDateWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self getOrLoadAccountStateWithTransaction:transaction].registrationDate;
-}
-
-- (BOOL)isOnboarded
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].isOnboarded;
-}
-
-- (BOOL)isOnboardedWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self getOrLoadAccountStateWithTransaction:transaction].isOnboarded;
-}
-
 - (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction
 {
     @synchronized(self) {
@@ -475,28 +404,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         [self loadAccountStateWithTransaction:transaction];
     }
     [self postOnboardingStateDidChangeNotification];
-}
-
-#pragma mark Server keying material
-
-- (nullable NSString *)storedServerAuthToken
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].serverAuthToken;
-}
-
-- (nullable NSString *)storedServerAuthTokenWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self getOrLoadAccountStateWithTransaction:transaction].serverAuthToken;
-}
-
-- (UInt32)storedDeviceId
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].deviceId;
-}
-
-- (UInt32)storedDeviceIdWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self getOrLoadAccountStateWithTransaction:transaction].deviceId;
 }
 
 - (void)setStoredServerAuthToken:(NSString *)authToken
@@ -509,60 +416,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
         [self loadAccountStateWithTransaction:transaction];
     }
-}
-
-#pragma mark - De-Registration
-
-- (BOOL)isDeregistered
-{
-    TSAccountState *state = [self getOrLoadAccountStateWithSneakyTransaction];
-    return [self isDeregisteredWithState:state];
-}
-
-- (BOOL)isDeregisteredWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    TSAccountState *state = [self getOrLoadAccountStateWithTransaction:transaction];
-    return [self isDeregisteredWithState:state];
-}
-
-- (BOOL)isDeregisteredWithState:(TSAccountState *)state
-{
-    // An in progress transfer is treated as being deregistered.
-    return state.isTransferInProgress || state.wasTransferred || state.isDeregistered;
-}
-
-- (void)setIsDeregistered:(BOOL)isDeregistered
-{
-    if (isDeregistered && !self.isRegisteredAndReady) {
-        OWSLogInfo(@"Ignoring; not registered and ready.");
-        return;
-    }
-
-    if ([self getOrLoadAccountStateWithSneakyTransaction].isDeregistered == isDeregistered) {
-        // Skip redundant write.
-        return;
-    }
-
-    OWSLogWarn(@"Updating isDeregistered: %d", isDeregistered);
-
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        @synchronized(self) {
-            if ([self getOrLoadAccountStateWithTransaction:transaction].isDeregistered == isDeregistered) {
-                return;
-            }
-            [self.keyValueStore setObject:@(isDeregistered)
-                                      key:TSAccountManager_IsDeregisteredKey
-                              transaction:transaction];
-
-            [self loadAccountStateWithTransaction:transaction];
-
-            if (isDeregistered) {
-                [self.notificationPresenter notifyUserOfDeregistration:transaction];
-            }
-        }
-    });
-
-    [self postRegistrationStateDidChangeNotification];
 }
 
 #pragma mark - Re-registration
@@ -643,65 +496,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         [self postRegistrationStateDidChangeNotification];
         [self postOnboardingStateDidChangeNotification];
     }];
-}
-
-- (nullable NSString *)reregistrationPhoneNumber
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].reregistrationPhoneNumber;
-}
-
-- (nullable NSUUID *)reregistrationUUID
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].reregistrationUUID;
-}
-
-- (BOOL)isReregistering
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].isReregistering;
-}
-
-- (BOOL)isTransferInProgress
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].isTransferInProgress;
-}
-
-- (void)setIsTransferInProgress:(BOOL)transferInProgress
-{
-    if (transferInProgress == self.isTransferInProgress) {
-        return;
-    }
-
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        @synchronized(self) {
-            [self.keyValueStore setObject:@(transferInProgress)
-                                      key:TSAccountManager_IsTransferInProgressKey
-                              transaction:transaction];
-
-            [self loadAccountStateWithTransaction:transaction];
-        }
-    });
-
-    [self postRegistrationStateDidChangeNotification];
-}
-
-- (BOOL)wasTransferred
-{
-    return [self getOrLoadAccountStateWithSneakyTransaction].wasTransferred;
-}
-
-- (void)setWasTransferred:(BOOL)wasTransferred
-{
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        @synchronized(self) {
-            [self.keyValueStore setObject:@(wasTransferred)
-                                      key:TSAccountManager_WasTransferredKey
-                              transaction:transaction];
-
-            [self loadAccountStateWithTransaction:transaction];
-        }
-    });
-
-    [self postRegistrationStateDidChangeNotification];
 }
 
 - (BOOL)isManualMessageFetchEnabled

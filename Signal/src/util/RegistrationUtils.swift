@@ -35,8 +35,9 @@ public extension RegistrationUtils {
 
             showReRegistration(e164: e164, aci: aci)
         } else {
-            guard tsAccountManager.resetForReregistration(),
-                  let phoneNumber = Self.tsAccountManager.reregistrationPhoneNumber()?.nilIfEmpty
+            guard
+                tsAccountManager.resetForReregistration(),
+                let phoneNumber = Self.tsAccountManager.reregistrationPhoneNumber?.nilIfEmpty
             else {
                 owsFailDebug("could not reset for re-registration.")
                 return

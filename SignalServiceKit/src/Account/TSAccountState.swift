@@ -15,18 +15,24 @@ import Foundation
 /// This cache changes all of its properties in lockstep, which
 /// helps ensure consistency.  e.g. isRegistered is true IFF
 /// localNumber is non-nil.
-@objcMembers
 class TSAccountState: NSObject {
+    @objc
     let localNumber: String?
+
+    @objc
     let localUuid: UUID?
+
+    @objc
     let localPni: UUID?
+
+    @objc
     let deviceId: UInt32
 
     let isReregistering: Bool
     let reregistrationPhoneNumber: String?
     let reregistrationUUID: UUID?
 
-    let isRegistered: Bool
+    var isRegistered: Bool { localNumber != nil }
     let isDeregistered: Bool
     let isOnboarded: Bool
     let registrationDate: Date?
@@ -39,6 +45,7 @@ class TSAccountState: NSObject {
     let hasDefinedIsDiscoverableByPhoneNumber: Bool
     let lastSetIsDiscoverableByPhoneNumberAt: Date
 
+    @objc
     init(
         transaction: SDSAnyReadTransaction,
         keyValueStore: SDSKeyValueStore
@@ -82,7 +89,6 @@ class TSAccountState: NSObject {
         // TODO: Support re-registration with only reregistrationUUID.
         isReregistering = reregistrationPhoneNumber != nil
 
-        isRegistered = localNumber != nil
         isDeregistered = getBool(TSAccountManager_IsDeregisteredKey) ?? false
         isOnboarded = getBool(TSAccountManager_IsOnboardedKey) ?? false
         registrationDate = getDate(TSAccountManager_RegistrationDateKey)
@@ -104,7 +110,7 @@ class TSAccountState: NSObject {
             // flag will be NO until you have successfully registered (aka defined
             // a local phone number).
             if FeatureFlags.phoneNumberDiscoverability {
-                isDiscoverableByDefault = isRegistered
+                isDiscoverableByDefault = localNumber != nil
             }
 
             isDiscoverableByPhoneNumber = persistedIsDiscoverable ?? isDiscoverableByDefault

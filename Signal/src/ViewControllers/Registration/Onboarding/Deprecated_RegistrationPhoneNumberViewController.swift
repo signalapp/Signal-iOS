@@ -358,7 +358,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
         guard tsAccountManager.isReregistering else {
             return nil
         }
-        guard let phoneNumberE164 = tsAccountManager.reregistrationPhoneNumber() else {
+        guard let phoneNumberE164 = tsAccountManager.reregistrationPhoneNumber else {
             owsFailDebug("Could not resume re-registration; missing phone number.")
             return nil
         }

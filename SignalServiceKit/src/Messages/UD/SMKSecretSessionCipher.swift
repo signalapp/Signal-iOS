@@ -235,7 +235,7 @@ public class SMKSecretSessionCipher: NSObject {
 
         let sender = messageContent.senderCertificate.sender
 
-        guard !SignalServiceAddress(sender).isLocalAddress || sender.deviceId != TSAccountManager.shared.storedDeviceId() else {
+        guard !SignalServiceAddress(sender).isLocalAddress || sender.deviceId != tsAccountManager.storedDeviceId else {
             Logger.info("Discarding self-sent message")
             throw SMKSecretSessionCipherError.selfSentMessage
         }

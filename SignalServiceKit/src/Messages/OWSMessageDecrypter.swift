@@ -30,7 +30,7 @@ public struct OWSMessageDecryptResult: Dependencies {
         owsAssertDebug(envelope.sourceDevice > 0)
 
         // Self-sent messages should be discarded during the decryption process.
-        let localDeviceId = Self.tsAccountManager.storedDeviceId()
+        let localDeviceId = Self.tsAccountManager.storedDeviceId(transaction: transaction)
         owsAssertDebug(!(sourceAddress.isLocalAddress && envelope.sourceDevice == localDeviceId))
     }
 }

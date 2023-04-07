@@ -116,7 +116,7 @@ public class Deprecated_OnboardingController: NSObject {
     }
 
     var isComplete: Bool {
-        guard !tsAccountManager.isOnboarded() else {
+        guard !tsAccountManager.isOnboarded else {
             Logger.debug("previously completed onboarding")
             return true
         }
@@ -160,7 +160,7 @@ public class Deprecated_OnboardingController: NSObject {
 
     @objc
     public func markAsOnboarded() {
-        guard !tsAccountManager.isOnboarded() else { return }
+        guard !tsAccountManager.isOnboarded else { return }
         self.databaseStorage.asyncWrite {
             Logger.info("completed onboarding")
             self.tsAccountManager.setIsOnboarded(true, transaction: $0)
@@ -689,7 +689,7 @@ public class Deprecated_OnboardingController: NSObject {
             if
                 Self.tsAccountManager.isReregistering,
                 self.phoneNumber != nil,
-                self.phoneNumber?.e164 == Self.tsAccountManager.reregistrationPhoneNumber()
+                self.phoneNumber?.e164 == Self.tsAccountManager.reregistrationPhoneNumber
             {
                 return Self.ows2FAManager.pinCode
             } else {

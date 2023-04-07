@@ -62,7 +62,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
         if CurrentAppContext().isMainApp {
             AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-                guard Self.tsAccountManager.isOnboarded() else {
+                guard Self.tsAccountManager.isOnboarded else {
                     // Observe when the account is ready before we try and download.
                     self?.observeOnboardingChanges()
                     return
@@ -183,7 +183,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     @objc
     private func onboardingStateDidChange() {
-        guard Self.tsAccountManager.isOnboarded() else {
+        guard Self.tsAccountManager.isOnboarded else {
             return
         }
         NotificationCenter.default.removeObserver(self, name: .onboardingStateDidChange, object: nil)

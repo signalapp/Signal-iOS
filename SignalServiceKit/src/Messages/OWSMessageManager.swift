@@ -273,7 +273,7 @@ extension OWSMessageManager {
 
         do {
             let errorMessage = try DecryptionErrorMessage(bytes: bytes)
-            guard errorMessage.deviceId == tsAccountManager.storedDeviceId() else {
+            guard errorMessage.deviceId == tsAccountManager.storedDeviceId(transaction: writeTx) else {
                 Logger.info("Received a DecryptionError message targeting a linked device. Ignoring.")
                 return
             }
