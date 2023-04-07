@@ -56,6 +56,10 @@ class RegistrationPermissionsViewController: OWSViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
+        let scrollView = UIScrollView()
+        view.addSubview(scrollView)
+        scrollView.autoPinEdgesToSuperviewEdges()
+
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -63,8 +67,20 @@ class RegistrationPermissionsViewController: OWSViewController {
             traitCollection.horizontalSizeClass
         )
         stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        stackView.setContentHuggingHigh()
+        scrollView.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges()
+        stackView.autoMatch(
+            .width,
+            to: .width,
+            of: view,
+            withOffset: -view.layoutMargins.totalWidth,
+            relation: .equal
+        )
+        let heightConstraint = stackView.heightAnchor.constraint(
+            greaterThanOrEqualTo: view.layoutMarginsGuide.heightAnchor
+        )
+        heightConstraint.isActive = true
 
         let titleText: String
         let explanationText: String
@@ -111,8 +127,10 @@ class RegistrationPermissionsViewController: OWSViewController {
 
         stackView.addArrangedSubview(animationView)
         animationView.setContentHuggingHigh()
+        let animationSize = animationView.intrinsicContentSize
+        animationView.autoPin(toAspectRatio: animationSize.width / animationSize.height)
 
-        stackView.addArrangedSubview(UIView.vStretchingSpacer(minHeight: 80))
+        stackView.addArrangedSubview(UIView.vStretchingSpacer(minHeight: 60))
 
         let giveAccessButton = OWSFlatButton.primaryButtonForRegistration(
             title: giveAccessText,
@@ -121,11 +139,14 @@ class RegistrationPermissionsViewController: OWSViewController {
         )
         giveAccessButton.accessibilityIdentifier = "registration.permissions.giveAccessButton"
         stackView.addArrangedSubview(giveAccessButton)
-        giveAccessButton.autoSetDimension(.width, toSize: 280)
         giveAccessButton.autoHCenterInSuperview()
         NSLayoutConstraint.autoSetPriority(.defaultLow) {
             giveAccessButton.autoPinEdge(toSuperviewEdge: .leading)
             giveAccessButton.autoPinEdge(toSuperviewEdge: .trailing)
+        }
+        NSLayoutConstraint.autoSetPriority(.required) {
+            giveAccessButton.autoSetDimension(.width, toSize: 280, relation: .greaterThanOrEqual)
+            giveAccessButton.autoSetDimension(.height, toSize: 50, relation: .greaterThanOrEqual)
         }
     }
 
