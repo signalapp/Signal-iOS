@@ -9,7 +9,7 @@ import Curve25519Kit
 
 @testable import SignalServiceKit
 
-class DeviceNamesTest: SSKBaseTestSwift {
+class DeviceNamesTest: XCTestCase {
     func testNotEncrypted() {
         let identityKeyPair = Curve25519.generateKeyPair()
 

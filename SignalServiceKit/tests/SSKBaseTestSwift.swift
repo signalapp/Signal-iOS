@@ -24,7 +24,6 @@ extension Thenable {
 
 @objc
 public class SSKBaseTestSwift: XCTestCase {
-
     @objc
     public override func setUp() {
         super.setUp()
@@ -69,7 +68,9 @@ public class SSKBaseTestSwift: XCTestCase {
     public func asyncWrite(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
         return databaseStorage.asyncWrite(block: block)
     }
+}
 
+extension XCTestCase {
     @discardableResult
     public func expect<T>(
         _ promise: Promise<T>,

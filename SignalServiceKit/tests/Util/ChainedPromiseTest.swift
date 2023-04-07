@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-public class ChainedPromiseTest: SSKBaseTestSwift {
+public class ChainedPromiseTest: XCTestCase {
 
     // NOTE: these tests don't use a TestScheduler or SyncScheduler because we explicitly
     // want to test asynchronicity of this class. That enables tests that build on this class

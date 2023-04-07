@@ -9,7 +9,7 @@ import SignalCoreKit
 
 @testable import SignalServiceKit
 
-class OWSOperationTest: SSKBaseTestSwift {
+class OWSOperationTest: XCTestCase {
 
     private class TestOperation: OWSOperation {
         let expectation: XCTestExpectation
