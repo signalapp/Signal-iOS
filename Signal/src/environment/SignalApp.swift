@@ -56,6 +56,13 @@ extension SignalApp {
         let startupDuration = CACurrentMediaTime() - launchStartedAt
         Logger.info("Presenting app \(startupDuration) seconds after launch started.")
 
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(spamChallenge),
+            name: SpamChallengeResolver.NeedsCaptchaNotification,
+            object: nil
+        )
+
         let onboardingController = Deprecated_OnboardingController()
 
         if FeatureFlags.useNewRegistrationFlow {
@@ -131,6 +138,11 @@ extension SignalApp {
         UIApplication.shared.delegate?.window??.rootViewController = navController
 
         conversationSplitViewController = nil
+    }
+
+    @objc
+    private func spamChallenge() {
+        SpamCaptchaViewController.presentActionSheet(from: UIApplication.shared.frontmostViewController!)
     }
 }
 

@@ -162,13 +162,6 @@ class NSEEnvironment: Dependencies {
             }
         )
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(storageIsReady),
-            name: .StorageIsReady,
-            object: nil
-        )
-
         logger.info("completed.")
 
         OWSAnalytics.appLaunchDidBegin()
@@ -203,23 +196,14 @@ class NSEEnvironment: Dependencies {
     }
 
     @objc
-    private func storageIsReady() {
-        AssertIsOnMainThread()
-
-        NSELogger.uncorrelated.debug("")
-
-        checkIsAppReady()
-    }
-
-    @objc
     private func checkIsAppReady() {
         AssertIsOnMainThread()
 
         // Only mark the app as ready once.
         guard !AppReadiness.isAppReady else { return }
 
-        // App isn't ready until storage is ready AND all version migrations are complete.
-        guard storageCoordinator.isStorageReady && areVersionMigrationsComplete else { return }
+        // App isn't ready until all version migrations are complete.
+        guard areVersionMigrationsComplete else { return }
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()

@@ -7,10 +7,7 @@ import Foundation
 import SignalMessaging
 import SignalUI
 
-@objc
-enum LaunchFailure: UInt, CustomStringConvertible {
-    case none
-    case couldNotLoadDatabase
+enum LaunchPreflightError {
     case unknownDatabaseVersion
     case couldNotRestoreTransferredData
     case databaseCorruptedAndMightBeRecoverable
@@ -18,12 +15,8 @@ enum LaunchFailure: UInt, CustomStringConvertible {
     case lastAppLaunchCrashed
     case lowStorageSpaceAvailable
 
-    public var description: String {
+    var supportTag: String {
         switch self {
-        case .none:
-            return "LaunchFailure_None"
-        case .couldNotLoadDatabase:
-            return "LaunchFailure_CouldNotLoadDatabase"
         case .unknownDatabaseVersion:
             return "LaunchFailure_UnknownDatabaseVersion"
         case .couldNotRestoreTransferredData:
@@ -46,26 +39,32 @@ extension AppDelegate {
     @objc
     func handleDidFinishLaunching(launchOptions: [UIApplication.LaunchOptionsKey: Any]) {
         // This should be the first thing we do.
-        SetCurrentAppContext(MainAppContext(), false)
-
+        let mainAppContext = MainAppContext()
+        SetCurrentAppContext(mainAppContext, false)
         self.launchStartedAt = CACurrentMediaTime()
-        BenchManager.startEvent(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
+
+        enableLoggingIfNeeded()
+
+        Logger.warn("application: didFinishLaunchingWithOptions.")
+        defer { Logger.info("application: didFinishLaunchingWithOptions completed.") }
+
+        BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
 
         InstrumentsMonitor.enable()
         let monitorId = InstrumentsMonitor.startSpan(category: "appstart", parent: "application", name: "didFinishLaunchingWithOptions")
         defer { InstrumentsMonitor.stopSpan(category: "appstart", hash: monitorId) }
-
-        enableLoggingIfNeeded()
 
         #if DEBUG
         FeatureFlags.logFlags()
         DebugFlags.logFlags()
         #endif
 
-        Logger.warn("application: didFinishLaunchingWithOptions.")
-        defer { Logger.info("application: didFinishLaunchingWithOptions completed.") }
-
         Cryptography.seedRandom()
+
+        if CurrentAppContext().isRunningTests {
+            _ = initializeWindow(mainAppContext: mainAppContext, rootViewController: UIViewController())
+            return
+        }
 
         // This *must* happen before we try and access or verify the database,
         // since we may be in a state where the database has been partially
@@ -83,16 +82,47 @@ extension AppDelegate {
 
         InstrumentsMonitor.trackEvent(name: "AppStart")
 
-        // We need to do this _after_ we set up logging, when the keychain is unlocked,
-        // but before we access the database, files on disk, or NSUserDefaults.
-        let launchFailure = launchFailure(didDeviceTransferRestoreSucceed: didDeviceTransferRestoreSucceed)
+        // This must happen in appDidFinishLaunching or earlier to ensure we don't
+        // miss notifications. Setting the delegate also seems to prevent us from
+        // getting the legacy notification notification callbacks upon launch e.g.
+        // 'didReceiveLocalNotification'
+        UNUserNotificationCenter.current().delegate = self
 
-        guard launchFailure == .none else {
-            showUI(forLaunchFailure: launchFailure)
+        // If there's a notification, queue it up for processing. (This processing
+        // may happen immediately, after a short delay, or never.)
+        if let remoteNotification = launchOptions[.remoteNotification] as? NSDictionary {
+            Logger.info("Application was launched by tapping a push notification.")
+            processRemoteNotification(remoteNotification, completion: {})
+        }
+
+        // Do this even if `appVersion` isn't used -- there's side effects.
+        let appVersion = AppVersion.shared
+
+        // We need to do this _after_ we set up logging, when the keychain is unlocked,
+        // but before we access the database or files on disk.
+        let preflightError = checkIfAllowedToLaunch(
+            mainAppContext: mainAppContext,
+            appVersion: appVersion,
+            didDeviceTransferRestoreSucceed: didDeviceTransferRestoreSucceed
+        )
+
+        if let preflightError {
+            let viewController = terminalErrorViewController()
+            let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: viewController)
+            showPreflightErrorUI(preflightError, window: window, viewController: viewController)
             return
         }
 
-        launchToHomeScreen(launchOptions: launchOptions, isEnvironmentAlreadySetUp: false)
+        // If this is a regular launch, increment the "launches attempted" counter.
+        // If repeatedly start launching but never finish them (ie the app is
+        // crashing while launching), we'll notice in `checkIfAllowedToLaunch`.
+        let userDefaults = mainAppContext.appUserDefaults()
+        let appLaunchesAttempted = userDefaults.integer(forKey: kAppLaunchesAttemptedKey)
+        userDefaults.set(appLaunchesAttempted + 1, forKey: kAppLaunchesAttemptedKey)
+
+        // Show LoadingViewController until the database migrations are complete.
+        let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: LoadingViewController())
+        self.launchApp(in: window)
     }
 
     private func enableLoggingIfNeeded() {
@@ -112,87 +142,41 @@ extension AppDelegate {
         DebugLogger.configureSwiftLogging()
     }
 
-    private func launchToHomeScreen(launchOptions: [UIApplication.LaunchOptionsKey: Any]?, isEnvironmentAlreadySetUp: Bool) {
-        setupNSEInteroperation()
+    private func initializeWindow(mainAppContext: MainAppContext, rootViewController: UIViewController) -> UIWindow {
+        let window = OWSWindow()
+        self.window = window
+        mainAppContext.mainWindow = window
+        window.rootViewController = rootViewController
+        window.makeKeyAndVisible()
+        return window
+    }
 
-        if CurrentAppContext().isRunningTests {
-            return
+    private func launchApp(in window: UIWindow) {
+        assert(window.rootViewController is LoadingViewController)
+        configureGlobalUI(in: window)
+        setUpMainAppEnvironment().done(on: DispatchQueue.main) {
+            self.versionMigrationsDidComplete()
+        }.catch(on: DispatchQueue.main) { error in
+            owsFailDebug("Error: \(error)")
+            let viewController = self.terminalErrorViewController()
+            window.rootViewController = viewController
+            self.presentTerminalDatabaseErrorActionSheet(from: viewController)
         }
+    }
 
-        let userDefaults = CurrentAppContext().appUserDefaults()
-        let appLaunchesAttempted = userDefaults.integer(forKey: kAppLaunchesAttemptedKey)
-        userDefaults.set(appLaunchesAttempted + 1, forKey: kAppLaunchesAttemptedKey)
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { userDefaults.removeObject(forKey: kAppLaunchesAttemptedKey) }
-
-        if !isEnvironmentAlreadySetUp {
-            Self.setUpMainAppEnvironment().done(on: DispatchQueue.main) {
-                self.versionMigrationsDidComplete()
-            }.catch(on: DispatchQueue.main) { error in
-                owsFailDebug("Error: \(error)")
-                self.showUI(forLaunchFailure: .couldNotLoadDatabase)
-            }
-        }
-
+    private func configureGlobalUI(in window: UIWindow) {
         UIUtil.setupSignalAppearance()
-
-        let mainWindow: UIWindow = self.window ?? {
-            let result = OWSWindow()
-            self.window = result
-            CurrentAppContext().mainWindow = result
-            return result
-        }()
-        // Show LoadingViewController until the async database view registrations are complete.
-        mainWindow.rootViewController = LoadingViewController()
-        mainWindow.makeKeyAndVisible()
-
-        // This must happen in appDidFinishLaunching or earlier to ensure we don't
-        // miss notifications. Setting the delegate also seems to prevent us from
-        // getting the legacy notification notification callbacks upon launch e.g.
-        // 'didReceiveLocalNotification'
-        UNUserNotificationCenter.current().delegate = self
-
-        if let remoteNotification = launchOptions?[.remoteNotification] as? NSDictionary {
-            Logger.info("Application was launched by tapping a push notification.")
-            processRemoteNotification(remoteNotification)
-        }
 
         let screenLockUI = OWSScreenLockUI.shared()
         let windowManager = OWSWindowManager.shared
-        screenLockUI.setup(withRootWindow: mainWindow)
-        windowManager.setup(withRootWindow: mainWindow, screenBlockingWindow: screenLockUI.screenBlockingWindow)
+        screenLockUI.setup(withRootWindow: window)
+        windowManager.setup(withRootWindow: window, screenBlockingWindow: screenLockUI.screenBlockingWindow)
         screenLockUI.startObserving()
-
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(storageIsReady),
-            name: .StorageIsReady,
-            object: nil
-        )
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(registrationStateDidChange),
-            name: .registrationStateDidChange,
-            object: nil
-        )
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(registrationLockDidChange),
-            name: Notification.Name(NSNotificationName_2FAStateDidChange),
-            object: nil
-        )
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(spamChallenge),
-            name: SpamChallengeResolver.NeedsCaptchaNotification,
-            object: nil
-        )
-
-        OWSAnalytics.appLaunchDidBegin()
     }
 
-    private static func setUpMainAppEnvironment() -> Promise<Void> {
+    private func setUpMainAppEnvironment() -> Promise<Void> {
         let (promise, future) = Promise<Void>.pending()
+        self.setupNSEInteroperation()
         AppSetup.setupEnvironment(
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
@@ -210,6 +194,7 @@ extension AppDelegate {
                 }
             }
         )
+        OWSAnalytics.appLaunchDidBegin()
         return promise
     }
 
@@ -266,9 +251,8 @@ extension AppDelegate {
         // If launch failed, the app will never be ready.
         guard !didAppLaunchFail else { return }
 
-        // App isn't ready until storage is ready AND all version migrations are complete.
+        // App isn't ready until all version migrations are complete.
         guard areVersionMigrationsComplete else { return }
-        guard storageCoordinator.isStorageReady else { return }
 
         // Only mark the app as ready once.
         guard !AppReadiness.isAppReady else { return }
@@ -302,6 +286,8 @@ extension AppDelegate {
             AppReadiness.setUIIsReady()
             return
         }
+
+        CurrentAppContext().appUserDefaults().removeObject(forKey: kAppLaunchesAttemptedKey)
 
         // If user is missing profile name, redirect to onboarding flow.
         if !SSKEnvironment.shared.profileManager.hasProfileName {
@@ -337,7 +323,22 @@ extension AppDelegate {
         DebugLogger.shared().postLaunchLogCleanup()
         AppVersion.shared.mainAppLaunchDidComplete()
 
+        enableBackgroundRefreshIfNecessary()
         Self.updateApplicationShortcutItems(isRegisteredAndReady: tsAccountManager.isRegisteredAndReady)
+
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange),
+            name: .registrationStateDidChange,
+            object: nil
+        )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(registrationLockDidChange),
+            name: Notification.Name(NSNotificationName_2FAStateDidChange),
+            object: nil
+        )
 
         if !Environment.shared.preferences.hasGeneratedThumbnails() {
             databaseStorage.asyncRead(
@@ -359,19 +360,15 @@ extension AppDelegate {
         )
     }
 
-    func enableBackgroundRefreshIfNecessary() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            let interval: TimeInterval
-            if
-                OWS2FAManager.shared.isRegistrationLockEnabled,
-                self.tsAccountManager.isRegisteredAndReady {
-                // Ping server once a day to keep-alive reglock clients.
-                interval = 24 * 60 * 60
-            } else {
-                interval = UIApplication.backgroundFetchIntervalNever
-            }
-            UIApplication.shared.setMinimumBackgroundFetchInterval(interval)
+    private func enableBackgroundRefreshIfNecessary() {
+        let interval: TimeInterval
+        if OWS2FAManager.shared.isRegistrationLockEnabled, self.tsAccountManager.isRegisteredAndReady {
+            // Ping server once a day to keep-alive reglock clients.
+            interval = 24 * 60 * 60
+        } else {
+            interval = UIApplication.backgroundFetchIntervalNever
         }
+        UIApplication.shared.setMinimumBackgroundFetchInterval(interval)
     }
 
     /// The user must unlock the device once after reboot before the database encryption key can be accessed.
@@ -417,7 +414,11 @@ extension AppDelegate {
 
     // MARK: - Launch failures
 
-    private func launchFailure(didDeviceTransferRestoreSucceed: Bool) -> LaunchFailure {
+    private func checkIfAllowedToLaunch(
+        mainAppContext: MainAppContext,
+        appVersion: AppVersion,
+        didDeviceTransferRestoreSucceed: Bool
+    ) -> LaunchPreflightError? {
         guard checkSomeDiskSpaceAvailable() else {
             return .lowStorageSpaceAvailable
         }
@@ -432,7 +433,7 @@ extension AppDelegate {
             return .unknownDatabaseVersion
         }
 
-        let userDefaults = CurrentAppContext().appUserDefaults()
+        let userDefaults = mainAppContext.appUserDefaults()
 
         let databaseCorruptionState = DatabaseCorruptionState(userDefaults: userDefaults)
         switch databaseCorruptionState.status {
@@ -450,7 +451,6 @@ extension AppDelegate {
             return .databaseCorruptedAndMightBeRecoverable
         }
 
-        let appVersion = AppVersion.shared
         let launchAttemptFailureThreshold = DebugFlags.betaLogging ? 2 : 3
         if
             appVersion.lastAppVersion == appVersion.currentAppReleaseVersion,
@@ -459,183 +459,167 @@ extension AppDelegate {
             return .lastAppLaunchCrashed
         }
 
-        return .none
+        return nil
     }
 
-    private func showUI(forLaunchFailure launchFailure: LaunchFailure) {
-        Logger.info("launchFailure: \(launchFailure)")
+    private func showPreflightErrorUI(
+        _ preflightError: LaunchPreflightError,
+        window: UIWindow,
+        viewController: UIViewController
+    ) {
+        Logger.warn("preflightError: \(preflightError)")
 
         // Disable normal functioning of app.
         didAppLaunchFail = true
 
-        if launchFailure == .lowStorageSpaceAvailable {
-            shouldKillAppWhenBackgrounded = true
-        }
+        let title: String
+        let message: String
+        let actions: [LaunchFailureActionSheetAction]
 
-        // We perform a subset of the [application:didFinishLaunchingWithOptions:].
-        let window: UIWindow
-        if let existingWindow = self.window {
-            window = existingWindow
-        } else {
-            window = OWSWindow()
-            CurrentAppContext().mainWindow = window
-            self.window = window
-        }
+        switch preflightError {
+        case .databaseUnrecoverablyCorrupted:
+            presentTerminalDatabaseErrorActionSheet(from: viewController)
+            return
 
-        // Show the launch screen
-        let storyboard = UIStoryboard(name: "Launch Screen", bundle: nil)
-        guard let viewController = storyboard.instantiateInitialViewController() else {
-            owsFail("No initial view controller")
-        }
-
-        window.rootViewController = viewController
-
-        window.makeKeyAndVisible()
-
-        switch launchFailure {
-        case .couldNotLoadDatabase, .databaseUnrecoverablyCorrupted:
-            presentLaunchFailureActionSheet(
-                from: viewController,
-                launchFailure: launchFailure,
-                title: NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
-                    comment: "Error indicating that the app could not launch because the database could not be loaded."
-                ),
-                actions: [.submitDebugLogsWithDatabaseIntegrityCheckAndCrash]
-            )
-        case .unknownDatabaseVersion:
-            presentLaunchFailureActionSheet(
-                from: viewController,
-                launchFailure: launchFailure,
-                title: NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE",
-                    comment: "Error indicating that the app could not launch without reverting unknown database migrations."
-                ),
-                message: NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE",
-                    comment: "Error indicating that the app could not launch without reverting unknown database migrations."
-                ),
-                actions: [.submitDebugLogs(and: .crash)]
-            )
-        case .couldNotRestoreTransferredData:
-            presentLaunchFailureActionSheet(
-                from: viewController,
-                launchFailure: launchFailure,
-                title: NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE",
-                    comment: "Error indicating that the app could not restore transferred data."
-                ),
-                message: NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE",
-                    comment: "Error indicating that the app could not restore transferred data."
-                ),
-                actions: [.submitDebugLogs(and: .crash)]
-            )
         case .databaseCorruptedAndMightBeRecoverable:
-            let recoveryViewController = DatabaseRecoveryViewController(
-                setupSskEnvironment: { () -> Promise<Void> in
-                    firstly(on: DispatchQueue.main) {
-                        Self.setUpMainAppEnvironment()
-                    }.catch(on: DispatchQueue.main) { error in
-                        owsFailDebug("Error: \(error)")
-                        self.showUI(forLaunchFailure: .couldNotLoadDatabase)
-                    }
-                },
-                launchApp: {
-                    // Pretend we didn't fail!
-                    self.didAppLaunchFail = false
-                    self.versionMigrationsDidComplete()
-                    self.launchToHomeScreen(launchOptions: nil, isEnvironmentAlreadySetUp: true)
-                }
+            presentDatabaseRecovery(from: viewController, window: window)
+            return
+
+        case .unknownDatabaseVersion:
+            title = NSLocalizedString(
+                "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE",
+                comment: "Error indicating that the app could not launch without reverting unknown database migrations."
             )
+            message = NSLocalizedString(
+                "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE",
+                comment: "Error indicating that the app could not launch without reverting unknown database migrations."
+            )
+            actions = [.submitDebugLogsAndCrash]
 
-            // Prevent dismissal.
-            if #available(iOS 13, *) {
-                recoveryViewController.isModalInPresentation = true
-            } else {
-                // This presents it fullscreen. Not ideal, but only affects old iOS versions, and prevents dismissal.
-                recoveryViewController.modalPresentationStyle = .fullScreen
-            }
+        case .couldNotRestoreTransferredData:
+            title = NSLocalizedString(
+                "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE",
+                comment: "Error indicating that the app could not restore transferred data."
+            )
+            message = NSLocalizedString(
+                "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE",
+                comment: "Error indicating that the app could not restore transferred data."
+            )
+            actions = [.submitDebugLogsAndCrash]
 
-            // Show as a half-sheet on iOS 15+. On older versions, the sheet fills the screen, which is okay.
-            if
-                #available(iOS 15, *),
-                let presentationController = recoveryViewController.presentationController as? UISheetPresentationController {
-                presentationController.detents = [.medium()]
-                presentationController.prefersEdgeAttachedInCompactHeight = true
-                presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = true
-            }
-
-            viewController.present(recoveryViewController, animated: true)
         case .lastAppLaunchCrashed:
-            presentLaunchFailureActionSheet(
-                from: viewController,
-                launchFailure: launchFailure,
-                title: NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE",
-                    comment: "Error indicating that the app crashed during the previous launch."
-                ),
-                message: NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE",
-                    comment: "Error indicating that the app crashed during the previous launch."
-                ),
-                actions: [.submitDebugLogs(and: .launchApp), .launchApp]
+            title = NSLocalizedString(
+                "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE",
+                comment: "Error indicating that the app crashed during the previous launch."
             )
+            message = NSLocalizedString(
+                "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE",
+                comment: "Error indicating that the app crashed during the previous launch."
+            )
+            actions = [.submitDebugLogsAndLaunchApp(window: window), .launchApp(window: window)]
+
         case .lowStorageSpaceAvailable:
-            presentLaunchFailureActionSheet(
-                from: viewController,
-                launchFailure: launchFailure,
-                title: NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE",
-                    comment: "Error title indicating that the app crashed because there was low storage space available on the device."
-                ),
-                message: NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE",
-                    comment: "Error description indicating that the app crashed because there was low storage space available on the device."
-                ),
-                actions: []
+            shouldKillAppWhenBackgrounded = true
+            title = NSLocalizedString(
+                "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE",
+                comment: "Error title indicating that the app crashed because there was low storage space available on the device."
             )
-        case .none:
-            owsFailDebug("Unknown launch failure.")
-            presentLaunchFailureActionSheet(
-                from: viewController,
-                launchFailure: launchFailure,
-                title: NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_ALERT_TITLE",
-                    comment: "Title for the 'app launch failed' alert."
-                ),
-                actions: [.submitDebugLogs(and: .crash)]
+            message = NSLocalizedString(
+                "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE",
+                comment: "Error description indicating that the app crashed because there was low storage space available on the device."
             )
+            actions = []
         }
+
+        presentLaunchFailureActionSheet(
+            from: viewController,
+            supportTag: preflightError.supportTag,
+            title: title,
+            message: message,
+            actions: actions
+        )
+    }
+
+    private func presentTerminalDatabaseErrorActionSheet(from viewController: UIViewController) {
+        presentLaunchFailureActionSheet(
+            from: viewController,
+            supportTag: "LaunchFailure_CouldNotLoadDatabase",
+            title: NSLocalizedString(
+                "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
+                comment: "Error indicating that the app could not launch because the database could not be loaded."
+            ),
+            message: NSLocalizedString(
+                "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
+                comment: "Default message for the 'app launch failed' alert."
+            ),
+            actions: [.submitDebugLogsWithDatabaseIntegrityCheckAndCrash]
+        )
+    }
+
+    private func presentDatabaseRecovery(from viewController: UIViewController, window: UIWindow) {
+        let recoveryViewController: DatabaseRecoveryViewController = DatabaseRecoveryViewController(
+            setupSskEnvironment: { () -> Promise<Void> in
+                firstly(on: DispatchQueue.main) {
+                    self.setUpMainAppEnvironment()
+                }.catch(on: DispatchQueue.main) { error in
+                    owsFailDebug("Error: \(error)")
+                    viewController.dismiss(animated: true) {
+                        self.presentTerminalDatabaseErrorActionSheet(from: viewController)
+                    }
+                }
+            },
+            launchApp: {
+                // Pretend we didn't fail!
+                self.didAppLaunchFail = false
+                self.configureGlobalUI(in: window)
+                self.versionMigrationsDidComplete()
+            }
+        )
+
+        // Prevent dismissal.
+        if #available(iOS 13, *) {
+            recoveryViewController.isModalInPresentation = true
+        } else {
+            // This presents it fullscreen. Not ideal, but only affects old iOS versions, and prevents dismissal.
+            recoveryViewController.modalPresentationStyle = .fullScreen
+        }
+
+        // Show as a half-sheet on iOS 15+. On older versions, the sheet fills the screen, which is okay.
+        if #available(iOS 15, *), let presentationController = recoveryViewController.presentationController as? UISheetPresentationController {
+            presentationController.detents = [.medium()]
+            presentationController.prefersEdgeAttachedInCompactHeight = true
+            presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+        }
+
+        viewController.present(recoveryViewController, animated: true)
     }
 
     private enum LaunchFailureActionSheetAction {
-        enum ActionAfterSubmittingDebugLogs {
-            case crash
-            case launchApp
-        }
-
-        case submitDebugLogs(and: ActionAfterSubmittingDebugLogs)
+        case submitDebugLogsAndCrash
+        case submitDebugLogsAndLaunchApp(window: UIWindow)
         case submitDebugLogsWithDatabaseIntegrityCheckAndCrash
-        case launchApp
+        case launchApp(window: UIWindow)
     }
 
     private func presentLaunchFailureActionSheet(
         from viewController: UIViewController,
-        launchFailure: LaunchFailure,
+        supportTag: String,
         title: String,
-        message: String = NSLocalizedString(
-            "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
-            comment: "Default message for the 'app launch failed' alert."
-        ),
+        message: String,
         actions: [LaunchFailureActionSheetAction]
     ) {
         let actionSheet = ActionSheetController(title: title, message: message)
 
         if DebugFlags.internalSettings {
-            actionSheet.addAction(.init(title: "Export Database (internal)") { _ in
-                SignalApp.showExportDatabaseUI(from: viewController) { [weak viewController] in
-                    viewController?.presentActionSheet(actionSheet)
+            actionSheet.addAction(.init(title: "Export Database (internal)") { [unowned viewController] _ in
+                SignalApp.showExportDatabaseUI(from: viewController) {
+                    self.presentLaunchFailureActionSheet(
+                        from: viewController,
+                        supportTag: supportTag,
+                        title: title,
+                        message: message,
+                        actions: actions
+                    )
                 }
             })
         }
@@ -647,49 +631,58 @@ extension AppDelegate {
             })
         }
 
-        lazy var supportTag = String(describing: launchFailure)
-
-        func launchApp() {
+        func ignoreErrorAndLaunchApp(in window: UIWindow) {
             // Pretend we didn't fail!
             self.didAppLaunchFail = false
-            self.checkIfAppIsReady()
-            self.launchToHomeScreen(launchOptions: nil, isEnvironmentAlreadySetUp: false)
+            window.rootViewController = LoadingViewController()
+            self.launchApp(in: window)
         }
 
         for action in actions {
             switch action {
-            case let .submitDebugLogs(actionAfterSubmitting):
+            case .submitDebugLogsAndCrash:
                 addSubmitDebugLogsAction {
                     DebugLogs.submitLogs(withSupportTag: supportTag) {
-                        switch actionAfterSubmitting {
-                        case .crash:
-                            owsFail("Exiting after submitting debug logs")
-                        case .launchApp:
-                            launchApp()
-                        }
+                        owsFail("Exiting after submitting debug logs")
+                    }
+                }
+            case .submitDebugLogsAndLaunchApp(let window):
+                addSubmitDebugLogsAction { [unowned window] in
+                    DebugLogs.submitLogs(withSupportTag: supportTag) {
+                        ignoreErrorAndLaunchApp(in: window)
                     }
                 }
             case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash:
-                addSubmitDebugLogsAction {
+                addSubmitDebugLogsAction { [unowned viewController] in
                     SignalApp.showDatabaseIntegrityCheckUI(from: viewController) {
                         DebugLogs.submitLogs(withSupportTag: supportTag) {
                             owsFail("Exiting after submitting debug logs")
                         }
                     }
                 }
-            case .launchApp:
-                // Use a cancel-style button to draw attention.
-                let title = NSLocalizedString(
-                    "APP_LAUNCH_FAILURE_CONTINUE",
-                    comment: "Button to try launching the app even though the last launch failed"
-                )
-                actionSheet.addAction(.init(title: title, style: .cancel) { _ in
-                    launchApp()
-                })
+            case .launchApp(let window):
+                actionSheet.addAction(.init(
+                    title: NSLocalizedString(
+                        "APP_LAUNCH_FAILURE_CONTINUE",
+                        comment: "Button to try launching the app even though the last launch failed"
+                    ),
+                    style: .cancel, // Use a cancel-style button to draw attention.
+                    handler: { [unowned window] _ in
+                        ignoreErrorAndLaunchApp(in: window)
+                    }
+                ))
             }
         }
 
         viewController.presentActionSheet(actionSheet)
+    }
+
+    private func terminalErrorViewController() -> UIViewController {
+        let storyboard = UIStoryboard(name: "Launch Screen", bundle: nil)
+        guard let viewController = storyboard.instantiateInitialViewController() else {
+            owsFail("No initial view controller")
+        }
+        return viewController
     }
 
     // MARK: - Remote notifications
@@ -700,25 +693,15 @@ extension AppDelegate {
     }
 
     @objc
-    func processRemoteNotification(_ remoteNotification: NSDictionary) {
-        processRemoteNotification(remoteNotification) {}
-    }
-
-    @objc
     func processRemoteNotification(_ remoteNotification: NSDictionary, completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
-        guard !didAppLaunchFail else {
-            Logger.error("App launch failed")
-            return
-        }
-
-        guard AppReadiness.isAppReady, tsAccountManager.isRegisteredAndReady else {
-            Logger.info("Ignoring remote notification; app is not ready.")
-            return
-        }
-
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            guard self.tsAccountManager.isRegisteredAndReady else {
+                Logger.info("Ignoring remote notification; user is not registered.")
+                return
+            }
+
             // TODO: NSE Lifecycle, is this invoked when the NSE wakes the main app?
             if
                 let remoteNotification = remoteNotification as? [AnyHashable: Any],
@@ -751,14 +734,6 @@ extension AppDelegate {
     // MARK: - Events
 
     @objc
-    private func storageIsReady() {
-        AssertIsOnMainThread()
-        Logger.info("storageIsReady")
-
-        checkIfAppIsReady()
-    }
-
-    @objc
     private func registrationStateDidChange() {
         AssertIsOnMainThread()
 
@@ -788,11 +763,6 @@ extension AppDelegate {
     @objc
     private func registrationLockDidChange() {
         enableBackgroundRefreshIfNecessary()
-    }
-
-    @objc
-    private func spamChallenge() {
-        SpamCaptchaViewController.presentActionSheet(from: UIApplication.shared.frontmostViewController!)
     }
 
     // MARK: - Utilities

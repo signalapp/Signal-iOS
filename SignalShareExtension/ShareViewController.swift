@@ -108,10 +108,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // We don't need to use "screen protection" in the SAE.
 
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(storageIsReady),
-                                               name: .StorageIsReady,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
                                                name: .registrationStateDidChange,
                                                object: nil)
@@ -198,23 +194,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     @objc
-    func storageIsReady() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        checkIsAppReady()
-    }
-
-    @objc
     func checkIsAppReady() {
         AssertIsOnMainThread()
 
         // App isn't ready until storage is ready AND all version migrations are complete.
         guard areVersionMigrationsComplete else {
-            return
-        }
-        guard storageCoordinator.isStorageReady else {
             return
         }
         guard !AppReadiness.isAppReady else {

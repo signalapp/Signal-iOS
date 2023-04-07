@@ -10,8 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const StorageIsReadyNotification = @"StorageIsReadyNotification";
-
 NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 {
     switch (value) {
@@ -35,8 +33,6 @@ NSString *NSStringForDataStore(DataStore value)
 @interface StorageCoordinator () <SDSDatabaseStorageDelegate>
 
 @property (atomic) StorageCoordinatorState state;
-
-@property (atomic) BOOL isStorageSetupComplete;
 
 @end
 
@@ -115,34 +111,6 @@ NSString *NSStringForDataStore(DataStore value)
 - (BOOL)isDatabasePasswordAccessible
 {
     return [GRDBDatabaseStorageAdapter isKeyAccessible];
-}
-
-- (void)markStorageSetupAsComplete
-{
-    self.isStorageSetupComplete = YES;
-
-    [self postStorageIsReadyNotification];
-}
-
-- (void)postStorageIsReadyNotification
-{
-    OWSLogInfo(@"");
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:StorageIsReadyNotification
-                                                                 object:nil
-                                                               userInfo:nil];
-    });
-}
-
-- (BOOL)isStorageReady
-{
-    switch (self.state) {
-        case StorageCoordinatorStateGRDB:
-        case StorageCoordinatorStateGRDBTests:
-            return self.isStorageSetupComplete;
-    }
 }
 
 @end

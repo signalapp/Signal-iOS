@@ -219,19 +219,10 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
     }
 
     private static func loadPaymentsState(transaction: SDSAnyReadTransaction) -> PaymentsState {
-        func loadPaymentsEntropy() -> Data? {
-            guard storageCoordinator.isStorageReady else {
-                owsFailDebug("Storage is not ready.")
-                return nil
-            }
-            guard tsAccountManager.isRegisteredAndReady(with: transaction) else {
-                return nil
-            }
-            return keyValueStore.getData(paymentsEntropyKey, transaction: transaction)
-        }
-        guard let paymentsEntropy = loadPaymentsEntropy() else {
+        guard tsAccountManager.isRegisteredAndReady(with: transaction) else {
             return .disabled
         }
+        let paymentsEntropy = keyValueStore.getData(paymentsEntropyKey, transaction: transaction)
         let arePaymentsEnabled = keyValueStore.getBool(Self.arePaymentsEnabledKey,
                                                        defaultValue: false,
                                                        transaction: transaction)

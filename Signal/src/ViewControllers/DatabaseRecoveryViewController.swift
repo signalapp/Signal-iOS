@@ -196,8 +196,7 @@ class DatabaseRecoveryViewController: OWSViewController {
     @objc
     private func didRequestToSubmitDebugLogs() {
         self.dismiss(animated: true) {
-            let supportTag = String(describing: LaunchFailure.databaseCorruptedAndMightBeRecoverable)
-            DebugLogs.submitLogs(withSupportTag: supportTag)
+            DebugLogs.submitLogs(withSupportTag: LaunchPreflightError.databaseCorruptedAndMightBeRecoverable.supportTag)
         }
     }
 
