@@ -3649,21 +3649,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     return randomText;
 }
 
-+ (NSString *)randomShortText
-{
-    NSArray<NSString *> *randomTexts = @[
-        @"a",
-        @"b",
-        @"c",
-        @"d",
-        @"e",
-        @"f",
-        @"g",
-    ];
-    NSString *randomText = randomTexts[(NSUInteger)arc4random_uniform((uint32_t)randomTexts.count)];
-    return randomText;
-}
-
 + (void)createFakeThreads:(NSUInteger)threadCount withFakeMessages:(NSUInteger)messageCount
 {
     [DebugContactsUtils
@@ -3866,13 +3851,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                       persistenceCompletionHandler:nil
                                        transaction:transaction];
             });
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 [self createNewGroups:counter - 1 recipientAddress:recipientAddress];
             });
         });
     };
 
-    NSString *groupName = [NSUUID UUID].UUIDString;
+    NSString *groupName = [self randomShortText];
     [self createRandomGroupWithName:groupName member:recipientAddress success:completion];
 }
 

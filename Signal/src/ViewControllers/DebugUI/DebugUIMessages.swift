@@ -49,4 +49,24 @@ public extension DebugUIMessages {
     }
 }
 
+// MARK: - Random text
+
+extension DebugUIMessages {
+    private static let shortTextLength: UInt = 4
+
+    @objc
+    static func randomShortText() -> String {
+        let alphabet: [Character] = (97...122).map { (ascii: Int) in
+            Character(Unicode.Scalar(ascii)!)
+        }
+
+        let chars: [Character] = (0..<shortTextLength).map { _ in
+            let index = UInt.random(in: 0..<UInt(alphabet.count))
+            return alphabet[Int(index)]
+        }
+
+        return String(chars)
+    }
+}
+
 #endif
