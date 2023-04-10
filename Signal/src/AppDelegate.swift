@@ -785,6 +785,27 @@ extension AppDelegate {
             icon: UIApplicationShortcutIcon(type: .compose)
         )]
     }
+
+    // MARK: - URL Handling
+
+    @objc
+    func handleOpenUrl(_ url: URL) -> Bool {
+        AssertIsOnMainThread()
+
+        if self.didAppLaunchFail {
+            Logger.error("App launch failed")
+            return false
+        }
+
+        guard let parsedUrl = UrlOpener.parseUrl(url) else {
+            return false
+        }
+        AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+            let urlOpener = UrlOpener(tsAccountManager: self.tsAccountManager)
+            urlOpener.openUrl(parsedUrl, in: self.window!)
+        }
+        return true
+    }
 }
 
 // MARK: - UNUserNotificationCenterDelegate

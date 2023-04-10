@@ -121,49 +121,56 @@ public class AppReadiness: NSObject {
 
     // MARK: -
 
-    public static func runNowOrWhenAppDidBecomeReadySync(_ block: @escaping BlockType,
-                                                         file: String = #file,
-                                                         function: String = #function,
-                                                         line: Int = #line) {
+    public static func runNowOrWhenUIDidBecomeReadySync(
+        _ block: @escaping BlockType,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
         let label = Self.buildLabel(file: file, function: function, line: line)
         let priority = Self.defaultPriority
         DispatchMainThreadSafe {
-            shared.runNowOrWhenAppDidBecomeReadySync(block,
-                                                     flag: shared.readyFlag,
-                                                     label: label,
-                                                     priority: priority)
+            shared.runNowOrWhenAppDidBecomeReadySync(block, flag: shared.readyFlagUI, label: label, priority: priority)
         }
     }
 
-    @objc
-    static func runNowOrWhenUIDidBecomeReadySync(_ block: @escaping BlockType,
-                                                 label: String) {
+    public static func runNowOrWhenAppDidBecomeReadySync(
+        _ block: @escaping BlockType,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        let label = Self.buildLabel(file: file, function: function, line: line)
         let priority = Self.defaultPriority
         DispatchMainThreadSafe {
-            shared.runNowOrWhenAppDidBecomeReadySync(block,
-                                                     flag: shared.readyFlagUI,
-                                                     label: label,
-                                                     priority: priority)
+            shared.runNowOrWhenAppDidBecomeReadySync(block, flag: shared.readyFlag, label: label, priority: priority)
         }
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
-    static func runNowOrWhenAppDidBecomeReadySync(_ block: @escaping BlockType,
-                                                  label: String) {
+    public static func runNowOrWhenUIDidBecomeReadySync(_ block: @escaping BlockType, label: String) {
         let priority = Self.defaultPriority
         DispatchMainThreadSafe {
-            shared.runNowOrWhenAppDidBecomeReadySync(block,
-                                                     flag: shared.readyFlag,
-                                                     label: label,
-                                                     priority: priority)
+            shared.runNowOrWhenAppDidBecomeReadySync(block, flag: shared.readyFlagUI, label: label, priority: priority)
         }
     }
 
-    private func runNowOrWhenAppDidBecomeReadySync(_ block: @escaping BlockType,
-                                                   flag: ReadyFlag,
-                                                   label: String,
-                                                   priority: ReadyFlag.Priority) {
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public static func runNowOrWhenAppDidBecomeReadySync(_ block: @escaping BlockType, label: String) {
+        let priority = Self.defaultPriority
+        DispatchMainThreadSafe {
+            shared.runNowOrWhenAppDidBecomeReadySync(block, flag: shared.readyFlag, label: label, priority: priority)
+        }
+    }
+
+    private func runNowOrWhenAppDidBecomeReadySync(
+        _ block: @escaping BlockType,
+        flag: ReadyFlag,
+        label: String,
+        priority: ReadyFlag.Priority
+    ) {
         AssertIsOnMainThread()
 
         guard !CurrentAppContext().isRunningTests else {

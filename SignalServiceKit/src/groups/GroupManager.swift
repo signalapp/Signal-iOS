@@ -1040,7 +1040,18 @@ public class GroupManager: NSObject {
 
     @objc
     public static func isPossibleGroupInviteLink(_ url: URL) -> Bool {
-        groupsV2Swift.isPossibleGroupInviteLink(url)
+        let possibleHosts: [String]
+        if url.scheme == "https" {
+            possibleHosts = ["signal.group"]
+        } else if url.scheme == "sgnl" {
+            possibleHosts = ["signal.group", "joingroup"]
+        } else {
+            return false
+        }
+        guard let host = url.host else {
+            return false
+        }
+        return possibleHosts.contains(host)
     }
 
     @objc

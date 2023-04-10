@@ -145,8 +145,6 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL
 
-    func isPossibleGroupInviteLink(_ url: URL) -> Bool
-
     func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo?
 
     func cachedGroupInviteLinkPreview(groupSecretParamsData: Data) -> GroupInviteLinkPreview?
@@ -670,10 +668,6 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
     }
 
     public func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
-        owsFail("Not implemented.")
-    }
-
-    public func isPossibleGroupInviteLink(_ url: URL) -> Bool {
         owsFail("Not implemented.")
     }
 
