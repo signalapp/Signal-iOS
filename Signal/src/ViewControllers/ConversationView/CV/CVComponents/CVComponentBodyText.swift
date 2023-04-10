@@ -149,7 +149,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
             // Add mentions.
             if let attributedString = attributedString {
-                attributedString.enumerateMentions { mention, range, _ in
+                attributedString.enumerateMentionsAndStyles { mention, _, range, _ in
                     guard let mention = mention else { return }
                     let mentionItem = CVTextLabel.MentionItem(mention: mention, range: range)
                     let item: CVTextLabel.Item = .mention(mentionItem: mentionItem)
@@ -737,6 +737,17 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             } catch {
                 owsFailDebug("Error: \(error)")
             }
+        }
+
+        if FeatureFlags.textFormattingReceiveSupport {
+            // Styles take precedence over everything else, so apply them last.
+            // TODO[TextFormatting]: spoilers in search results should change both
+            // the highlight and the text color to yellow.
+            MessageBodyRanges.applyStyleAttributes(
+                on: attributedText,
+                baseFont: textMessageFont,
+                textColor: bodyTextColor
+            )
         }
 
         var extraCacheKeyFactors = [String]()

@@ -104,6 +104,8 @@ public class FeatureFlags: BaseFlags {
 
     public static let canRequestAccountDataReport: Bool = build.includes(.internal)
 
+    public static let textFormattingReceiveSupport: Bool = build.includes(.internal)
+
     @objc
     public static func logFlags() {
         let logFlag = { (prefix: String, key: String, value: Any?) in

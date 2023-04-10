@@ -316,7 +316,8 @@ open class MentionTextView: OWSTextView {
 
         if range.length > 0 {
             // Locate any mentions in the edited range.
-            textStorage.enumerateMentions(in: range) { mention, subrange, _ in
+            // TODO[TextFormatting]: update styles as needed
+            textStorage.enumerateMentionsAndStyles(in: range) { mention, _, subrange, _ in
                 guard let mention = mention else { return }
 
                 // Get the full range of the mention, we may only be editing a part of it.

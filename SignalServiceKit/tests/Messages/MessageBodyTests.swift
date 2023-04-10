@@ -770,7 +770,7 @@ final class MessageBodyTests: XCTestCase {
         let hydrated = input.hydratingMentions(
             hydrator: { uuid in
                 if let displayName = names[uuid] {
-                    return .hydrate(displayName: displayName)
+                    return .hydrate(displayName, alreadyIncludesPrefix: false)
                 } else {
                     return .preserveMention
                 }

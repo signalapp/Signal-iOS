@@ -50,10 +50,13 @@ public class MessageBody: NSObject, NSCopying, NSSecureCoding {
     // want to apply some styles.
     public func plaintextBody(transaction: GRDBReadTransaction) -> String {
         let hydratedMessageBody = hydratingMentions(hydrator: { mentionUUID in
-            return .hydrate(displayName: Self.contactsManager.displayName(
-                for: SignalServiceAddress(uuid: mentionUUID),
-                transaction: transaction.asAnyRead
-            ))
+            return .hydrate(
+                Self.contactsManager.displayName(
+                    for: SignalServiceAddress(uuid: mentionUUID),
+                    transaction: transaction.asAnyRead
+                ),
+                alreadyIncludesPrefix: false
+            )
         })
         return (hydratedMessageBody.text as NSString).filterStringForDisplay()
     }
@@ -90,159 +93,22 @@ public class MessageBody: NSObject, NSCopying, NSSecureCoding {
                     for: address,
                     transaction: transaction.asAnyRead
                 )
-                return .hydrate(displayName: displayName)
+                return .hydrate(displayName, alreadyIncludesPrefix: false)
             }
         })
     }
 
-    enum HydrationOption {
-        /// Do not hydrate the mention; this leaves the string as it was in the original,
-        /// which we want to do e.g. when forwarding a message with mentions from one
-        /// thread context to another, where we hydrate the mentions of members not in
-        /// the destination, but preserve mentions of shared members fully intact.
-        case preserveMention
-        /// Replace the mention range with the populated display name.
-        case hydrate(displayName: String)
-    }
-
     internal func hydratingMentions(
-        hydrator: (UUID) -> HydrationOption,
+        hydrator: (UUID) -> MessageBodyRanges.MentionHydrationOption,
         isRTL: Bool = CurrentAppContext().isRTL
     ) -> MessageBody {
-        guard hasMentions else {
-            return self
-        }
-
-        let finalText = NSMutableString(string: text)
-        var finalMentions = [NSRange: UUID]()
-        var finalStyles = [(NSRange, Style)]()
-
-        var mentionsInOriginal = ranges.orderedMentions
-        var stylesInOriginal = ranges.styles
-
-        var rangeOffset = 0
-
-        struct ProcessingStyle {
-            let originalRange: NSRange
-            let newRange: NSRange
-            let style: Style
-        }
-        var styleAtCurrentIndex: ProcessingStyle?
-
-        let nsString = text as NSString
-        for currentIndex in 0..<nsString.length {
-            // If we are past the end, apply the active style to the final result
-            // and drop.
-            if
-                let style = styleAtCurrentIndex,
-                currentIndex >= style.originalRange.upperBound
-            {
-                finalStyles.append((style.newRange, style.style))
-                styleAtCurrentIndex = nil
-            }
-            // Check for any new styles starting at the current index.
-            if stylesInOriginal.first?.0.contains(currentIndex) == true {
-                let (originalRange, style) = stylesInOriginal.removeFirst()
-                styleAtCurrentIndex = .init(
-                    originalRange: originalRange,
-                    newRange: NSRange(
-                        location: originalRange.location + rangeOffset,
-                        length: originalRange.length
-                    ),
-                    style: style
-                )
-            }
-
-            // Check for any mentions at the current index.
-            // Mentions can't overlap, so we don't need a while loop to check for multiple.
-            guard
-                let (originalMentionRange, mentionUuid) = mentionsInOriginal.first,
-                (
-                    originalMentionRange.contains(currentIndex)
-                    || originalMentionRange.location == currentIndex
-                )
-            else {
-                // No mentions, so no additional logic needed, just go to the next index.
-                continue
-            }
-            mentionsInOriginal.removeFirst()
-
-            let newMentionRange = NSRange(
-                location: originalMentionRange.location + rangeOffset,
-                length: originalMentionRange.length
-            )
-
-            switch hydrator(mentionUuid) {
-            case .preserveMention:
-                // Preserve the mention without replacement and proceed.
-                finalMentions[newMentionRange] = mentionUuid
-                continue
-            case .hydrate(let displayName):
-                let mentionPlaintext: String
-                if isRTL {
-                    mentionPlaintext = displayName + MessageBodyRanges.mentionPrefix
-                } else {
-                    mentionPlaintext = MessageBodyRanges.mentionPrefix + displayName
-                }
-                let finalMentionLength = (mentionPlaintext as NSString).length
-                let extraOffset = finalMentionLength - originalMentionRange.length
-                finalText.replaceCharacters(in: newMentionRange, with: mentionPlaintext)
-                rangeOffset += extraOffset
-
-                // We have to adjust style ranges for the active style
-                if let style = styleAtCurrentIndex {
-                    if style.originalRange.upperBound <= originalMentionRange.upperBound {
-                        // If the style ended inside (or right at the end of) the mention,
-                        // it should now end at the end of the replacement text.
-
-                        let finalLength = (newMentionRange.location + finalMentionLength) - style.newRange.location
-                        let finalStyle = (
-                            NSRange(
-                                location: style.newRange.location,
-                                length: finalLength
-                            ),
-                            style.style
-                        )
-                        finalStyles.append(finalStyle)
-
-                        // We are done with it, now.
-                        styleAtCurrentIndex = nil
-                    } else {
-                        // The original style ends past the mention; extend its
-                        // length by the right amount, but keep it in
-                        // the current styles being walked through.
-                        styleAtCurrentIndex = .init(
-                            originalRange: style.originalRange,
-                            newRange: NSRange(
-                                location: style.newRange.location,
-                                length: style.newRange.length + extraOffset
-                            ),
-                            style: style.style
-                        )
-                    }
-                }
-            }
-        }
-
-        if let style = styleAtCurrentIndex {
-            // Styles that ran right to the end (or overran) should be finalized.
-            let finalStyle = (
-                NSRange(
-                    location: style.newRange.location,
-                    length: finalText.length - style.newRange.location
-                ),
-                style.style
-            )
-            finalStyles.append(finalStyle)
-        }
-
-        return MessageBody(
-            text: String(finalText),
-            ranges: MessageBodyRanges(
-                mentions: finalMentions,
-                styles: finalStyles
-            )
+        let text = NSMutableAttributedString(string: self.text)
+        let ranges = ranges.hydratingMentions(
+            in: text,
+            hydrator: hydrator,
+            isRTL: isRTL
         )
+        return MessageBody(text: text.string, ranges: ranges)
     }
 
     override public func isEqual(_ object: Any?) -> Bool {
@@ -289,6 +155,8 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         static let spoiler = Style(rawValue: 1 << 2)
         static let strikethrough = Style(rawValue: 1 << 3)
         static let monospace = Style(rawValue: 1 << 4)
+
+        static let attributedStringKey = NSAttributedString.Key("OWSStyle")
     }
 
     /// Sorted from lowest location to highest location.
@@ -511,6 +379,285 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         return MessageBody(text: text, ranges: self).plaintextBody(transaction: transaction)
     }
 
+    public enum MentionHydrationOption {
+        /// Do not hydrate the mention; this leaves the string as it was in the original,
+        /// which we want to do e.g. when forwarding a message with mentions from one
+        /// thread context to another, where we hydrate the mentions of members not in
+        /// the destination, but preserve mentions of shared members fully intact.
+        case preserveMention
+        /// Replace the mention range with the populated display name.
+        case hydrate(String, alreadyIncludesPrefix: Bool)
+        /// Replace the mention range with the populated display name and attributes.
+        case hydrateAttributed(NSAttributedString, alreadyIncludesPrefix: Bool)
+    }
+
+    /// Hydrates mentions (as determined by the hydrator) and sets the `.owsStyle` attribute
+    /// on the string for any styles but *does not* actually apply the styles. (e.g. no font attribute)
+    /// `.owsStyle` attributes can be converted to attributes just before display, when the font
+    /// and text color are available.
+    public func hydrateMentionsAndSetStyleAttributes(
+        on string: NSMutableAttributedString,
+        hydrator: (UUID) -> MentionHydrationOption,
+        isRTL: Bool = CurrentAppContext().isRTL
+    ) {
+        let newStyles = hydratingMentions(
+            in: string,
+            hydrator: hydrator,
+            isRTL: isRTL
+        )
+        newStyles.setStyleAttributesWithoutApplying(on: string)
+    }
+
+    /// Applies hydrations to the provided `NSMutableAttributedString`, and returns any
+    /// ranges left over (styles and preserved mentions) with ranges updated to reflect the new string.
+    public func hydratingMentions(
+        in text: NSMutableAttributedString,
+        hydrator: (UUID) -> MentionHydrationOption,
+        isRTL: Bool = CurrentAppContext().isRTL
+    ) -> MessageBodyRanges {
+        guard hasMentions else {
+            return self
+        }
+
+        let finalText = text
+        var finalMentions = [NSRange: UUID]()
+        var finalStyles = [(NSRange, Style)]()
+
+        var mentionsInOriginal = orderedMentions
+        var stylesInOriginal = styles
+
+        var rangeOffset = 0
+
+        struct ProcessingStyle {
+            let originalRange: NSRange
+            let newRange: NSRange
+            let style: Style
+        }
+        var styleAtCurrentIndex: ProcessingStyle?
+
+        let startLength = text.length
+        for currentIndex in 0..<startLength {
+            // If we are past the end, apply the active style to the final result
+            // and drop.
+            if
+                let style = styleAtCurrentIndex,
+                currentIndex >= style.originalRange.upperBound
+            {
+                finalStyles.append((style.newRange, style.style))
+                styleAtCurrentIndex = nil
+            }
+            // Check for any new styles starting at the current index.
+            if stylesInOriginal.first?.0.contains(currentIndex) == true {
+                let (originalRange, style) = stylesInOriginal.removeFirst()
+                styleAtCurrentIndex = .init(
+                    originalRange: originalRange,
+                    newRange: NSRange(
+                        location: originalRange.location + rangeOffset,
+                        length: originalRange.length
+                    ),
+                    style: style
+                )
+            }
+
+            // Check for any mentions at the current index.
+            // Mentions can't overlap, so we don't need a while loop to check for multiple.
+            guard
+                let (originalMentionRange, mentionUuid) = mentionsInOriginal.first,
+                (
+                    originalMentionRange.contains(currentIndex)
+                    || originalMentionRange.location == currentIndex
+                )
+            else {
+                // No mentions, so no additional logic needed, just go to the next index.
+                continue
+            }
+            mentionsInOriginal.removeFirst()
+
+            let newMentionRange = NSRange(
+                location: originalMentionRange.location + rangeOffset,
+                length: originalMentionRange.length
+            )
+
+            let finalMentionLength: Int
+            let mentionOffsetDelta: Int
+            switch hydrator(mentionUuid) {
+            case .preserveMention:
+                // Preserve the mention without replacement and proceed.
+                finalMentions[newMentionRange] = mentionUuid
+                continue
+            case let .hydrate(displayName, alreadyIncludesPrefix):
+                let mentionPlaintext: String
+                if alreadyIncludesPrefix {
+                    mentionPlaintext = displayName
+                } else {
+                    if isRTL {
+                        mentionPlaintext = displayName + MessageBodyRanges.mentionPrefix
+                    } else {
+                        mentionPlaintext = MessageBodyRanges.mentionPrefix + displayName
+                    }
+                }
+                finalMentionLength = (mentionPlaintext as NSString).length
+                mentionOffsetDelta = finalMentionLength - originalMentionRange.length
+                finalText.replaceCharacters(in: newMentionRange, with: mentionPlaintext)
+            case let .hydrateAttributed(displayName, alreadyIncludesPrefix):
+                let mentionString: NSAttributedString
+                if alreadyIncludesPrefix {
+                    mentionString = displayName
+                } else {
+                    let base = NSMutableAttributedString(attributedString: displayName)
+                    let replacement = NSAttributedString(string: MessageBodyRanges.mentionPrefix)
+                    if isRTL {
+                        base.replaceCharacters(in: NSRange(location: 0, length: 0), with: replacement)
+                    } else {
+                        base.replaceCharacters(in: NSRange(location: base.length, length: 0), with: replacement)
+                    }
+                    mentionString = base
+                }
+                finalMentionLength = mentionString.length
+                mentionOffsetDelta = finalMentionLength - originalMentionRange.length
+                finalText.replaceCharacters(in: newMentionRange, with: mentionString)
+            }
+            rangeOffset += mentionOffsetDelta
+
+            // We have to adjust style ranges for the active style
+            if let style = styleAtCurrentIndex {
+                if style.originalRange.upperBound <= originalMentionRange.upperBound {
+                    // If the style ended inside (or right at the end of) the mention,
+                    // it should now end at the end of the replacement text.
+
+                    let finalLength = (newMentionRange.location + finalMentionLength) - style.newRange.location
+                    let finalStyle = (
+                        NSRange(
+                            location: style.newRange.location,
+                            length: finalLength
+                        ),
+                        style.style
+                    )
+                    finalStyles.append(finalStyle)
+
+                    // We are done with it, now.
+                    styleAtCurrentIndex = nil
+                } else {
+                    // The original style ends past the mention; extend its
+                    // length by the right amount, but keep it in
+                    // the current styles being walked through.
+                    styleAtCurrentIndex = .init(
+                        originalRange: style.originalRange,
+                        newRange: NSRange(
+                            location: style.newRange.location,
+                            length: style.newRange.length + mentionOffsetDelta
+                        ),
+                        style: style.style
+                    )
+                }
+            }
+        }
+
+        if let style = styleAtCurrentIndex {
+            // Styles that ran right to the end (or overran) should be finalized.
+            let finalStyle = (
+                NSRange(
+                    location: style.newRange.location,
+                    length: finalText.length - style.newRange.location
+                ),
+                style.style
+            )
+            finalStyles.append(finalStyle)
+        }
+
+        return MessageBodyRanges(
+            mentions: finalMentions,
+            styles: finalStyles
+        )
+    }
+
+    /// Sets the `.owsStyle` attribute on the string for any styles but
+    /// *does not* actually apply the styles. (e.g. no font attribute)
+    /// `.owsStyle` attributes can be converted to attributes just before display,
+    /// when the font and text color are available.
+    public func setStyleAttributesWithoutApplying(on string: NSMutableAttributedString) {
+        for (range, style) in styles {
+            string.addAttributes([.owsStyle: style], range: range)
+        }
+    }
+
+    /// Applies styles to the provided string (sets attributes for font, strikethrough, etc).
+    /// Font and colors for styles are based on the provided base font and color.
+    public func applyStyles(
+        to string: NSMutableAttributedString,
+        baseFont: UIFont,
+        textColor: UIColor
+    ) {
+        for (range, style) in styles {
+            Self.applyStyle(
+                style: style,
+                to: string,
+                range: range,
+                baseFont: baseFont,
+                textColor: textColor
+            )
+        }
+    }
+
+    /// Applies any `.owsStyle` attributes on the string (sets attributes for font, strikethrough, etc).
+    /// Font and colors for styles are based on the provided base font and color.
+    public static func applyStyleAttributes(
+        on string: NSMutableAttributedString,
+        baseFont: UIFont,
+        textColor: UIColor
+    ) {
+        let copy = NSAttributedString(attributedString: string)
+        copy.enumerateAttributes(
+            in: string.entireRange,
+            using: { attrs, range, stop in
+                guard let style = attrs[.owsStyle] as? Style else {
+                    return
+                }
+                applyStyle(
+                    style: style,
+                    to: string,
+                    range: range,
+                    baseFont: baseFont,
+                    textColor: textColor
+                )
+            }
+        )
+    }
+
+    private static func applyStyle(
+        style: Style,
+        to string: NSMutableAttributedString,
+        range: NSRange,
+        baseFont: UIFont,
+        textColor: UIColor
+    ) {
+        var fontTraits: UIFontDescriptor.SymbolicTraits = []
+        var attributes: [NSAttributedString.Key: Any] = [
+            .owsStyle: style
+        ]
+        if style.contains(.bold) {
+            fontTraits.insert(.traitBold)
+        }
+        if style.contains(.italic) {
+            fontTraits.insert(.traitItalic)
+        }
+        if style.contains(.monospace) {
+            fontTraits.insert(.traitMonoSpace)
+        }
+        if style.contains(.strikethrough) {
+            attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
+            attributes[.strikethroughColor] = textColor
+        }
+        if style.contains(.spoiler) {
+            // TODO[TextFormatting]: we need different representations of spoiler.
+            attributes[.backgroundColor] = textColor
+        }
+        if !fontTraits.isEmpty {
+            attributes[.font] = baseFont.withTraits(fontTraits)
+        }
+        string.addAttributes(attributes, range: range)
+    }
+
     override public func isEqual(_ object: Any?) -> Bool {
         guard let other = object as? MessageBodyRanges else {
             return false
@@ -533,4 +680,23 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         }
         return true
     }
+}
+
+extension UIFont {
+
+    func withTraits(_ traits: UIFontDescriptor.SymbolicTraits) -> UIFont {
+
+        // create a new font descriptor with the given traits
+        guard let fd = fontDescriptor.withSymbolicTraits(traits) else {
+            // the given traits couldn't be applied, return self
+            return self
+        }
+
+        // return a new font with the created font descriptor
+        return UIFont(descriptor: fd, size: pointSize)
+    }
+}
+
+extension NSAttributedString.Key {
+    public static let owsStyle = MessageBodyRanges.Style.attributedStringKey
 }
