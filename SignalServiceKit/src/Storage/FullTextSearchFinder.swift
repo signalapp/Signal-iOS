@@ -9,14 +9,14 @@ import GRDB
 public enum FullTextSearchFinder {
     public static let matchTag = "match"
 
-    public static func enumerateObjects(searchText: String, collections: [String], maxResults: UInt, transaction: SDSAnyReadTransaction, block: @escaping (Any, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateObjects(searchText: String, collections: [String], maxResults: UInt, transaction: SDSAnyReadTransaction, block: (Any, String, inout Bool) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             GRDBFullTextSearchFinder.enumerateObjects(searchText: searchText, collections: collections, maxResults: maxResults, transaction: grdbRead, block: block)
         }
     }
 
-    public static func enumerateObjects<T: SDSIndexableModel>(searchText: String, maxResults: UInt, transaction: SDSAnyReadTransaction, block: @escaping (T, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateObjects<T: SDSIndexableModel>(searchText: String, maxResults: UInt, transaction: SDSAnyReadTransaction, block: (T, String, inout Bool) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             GRDBFullTextSearchFinder.enumerateObjects(searchText: searchText, maxResults: maxResults, transaction: grdbRead, block: block)
@@ -487,7 +487,12 @@ enum GRDBFullTextSearchFinder {
 
     // MARK: - Querying
 
-    public static func enumerateObjects<T: SDSIndexableModel>(searchText: String, maxResults: UInt, transaction: GRDBReadTransaction, block: @escaping (T, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateObjects<T: SDSIndexableModel>(
+        searchText: String,
+        maxResults: UInt,
+        transaction: GRDBReadTransaction,
+        block: (T, String, inout Bool) -> Void
+    ) {
         enumerateObjects(
             searchText: searchText,
             collections: [T.collection()],
@@ -500,12 +505,17 @@ enum GRDBFullTextSearchFinder {
             guard let object = object as? T else {
                 return owsFailDebug("Unexpected object type")
             }
-            block(object, snippet, stop)
+            block(object, snippet, &stop)
         }
     }
 
-    public static func enumerateObjects(searchText: String, collections: [String], maxResults: UInt, transaction: GRDBReadTransaction, block: @escaping (Any, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
-
+    public static func enumerateObjects(
+        searchText: String,
+        collections: [String],
+        maxResults: UInt,
+        transaction: GRDBReadTransaction,
+        block: (Any, String, inout Bool) -> Void
+    ) {
         let query = FullTextSearchFinder.query(searchText: searchText)
 
         if query.isEmpty {
@@ -517,7 +527,7 @@ enum GRDBFullTextSearchFinder {
 
         // Search with the query interface or SQL
         do {
-            var stop: ObjCBool = false
+            var stop = false
 
             // GRDB TODO: We could use bm25() instead of rank to order results.
             let indexOfContentColumnInFTSTable = 0
@@ -554,7 +564,7 @@ enum GRDBFullTextSearchFinder {
                 }
 
                 block(model, snippet, &stop)
-                guard !stop.boolValue else {
+                if stop {
                     break
                 }
             }

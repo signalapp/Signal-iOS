@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import BonMot
+import Foundation
+import SignalServiceKit
+import SignalUI
 
 /* From BonMot 6.0.0: If you're targeting iOS 15 or higher, you may want to check out [AttributedString](https://developer.apple.com/documentation/foundation/attributedstring) instead.
  If you're an existing user of BonMot using Xcode 13, you may want to add the following `typealias` somewhere in your project to avoid a conflict with `Foundation.StringStyle`: */
@@ -532,50 +534,55 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
         }
     }
 
-    private func updateSearchResults(searchText rawSearchText: String) {
+    private let currentSearchCounter = AtomicUInt(0, lock: AtomicLock())
 
-        let searchText = rawSearchText.stripped
-        if searchText.isEmpty {
-            searchResultSet = HomeScreenSearchResultSet.empty
-            lastSearchText = nil
-            reloadTableData()
+    private func updateSearchResults(searchText: String) {
+        let searchText = searchText.stripped
+        let lastSearchText = self.lastSearchText
+        self.lastSearchText = searchText
+
+        if searchText != lastSearchText {
+            // The query has changed; perform a search.
+        } else if tableView.visibleCells.contains(where: { $0 is ChatListCell }) {
+            // The database may have been updated, and that'll lead to a duplicate
+            // query for the same search text. In that case, perform a search if
+            // there's a cell that needs to be updated.
+        } else {
+            // Nothing has changed, so don't perform a search.
             return
         }
 
-        // a database change will lead to a search with the searchText=lastSearchText
-        // in this case we only want to update the visible cells
-        var updateCellCandidates: [ChatListCell]?
-        if lastSearchText == searchText {
-            updateCellCandidates = tableView.visibleCells.filter {$0 as? ChatListCell != nil} as? [ChatListCell]
-        }
-        guard updateCellCandidates == nil || updateCellCandidates!.count > 0 else {
-            // Ignoring redundant search.
-            return
-        }
+        currentSearchCounter.increment()
+        let searchCounter = currentSearchCounter.get()
 
-        lastSearchText = searchText
+        let isCanceled: () -> Bool = { [weak currentSearchCounter] in currentSearchCounter?.get() != searchCounter }
 
-        var searchResults: HomeScreenSearchResultSet?
-        self.databaseStorage.asyncRead(block: {[weak self] transaction in
-            guard let strongSelf = self else { return }
-            searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction)
-        },
-        completion: { [weak self] in
-            AssertIsOnMainThread()
-            guard let self = self else { return }
-
-            guard let results = searchResults else {
-                owsFailDebug("searchResults was unexpectedly nil")
+        fetchSearchResults(
+            searchText: searchText,
+            isCanceled: isCanceled
+        ).done(on: DispatchQueue.main) { [weak self] searchResultSet in
+            guard let self, let searchResultSet, !isCanceled() else {
                 return
             }
-            guard self.lastSearchText == searchText else {
-                // Discard results from stale search.
-                return
-            }
-
-            self.searchResultSet = results
+            self.searchResultSet = searchResultSet
             self.reloadTableData()
-        })
+        }
+    }
+
+    private func fetchSearchResults(searchText: String, isCanceled: @escaping () -> Bool) -> Guarantee<HomeScreenSearchResultSet?> {
+        if searchText.isEmpty {
+            return .value(.empty)
+        }
+
+        let (result, future) = Guarantee<HomeScreenSearchResultSet?>.pending()
+        databaseStorage.asyncRead { [weak self] transaction in
+            future.resolve(self?.searcher.searchForHomeScreen(
+                searchText: searchText,
+                isCanceled: isCanceled,
+                transaction: transaction
+            ))
+        }
+        return result
     }
 
     // MARK: -

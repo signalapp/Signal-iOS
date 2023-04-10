@@ -682,10 +682,12 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     }
 
     private func getResultSet(searchText: String) -> HomeScreenSearchResultSet {
-        var results: HomeScreenSearchResultSet!
         self.read { transaction in
-            results = self.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction)
+            self.searcher.searchForHomeScreen(
+                searchText: searchText,
+                isCanceled: { false },
+                transaction: transaction
+            )!
         }
-        return results
     }
 }
