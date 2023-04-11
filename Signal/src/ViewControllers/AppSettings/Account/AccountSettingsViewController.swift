@@ -189,7 +189,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             if FeatureFlags.canRequestAccountDataReport {
                 accountSection.add(.actionItem(
                     // TODO[ADE]: Localize this string
-                    withText: "Request Account Data",
+                    withText: "Your Account Data",
                     accessibilityIdentifier: UIView.accessibilityIdentifier(
                         in: self,
                         name: "request_account_data_report"
