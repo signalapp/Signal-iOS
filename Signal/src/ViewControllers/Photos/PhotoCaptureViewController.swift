@@ -1229,7 +1229,11 @@ extension PhotoCaptureViewController: InteractiveDismissDelegate {
         view.backgroundColor = .clear
     }
 
-    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition,
+                            didChangeProgress: CGFloat,
+                            touchOffset: CGPoint) { }
+
+    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didFinishWithVelocity: CGVector?) {
         dismiss(animated: true)
     }
 

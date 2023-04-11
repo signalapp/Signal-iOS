@@ -21,21 +21,6 @@ protocol InteractiveDismissDelegate: AnyObject {
     func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
 }
 
-extension InteractiveDismissDelegate {
-    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-
-    }
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition,
-                            didChangeProgress: CGFloat,
-                            touchOffset: CGPoint
-    ) { }
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition,
-                            didFinishWithVelocity: CGVector?) { }
-    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-
-    }
-}
-
 class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
     var interactionInProgress = false
 
