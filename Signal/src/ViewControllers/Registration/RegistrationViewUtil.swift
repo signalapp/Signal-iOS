@@ -24,12 +24,16 @@ extension UIEdgeInsets {
     ) -> UIEdgeInsets {
         switch horizontalSizeClass {
         case .unspecified, .compact:
-            return UIEdgeInsets(margin: 32)
+            return UIEdgeInsets(allButTop: 32)
         case .regular:
-            return UIEdgeInsets(margin: 112)
+            return UIEdgeInsets(allButTop: 112)
         @unknown default:
-            return UIEdgeInsets(margin: 32)
+            return UIEdgeInsets(allButTop: 32)
         }
+    }
+
+    private init(allButTop: CGFloat) {
+        self.init(top: 0, leading: allButTop, bottom: allButTop, trailing: allButTop)
     }
 }
 

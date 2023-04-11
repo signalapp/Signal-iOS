@@ -105,18 +105,26 @@ class RegistrationVerificationViewController: OWSViewController {
         title: String = "",
         selector: Selector,
         accessibilityIdentifierSuffix: String
-    ) -> OWSFlatButton {
-        let result = OWSFlatButton.button(
-            title: title,
-            font: UIFont.ows_dynamicTypeSubheadlineClamped,
-            titleColor: .clear, // This should be overwritten in `render`.
-            backgroundColor: .clear,
-            target: self,
-            selector: selector
-        )
-        result.enableMultilineLabel()
-        result.contentEdgeInsets = UIEdgeInsets(margin: 12)
+    ) -> UIButton {
+        let result = UIButton(type: .system)
+
+        result.addTarget(self, action: selector, for: .touchUpInside)
+
+        result.setTitle(title, for: .normal)
+        if let titleLabel = result.titleLabel {
+            titleLabel.font = .ows_dynamicTypeSubheadlineClamped
+            titleLabel.numberOfLines = 0
+            titleLabel.lineBreakMode = .byWordWrapping
+            titleLabel.textAlignment = .center
+            result.heightAnchor.constraint(
+                greaterThanOrEqualTo: titleLabel.heightAnchor
+            ).isActive = true
+        } else {
+            owsFailBeta("Button has no title label")
+        }
+
         result.accessibilityIdentifier = "registration.verification.\(accessibilityIdentifierSuffix)"
+
         return result
     }
 
@@ -141,7 +149,7 @@ class RegistrationVerificationViewController: OWSViewController {
         return result
     }()
 
-    private lazy var wrongNumberButton: OWSFlatButton = button(
+    private lazy var wrongNumberButton = button(
         title: OWSLocalizedString(
             "ONBOARDING_VERIFICATION_BACK_LINK",
             comment: "Label for the link that lets users change their phone number in the onboarding views."
@@ -156,7 +164,7 @@ class RegistrationVerificationViewController: OWSViewController {
         return result
     }()
 
-    private lazy var helpButton: OWSFlatButton = button(
+    private lazy var helpButton = button(
         title: OWSLocalizedString(
             "ONBOARDING_VERIFICATION_HELP_LINK",
             comment: "Label for a button to get help entering a verification code when registering."
@@ -165,12 +173,12 @@ class RegistrationVerificationViewController: OWSViewController {
         accessibilityIdentifierSuffix: "helpButton"
     )
 
-    private lazy var resendSMSCodeButton: OWSFlatButton = button(
+    private lazy var resendSMSCodeButton = button(
         selector: #selector(didTapResendSMSCode),
         accessibilityIdentifierSuffix: "resendSMSCodeButton"
     )
 
-    private lazy var requestVoiceCodeButton: OWSFlatButton = button(
+    private lazy var requestVoiceCodeButton = button(
         selector: #selector(didTapSendVoiceCode),
         accessibilityIdentifierSuffix: "requestVoiceCodeButton"
     )
@@ -206,7 +214,11 @@ class RegistrationVerificationViewController: OWSViewController {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        verificationCodeView.becomeFirstResponder()
+        if !UIDevice.current.isIPhone5OrShorter {
+            // Small devices may obscure parts of the UI behind the keyboard, especially with larger
+            // font sizes.
+            verificationCodeView.becomeFirstResponder()
+        }
 
         showValidationErrorUiIfNecessary()
 
@@ -229,12 +241,28 @@ class RegistrationVerificationViewController: OWSViewController {
     }
 
     private func initialRender() {
-        let stackView = UIStackView()
+        let scrollView = UIScrollView()
+        view.addSubview(scrollView)
+        scrollView.autoPinWidthToSuperview()
+        scrollView.autoPinEdge(.top, to: .top, of: keyboardLayoutGuideViewSafeArea)
+        scrollView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
+        let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 12
-        view.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        stackView.layoutMargins = UIEdgeInsets.layoutMarginsForRegistration(
+            traitCollection.horizontalSizeClass
+        )
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.setContentHuggingHigh()
+        scrollView.addSubview(stackView)
+        stackView.autoPinWidth(toWidthOf: scrollView)
+        stackView.heightAnchor.constraint(
+            greaterThanOrEqualTo: scrollView.contentLayoutGuide.heightAnchor
+        ).isActive = true
+        stackView.heightAnchor.constraint(
+            greaterThanOrEqualTo: scrollView.frameLayoutGuide.heightAnchor
+        ).isActive = true
 
         stackView.addArrangedSubview(titleLabel)
 
@@ -257,28 +285,7 @@ class RegistrationVerificationViewController: OWSViewController {
         resendButtonsContainer.axis = .horizontal
         resendButtonsContainer.distribution = .fillEqually
 
-        view.addSubview(resendButtonsContainer)
-        resendButtonsContainer.autoPinEdge(
-            .bottom,
-            to: .bottom,
-            of: self.keyboardLayoutGuideView,
-            withOffset: -24
-        )
-        resendButtonsContainer.autoPinEdge(
-            .top,
-            to: .bottom,
-            of: verificationCodeView,
-            withOffset: 12,
-            relation: .greaterThanOrEqual
-        )
-        resendButtonsContainer.autoPinEdge(
-            .top,
-            to: .bottom,
-            of: helpButton,
-            withOffset: 12,
-            relation: .greaterThanOrEqual
-        )
-        resendButtonsContainer.autoPinHorizontalEdges(toEdgesOf: view)
+        stackView.addArrangedSubview(resendButtonsContainer)
 
         render()
     }
@@ -350,8 +357,6 @@ class RegistrationVerificationViewController: OWSViewController {
         view.backgroundColor = Theme.backgroundColor
         titleLabel.textColor = .colorForRegistrationTitleLabel
         explanationLabel.textColor = .colorForRegistrationExplanationLabel
-        wrongNumberButton.setTitleColor(Theme.accentBlueColor)
-        helpButton.setTitleColor(Theme.accentBlueColor)
         helpButton.isHidden = state.showHelpText.negated
 
         verificationCodeView.updateColors()
@@ -365,32 +370,35 @@ class RegistrationVerificationViewController: OWSViewController {
     }()
 
     private func renderResendButton(
-        button: OWSFlatButton,
+        button: UIButton,
         date: Date?,
         enabledString: String,
         countdownFormat: String
     ) {
-        guard let date else {
-            button.alpha = 0
-            button.setEnabled(false)
-            return
-        }
+        // UIButton will flash when we update the title.
+        UIView.performWithoutAnimation {
+            defer { button.layoutIfNeeded() }
 
-        button.alpha = 1
+            guard let date else {
+                button.isHidden = true
+                button.isEnabled = false
+                return
+            }
 
-        if date <= now {
-            button.setEnabled(true)
-            button.setTitle(title: enabledString, titleColor: Theme.accentBlueColor)
-        } else {
-            button.setEnabled(false)
-            button.setTitle(
-                title: {
-                    let timeRemaining = max(date.timeIntervalSince(now), 0)
-                    let durationString = retryAfterFormatter.string(from: Date(timeIntervalSinceReferenceDate: timeRemaining))
-                    return String(format: countdownFormat, durationString)
-                }(),
-                titleColor: Theme.secondaryTextAndIconColor
-            )
+            if date <= now {
+                button.isEnabled = true
+                button.setTitle(enabledString, for: .normal)
+            } else {
+                button.isEnabled = false
+                button.setTitle(
+                    {
+                        let timeRemaining = max(date.timeIntervalSince(now), 0)
+                        let durationString = retryAfterFormatter.string(from: Date(timeIntervalSinceReferenceDate: timeRemaining))
+                        return String(format: countdownFormat, durationString)
+                    }(),
+                    for: .normal
+                )
+            }
         }
     }
 
