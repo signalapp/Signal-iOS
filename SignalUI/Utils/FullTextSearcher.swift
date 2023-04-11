@@ -183,20 +183,20 @@ public class GroupSearchResult: NSObject, Comparable {
         thread: ThreadViewModel,
         sortKey: ConversationSortKey,
         searchText: String,
+        nameResolver: NameResolver,
         transaction: SDSAnyReadTransaction
     ) -> GroupSearchResult? {
         guard let groupThread = thread.threadRecord as? TSGroupThread else {
             owsFailDebug("Unexpected thread type")
             return nil
         }
-
-        let matchedMembers = groupThread.sortedMemberNames(searchText: searchText,
-                                                           includingBlocked: true,
-                                                           transaction: transaction) {
-            contactsManager.displayName(for: $0, transaction: transaction)
-        }
+        let matchedMembers = groupThread.sortedMemberNames(
+            searchText: searchText,
+            includingBlocked: true,
+            nameResolver: nameResolver,
+            transaction: transaction
+        )
         let matchedMembersSnippet = matchedMembers.joined(separator: ", ")
-
         return GroupSearchResult(thread: thread, sortKey: sortKey, matchedMembersSnippet: matchedMembersSnippet)
     }
 
@@ -683,6 +683,8 @@ public class FullTextSearcher: NSObject {
 
         var existingConversationAddresses: Set<SignalServiceAddress> = Set()
 
+        let nameResolver = NameResolverImpl(contactsManager: contactsManager)
+
         var threadCache = [String: TSThread]()
         let getThread: (String) -> TSThread? = { threadUniqueId in
             if let thread = threadCache[threadUniqueId] {
@@ -799,6 +801,7 @@ public class FullTextSearcher: NSObject {
                     thread: threadViewModel,
                     sortKey: sortKey,
                     searchText: searchText,
+                    nameResolver: nameResolver,
                     transaction: transaction
                 ) else {
                     return owsFailDebug("Unexpectedly failed to determine members snippet")
@@ -844,6 +847,7 @@ public class FullTextSearcher: NSObject {
                 thread: threadViewModel,
                 sortKey: sortKey,
                 searchText: searchText,
+                nameResolver: nameResolver,
                 transaction: transaction
             ) else {
                 return owsFailDebug("Unexpectedly failed to determine members snippet")

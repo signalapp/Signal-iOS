@@ -6,6 +6,7 @@
 import Foundation
 import SignalMessaging
 import SignalRingRTC
+import SignalUI
 import UIKit
 
 @objc
@@ -202,11 +203,12 @@ class CallHeader: UIView {
         }
         return databaseStorage.read { transaction in
             // FIXME: Register for notifications so we can update if someone leaves the group while the screen is up?
-            let firstTwoNames = groupThread.sortedMemberNames(includingBlocked: false,
-                                                              limit: 2,
-                                                              transaction: transaction) {
-                contactsManager.shortDisplayName(for: $0, transaction: transaction)
-            }
+            let firstTwoNames = groupThread.sortedMemberNames(
+                includingBlocked: false,
+                limit: 2,
+                useShortNameIfAvailable: true,
+                transaction: transaction
+            )
             if firstTwoNames.count < 2 {
                 return (firstTwoNames.count, firstTwoNames)
             }

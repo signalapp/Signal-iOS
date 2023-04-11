@@ -746,6 +746,8 @@
 		5003BB45299F650E0037159B /* ServiceIdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB44299F650E0037159B /* ServiceIdTest.swift */; };
 		500824CE292737FC005A5DC0 /* WebSocketPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CD292737FC005A5DC0 /* WebSocketPromise.swift */; };
 		500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */; };
+		50086B9E29DF606E00F9C072 /* TSGroupThread+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */; };
+		50086B9F29DF60D900F9C072 /* NameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9B29DF5CB100F9C072 /* NameResolver.swift */; };
 		500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */; };
 		500FE490288615BA00FA090C /* CachedBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE48E2886148800FA090C /* CachedBadge.swift */; };
 		500FE4E0288A11B000FA090C /* ConversationViewController+GiftBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */; };
@@ -3215,6 +3217,8 @@
 		5003BB44299F650E0037159B /* ServiceIdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceIdTest.swift; sourceTree = "<group>"; };
 		500824CD292737FC005A5DC0 /* WebSocketPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketPromise.swift; sourceTree = "<group>"; };
 		500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2OperationTest.swift; sourceTree = "<group>"; };
+		50086B9B29DF5CB100F9C072 /* NameResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameResolver.swift; sourceTree = "<group>"; };
+		50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSGroupThread+ViewModel.swift"; sourceTree = "<group>"; };
 		500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+ReusableCell.swift"; sourceTree = "<group>"; };
 		500FE48E2886148800FA090C /* CachedBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedBadge.swift; sourceTree = "<group>"; };
 		500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GiftBadges.swift"; sourceTree = "<group>"; };
@@ -5341,6 +5345,7 @@
 			isa = PBXGroup;
 			children = (
 				342FFE822721D4B6000AC89F /* ContactsMaps.swift */,
+				50086B9B29DF5CB100F9C072 /* NameResolver.swift */,
 				4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */,
 				346129A21FD1F09100532771 /* OWSContactsManager.h */,
 				346129A31FD1F09100532771 /* OWSContactsManager.m */,
@@ -5897,6 +5902,7 @@
 				3402A9F7271D9C700084CBAE /* OWSQuotedReplyModel.m */,
 				3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */,
 				34A955A7271B510500B05242 /* ThreadViewModel.swift */,
+				50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -10795,6 +10801,7 @@
 				3402AA65271D9DEC0084CBAE /* ThreadViewModel.swift in Sources */,
 				3402AA96271D9E180084CBAE /* Toast.swift in Sources */,
 				3402AA9B271D9E180084CBAE /* TooltipView.swift in Sources */,
+				50086B9E29DF606E00F9C072 /* TSGroupThread+ViewModel.swift in Sources */,
 				88C980D427F3AD2C009750C0 /* TSMessage+SignalUI.swift in Sources */,
 				8803C2F628B02FDB00183D2B /* TSOutgoingMessage+AttachmentMultisend.swift in Sources */,
 				F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */,
@@ -10893,6 +10900,7 @@
 				32525F9527C74B1A0099E801 /* LightweightCallManager.swift in Sources */,
 				4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */,
 				34BB78B5272C510900DA0D04 /* MobileCoinHelperMinimal.swift in Sources */,
+				50086B9F29DF60D900F9C072 /* NameResolver.swift in Sources */,
 				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
 				3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */,
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
