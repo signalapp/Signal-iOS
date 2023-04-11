@@ -13,7 +13,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let bodyText: CVComponentState.BodyText
         let isTextExpanded: Bool
         let searchText: String?
-        let revealedSpoilerIndexes: Set<Int>
+        let revealedSpoilerIds: Set<Int>
         let hasTapForMore: Bool
         let shouldUseAttributedText: Bool
         let hasPendingMessageRequest: Bool
@@ -51,8 +51,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     private var searchText: String? {
         bodyTextState.searchText
     }
-    private var revealedSpoilerIndexes: Set<Int> {
-        bodyTextState.revealedSpoilerIndexes
+    private var revealedSpoilerIds: Set<Int> {
+        bodyTextState.revealedSpoilerIds
     }
     private var hasTapForMore: Bool {
         bodyTextState.hasTapForMore
@@ -357,7 +357,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let textExpansion = viewStateSnapshot.textExpansion
         let searchText = viewStateSnapshot.searchText
         let isTextExpanded = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
-        let revealedSpoilerIndexes = viewStateSnapshot.spoilerReveal.revealedSpoilerIndexes(
+        let revealedSpoilerIds = viewStateSnapshot.spoilerReveal.revealedSpoilerIds(
             interactionUniqueId: interaction.uniqueId
         )
 
@@ -399,21 +399,19 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     textWasTruncated: textWasTruncated
                 )
                 if FeatureFlags.textFormattingReceiveSupport {
-                    var spoilerIndex = 0
-                    var spoilerItems = [CVTextLabel.Item]()
-                    attributedText.enumerateMentionsAndStyles { _, style, range, _  in
-                        guard let style, style.contains(.spoiler) else { return }
-                        let index = spoilerIndex
-                        spoilerIndex += 1
-                        guard revealedSpoilerIndexes.contains(index).negated else { return }
-                        spoilerItems.append(.unrevealedSpoiler(
-                            CVTextLabel.UnrevealedSpoilerItem(
-                                index: index,
-                                interactionUniqueId: interaction.uniqueId,
-                                range: range
+                    let spoilerItems: [CVTextLabel.Item] = MessageBodyRanges
+                        .spoilerAttributes(in: attributedText).compactMap { spoilerAttribute in
+                            guard revealedSpoilerIds.contains(spoilerAttribute.id).negated else {
+                                return nil
+                            }
+                            return .unrevealedSpoiler(
+                                CVTextLabel.UnrevealedSpoilerItem(
+                                    spoilerId: spoilerAttribute.id,
+                                    interactionUniqueId: interaction.uniqueId,
+                                    range: spoilerAttribute.effectiveRange
+                                )
                             )
-                        ))
-                    }
+                        }
                     // Spoilers take precedence and overwrite other items. Where their ranges overlap,
                     // we need to cut off the detected item ranges and replace with spoiler range.
                     items = NSRangeUtil.replacingRanges(
@@ -433,7 +431,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return State(bodyText: bodyText,
                      isTextExpanded: isTextExpanded,
                      searchText: searchText,
-                     revealedSpoilerIndexes: revealedSpoilerIndexes,
+                     revealedSpoilerIds: revealedSpoilerIds,
                      hasTapForMore: hasTapForMore,
                      shouldUseAttributedText: shouldUseAttributedText,
                      hasPendingMessageRequest: hasPendingMessageRequest,
@@ -757,6 +755,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         )
         linkifyData(attributedText: attributedText)
 
+        var matchedSearchRangeColors = [(NSRange, UIColor)]()
         if let searchText = searchText,
            searchText.count >= ConversationSearchController.kMinimumSearchTextLength {
             let searchableText = FullTextSearchFinder.normalize(text: searchText)
@@ -767,8 +766,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                            options: [.withoutAnchoringBounds],
                                            range: attributedText.string.entireRange) {
                     owsAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength)
-                    attributedText.addAttribute(.backgroundColor, value: UIColor.yellow, range: match.range)
+                    let highlightColor = UIColor.yellow
+                    attributedText.addAttribute(.backgroundColor, value: highlightColor, range: match.range)
                     attributedText.addAttribute(.foregroundColor, value: UIColor.ows_black, range: match.range)
+                    matchedSearchRangeColors.append((match.range, highlightColor))
                 }
             } catch {
                 owsFailDebug("Error: \(error)")
@@ -783,11 +784,14 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 on: attributedText,
                 baseFont: textMessageFont,
                 textColor: bodyTextColor,
-                spoilerStyler: { spoilerIndex, _ in
-                    if revealedSpoilerIndexes.contains(spoilerIndex) {
+                spoilerStyler: { spoilerAttribute in
+                    if revealedSpoilerIds.contains(spoilerAttribute.id) {
                         return .revealed
                     } else {
-                        return .concealedWithHighlight(bodyTextColor)
+                        return .concealedWithHighlight(MessageBodyRanges.SpoilerStyle.HighlightColors(
+                            baseColor: bodyTextColor,
+                            otherColors: matchedSearchRangeColors
+                        ))
                     }
                 }
             )

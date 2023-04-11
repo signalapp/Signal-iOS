@@ -384,7 +384,7 @@ extension ConversationViewController {
     // Taps and long presses do the same thing.
     private func didTapOrLongPressUnrevealedSpoiler(_ unrevealedSpoilerItem: CVTextLabel.UnrevealedSpoilerItem) {
         viewState.spoilerReveal.setSpoilerRevealed(
-            atIndex: unrevealedSpoilerItem.index,
+            withID: unrevealedSpoilerItem.spoilerId,
             onInteractionUniqueId: unrevealedSpoilerItem.interactionUniqueId
         )
         self.loadCoordinator.enqueueReload(

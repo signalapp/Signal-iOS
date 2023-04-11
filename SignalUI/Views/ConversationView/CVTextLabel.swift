@@ -90,20 +90,22 @@ public class CVTextLabel: NSObject {
     // MARK: -
 
     public struct UnrevealedSpoilerItem: Equatable, NSRangeProviding {
-        // The index in the array of all spoilers in the component.
-        // Uniquely identifies this spoiler when e.g. revealing.
-        public let index: Int
+        public let spoilerId: Int
         public let interactionUniqueId: String
         public let range: NSRange
 
-        public init(index: Int, interactionUniqueId: String, range: NSRange) {
-            self.index = index
+        public init(spoilerId: Int, interactionUniqueId: String, range: NSRange) {
+            self.spoilerId = spoilerId
             self.interactionUniqueId = interactionUniqueId
             self.range = range
         }
 
         public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.UnrevealedSpoilerItem {
-            return UnrevealedSpoilerItem(index: index, interactionUniqueId: interactionUniqueId, range: range)
+            return UnrevealedSpoilerItem(
+                spoilerId: spoilerId,
+                interactionUniqueId: interactionUniqueId,
+                range: range
+            )
         }
     }
 

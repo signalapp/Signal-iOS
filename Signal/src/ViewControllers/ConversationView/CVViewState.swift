@@ -410,29 +410,28 @@ public class CVTextExpansion {
 // MARK: -
 
 public class CVSpoilerReveal {
-    private var revealedSpoilerIndexesByInteractionUniqueId = [String: Set<Int>]()
+    private var revealedSpoilerIdsByInteractionUniqueId = [String: Set<Int>]()
 
-    /// Returns the set of indexes in the ordered list of spoiler ranges for a given message that
-    /// should be revealed. e.g. [0, 3] means that the first and third spoiler range, when ordered
-    /// from the start of the text to the end, should be revealed.
-    public func revealedSpoilerIndexes(
+    /// Returns the set of IDs in the ordered list of spoiler ranges for a given message that
+    /// should be revealed.
+    public func revealedSpoilerIds(
         interactionUniqueId: String
     ) -> Set<Int> {
-        return revealedSpoilerIndexesByInteractionUniqueId[interactionUniqueId] ?? []
+        return revealedSpoilerIdsByInteractionUniqueId[interactionUniqueId] ?? []
     }
 
     public func setSpoilerRevealed(
-        atIndex revealedIndex: Int,
+        withID id: Int,
         onInteractionUniqueId interactionUniqueId: String
     ) {
-        var revealedIndexes = revealedSpoilerIndexesByInteractionUniqueId[interactionUniqueId] ?? Set()
-        revealedIndexes.insert(revealedIndex)
-        revealedSpoilerIndexesByInteractionUniqueId[interactionUniqueId] = revealedIndexes
+        var revealedIds = revealedSpoilerIdsByInteractionUniqueId[interactionUniqueId] ?? Set()
+        revealedIds.insert(id)
+        revealedSpoilerIdsByInteractionUniqueId[interactionUniqueId] = revealedIds
     }
 
     func copy() -> CVSpoilerReveal {
         let returnValue = CVSpoilerReveal()
-        returnValue.revealedSpoilerIndexesByInteractionUniqueId = revealedSpoilerIndexesByInteractionUniqueId
+        returnValue.revealedSpoilerIdsByInteractionUniqueId = revealedSpoilerIdsByInteractionUniqueId
         return returnValue
     }
 }

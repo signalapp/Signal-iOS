@@ -577,7 +577,52 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     /// when the font and text color are available.
     public func setStyleAttributesWithoutApplying(on string: NSMutableAttributedString) {
         for (range, style) in styles {
-            string.addAttributes([.owsStyle: style], range: range)
+            var attrs: [NSAttributedString.Key: Any] = [
+                .owsStyle: style
+            ]
+            if style.contains(.spoiler) {
+                SpoilerAttribute.fromOriginalRange(range).addToAttributes(&attrs)
+            }
+            string.addAttributes(attrs, range: range)
+        }
+    }
+
+    public struct SpoilerAttribute {
+        /// Externally: identifies a single spoiler range, even if the actual attribute has been
+        /// split when applied, as happens when a parallel attribute is applied to the middle
+        /// of a spoiler range.
+        ///
+        /// Really this is just the original fill range of the spoiler, hashed. But that detail is
+        /// irrelevant to everthing outside of this class.
+        public let id: Int
+        public let effectiveRange: NSRange
+
+        private static let idKey = NSAttributedString.Key("OWSStyle.spoilerId")
+
+        fileprivate static func extractFromAttributes(
+            _ attrs: [NSAttributedString.Key: Any],
+            range: NSRange
+        ) -> Self {
+            guard let id = attrs[Self.idKey] as? Int else {
+                return .fromOriginalRange(range)
+            }
+            return .init(id: id, effectiveRange: range)
+        }
+
+        fileprivate static func fromOriginalRange(_ range: NSRange) -> Self {
+            var hasher = Hasher()
+            hasher.combine(range)
+            let id = hasher.finalize()
+            return .init(id: id, effectiveRange: range)
+        }
+
+        private init(id: Int, effectiveRange: NSRange) {
+            self.id = id
+            self.effectiveRange = effectiveRange
+        }
+
+        fileprivate func addToAttributes(_ attrs: inout [NSAttributedString.Key: Any]) {
+            attrs[Self.idKey] = id
         }
     }
 
@@ -585,8 +630,20 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         case revealed
         // TODO[TextFormatting]: instead of highlight, we should use
         // a fancy animation which won't be represented in attributes.
-        case concealedWithHighlight(UIColor)
+        case concealedWithHighlight(HighlightColors)
         // TODO[TextFormatting]: add concealed with characters option
+
+        public struct HighlightColors {
+            public let baseColor: UIColor
+            // Subranges within the spoiler range to apply other
+            // colors to.
+            public let otherColors: [(NSRange, UIColor)]
+
+            public init(baseColor: UIColor, otherColors: [(NSRange, UIColor)]) {
+                self.baseColor = baseColor
+                self.otherColors = otherColors
+            }
+        }
     }
 
     /// Applies styles to the provided string (sets attributes for font, strikethrough, etc).
@@ -595,13 +652,14 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         to string: NSMutableAttributedString,
         baseFont: UIFont,
         textColor: UIColor,
-        spoilerStyler: (Int, NSRange) -> SpoilerStyle
+        spoilerStyler: (SpoilerAttribute) -> SpoilerStyle
     ) {
         var spoilerCount = 0
         for (range, style) in styles {
             Self.applyStyle(
                 style: style,
                 to: string,
+                attributes: [:],
                 range: range,
                 baseFont: baseFont,
                 textColor: textColor,
@@ -617,7 +675,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         on string: NSMutableAttributedString,
         baseFont: UIFont,
         textColor: UIColor,
-        spoilerStyler: (Int, NSRange) -> SpoilerStyle
+        spoilerStyler: (SpoilerAttribute) -> SpoilerStyle
     ) {
         let copy = NSAttributedString(attributedString: string)
         var spoilerCount = 0
@@ -630,6 +688,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                 applyStyle(
                     style: style,
                     to: string,
+                    attributes: attrs,
                     range: range,
                     baseFont: baseFont,
                     textColor: textColor,
@@ -643,10 +702,11 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     private static func applyStyle(
         style: Style,
         to string: NSMutableAttributedString,
+        attributes originalAttributes: [NSAttributedString.Key: Any],
         range: NSRange,
         baseFont: UIFont,
         textColor: UIColor,
-        spoilerStyler: (Int, NSRange) -> SpoilerStyle,
+        spoilerStyler: (SpoilerAttribute) -> SpoilerStyle,
         spoilerCount: inout Int
     ) {
         var fontTraits: UIFontDescriptor.SymbolicTraits = []
@@ -666,12 +726,21 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
             attributes[.strikethroughColor] = textColor
         }
+        var otherHighlightColors: [(NSRange, UIColor)]?
         if style.contains(.spoiler) {
-            switch spoilerStyler(spoilerCount, range) {
+            let spoilerAttribute = SpoilerAttribute.extractFromAttributes(
+                originalAttributes,
+                range: range
+            )
+            switch spoilerStyler(spoilerAttribute) {
             case .revealed:
-                break
-            case .concealedWithHighlight(let highlightColor):
-                attributes[.backgroundColor] = highlightColor
+                attributes[.foregroundColor] = textColor
+                spoilerAttribute.addToAttributes(&attributes)
+            case .concealedWithHighlight(let highlightColors):
+                attributes[.foregroundColor] = highlightColors.baseColor
+                attributes[.backgroundColor] = highlightColors.baseColor
+                spoilerAttribute.addToAttributes(&attributes)
+                otherHighlightColors = highlightColors.otherColors
             }
             spoilerCount += 1
         }
@@ -679,6 +748,63 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             attributes[.font] = baseFont.withTraits(fontTraits)
         }
         string.addAttributes(attributes, range: range)
+
+        if let otherHighlightColors {
+            for (otherRange, otherColor) in otherHighlightColors {
+                let lowInside = otherRange.lowerBound >= range.lowerBound
+                    && otherRange.lowerBound < range.upperBound
+                let highInside = otherRange.upperBound <= range.upperBound
+                    && otherRange.upperBound > range.lowerBound
+                var otherAttributes: [NSAttributedString.Key: Any] = [
+                    .foregroundColor: otherColor,
+                    .backgroundColor: otherColor,
+                    .owsStyle: style
+                ]
+                SpoilerAttribute.extractFromAttributes(
+                    originalAttributes,
+                    range: range
+                ).addToAttributes(&otherAttributes)
+                if lowInside && highInside {
+                    string.addAttributes(
+                        otherAttributes,
+                        range: otherRange
+                    )
+                } else if lowInside {
+                    string.addAttributes(
+                        otherAttributes,
+                        range: NSRange(
+                            location: otherRange.location,
+                            length: range.upperBound - otherRange.lowerBound
+                        )
+                    )
+                } else if highInside {
+                    string.addAttributes(
+                        otherAttributes,
+                        range: NSRange(
+                            location: range.location,
+                            length: otherRange.upperBound - range.lowerBound
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    public static func spoilerAttributes(in string: NSAttributedString) -> [SpoilerAttribute] {
+        var spoilerAttributes = [SpoilerAttribute]()
+        string.enumerateAttributes(
+            in: string.entireRange,
+            using: { attrs, range, _ in
+                guard
+                    let style = attrs[.owsStyle] as? Style,
+                    style.contains(.spoiler)
+                else {
+                    return
+                }
+                spoilerAttributes.append(SpoilerAttribute.extractFromAttributes(attrs, range: range))
+            }
+        )
+        return spoilerAttributes
     }
 
     override public func isEqual(_ object: Any?) -> Bool {
