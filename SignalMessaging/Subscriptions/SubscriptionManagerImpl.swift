@@ -213,9 +213,12 @@ public class SubscriptionManagerImpl: NSObject {
 
         SwiftSingletons.register(self)
 
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            Self.warmCaches()
+        }
+
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
-                Self.warmCaches()
                 Self.performMigrationToStorageServiceIfNecessary()
                 Self.performSubscriptionKeepAliveIfNecessary()
             }
