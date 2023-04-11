@@ -11,13 +11,12 @@ public struct AccountDataReport {
     public let formattedJsonData: Data
 
     /// The formatted text data returned by the server.
-    ///
-    /// If `nil`, the server sent back a response without this text. That indicates a server bug.
-    public let textData: Data?
+    public let textData: Data
 
     /// Initializes the requested account data.
     ///
-    /// Throws an error if the data is not a valid JSON object.
+    /// Throws an error if the data is not a valid JSON object, or if the `text` field is not a
+    /// valid string.
     public init(rawData: Data) throws {
         let jsonValue = try JSONSerialization.jsonObject(with: rawData)
         guard let jsonObject = jsonValue as? [String: Any] else {
@@ -29,9 +28,12 @@ public struct AccountDataReport {
             options: .prettyPrinted
         )
 
-        self.textData = (jsonObject["text"] as? String)?.data(using: .utf8)
-        if self.textData == nil {
-            Logger.error("Couldn't parse text from server, indicating a server bug")
+        guard
+            let text = jsonObject["text"] as? String,
+            let textData = text.data(using: .utf8)
+        else {
+            throw OWSGenericError("Text is missing or cannot be parsed")
         }
+        self.textData = textData
     }
 }

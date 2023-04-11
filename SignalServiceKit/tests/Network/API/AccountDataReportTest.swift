@@ -19,38 +19,18 @@ final class AccountDataReportTest: XCTestCase {
         XCTAssertEqual(report.textData, "baz".data(using: .ascii)!)
     }
 
-    func testWithValidDataButNoText() throws {
-        let rawData = "{\"foo\": \"bar\"}".data(using: .ascii)!
-        let report = try XCTUnwrap(AccountDataReport(rawData: rawData))
-
-        XCTAssertEqual(report.formattedJsonData, "{\n  \"foo\" : \"bar\"\n}".data(using: .ascii)!)
-        XCTAssertNil(report.textData)
-    }
-
-    func testWithValidDataButNonstringText() throws {
-        let jsonStrings: [String] = [
-            "{}",
-            "{\"missing\": \"text field\"}",
-            "{\"text\": null}",
-            "{\"text\": 123}",
-            "{\"TEXT\": \"should be ignored\"}"
-        ]
-
-        for jsonString in jsonStrings {
-            let rawData = jsonString.data(using: .ascii)!
-            let report = try XCTUnwrap(AccountDataReport(rawData: rawData))
-
-            XCTAssertNil(report.textData)
-        }
-    }
-
     func testWithInvalidData() {
         let rawDatas: [Data] = [
             Data(),
             Data([1, 2, 3]),
             "\"not an object\"".data(using: .ascii)!,
             "[\"not an object\"]".data(using: .ascii)!,
-            "{ \"foo\":".data(using: .ascii)!
+            "{ \"foo\":".data(using: .ascii)!,
+            "{}".data(using: .ascii)!,
+            "{\"missing\": \"text field\"}".data(using: .ascii)!,
+            "{\"text\": null}".data(using: .ascii)!,
+            "{\"text\": 123}".data(using: .ascii)!,
+            "{\"TEXT\": \"should be ignored\"}".data(using: .ascii)!
         ]
 
         for rawData in rawDatas {
