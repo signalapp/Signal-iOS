@@ -23,8 +23,8 @@ open class RoundMediaButton: UIButton {
     private var backgroundDimmerView: UIView?
     public static let defaultBackgroundColor = UIColor.ows_gray80
     static let visibleButtonSize: CGFloat = 42
-    private static let defaultInset: CGFloat = 8
-    private static let defaultContentInset: CGFloat = 15
+    private static let defaultInset: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 4 : 8
+    private static let defaultContentInset: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 11 : 15
 
     public convenience init(image: UIImage?, backgroundStyle: BackgroundStyle) {
         self.init(image: image, backgroundStyle: backgroundStyle, customView: nil)
