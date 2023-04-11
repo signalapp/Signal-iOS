@@ -212,14 +212,19 @@ extension SignalApp {
             progressView.autoCenterInSuperview()
             progressView.startAnimating()
 
-            var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "showDatabaseIntegrityCheckUI")
+            DispatchQueue.sharedUserInitiated.async {
+                var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "showDatabaseIntegrityCheckUI")
 
-            GRDBDatabaseStorageAdapter.logIntegrityChecks().ensure {
+                GRDBDatabaseStorageAdapter.logIntegrityChecks()
+
                 owsAssertDebug(backgroundTask != nil)
                 backgroundTask = nil
-                progressView.removeFromSuperview()
-                completion()
-            }.cauterize()
+
+                DispatchQueue.main.async {
+                    progressView.removeFromSuperview()
+                    completion()
+                }
+            }
         })
         alert.addAction(.init(title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_SKIP",
                                                        comment: "Button to skip database integrity check step"),

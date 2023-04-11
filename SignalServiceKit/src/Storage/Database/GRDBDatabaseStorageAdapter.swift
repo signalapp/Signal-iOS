@@ -1067,42 +1067,40 @@ extension GRDBDatabaseStorageAdapter {
             .map { containerDirectory.appendingPathComponent($0) }
     }
 
-    public static func logIntegrityChecks() -> Promise<Void> {
-        return firstly(on: DispatchQueue.global(qos: .userInitiated)) {
-            let storageCoordinator: StorageCoordinator
-            if SSKEnvironment.hasShared() {
-                storageCoordinator = SSKEnvironment.shared.storageCoordinator
-            } else {
-                storageCoordinator = StorageCoordinator()
-            }
-            // Workaround to disambiguate between NSObject.databaseStorage and StorageCoordinator.databaseStorage.
-            let databaseStorage = storageCoordinator.value(forKey: "databaseStorage") as! SDSDatabaseStorage
+    public static func logIntegrityChecks() {
+        let storageCoordinator: StorageCoordinator
+        if SSKEnvironment.hasShared() {
+            storageCoordinator = SSKEnvironment.shared.storageCoordinator
+        } else {
+            storageCoordinator = StorageCoordinator()
+        }
+        // Workaround to disambiguate between NSObject.databaseStorage and StorageCoordinator.databaseStorage.
+        let databaseStorage = storageCoordinator.value(forKey: "databaseStorage") as! SDSDatabaseStorage
 
-            let unfilteredSqls = [
-                "PRAGMA cipher_provider",
-                "PRAGMA cipher_integrity_check"
-            ]
-            for sql in unfilteredSqls {
-                Logger.info(sql)
-                databaseStorage.read { transaction in
-                    do {
-                        let cursor = try String.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
-                        while let line = try cursor.next() { Logger.info(line) }
-                    } catch {
-                        Logger.error("\(sql) failed to run")
-                    }
+        let unfilteredSqls = [
+            "PRAGMA cipher_provider",
+            "PRAGMA cipher_integrity_check"
+        ]
+        for sql in unfilteredSqls {
+            Logger.info(sql)
+            databaseStorage.read { transaction in
+                do {
+                    let cursor = try String.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+                    while let line = try cursor.next() { Logger.info(line) }
+                } catch {
+                    Logger.error("\(sql) failed to run")
                 }
             }
+        }
 
-            let quickCheckResult = databaseStorage.read { transaction in
-                let db = transaction.unwrapGrdbRead.database
-                return SqliteUtil.quickCheck(db: db)
-            }
-            Logger.info("PRAGMA quick_check")
-            switch quickCheckResult {
-            case .ok: Logger.info("ok")
-            case .notOk: Logger.error("failed (failure redacted)")
-            }
+        let quickCheckResult = databaseStorage.read { transaction in
+            let db = transaction.unwrapGrdbRead.database
+            return SqliteUtil.quickCheck(db: db)
+        }
+        Logger.info("PRAGMA quick_check")
+        switch quickCheckResult {
+        case .ok: Logger.info("ok")
+        case .notOk: Logger.error("failed (failure redacted)")
         }
     }
 }
