@@ -466,6 +466,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         }
 
         if let item = componentView.textLabel.itemForGesture(sender: sender) {
+            componentView.textLabel.animate(selectedItem: item)
             componentDelegate.didTapSystemMessageItem(item)
             return true
         }

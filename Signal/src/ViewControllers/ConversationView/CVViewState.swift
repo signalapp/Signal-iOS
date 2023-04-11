@@ -80,6 +80,7 @@ public class CVViewState: NSObject {
 
     public let selectionState = CVSelectionState()
     public let textExpansion = CVTextExpansion()
+    public let spoilerReveal = CVSpoilerReveal()
     public let messageSwipeActionState = CVMessageSwipeActionState()
 
     public var isDarkThemeEnabled: Bool = Theme.isDarkThemeEnabled
@@ -404,6 +405,36 @@ public class CVTextExpansion {
 
     //    // TODO: collapseCutoffDate
     //    let collapseCutoffDate = Date()
+}
+
+// MARK: -
+
+public class CVSpoilerReveal {
+    private var revealedSpoilerIndexesByInteractionUniqueId = [String: Set<Int>]()
+
+    /// Returns the set of indexes in the ordered list of spoiler ranges for a given message that
+    /// should be revealed. e.g. [0, 3] means that the first and third spoiler range, when ordered
+    /// from the start of the text to the end, should be revealed.
+    public func revealedSpoilerIndexes(
+        interactionUniqueId: String
+    ) -> Set<Int> {
+        return revealedSpoilerIndexesByInteractionUniqueId[interactionUniqueId] ?? []
+    }
+
+    public func setSpoilerRevealed(
+        atIndex revealedIndex: Int,
+        onInteractionUniqueId interactionUniqueId: String
+    ) {
+        var revealedIndexes = revealedSpoilerIndexesByInteractionUniqueId[interactionUniqueId] ?? Set()
+        revealedIndexes.insert(revealedIndex)
+        revealedSpoilerIndexesByInteractionUniqueId[interactionUniqueId] = revealedIndexes
+    }
+
+    func copy() -> CVSpoilerReveal {
+        let returnValue = CVSpoilerReveal()
+        returnValue.revealedSpoilerIndexesByInteractionUniqueId = revealedSpoilerIndexesByInteractionUniqueId
+        return returnValue
+    }
 }
 
 // MARK: -

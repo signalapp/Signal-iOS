@@ -150,11 +150,11 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             self.rawValue = rawValue
         }
 
-        static let bold = Style(rawValue: 1 << 0)
-        static let italic = Style(rawValue: 1 << 1)
-        static let spoiler = Style(rawValue: 1 << 2)
-        static let strikethrough = Style(rawValue: 1 << 3)
-        static let monospace = Style(rawValue: 1 << 4)
+        public static let bold = Style(rawValue: 1 << 0)
+        public static let italic = Style(rawValue: 1 << 1)
+        public static let spoiler = Style(rawValue: 1 << 2)
+        public static let strikethrough = Style(rawValue: 1 << 3)
+        public static let monospace = Style(rawValue: 1 << 4)
 
         static let attributedStringKey = NSAttributedString.Key("OWSStyle")
     }
@@ -581,20 +581,32 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         }
     }
 
+    public enum SpoilerStyle {
+        case revealed
+        // TODO[TextFormatting]: instead of highlight, we should use
+        // a fancy animation which won't be represented in attributes.
+        case concealedWithHighlight(UIColor)
+        // TODO[TextFormatting]: add concealed with characters option
+    }
+
     /// Applies styles to the provided string (sets attributes for font, strikethrough, etc).
     /// Font and colors for styles are based on the provided base font and color.
     public func applyStyles(
         to string: NSMutableAttributedString,
         baseFont: UIFont,
-        textColor: UIColor
+        textColor: UIColor,
+        spoilerStyler: (Int, NSRange) -> SpoilerStyle
     ) {
+        var spoilerCount = 0
         for (range, style) in styles {
             Self.applyStyle(
                 style: style,
                 to: string,
                 range: range,
                 baseFont: baseFont,
-                textColor: textColor
+                textColor: textColor,
+                spoilerStyler: spoilerStyler,
+                spoilerCount: &spoilerCount
             )
         }
     }
@@ -604,9 +616,11 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     public static func applyStyleAttributes(
         on string: NSMutableAttributedString,
         baseFont: UIFont,
-        textColor: UIColor
+        textColor: UIColor,
+        spoilerStyler: (Int, NSRange) -> SpoilerStyle
     ) {
         let copy = NSAttributedString(attributedString: string)
+        var spoilerCount = 0
         copy.enumerateAttributes(
             in: string.entireRange,
             using: { attrs, range, stop in
@@ -618,7 +632,9 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                     to: string,
                     range: range,
                     baseFont: baseFont,
-                    textColor: textColor
+                    textColor: textColor,
+                    spoilerStyler: spoilerStyler,
+                    spoilerCount: &spoilerCount
                 )
             }
         )
@@ -629,7 +645,9 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         to string: NSMutableAttributedString,
         range: NSRange,
         baseFont: UIFont,
-        textColor: UIColor
+        textColor: UIColor,
+        spoilerStyler: (Int, NSRange) -> SpoilerStyle,
+        spoilerCount: inout Int
     ) {
         var fontTraits: UIFontDescriptor.SymbolicTraits = []
         var attributes: [NSAttributedString.Key: Any] = [
@@ -649,8 +667,13 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             attributes[.strikethroughColor] = textColor
         }
         if style.contains(.spoiler) {
-            // TODO[TextFormatting]: we need different representations of spoiler.
-            attributes[.backgroundColor] = textColor
+            switch spoilerStyler(spoilerCount, range) {
+            case .revealed:
+                break
+            case .concealedWithHighlight(let highlightColor):
+                attributes[.backgroundColor] = highlightColor
+            }
+            spoilerCount += 1
         }
         if !fontTraits.isEmpty {
             attributes[.font] = baseFont.withTraits(fontTraits)

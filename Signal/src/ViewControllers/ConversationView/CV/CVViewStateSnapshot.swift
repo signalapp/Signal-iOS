@@ -10,6 +10,7 @@ import Foundation
 struct CVViewStateSnapshot: Dependencies {
 
     let textExpansion: CVTextExpansion
+    let spoilerReveal: CVSpoilerReveal
     let messageSwipeActionState: CVMessageSwipeActionState
 
     // We can only measure (configure) with a given ConversationStyle.
@@ -43,6 +44,7 @@ struct CVViewStateSnapshot: Dependencies {
                          hasClearedUnreadMessagesIndicator: Bool,
                          previousViewStateSnapshot: CVViewStateSnapshot?) -> CVViewStateSnapshot {
         CVViewStateSnapshot(textExpansion: viewState.textExpansion.copy(),
+                            spoilerReveal: viewState.spoilerReveal.copy(),
                             messageSwipeActionState: viewState.messageSwipeActionState.copy(),
                             coreState: viewState.asCoreState,
                             typingIndicatorsSender: typingIndicatorsSender,
@@ -55,6 +57,7 @@ struct CVViewStateSnapshot: Dependencies {
 
     static func mockSnapshotForStandaloneItems(coreState: CVCoreState) -> CVViewStateSnapshot {
         CVViewStateSnapshot(textExpansion: CVTextExpansion(),
+                            spoilerReveal: CVSpoilerReveal(),
                             messageSwipeActionState: CVMessageSwipeActionState(),
                             coreState: coreState,
                             typingIndicatorsSender: nil,

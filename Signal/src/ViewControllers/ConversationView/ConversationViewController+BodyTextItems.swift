@@ -69,6 +69,8 @@ extension ConversationViewController {
             }
         case .mention(let mentionItem):
             didTapOrLongPressMention(mentionItem.mention)
+        case .unrevealedSpoiler(let unrevealedSpoilerItem):
+            didTapOrLongPressUnrevealedSpoiler(unrevealedSpoilerItem)
         case .referencedUser(let referencedUserItem):
             owsFailDebug("Should never have a referenced user item in body text, but tapped \(referencedUserItem)")
         }
@@ -112,6 +114,8 @@ extension ConversationViewController {
             }
         case .mention(let mentionItem):
             didTapOrLongPressMention(mentionItem.mention)
+        case .unrevealedSpoiler(let unrevealedSpoilerItem):
+            didTapOrLongPressUnrevealedSpoiler(unrevealedSpoilerItem)
         case .referencedUser(let referencedUserItem):
             owsFailDebug("Should never have a referenced user item in body text, but long pressed \(referencedUserItem)")
         }
@@ -375,5 +379,17 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         showMemberActionSheet(forAddress: mention.address, withHapticFeedback: true)
+    }
+
+    // Taps and long presses do the same thing.
+    private func didTapOrLongPressUnrevealedSpoiler(_ unrevealedSpoilerItem: CVTextLabel.UnrevealedSpoilerItem) {
+        viewState.spoilerReveal.setSpoilerRevealed(
+            atIndex: unrevealedSpoilerItem.index,
+            onInteractionUniqueId: unrevealedSpoilerItem.interactionUniqueId
+        )
+        self.loadCoordinator.enqueueReload(
+            updatedInteractionIds: [unrevealedSpoilerItem.interactionUniqueId],
+            deletedInteractionIds: []
+        )
     }
 }

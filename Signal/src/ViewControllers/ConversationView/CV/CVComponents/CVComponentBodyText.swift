@@ -13,6 +13,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let bodyText: CVComponentState.BodyText
         let isTextExpanded: Bool
         let searchText: String?
+        let revealedSpoilerIndexes: Set<Int>
         let hasTapForMore: Bool
         let shouldUseAttributedText: Bool
         let hasPendingMessageRequest: Bool
@@ -49,6 +50,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
     private var searchText: String? {
         bodyTextState.searchText
+    }
+    private var revealedSpoilerIndexes: Set<Int> {
+        bodyTextState.revealedSpoilerIndexes
     }
     private var hasTapForMore: Bool {
         bodyTextState.hasTapForMore
@@ -353,6 +357,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let textExpansion = viewStateSnapshot.textExpansion
         let searchText = viewStateSnapshot.searchText
         let isTextExpanded = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
+        let revealedSpoilerIndexes = viewStateSnapshot.spoilerReveal.revealedSpoilerIndexes(
+            interactionUniqueId: interaction.uniqueId
+        )
 
         let items: [CVTextLabel.Item]
         var shouldUseAttributedText = false
@@ -384,11 +391,39 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     shouldUseAttributedText = !items.isEmpty
                 }
             case .attributedText(let attributedText):
-                items = detectItems(text: attributedText.string,
-                                    attributedString: attributedText,
-                                    hasPendingMessageRequest: hasPendingMessageRequest,
-                                    shouldAllowLinkification: shouldAllowLinkification,
-                                    textWasTruncated: textWasTruncated)
+                let dataItems = detectItems(
+                    text: attributedText.string,
+                    attributedString: attributedText,
+                    hasPendingMessageRequest: hasPendingMessageRequest,
+                    shouldAllowLinkification: shouldAllowLinkification,
+                    textWasTruncated: textWasTruncated
+                )
+                if FeatureFlags.textFormattingReceiveSupport {
+                    var spoilerIndex = 0
+                    var spoilerItems = [CVTextLabel.Item]()
+                    attributedText.enumerateMentionsAndStyles { _, style, range, _  in
+                        guard let style, style.contains(.spoiler) else { return }
+                        let index = spoilerIndex
+                        spoilerIndex += 1
+                        guard revealedSpoilerIndexes.contains(index).negated else { return }
+                        spoilerItems.append(.unrevealedSpoiler(
+                            CVTextLabel.UnrevealedSpoilerItem(
+                                index: index,
+                                interactionUniqueId: interaction.uniqueId,
+                                range: range
+                            )
+                        ))
+                    }
+                    // Spoilers take precedence and overwrite other items. Where their ranges overlap,
+                    // we need to cut off the detected item ranges and replace with spoiler range.
+                    items = NSRangeUtil.replacingRanges(
+                        in: dataItems.sorted(by: { $0.range.location < $1.range.location }),
+                        withOverlapsIn: spoilerItems
+                    )
+                } else {
+                    items = dataItems
+                }
+
                 shouldUseAttributedText = true
             }
         } else {
@@ -398,6 +433,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return State(bodyText: bodyText,
                      isTextExpanded: isTextExpanded,
                      searchText: searchText,
+                     revealedSpoilerIndexes: revealedSpoilerIndexes,
                      hasTapForMore: hasTapForMore,
                      shouldUseAttributedText: shouldUseAttributedText,
                      hasPendingMessageRequest: hasPendingMessageRequest,
@@ -672,8 +708,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 continue
             }
             switch item {
-            case .mention, .referencedUser:
-                // Do nothing; mentions and referenced users are already styled.
+            case .mention, .referencedUser, .unrevealedSpoiler:
+                // Do nothing; these are already styled.
                 continue
             case .dataItem(let dataItem):
                 guard let link = dataItem.url.absoluteString.nilIfEmpty else {
@@ -746,7 +782,14 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             MessageBodyRanges.applyStyleAttributes(
                 on: attributedText,
                 baseFont: textMessageFont,
-                textColor: bodyTextColor
+                textColor: bodyTextColor,
+                spoilerStyler: { spoilerIndex, _ in
+                    if revealedSpoilerIndexes.contains(spoilerIndex) {
+                        return .revealed
+                    } else {
+                        return .concealedWithHighlight(bodyTextColor)
+                    }
+                }
             )
         }
 
@@ -814,10 +857,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         let bodyTextLabel = componentView.bodyTextLabel
         if let item = bodyTextLabel.itemForGesture(sender: sender) {
+            bodyTextLabel.animate(selectedItem: item)
             componentDelegate.didTapBodyTextItem(item)
             return true
         }
-
         if hasTapForMore {
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
             componentDelegate.didTapTruncatedTextMessage(itemViewModel)
@@ -845,6 +888,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         guard let item = bodyTextLabel.itemForGesture(sender: sender) else {
             return nil
         }
+        bodyTextLabel.animate(selectedItem: item)
         return CVLongPressHandler(delegate: componentDelegate,
                                   renderItem: renderItem,
                                   gestureLocation: .bodyText(item: item))

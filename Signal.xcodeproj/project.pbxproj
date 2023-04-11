@@ -905,6 +905,8 @@
 		66FA2B1F28CBA4A5006845CD /* BiometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* BiometryType.swift */; };
 		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
+		66FC636929DE21A600F00DAC /* NSRangeUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC636829DE21A600F00DAC /* NSRangeUtil.swift */; };
+		66FC636B29DE27A500F00DAC /* NSRangeUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC636A29DE27A500F00DAC /* NSRangeUtilTests.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
 		7609818C2936EF22008F8300 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7609818B2936EF22008F8300 /* AudioPlayer.swift */; };
@@ -3387,6 +3389,8 @@
 		66FA2B1E28CBA4A5006845CD /* BiometryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
 		66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMyStoryRecipientsViewController.swift; sourceTree = "<group>"; };
+		66FC636829DE21A600F00DAC /* NSRangeUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangeUtil.swift; sourceTree = "<group>"; };
+		66FC636A29DE27A500F00DAC /* NSRangeUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangeUtilTests.swift; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		760981872936DE90008F8300 /* BezierPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierPathView.swift; sourceTree = "<group>"; };
@@ -7931,6 +7935,7 @@
 				F94261F2289B1B5400460798 /* LRUCacheTest.swift */,
 				F94261FC289B1B5400460798 /* MathOWSTests.swift */,
 				F94261E9289B1B5400460798 /* NSData+ImageTest.swift */,
+				66FC636A29DE27A500F00DAC /* NSRangeUtilTests.swift */,
 				F96BB60629A528BD001C18DF /* OWS2FAManagerTest.swift */,
 				F94261E6289B1B5400460798 /* OWSErrorTest.swift */,
 				F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */,
@@ -9142,6 +9147,7 @@
 				F9C5CB7E289453B200548EEE /* NSData+Image.m */,
 				F9C5CB37289453B200548EEE /* NSData+Image.swift */,
 				F9C5CB39289453B200548EEE /* NSNotificationCenter+OWS.swift */,
+				66FC636829DE21A600F00DAC /* NSRangeUtil.swift */,
 				F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */,
 				F9C5CB6C289453B200548EEE /* NSString+SSK.h */,
 				F9C5CB20289453B200548EEE /* NSString+SSK.m */,
@@ -11884,6 +11890,7 @@
 				F9C5CE09289453B400548EEE /* NSData+Image.swift in Sources */,
 				F9C5CD3B289453B300548EEE /* NSData+keyVersionByte.m in Sources */,
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
+				66FC636929DE21A600F00DAC /* NSRangeUtil.swift in Sources */,
 				F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */,
 				F9C5CDF2289453B400548EEE /* NSString+SSK.m in Sources */,
 				F9C5CDD1289453B400548EEE /* NSTimer+OWS.m in Sources */,
@@ -12376,6 +12383,7 @@
 				F9426293289B1B5600460798 /* MessageSendLogTests.swift in Sources */,
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
+				66FC636B29DE27A500F00DAC /* NSRangeUtilTests.swift in Sources */,
 				F96BB60729A528BD001C18DF /* OWS2FAManagerTest.swift in Sources */,
 				F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */,
 				F942627B289B1B5600460798 /* OWSDisappearingMessagesConfigurationTest.m in Sources */,
