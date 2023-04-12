@@ -196,8 +196,8 @@ public class AppVersion {
 
         let largestCount = max(lhsComponents.count, rhsComponents.count)
         for index in (0..<largestCount) {
-            let lhsComponent = parseVersionComponent(lhsComponents[index])
-            let rhsComponent = parseVersionComponent(rhsComponents[index])
+            let lhsComponent = parseVersionComponent(lhsComponents[safe: index])
+            let rhsComponent = parseVersionComponent(rhsComponents[safe: index])
             if lhsComponent != rhsComponent {
                 return (lhsComponent < rhsComponent) ? .orderedAscending : .orderedDescending
             }
