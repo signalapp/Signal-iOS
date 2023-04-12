@@ -31,8 +31,9 @@ final class SqliteUtilTest: XCTestCase {
         }
     }
 
-    @available(iOS 16.0, *)
     func testQuickCheck() throws {
+        guard #available(iOS 16, *) else { throw XCTSkip() }
+
         let databasePath = OWSFileSystem.temporaryFilePath(fileExtension: "sqlite")
         let databaseUrl = URL(filePath: databasePath)
 
