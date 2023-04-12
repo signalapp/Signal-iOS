@@ -192,7 +192,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalCoreKit:
-    :commit: 75f61972e02f114cd747bbbbd1d7f887bcfe95e7
+    :commit: c31350f2cab65be465b292752108fa876b81258f
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
