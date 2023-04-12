@@ -694,7 +694,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Forward %1$d</string>
+			<string>轉寄 %1$d</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>

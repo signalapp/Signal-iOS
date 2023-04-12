@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Forward %1$d</string>
+			<string>%1$d ફોરવર્ડ કરો</string>
 			<key>other</key>
-			<string>Forward %1$d</string>
+			<string>%1$d ફોરવર્ડ કરો</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>

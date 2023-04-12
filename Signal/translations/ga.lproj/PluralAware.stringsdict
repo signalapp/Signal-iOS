@@ -1086,15 +1086,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Forward %1$d</string>
+			<string>Cuir %1$d amháin ar aghaidh</string>
 			<key>two</key>
-			<string>Forward %1$d</string>
+			<string>Cuir %1$d cheann ar aghaidh</string>
 			<key>few</key>
-			<string>Forward %1$d</string>
+			<string>Cuir %1$d cinn ar aghaidh</string>
 			<key>many</key>
-			<string>Forward %1$d</string>
+			<string>Cuir %1$d gcinn ar aghaidh</string>
 			<key>other</key>
-			<string>Forward %1$d</string>
+			<string>Cuir %1$d ceann ar aghaidh</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>

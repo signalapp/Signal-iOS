@@ -28,6 +28,42 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Wiadomość głosowa";
 
+/* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Export Report";
+
+/* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Only share your Signal account data with people or apps you trust.";
+
+/* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
+"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Couldn’t Generate Report";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Machine-readable file";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Export as JSON";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Easy-to-read text file";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Export as TXT";
+
+/* Users can request a report of their account data. Users tap this button to export their data. */
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Export Report";
+
+/* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
+"ACCOUNT_DATA_REPORT_FOOTER" = "Your report is generated only at the time of export and is not stored by Signal on your device.";
+
+/* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "Download and export a report of your Signal account data. This report does not include any messages or media.";
+
+/* Users can request a report of their account data. This is the title on the screen where they do this. */
+"ACCOUNT_DATA_REPORT_TITLE" = "Your Account Data";
+
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Połączenie Signal";
 
@@ -138,9 +174,6 @@
 
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal nie może się uruchomić. Wyślij dziennik debugowania na adres support@signal.org, abyśmy mogli rozwiązać ten problem.";
-
-/* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Błąd";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "Otwórz Signal";
@@ -3575,7 +3608,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Ten miesiąc";
 
 /* Text explaining that the user will forward all media from a message. */
-"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "All media in this message will be forwarded.";
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "Wszystkie multimedia w tej wiadomości zostaną przekazane.";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Usuń";
@@ -4089,6 +4122,9 @@
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Moje notatki";
+
+/* Body for a notification representing a message request. */
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Message Request";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Możliwe, że otrzymałeś(aś) wiadomości podczas restartowania %1$@.";
@@ -5444,7 +5480,7 @@
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Zmiany numeru bezpieczeństwa";
 
 /* Text explaining that the given contact has had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Verified";
+"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Zweryfikowano";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Zobacz";
@@ -5631,6 +5667,9 @@
 
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "Konto";
+
+/* Label for button in settings to get your account data report */
+"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Your Account Data";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Zablokuj";

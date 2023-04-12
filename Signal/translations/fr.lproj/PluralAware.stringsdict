@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Forward %1$d</string>
+			<string>Transférer %1$d</string>
 			<key>other</key>
-			<string>Forward %1$d</string>
+			<string>Transférer %1$d</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
