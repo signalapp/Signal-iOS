@@ -3575,7 +3575,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "این ماه";
 
 /* Text explaining that the user will forward all media from a message. */
-"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "All media in this message will be forwarded.";
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "همه رسانه‌های موجود در این پیام بازارسال خواهند شد.";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "پاک کردن";
@@ -5444,7 +5444,7 @@
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "تغییرات شمارهٔ امنیتی";
 
 /* Text explaining that the given contact has had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Verified";
+"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "تأییدشده";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "نمایش";

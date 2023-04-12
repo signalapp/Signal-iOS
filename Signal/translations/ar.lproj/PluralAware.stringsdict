@@ -1184,17 +1184,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Forward %1$d</string>
+			<string>إعادة توجيه %1$d</string>
 			<key>one</key>
-			<string>Forward %1$d</string>
+			<string>إعادة توجيه %1$d</string>
 			<key>two</key>
-			<string>Forward %1$d</string>
+			<string>إعادة توجيه %1$d</string>
 			<key>few</key>
-			<string>Forward %1$d</string>
+			<string>إعادة توجيه %1$d</string>
 			<key>many</key>
-			<string>Forward %1$d</string>
+			<string>إعادة توجيه %1$d</string>
 			<key>other</key>
-			<string>Forward %1$d</string>
+			<string>إعادة توجيه %1$d</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>

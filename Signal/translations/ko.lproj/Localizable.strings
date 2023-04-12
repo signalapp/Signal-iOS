@@ -3575,7 +3575,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "이번 달";
 
 /* Text explaining that the user will forward all media from a message. */
-"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "All media in this message will be forwarded.";
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "이 메시지의 모든 미디어를 전달합니다.";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "삭제";
@@ -5444,7 +5444,7 @@
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "안전 번호 변경됨";
 
 /* Text explaining that the given contact has had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Verified";
+"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "확인됨";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "보기";
