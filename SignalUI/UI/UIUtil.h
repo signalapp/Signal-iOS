@@ -13,9 +13,3 @@
     _variable_name.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(_root_view, (@ #_variable_name))
 
 typedef void (^completionBlock)(void);
-
-@interface UIUtil : NSObject
-
-+ (void)setupSignalAppearance;
-
-@end

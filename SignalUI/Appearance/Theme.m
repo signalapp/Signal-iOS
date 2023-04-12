@@ -4,10 +4,10 @@
 //
 
 #import "Theme.h"
-#import "UIUtil.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -258,7 +258,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 - (void)themeDidChange
 {
-    [UIUtil setupSignalAppearance];
+    [Theme setupSignalAppearance];
 
     [UIView performWithoutAnimation:^{
         [[NSNotificationCenter defaultCenter] postNotificationName:ThemeDidChangeNotification object:nil userInfo:nil];

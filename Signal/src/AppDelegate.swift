@@ -165,7 +165,7 @@ extension AppDelegate {
     }
 
     private func configureGlobalUI(in window: UIWindow) {
-        UIUtil.setupSignalAppearance()
+        Theme.setupSignalAppearance()
 
         let screenLockUI = OWSScreenLockUI.shared()
         let windowManager = OWSWindowManager.shared

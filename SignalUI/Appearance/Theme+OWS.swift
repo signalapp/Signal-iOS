@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 @objc
 public enum ThemeIcon: UInt {
@@ -161,6 +162,41 @@ public enum ThemeIcon: UInt {
 
     case hide20
     case hide24
+}
+
+// MARK: - Theme setup
+
+public extension Theme {
+    @objc
+    class func setupSignalAppearance() {
+        UINavigationBar.appearance().barTintColor = Theme.navbarBackgroundColor
+        UINavigationBar.appearance().tintColor = Theme.primaryIconColor
+        UIToolbar.appearance().barTintColor = Theme.navbarBackgroundColor
+        UIToolbar.appearance().tintColor = Theme.primaryIconColor
+
+        // We do _not_ specify BarButton.appearance().tintColor because it is sufficient to specify
+        // UINavigationBar.appearance().tintColor. Furthermore, specifying the BarButtonItem's
+        // appearance makes it more difficult to override the navbar theme, e.g. how we _always_
+        // use dark theme in the media send flow and gallery views. If we were specifying
+        // barButton.appearance().tintColor we would then have to manually override each
+        // BarButtonItem's tint, rather than just the navbars.
+        //
+        // UIBarButtonItem.appearance.tintColor = Theme.primaryIconColor;
+
+        // Using UIText{View,Field}.appearance().keyboardAppearance crashes due to a bug in UIKit,
+        // so we don't do it.
+
+        UITableViewCell.appearance().tintColor = Theme.primaryIconColor
+        UIToolbar.appearance().tintColor = .ows_accentBlue
+
+        // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
+        UINavigationBar.appearance().titleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: Theme.navbarTitleColor
+        ]
+
+        UITextView.appearance(whenContainedInInstancesOf: [OWSNavigationController.self]).tintColor = Theme.cursorColor
+        UITextField.appearance(whenContainedInInstancesOf: [OWSNavigationController.self]).tintColor = Theme.cursorColor
+    }
 }
 
 // MARK: - Colors

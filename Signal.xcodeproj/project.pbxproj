@@ -57,7 +57,6 @@
 		3402A9EA271D97090084CBAE /* UIView+SignalUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E7271D97090084CBAE /* UIView+SignalUI.m */; };
 		3402A9EC271D98440084CBAE /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9EB271D98440084CBAE /* AttachmentMultisend.swift */; };
 		3402A9F4271D9A060084CBAE /* UIUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 3402A9F2271D9A060084CBAE /* UIUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3402A9F5271D9A060084CBAE /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9F3271D9A060084CBAE /* UIUtil.m */; };
 		3402A9FE271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95504271B510400B05242 /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402A9FF271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95503271B510400B05242 /* OWSAnyTouchGestureRecognizer.m */; };
 		3402AA02271D9DAF0084CBAE /* GroupViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95507271B510400B05242 /* GroupViewUtils.swift */; };
@@ -2474,7 +2473,6 @@
 		3402A9E7271D97090084CBAE /* UIView+SignalUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SignalUI.m"; sourceTree = "<group>"; };
 		3402A9EB271D98440084CBAE /* AttachmentMultisend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentMultisend.swift; sourceTree = "<group>"; };
 		3402A9F2271D9A060084CBAE /* UIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIUtil.h; sourceTree = "<group>"; };
-		3402A9F3271D9A060084CBAE /* UIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIUtil.m; sourceTree = "<group>"; };
 		3402A9F6271D9C700084CBAE /* OWSQuotedReplyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQuotedReplyModel.h; sourceTree = "<group>"; };
 		3402A9F7271D9C700084CBAE /* OWSQuotedReplyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQuotedReplyModel.m; sourceTree = "<group>"; };
 		3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ThreadUtil+SignalUI.swift"; sourceTree = "<group>"; };
@@ -5594,7 +5592,6 @@
 				34A954E4271B4F6A00B05242 /* AttachmentSharing.m */,
 				34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */,
 				3402A9F2271D9A060084CBAE /* UIUtil.h */,
-				3402A9F3271D9A060084CBAE /* UIUtil.m */,
 				34A954E5271B4F6A00B05242 /* VideoPlayer.swift */,
 			);
 			path = UI;
@@ -10816,7 +10813,6 @@
 				7609819429382EFF008F8300 /* UIGeometry+Signal.swift in Sources */,
 				76F4B581293ACCD200A7CF2F /* UIKit+SignalUI.swift in Sources */,
 				500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */,
-				3402A9F5271D9A060084CBAE /* UIUtil.m in Sources */,
 				3402A9EA271D97090084CBAE /* UIView+SignalUI.m in Sources */,
 				3402A9E8271D97090084CBAE /* UIView+SignalUI.swift in Sources */,
 				34A954F7271B4FB000B05242 /* UIViewController+OWS.m in Sources */,
