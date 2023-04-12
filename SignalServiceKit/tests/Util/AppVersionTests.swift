@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-final class AppVersionTests: XCTest {
+final class AppVersionTests: XCTestCase {
     func testVersionComparisons() {
         let testCases: [(String, String, ComparisonResult)] = [
             ("0", "0", .orderedSame),
