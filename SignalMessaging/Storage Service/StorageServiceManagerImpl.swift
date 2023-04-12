@@ -219,7 +219,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         Logger.info("Recording pending update for addresses: \(updatedAddresses)")
 
         updatePendingMutations {
-            $0.updatedAddresses.formUnion(updatedAddresses)
+            $0.updatedServiceIds.formUnion(updatedAddresses.lazy.compactMap({ $0.serviceId }))
             $0.authedAccount = authedAccount.orIfImplicitUse($0.authedAccount)
         }
     }
@@ -369,7 +369,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
 private struct PendingMutations {
     var updatedAccountIds = Set<AccountId>()
-    var updatedAddresses = Set<SignalServiceAddress>()
+    var updatedServiceIds = Set<ServiceId>()
     var updatedGroupV2MasterKeys = Set<Data>()
     var updatedStoryDistributionListIds = Set<Data>()
     var updatedLocalAccount = false
@@ -381,7 +381,7 @@ private struct PendingMutations {
         return (
             updatedLocalAccount
             || !updatedAccountIds.isEmpty
-            || !updatedAddresses.isEmpty
+            || !updatedServiceIds.isEmpty
             || !updatedGroupV2MasterKeys.isEmpty
             || !updatedStoryDistributionListIds.isEmpty
             || !mutatedGroupV1Ids.isEmpty
@@ -492,8 +492,8 @@ class StorageServiceOperation: OWSOperation {
 
         allAccountIds.formUnion(pendingMutations.updatedAccountIds)
 
-        allAccountIds.formUnion(pendingMutations.updatedAddresses.lazy.map {
-            OWSAccountIdFinder.ensureAccountId(forAddress: $0, transaction: transaction)
+        allAccountIds.formUnion(pendingMutations.updatedServiceIds.lazy.map {
+            SignalRecipient.fetchOrCreate(serviceId: $0, transaction: transaction).uniqueId
         })
 
         // Check if we're updating the local account. If so, remove it so that we
