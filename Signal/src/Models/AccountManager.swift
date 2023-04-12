@@ -13,10 +13,6 @@ public enum AccountManagerError: Error {
 
 // MARK: -
 
-/**
- * Signal is actually two services - textSecure for messages and red phone (for calls). 
- * AccountManager delegates to both.
- */
 @objc
 public class AccountManager: NSObject, Dependencies {
 
