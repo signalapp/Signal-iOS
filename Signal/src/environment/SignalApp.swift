@@ -215,7 +215,7 @@ extension SignalApp {
             DispatchQueue.sharedUserInitiated.async {
                 var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "showDatabaseIntegrityCheckUI")
 
-                GRDBDatabaseStorageAdapter.logIntegrityChecks()
+                GRDBDatabaseStorageAdapter.checkIntegrity()
 
                 owsAssertDebug(backgroundTask != nil)
                 backgroundTask = nil

@@ -353,6 +353,8 @@ extension AppDelegate {
             )
         }
 
+        checkDatabaseIntegrityIfNecessary(isRegistered: tsAccountManager.isRegistered)
+
         SignalApp.shared().ensureRootViewController(
             appDelegate: self,
             launchStartedAt: launchStartedAt,
@@ -805,6 +807,27 @@ extension AppDelegate {
             urlOpener.openUrl(parsedUrl, in: self.window!)
         }
         return true
+    }
+
+    // MARK: - Database integrity checks
+
+    private func checkDatabaseIntegrityIfNecessary(
+        isRegistered: Bool
+    ) {
+        guard isRegistered, FeatureFlags.periodicallyCheckDatabaseIntegrity else { return }
+
+        DispatchQueue.sharedBackground.async {
+            switch GRDBDatabaseStorageAdapter.checkIntegrity() {
+            case .ok: break
+            case .notOk:
+                AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+                    OWSActionSheets.showActionSheet(
+                        title: "Database corrupted!",
+                        message: "We have detected database corruption on your device. Please submit debug logs to the iOS team."
+                    )
+                }
+            }
+        }
     }
 }
 

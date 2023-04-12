@@ -1067,7 +1067,9 @@ extension GRDBDatabaseStorageAdapter {
             .map { containerDirectory.appendingPathComponent($0) }
     }
 
-    public static func logIntegrityChecks() {
+    /// Run database integrity checks and log their results.
+    @discardableResult
+    public static func checkIntegrity() -> SqliteUtil.IntegrityCheckResult {
         let storageCoordinator: StorageCoordinator
         if SSKEnvironment.hasShared() {
             storageCoordinator = SSKEnvironment.shared.storageCoordinator
@@ -1077,31 +1079,26 @@ extension GRDBDatabaseStorageAdapter {
         // Workaround to disambiguate between NSObject.databaseStorage and StorageCoordinator.databaseStorage.
         let databaseStorage = storageCoordinator.value(forKey: "databaseStorage") as! SDSDatabaseStorage
 
-        let unfilteredSqls = [
-            "PRAGMA cipher_provider",
-            "PRAGMA cipher_integrity_check"
-        ]
-        for sql in unfilteredSqls {
-            Logger.info(sql)
-            databaseStorage.read { transaction in
-                do {
-                    let cursor = try String.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
-                    while let line = try cursor.next() { Logger.info(line) }
-                } catch {
-                    Logger.error("\(sql) failed to run")
-                }
-            }
+        func read<T>(block: (Database) -> T) -> T {
+            return databaseStorage.read { block($0.unwrapGrdbRead.database) }
         }
 
-        let quickCheckResult = databaseStorage.read { transaction in
-            let db = transaction.unwrapGrdbRead.database
+        read { db in
+            Logger.info("PRAGMA cipher_provider")
+            Logger.info(SqliteUtil.cipherProvider(db: db))
+        }
+
+        let cipherIntegrityCheckResult = read { db in
+            Logger.info("PRAGMA cipher_integrity_check")
+            return SqliteUtil.cipherIntegrityCheck(db: db)
+        }
+
+        let quickCheckResult = read { db in
+            Logger.info("PRAGMA quick_check")
             return SqliteUtil.quickCheck(db: db)
         }
-        Logger.info("PRAGMA quick_check")
-        switch quickCheckResult {
-        case .ok: Logger.info("ok")
-        case .notOk: Logger.error("failed (failure redacted)")
-        }
+
+        return cipherIntegrityCheckResult && quickCheckResult
     }
 }
 
