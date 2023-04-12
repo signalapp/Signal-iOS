@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import AVFoundation
+import Foundation
+import SignalMessaging
 
 public class AudioActivity: NSObject {
     let audioDescription: String
