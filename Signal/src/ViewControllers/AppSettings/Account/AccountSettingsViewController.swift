@@ -186,21 +186,19 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     ))
                 }
             }
-            if FeatureFlags.canRequestAccountDataReport {
-                accountSection.add(.actionItem(
-                    withText: NSLocalizedString(
-                        "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON",
-                        comment: "Label for button in settings to get your account data report"
-                    ),
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(
-                        in: self,
-                        name: "request_account_data_report"
-                    ),
-                    actionBlock: { [weak self] in
-                        self?.requestAccountDataReport()
-                    }
-                ))
-            }
+            accountSection.add(.actionItem(
+                withText: NSLocalizedString(
+                    "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON",
+                    comment: "Label for button in settings to get your account data report"
+                ),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(
+                    in: self,
+                    name: "request_account_data_report"
+                ),
+                actionBlock: { [weak self] in
+                    self?.requestAccountDataReport()
+                }
+            ))
             accountSection.add(.actionItem(
                 withText: NSLocalizedString("SETTINGS_DELETE_ACCOUNT_BUTTON", comment: ""),
                 textColor: .ows_accentRed,

@@ -26,12 +26,6 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
         }
     }
 
-    public override init() {
-        owsAssert(FeatureFlags.canRequestAccountDataReport)
-
-        super.init()
-    }
-
     // MARK: - Callbacks
 
     public override func viewDidLoad() {
