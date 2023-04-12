@@ -8,8 +8,6 @@ import SignalUI
 import SignalMessaging
 import SignalServiceKit
 
-// TODO[ADE] Localize the strings in this file
-
 class RequestAccountDataReportViewController: OWSTableViewController2 {
     private var learnMoreUrl: URL {
         URL(string: "https://support.signal.org/hc/articles/5538911756954")!
@@ -38,7 +36,10 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Your Account Data"
+        title = OWSLocalizedString(
+            "ACCOUNT_DATA_REPORT_TITLE",
+            comment: "Users can request a report of their account data. This is the title on the screen where they do this."
+        )
         updateTableContents()
     }
 
@@ -50,7 +51,10 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
     // MARK: - Rendering
 
     private lazy var exportButton: UIView = {
-        let title = "Export Report"
+        let title = OWSLocalizedString(
+            "ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON",
+            comment: "Users can request a report of their account data. Users tap this button to export their data."
+        )
         let result = OWSButton(title: title) { [weak self] in self?.didTapExport() }
         result.dimsWhenHighlighted = true
         result.layer.cornerRadius = 8
@@ -82,14 +86,20 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
                 let titleLabel = UILabel()
                 titleLabel.textAlignment = .center
                 titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
-                titleLabel.text = "Your Account Data"
+                titleLabel.text = OWSLocalizedString(
+                    "ACCOUNT_DATA_REPORT_TITLE",
+                    comment: "Users can request a report of their account data. This is the title on the screen where they do this."
+                )
                 titleLabel.numberOfLines = 0
                 titleLabel.lineBreakMode = .byWordWrapping
 
                 let descriptionTextView = LinkingTextView()
                 descriptionTextView.attributedText = .composed(
                     of: [
-                        "Download and export a report of your Signal account data. This report does not include any messages or media.",
+                        OWSLocalizedString(
+                            "ACCOUNT_DATA_REPORT_SUBTITLE",
+                            comment: "Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information."
+                        ),
                         CommonStrings.learnMore.styled(with: .link(self.learnMoreUrl))
                     ],
                     baseStyle: .init(.color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody)),
@@ -130,8 +140,14 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             .init(
                 customCellBlock: {
                     return OWSTableItem.buildImageNameCell(
-                        itemName: "Export as TXT",
-                        subtitle: "Easy-to-read text file",
+                        itemName: OWSLocalizedString(
+                            "ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE",
+                            comment: "Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode."
+                        ),
+                        subtitle: OWSLocalizedString(
+                            "ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE",
+                            comment: "Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode."
+                        ),
                         accessoryType: selectedFileType == .text ? .checkmark : .none
                     )
                 },
@@ -142,8 +158,14 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             .init(
                 customCellBlock: {
                     return OWSTableItem.buildImageNameCell(
-                        itemName: "Export as JSON",
-                        subtitle: "Machine-readable file",
+                        itemName: OWSLocalizedString(
+                            "ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE",
+                            comment: "Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode."
+                        ),
+                        subtitle: OWSLocalizedString(
+                            "ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE",
+                            comment: "Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode."
+                        ),
                         accessoryType: selectedFileType == .json ? .checkmark : .none
                     )
                 },
@@ -165,7 +187,10 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             return cell
         })])
         result.hasBackground = false
-        result.footerTitle = "Your report is generated only at the time of export and is not stored by Signal on your device."
+        result.footerTitle = OWSLocalizedString(
+            "ACCOUNT_DATA_REPORT_FOOTER",
+            comment: "Users can request a report of their account data. This text appears at the bottom of this screen, offering more information."
+        )
         return result
     }
 
@@ -226,8 +251,14 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
 
     private func didRequestFail() {
         OWSActionSheets.showActionSheet(
-            title: "Couldn’t Generate Report",
-            message: "Check your connection and try again."
+            title: OWSLocalizedString(
+                "ACCOUNT_DATA_REPORT_ERROR_TITLE",
+                comment: "Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error."
+            ),
+            message: OWSLocalizedString(
+                "ACCOUNT_DATA_REPORT_ERROR_MESSAGE",
+                comment: "Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error."
+            )
         )
     }
 
@@ -237,11 +268,17 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
 
     private func confirmExport(didConfirm: @escaping () -> Void) {
         let actionSheet = ActionSheetController(
-            message: "Only share your Signal account data with people or apps you trust."
+            message: OWSLocalizedString(
+                "ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE",
+                comment: "Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning."
+            )
         )
 
         actionSheet.addAction(.init(
-            title: "Export Report"
+            title: OWSLocalizedString(
+                "ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON",
+                comment: "Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue."
+            )
         ) { _ in
             didConfirm()
         })
