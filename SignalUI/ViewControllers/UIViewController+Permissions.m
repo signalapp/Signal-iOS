@@ -4,7 +4,6 @@
 //
 
 #import "UIViewController+Permissions.h"
-#import "UIUtil.h"
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
 #import <SignalCoreKit/Threading.h>

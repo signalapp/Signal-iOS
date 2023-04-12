@@ -929,7 +929,7 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
         //        } else if (viewItem.stickerInfo) {
         //            cellName = [NSString stringWithFormat:@"message.sticker.%@", [viewItem.stickerInfo asKey]];
         //        }
-        //        cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
+        //        cell.accessibilityIdentifier = "CVLoadCoordinator.\(cellName)"
         // #endif
         //
         // return cell;

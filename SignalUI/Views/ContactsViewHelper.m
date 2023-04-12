@@ -4,7 +4,6 @@
 //
 
 #import "ContactsViewHelper.h"
-#import "UIUtil.h"
 #import <ContactsUI/ContactsUI.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/Environment.h>

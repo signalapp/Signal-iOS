@@ -4,10 +4,10 @@
 //
 
 #import "AttachmentSharing.h"
-#import "UIUtil.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/FunctionalUtil.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <YYImage/YYImage.h>
 

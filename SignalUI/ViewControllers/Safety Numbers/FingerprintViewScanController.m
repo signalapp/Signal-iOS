@@ -12,7 +12,6 @@
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalUI/SignalUI-Swift.h>
 #import <SignalUI/UIFont+OWS.h>
-#import <SignalUI/UIUtil.h>
 #import <SignalUI/UIView+SignalUI.h>
 #import <SignalUI/UIViewController+Permissions.h>
 

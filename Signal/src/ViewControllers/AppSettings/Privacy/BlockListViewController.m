@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
         addItem:[OWSTableItem
                      disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_ADD_BUTTON",
                                                 @"A label for the 'add phone number' button in the block list table.")
-                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"add")
+                    accessibilityIdentifier:@"BlockListViewController.add"
                                 actionBlock:^{
                                     AddToBlockListViewController *vc = [AddToBlockListViewController new];
                                     vc.delegate = self;
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [weakSelf.databaseStorage readWithBlock:^(SDSAnyReadTransaction *readTx) {
                     [cell configureWithConfiguration:config transaction:readTx];
                 }];
-                cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(BlockListViewController, @"user");
+                cell.accessibilityIdentifier = @"BlockListViewController.user";
                 return cell;
             } actionBlock:^{
                 [BlockListUIUtils showUnblockAddressActionSheet:address fromViewController:weakSelf completionBlock:^(BOOL isBlocked) {

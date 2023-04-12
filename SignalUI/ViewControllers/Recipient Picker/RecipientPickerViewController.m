@@ -15,7 +15,6 @@
 #import <SignalUI/ContactsViewHelper.h>
 #import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/SignalUI-Swift.h>
-#import <SignalUI/UIUtil.h>
 #import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -103,8 +102,8 @@ const NSUInteger kMinimumSearchLength = 1;
     }
     [searchBar sizeToFit];
 
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
-    searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
+    searchBar.accessibilityIdentifier = @"RecipientPickerViewController.searchBar";
+    searchBar.textField.accessibilityIdentifier = @"RecipientPickerViewController.contact_search";
     [self.signalContactsStackView addArrangedSubview:searchBar];
     [searchBar setCompressionResistanceVerticalHigh];
     [searchBar setContentHuggingVerticalHigh];
@@ -134,7 +133,7 @@ const NSUInteger kMinimumSearchLength = 1;
     [self.noSignalContactsView autoPinWidthToSuperview];
     [self.noSignalContactsView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.noSignalContactsView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _noSignalContactsView);
+    self.noSignalContactsView.accessibilityIdentifier = @"RecipientPickerViewController.noSignalContactsView";
 
     UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
     pullToRefreshView.tintColor = [UIColor grayColor];
@@ -142,7 +141,7 @@ const NSUInteger kMinimumSearchLength = 1;
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     self.tableViewController.tableView.refreshControl = pullToRefreshView;
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, pullToRefreshView);
+    pullToRefreshView.accessibilityIdentifier = @"RecipientPickerViewController.pullToRefreshView";
 
     [self updateTableContents];
 }
@@ -251,8 +250,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                                                         @"NEW_GROUP_BUTTON", comment
                                                                         : @"Label for the 'create new group' button.")
                                                       accessoryText:nil
-                                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                                        RecipientPickerViewController, @"new_group")
+                                            accessibilityIdentifier:@"RecipientPickerViewController.new_group"
                                                         actionBlock:^{ [weakSelf newGroupButtonPressed]; }]];
     }
 
@@ -264,8 +262,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                            name:OWSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
                                                     @"A label the cell that lets you add a new member to a group.")
                                   accessoryText:nil
-                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                    RecipientPickerViewController, @"find_by_phone")
+                        accessibilityIdentifier:@"RecipientPickerViewController.find_by_phone"
                                     actionBlock:^{
                                         typeof(self) strongSelf = weakSelf;
                                         if (!strongSelf) {
@@ -290,8 +287,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                            name:OWSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                                                     @"Label for the cell that presents the 'invite contacts' workflow.")
                                   accessoryText:nil
-                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                    RecipientPickerViewController, @"invite_contacts")
+                        accessibilityIdentifier:@"RecipientPickerViewController.invite_contacts"
                                     actionBlock:^{ [weakSelf presentInviteFlow]; }]];
     }
 
