@@ -5,30 +5,12 @@
 
 #import <Foundation/Foundation.h>
 
-#ifndef signalservicekitprefix
-#define signalservicekitprefix
-#import <Availability.h>
-
-#ifdef __OBJC__
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-
-#import <SignalCoreKit/NSObject+OWS.h>
-#import <SignalCoreKit/OWSAsserts.h>
-#import <SignalServiceKit/OWSAnalytics.h>
-#import <SignalServiceKit/SSKAsserts.h>
-
-#endif
-#endif
-
 //! Project version number for SignalServiceKit.
 FOUNDATION_EXPORT double SignalServiceKitVersionNumber;
 
 //! Project version string for SignalServiceKit.
 FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import
-// <SignalServiceKit/PublicHeader.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
