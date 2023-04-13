@@ -262,7 +262,7 @@ public class DatabaseChangeObserver: NSObject {
 
 extension DatabaseChangeObserver: TransactionObserver {
 
-    public func observes(eventWithTableName tableName: String) -> Bool {
+    private func observes(eventWithTableName tableName: String) -> Bool {
         guard !tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
             return false
         }
@@ -278,7 +278,7 @@ extension DatabaseChangeObserver: TransactionObserver {
         observes(eventWithTableName: eventKind.tableName)
     }
 
-    public func observes(event: DatabaseEvent) -> Bool {
+    private func observes(event: DatabaseEvent) -> Bool {
         observes(eventWithTableName: event.tableName)
     }
 
