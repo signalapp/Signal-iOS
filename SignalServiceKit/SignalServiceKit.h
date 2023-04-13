@@ -59,7 +59,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/LegacySessionState.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/MessageSender.h>
-#import <SignalServiceKit/MockSSKEnvironment.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSData+keyVersionByte.h>
 #import <SignalServiceKit/NSString+SSK.h>

@@ -59,32 +59,22 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
-        AppSetup.setupEnvironment(
+        AppSetup.setUpEnvironment(
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             webSocketFactory: WebSocketFactoryNative(),
-            appSpecificSingletonBlock: {
-            // Create SUIEnvironment.
-            SUIEnvironment.shared.setup()
-            SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()
-            SSKEnvironment.shared.notificationsManagerRef = NoopNotificationsManager()
-            Environment.shared.lightweightCallManagerRef = LightweightCallManager()
-        },
-        migrationCompletion: { [weak self] error in
-            AssertIsOnMainThread()
-
-            guard let strongSelf = self else { return }
-
-            if let error = error {
-                owsFailDebug("Error \(error)")
-                strongSelf.showNotReadyView()
-                return
+            extensionSpecificSingletonBlock: {
+                SUIEnvironment.shared.setup()
+                SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()
+                SSKEnvironment.shared.notificationsManagerRef = NoopNotificationsManager()
+                Environment.shared.lightweightCallManagerRef = LightweightCallManager()
             }
-
-            // performUpdateCheck must be invoked after Environment has been initialized because
-            // upgrade process may depend on Environment.
-            strongSelf.versionMigrationsDidComplete()
-        })
+        ).done(on: DispatchQueue.main) { error in
+            if let error {
+                return self.showNotReadyView()
+            }
+            self.versionMigrationsDidComplete()
+        }
 
         let shareViewNavigationController = OWSNavigationController()
         shareViewNavigationController.presentationController?.delegate = self

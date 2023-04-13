@@ -29,7 +29,6 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         super.setUp()
 
         tsAccountManager.registerForTests(withLocalNumber: aliceE164, uuid: aliceUuid)
-        (MockSSKEnvironment.shared as! MockSSKEnvironment).setContactsManagerForMock(FakeContactsManager())
 
         // Configure UDManager
         self.write { transaction in

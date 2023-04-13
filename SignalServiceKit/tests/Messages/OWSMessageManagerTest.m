@@ -7,7 +7,6 @@
 #import "ContactsManagerProtocol.h"
 #import "HTTPUtils.h"
 #import "MessageSender.h"
-#import "MockSSKEnvironment.h"
 #import "OWSIdentityManager.h"
 #import "OWSSyncGroupsMessage.h"
 #import "SSKBaseTestObjC.h"
@@ -16,6 +15,7 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalCoreKit/OWSLogs.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

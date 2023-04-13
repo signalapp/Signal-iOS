@@ -50,7 +50,7 @@ NSString *NSStringForDataStore(DataStore value)
     OWSSingletonAssert();
 
     NSURL *databaseFileUrl = [GRDBDatabaseStorageAdapter databaseFileUrlWithDirectoryMode:DirectoryModePrimary];
-    _databaseStorage = [[SDSDatabaseStorage alloc] initWithDatabaseFileUrl:databaseFileUrl delegate:self];
+    _nonGlobalDatabaseStorage = [[SDSDatabaseStorage alloc] initWithDatabaseFileUrl:databaseFileUrl delegate:self];
 
     [self configure];
 

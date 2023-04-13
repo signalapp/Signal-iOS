@@ -22,7 +22,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!, uuid: localAddress.uuid!)
 
         // Replace the fake contacts manager with the real one just for this test.
-        (MockSSKEnvironment.shared as! MockSSKEnvironment).setContactsManagerForMock(makeContactsManager())
+        SSKEnvironment.shared.setContactsManagerForUnitTests(makeContactsManager())
     }
 
     override func tearDown() {

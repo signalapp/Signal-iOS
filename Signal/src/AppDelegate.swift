@@ -154,14 +154,7 @@ extension AppDelegate {
     private func launchApp(in window: UIWindow) {
         assert(window.rootViewController is LoadingViewController)
         configureGlobalUI(in: window)
-        setUpMainAppEnvironment().done(on: DispatchQueue.main) {
-            self.versionMigrationsDidComplete()
-        }.catch(on: DispatchQueue.main) { error in
-            owsFailDebug("Error: \(error)")
-            let viewController = self.terminalErrorViewController()
-            window.rootViewController = viewController
-            self.presentTerminalDatabaseErrorActionSheet(from: viewController)
-        }
+        setUpMainAppEnvironment().done(on: DispatchQueue.main) { self.handleLaunchResult($0) }
     }
 
     private func configureGlobalUI(in window: UIWindow) {
@@ -174,28 +167,27 @@ extension AppDelegate {
         screenLockUI.startObserving()
     }
 
-    private func setUpMainAppEnvironment() -> Promise<Void> {
-        let (promise, future) = Promise<Void>.pending()
+    private func setUpMainAppEnvironment() -> Guarantee<AppSetupError?> {
         self.setupNSEInteroperation()
-        AppSetup.setupEnvironment(
+        let result = AppSetup.setUpEnvironment(
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
             webSocketFactory: WebSocketFactoryHybrid(),
-            appSpecificSingletonBlock: {
+            extensionSpecificSingletonBlock: {
                 SUIEnvironment.shared.setup()
                 AppEnvironment.shared.setup()
                 SignalApp.shared().setup()
-            },
-            migrationCompletion: { error in
-                if let error = error {
-                    future.reject(error)
-                } else {
-                    future.resolve()
-                }
             }
         )
         OWSAnalytics.appLaunchDidBegin()
-        return promise
+        return result
+    }
+
+    private func handleLaunchResult(_ appSetupError: AppSetupError?) {
+        switch appSetupError {
+        case nil:
+            self.versionMigrationsDidComplete()
+        }
     }
 
     private func checkSomeDiskSpaceAvailable() -> Bool {
@@ -479,13 +471,20 @@ extension AppDelegate {
         let actions: [LaunchFailureActionSheetAction]
 
         switch preflightError {
-        case .databaseUnrecoverablyCorrupted:
-            presentTerminalDatabaseErrorActionSheet(from: viewController)
-            return
-
         case .databaseCorruptedAndMightBeRecoverable:
             presentDatabaseRecovery(from: viewController, window: window)
             return
+
+        case .databaseUnrecoverablyCorrupted:
+            title = NSLocalizedString(
+                "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
+                comment: "Error indicating that the app could not launch because the database could not be loaded."
+            )
+            message = NSLocalizedString(
+                "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
+                comment: "Default message for the 'app launch failed' alert."
+            )
+            actions = [.submitDebugLogsWithDatabaseIntegrityCheckAndCrash]
 
         case .unknownDatabaseVersion:
             title = NSLocalizedString(
@@ -542,32 +541,14 @@ extension AppDelegate {
         )
     }
 
-    private func presentTerminalDatabaseErrorActionSheet(from viewController: UIViewController) {
-        presentLaunchFailureActionSheet(
-            from: viewController,
-            supportTag: "LaunchFailure_CouldNotLoadDatabase",
-            title: NSLocalizedString(
-                "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
-                comment: "Error indicating that the app could not launch because the database could not be loaded."
-            ),
-            message: NSLocalizedString(
-                "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
-                comment: "Default message for the 'app launch failed' alert."
-            ),
-            actions: [.submitDebugLogsWithDatabaseIntegrityCheckAndCrash]
-        )
-    }
-
     private func presentDatabaseRecovery(from viewController: UIViewController, window: UIWindow) {
         let recoveryViewController: DatabaseRecoveryViewController = DatabaseRecoveryViewController(
             setupSskEnvironment: { () -> Promise<Void> in
                 firstly(on: DispatchQueue.main) {
                     self.setUpMainAppEnvironment()
-                }.catch(on: DispatchQueue.main) { error in
-                    owsFailDebug("Error: \(error)")
-                    viewController.dismiss(animated: true) {
-                        self.presentTerminalDatabaseErrorActionSheet(from: viewController)
-                    }
+                }.map { (error) -> Void in
+                    if let error { throw error }
+                    return ()
                 }
             },
             launchApp: {

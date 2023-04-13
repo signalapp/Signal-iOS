@@ -343,8 +343,6 @@
 		3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */; };
 		3478504C1FD7496D007B8332 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850561FD86544007B8332 /* SAEFailedViewController.swift */; };
-		347850691FD9B78A007B8332 /* AppSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = 347850651FD9B789007B8332 /* AppSetup.m */; };
-		3478506A1FD9B78A007B8332 /* AppSetup.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850661FD9B789007B8332 /* AppSetup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
 		34798A8725AF965300EC89B4 /* ProfileBioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34798A8625AF965300EC89B4 /* ProfileBioViewController.swift */; };
 		3479D6B226A762E200811069 /* ChatListViewController+Reminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3479D6B126A762E200811069 /* ChatListViewController+Reminders.swift */; };
@@ -756,6 +754,7 @@
 		501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
 		5033D46929D7951F007FEADA /* MainAppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46829D7951F007FEADA /* MainAppContext.swift */; };
+		5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46A29DB9F17007FEADA /* AppSetup.swift */; };
 		5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46F29DCACEF007FEADA /* UrlOpener.swift */; };
 		5033D47329DCB3FF007FEADA /* UrlOpenerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D47229DCB3FF007FEADA /* UrlOpenerTest.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
@@ -2171,13 +2170,11 @@
 		F9C5CE52289453B400548EEE /* AppReadiness.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB81289453B200548EEE /* AppReadiness.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE53289453B400548EEE /* OWSFakeProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB83289453B200548EEE /* OWSFakeProfileManager.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE54289453B400548EEE /* FakeStorageServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB84289453B200548EEE /* FakeStorageServiceManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE55289453B400548EEE /* MockSSKEnvironment.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB85289453B200548EEE /* MockSSKEnvironment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE56289453B400548EEE /* MockSubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB86289453B200548EEE /* MockSubscriptionManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE57289453B400548EEE /* Factories.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB87289453B200548EEE /* Factories.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE58289453B400548EEE /* NoopPendingReadReceiptRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB88289453B200548EEE /* NoopPendingReadReceiptRecorder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE59289453B400548EEE /* TestAppContext.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB89289453B200548EEE /* TestAppContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE5C289453B400548EEE /* TestProtocolRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB8C289453B200548EEE /* TestProtocolRunner.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE5D289453B400548EEE /* MockSSKEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB8D289453B200548EEE /* MockSSKEnvironment.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE5E289453B400548EEE /* OWSMockSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB8E289453B200548EEE /* OWSMockSyncManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE5F289453B400548EEE /* OWSFakeProfileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB8F289453B200548EEE /* OWSFakeProfileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE60289453B400548EEE /* FakeContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB90289453B200548EEE /* FakeContactsManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2657,8 +2654,6 @@
 		34784593237C4819000D1CAA /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/Localizable.strings; sourceTree = "<group>"; };
 		347850561FD86544007B8332 /* SAEFailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFailedViewController.swift; sourceTree = "<group>"; };
 		3478505C1FD99A1F007B8332 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = translations/zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
-		347850651FD9B789007B8332 /* AppSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSetup.m; sourceTree = "<group>"; };
-		347850661FD9B789007B8332 /* AppSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSetup.h; sourceTree = "<group>"; };
 		347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopCallMessageHandler.swift; sourceTree = "<group>"; };
 		34798A8625AF965300EC89B4 /* ProfileBioViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileBioViewController.swift; sourceTree = "<group>"; };
 		3479D6B126A762E200811069 /* ChatListViewController+Reminders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Reminders.swift"; sourceTree = "<group>"; };
@@ -3227,6 +3222,7 @@
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
 		5033D46829D7951F007FEADA /* MainAppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppContext.swift; sourceTree = "<group>"; };
+		5033D46A29DB9F17007FEADA /* AppSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSetup.swift; sourceTree = "<group>"; };
 		5033D46F29DCACEF007FEADA /* UrlOpener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlOpener.swift; sourceTree = "<group>"; };
 		5033D47229DCB3FF007FEADA /* UrlOpenerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlOpenerTest.swift; sourceTree = "<group>"; };
 		503614CE282AF657008128B4 /* GiftBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftBadgeView.swift; sourceTree = "<group>"; };
@@ -4736,13 +4732,11 @@
 		F9C5CB81289453B200548EEE /* AppReadiness.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppReadiness.swift; sourceTree = "<group>"; };
 		F9C5CB83289453B200548EEE /* OWSFakeProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFakeProfileManager.m; sourceTree = "<group>"; };
 		F9C5CB84289453B200548EEE /* FakeStorageServiceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeStorageServiceManager.swift; sourceTree = "<group>"; };
-		F9C5CB85289453B200548EEE /* MockSSKEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MockSSKEnvironment.h; sourceTree = "<group>"; };
 		F9C5CB86289453B200548EEE /* MockSubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockSubscriptionManager.swift; sourceTree = "<group>"; };
 		F9C5CB87289453B200548EEE /* Factories.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Factories.swift; sourceTree = "<group>"; };
 		F9C5CB88289453B200548EEE /* NoopPendingReadReceiptRecorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopPendingReadReceiptRecorder.swift; sourceTree = "<group>"; };
 		F9C5CB89289453B200548EEE /* TestAppContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestAppContext.h; sourceTree = "<group>"; };
 		F9C5CB8C289453B200548EEE /* TestProtocolRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestProtocolRunner.swift; sourceTree = "<group>"; };
-		F9C5CB8D289453B200548EEE /* MockSSKEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MockSSKEnvironment.m; sourceTree = "<group>"; };
 		F9C5CB8E289453B200548EEE /* OWSMockSyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMockSyncManager.swift; sourceTree = "<group>"; };
 		F9C5CB8F289453B200548EEE /* OWSFakeProfileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFakeProfileManager.h; sourceTree = "<group>"; };
 		F9C5CB90289453B200548EEE /* FakeContactsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeContactsManager.swift; sourceTree = "<group>"; };
@@ -5326,8 +5320,7 @@
 		3461293F1FD1D74B00532771 /* environment */ = {
 			isa = PBXGroup;
 			children = (
-				347850661FD9B789007B8332 /* AppSetup.h */,
-				347850651FD9B789007B8332 /* AppSetup.m */,
+				5033D46A29DB9F17007FEADA /* AppSetup.swift */,
 				346129401FD1D74B00532771 /* Environment.h */,
 				346129411FD1D74B00532771 /* Environment.m */,
 				349C3636233D198300D52012 /* LaunchJobs.swift */,
@@ -9244,8 +9237,6 @@
 				F9C5CB90289453B200548EEE /* FakeContactsManager.swift */,
 				F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */,
 				F9C5CB84289453B200548EEE /* FakeStorageServiceManager.swift */,
-				F9C5CB85289453B200548EEE /* MockSSKEnvironment.h */,
-				F9C5CB8D289453B200548EEE /* MockSSKEnvironment.m */,
 				F9C57FAC28E5F1E2001D3596 /* MockSSKEnvironment.swift */,
 				F9C5CB86289453B200548EEE /* MockSubscriptionManager.swift */,
 				F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */,
@@ -9365,7 +9356,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				179E8C33276A713300AF640F /* AFQueryString.h in Headers */,
-				3478506A1FD9B78A007B8332 /* AppSetup.h in Headers */,
 				3464451222B7F97100A957B1 /* DateUtil.h in Headers */,
 				34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */,
 				3461295A1FD1D74C00532771 /* Environment.h in Headers */,
@@ -9410,7 +9400,6 @@
 				F9C5CD45289453B300548EEE /* LegacySessionState.h in Headers */,
 				F9C5CC66289453B300548EEE /* MessageSender.h in Headers */,
 				F9C5CDFE289453B400548EEE /* MIMETypeUtil.h in Headers */,
-				F9C5CE55289453B400548EEE /* MockSSKEnvironment.h in Headers */,
 				F9C5CCEB289453B300548EEE /* NotificationsProtocol.h in Headers */,
 				F9C5CE00289453B400548EEE /* NSData+Image.h in Headers */,
 				F9C5CD31289453B300548EEE /* NSData+keyVersionByte.h in Headers */,
@@ -10862,7 +10851,7 @@
 				6675F64D2925C012007A311E /* APNSRotationStore.swift in Sources */,
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				349ED992221EE80D008045B0 /* AppPreferences.swift in Sources */,
-				347850691FD9B78A007B8332 /* AppSetup.m in Sources */,
+				5033D46B29DB9F17007FEADA /* AppSetup.swift in Sources */,
 				34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */,
 				883A7FD2269F642F00841DF9 /* AvatarModel.swift in Sources */,
 				66FA2B1F28CBA4A5006845CD /* BiometryType.swift in Sources */,
@@ -11868,7 +11857,6 @@
 				F9C5CE30289453B400548EEE /* MIMETypeUtil.m in Sources */,
 				F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */,
 				D9E335A42993269100825677 /* MockDBV2.swift in Sources */,
-				F9C5CE5D289453B400548EEE /* MockSSKEnvironment.m in Sources */,
 				F9C57FAD28E5F1E2001D3596 /* MockSSKEnvironment.swift in Sources */,
 				F9C5CE56289453B400548EEE /* MockSubscriptionManager.swift in Sources */,
 				F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */,

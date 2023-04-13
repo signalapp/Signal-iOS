@@ -5,7 +5,7 @@
 
 import Foundation
 
-extension OWSSyncManager: SyncManagerProtocolSwift {
+extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
     // MARK: - Sync Requests
 

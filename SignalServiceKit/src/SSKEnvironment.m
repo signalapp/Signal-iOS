@@ -320,6 +320,40 @@ static SSKEnvironment *sharedSSKEnvironment;
     [NSNotificationCenter.defaultCenter postNotificationName:WarmCachesNotification object:nil];
 }
 
+#if TESTABLE_BUILD
+
+- (void)setContactsManagerForUnitTests:(id<ContactsManagerProtocol>)contactsManagerRef
+{
+    self.contactsManagerRef = contactsManagerRef;
+}
+
+- (void)setMessageSenderForUnitTests:(MessageSender *)messageSenderRef
+{
+    self.messageSenderRef = messageSenderRef;
+}
+
+- (void)setNetworkManagerForUnitTests:(NetworkManager *)networkManagerRef
+{
+    self.networkManagerRef = networkManagerRef;
+}
+
+- (void)setPaymentsHelperForUnitTests:(id<PaymentsHelper>)paymentsHelperRef
+{
+    self.paymentsHelperRef = paymentsHelperRef;
+}
+
+- (void)setTsAccountManagerForUnitTests:(TSAccountManager *)tsAccountManagerRef
+{
+    self.tsAccountManagerRef = tsAccountManagerRef;
+}
+
+- (void)setGroupsV2ForUnitTests:(id<GroupsV2>)groupsV2Ref
+{
+    self.groupsV2Ref = groupsV2Ref;
+}
+
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

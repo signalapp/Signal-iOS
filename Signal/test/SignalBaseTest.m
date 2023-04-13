@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
     [MockSSKEnvironment activate];
     [MockEnvironment activate];
 
-    ((MockSSKEnvironment *)SSKEnvironment.shared).groupsV2Ref = [GroupsV2Impl new];
+    [SSKEnvironment.shared setGroupsV2ForUnitTests:[GroupsV2Impl new]];
 }
 
 - (void)tearDown

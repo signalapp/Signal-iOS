@@ -4,7 +4,6 @@
 //
 
 #import "MockEnvironment.h"
-#import <SignalServiceKit/MockSSKEnvironment.h>
 #import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN

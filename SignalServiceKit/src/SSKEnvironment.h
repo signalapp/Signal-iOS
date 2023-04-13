@@ -205,6 +205,17 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 - (void)warmCaches;
 
+#if TESTABLE_BUILD
+
+- (void)setContactsManagerForUnitTests:(id<ContactsManagerProtocol>)contactsManagerRef;
+- (void)setMessageSenderForUnitTests:(MessageSender *)messageSenderRef;
+- (void)setNetworkManagerForUnitTests:(NetworkManager *)networkManagerRef;
+- (void)setPaymentsHelperForUnitTests:(id<PaymentsHelper>)paymentsHelperRef;
+- (void)setTsAccountManagerForUnitTests:(TSAccountManager *)tsAccountManagerRef;
+- (void)setGroupsV2ForUnitTests:(id<GroupsV2>)groupsV2Ref;
+
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

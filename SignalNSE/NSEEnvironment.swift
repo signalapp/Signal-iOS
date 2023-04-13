@@ -143,24 +143,22 @@ class NSEEnvironment: Dependencies {
             return errorContent
         }
 
-        AppSetup.setupEnvironment(
+        AppSetup.setUpEnvironment(
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             webSocketFactory: WebSocketFactoryNative(),
-            appSpecificSingletonBlock: {
+            extensionSpecificSingletonBlock: {
                 SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
                 SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
                 Environment.shared.lightweightCallManagerRef = LightweightCallManager()
-            },
-            migrationCompletion: { [weak self] error in
-                if let error = error {
-                    // TODO: Maybe notify that you should open the main app.
-                    owsFailDebug("Error \(error)")
-                    return
-                }
-                self?.versionMigrationsDidComplete(logger: logger)
             }
-        )
+        ).done(on: DispatchQueue.main) { error in
+            if let error {
+                // TODO: Maybe notify that you should open the main app.
+                return owsFailDebug("Couldn't launch NSE: \(error)")
+            }
+            self.versionMigrationsDidComplete(logger: logger)
+        }
 
         logger.info("completed.")
 

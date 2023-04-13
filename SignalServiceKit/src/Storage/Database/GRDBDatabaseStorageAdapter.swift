@@ -1076,8 +1076,7 @@ extension GRDBDatabaseStorageAdapter {
         } else {
             storageCoordinator = StorageCoordinator()
         }
-        // Workaround to disambiguate between NSObject.databaseStorage and StorageCoordinator.databaseStorage.
-        let databaseStorage = storageCoordinator.value(forKey: "databaseStorage") as! SDSDatabaseStorage
+        let databaseStorage = storageCoordinator.nonGlobalDatabaseStorage
 
         func read<T>(block: (Database) -> T) -> T {
             return databaseStorage.read { block($0.unwrapGrdbRead.database) }

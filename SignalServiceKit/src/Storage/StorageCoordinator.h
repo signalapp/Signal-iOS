@@ -20,7 +20,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 
 @interface StorageCoordinator : NSObject
 
-@property (atomic, readonly) SDSDatabaseStorage *databaseStorage;
+/// Named this way to avoid colliding with `-[NSObject databaseStorage]`.
+@property (atomic, readonly) SDSDatabaseStorage *nonGlobalDatabaseStorage;
 
 @property (atomic, readonly) StorageCoordinatorState state;
 
