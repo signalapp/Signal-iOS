@@ -38,10 +38,11 @@ extension AppDelegate {
 
     @objc
     func handleDidFinishLaunching(launchOptions: [UIApplication.LaunchOptionsKey: Any]) {
+        let launchStartedAt = CACurrentMediaTime()
+
         // This should be the first thing we do.
         let mainAppContext = MainAppContext()
         SetCurrentAppContext(mainAppContext, false)
-        self.launchStartedAt = CACurrentMediaTime()
 
         enableLoggingIfNeeded()
 
@@ -109,7 +110,7 @@ extension AppDelegate {
         if let preflightError {
             let viewController = terminalErrorViewController()
             let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: viewController)
-            showPreflightErrorUI(preflightError, window: window, viewController: viewController)
+            showPreflightErrorUI(preflightError, window: window, viewController: viewController, launchStartedAt: launchStartedAt)
             return
         }
 
@@ -122,7 +123,7 @@ extension AppDelegate {
 
         // Show LoadingViewController until the database migrations are complete.
         let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: LoadingViewController())
-        self.launchApp(in: window)
+        self.launchApp(in: window, launchStartedAt: launchStartedAt)
     }
 
     private func enableLoggingIfNeeded() {
@@ -151,10 +152,16 @@ extension AppDelegate {
         return window
     }
 
-    private func launchApp(in window: UIWindow) {
+    private func launchApp(in window: UIWindow, launchStartedAt: CFTimeInterval) {
         assert(window.rootViewController is LoadingViewController)
         configureGlobalUI(in: window)
-        setUpMainAppEnvironment().done(on: DispatchQueue.main) { self.handleLaunchResult($0) }
+        setUpMainAppEnvironment().done(on: DispatchQueue.main) { (finalContinuation, sleepBlockObject) in
+            self.didLoadDatabase(
+                finalContinuation: finalContinuation,
+                sleepBlockObject: sleepBlockObject,
+                launchStartedAt: launchStartedAt
+            )
+        }
     }
 
     private func configureGlobalUI(in window: UIWindow) {
@@ -167,27 +174,23 @@ extension AppDelegate {
         screenLockUI.startObserving()
     }
 
-    private func setUpMainAppEnvironment() -> Guarantee<AppSetupError?> {
-        self.setupNSEInteroperation()
-        let result = AppSetup.setUpEnvironment(
+    private func setUpMainAppEnvironment() -> Guarantee<(AppSetup.FinalContinuation, NSObject)> {
+        let sleepBlockObject = NSObject()
+        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
+
+        let databaseContinuation = AppSetup().start(
+            appContext: CurrentAppContext(),
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
-            webSocketFactory: WebSocketFactoryHybrid(),
-            extensionSpecificSingletonBlock: {
-                SUIEnvironment.shared.setup()
-                AppEnvironment.shared.setup()
-                SignalApp.shared().setup()
-            }
+            webSocketFactory: WebSocketFactoryHybrid()
         )
+        setupNSEInteroperation()
+        SUIEnvironment.shared.setup()
+        AppEnvironment.shared.setup()
+        SignalApp.shared().setup()
+        let result = databaseContinuation.prepareDatabase()
         OWSAnalytics.appLaunchDidBegin()
-        return result
-    }
-
-    private func handleLaunchResult(_ appSetupError: AppSetupError?) {
-        switch appSetupError {
-        case nil:
-            self.versionMigrationsDidComplete()
-        }
+        return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }
     }
 
     private func checkSomeDiskSpaceAvailable() -> Bool {
@@ -230,35 +233,34 @@ extension AppDelegate {
         }
     }
 
-    private func versionMigrationsDidComplete() {
+    private func didLoadDatabase(
+        finalContinuation: AppSetup.FinalContinuation,
+        sleepBlockObject: NSObject,
+        launchStartedAt: CFTimeInterval
+    ) {
+        Logger.info("")
         AssertIsOnMainThread()
-        Logger.info("versionMigrationsDidComplete")
-        areVersionMigrationsComplete = true
-        checkIfAppIsReady()
+
+        switch finalContinuation.finish() {
+        case nil:
+            firstly {
+                LaunchJobs.run(tsAccountManager: tsAccountManager, databaseStorage: databaseStorage)
+            }.done(on: DispatchQueue.main) {
+                self.setAppIsReady(launchStartedAt: launchStartedAt)
+                DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
+            }
+        }
     }
 
-    private func checkIfAppIsReady() {
+    private func setAppIsReady(launchStartedAt: CFTimeInterval) {
+        Logger.info("")
         AssertIsOnMainThread()
-
-        // If launch failed, the app will never be ready.
-        guard !didAppLaunchFail else { return }
-
-        // App isn't ready until all version migrations are complete.
-        guard areVersionMigrationsComplete else { return }
-
-        // Only mark the app as ready once.
-        guard !AppReadiness.isAppReady else { return }
-
-        // If launch jobs need to run, return and call checkIfAppIsReady again when they're complete.
-        let launchJobsAreComplete = launchJobs.ensureLaunchJobs {
-            self.checkIfAppIsReady()
-        }
-        guard launchJobsAreComplete else { return }
+        owsAssert(!AppReadiness.isAppReady)
+        owsAssert(!CurrentAppContext().isRunningTests)
 
         // Before we mark ready, block message processing on any pending change numbers.
         let regLoader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
         if
-            !CurrentAppContext().isRunningTests,
             FeatureFlags.useNewRegistrationFlow,
             databaseStorage.read(block: {
                 regLoader.hasPendingChangeNumber(transaction: $0.asV2Read)
@@ -267,17 +269,8 @@ extension AppDelegate {
             messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
         }
 
-        Logger.info("checkIfAppIsReady")
-
-        // Note that this does much more than set a flag;
-        // it will also run all deferred blocks.
+        // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReadyUIStillPending()
-
-        guard !CurrentAppContext().isRunningTests else {
-            Logger.verbose("Skipping post-launch logic in tests.")
-            AppReadiness.setUIIsReady()
-            return
-        }
 
         CurrentAppContext().appUserDefaults().removeObject(forKey: kAppLaunchesAttemptedKey)
 
@@ -459,7 +452,8 @@ extension AppDelegate {
     private func showPreflightErrorUI(
         _ preflightError: LaunchPreflightError,
         window: UIWindow,
-        viewController: UIViewController
+        viewController: UIViewController,
+        launchStartedAt: CFTimeInterval
     ) {
         Logger.warn("preflightError: \(preflightError)")
 
@@ -472,7 +466,7 @@ extension AppDelegate {
 
         switch preflightError {
         case .databaseCorruptedAndMightBeRecoverable:
-            presentDatabaseRecovery(from: viewController, window: window)
+            presentDatabaseRecovery(from: viewController, window: window, launchStartedAt: launchStartedAt)
             return
 
         case .databaseUnrecoverablyCorrupted:
@@ -534,6 +528,7 @@ extension AppDelegate {
 
         presentLaunchFailureActionSheet(
             from: viewController,
+            launchStartedAt: launchStartedAt,
             supportTag: preflightError.supportTag,
             title: title,
             message: message,
@@ -541,21 +536,26 @@ extension AppDelegate {
         )
     }
 
-    private func presentDatabaseRecovery(from viewController: UIViewController, window: UIWindow) {
-        let recoveryViewController: DatabaseRecoveryViewController = DatabaseRecoveryViewController(
-            setupSskEnvironment: { () -> Promise<Void> in
+    private func presentDatabaseRecovery(
+        from viewController: UIViewController,
+        window: UIWindow,
+        launchStartedAt: CFTimeInterval
+    ) {
+        let recoveryViewController = DatabaseRecoveryViewController<(AppSetup.FinalContinuation, NSObject)>(
+            setupSskEnvironment: {
                 firstly(on: DispatchQueue.main) {
                     self.setUpMainAppEnvironment()
-                }.map { (error) -> Void in
-                    if let error { throw error }
-                    return ()
                 }
             },
-            launchApp: {
+            launchApp: { (finalContinuation, sleepBlockObject) in
                 // Pretend we didn't fail!
                 self.didAppLaunchFail = false
                 self.configureGlobalUI(in: window)
-                self.versionMigrationsDidComplete()
+                self.didLoadDatabase(
+                    finalContinuation: finalContinuation,
+                    sleepBlockObject: sleepBlockObject,
+                    launchStartedAt: launchStartedAt
+                )
             }
         )
 
@@ -586,6 +586,7 @@ extension AppDelegate {
 
     private func presentLaunchFailureActionSheet(
         from viewController: UIViewController,
+        launchStartedAt: CFTimeInterval,
         supportTag: String,
         title: String,
         message: String,
@@ -598,6 +599,7 @@ extension AppDelegate {
                 SignalApp.showExportDatabaseUI(from: viewController) {
                     self.presentLaunchFailureActionSheet(
                         from: viewController,
+                        launchStartedAt: launchStartedAt,
                         supportTag: supportTag,
                         title: title,
                         message: message,
@@ -618,7 +620,7 @@ extension AppDelegate {
             // Pretend we didn't fail!
             self.didAppLaunchFail = false
             window.rootViewController = LoadingViewController()
-            self.launchApp(in: window)
+            self.launchApp(in: window, launchStartedAt: launchStartedAt)
         }
 
         for action in actions {

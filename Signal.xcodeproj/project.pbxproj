@@ -432,7 +432,6 @@
 		3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */; };
 		349A5C5425CD7A6C00B30EE8 /* DebugContactsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349A5C5325CD7A6C00B30EE8 /* DebugContactsUtils.swift */; };
 		349BC861253A2651003C949A /* GroupsV2MigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349BC860253A2651003C949A /* GroupsV2MigrationTest.swift */; };
-		349C3637233D198300D52012 /* LaunchJobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C3636233D198300D52012 /* LaunchJobs.swift */; };
 		349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D21E7268E044700D98870 /* QRCodeParserTest.swift */; };
 		349ED992221EE80D008045B0 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349ED991221EE80D008045B0 /* AppPreferences.swift */; };
 		34A17D81253F7237009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A17D80253F7236009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift */; };
@@ -766,6 +765,7 @@
 		503BDDB6296F5BE100FED3B2 /* ContactReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */; };
 		503C2F432977752B00217527 /* OWSURLSessionEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */; };
 		5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */; };
+		5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C3636233D198300D52012 /* LaunchJobs.swift */; };
 		5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */; };
 		5049FA3028BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */; };
 		5049FA3228BEAAD800D6E099 /* cdsi.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA3128BEAAD800D6E099 /* cdsi.pb.swift */; };
@@ -5323,7 +5323,6 @@
 				5033D46A29DB9F17007FEADA /* AppSetup.swift */,
 				346129401FD1D74B00532771 /* Environment.h */,
 				346129411FD1D74B00532771 /* Environment.m */,
-				349C3636233D198300D52012 /* LaunchJobs.swift */,
 				4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */,
 				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
 				34074F60203D0CBE004596AE /* OWSSounds.h */,
@@ -6408,6 +6407,14 @@
 			path = VoiceMessage;
 			sourceTree = "<group>";
 		};
+		5045F44129E0DAA400058E5F /* Launch */ = {
+			isa = PBXGroup;
+			children = (
+				349C3636233D198300D52012 /* LaunchJobs.swift */,
+			);
+			path = Launch;
+			sourceTree = "<group>";
+		};
 		505C2ED72997421E00C23FB2 /* DeviceTransfer */ = {
 			isa = PBXGroup;
 			children = (
@@ -6690,6 +6697,7 @@
 				F94D12FD28BD0DD900B2C478 /* Accessibility */,
 				88D23D1323CEC0C700B0E74B /* Calls */,
 				76EB041118170B33006006FC /* environment */,
+				5045F44129E0DAA400058E5F /* Launch */,
 				457F3AC01D14A0F700C51351 /* Models */,
 				45CD81A41DBFF8CF004C9430 /* Storyboards */,
 				450DF2061E0DD28D003D14BE /* UserInterface */,
@@ -10883,7 +10891,6 @@
 				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
 				88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
-				349C3637233D198300D52012 /* LaunchJobs.swift in Sources */,
 				32525F9527C74B1A0099E801 /* LightweightCallManager.swift in Sources */,
 				4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */,
 				34BB78B5272C510900DA0D04 /* MobileCoinHelperMinimal.swift in Sources */,
@@ -11340,6 +11347,7 @@
 				88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */,
 				32AC5CE7255B51E900829BD8 /* JoinGroupCallPill.swift in Sources */,
 				45C845AD291466C0005F6EA5 /* JournalingOrderedDictionary.swift in Sources */,
+				5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */,
 				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
 				76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,

@@ -7,19 +7,19 @@ import Foundation
 import SignalCoreKit
 import SignalServiceKit
 
-public enum AppSetupError: Error {
-    // no errors for now, but some will be added in the future
-}
+public class AppSetup {
+    public init() {}
 
-public enum AppSetup {
-    public static func setUpEnvironment(
+    public func start(
+        appContext: AppContext,
         paymentsEvents: PaymentsEvents,
         mobileCoinHelper: MobileCoinHelper,
-        webSocketFactory: WebSocketFactory,
-        extensionSpecificSingletonBlock: () -> Void
-    ) -> Guarantee<AppSetupError?> {
-
+        webSocketFactory: WebSocketFactory
+    ) -> AppSetup.DatabaseContinuation {
         configureUnsatisfiableConstraintLogging()
+
+        let sleepBlockObject = NSObject()
+        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
 
         let backgroundTask = OWSBackgroundTask(label: #function)
 
@@ -71,7 +71,6 @@ public enum AppSetup {
 
         // MARK: SignalMessaging environment properties
 
-        let launchJobs = LaunchJobs()
         let preferences = OWSPreferences()
         let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
         let sounds = OWSSounds()
@@ -124,7 +123,6 @@ public enum AppSetup {
         let contactDiscoveryManager = ContactDiscoveryManagerImpl()
 
         Environment.shared = Environment(
-            launchJobs: launchJobs,
             preferences: preferences,
             proximityMonitoringManager: proximityMonitoringManager,
             sounds: sounds,
@@ -133,7 +131,7 @@ public enum AppSetup {
             smJobQueues: smJobQueues
         )
 
-        SSKEnvironment.setShared(SSKEnvironment(
+        let sskEnvironment = SSKEnvironment(
             contactsManager: contactsManager,
             linkPreviewManager: linkPreviewManager,
             messageSender: messageSender,
@@ -191,27 +189,55 @@ public enum AppSetup {
             remoteMegaphoneFetcher: remoteMegaphoneFetcher,
             sskJobQueues: sskJobQueues,
             contactDiscoveryManager: contactDiscoveryManager
-        ))
-
-        extensionSpecificSingletonBlock()
-
-        owsAssertDebug(SSKEnvironment.shared.isComplete())
+        )
+        SSKEnvironment.setShared(sskEnvironment)
 
         // Register renamed classes.
         NSKeyedUnarchiver.setClass(OWSUserProfile.self, forClassName: OWSUserProfile.collection())
         NSKeyedUnarchiver.setClass(OWSGroupInfoRequestMessage.self, forClassName: "OWSSyncGroupsRequestMessage")
         NSKeyedUnarchiver.setClass(TSGroupModelV2.self, forClassName: "TSGroupModelV2")
 
-        // Prevent device from sleeping during migrations.
-        // This protects long migrations from the iOS 13 background crash.
-        //
-        // We can use any object.
-        let sleepBlockObject = NSObject()
-        DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
+        return AppSetup.DatabaseContinuation(
+            appContext: appContext,
+            sskEnvironment: sskEnvironment,
+            backgroundTask: backgroundTask
+        )
+    }
 
-        let (guarantee, future) = Guarantee<AppSetupError?>.pending()
+    private func configureUnsatisfiableConstraintLogging() {
+        UserDefaults.standard.setValue(DebugFlags.internalLogging, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
+    }
+}
+
+// MARK: - DatabaseContinuation
+
+extension AppSetup {
+    public class DatabaseContinuation {
+        private let appContext: AppContext
+        private let sskEnvironment: SSKEnvironment
+        private let backgroundTask: OWSBackgroundTask
+
+        fileprivate init(
+            appContext: AppContext,
+            sskEnvironment: SSKEnvironment,
+            backgroundTask: OWSBackgroundTask
+        ) {
+            self.appContext = appContext
+            self.sskEnvironment = sskEnvironment
+            self.backgroundTask = backgroundTask
+        }
+    }
+}
+
+extension AppSetup.DatabaseContinuation {
+    public func prepareDatabase() -> Guarantee<AppSetup.FinalContinuation> {
+        owsAssertDebug(sskEnvironment.isComplete())
+
+        let databaseStorage = sskEnvironment.databaseStorageRef
+
+        let (guarantee, future) = Guarantee<AppSetup.FinalContinuation>.pending()
         DispatchQueue.global().async {
-            if shouldTruncateGrdbWal() {
+            if self.shouldTruncateGrdbWal() {
                 // Try to truncate GRDB WAL before any readers or writers are active.
                 do {
                     try databaseStorage.grdbStorage.syncTruncatingCheckpoint()
@@ -219,35 +245,51 @@ public enum AppSetup {
                     owsFailDebug("Failed to truncate database: \(error)")
                 }
             }
-
             databaseStorage.runGrdbSchemaMigrationsOnMainDatabase {
-                AssertIsOnMainThread()
-
-                DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
-                SSKEnvironment.shared.warmCaches()
-                future.resolve(nil)
-                backgroundTask.end()
-
-                // Do this after we've finished running database migrations.
-                if DebugFlags.internalLogging {
-                    DispatchQueue.global().async { SDSKeyValueStore.logCollectionStatistics() }
-                }
+                self.sskEnvironment.warmCaches()
+                self.backgroundTask.end()
+                future.resolve(AppSetup.FinalContinuation(sskEnvironment: self.sskEnvironment))
             }
         }
         return guarantee
     }
 
-    private static func configureUnsatisfiableConstraintLogging() {
-        UserDefaults.standard.setValue(DebugFlags.internalLogging, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
-    }
-
-    private static func shouldTruncateGrdbWal() -> Bool {
-        guard CurrentAppContext().isMainApp else {
+    private func shouldTruncateGrdbWal() -> Bool {
+        guard appContext.isMainApp else {
             return false
         }
-        guard CurrentAppContext().mainApplicationStateOnLaunch() != .background else {
+        guard appContext.mainApplicationStateOnLaunch() != .background else {
             return false
         }
         return true
+    }
+}
+
+// MARK: - FinalContinuation
+
+extension AppSetup {
+    public class FinalContinuation {
+        private let sskEnvironment: SSKEnvironment
+
+        fileprivate init(sskEnvironment: SSKEnvironment) {
+            self.sskEnvironment = sskEnvironment
+        }
+    }
+}
+
+extension AppSetup.FinalContinuation {
+    public enum SetupError: Error {
+        // no errors for now, but some will be added in the future
+    }
+
+    public func finish() -> SetupError? {
+        AssertIsOnMainThread()
+
+        // Do this after we've finished running database migrations.
+        if DebugFlags.internalLogging {
+            DispatchQueue.global().async { SDSKeyValueStore.logCollectionStatistics() }
+        }
+
+        return nil
     }
 }

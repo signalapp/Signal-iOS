@@ -8,7 +8,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class AvatarBuilder;
-@class LaunchJobs;
 @class LightweightCallManager;
 @class OWSOrphanDataCleaner;
 @class OWSPreferences;
@@ -30,15 +29,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithLaunchJobs:(LaunchJobs *)launchJobs
-                       preferences:(OWSPreferences *)preferences
-        proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
-                            sounds:(OWSSounds *)sounds
-                 orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
-                     avatarBuilder:(AvatarBuilder *)avatarBuilder
-                       smJobQueues:(SignalMessagingJobQueues *)smJobQueues;
+- (instancetype)initWithPreferences:(OWSPreferences *)preferences
+         proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
+                             sounds:(OWSSounds *)sounds
+                  orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
+                      avatarBuilder:(AvatarBuilder *)avatarBuilder
+                        smJobQueues:(SignalMessagingJobQueues *)smJobQueues;
 
-@property (nonatomic, readonly) LaunchJobs *launchJobsRef;
 @property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManagerRef;
 @property (nonatomic, readonly) OWSPreferences *preferencesRef;
 @property (nonatomic, readonly) OWSSounds *soundsRef;

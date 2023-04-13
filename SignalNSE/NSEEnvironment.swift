@@ -131,7 +131,6 @@ class NSEEnvironment: Dependencies {
         return DispatchQueue.main.sync { setup(logger: logger) }
     }
 
-    private var areVersionMigrationsComplete = false
     private func setup(logger: NSELogger) -> UNNotificationContent? {
         AssertIsOnMainThread()
 
@@ -143,21 +142,22 @@ class NSEEnvironment: Dependencies {
             return errorContent
         }
 
-        AppSetup.setUpEnvironment(
+        let databaseContinuation = AppSetup().start(
+            appContext: CurrentAppContext(),
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
-            webSocketFactory: WebSocketFactoryNative(),
-            extensionSpecificSingletonBlock: {
-                SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
-                SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
-                Environment.shared.lightweightCallManagerRef = LightweightCallManager()
+            webSocketFactory: WebSocketFactoryNative()
+        )
+
+        SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
+        SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
+        Environment.shared.lightweightCallManagerRef = LightweightCallManager()
+
+        databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalSetupContinuation in
+            switch finalSetupContinuation.finish() {
+            case nil:
+                self.setAppIsReady()
             }
-        ).done(on: DispatchQueue.main) { error in
-            if let error {
-                // TODO: Maybe notify that you should open the main app.
-                return owsFailDebug("Couldn't launch NSE: \(error)")
-            }
-            self.versionMigrationsDidComplete(logger: logger)
         }
 
         logger.info("completed.")
@@ -183,25 +183,9 @@ class NSEEnvironment: Dependencies {
         return content
     }
 
-    private func versionMigrationsDidComplete(logger: NSELogger) {
+    private func setAppIsReady() {
         AssertIsOnMainThread()
-
-        logger.debug("")
-
-        areVersionMigrationsComplete = true
-
-        checkIsAppReady()
-    }
-
-    @objc
-    private func checkIsAppReady() {
-        AssertIsOnMainThread()
-
-        // Only mark the app as ready once.
-        guard !AppReadiness.isAppReady else { return }
-
-        // App isn't ready until all version migrations are complete.
-        guard areVersionMigrationsComplete else { return }
+        owsAssert(!AppReadiness.isAppReady)
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()

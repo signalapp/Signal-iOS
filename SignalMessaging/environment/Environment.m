@@ -17,7 +17,6 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) OWSPreferences *preferencesRef;
 @property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManagerRef;
 @property (nonatomic) OWSSounds *soundsRef;
-@property (nonatomic) LaunchJobs *launchJobsRef;
 @property (nonatomic) OWSOrphanDataCleaner *orphanDataCleanerRef;
 @property (nonatomic) AvatarBuilder *avatarBuilderRef;
 @property (nonatomic) SignalMessagingJobQueues *signalMessagingJobQueuesRef;
@@ -47,20 +46,18 @@ static Environment *sharedEnvironment = nil;
     sharedEnvironment = environment;
 }
 
-- (instancetype)initWithLaunchJobs:(LaunchJobs *)launchJobs
-                       preferences:(OWSPreferences *)preferences
-        proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
-                            sounds:(OWSSounds *)sounds
-                 orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
-                     avatarBuilder:(AvatarBuilder *)avatarBuilder
-                       smJobQueues:(SignalMessagingJobQueues *)smJobQueues
+- (instancetype)initWithPreferences:(OWSPreferences *)preferences
+         proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
+                             sounds:(OWSSounds *)sounds
+                  orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
+                      avatarBuilder:(AvatarBuilder *)avatarBuilder
+                        smJobQueues:(SignalMessagingJobQueues *)smJobQueues
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    OWSAssertDebug(launchJobs);
     OWSAssertDebug(preferences);
     OWSAssertDebug(proximityMonitoringManager);
     OWSAssertDebug(sounds);
@@ -68,7 +65,6 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(avatarBuilder);
     OWSAssertDebug(smJobQueues);
 
-    _launchJobsRef = launchJobs;
     _preferencesRef = preferences;
     _proximityMonitoringManagerRef = proximityMonitoringManager;
     _soundsRef = sounds;
