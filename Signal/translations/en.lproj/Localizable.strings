@@ -1669,6 +1669,12 @@
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Failed to update device list.";
 
+/* A label for this device in the device list. */
+"DEVICE_NAME_THIS_DEVICE" = "This Device";
+
+/* A label for an unnamed device in the device list. */
+"DEVICE_NAME_UNNAMED_DEVICE" = "Unnamed Device";
+
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
 
@@ -7233,9 +7239,6 @@
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal was unable to unlink your device.";
-
-/* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Unnamed Device";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "Unpin";

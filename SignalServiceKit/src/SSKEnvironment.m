@@ -308,7 +308,9 @@ static SSKEnvironment *sharedSSKEnvironment;
         @"paymentsCurrencies",
         ^{ [self.paymentsCurrencies warmCaches]; },
         @"storyManager",
-        ^{ [StoryManager setup]; }
+        ^{ [StoryManager setup]; },
+        @"OWSDeviceManager",
+        ^{ [OWSDeviceManagerObjcBridge warmCaches]; }
     ];
 
     for (unsigned i = 0; i < specs.count / 2; i++) {

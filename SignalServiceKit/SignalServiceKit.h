@@ -56,7 +56,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSContactsOutputStream.h>
 #import <SignalServiceKit/OWSCountryMetadata.h>
-#import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfigurationMessage.h>

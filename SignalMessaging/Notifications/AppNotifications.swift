@@ -175,7 +175,9 @@ let kAudioNotificationsThrottleInterval: TimeInterval = 5
 
 extension UserNotificationPresenter {
     var hasReceivedSyncMessageRecently: Bool {
-        return OWSDeviceManager.shared().hasReceivedSyncMessage(inLastSeconds: 60)
+        return DependenciesBridge.shared.deviceManager.hasReceivedSyncMessage(
+            inLastSeconds: 60
+        )
     }
 }
 

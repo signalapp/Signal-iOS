@@ -29,8 +29,40 @@ extension SDSCodableModelDatabaseInterfaceImpl {
                 arguments: [uniqueId]
             )
         } catch let error {
-            owsFailDebug("Failed to fetch model by uniqueId: \(error)")
+            owsFailDebug("Failed to fetch model \(modelType) by uniqueId: \(error)")
             return nil
         }
+    }
+
+    /// Fetch all persisted models of the given type.
+    func fetchAllModels<Model: SDSCodableModel>(
+        modelType: Model.Type,
+        transaction: DBReadTransaction
+    ) -> [Model] {
+        let transaction = SDSDB.shimOnlyBridge(transaction)
+
+        do {
+            let sql: String = """
+                SELECT * FROM \(modelType.databaseTableName)
+            """
+
+            return try modelType.fetchAll(
+                transaction.unwrapGrdbRead.database,
+                sql: sql
+            )
+        } catch let error {
+            owsFailDebug("Failed to fetch \(modelType) models: \(error)")
+            return []
+        }
+    }
+
+    /// Count all persisted models of the given type.
+    func countAllModels<Model: SDSCodableModel>(
+        modelType: Model.Type,
+        transaction: DBReadTransaction
+    ) -> UInt {
+        let transaction = SDSDB.shimOnlyBridge(transaction)
+
+        return modelType.ows_fetchCount(transaction.unwrapGrdbRead.database)
     }
 }

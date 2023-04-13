@@ -11,8 +11,13 @@ import SignalServiceKit
 extension OWSLinkDeviceViewController {
     @objc
     func provisionWithUrl(_ deviceProvisioningUrl: DeviceProvisioningURL) {
-        // Optimistically set this flag.
-        OWSDeviceManager.shared().setMayHaveLinkedDevices()
+        databaseStorage.write { transaction in
+            // Optimistically set this flag.
+            DependenciesBridge.shared.deviceManager.setMayHaveLinkedDevices(
+                true,
+                transaction: transaction.asV2Write
+            )
+        }
 
         let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci)
         let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni)

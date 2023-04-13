@@ -7,7 +7,6 @@
 #import "Signal-Swift.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalMessaging/OWSProfileManager.h>
-#import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

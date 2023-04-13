@@ -31,11 +31,11 @@ extension SignalRecipient {
 
     public func markAsRegistered(
         source: SignalRecipientSource = .local,
-        deviceId: UInt32 = OWSDevicePrimaryDeviceId,
+        deviceId: UInt32 = OWSDevice.primaryDeviceId,
         transaction: SDSAnyWriteTransaction
     ) {
         // Always add the primary device ID if we're adding any other.
-        let deviceIds: Set<UInt32> = [deviceId, OWSDevicePrimaryDeviceId]
+        let deviceIds: Set<UInt32> = [deviceId, OWSDevice.primaryDeviceId]
 
         let missingDeviceIds = deviceIds.filter { !devices.contains(NSNumber(value: $0)) }
         guard !missingDeviceIds.isEmpty else {

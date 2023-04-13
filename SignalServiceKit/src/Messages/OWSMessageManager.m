@@ -14,7 +14,6 @@
 #import "NotificationsProtocol.h"
 #import "OWSCallMessageHandler.h"
 #import "OWSContact.h"
-#import "OWSDevice.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -446,7 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
                  serverDeliveryTimestamp:request.serverDeliveryTimestamp
                              transaction:transaction];
 
-            [[OWSDeviceManager shared] setHasReceivedSyncMessage];
+            [OWSDeviceManagerObjcBridge setHasReceivedSyncMessageWithTransaction:transaction];
             break;
         case OWSMessageManagerMessageTypeDataMessage:
             [self handleIncomingEnvelope:request.envelope

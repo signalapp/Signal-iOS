@@ -14,7 +14,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
     public var authorAddress: SignalServiceAddress?
     @objc
-    public var sourceDeviceId: UInt32 = OWSDevicePrimaryDeviceId
+    public var sourceDeviceId: UInt32 = OWSDevice.primaryDeviceId
     @objc
     public var serverTimestamp: NSNumber?
     @objc

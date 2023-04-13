@@ -273,7 +273,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                        aci:[[ServiceIdObjC alloc] initWithUuidValue:aci]
                        pni:[[ServiceIdObjC alloc] initWithUuidValue:pni]
                transaction:transaction];
-    [self setStoredServerAuthToken:authToken deviceId:OWSDevicePrimaryDeviceId transaction:transaction];
+    [self setStoredServerAuthToken:authToken deviceId:OWSDeviceObjc.primaryDeviceId transaction:transaction];
     [transaction addSyncCompletion:^{ [self postRegistrationStateDidChangeNotification]; }];
 }
 
@@ -424,7 +424,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         return NO;
     }
 
-    BOOL wasPrimaryDevice = oldAccountState.deviceId == OWSDevicePrimaryDeviceId;
+    BOOL wasPrimaryDevice = oldAccountState.deviceId == OWSDeviceObjc.primaryDeviceId;
 
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {

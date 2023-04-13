@@ -44,27 +44,22 @@ class GroupMemberDataStoreImpl: GroupMemberDataStore {
 #if TESTABLE_BUILD
 
 class MockGroupMemberDataStore: GroupMemberDataStore {
-    let inMemoryDatabase: DatabaseQueue = {
-        let result = DatabaseQueue()
-        let schemaUrl = Bundle(for: GRDBSchemaMigrator.self).url(forResource: "schema", withExtension: "sql")!
-        try! result.write { try $0.execute(sql: try String(contentsOf: schemaUrl)) }
-        return result
-    }()
+    let inMemoryDatabase = InMemoryDatabase()
 
     func insertGroupMember(_ groupMember: TSGroupMember, transaction: DBWriteTransaction) {
-        try! inMemoryDatabase.write { try groupMember.insert($0) }
+        inMemoryDatabase.insert(record: groupMember)
     }
 
     func updateGroupMember(_ groupMember: TSGroupMember, transaction: DBWriteTransaction) {
-        try! inMemoryDatabase.write { try groupMember.update($0) }
+        inMemoryDatabase.update(record: groupMember)
     }
 
     func removeGroupMember(_ groupMember: TSGroupMember, transaction: DBWriteTransaction) {
-        try! inMemoryDatabase.write { _ = try groupMember.delete($0) }
+        inMemoryDatabase.remove(model: groupMember)
     }
 
     func sortedGroupMembers(in groupThreadId: String, transaction: DBReadTransaction) -> [TSGroupMember] {
-        try! inMemoryDatabase.read { GroupMemberDataStoreImpl.sortedGroupMembers(in: groupThreadId, database: $0) }
+        inMemoryDatabase.read { GroupMemberDataStoreImpl.sortedGroupMembers(in: groupThreadId, database: $0) }
     }
 }
 

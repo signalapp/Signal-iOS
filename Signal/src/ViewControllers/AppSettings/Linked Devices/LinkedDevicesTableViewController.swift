@@ -7,10 +7,15 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
+private struct DisplayableDevice {
+    let device: OWSDevice
+    let displayName: String
+}
+
 @objc
 class LinkedDevicesTableViewController: OWSTableViewController2 {
 
-    private var devices = [OWSDevice]()
+    private var displayableDevices: [DisplayableDevice] = []
 
     private var pollingRefreshTimer: Timer?
 
@@ -56,20 +61,27 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     private func updateDeviceList() {
         AssertIsOnMainThread()
 
-        var devices = Self.databaseStorage.read { transaction in
-            OWSDevice.anyFetchAll(transaction: transaction).filter {
-                !$0.isPrimaryDevice()
+        displayableDevices = databaseStorage.read { transaction -> [DisplayableDevice] in
+            let justDevices = OWSDevice.anyFetchAll(transaction: transaction).filter {
+                !$0.isPrimaryDevice
+            }
+
+            return justDevices.map { device -> DisplayableDevice in
+                return .init(
+                    device: device,
+                    displayName: device.displayName(
+                        identityManager: identityManager,
+                        transaction: transaction
+                    )
+                )
             }
         }
 
-        if DebugFlags.fakeLinkedDevices {
-            devices.append(.init(uniqueId: "test", createdAt: .distantPast, deviceId: 10, lastSeenAt: Date(), name: "Fake Device"))
-            devices.append(.init(uniqueId: "test2", createdAt: .distantPast, deviceId: 4, lastSeenAt: Date(), name: "Fake Device 2"))
+        displayableDevices.sort { (lhs, rhs) in
+            lhs.device.createdAt < rhs.device.createdAt
         }
 
-        devices.sort { $0.createdAt < $1.createdAt }
-        self.devices = devices
-        if devices.isEmpty {
+        if displayableDevices.isEmpty {
             self.isEditing = false
         }
 
@@ -201,15 +213,17 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
         ))
         contents.addSection(addDeviceSection)
 
-        if !devices.isEmpty {
+        if !displayableDevices.isEmpty {
             let devicesSection = OWSTableSection()
-            for device in devices {
+            for displayableDevice in displayableDevices {
                 let item = OWSTableItem(customCellBlock: { [weak self] in
                     let cell = DeviceTableViewCell()
                     OWSTableItem.configureCell(cell)
                     cell.isEditing = self?.isEditing ?? false
-                    cell.configure(with: device) {
-                        self?.showUnlinkDeviceConfirmAlert(device: device)
+                    cell.configure(with: displayableDevice) {
+                        self?.showUnlinkDeviceConfirmAlert(
+                            displayableDevice: displayableDevice
+                        )
                     }
                     return cell
                 })
@@ -223,7 +237,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
 
     private func updateNavigationItems() {
         // Don't show edit button for an empty table
-        if devices.isEmpty {
+        if displayableDevices.isEmpty {
             navigationItem.rightBarButtonItem = nil
             didTapDoneEditing()
         } else {
@@ -251,22 +265,28 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    private func showUnlinkDeviceConfirmAlert(device: OWSDevice) {
+    private func showUnlinkDeviceConfirmAlert(displayableDevice: DisplayableDevice) {
         AssertIsOnMainThread()
 
         let titleFormat = NSLocalizedString("UNLINK_CONFIRMATION_ALERT_TITLE",
                                                         comment: "Alert title for confirming device deletion")
-        let title = String(format: titleFormat, device.displayName())
+        let title = String(format: titleFormat, displayableDevice.displayName)
         let message = NSLocalizedString("UNLINK_CONFIRMATION_ALERT_BODY",
                                                     comment: "Alert message to confirm unlinking a device")
         let alert = ActionSheetController(title: title, message: message)
-
-        alert.addAction(ActionSheetAction(title: NSLocalizedString("UNLINK_ACTION",
-                                                                   comment: "button title for unlinking a device"),
-                                          accessibilityIdentifier: "confirm_unlink_device",
-                                          style: .destructive) { _ in
-                                            self.unlinkDevice(device)
-            })
+        alert.addAction(
+            ActionSheetAction(
+                title: NSLocalizedString(
+                    "UNLINK_ACTION",
+                    comment: "button title for unlinking a device"
+                ),
+                accessibilityIdentifier: "confirm_unlink_device",
+                style: .destructive,
+                handler: { _ in
+                    self.unlinkDevice(displayableDevice.device)
+                }
+            )
+        )
         alert.addAction(OWSActionSheets.cancelAction)
         presentActionSheet(alert)
     }
@@ -426,7 +446,10 @@ private class DeviceTableViewCell: UITableViewCell {
         unlinkAction?()
     }
 
-    func configure(with device: OWSDevice, unlinkAction: @escaping () -> Void) {
+    func configure(
+        with displayableDevice: DisplayableDevice,
+        unlinkAction: @escaping () -> Void
+    ) {
         // TODO: This is not super, but the best we can do until
         // OWSTableViewController2 supports delete actions for
         // the inset cell style (which probably means building
@@ -440,18 +463,30 @@ private class DeviceTableViewCell: UITableViewCell {
         lastSeenLabel.font = .ows_dynamicTypeFootnote
 
         if DebugFlags.internalSettings {
-            nameLabel.text = LocalizationNotNeeded(String(format: "#%ld: %@", device.deviceId, device.displayName()))
+            nameLabel.text = LocalizationNotNeeded(String(
+                format: "#%ld: %@",
+                displayableDevice.device.deviceId,
+                displayableDevice.displayName
+            ))
         } else {
-            nameLabel.text = device.displayName()
+            nameLabel.text = displayableDevice.displayName
         }
 
         let linkedFormatString = NSLocalizedString("DEVICE_LINKED_AT_LABEL", comment: "{{Short Date}} when device was linked.")
-        linkedLabel.text = String(format: linkedFormatString, DateUtil.dateFormatter().string(from: device.createdAt))
+        linkedLabel.text = String(
+            format: linkedFormatString,
+            DateUtil.dateFormatter().string(
+                from: displayableDevice.device.createdAt
+            )
+        )
 
         // lastSeenAt is stored at day granularity. At midnight UTC.
         // Making it likely that when you first link a device it will
         // be "last seen" the day before it was created, which looks broken.
-        let displayedLastSeenAt = max(device.createdAt, device.lastSeenAt)
+        let displayedLastSeenAt = max(
+            displayableDevice.device.createdAt,
+            displayableDevice.device.lastSeenAt
+        )
         let lastSeenFormatString = NSLocalizedString(
             "DEVICE_LAST_ACTIVE_AT_LABEL",
             comment: "{{Short Date}} when device last communicated with Signal Server."

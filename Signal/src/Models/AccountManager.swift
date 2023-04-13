@@ -499,9 +499,11 @@ public class AccountManager: NSObject, Dependencies {
                                                 failure: future.reject)
         }.map(on: DispatchQueue.global()) { responseObject throws -> RegistrationResponse in
             self.databaseStorage.write { transaction in
-                self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
-                                                               deviceId: OWSDevicePrimaryDeviceId,
-                                                               transaction: transaction)
+                self.tsAccountManager.setStoredServerAuthToken(
+                    serverAuthToken,
+                    deviceId: OWSDevice.primaryDeviceId,
+                    transaction: transaction
+                )
             }
 
             guard let responseObject = responseObject else {

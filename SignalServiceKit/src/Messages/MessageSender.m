@@ -11,7 +11,6 @@
 #import "NSData+keyVersionByte.h"
 #import "OWSBackgroundTask.h"
 #import "OWSContact.h"
-#import "OWSDevice.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
@@ -1098,7 +1097,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
         __block BOOL mayHaveLinkedDevices;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            mayHaveLinkedDevices = [OWSDeviceManager.shared mayHaveLinkedDevicesWithTransaction:transaction];
+            mayHaveLinkedDevices = [OWSDeviceManagerObjcBridge mayHaveLinkedDevicesWithTransaction:transaction];
         }];
 
         BOOL hasDeviceMessages = NO;

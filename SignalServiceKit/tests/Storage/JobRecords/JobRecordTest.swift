@@ -7,35 +7,12 @@ import GRDB
 @testable import SignalServiceKit
 import XCTest
 
-private struct InMemoryDatabase {
-    private let inMemoryDatabase: DatabaseQueue = {
-        let result = DatabaseQueue()
-        let schemaUrl = Bundle(for: GRDBSchemaMigrator.self).url(forResource: "schema", withExtension: "sql")!
-        try! result.write { try $0.execute(sql: try String(contentsOf: schemaUrl)) }
-        return result
-    }()
-
-    func insert<T: SDSCodableModel>(record: T) {
-        try! inMemoryDatabase.write { try record.insert($0) }
-    }
-
-    func removeAll<T: SDSCodableModel>(modelType: T.Type) {
-        _ = try! inMemoryDatabase.write { try modelType.deleteAll($0) }
-    }
-
-    func fetchExactlyOne<T: SDSCodableModel>(modelType: T.Type) -> T? {
-        let all = try! inMemoryDatabase.read { try modelType.fetchAll($0) }
-        guard all.count == 1 else { return nil }
-        return all.first!
-    }
-}
-
 class JobRecordTest: XCTestCase {
     private let inMemoryDatabase = InMemoryDatabase()
 
     private func jobRecordClass(
         forRecordType recordType: JobRecord.JobRecordType
-    ) -> any (JobRecord & Validatable).Type {
+    ) -> any (JobRecord & ValidatableModel).Type {
         switch recordType {
         case .broadcastMediaMessage: return BroadcastMediaMessageJobRecord.self
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
@@ -52,7 +29,7 @@ class JobRecordTest: XCTestCase {
     // MARK: - Round trip
 
     func testRoundTrip() {
-        func roundTripValidateConstant<T: JobRecord & Validatable>(constant: T, index: Int) {
+        func roundTripValidateConstant<T: JobRecord & ValidatableModel>(constant: T, index: Int) {
             inMemoryDatabase.insert(record: constant)
 
             let deserialized: T? = inMemoryDatabase.fetchExactlyOne(modelType: T.self)
@@ -65,13 +42,13 @@ class JobRecordTest: XCTestCase {
             do {
                 try deserialized.validate(against: constant)
                 try deserialized.commonValidate(against: constant)
-            } catch ValidationError.failedToValidate {
+            } catch ValidatableModelError.failedToValidate {
                 XCTFail("Failed to validate constant \(index) for class \(T.self)!")
             } catch {
                 XCTFail("Unexpected error while validating constant \(index) for class \(T.self)!")
             }
 
-            inMemoryDatabase.removeAll(modelType: T.self)
+            inMemoryDatabase.remove(model: deserialized)
         }
 
         for jobRecordType in JobRecord.JobRecordType.allCases {
@@ -94,18 +71,8 @@ class JobRecordTest: XCTestCase {
         static let mode: Self = .runTest
     }
 
-    /// Print the given constant as base64-encoded JSON data, represented as a
-    /// string.
-    ///
-    /// Use this when adding new constants, to get the JSON representation to
-    /// hardcode.
-    private func printHardcodedJsonData<T: JobRecord>(constant: T, index: Int) {
-        let jsonData: Data = try! JSONEncoder().encode(constant)
-        print("\(T.self) constant \(index): \(jsonData.base64EncodedString())")
-    }
-
     func testHardcodedJsonDataDecodes() {
-        func validateConstantAgainstJsonData<T: JobRecord & Validatable>(
+        func validateConstantAgainstJsonData<T: JobRecord & ValidatableModel>(
             constant: T,
             jsonData: Data,
             index: Int
@@ -115,7 +82,7 @@ class JobRecordTest: XCTestCase {
                 try constant.validate(against: decoded)
             } catch let error where error is DecodingError {
                 XCTFail("Failed to decode JSON model for constant \(index) of class \(T.self): \(error)")
-            } catch ValidationError.failedToValidate {
+            } catch ValidatableModelError.failedToValidate {
                 XCTFail("Failed to validate JSON-decoded model for constant \(index) of class \(T.self)")
             } catch {
                 XCTFail("Unexpected error for constant \(index) of class \(T.self)")
@@ -125,14 +92,13 @@ class JobRecordTest: XCTestCase {
         for jobRecordType in JobRecord.JobRecordType.allCases {
             let jobRecordClass = jobRecordClass(forRecordType: jobRecordType)
 
-            for (idx, (constant, jsonData)) in jobRecordClass.constants.enumerated() {
-                switch HardcodedDataTestMode.mode {
-                case .runTest:
+            switch HardcodedDataTestMode.mode {
+            case .printStrings:
+                jobRecordClass.printHardcodedJsonDataForConstants()
+            case .runTest:
+                for (idx, (constant, jsonData)) in jobRecordClass.constants.enumerated() {
                     validateConstantAgainstJsonData(constant: constant, jsonData: jsonData, index: idx)
-                case .printStrings:
-                    printHardcodedJsonData(constant: constant, index: idx)
                 }
-
             }
         }
     }
@@ -140,25 +106,7 @@ class JobRecordTest: XCTestCase {
 
 // MARK: - Validatable
 
-private enum ValidationError: Error {
-    case failedToValidate
-}
-
-private protocol Validatable {
-    /// Contains pairs of constant instances, alongside base64-encoded JSON
-    /// produced by serializing the instance at the time of writing.
-    ///
-    /// To maintain backwards-compatibility, all serialized data here must
-    /// always decode successfully as the expected paired instance. If changes
-    /// are made such that this old data fails to deserialize as expected, then
-    /// data from old app versions in the wild may also fail to decode as
-    /// expected.
-    static var constants: [(Self, base64JsonData: Data)] { get }
-
-    func validate(against: Self) throws
-}
-
-extension Validatable where Self: JobRecord {
+extension ValidatableModel where Self: JobRecord {
     func commonValidate(against: Self) throws {
         guard
             label == against.label,
@@ -166,14 +114,14 @@ extension Validatable where Self: JobRecord {
             status == against.status,
             exclusiveProcessIdentifier == against.exclusiveProcessIdentifier
         else {
-            throw ValidationError.failedToValidate
+            throw ValidatableModelError.failedToValidate
         }
     }
 }
 
 // MARK: - Job records
 
-extension BroadcastMediaMessageJobRecord: Validatable {
+extension BroadcastMediaMessageJobRecord: ValidatableModel {
     static let constants: [(BroadcastMediaMessageJobRecord, base64JsonData: Data)] = [
         (
             BroadcastMediaMessageJobRecord(
@@ -196,12 +144,12 @@ extension BroadcastMediaMessageJobRecord: Validatable {
             unsavedMessagesToSend!.count == against.unsavedMessagesToSend!.count,
             unsavedMessagesToSend!.first!.uniqueId == against.unsavedMessagesToSend!.first!.uniqueId
         else {
-            throw ValidationError.failedToValidate
+            throw ValidatableModelError.failedToValidate
         }
     }
 }
 
-extension IncomingContactSyncJobRecord: Validatable {
+extension IncomingContactSyncJobRecord: ValidatableModel {
     static let constants: [(IncomingContactSyncJobRecord, base64JsonData: Data)] = [
         (
             IncomingContactSyncJobRecord(
@@ -221,12 +169,12 @@ extension IncomingContactSyncJobRecord: Validatable {
             attachmentId == against.attachmentId,
             isCompleteContactSync == against.isCompleteContactSync
         else {
-            throw ValidationError.failedToValidate
+            throw ValidatableModelError.failedToValidate
         }
     }
 }
 
-extension IncomingGroupSyncJobRecord: Validatable {
+extension IncomingGroupSyncJobRecord: ValidatableModel {
     static let constants: [(IncomingGroupSyncJobRecord, base64JsonData: Data)] = [
         (
             IncomingGroupSyncJobRecord(
@@ -244,12 +192,12 @@ extension IncomingGroupSyncJobRecord: Validatable {
         guard
             attachmentId == against.attachmentId
         else {
-            throw ValidationError.failedToValidate
+            throw ValidatableModelError.failedToValidate
         }
     }
 }
 
-extension LegacyMessageDecryptJobRecord: Validatable {
+extension LegacyMessageDecryptJobRecord: ValidatableModel {
     static let constants: [(LegacyMessageDecryptJobRecord, base64JsonData: Data)] = [
         (
             LegacyMessageDecryptJobRecord(
@@ -269,12 +217,12 @@ extension LegacyMessageDecryptJobRecord: Validatable {
             envelopeData == against.envelopeData,
             serverDeliveryTimestamp == against.serverDeliveryTimestamp
         else {
-            throw ValidationError.failedToValidate
+            throw ValidatableModelError.failedToValidate
         }
     }
 }
 
-extension LocalUserLeaveGroupJobRecord: Validatable {
+extension LocalUserLeaveGroupJobRecord: ValidatableModel {
     static let constants: [(LocalUserLeaveGroupJobRecord, base64JsonData: Data)] = [
         (
             LocalUserLeaveGroupJobRecord(
@@ -296,12 +244,12 @@ extension LocalUserLeaveGroupJobRecord: Validatable {
             replacementAdminUuid == against.replacementAdminUuid,
             waitForMessageProcessing == against.waitForMessageProcessing
         else {
-            throw ValidationError.failedToValidate
+            throw ValidatableModelError.failedToValidate
         }
     }
 }
 
-extension MessageSenderJobRecord: Validatable {
+extension MessageSenderJobRecord: ValidatableModel {
     static let constants: [(MessageSenderJobRecord, base64JsonData: Data)] = [
         (
             MessageSenderJobRecord(
@@ -332,12 +280,12 @@ extension MessageSenderJobRecord: Validatable {
             removeMessageAfterSending == against.removeMessageAfterSending,
             isHighPriority == against.isHighPriority
         else {
-            throw ValidationError.failedToValidate
+            throw ValidatableModelError.failedToValidate
         }
     }
 }
 
-extension ReceiptCredentialRedemptionJobRecord: Validatable {
+extension ReceiptCredentialRedemptionJobRecord: ValidatableModel {
 
     static let constants: [(ReceiptCredentialRedemptionJobRecord, base64JsonData: Data)] = [
         (
@@ -376,12 +324,12 @@ extension ReceiptCredentialRedemptionJobRecord: Validatable {
             currencyCode == against.currencyCode,
             boostPaymentIntentID == against.boostPaymentIntentID
         else {
-            throw ValidationError.failedToValidate
+            throw ValidatableModelError.failedToValidate
         }
     }
 }
 
-extension SendGiftBadgeJobRecord: Validatable {
+extension SendGiftBadgeJobRecord: ValidatableModel {
     static let constants: [(SendGiftBadgeJobRecord, base64JsonData: Data)] = [
         (
             SendGiftBadgeJobRecord(
@@ -423,12 +371,12 @@ extension SendGiftBadgeJobRecord: Validatable {
             threadId == against.threadId,
             messageText == against.messageText
         else {
-            throw ValidationError.failedToValidate
+            throw ValidatableModelError.failedToValidate
         }
     }
 }
 
-extension SessionResetJobRecord: Validatable {
+extension SessionResetJobRecord: ValidatableModel {
     static let constants: [(SessionResetJobRecord, base64JsonData: Data)] = [
         (
             SessionResetJobRecord(
@@ -446,7 +394,7 @@ extension SessionResetJobRecord: Validatable {
         guard
             contactThreadId == against.contactThreadId
         else {
-            throw ValidationError.failedToValidate
+            throw ValidatableModelError.failedToValidate
         }
     }
 }

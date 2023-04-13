@@ -110,12 +110,12 @@ public extension TSAccountManager {
 
     @objc
     var isPrimaryDevice: Bool {
-        storedDeviceId == OWSDevicePrimaryDeviceId
+        storedDeviceId == OWSDevice.primaryDeviceId
     }
 
     @objc
     func isPrimaryDevice(transaction: SDSAnyReadTransaction) -> Bool {
-        storedDeviceId(transaction: transaction) == OWSDevicePrimaryDeviceId
+        storedDeviceId(transaction: transaction) == OWSDevice.primaryDeviceId
     }
 
     @objc

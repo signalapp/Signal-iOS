@@ -319,7 +319,7 @@ public extension DatabaseRecovery {
             DisappearingMessagesConfigurationRecord.databaseTableName,
             // We don't want to get our linked devices wrong.
             // We *could* fetch these from the server. Could be a good followup change.
-            OWSDevice.table.tableName
+            OWSDevice.databaseTableName
         ]
 
         /// Copy tables that must be copied flawlessly. Operation throws if any tables fail.

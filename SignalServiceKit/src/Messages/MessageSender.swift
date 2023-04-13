@@ -68,7 +68,7 @@ extension MessageSender {
             // If there is no existing recipient for this address, try and send to the
             // primary device so we can see if they are registered.
             guard let recipient else {
-                return (nil, [OWSDevicePrimaryDeviceId])
+                return (nil, [OWSDevice.primaryDeviceId])
             }
 
             var deviceIds = recipient.deviceIds ?? []
@@ -491,7 +491,7 @@ fileprivate extension MessageSender {
     static func reportMissingDeviceError(serviceId: ServiceId, deviceId: UInt32) {
         assert(!Thread.isMainThread)
 
-        guard deviceId == OWSDevicePrimaryDeviceId else {
+        guard deviceId == OWSDevice.primaryDeviceId else {
             // For now, only bother ignoring primary devices. HTTP 404s should cause
             // the recipient's device list to be updated, so linked devices shouldn't
             // be a problem.
@@ -898,19 +898,20 @@ extension MessageSender {
 
         Logger.info("Successfully sent message: \(type(of: message)), serviceId: \(messageSend.serviceId), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD), wasSentByWebsocket: \(wasSentByWebsocket)")
 
-        if messageSend.isLocalAddress && deviceMessages.isEmpty {
-            Logger.info("Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.")
-            // In order to avoid skipping necessary sync messages, the default value
-            // for mayHaveLinkedDevices is YES.  Once we've successfully sent a
-            // sync message with no device messages (e.g. the service has confirmed
-            // that we have no linked devices), we can set mayHaveLinkedDevices to NO
-            // to avoid unnecessary message sends for sync messages until we learn
-            // of a linked device (e.g. through the device linking UI or by receiving
-            // a sync message, etc.).
-            Self.deviceManager.clearMayHaveLinkedDevices()
-        }
+        databaseStorage.write { transaction in
+            if messageSend.isLocalAddress && deviceMessages.isEmpty {
+                // Since we know we have no linked devices, we can record that
+                // fact to later avoid unnecessary sync message sends unless we
+                // later learn of a new linked device.
 
-        Self.databaseStorage.write { transaction in
+                Logger.info("Sent a message with no device messages. Recording no linked devices.")
+
+                DependenciesBridge.shared.deviceManager.setMayHaveLinkedDevices(
+                    false,
+                    transaction: transaction.asV2Write
+                )
+            }
+
             deviceMessages.forEach { deviceMessage in
                 if let payloadId = messageSend.plaintextPayloadId {
                     MessageSendLog.recordPendingDelivery(
@@ -1178,7 +1179,10 @@ extension MessageSender {
         owsAssertDebug(Set(devicesToAdd).isDisjoint(with: devicesToRemove))
 
         if !devicesToAdd.isEmpty, SignalServiceAddress(serviceId.wrappedValue).isLocalAddress {
-            deviceManager.setMayHaveLinkedDevices()
+            DependenciesBridge.shared.deviceManager.setMayHaveLinkedDevices(
+                true,
+                transaction: transaction.asV2Write
+            )
         }
 
         let recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId.wrappedValue, transaction: transaction)

@@ -339,14 +339,6 @@ public extension NSObject {
         SSKEnvironment.shared.messageDecrypterRef
     }
 
-    final var deviceManager: OWSDeviceManager {
-        .shared()
-    }
-
-    static var deviceManager: OWSDeviceManager {
-        .shared()
-    }
-
     final var outgoingReceiptManager: OWSOutgoingReceiptManager {
         SSKEnvironment.shared.outgoingReceiptManagerRef
     }
@@ -822,14 +814,6 @@ public extension Dependencies {
 
     static var messageDecrypter: OWSMessageDecrypter {
         SSKEnvironment.shared.messageDecrypterRef
-    }
-
-    var deviceManager: OWSDeviceManager {
-        .shared()
-    }
-
-    static var deviceManager: OWSDeviceManager {
-        .shared()
     }
 
     var outgoingReceiptManager: OWSOutgoingReceiptManager {

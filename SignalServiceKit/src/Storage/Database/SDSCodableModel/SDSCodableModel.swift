@@ -133,6 +133,15 @@ public extension SDSCodableModel {
 }
 
 public extension SDSCodableModel {
+    static func anyCount(
+        transaction: SDSAnyReadTransaction
+    ) -> UInt {
+        SDSCodableModelDatabaseInterfaceImpl().countAllModels(
+            modelType: Self.self,
+            transaction: transaction.asV2Read
+        )
+    }
+
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
     static func anyFetch(
@@ -142,6 +151,17 @@ public extension SDSCodableModel {
         SDSCodableModelDatabaseInterfaceImpl().fetchModel(
             modelType: Self.self,
             uniqueId: uniqueId,
+            transaction: transaction.asV2Read
+        )
+    }
+
+    /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
+    /// See that class for details.
+    static func anyFetchAll(
+        transaction: SDSAnyReadTransaction
+    ) -> [Self] {
+        SDSCodableModelDatabaseInterfaceImpl().fetchAllModels(
+            modelType: Self.self,
             transaction: transaction.asV2Read
         )
     }

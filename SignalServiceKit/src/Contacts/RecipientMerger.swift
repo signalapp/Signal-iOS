@@ -287,12 +287,12 @@ class RecipientMergerImpl: RecipientMerger {
         // (Note that we don't check for PNI sessions; we always prefer the ACI session there.)
         let hasSessionForServiceId = temporaryShims.hasActiveSignalProtocolSession(
             recipientId: serviceIdRecipient.accountId,
-            deviceId: Int32(OWSDevicePrimaryDeviceId),
+            deviceId: Int32(OWSDevice.primaryDeviceId),
             transaction: transaction
         )
         let hasSessionForPhoneNumber = temporaryShims.hasActiveSignalProtocolSession(
             recipientId: phoneNumberRecipient.accountId,
-            deviceId: Int32(OWSDevicePrimaryDeviceId),
+            deviceId: Int32(OWSDevice.primaryDeviceId),
             transaction: transaction
         )
 

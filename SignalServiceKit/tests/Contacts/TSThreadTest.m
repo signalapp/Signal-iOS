@@ -4,7 +4,6 @@
 //
 
 #import "MIMETypeUtil.h"
-#import "OWSDevice.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"

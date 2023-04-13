@@ -18,6 +18,18 @@ protocol SDSCodableModelDatabaseInterface {
         transaction: DBReadTransaction
     ) -> Model?
 
+    /// Fetch all persisted models of the given type.
+    func fetchAllModels<Model: SDSCodableModel>(
+        modelType: Model.Type,
+        transaction: DBReadTransaction
+    ) -> [Model]
+
+    /// Count all persisted models of the given type.
+    func countAllModels<Model: SDSCodableModel>(
+        modelType: Model.Type,
+        transaction: DBReadTransaction
+    ) -> UInt
+
     // MARK: Remove
 
     /// Remove a model from the database.
