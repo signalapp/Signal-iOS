@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 extension ConversationViewController {
 
@@ -159,15 +160,16 @@ extension ConversationViewController: UIScrollViewDelegate {
         }
 
         Logger.verbose("")
-        self.scrollUpdateTimer?.invalidate()
 
         // We need to manually schedule this timer using NSRunLoopCommonModes
         // or it won't fire during scrolling.
-        let scrollUpdateTimer = Timer.weakTimer(withTimeInterval: 0.1,
-                                                target: self,
-                                                selector: #selector(scrollUpdateTimerDidFire),
-                                                userInfo: nil,
-                                                repeats: false)
+        let scrollUpdateTimer = Timer.weakTimer(
+            withTimeInterval: 0.1,
+            target: self,
+            selector: #selector(scrollUpdateTimerDidFire),
+            userInfo: nil,
+            repeats: false
+        )
         self.scrollUpdateTimer = scrollUpdateTimer
         RunLoop.main.add(scrollUpdateTimer, forMode: .common)
     }
@@ -183,7 +185,7 @@ extension ConversationViewController: UIScrollViewDelegate {
         AssertIsOnMainThread()
 
         scrollUpdateTimer?.invalidate()
-        self.scrollUpdateTimer = nil
+        scrollUpdateTimer = nil
 
         guard viewHasEverAppeared else {
             return
@@ -191,7 +193,7 @@ extension ConversationViewController: UIScrollViewDelegate {
 
         _ = autoLoadMoreIfNecessary()
 
-        if !isUserScrolling {
+        if !isUserScrolling, !isWaitingForDeceleration {
             saveLastVisibleSortIdAndOnScreenPercentage()
         }
     }
