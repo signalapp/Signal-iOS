@@ -4,11 +4,17 @@
 //
 
 import UIKit
+import SignalUI
 
-@objc(OWSPinReminderViewController)
 public class PinReminderViewController: OWSViewController {
 
-    private let completionHandler: (() -> Void)?
+    enum PinReminderResult {
+        case canceled(didGuessWrong: Bool)
+        case changedOrRemovedPin
+        case succeeded
+    }
+
+    private let completionHandler: ((PinReminderResult) -> Void)?
 
     private let containerView = UIView()
     private let pinTextField = UITextField()
@@ -39,8 +45,7 @@ public class PinReminderViewController: OWSViewController {
 
     private let context: ViewControllerContext
 
-    @objc
-    init(completionHandler: (() -> Void)? = nil) {
+    init(completionHandler: ((PinReminderResult) -> Void)? = nil) {
         // TODO[ViewContextPiping]
         self.context = ViewControllerContext.shared
         self.completionHandler = completionHandler
@@ -254,10 +259,14 @@ public class PinReminderViewController: OWSViewController {
     func forgotPressed() {
         Logger.info("")
 
-        let vc = PinSetupViewController.creating { [weak self] _, _ in
-            self?.presentingViewController?.dismiss(animated: true, completion: nil)
-        }
-        present(OWSNavigationController(rootViewController: vc), animated: true, completion: nil)
+        let viewController = PinSetupViewController(
+            mode: .creating,
+            hideNavigationBar: false,
+            showCancelButton: true,
+            showDisablePinButton: true,
+            completionHandler: { [weak self] _, _ in self?.completionHandler?(.changedOrRemovedPin) }
+        )
+        present(OWSNavigationController(rootViewController: viewController), animated: true)
     }
 
     @objc
@@ -269,7 +278,7 @@ public class PinReminderViewController: OWSViewController {
         // If they didn't try and enter a PIN, we do nothing and leave the megaphone.
         if hasGuessedWrong { OWS2FAManager.shared.reminderCompleted(withIncorrectAttempts: true) }
 
-        dismiss(animated: true, completion: nil)
+        self.completionHandler?(.canceled(didGuessWrong: hasGuessedWrong))
     }
 
     @objc
@@ -303,14 +312,9 @@ public class PinReminderViewController: OWSViewController {
                 return
             }
 
-            self.dismissAndUpdateRepetitionInterval()
-            self.completionHandler?()
+            OWS2FAManager.shared.reminderCompleted(withIncorrectAttempts: self.hasGuessedWrong)
+            self.completionHandler?(.succeeded)
         }
-    }
-
-    private func dismissAndUpdateRepetitionInterval() {
-        OWS2FAManager.shared.reminderCompleted(withIncorrectAttempts: hasGuessedWrong)
-        dismiss(animated: true)
     }
 
     private func updateValidationWarnings() {
