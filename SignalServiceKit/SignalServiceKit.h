@@ -10,15 +10,9 @@
 #import <Availability.h>
 
 #ifdef __OBJC__
-#import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#ifdef DEBUG
-static const NSUInteger ddLogLevel = DDLogLevelAll;
-#else
-static const NSUInteger ddLogLevel = DDLogLevelInfo;
-#endif
 #import <SignalCoreKit/NSObject+OWS.h>
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalServiceKit/OWSAnalytics.h>
