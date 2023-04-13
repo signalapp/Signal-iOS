@@ -72,7 +72,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Environment.shared.lightweightCallManagerRef = LightweightCallManager()
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalContinuation in
-            switch finalContinuation.finish() {
+            switch finalContinuation.finish(willResumeInProgressRegistration: false) {
+            case .corruptRegistrationState:
+                self.showNotRegisteredView()
             case nil:
                 self.setAppIsReady()
             }

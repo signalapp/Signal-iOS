@@ -21,12 +21,6 @@ public class AccountManager: NSObject, Dependencies {
         super.init()
 
         SwiftSingletons.register(self)
-
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            if self.tsAccountManager.isRegistered {
-                self.recordUuidIfNecessary()
-            }
-        }
     }
 
     // MARK: registration
@@ -576,37 +570,6 @@ public class AccountManager: NSObject, Dependencies {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
             return turnServerInfo
-        }
-    }
-
-    func recordUuidIfNecessary() {
-        DispatchQueue.global().async {
-            _ = self.ensureUuid().catch { error in
-                // Until we're in a UUID-only world, don't require a
-                // local UUID.
-                owsFailDebug("error: \(error)")
-            }
-        }
-    }
-
-    func ensureUuid() -> Promise<UUID> {
-        if let existingUuid = tsAccountManager.localUuid {
-            return Promise.value(existingUuid)
-        }
-
-        return accountServiceClient.getAccountWhoAmI().map(on: DispatchQueue.global()) { whoAmIResponse in
-            let uuid = whoAmIResponse.aci
-
-            // It's possible this method could be called multiple times, so we check
-            // again if it's been set. We dont bother serializing access since it should
-            // be idempotent.
-            if let existingUuid = self.tsAccountManager.localUuid {
-                assert(existingUuid == uuid)
-                return existingUuid
-            }
-            Logger.info("Recording UUID for legacy user")
-            self.tsAccountManager.recordUuidForLegacyUser(uuid)
-            return uuid
         }
     }
 

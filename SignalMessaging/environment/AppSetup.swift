@@ -279,11 +279,15 @@ extension AppSetup {
 
 extension AppSetup.FinalContinuation {
     public enum SetupError: Error {
-        // no errors for now, but some will be added in the future
+        case corruptRegistrationState
     }
 
-    public func finish() -> SetupError? {
+    public func finish(willResumeInProgressRegistration: Bool) -> SetupError? {
         AssertIsOnMainThread()
+
+        guard setUpLocalIdentifiers(willResumeInProgressRegistration: willResumeInProgressRegistration) else {
+            return .corruptRegistrationState
+        }
 
         // Do this after we've finished running database migrations.
         if DebugFlags.internalLogging {
@@ -291,5 +295,19 @@ extension AppSetup.FinalContinuation {
         }
 
         return nil
+    }
+
+    private func setUpLocalIdentifiers(willResumeInProgressRegistration: Bool) -> Bool {
+        let databaseStorage = sskEnvironment.databaseStorageRef
+        let tsAccountManager = sskEnvironment.tsAccountManagerRef
+
+        if tsAccountManager.isOnboarded && !willResumeInProgressRegistration {
+            let localIdentifiers = databaseStorage.read { tsAccountManager.localIdentifiers(transaction: $0) }
+            guard localIdentifiers != nil else {
+                return false
+            }
+        }
+
+        return true
     }
 }

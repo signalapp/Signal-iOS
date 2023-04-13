@@ -16,14 +16,16 @@ import Foundation
 /// helps ensure consistency.  e.g. isRegistered is true IFF
 /// localNumber is non-nil.
 class TSAccountState: NSObject {
-    @objc
-    let localNumber: String?
+    let localIdentifiers: LocalIdentifiers?
 
     @objc
-    let localUuid: UUID?
+    var localNumber: String? { localIdentifiers?.phoneNumber }
 
     @objc
-    let localPni: UUID?
+    var localUuid: UUID? { localIdentifiers?.aci.uuidValue }
+
+    @objc
+    var localPni: UUID? { localIdentifiers?.pni?.uuidValue }
 
     @objc
     let deviceId: UInt32
@@ -32,7 +34,7 @@ class TSAccountState: NSObject {
     let reregistrationPhoneNumber: String?
     let reregistrationUUID: UUID?
 
-    var isRegistered: Bool { localNumber != nil }
+    var isRegistered: Bool { localIdentifiers != nil }
     let isDeregistered: Bool
     let isOnboarded: Bool
     let registrationDate: Date?
@@ -78,9 +80,19 @@ class TSAccountState: NSObject {
         // Do not use data migrations to update TSAccountState data; do it through schema migrations
         // or through normal write transactions. TSAccountManager should be the only code accessing this state anyway.
 
-        localNumber = getString(TSAccountManager_RegisteredNumberKey)
-        localUuid = getUuid(TSAccountManager_RegisteredUUIDKey)
-        localPni = getUuid(TSAccountManager_RegisteredPNIKey)
+        localIdentifiers = {
+            guard let localNumber = getString(TSAccountManager_RegisteredNumberKey) else {
+                return nil
+            }
+            guard let localAci = getUuid(TSAccountManager_RegisteredUUIDKey) else {
+                return nil
+            }
+            return LocalIdentifiers(
+                aci: ServiceId(localAci),
+                pni: getUuid(TSAccountManager_RegisteredPNIKey).map { ServiceId($0) },
+                phoneNumber: localNumber
+            )
+        }()
         deviceId = getUInt32(TSAccountManager_DeviceIdKey) ?? 1
 
         reregistrationPhoneNumber = getString(TSAccountManager_ReregisteringPhoneNumberKey)
@@ -110,7 +122,7 @@ class TSAccountState: NSObject {
             // flag will be NO until you have successfully registered (aka defined
             // a local phone number).
             if FeatureFlags.phoneNumberDiscoverability {
-                isDiscoverableByDefault = localNumber != nil
+                isDiscoverableByDefault = localIdentifiers != nil
             }
 
             isDiscoverableByPhoneNumber = persistedIsDiscoverable ?? isDiscoverableByDefault

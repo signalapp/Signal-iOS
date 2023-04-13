@@ -159,6 +159,7 @@ extension AppDelegate {
             self.didLoadDatabase(
                 finalContinuation: finalContinuation,
                 sleepBlockObject: sleepBlockObject,
+                window: window,
                 launchStartedAt: launchStartedAt
             )
         }
@@ -236,50 +237,79 @@ extension AppDelegate {
     private func didLoadDatabase(
         finalContinuation: AppSetup.FinalContinuation,
         sleepBlockObject: NSObject,
+        window: UIWindow,
         launchStartedAt: CFTimeInterval
     ) {
         Logger.info("")
         AssertIsOnMainThread()
 
-        switch finalContinuation.finish() {
+        let regLoader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
+
+        // Before we mark ready, block message processing on any pending change numbers.
+        let hasPendingChangeNumber: Bool = (
+            FeatureFlags.useNewRegistrationFlow
+            && databaseStorage.read(block: { regLoader.hasPendingChangeNumber(transaction: $0.asV2Read) })
+        )
+        if hasPendingChangeNumber {
+            // The registration loader will clear the suspension later on.
+            messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
+        }
+
+        // If user is missing profile name, redirect to onboarding flow.
+        if !profileManager.hasProfileName {
+            databaseStorage.write { transaction in
+                tsAccountManager.setIsOnboarded(false, transaction: transaction)
+            }
+        }
+
+        let launchInterface = buildLaunchInterface(regLoader: regLoader)
+
+        let hasInProgressRegistration: Bool
+        switch launchInterface {
+        case .registration, .deprecatedOnboarding:
+            hasInProgressRegistration = true
+        case .chatList:
+            hasInProgressRegistration = false
+        }
+
+        switch finalContinuation.finish(willResumeInProgressRegistration: hasInProgressRegistration) {
+        case .corruptRegistrationState:
+            let viewController = terminalErrorViewController()
+            window.rootViewController = viewController
+            presentLaunchFailureActionSheet(
+                from: viewController,
+                launchStartedAt: launchStartedAt,
+                supportTag: "CorruptRegistrationState",
+                title: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE",
+                    comment: "Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status."
+                ),
+                message: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE",
+                    comment: "Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status."
+                ),
+                actions: [.submitDebugLogsAndCrash]
+            )
         case nil:
             firstly {
                 LaunchJobs.run(tsAccountManager: tsAccountManager, databaseStorage: databaseStorage)
             }.done(on: DispatchQueue.main) {
-                self.setAppIsReady(launchStartedAt: launchStartedAt)
+                self.setAppIsReady(launchInterface: launchInterface, launchStartedAt: launchStartedAt)
                 DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
             }
         }
     }
 
-    private func setAppIsReady(launchStartedAt: CFTimeInterval) {
+    private func setAppIsReady(launchInterface: LaunchInterface, launchStartedAt: CFTimeInterval) {
         Logger.info("")
         AssertIsOnMainThread()
         owsAssert(!AppReadiness.isAppReady)
         owsAssert(!CurrentAppContext().isRunningTests)
 
-        // Before we mark ready, block message processing on any pending change numbers.
-        let regLoader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
-        if
-            FeatureFlags.useNewRegistrationFlow,
-            databaseStorage.read(block: {
-                regLoader.hasPendingChangeNumber(transaction: $0.asV2Read)
-            }) {
-            // The registration loader will clear the suspension later on.
-            messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
-        }
-
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReadyUIStillPending()
 
         CurrentAppContext().appUserDefaults().removeObject(forKey: kAppLaunchesAttemptedKey)
-
-        // If user is missing profile name, redirect to onboarding flow.
-        if !SSKEnvironment.shared.profileManager.hasProfileName {
-            databaseStorage.write { transaction in
-                self.tsAccountManager.setIsOnboarded(false, transaction: transaction)
-            }
-        }
 
         if tsAccountManager.isRegistered {
             databaseStorage.read { transaction in
@@ -340,11 +370,7 @@ extension AppDelegate {
 
         checkDatabaseIntegrityIfNecessary(isRegistered: tsAccountManager.isRegistered)
 
-        SignalApp.shared().ensureRootViewController(
-            appDelegate: self,
-            launchStartedAt: launchStartedAt,
-            registrationLoader: regLoader
-        )
+        SignalApp.shared().showLaunchInterface(launchInterface, launchStartedAt: launchStartedAt)
     }
 
     private func enableBackgroundRefreshIfNecessary() {
@@ -397,6 +423,48 @@ extension AppDelegate {
         Thread.sleep(forTimeInterval: 3)
         Logger.flush()
         exit(0)
+    }
+
+    // MARK: - Registration
+
+    private func buildLaunchInterface(regLoader: RegistrationCoordinatorLoader) -> LaunchInterface {
+        let onboardingController = Deprecated_OnboardingController()
+
+        guard FeatureFlags.useNewRegistrationFlow else {
+            if onboardingController.isComplete {
+                return .chatList(onboardingController)
+            } else {
+                return .deprecatedOnboarding(onboardingController)
+            }
+        }
+
+        if let lastMode = databaseStorage.read(block: { regLoader.restoreLastMode(transaction: $0.asV2Read) }) {
+            Logger.info("Found ongoing registration; continuing")
+            return .registration(regLoader, lastMode)
+            // TODO[Registration]: use a db migration to move isComplete state to reg coordinator.
+        } else if !onboardingController.isComplete {
+            if UIDevice.current.isIPad {
+                return .deprecatedOnboarding(onboardingController)
+            } else {
+                let desiredMode: RegistrationMode
+                if
+                    let reregNumber = tsAccountManager.reregistrationPhoneNumber,
+                    let reregE164 = E164(reregNumber),
+                    let reregAci = tsAccountManager.reregistrationUUID
+                {
+                    Logger.info("Found legacy re-registration; continuing in new registration")
+                    // A user who started re-registration before the new
+                    // registration flow shipped; kick them to new re-reg.
+                    desiredMode = .reRegistering(.init(e164: reregE164, aci: reregAci))
+                } else {
+                    Logger.info("Found legacy initial registration; continuing in new registration")
+                    desiredMode = .registering
+                }
+                return .registration(regLoader, desiredMode)
+            }
+        } else {
+            return .chatList(onboardingController)
+        }
     }
 
     // MARK: - Launch failures
@@ -554,6 +622,7 @@ extension AppDelegate {
                 self.didLoadDatabase(
                     finalContinuation: finalContinuation,
                     sleepBlockObject: sleepBlockObject,
+                    window: window,
                     launchStartedAt: launchStartedAt
                 )
             }

@@ -6,6 +6,12 @@
 import SignalUI
 import UIKit
 
+enum LaunchInterface {
+    case registration(RegistrationCoordinatorLoader, RegistrationMode)
+    case deprecatedOnboarding(Deprecated_OnboardingController)
+    case chatList(Deprecated_OnboardingController)
+}
+
 extension SignalApp {
     @objc
     func warmCachesAsync() {
@@ -39,19 +45,9 @@ extension SignalApp {
         }
     }
 
-    func ensureRootViewController(
-        appDelegate: UIApplicationDelegate,
-        launchStartedAt: TimeInterval,
-        registrationLoader: RegistrationCoordinatorLoader
-    ) {
+    func showLaunchInterface(_ launchInterface: LaunchInterface, launchStartedAt: TimeInterval) {
         AssertIsOnMainThread()
-
-        Logger.info("ensureRootViewController")
-
-        guard AppReadiness.isAppReady, !hasInitialRootViewController else {
-            return
-        }
-        hasInitialRootViewController = true
+        owsAssert(AppReadiness.isAppReady)
 
         let startupDuration = CACurrentMediaTime() - launchStartedAt
         Logger.info("Presenting app \(startupDuration) seconds after launch started.")
@@ -63,49 +59,18 @@ extension SignalApp {
             object: nil
         )
 
-        let onboardingController = Deprecated_OnboardingController()
-
-        if FeatureFlags.useNewRegistrationFlow {
-            if let lastMode = DependenciesBridge.shared.db.read(block: {
-                return registrationLoader.restoreLastMode(transaction: $0)
-            }) {
-                Logger.info("Found ongoing registration; continuing")
-                showRegistration(loader: registrationLoader, desiredMode: lastMode)
+        switch launchInterface {
+        case .registration(let registrationLoader, let desiredMode):
+            showRegistration(loader: registrationLoader, desiredMode: desiredMode)
+            AppReadiness.setUIIsReady()
+        case .deprecatedOnboarding(let onboardingController):
+            showDeprecatedOnboardingView(onboardingController)
+            if FeatureFlags.useNewRegistrationFlow {
                 AppReadiness.setUIIsReady()
-                // TODO[Registration]: use a db migration to move isComplete state to reg coordinator.
-            } else if !onboardingController.isComplete {
-                if UIDevice.current.isIPad {
-                    showDeprecatedOnboardingView(onboardingController)
-                    AppReadiness.setUIIsReady()
-                } else {
-                    let desiredMode: RegistrationMode
-                    if
-                        let reregNumber = tsAccountManager.reregistrationPhoneNumber,
-                        let reregE164 = E164(reregNumber),
-                        let reregAci = tsAccountManager.reregistrationUUID
-                    {
-                        Logger.info("Found legacy re-registration; continuing in new registration")
-                        // A user who started re-registration before the new
-                        // registration flow shipped; kick them to new re-reg.
-                        desiredMode = .reRegistering(.init(e164: reregE164, aci: reregAci))
-                    } else {
-                        Logger.info("Found legacy initial registration; continuing in new registration")
-                        desiredMode = .registering
-                    }
-                    showRegistration(loader: registrationLoader, desiredMode: desiredMode)
-                    AppReadiness.setUIIsReady()
-                }
-            } else {
-                onboardingController.markAsOnboarded()
-                showConversationSplitView()
             }
-        } else {
-            if onboardingController.isComplete {
-                onboardingController.markAsOnboarded()
-                showConversationSplitView()
-            } else {
-                showDeprecatedOnboardingView(onboardingController)
-            }
+        case .chatList(let onboardingController):
+            onboardingController.markAsOnboarded()
+            showConversationSplitView()
         }
 
         AppUpdateNag.shared.showAppUpgradeNagIfNecessary()

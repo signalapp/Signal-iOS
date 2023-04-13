@@ -277,21 +277,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     [transaction addSyncCompletion:^{ [self postRegistrationStateDidChangeNotification]; }];
 }
 
-- (void)recordUuidForLegacyUser:(NSUUID *)uuid
-{
-    OWSAssert(self.localUuid == nil);
-
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        @synchronized(self) {
-            [self.keyValueStore setString:uuid.UUIDString
-                                      key:TSAccountManager_RegisteredUUIDKey
-                              transaction:transaction];
-
-            [self loadAccountStateWithTransaction:transaction];
-        }
-    });
-}
-
 + (nullable NSString *)localNumber
 {
     return [[self shared] localNumber];

@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL hasSelectedThread;
 
 // These properties are only public for Swift bridging.
-@property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic, nullable, weak) ConversationSplitViewController *conversationSplitViewController;
 
 #pragma mark - Conversation Presentation

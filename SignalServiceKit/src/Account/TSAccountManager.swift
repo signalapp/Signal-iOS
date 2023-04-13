@@ -79,6 +79,10 @@ public extension TSAccountManager {
         return .unregistered
     }
 
+    func localIdentifiers(transaction: SDSAnyReadTransaction) -> LocalIdentifiers? {
+        getOrLoadAccountState(with: transaction).localIdentifiers
+    }
+
     @objc
     var isRegistered: Bool {
         getOrLoadAccountStateWithSneakyTransaction().isRegistered

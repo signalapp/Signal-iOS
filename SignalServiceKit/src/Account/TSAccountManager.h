@@ -120,7 +120,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
                                pni:(NSUUID *)pni
                          authToken:(NSString *)authToken
                        transaction:(SDSAnyWriteTransaction *)transaction;
-- (void)recordUuidForLegacyUser:(NSUUID *)uuid NS_SWIFT_NAME(recordUuidForLegacyUser(_:));
 
 #pragma mark - Re-registration
 

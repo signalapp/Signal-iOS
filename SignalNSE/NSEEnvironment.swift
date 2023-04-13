@@ -154,7 +154,10 @@ class NSEEnvironment: Dependencies {
         Environment.shared.lightweightCallManagerRef = LightweightCallManager()
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalSetupContinuation in
-            switch finalSetupContinuation.finish() {
+            switch finalSetupContinuation.finish(willResumeInProgressRegistration: false) {
+            case .corruptRegistrationState:
+                // TODO: Maybe notify that you should open the main app.
+                return owsFailDebug("Couldn't launch because of corrupted registration state.")
             case nil:
                 self.setAppIsReady()
             }
