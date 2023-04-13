@@ -9,7 +9,9 @@ import LibSignalClient
 import UIKit
 
 @objc
-public final class StoryMessage: NSObject, SDSCodableModel {
+public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
+    public static var recordType: UInt { 0 }
+
     public static let databaseTableName = "model_StoryMessage"
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -720,7 +722,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         if let id = id { try container.encode(id, forKey: .id) }
-        try container.encode(recordType, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(timestamp, forKey: .timestamp)
         try container.encode(authorUuid, forKey: .authorUuid)

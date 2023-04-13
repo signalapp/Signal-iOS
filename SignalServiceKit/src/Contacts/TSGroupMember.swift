@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 
 @objc
-public final class TSGroupMember: NSObject, SDSCodableModel {
+public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_TSGroupMember"
     public static var recordType: UInt { SDSRecordType.groupMember.rawValue }
     public static var ftsIndexMode: TSFTSIndexMode { .manualUpdates }
@@ -56,7 +56,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(id, forKey: .id)
-        try container.encode(recordType, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(groupThreadId, forKey: .groupThreadId)
         try container.encodeIfPresent(serviceId?.uuidValue, forKey: .serviceId)

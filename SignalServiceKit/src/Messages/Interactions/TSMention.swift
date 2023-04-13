@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 
 @objc
-public final class TSMention: NSObject, SDSCodableModel {
+public final class TSMention: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_TSMention"
     public static var recordType: UInt { SDSRecordType.mention.rawValue }
 
@@ -67,7 +67,7 @@ public final class TSMention: NSObject, SDSCodableModel {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try id.map { try container.encode($0, forKey: .id) }
-        try container.encode(recordType, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
 
         try container.encode(uniqueMessageId, forKey: .uniqueMessageId)

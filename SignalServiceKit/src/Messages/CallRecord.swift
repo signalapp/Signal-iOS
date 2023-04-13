@@ -17,7 +17,9 @@ import UIKit
 /// this lets us associate them with this device's ongoing calls. The CallRecord also holds
 /// other metadata like call status to allow us to update the state of the TSCall accordingly.
 @objc
-public final class CallRecord: NSObject, SDSCodableModel {
+public final class CallRecord: NSObject, SDSCodableModel, Decodable {
+    public static var recordType: UInt { 0 }
+
     public static let databaseTableName = "model_CallRecord"
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {

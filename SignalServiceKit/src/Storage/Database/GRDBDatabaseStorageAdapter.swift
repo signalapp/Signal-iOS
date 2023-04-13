@@ -148,7 +148,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             InstalledSticker.table,
             KnownStickerPack.table,
             TSAttachment.table,
-            SSKJobRecord.table,
             OWSMessageContentJob.table,
             OWSRecipientIdentity.table,
             OWSDisappearingMessagesConfiguration.table,
@@ -184,7 +183,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             CdsPreviousE164.self,
             CallRecord.self,
             SpamReportingTokenRecord.self,
-            UsernameLookupRecord.self
+            UsernameLookupRecord.self,
+            JobRecord.self
         ]
     }
 

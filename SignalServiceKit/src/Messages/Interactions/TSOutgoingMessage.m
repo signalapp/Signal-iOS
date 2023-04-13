@@ -213,7 +213,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     self = [super initWithCoder:coder];
 
     if (self) {
+#ifndef TESTABLE_BUILD
         OWSAssertDebug(self.outgoingMessageSchemaVersion >= 1);
+#endif
 
         _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
     }

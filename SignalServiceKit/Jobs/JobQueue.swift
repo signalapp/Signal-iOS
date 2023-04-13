@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 
 /// JobQueue - A durable work queue
 ///
@@ -21,30 +22,13 @@ import Foundation
 /// DurableOperations are retryable - via their `remainingRetries` logic. However, if the operation encounters
 /// an error where `error.isRetryable == false`, the operation will fail, regardless of available retries.
 
-extension SSKJobRecordStatus: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .ready:
-            return "ready"
-        case .unknown:
-            return "unknown"
-        case .running:
-            return "running"
-        case .permanentlyFailed:
-            return "permanentlyFailed"
-        case .obsolete:
-            return "obsolete"
-        }
-    }
-}
-
 public enum JobError: Error {
     case assertionFailure(description: String)
     case obsolete(description: String)
 }
 
 public protocol DurableOperation: AnyObject, Equatable {
-    associatedtype JobRecordType: SSKJobRecord
+    associatedtype JobRecordType: JobRecord
     associatedtype DurableOperationDelegateType: DurableOperationDelegate
 
     var jobRecord: JobRecordType { get }
@@ -98,7 +82,10 @@ public extension JobQueue {
 
     // MARK: Default Implementations
 
-    func add(jobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
+    func add(
+        jobRecord: JobRecordType,
+        transaction: SDSAnyWriteTransaction
+    ) {
         owsAssertDebug(jobRecord.status == .ready)
 
         jobRecord.anyInsert(transaction: transaction)
@@ -187,7 +174,7 @@ public extension JobQueue {
         }
 
         do {
-            try nextJob.saveAsStarted(transaction: transaction)
+            try nextJob.saveReadyAsRunning(transaction: transaction)
 
             let operationQueue = operationQueue(jobRecord: nextJob)
             let durableOperation = try buildOperation(jobRecord: nextJob, transaction: transaction)
@@ -368,13 +355,13 @@ public extension JobQueue {
 
 public protocol JobRecordFinder {
     associatedtype ReadTransaction
-    associatedtype JobRecordType: SSKJobRecord
+    associatedtype JobRecordType: JobRecord
 
     func getNextReady(label: String, transaction: ReadTransaction) throws -> JobRecordType?
-    func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) throws -> [JobRecordType]
+    func allRecords(label: String, status: JobRecord.Status, transaction: ReadTransaction) throws -> [JobRecordType]
     func staleReadyRecords(label: String, transaction: ReadTransaction) throws -> [JobRecordType]
     func enumerateJobRecords(label: String, transaction: ReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws
-    func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws
+    func enumerateJobRecords(label: String, status: JobRecord.Status, transaction: ReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws
 }
 
 extension JobRecordFinder {
@@ -391,7 +378,7 @@ extension JobRecordFinder {
         return result
     }
 
-    public func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) throws -> [JobRecordType] {
+    public func allRecords(label: String, status: JobRecord.Status, transaction: ReadTransaction) throws -> [JobRecordType] {
         var result: [JobRecordType] = []
         try enumerateJobRecords(label: label, status: status, transaction: transaction) { jobRecord, _ in
             result.append(jobRecord)
@@ -411,16 +398,16 @@ extension JobRecordFinder {
     }
 }
 
-private extension SSKJobRecord {
+private extension JobRecord {
     var canBeRunByCurrentProcess: Bool {
-        if let exclusiveProcessIdentifier, exclusiveProcessIdentifier != SSKJobRecord.currentProcessIdentifier {
+        if let exclusiveProcessIdentifier, exclusiveProcessIdentifier != JobRecord.currentProcessIdentifier {
             return false
         }
         return true
     }
 }
 
-public class AnyJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
+public class AnyJobRecordFinder<JobRecordType> where JobRecordType: JobRecord {
     lazy var grdbAdapter = GRDBJobRecordFinder<JobRecordType>()
 
     public init() {}
@@ -434,7 +421,7 @@ extension AnyJobRecordFinder: JobRecordFinder {
         }
     }
 
-    public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: SDSAnyReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws {
+    public func enumerateJobRecords(label: String, status: JobRecord.Status, transaction: SDSAnyReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             try grdbAdapter.enumerateJobRecords(label: label, status: status, transaction: grdbRead, block: block)
@@ -442,53 +429,70 @@ extension AnyJobRecordFinder: JobRecordFinder {
     }
 }
 
-class GRDBJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
+class GRDBJobRecordFinder<JobRecordType> where JobRecordType: JobRecord {
 
 }
 
 extension GRDBJobRecordFinder: JobRecordFinder {
-    private func iterateJobsWith(cursor: SSKJobRecordCursor, block: (JobRecordType, inout Bool) -> Void) throws {
+    private func iterateJobsWith(
+        sql: String,
+        arguments: StatementArguments,
+        transaction: GRDBReadTransaction,
+        block: (JobRecordType, inout Bool) -> Void
+    ) throws {
+        let cursor = try JobRecordType.fetchCursor(
+            transaction.database,
+            sql: sql,
+            arguments: arguments
+        )
+
         var stop = false
-        while let next = try cursor.next() {
-            guard let jobRecord = next as? JobRecordType else {
-                owsFailDebug("expecting jobRecord but found: \(type(of: next))")
-                continue
-            }
-            block(jobRecord, &stop)
+        while let nextJobRecord = try cursor.next() {
+            block(nextJobRecord, &stop)
+
             if stop {
                 return
             }
         }
     }
 
-    func enumerateJobRecords(label: String, transaction: GRDBReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws {
+    func enumerateJobRecords(
+        label: String,
+        transaction: GRDBReadTransaction,
+        block: (JobRecordType, inout Bool) -> Void
+    ) throws {
         let sql = """
-        SELECT * FROM \(JobRecordRecord.databaseTableName)
-        WHERE \(jobRecordColumn: .label) = ?
-        ORDER BY \(jobRecordColumn: .id)
+            SELECT * FROM \(JobRecord.databaseTableName)
+            WHERE \(JobRecord.columnName(.label)) = ?
+            ORDER BY \(JobRecord.columnName(.id))
         """
 
-        let cursor = JobRecordType.grdbFetchCursor(
+        try iterateJobsWith(
             sql: sql,
             arguments: [label],
-            transaction: transaction
+            transaction: transaction,
+            block: block
         )
-        try iterateJobsWith(cursor: cursor, block: block)
     }
 
-    func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: GRDBReadTransaction, block: (JobRecordType, inout Bool) -> Void) throws {
+    func enumerateJobRecords(
+        label: String,
+        status: JobRecord.Status,
+        transaction: GRDBReadTransaction,
+        block: (JobRecordType, inout Bool) -> Void
+    ) throws {
         let sql = """
-            SELECT * FROM \(JobRecordRecord.databaseTableName)
-            WHERE \(jobRecordColumn: .status) = ?
-              AND \(jobRecordColumn: .label) = ?
-            ORDER BY \(jobRecordColumn: .id)
+            SELECT * FROM \(JobRecord.databaseTableName)
+            WHERE \(JobRecord.columnName(.status)) = ?
+              AND \(JobRecord.columnName(.label)) = ?
+            ORDER BY \(JobRecord.columnName(.id))
         """
 
-        let cursor = JobRecordType.grdbFetchCursor(
+        try iterateJobsWith(
             sql: sql,
             arguments: [status.rawValue, label],
-            transaction: transaction
+            transaction: transaction,
+            block: block
         )
-        try iterateJobsWith(cursor: cursor, block: block)
     }
 }

@@ -17,7 +17,7 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     public let isEnabled: Bool = true
     public static let maxRetries: UInt = 4
     @objc
-    public static let jobRecordLabel: String = OWSIncomingContactSyncJobRecord.defaultLabel
+    public static let jobRecordLabel: String = IncomingContactSyncJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
     }
@@ -38,7 +38,7 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public func didMarkAsReady(oldJobRecord: OWSIncomingContactSyncJobRecord, transaction: SDSAnyWriteTransaction) {
+    public func didMarkAsReady(oldJobRecord: IncomingContactSyncJobRecord, transaction: SDSAnyWriteTransaction) {
         // no special handling
     }
 
@@ -49,30 +49,30 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
         return operationQueue
     }()
 
-    public func operationQueue(jobRecord: OWSIncomingContactSyncJobRecord) -> OperationQueue {
+    public func operationQueue(jobRecord: IncomingContactSyncJobRecord) -> OperationQueue {
         return defaultQueue
     }
 
-    public func buildOperation(jobRecord: OWSIncomingContactSyncJobRecord, transaction: SDSAnyReadTransaction) throws -> IncomingContactSyncOperation {
+    public func buildOperation(jobRecord: IncomingContactSyncJobRecord, transaction: SDSAnyReadTransaction) throws -> IncomingContactSyncOperation {
         return IncomingContactSyncOperation(jobRecord: jobRecord)
     }
 
     @objc
     public func add(attachmentId: String, isComplete: Bool, transaction: SDSAnyWriteTransaction) {
-        let jobRecord = OWSIncomingContactSyncJobRecord(
+        let jobRecord = IncomingContactSyncJobRecord(
             attachmentId: attachmentId,
-            isComplete: isComplete,
-            label: self.jobRecordLabel
+            isCompleteContactSync: isComplete,
+            label: jobRecordLabel
         )
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 }
 
 public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
-    public typealias JobRecordType = OWSIncomingContactSyncJobRecord
+    public typealias JobRecordType = IncomingContactSyncJobRecord
     public typealias DurableOperationDelegateType = IncomingContactSyncJobQueue
     public weak var durableOperationDelegate: IncomingContactSyncJobQueue?
-    public var jobRecord: OWSIncomingContactSyncJobRecord
+    public var jobRecord: IncomingContactSyncJobRecord
     public var operation: OWSOperation {
         return self
     }
@@ -81,7 +81,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
     // MARK: -
 
-    init(jobRecord: OWSIncomingContactSyncJobRecord) {
+    init(jobRecord: IncomingContactSyncJobRecord) {
         self.jobRecord = jobRecord
     }
 

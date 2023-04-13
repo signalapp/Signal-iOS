@@ -148,7 +148,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
         do {
             let messageRecord = try message.prepareMessage(transaction: transaction)
-            let jobRecord = try SSKMessageSenderJobRecord(
+            let jobRecord = try MessageSenderJobRecord(
                 message: messageRecord,
                 removeMessageAfterSending: removeMessageAfterSending,
                 isHighPriority: isHighPriority,
@@ -196,7 +196,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public var isSetup = AtomicBool(false)
 
-    public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord,
+    public func didMarkAsReady(oldJobRecord: MessageSenderJobRecord,
                                transaction: SDSAnyWriteTransaction) {
         if let messageId = oldJobRecord.messageId,
            let message = TSOutgoingMessage.anyFetch(uniqueId: messageId,
@@ -205,7 +205,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         }
     }
 
-    public func buildOperation(jobRecord: SSKMessageSenderJobRecord,
+    public func buildOperation(jobRecord: MessageSenderJobRecord,
                                transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
         let message: TSOutgoingMessage
         if let invisibleMessage = jobRecord.invisibleMessage {
@@ -257,7 +257,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     // We use a per-thread serial OperationQueue to ensure messages are delivered to the
     // service in the order the user sent them.
-    public func operationQueue(jobRecord: SSKMessageSenderJobRecord) -> OperationQueue {
+    public func operationQueue(jobRecord: MessageSenderJobRecord) -> OperationQueue {
         guard let threadId = jobRecord.threadId else {
             return defaultQueue
         }
@@ -294,7 +294,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
 
     // MARK: DurableOperation
 
-    public let jobRecord: SSKMessageSenderJobRecord
+    public let jobRecord: MessageSenderJobRecord
 
     weak public var durableOperationDelegate: MessageSenderJobQueue?
 
@@ -307,7 +307,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     let message: TSOutgoingMessage
     private var future: Future<Void>?
 
-    init(message: TSOutgoingMessage, jobRecord: SSKMessageSenderJobRecord, future: Future<Void>?) {
+    init(message: TSOutgoingMessage, jobRecord: MessageSenderJobRecord, future: Future<Void>?) {
         self.message = message
         self.jobRecord = jobRecord
         self.future = future

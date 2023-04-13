@@ -9,11 +9,8 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
-#import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -81,8 +78,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return keyValueStore;
 }
 
-// Unlike CurrentAppContext().isMainAppAndActive, this method can be safely
-// invoked off the main thread.
+/// Unlike CurrentAppContext().isMainAppAndActive, this method can be safely
+/// invoked off the main thread.
 + (BOOL)isMainAppAndActive
 {
     return CurrentAppContext().reportedApplicationState == UIApplicationStateActive;

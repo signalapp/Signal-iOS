@@ -16,23 +16,23 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
         amount: FiatMoney,
         paymentProcessor: PaymentProcessor,
         receiptCredentialRequestContext: Data,
-        receiptCredentailRequest: Data,
+        receiptCredentialRequest: Data,
         boostPaymentIntentID: String,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("[Donations] Adding a boost job")
-        let jobRecord = OWSReceiptCredentialRedemptionJobRecord(
+        let jobRecord = ReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
             receiptCredentialRequestContext: receiptCredentialRequestContext,
-            receiptCredentailRequest: receiptCredentailRequest,
+            receiptCredentialRequest: receiptCredentialRequest,
             subscriberID: Data(),
             targetSubscriptionLevel: 0,
             priorSubscriptionLevel: 0,
             isBoost: true,
-            amount: amount.value as NSDecimalNumber,
+            amount: amount.value,
             currencyCode: amount.currencyCode,
             boostPaymentIntentID: boostPaymentIntentID,
-            label: self.jobRecordLabel
+            label: jobRecordLabel
         )
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
@@ -40,7 +40,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
     public func addSubscriptionJob(
         paymentProcessor: PaymentProcessor,
         receiptCredentialRequestContext: Data,
-        receiptCredentailRequest: Data,
+        receiptCredentialRequest: Data,
         subscriberID: Data,
         targetSubscriptionLevel: UInt,
         priorSubscriptionLevel: UInt?,
@@ -48,10 +48,10 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("[Donations] Adding a subscription job")
-        let jobRecord = OWSReceiptCredentialRedemptionJobRecord(
+        let jobRecord = ReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
             receiptCredentialRequestContext: receiptCredentialRequestContext,
-            receiptCredentailRequest: receiptCredentailRequest,
+            receiptCredentialRequest: receiptCredentialRequest,
             subscriberID: subscriberID,
             targetSubscriptionLevel: targetSubscriptionLevel,
             priorSubscriptionLevel: priorSubscriptionLevel ?? 0,
@@ -103,11 +103,11 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
         return operationQueue
     }()
 
-    public func operationQueue(jobRecord: OWSReceiptCredentialRedemptionJobRecord) -> OperationQueue {
+    public func operationQueue(jobRecord: ReceiptCredentialRedemptionJobRecord) -> OperationQueue {
         return self.operationQueue
     }
 
-    public func buildOperation(jobRecord: OWSReceiptCredentialRedemptionJobRecord, transaction: SDSAnyReadTransaction) throws -> SubscriptionReceiptCredentailRedemptionOperation {
+    public func buildOperation(jobRecord: ReceiptCredentialRedemptionJobRecord, transaction: SDSAnyReadTransaction) throws -> SubscriptionReceiptCredentailRedemptionOperation {
         return try SubscriptionReceiptCredentailRedemptionOperation(jobRecord)
     }
 }
@@ -116,7 +116,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
     // MARK: DurableOperation
 
-    public let jobRecord: OWSReceiptCredentialRedemptionJobRecord
+    public let jobRecord: ReceiptCredentialRedemptionJobRecord
 
     weak public var durableOperationDelegate: SubscriptionReceiptCredentialJobQueue?
 
@@ -138,8 +138,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     // For subscriptions, these will be absent until the job runs, which should populate them.
     var amount: FiatMoney?
 
-    @objc
-    public required init(_ jobRecord: OWSReceiptCredentialRedemptionJobRecord) throws {
+    public required init(_ jobRecord: ReceiptCredentialRedemptionJobRecord) throws {
         self.jobRecord = jobRecord
         self.paymentProcessor = {
             guard let paymentProcessor = PaymentProcessor(rawValue: jobRecord.paymentProcessor) else {
@@ -164,9 +163,9 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
         self.priorSubscriptionLevel = jobRecord.priorSubscriptionLevel
         self.boostPaymentIntentID = jobRecord.boostPaymentIntentID
         self.receiptCredentialRequestContext = try ReceiptCredentialRequestContext(
-            contents: [UInt8](jobRecord.receiptCredentailRequestContext))
+            contents: [UInt8](jobRecord.receiptCredentialRequestContext))
         self.receiptCredentialRequest = try ReceiptCredentialRequest(
-            contents: [UInt8](jobRecord.receiptCredentailRequest))
+            contents: [UInt8](jobRecord.receiptCredentialRequest))
         if let receiptCredentialPresentation = jobRecord.receiptCredentialPresentation {
             self.receiptCredentialPresentation = try ReceiptCredentialPresentation(
                 contents: [UInt8](receiptCredentialPresentation))

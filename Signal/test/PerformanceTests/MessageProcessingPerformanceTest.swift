@@ -133,7 +133,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
             self.write { transaction in
                 TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
                 TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-                SSKMessageDecryptJobRecord.anyRemoveAllWithInstantation(transaction: transaction)
+                LegacyMessageDecryptJobRecord.anyRemoveAllWithInstantiation(transaction: transaction)
                 OWSMessageContentJob.anyRemoveAllWithInstantation(transaction: transaction)
                 OWSRecipientIdentity.anyRemoveAllWithInstantation(transaction: transaction)
             }

@@ -55,11 +55,11 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
         return operationQueue
     }()
 
-    public func operationQueue(jobRecord: OWSSendGiftBadgeJobRecord) -> OperationQueue {
+    public func operationQueue(jobRecord: SendGiftBadgeJobRecord) -> OperationQueue {
         return self.operationQueue
     }
 
-    public func buildOperation(jobRecord: OWSSendGiftBadgeJobRecord, transaction: SDSAnyReadTransaction) throws -> SendGiftBadgeOperation {
+    public func buildOperation(jobRecord: SendGiftBadgeJobRecord, transaction: SDSAnyReadTransaction) throws -> SendGiftBadgeOperation {
         return try SendGiftBadgeOperation(jobRecord)
     }
 
@@ -69,7 +69,7 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
         amount: FiatMoney,
         thread: TSContactThread,
         messageText: String
-    ) -> OWSSendGiftBadgeJobRecord {
+    ) -> SendGiftBadgeJobRecord {
         let paymentProcessor: PaymentProcessor
         var stripePaymentIntent: Stripe.PaymentIntent?
         var stripePaymentMethodId: String?
@@ -85,11 +85,11 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
             paypalApprovalParams = approvalParams
         }
 
-        return OWSSendGiftBadgeJobRecord(
+        return SendGiftBadgeJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
             receiptCredentialRequestContext: receiptRequest.context.serialize().asData,
             receiptCredentialRequest: receiptRequest.request.serialize().asData,
-            amount: amount.value as NSDecimalNumber,
+            amount: amount.value,
             currencyCode: amount.currencyCode,
             paymentIntentClientSecret: stripePaymentIntent?.clientSecret,
             paymentIntentId: stripePaymentIntent?.id,
@@ -103,7 +103,7 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
         )
     }
 
-    public func addJob(_ jobRecord: OWSSendGiftBadgeJobRecord, transaction: SDSAnyWriteTransaction) {
+    public func addJob(_ jobRecord: SendGiftBadgeJobRecord, transaction: SDSAnyWriteTransaction) {
         Logger.info("[Gifting] Adding a \"send gift badge\" job")
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
@@ -123,17 +123,17 @@ private class SendGiftBadgeJobFinder {
         case .grdbRead(let grdbTransaction):
             let sql = """
                 SELECT EXISTS (
-                    SELECT 1 FROM \(JobRecordRecord.databaseTableName)
-                    WHERE \(jobRecordColumn: .threadId) IS ?
-                    AND \(jobRecordColumn: .recordType) IS ?
-                    AND \(jobRecordColumn: .status) NOT IN (?, ?)
+                    SELECT 1 FROM \(SendGiftBadgeJobRecord.databaseTableName)
+                    WHERE \(SendGiftBadgeJobRecord.columnName(.threadId)) IS ?
+                    AND \(SendGiftBadgeJobRecord.columnName(.recordType)) IS ?
+                    AND \(SendGiftBadgeJobRecord.columnName(.status)) NOT IN (?, ?)
                 )
             """
             let arguments: StatementArguments = [
                 threadId,
                 SDSRecordType.sendGiftBadgeJobRecord.rawValue,
-                SSKJobRecordStatus.permanentlyFailed,
-                SSKJobRecordStatus.obsolete
+                SendGiftBadgeJobRecord.Status.permanentlyFailed.rawValue,
+                SendGiftBadgeJobRecord.Status.obsolete.rawValue
             ]
             return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
         }
@@ -159,9 +159,9 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
         }
     }
 
-    public var jobRecord: OWSSendGiftBadgeJobRecord
+    public var jobRecord: SendGiftBadgeJobRecord
 
-    public typealias JobRecordType = OWSSendGiftBadgeJobRecord
+    public typealias JobRecordType = SendGiftBadgeJobRecord
 
     public typealias DurableOperationDelegateType = SendGiftBadgeJobQueue
 
@@ -176,8 +176,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
     private let threadId: String
     private let messageText: String
 
-    @objc
-    public required init(_ jobRecord: OWSSendGiftBadgeJobRecord) throws {
+    public required init(_ jobRecord: SendGiftBadgeJobRecord) throws {
         self.jobRecord = jobRecord
 
         payment = try {
@@ -188,7 +187,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
             case .stripe:
                 guard
                     let paymentIntentClientSecret = jobRecord.paymentIntentClientSecret,
-                    let paymentIntentId = jobRecord.boostPaymentIntentID,
+                    let paymentIntentId = jobRecord.paymentIntentId,
                     let paymentMethodId = jobRecord.paymentMethodId
                 else {
                     throw JobError.assertionFailure(description: "Tried to use Stripe as payment processor but data was missing")
@@ -214,8 +213,8 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
             }
         }()
 
-        receiptCredentialRequestContext = try ReceiptCredentialRequestContext(contents: [UInt8](jobRecord.receiptCredentailRequestContext))
-        receiptCredentialRequest = try ReceiptCredentialRequest(contents: [UInt8](jobRecord.receiptCredentailRequest))
+        receiptCredentialRequestContext = try ReceiptCredentialRequestContext(contents: [UInt8](jobRecord.receiptCredentialRequestContext))
+        receiptCredentialRequest = try ReceiptCredentialRequest(contents: [UInt8](jobRecord.receiptCredentialRequest))
         amount = FiatMoney(
             currencyCode: jobRecord.currencyCode,
             value: jobRecord.amount as Decimal

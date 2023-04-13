@@ -6,7 +6,7 @@
 import Foundation
 import GRDB
 
-public class ExperienceUpgrade: SDSCodableModel {
+public class ExperienceUpgrade: SDSCodableModel, Decodable {
     public static let databaseTableName = "model_ExperienceUpgrade"
     public static var recordType: UInt { SDSRecordType.experienceUpgrade.rawValue }
 
@@ -87,7 +87,7 @@ public class ExperienceUpgrade: SDSCodableModel {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try id.map { try container.encode($0, forKey: .id) }
-        try container.encode(recordType, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
 
         try container.encode(firstViewedTimestamp, forKey: .firstViewedTimestamp)

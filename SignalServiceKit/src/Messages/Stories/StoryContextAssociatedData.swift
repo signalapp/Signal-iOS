@@ -14,7 +14,9 @@ import UIKit
 /// Outgoing story threads are not represented, but this table could be extended to include
 /// them in the future.
 @objc
-public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
+public final class StoryContextAssociatedData: NSObject, SDSCodableModel, Decodable {
+    public static var recordType: UInt { 0 }
+
     public static let databaseTableName = "model_StoryContextAssociatedData"
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -283,7 +285,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         if let id = id { try container.encode(id, forKey: .id) }
-        try container.encode(recordType, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(contactUuid, forKey: .contactUuid)
         if let groupId = groupId { try container.encode(groupId, forKey: .groupId) }

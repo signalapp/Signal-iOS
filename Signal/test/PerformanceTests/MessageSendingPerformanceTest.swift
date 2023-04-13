@@ -170,7 +170,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
             self.write { transaction in
                 TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
                 TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-                SSKMessageSenderJobRecord.anyRemoveAllWithInstantation(transaction: transaction)
+                MessageSenderJobRecord.anyRemoveAllWithInstantiation(transaction: transaction)
                 OWSRecipientIdentity.anyRemoveAllWithInstantation(transaction: transaction)
             }
         }

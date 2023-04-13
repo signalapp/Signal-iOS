@@ -18,7 +18,7 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
     public let isEnabled: Bool = true
     public static let maxRetries: UInt = 4
     @objc
-    public static let jobRecordLabel: String = OWSIncomingGroupSyncJobRecord.defaultLabel
+    public static let jobRecordLabel: String = IncomingGroupSyncJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
     }
@@ -39,7 +39,7 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public func didMarkAsReady(oldJobRecord: OWSIncomingGroupSyncJobRecord, transaction: SDSAnyWriteTransaction) {
+    public func didMarkAsReady(oldJobRecord: IncomingGroupSyncJobRecord, transaction: SDSAnyWriteTransaction) {
         // no special handling
     }
 
@@ -50,27 +50,29 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
         return operationQueue
     }()
 
-    public func operationQueue(jobRecord: OWSIncomingGroupSyncJobRecord) -> OperationQueue {
+    public func operationQueue(jobRecord: IncomingGroupSyncJobRecord) -> OperationQueue {
         return defaultQueue
     }
 
-    public func buildOperation(jobRecord: OWSIncomingGroupSyncJobRecord, transaction: SDSAnyReadTransaction) throws -> IncomingGroupSyncOperation {
+    public func buildOperation(jobRecord: IncomingGroupSyncJobRecord, transaction: SDSAnyReadTransaction) throws -> IncomingGroupSyncOperation {
         return IncomingGroupSyncOperation(jobRecord: jobRecord)
     }
 
     @objc
     public func add(attachmentId: String, transaction: SDSAnyWriteTransaction) {
-        let jobRecord = OWSIncomingGroupSyncJobRecord(attachmentId: attachmentId,
-                                                      label: self.jobRecordLabel)
+        let jobRecord = IncomingGroupSyncJobRecord(
+            attachmentId: attachmentId,
+            label: jobRecordLabel
+        )
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 }
 
 public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
-    public typealias JobRecordType = OWSIncomingGroupSyncJobRecord
+    public typealias JobRecordType = IncomingGroupSyncJobRecord
     public typealias DurableOperationDelegateType = IncomingGroupSyncJobQueue
     public weak var durableOperationDelegate: IncomingGroupSyncJobQueue?
-    public var jobRecord: OWSIncomingGroupSyncJobRecord
+    public var jobRecord: IncomingGroupSyncJobRecord
     public var operation: OWSOperation {
         return self
     }
@@ -79,7 +81,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
 
     // MARK: -
 
-    init(jobRecord: OWSIncomingGroupSyncJobRecord) {
+    init(jobRecord: IncomingGroupSyncJobRecord) {
         self.jobRecord = jobRecord
     }
 

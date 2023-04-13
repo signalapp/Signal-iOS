@@ -539,7 +539,7 @@ public class SubscriptionManagerImpl: NSObject {
             self.subscriptionJobQueue.addSubscriptionJob(
                 paymentProcessor: paymentProcessor,
                 receiptCredentialRequestContext: request.context.serialize().asData,
-                receiptCredentailRequest: request.request.serialize().asData,
+                receiptCredentialRequest: request.request.serialize().asData,
                 subscriberID: subscriberID,
                 targetSubscriptionLevel: subscriptionLevel,
                 priorSubscriptionLevel: priorSubscriptionLevel,
@@ -1093,7 +1093,7 @@ extension SubscriptionManagerImpl {
                 amount: amount,
                 paymentProcessor: paymentProcessor,
                 receiptCredentialRequestContext: request.context.serialize().asData,
-                receiptCredentailRequest: request.request.serialize().asData,
+                receiptCredentialRequest: request.request.serialize().asData,
                 boostPaymentIntentID: intentId,
                 transaction: transaction
             )

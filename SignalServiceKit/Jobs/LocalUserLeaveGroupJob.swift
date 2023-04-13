@@ -6,11 +6,11 @@
 import Foundation
 
 public final class LocalUserLeaveGroupOperation: OWSOperation, DurableOperation {
-    public typealias JobRecordType = OWSLocalUserLeaveGroupJobRecord
+    public typealias JobRecordType = LocalUserLeaveGroupJobRecord
     public typealias DurableOperationDelegateType = LocalUserLeaveGroupJobQueue
 
-    public let jobRecord: OWSLocalUserLeaveGroupJobRecord
-    public weak var durableOperationDelegate: LocalUserLeaveGroupJobQueue?
+    public let jobRecord: JobRecordType
+    public weak var durableOperationDelegate: DurableOperationDelegateType?
 
     public var operation: OWSOperation { self }
 
@@ -18,7 +18,7 @@ public final class LocalUserLeaveGroupOperation: OWSOperation, DurableOperation 
     private let future: Future<TSGroupThread>?
 
     fileprivate init(
-        jobRecord: OWSLocalUserLeaveGroupJobRecord,
+        jobRecord: LocalUserLeaveGroupJobRecord,
         future: Future<TSGroupThread>?
     ) {
         self.jobRecord = jobRecord
@@ -201,11 +201,11 @@ public class LocalUserLeaveGroupJobQueue: NSObject, JobQueue {
         future: Future<TSGroupThread>,
         transaction: SDSAnyWriteTransaction
     ) {
-        let jobRecord = OWSLocalUserLeaveGroupJobRecord(
+        let jobRecord = LocalUserLeaveGroupJobRecord(
             threadId: threadId,
             replacementAdminUuid: replacementAdminUuid?.uuidString,
             waitForMessageProcessing: waitForMessageProcessing,
-            label: self.jobRecordLabel
+            label: jobRecordLabel
         )
 
         self.add(jobRecord: jobRecord, transaction: transaction)

@@ -419,7 +419,7 @@ public extension DatabaseRecovery {
             MessageSendLog.Payload.databaseTableName,
             MessageSendLog.Recipient.databaseTableName,
             // We'd rather not try to resurrect jobs, as they may result in unintended behavior (e.g., a bad message send).
-            JobRecordRecord.databaseTableName,
+            JobRecord.databaseTableName,
             PendingReadReceiptRecord.databaseTableName,
             PendingViewedReceiptRecord.databaseTableName,
             OWSMessageContentJob.table.tableName, // also, this one is deprecated
