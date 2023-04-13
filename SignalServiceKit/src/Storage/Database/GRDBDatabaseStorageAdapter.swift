@@ -755,45 +755,30 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
 
         pool.writeWithoutTransaction { database in
-            let kind: Database.CheckpointMode = .truncate
+            Bench(
+                title: "Checkpoint",
+                logIfLongerThan: TimeInterval(5) / TimeInterval(1000),
+                logInProduction: true
+            ) {
+                do {
+                    try database.checkpoint(.truncate)
 
-            var walSizePages: Int32 = 0
-            var pagesCheckpointed: Int32 = 0
-            var code: Int32 = 0
-            Bench(title: "Checkpoint",
-                  logIfLongerThan: TimeInterval(5) / TimeInterval(1000),
-                  logInProduction: true) {
-                code = sqlite3_wal_checkpoint_v2(database.sqliteConnection,
-                                                 nil,
-                                                 kind.rawValue,
-                                                 &walSizePages,
-                                                 &pagesCheckpointed)
-            }
-            if code != SQLITE_OK {
-                // Extracting this error message can race.
-                let errorMessage = String(cString: sqlite3_errmsg(database.sqliteConnection))
-                if code == SQLITE_BUSY {
-                    // It is expected that the busy-handler (aka busyMode callback)
-                    // will abort checkpoints if there is contention.
-                    Logger.warn("Error code: \(code), errorMessage: \(errorMessage).")
-                } else {
-                    owsFailDebug("Error code: \(code), errorMessage: \(errorMessage).")
+                    // If the checkpoint succeeded, wait N writes before performing another checkpoint.
+                    Logger.verbose("Checkpoint succeeded")
+                    checkpointBudget += 32
+                    lastSuccessfulCheckpointDate = Date()
+                } catch {
+                    if (error as? DatabaseError)?.resultCode == .SQLITE_BUSY {
+                        // It is expected that the busy-handler (aka busyMode callback)
+                        // will abort checkpoints if there is contention.
+                        Logger.warn("Didn't checkpoint because we were busy")
+                    } else {
+                        owsFailDebug("Checkpoint failed. Error: \(error.grdbErrorForLogging)")
+                    }
+
+                    // If the checkpoint failed, try again soon.
+                    checkpointBudget += 5
                 }
-                // If the checkpoint failed, try again soon.
-                checkpointBudget += 5
-            } else {
-                let pageSize: Int32 = 4 * 1024
-                let walFileSizeBytes = walSizePages * pageSize
-                let maxWalFileSizeBytes = 4 * 1024 * 1024
-                if walFileSizeBytes > maxWalFileSizeBytes {
-                    Logger.info("walFileSizeBytes: \(walFileSizeBytes).")
-                    Logger.info("walSizePages: \(walSizePages), pagesCheckpointed: \(pagesCheckpointed).")
-                } else {
-                    Logger.verbose("walSizePages: \(walSizePages), pagesCheckpointed: \(pagesCheckpointed).")
-                }
-                // If the checkpoint succeeded, wait N writes before performing another checkpoint.
-                checkpointBudget += 32
-                lastSuccessfulCheckpointDate = Date()
             }
         }
     }
@@ -1131,11 +1116,6 @@ extension GRDBDatabaseStorageAdapter {
 
 // MARK: - Checkpoints
 
-public struct GrdbTruncationResult {
-    let walSizePages: Int32
-    let pagesCheckpointed: Int32
-}
-
 extension GRDBDatabaseStorageAdapter {
     @objc
     public func syncTruncatingCheckpoint() throws {
@@ -1143,20 +1123,13 @@ extension GRDBDatabaseStorageAdapter {
 
         SDSDatabaseStorage.shared.logFileSizes()
 
-        let result = try GRDBDatabaseStorageAdapter.checkpoint(pool: pool,
-                                                               mode: .truncate)
-
-        Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed)")
+        try GRDBDatabaseStorageAdapter.checkpoint(pool: pool)
 
         SDSDatabaseStorage.shared.logFileSizes()
     }
 
-    public static func checkpoint(pool: DatabasePool,
-                                  mode: Database.CheckpointMode) throws -> GrdbTruncationResult {
-
-        var walSizePages: Int32 = 0
-        var pagesCheckpointed: Int32 = 0
-        try Bench(title: "Slow checkpoint: \(mode)", logIfLongerThan: 0.01, logInProduction: true) {
+    private static func checkpoint(pool: DatabasePool) throws {
+        try Bench(title: "Slow checkpoint", logIfLongerThan: 0.01, logInProduction: true) {
             // Set checkpointTimeout flag.
             // If we hit the timeout, we get back SQLITE_BUSY, which is ignored below.
             owsAssertDebug(GRDBStorage.checkpointTimeout == nil)
@@ -1183,21 +1156,19 @@ extension GRDBDatabaseStorageAdapter {
                 }
                 #endif
 
-                let code = sqlite3_wal_checkpoint_v2(db.sqliteConnection, nil, mode.rawValue, &walSizePages, &pagesCheckpointed)
-                switch code {
-                case SQLITE_OK:
-                    if mode != .passive {
-                        Logger.info("Checkpoint succeeded: \(mode).")
+                do {
+                    try db.checkpoint(.truncate)
+                    Logger.info("Truncating checkpoint succeeded")
+                } catch {
+                    if (error as? DatabaseError)?.resultCode == .SQLITE_BUSY {
+                        // Busy is not an error.
+                        Logger.info("Truncating checkpoint failed due to busy")
+                    } else {
+                        throw error
                     }
-                case SQLITE_BUSY:
-                    // Busy is not an error.
-                    Logger.info("Checkpoint \(mode) failed due to busy.")
-                default:
-                    throw OWSAssertionError("checkpoint sql error with code: \(code)")
                 }
             }
         }
-        return GrdbTruncationResult(walSizePages: walSizePages, pagesCheckpointed: pagesCheckpointed)
     }
 }
 
