@@ -204,10 +204,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // MARK: Local Configuration State
 
-    private let kUDCurrentSenderCertificateKey_Production = "kUDCurrentSenderCertificateKey_Production-uuid"
-    private let kUDCurrentSenderCertificateKey_Staging = "kUDCurrentSenderCertificateKey_Staging-uuid"
-    private let kUDCurrentSenderCertificateDateKey_Production = "kUDCurrentSenderCertificateDateKey_Production-uuid"
-    private let kUDCurrentSenderCertificateDateKey_Staging = "kUDCurrentSenderCertificateDateKey_Staging-uuid"
+    // These keys contain the word "Production" for historical reasons, but
+    // they store sender certificates in both production & staging builds.
+    private let kUDCurrentSenderCertificateKey = "kUDCurrentSenderCertificateKey_Production-uuid"
+    private let kUDCurrentSenderCertificateDateKey = "kUDCurrentSenderCertificateDateKey_Production-uuid"
+
     private let kUDUnrestrictedAccessKey = "kUDUnrestrictedAccessKey"
 
     // MARK: Recipient State
@@ -621,7 +622,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func senderCertificateKey(uuidOnly: Bool) -> String {
-        let baseKey = TSConstants.isUsingProductionService ? kUDCurrentSenderCertificateKey_Production : kUDCurrentSenderCertificateKey_Staging
+        let baseKey = kUDCurrentSenderCertificateKey
         if uuidOnly {
             return "\(baseKey)-withoutPhoneNumber"
         } else {
@@ -630,7 +631,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func senderCertificateDateKey(uuidOnly: Bool) -> String {
-        let baseKey = TSConstants.isUsingProductionService ? kUDCurrentSenderCertificateDateKey_Production : kUDCurrentSenderCertificateDateKey_Staging
+        let baseKey = kUDCurrentSenderCertificateDateKey
         if uuidOnly {
             return "\(baseKey)-withoutPhoneNumber"
         } else {
