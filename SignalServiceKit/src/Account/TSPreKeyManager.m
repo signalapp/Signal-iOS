@@ -7,7 +7,6 @@
 #import "AppContext.h"
 #import "HTTPUtils.h"
 #import "OWSIdentityManager.h"
-#import "SSKEnvironment.h"
 #import "SSKPreKeyStore.h"
 #import "SSKSignedPreKeyStore.h"
 #import "SignedPrekeyRecord.h"

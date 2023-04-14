@@ -7,7 +7,6 @@
 #import "AppReadiness.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSReadTracking.h"
-#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"

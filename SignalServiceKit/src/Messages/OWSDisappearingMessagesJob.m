@@ -10,7 +10,6 @@
 #import "NSTimer+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "SSKEnvironment.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSThread.h"

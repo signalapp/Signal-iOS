@@ -23,7 +23,6 @@
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/OWSSyncKeysMessage.h>
 #import <SignalServiceKit/OWSSyncRequestMessage.h>
-#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>

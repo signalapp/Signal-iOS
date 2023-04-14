@@ -18,11 +18,6 @@ public final class KeyBackupServiceObjcBridge: NSObject {
     }
 
     @objc
-    public static func warmKBSCaches() {
-        DependenciesBridge.shared.keyBackupService.warmCaches()
-    }
-
-    @objc
     public static var hasBackedUpMasterKey: Bool {
         DependenciesBridge.shared.keyBackupService.hasBackedUpMasterKey
     }

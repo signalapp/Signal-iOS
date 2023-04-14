@@ -9,7 +9,6 @@
 #import "OWSContact.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "ProtoUtils.h"
-#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"

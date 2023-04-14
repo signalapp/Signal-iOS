@@ -25,7 +25,6 @@
 #import "OWSRecordTranscriptJob.h"
 #import "OWSUnknownProtocolVersionMessage.h"
 #import "ProfileManagerProtocol.h"
-#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"

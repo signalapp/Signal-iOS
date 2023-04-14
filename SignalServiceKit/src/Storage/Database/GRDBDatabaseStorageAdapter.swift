@@ -1056,7 +1056,7 @@ extension GRDBDatabaseStorageAdapter {
     @discardableResult
     public static func checkIntegrity() -> SqliteUtil.IntegrityCheckResult {
         let storageCoordinator: StorageCoordinator
-        if SSKEnvironment.hasShared() {
+        if SSKEnvironment.hasShared {
             storageCoordinator = SSKEnvironment.shared.storageCoordinator
         } else {
             storageCoordinator = StorageCoordinator()

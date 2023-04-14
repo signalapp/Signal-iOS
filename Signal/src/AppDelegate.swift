@@ -183,7 +183,9 @@ extension AppDelegate {
             appContext: CurrentAppContext(),
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
-            webSocketFactory: WebSocketFactoryHybrid()
+            webSocketFactory: WebSocketFactoryHybrid(),
+            callMessageHandler: AppEnvironment.sharedCallMessageHandler,
+            notificationPresenter: AppEnvironment.sharedNotificationPresenter
         )
         setupNSEInteroperation()
         SUIEnvironment.shared.setup()

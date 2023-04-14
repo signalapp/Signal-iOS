@@ -9,7 +9,6 @@
 #import "OWSError.h"
 #import "OWSOperation.h"
 #import "OWSUpload.h"
-#import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

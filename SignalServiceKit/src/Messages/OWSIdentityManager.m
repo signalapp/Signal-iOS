@@ -15,7 +15,6 @@
 #import "OWSRecipientIdentity.h"
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
-#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"

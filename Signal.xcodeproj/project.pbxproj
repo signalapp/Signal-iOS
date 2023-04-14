@@ -795,6 +795,7 @@
 		50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2422980B53000899660 /* LinkValidatorTest.swift */; };
 		50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */; };
 		50E5E4B32993352C00E15A1C /* ChangePhoneNumberPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */; };
+		50E642C929E4E9CD00566D5D /* SSKEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
 		6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */; };
 		6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */; };
@@ -1791,7 +1792,6 @@
 		F9C5CCAC289453B300548EEE /* TSPreKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C2289453B100548EEE /* TSPreKeyManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCAD289453B300548EEE /* RefreshPreKeysOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C3289453B100548EEE /* RefreshPreKeysOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCAE289453B300548EEE /* TSPreKeyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C4289453B100548EEE /* TSPreKeyManager.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCAF289453B300548EEE /* SSKEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C5289453B100548EEE /* SSKEnvironment.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB3289453B300548EEE /* RemoteAttestationQuote.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1847,7 +1847,6 @@
 		F9C5CCEA289453B300548EEE /* ProtoUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA05289453B100548EEE /* ProtoUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCEB289453B300548EEE /* NotificationsProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA06289453B100548EEE /* NotificationsProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCEC289453B300548EEE /* ContactsManagerProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CCED289453B300548EEE /* SSKEnvironment.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA08289453B100548EEE /* SSKEnvironment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCEE289453B300548EEE /* OWSRecordTranscriptJob.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA0A289453B100548EEE /* OWSRecordTranscriptJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCEF289453B300548EEE /* OWSDeviceProvisioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0B289453B100548EEE /* OWSDeviceProvisioner.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCF0289453B300548EEE /* OWSStickerPackSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0C289453B100548EEE /* OWSStickerPackSyncMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3257,6 +3256,7 @@
 		50D5E2422980B53000899660 /* LinkValidatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidatorTest.swift; sourceTree = "<group>"; };
 		50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceMessage.swift; sourceTree = "<group>"; };
 		50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManager.swift; sourceTree = "<group>"; };
+		50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSKEnvironment.swift; path = src/SSKEnvironment.swift; sourceTree = "<group>"; };
 		50F96F3A28ECBC3200541EED /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -4340,7 +4340,6 @@
 		F9C5C9C2289453B100548EEE /* TSPreKeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSPreKeyManager.swift; sourceTree = "<group>"; };
 		F9C5C9C3289453B100548EEE /* RefreshPreKeysOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefreshPreKeysOperation.swift; sourceTree = "<group>"; };
 		F9C5C9C4289453B100548EEE /* TSPreKeyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSPreKeyManager.m; sourceTree = "<group>"; };
-		F9C5C9C5289453B100548EEE /* SSKEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SSKEnvironment.m; path = src/SSKEnvironment.m; sourceTree = "<group>"; };
 		F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteAttestation.swift; sourceTree = "<group>"; };
 		F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationQuote.m; sourceTree = "<group>"; };
 		F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoteAttestationQuote.h; sourceTree = "<group>"; };
@@ -4396,7 +4395,6 @@
 		F9C5CA05289453B100548EEE /* ProtoUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProtoUtils.h; sourceTree = "<group>"; };
 		F9C5CA06289453B100548EEE /* NotificationsProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationsProtocol.h; sourceTree = "<group>"; };
 		F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsManagerProtocol.h; sourceTree = "<group>"; };
-		F9C5CA08289453B100548EEE /* SSKEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SSKEnvironment.h; path = src/SSKEnvironment.h; sourceTree = "<group>"; };
 		F9C5CA0A289453B100548EEE /* OWSRecordTranscriptJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSRecordTranscriptJob.h; sourceTree = "<group>"; };
 		F9C5CA0B289453B100548EEE /* OWSDeviceProvisioner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisioner.swift; sourceTree = "<group>"; };
 		F9C5CA0C289453B100548EEE /* OWSStickerPackSyncMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSStickerPackSyncMessage.m; sourceTree = "<group>"; };
@@ -8185,8 +8183,7 @@
 				F9C5CAF8289453B200548EEE /* Util */,
 				F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */,
 				F9C5C899289451B900548EEE /* SignalServiceKit.h */,
-				F9C5CA08289453B100548EEE /* SSKEnvironment.h */,
-				F9C5C9C5289453B100548EEE /* SSKEnvironment.m */,
+				50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */,
 				F9C5CB97289453B200548EEE /* TSConstants.swift */,
 			);
 			path = SignalServiceKit;
@@ -9490,7 +9487,6 @@
 				F9C5CD4B289453B300548EEE /* SignedPrekeyRecord.h in Headers */,
 				F9C5CD2C289453B300548EEE /* SSKAccessors+SDS.h in Headers */,
 				F9C5CE42289453B400548EEE /* SSKAsserts.h in Headers */,
-				F9C5CCED289453B300548EEE /* SSKEnvironment.h in Headers */,
 				F9C5CD38289453B300548EEE /* SSKPreKeyStore.h in Headers */,
 				F9C5CD51289453B300548EEE /* SSKSignedPreKeyStore.h in Headers */,
 				F9C5CC1C289453B300548EEE /* StickerInfo.h in Headers */,
@@ -12125,7 +12121,7 @@
 				F9427EAB297F1E88008EF0AC /* SpamReportingToken.swift in Sources */,
 				F9427EB0297F24AB008EF0AC /* SpamReportingTokenRecord.swift in Sources */,
 				F9613CDC2981F11400894B55 /* SqliteUtil.swift in Sources */,
-				F9C5CCAF289453B300548EEE /* SSKEnvironment.m in Sources */,
+				50E642C929E4E9CD00566D5D /* SSKEnvironment.swift in Sources */,
 				D9668B2F291AF63500665298 /* SSKJobQueues.swift in Sources */,
 				F9C5CD54289453B300548EEE /* SSKKeychainStorage.swift in Sources */,
 				F9C5CE19289453B400548EEE /* SSKPreferences.swift in Sources */,

@@ -27,6 +27,9 @@ public class AppEnvironment: NSObject {
         }
     }
 
+    // A temporary hack until `.shared` goes away and this can be provided to `init`.
+    static let sharedCallMessageHandler = WebRTCCallMessageHandler()
+
     @objc
     public var callMessageHandlerRef: WebRTCCallMessageHandler
 
@@ -37,6 +40,9 @@ public class AppEnvironment: NSObject {
     public var accountManagerRef: AccountManager
 
     private var usernameValidationObserverRef: UsernameValidationObserver?
+
+    // A temporary hack until `.shared` goes away and this can be provided to `init`.
+    static let sharedNotificationPresenter = NotificationPresenter()
 
     @objc
     public var notificationPresenterRef: NotificationPresenter
@@ -60,10 +66,10 @@ public class AppEnvironment: NSObject {
     public var windowManagerRef: OWSWindowManager = OWSWindowManager()
 
     private override init() {
-        self.callMessageHandlerRef = WebRTCCallMessageHandler()
+        self.callMessageHandlerRef = Self.sharedCallMessageHandler
         self.callServiceRef = CallService()
         self.accountManagerRef = AccountManager()
-        self.notificationPresenterRef = NotificationPresenter()
+        self.notificationPresenterRef = Self.sharedNotificationPresenter
         self.pushRegistrationManagerRef = PushRegistrationManager()
 
         super.init()
@@ -80,9 +86,7 @@ public class AppEnvironment: NSObject {
             database: DependenciesBridge.shared.db
         )
 
-        // Hang certain singletons on SSKEnvironment too.
-        SSKEnvironment.shared.notificationsManagerRef = notificationPresenterRef
-        SSKEnvironment.shared.callMessageHandlerRef = callMessageHandlerRef
+        // Hang certain singletons on Environment too.
         Environment.shared.lightweightCallManagerRef = callServiceRef
     }
 }

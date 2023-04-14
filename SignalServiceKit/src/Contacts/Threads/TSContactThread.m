@@ -7,7 +7,6 @@
 #import "ContactsManagerProtocol.h"
 #import "NotificationsProtocol.h"
 #import "OWSIdentityManager.h"
-#import "SSKEnvironment.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

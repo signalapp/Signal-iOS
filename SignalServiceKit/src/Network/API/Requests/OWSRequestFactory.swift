@@ -256,9 +256,6 @@ extension OWSRequestFactory {
             return nil
         case .pni:
             return "identity=pni"
-        @unknown default:
-            owsFailDebug("Unrecognized identity type")
-            return nil
         }
     }
 

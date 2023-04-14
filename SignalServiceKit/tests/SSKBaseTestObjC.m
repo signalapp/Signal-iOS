@@ -5,7 +5,6 @@
 
 #import "SSKBaseTestObjC.h"
 #import "SDSDatabaseStorage+Objc.h"
-#import "SSKEnvironment.h"
 #import "TestAppContext.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <CocoaLumberjack/DDTTYLogger.h>

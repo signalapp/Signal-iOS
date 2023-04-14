@@ -146,11 +146,11 @@ class NSEEnvironment: Dependencies {
             appContext: CurrentAppContext(),
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
-            webSocketFactory: WebSocketFactoryNative()
+            webSocketFactory: WebSocketFactoryNative(),
+            callMessageHandler: NSECallMessageHandler(),
+            notificationPresenter: NotificationPresenter()
         )
 
-        SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
-        SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
         Environment.shared.lightweightCallManagerRef = LightweightCallManager()
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalSetupContinuation in

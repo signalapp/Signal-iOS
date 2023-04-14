@@ -130,7 +130,7 @@ extension SignalApp {
                 + "NO ONE AT SIGNAL CAN MAKE YOU DO THIS! Don't do it if you're not comfortable.",
             preferredStyle: .alert)
         alert.addAction(.init(title: "Export", style: .destructive) { _ in
-            if SSKEnvironment.hasShared() {
+            if SSKEnvironment.hasShared {
                 // Try to sync the database first, since we don't export the WAL.
                 _ = try? SSKEnvironment.shared.grdbStorageAdapter.syncTruncatingCheckpoint()
             }

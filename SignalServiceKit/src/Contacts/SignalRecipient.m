@@ -5,7 +5,6 @@
 
 #import "SignalRecipient.h"
 #import "ProfileManagerProtocol.h"
-#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

@@ -8,7 +8,6 @@
 #import "OWS2FAManager.h"
 #import "OWSIdentityManager.h"
 #import "ProfileManagerProtocol.h"
-#import "SSKEnvironment.h"
 #import "SignedPrekeyRecord.h"
 #import "TSAccountManager.h"
 #import "TSRequest.h"

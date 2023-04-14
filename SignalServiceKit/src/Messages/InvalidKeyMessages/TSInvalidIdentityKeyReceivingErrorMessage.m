@@ -9,7 +9,6 @@
 #import "OWSFingerprint.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
-#import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

@@ -8,7 +8,6 @@
 #import "MIMETypeUtil.h"
 #import "OWSError.h"
 #import "OWSRequestFactory.h"
-#import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>

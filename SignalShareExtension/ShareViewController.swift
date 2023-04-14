@@ -62,13 +62,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             appContext: appContext,
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
-            webSocketFactory: WebSocketFactoryNative()
+            webSocketFactory: WebSocketFactoryNative(),
+            callMessageHandler: NoopCallMessageHandler(),
+            notificationPresenter: NoopNotificationsManager()
         )
 
         // Configure the rest of the globals before preparing the database.
         SUIEnvironment.shared.setup()
-        SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()
-        SSKEnvironment.shared.notificationsManagerRef = NoopNotificationsManager()
         Environment.shared.lightweightCallManagerRef = LightweightCallManager()
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalContinuation in

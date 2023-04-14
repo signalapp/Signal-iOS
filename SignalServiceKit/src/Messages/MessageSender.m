@@ -24,7 +24,6 @@
 #import "OWSUploadOperation.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "ProfileManagerProtocol.h"
-#import "SSKEnvironment.h"
 #import "SSKPreKeyStore.h"
 #import "SSKSignedPreKeyStore.h"
 #import "SignalRecipient.h"

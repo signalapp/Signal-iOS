@@ -12,7 +12,7 @@ public class MockSSKEnvironment: SSKEnvironment {
     @objc
     public static func activate() {
         let sskEnvironment = MockSSKEnvironment()
-        MockSSKEnvironment.setShared(sskEnvironment)
+        MockSSKEnvironment.setShared(sskEnvironment, isRunningTests: true)
 
         sskEnvironment.configureGrdb()
         sskEnvironment.warmCaches()
@@ -158,11 +158,10 @@ public class MockSSKEnvironment: SSKEnvironment {
             systemStoryManager: systemStoryManager,
             remoteMegaphoneFetcher: remoteMegaphoneFetcher,
             sskJobQueues: sskJobQueues,
-            contactDiscoveryManager: contactDiscoveryManager
+            contactDiscoveryManager: contactDiscoveryManager,
+            callMessageHandler: FakeCallMessageHandler(),
+            notificationsManager: NoopNotificationsManager()
         )
-
-        self.callMessageHandlerRef = FakeCallMessageHandler()
-        self.notificationsManagerRef = NoopNotificationsManager()
     }
 
     @objc

@@ -15,7 +15,6 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalCoreKit/OWSLogs.h>
-#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

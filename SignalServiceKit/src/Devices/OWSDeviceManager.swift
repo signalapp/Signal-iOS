@@ -125,11 +125,6 @@ class OWSDeviceManagerImpl: OWSDeviceManager {
 @objc
 class OWSDeviceManagerObjcBridge: NSObject {
     @objc
-    static func warmCaches() {
-        DependenciesBridge.shared.deviceManager.warmCaches()
-    }
-
-    @objc
     static func setHasReceivedSyncMessage(transaction: SDSAnyWriteTransaction) {
         DependenciesBridge.shared.deviceManager.setHasReceivedSyncMessage(
             transaction: transaction.asV2Write

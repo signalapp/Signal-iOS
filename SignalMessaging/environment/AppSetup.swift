@@ -14,7 +14,9 @@ public class AppSetup {
         appContext: AppContext,
         paymentsEvents: PaymentsEvents,
         mobileCoinHelper: MobileCoinHelper,
-        webSocketFactory: WebSocketFactory
+        webSocketFactory: WebSocketFactory,
+        callMessageHandler: OWSCallMessageHandler,
+        notificationPresenter: NotificationsProtocol
     ) -> AppSetup.DatabaseContinuation {
         configureUnsatisfiableConstraintLogging()
 
@@ -188,9 +190,11 @@ public class AppSetup {
             systemStoryManager: systemStoryManager,
             remoteMegaphoneFetcher: remoteMegaphoneFetcher,
             sskJobQueues: sskJobQueues,
-            contactDiscoveryManager: contactDiscoveryManager
+            contactDiscoveryManager: contactDiscoveryManager,
+            callMessageHandler: callMessageHandler,
+            notificationsManager: notificationPresenter
         )
-        SSKEnvironment.setShared(sskEnvironment)
+        SSKEnvironment.setShared(sskEnvironment, isRunningTests: appContext.isRunningTests)
 
         // Register renamed classes.
         NSKeyedUnarchiver.setClass(OWSUserProfile.self, forClassName: OWSUserProfile.collection())
@@ -231,8 +235,6 @@ extension AppSetup {
 
 extension AppSetup.DatabaseContinuation {
     public func prepareDatabase() -> Guarantee<AppSetup.FinalContinuation> {
-        owsAssertDebug(sskEnvironment.isComplete())
-
         let databaseStorage = sskEnvironment.databaseStorageRef
 
         let (guarantee, future) = Guarantee<AppSetup.FinalContinuation>.pending()

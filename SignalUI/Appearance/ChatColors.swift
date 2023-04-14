@@ -53,7 +53,7 @@ public class ChatColors: NSObject, Dependencies {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(warmCaches),
-            name: .WarmCaches,
+            name: SSKEnvironment.warmCachesNotification,
             object: nil
         )
     }
