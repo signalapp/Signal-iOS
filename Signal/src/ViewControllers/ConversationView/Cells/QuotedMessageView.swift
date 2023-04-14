@@ -307,7 +307,9 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                          comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender.")
             return CVLabelConfig(text: text,
                                  font: UIFont.ows_dynamicTypeFootnote,
-                                 textColor: Theme.lightThemePrimaryColor)
+                                 textColor: Theme.lightThemePrimaryColor,
+                                 numberOfLines: 0,
+                                 lineBreakMode: .byWordWrapping)
         }
 
         var quoteReactionHeaderLabelConfig: CVLabelConfig {
