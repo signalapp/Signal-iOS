@@ -7,25 +7,21 @@ import Foundation
 
 extension Notification.Name {
     public static var isCensorshipCircumventionActiveDidChange: Self {
-        return .init(rawValue: OWSSignalService.isCensorshipCircumventionActiveDidChangeNotificationName)
+        return .init(rawValue: OWSSignalServiceObjC.isCensorshipCircumventionActiveDidChangeNotificationName)
     }
 }
 
-@objc
-public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
-
-    // MARK: - Protocol Conformance
-
-    @objc
-    public let keyValueStore = SDSKeyValueStore(collection: "kTSStorageManager_OWSSignalService")
-
+public class OWSSignalServiceObjC: NSObject {
     @objc
     public static var isCensorshipCircumventionActiveDidChangeNotificationName: String {
         return "NSNotificationNameIsCensorshipCircumventionActiveDidChange"
     }
+}
 
-    @Atomic
-    public private(set) var isCensorshipCircumventionActive: Bool = false {
+public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
+    private let keyValueStore = SDSKeyValueStore(collection: "kTSStorageManager_OWSSignalService")
+
+    @Atomic public private(set) var isCensorshipCircumventionActive: Bool = false {
         didSet {
             guard isCensorshipCircumventionActive != oldValue else {
                 return
@@ -38,13 +34,10 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
         }
     }
 
-    @objc
     @Atomic public private(set) var hasCensoredPhoneNumber: Bool = false
 
-    @objc
     private let isCensorshipCircumventionManuallyActivatedLock = UnfairLock()
 
-    @objc
     public var isCensorshipCircumventionManuallyActivated: Bool {
         get {
             isCensorshipCircumventionManuallyActivatedLock.withLock {
@@ -59,10 +52,8 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
         }
     }
 
-    @objc
     private let isCensorshipCircumventionManuallyDisabledLock = UnfairLock()
 
-    @objc
     public var isCensorshipCircumventionManuallyDisabled: Bool {
         get {
             isCensorshipCircumventionManuallyDisabledLock.withLock {
@@ -77,10 +68,8 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
         }
     }
 
-    @objc
     private let manualCensorshipCircumventionCountryCodeLock = UnfairLock()
 
-    @objc
     public var manualCensorshipCircumventionCountryCode: String? {
         get {
             manualCensorshipCircumventionCountryCodeLock.withLock {
@@ -120,11 +109,7 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
         return configuration
     }
 
-    public func typeUnsafe_buildUrlEndpoint(for signalServiceInfo: Any) -> Any {
-        typeSafe_buildUrlEndpoint(for: signalServiceInfo as! SignalServiceInfo)
-    }
-
-    private func typeSafe_buildUrlEndpoint(for signalServiceInfo: SignalServiceInfo) -> OWSURLSessionEndpoint {
+    public func buildUrlEndpoint(for signalServiceInfo: SignalServiceInfo) -> OWSURLSessionEndpoint {
         // If there's an open transaction when this is called, and if censorship
         // circumvention is enabled, `buildCensorshipConfiguration()` will crash.
         // Add a database read here so that we crash in both `if` branches.
@@ -171,16 +156,7 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
         }
     }
 
-    public func typeUnsafe_buildUrlSession(
-        for signalServiceInfo: Any,
-        endpoint: OWSURLSessionEndpoint,
-        configuration: URLSessionConfiguration?
-    ) -> Any {
-        let signalServiceInfo = signalServiceInfo as! SignalServiceInfo
-        return typeSafe_buildUrlSession(for: signalServiceInfo, endpoint: endpoint, configuration: configuration)
-    }
-
-    private func typeSafe_buildUrlSession(
+    public func buildUrlSession(
         for signalServiceInfo: SignalServiceInfo,
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration?
@@ -197,22 +173,14 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
 
     // MARK: - Internal Implementation
 
-    public override init() {
-        super.init()
-
+    public init() {
         observeNotifications()
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
 
     // MARK: Setup
 
-    @objc
     public func warmCaches() {
         updateHasCensoredPhoneNumber()
-        updateIsCensorshipCircumventionActive()
     }
 
     private func observeNotifications() {

@@ -283,10 +283,12 @@ public extension NSObject {
         SSKEnvironment.shared.appExpiryRef
     }
 
+    @nonobjc
     final var signalService: OWSSignalServiceProtocol {
         SSKEnvironment.shared.signalServiceRef
     }
 
+    @nonobjc
     static var signalService: OWSSignalServiceProtocol {
         SSKEnvironment.shared.signalServiceRef
     }
