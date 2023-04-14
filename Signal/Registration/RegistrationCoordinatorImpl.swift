@@ -5,6 +5,7 @@
 
 import Contacts
 import Foundation
+import SignalServiceKit
 
 public protocol RegistrationCoordinatorLoaderDelegate: AnyObject {
     func clearPersistedMode(transaction: DBWriteTransaction)
@@ -847,7 +848,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         func setupContactsAndFinish() -> Guarantee<RegistrationStep> {
             // Start syncing system contacts now that we have set up tsAccountManager.
-            deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: accountIdentity.authedAccount)
+            deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
             // Update the account attributes once, now, at the end.
             return updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
@@ -3387,7 +3388,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         var authedAccount: AuthedAccount {
-            return AuthedAccount.explicit(aci: aci, e164: e164, authPassword: authPassword)
+            return AuthedAccount.explicit(aci: aci, pni: pni, e164: e164, authPassword: authPassword)
         }
 
         var chatServiceAuth: ChatServiceAuth {

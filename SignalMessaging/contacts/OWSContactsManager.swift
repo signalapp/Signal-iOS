@@ -705,10 +705,7 @@ extension OWSContactsManager {
     }
 
     @objc
-    func buildSignalAccountsAndUpdatePersistedState(
-        forFetchedSystemContacts localSystemContacts: [Contact],
-        authedAccount: AuthedAccount
-    ) {
+    func buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts localSystemContacts: [Contact]) {
         intersectionQueue.async {
             let (oldSignalAccounts, newSignalAccounts) = Self.databaseStorage.read { transaction in
                 let oldSignalAccounts = SignalAccount.anyFetchAll(transaction: transaction)
@@ -790,7 +787,6 @@ extension OWSContactsManager {
                 Self.profileManager.addUsers(
                     toProfileWhitelist: Array(newSignalAccountsMap.keys),
                     userProfileWriter: .systemContactsFetch,
-                    authedAccount: authedAccount,
                     transaction: transaction
                 )
 
@@ -807,8 +803,7 @@ extension OWSContactsManager {
             // StorageService know.
             Self.updateStorageServiceForSystemContactsFetch(
                 allSignalAccountsBeforeFetch: oldSignalAccountsMap,
-                allSignalAccountsAfterFetch: newSignalAccountsMap,
-                authedAccount: authedAccount
+                allSignalAccountsAfterFetch: newSignalAccountsMap
             )
 
             let didChangeAnySignalAccount = !signalAccountsToRemove.isEmpty || !signalAccountsToInsert.isEmpty
@@ -827,8 +822,7 @@ extension OWSContactsManager {
     /// relevant way. Has no effect when we are a linked device.
     private static func updateStorageServiceForSystemContactsFetch(
         allSignalAccountsBeforeFetch: [SignalServiceAddress: SignalAccount],
-        allSignalAccountsAfterFetch: [SignalServiceAddress: SignalAccount],
-        authedAccount: AuthedAccount
+        allSignalAccountsAfterFetch: [SignalServiceAddress: SignalAccount]
     ) {
         guard tsAccountManager.isPrimaryDevice else {
             Logger.info("Skipping updating StorageService on contact change, not primary device!")
@@ -889,10 +883,7 @@ extension OWSContactsManager {
             }
         }
 
-        storageServiceManager.recordPendingUpdates(
-            updatedAddresses: Array(addressesToUpdateInStorageService),
-            authedAccount: authedAccount
-        )
+        storageServiceManager.recordPendingUpdates(updatedAddresses: Array(addressesToUpdateInStorageService))
     }
 
     func didUpdateSignalAccounts(transaction: SDSAnyWriteTransaction) {

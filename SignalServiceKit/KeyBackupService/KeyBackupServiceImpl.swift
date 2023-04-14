@@ -927,9 +927,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
 
         // Trigger a re-fetch of the storage manifest, our keys have changed
         if type == .storageService, data != nil {
-            storageServiceManager.restoreOrCreateManifestIfNecessary(
-                authedAccount: authedAccount
-            )
+            storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
         }
     }
 

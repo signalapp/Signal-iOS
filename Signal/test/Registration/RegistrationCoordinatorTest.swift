@@ -296,7 +296,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
         ))
 
         func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(aci: identityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
+            return .explicit(
+                aci: identityResponse.aci,
+                pni: identityResponse.pni,
+                e164: Stubs.e164,
+                authPassword: authPassword
+            )
         }
 
         // When registered, it should try and sync push tokens.
@@ -425,7 +430,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
             ))
 
             func expectedAuthedAccount() -> AuthedAccount {
-                return .explicit(aci: identityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
+                return .explicit(
+                    aci: identityResponse.aci,
+                    pni: identityResponse.pni,
+                    e164: Stubs.e164,
+                    authPassword: authPassword
+                )
             }
 
             // When registered, it should try and sync push tokens.
@@ -777,7 +787,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             func expectedAuthedAccount() -> AuthedAccount {
-                return .explicit(aci: identityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
+                return .explicit(
+                    aci: identityResponse.aci,
+                    pni: identityResponse.pni,
+                    e164: Stubs.e164,
+                    authPassword: authPassword
+                )
             }
 
             // When registered at t=3, it should try and sync push tokens. Succeed at t=4
@@ -945,7 +960,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
 
             func expectedAuthedAccount() -> AuthedAccount {
-                return .explicit(aci: accountIdentityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
+                return .explicit(
+                    aci: accountIdentityResponse.aci,
+                    pni: accountIdentityResponse.pni,
+                    e164: Stubs.e164,
+                    authPassword: authPassword
+                )
             }
 
             // When registered at t=2, it should try and sync push tokens.
@@ -1254,7 +1274,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             func expectedAuthedAccount() -> AuthedAccount {
-                return .explicit(aci: accountIdentityResponse.aci, e164: Stubs.e164, authPassword: authPassword)
+                return .explicit(
+                    aci: accountIdentityResponse.aci,
+                    pni: accountIdentityResponse.pni,
+                    e164: Stubs.e164,
+                    authPassword: authPassword
+                )
             }
 
             // Once we are registered at t=8, we should try and sync push tokens

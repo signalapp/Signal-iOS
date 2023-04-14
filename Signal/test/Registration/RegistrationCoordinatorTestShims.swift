@@ -51,7 +51,7 @@ public class _RegistrationCoordinator_ContactsManagerMock: _RegistrationCoordina
 
     public init() {}
 
-    public func fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: AuthedAccount) {
+    public func fetchSystemContactsOnceIfAlreadyAuthorized() {
         // TODO[Registration]: test that this gets called.
     }
 

@@ -163,7 +163,7 @@ extension BlockingManager {
         updateCurrentState(transaction: transaction, wasLocallyInitiated: blockMode.locallyInitiated) { state in
             let didAdd = state.addBlockedAddress(address)
             if didAdd && blockMode.locallyInitiated {
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [address], authedAccount: .implicit())
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
             }
         }
     }
@@ -181,7 +181,7 @@ extension BlockingManager {
         updateCurrentState(transaction: transaction, wasLocallyInitiated: wasLocallyInitiated) { state in
             let didRemove = state.removeBlockedAddress(address)
             if didRemove && wasLocallyInitiated {
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [address], authedAccount: .implicit())
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
             }
         }
     }

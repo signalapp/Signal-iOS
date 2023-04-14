@@ -110,7 +110,7 @@ extension AppDelegate {
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.main.async {
-                AppEnvironment.shared.contactsManagerImpl.fetchSystemContactsOnceIfAlreadyAuthorized(with: .implicit())
+                AppEnvironment.shared.contactsManagerImpl.fetchSystemContactsOnceIfAlreadyAuthorized()
 
                 // TODO: Should we run this immediately even if we would like to process
                 // already decrypted envelopes handed to us by the NSE?

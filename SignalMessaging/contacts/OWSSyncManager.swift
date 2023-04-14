@@ -173,7 +173,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         switch type {
         case .accept:
             blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
-            profileManager.addThread(toProfileWhitelist: thread, authedAccount: .implicit(), transaction: transaction)
+            profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
         case .delete:
             thread.softDelete(with: transaction)
         case .block:

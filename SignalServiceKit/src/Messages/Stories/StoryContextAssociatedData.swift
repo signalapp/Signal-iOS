@@ -192,7 +192,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel, Decoda
                 }
                 storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
             case .contact(let contactUuid):
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [.init(uuid: contactUuid)], authedAccount: .implicit())
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [.init(uuid: contactUuid)])
             }
         }
 

@@ -233,7 +233,6 @@ extension SignalRecipient {
                     profileManager.removeUser(
                         fromProfileWhitelist: obsoleteAddress,
                         userProfileWriter: .changePhoneNumber,
-                        authedAccount: .implicit(),
                         transaction: transaction
                     )
                 }
@@ -243,14 +242,12 @@ extension SignalRecipient {
                     profileManager.addUser(
                         toProfileWhitelist: newAddress,
                         userProfileWriter: .changePhoneNumber,
-                        authedAccount: .implicit(),
                         transaction: transaction
                     )
                 } else {
                     profileManager.removeUser(
                         fromProfileWhitelist: newAddress,
                         userProfileWriter: .changePhoneNumber,
-                        authedAccount: .implicit(),
                         transaction: transaction
                     )
                 }

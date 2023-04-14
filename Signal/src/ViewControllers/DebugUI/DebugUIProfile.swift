@@ -29,7 +29,7 @@ class DebugUIProfile: DebugUIPage {
                 }
                 let name = Self.contactsManager.displayNameWithSneakyTransaction(thread: thread)
                 return OWSTableItem(title: "Remove “\(name)” from Profile Whitelist") {
-                    Self.profileManagerImpl.removeThread(fromProfileWhitelist: thread, authedAccount: .implicit())
+                    Self.profileManagerImpl.removeThread(fromProfileWhitelist: thread)
                 }
             }(),
             OWSTableItem(title: "Log Profile Whitelist") {

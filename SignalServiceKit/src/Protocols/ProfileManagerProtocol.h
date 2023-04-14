@@ -114,28 +114,22 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread authedAccount:(AuthedAccount *)authedAccount;
-- (void)addThreadToProfileWhitelist:(TSThread *)thread
-                      authedAccount:(AuthedAccount *)authedAccount
-                        transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)addThreadToProfileWhitelist:(TSThread *)thread;
+- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount;
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
                 userProfileWriter:(UserProfileWriter)userProfileWriter
-                    authedAccount:(AuthedAccount *)authedAccount
                       transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
-                     authedAccount:(AuthedAccount *)authedAccount;
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses;
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
                  userProfileWriter:(UserProfileWriter)userProfileWriter
-                     authedAccount:(AuthedAccount *)authedAccount
                        transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount;
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
                      userProfileWriter:(UserProfileWriter)userProfileWriter
-                         authedAccount:(AuthedAccount *)authedAccount
                            transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;

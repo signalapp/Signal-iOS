@@ -501,7 +501,6 @@ extension SharingThreadPickerViewController {
                             identityKey: indentityKey,
                             address: untrustedAddress,
                             isUserInitiatedChange: true,
-                            authedAccount: .implicit(),
                             transaction: transaction
                         )
                     case .verified:

@@ -2305,10 +2305,7 @@ public class GRDBSchemaMigrator: NSObject {
 
             while let thread = try cursor.next() {
                 if let thread = thread as? TSContactThread {
-                    Self.storageServiceManager.recordPendingUpdates(
-                        updatedAddresses: [thread.contactAddress],
-                        authedAccount: .implicit()
-                    )
+                    Self.storageServiceManager.recordPendingUpdates(updatedAddresses: [thread.contactAddress])
                 } else if let thread = thread as? TSGroupThread {
                     Self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
                 } else {
@@ -2576,10 +2573,7 @@ public class GRDBSchemaMigrator: NSObject {
                 accountsToRemove.insert(account)
             }
 
-            storageServiceManager.recordPendingUpdates(
-                updatedAddresses: accountsToRemove.map { $0.recipientAddress },
-                authedAccount: .implicit()
-            )
+            storageServiceManager.recordPendingUpdates(updatedAddresses: accountsToRemove.map { $0.recipientAddress })
             return .success(())
         }
 

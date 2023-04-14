@@ -54,9 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     [flippedKey appendBytes:&xorByte length:1];
                                 }
                                 OWSAssertDebug(flippedKey.length == currentKey.length);
-                                [identityManager saveRemoteIdentity:flippedKey
-                                                            address:address
-                                                      authedAccount:AuthedAccount.implicit];
+                                [identityManager saveRemoteIdentity:flippedKey address:address];
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
@@ -173,16 +171,15 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSNumber *stateNum in
         @[ @(OWSVerificationStateVerified), @(OWSVerificationStateDefault), @(OWSVerificationStateNoLongerVerified) ]) {
         OWSVerificationState state = [stateNum unsignedIntegerValue];
-        [stateSelection addAction:[[ActionSheetAction alloc]
-                                      initWithTitle:OWSVerificationStateToString(state)
-                                              style:ActionSheetActionStyleDefault
-                                            handler:^(ActionSheetAction *action) {
-                                                [OWSIdentityManager.shared setVerificationState:state
-                                                                                    identityKey:identity.identityKey
-                                                                                        address:address
-                                                                          isUserInitiatedChange:NO
-                                                                                  authedAccount:AuthedAccount.implicit];
-                                            }]];
+        [stateSelection addAction:[[ActionSheetAction alloc] initWithTitle:OWSVerificationStateToString(state)
+                                                                     style:ActionSheetActionStyleDefault
+                                                                   handler:^(ActionSheetAction *action) {
+                                                                       [OWSIdentityManager.shared
+                                                                            setVerificationState:state
+                                                                                     identityKey:identity.identityKey
+                                                                                         address:address
+                                                                           isUserInitiatedChange:NO];
+                                                                   }]];
     }
 
     [OWSActionSheets showActionSheet:stateSelection fromViewController:nil];

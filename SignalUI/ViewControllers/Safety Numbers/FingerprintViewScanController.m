@@ -185,8 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    [OWSIdentityManager.shared setVerificationState:OWSVerificationStateVerified
                                                                        identityKey:identityKey
                                                                            address:address
-                                                             isUserInitiatedChange:YES
-                                                                  authedAccount:AuthedAccount.implicit];
+                                                             isUserInitiatedChange:YES];
                                    [viewController dismissViewControllerAnimated:true completion:nil];
                                }]];
     ActionSheetAction *dismissAction =

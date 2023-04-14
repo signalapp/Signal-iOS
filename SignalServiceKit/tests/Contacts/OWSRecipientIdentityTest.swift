@@ -46,8 +46,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         for recipient in recipients {
             OWSIdentityManager.shared.saveRemoteIdentity(
                 identityKey(recipient),
-                address: SignalServiceAddress(recipient),
-                authedAccount: .implicit()
+                address: SignalServiceAddress(recipient)
             )
         }
 
@@ -73,8 +72,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 .verified,
                 identityKey: identityKey(recipient),
                 address: SignalServiceAddress(recipient),
-                isUserInitiatedChange: true,
-                authedAccount: .implicit()
+                isUserInitiatedChange: true
             )
         }
         XCTAssertFalse(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
@@ -86,8 +84,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             .verified,
             identityKey: identityKey(recipient),
             address: SignalServiceAddress(recipient),
-            isUserInitiatedChange: true,
-            authedAccount: .implicit()
+            isUserInitiatedChange: true
         )
         XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
     }
@@ -99,8 +96,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 .verified,
                 identityKey: identityKey(recipient),
                 address: SignalServiceAddress(recipient),
-                isUserInitiatedChange: true,
-                authedAccount: .implicit()
+                isUserInitiatedChange: true
             )
         }
         // Make Alice and Bob no-longer-verified.
@@ -110,8 +106,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 .noLongerVerified,
                 identityKey: identityKey(recipient),
                 address: SignalServiceAddress(recipient),
-                isUserInitiatedChange: false,
-                authedAccount: .implicit()
+                isUserInitiatedChange: false
             )
         }
         XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
@@ -133,8 +128,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 .noLongerVerified,
                 identityKey: identityKey(recipient),
                 address: SignalServiceAddress(recipient),
-                isUserInitiatedChange: false,
-                authedAccount: .implicit()
+                isUserInitiatedChange: false
             )
         }
         // All recipients are no longer verified. Check that the limit is respected.
@@ -160,8 +154,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 .verified,
                 identityKey: identityKey(recipient),
                 address: SignalServiceAddress(recipient),
-                isUserInitiatedChange: true,
-                authedAccount: .implicit()
+                isUserInitiatedChange: true
             )
         }
         XCTAssertFalse(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))

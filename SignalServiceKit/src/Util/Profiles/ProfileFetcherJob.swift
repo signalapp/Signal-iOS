@@ -552,7 +552,6 @@ public class ProfileFetcherJob: NSObject {
             self.verifyIdentityUpToDate(
                 address: address,
                 latestIdentityKey: profile.identityKey,
-                authedAccount: authedAccount,
                 transaction: transaction
             )
 
@@ -610,13 +609,11 @@ public class ProfileFetcherJob: NSObject {
     private func verifyIdentityUpToDate(
         address: SignalServiceAddress,
         latestIdentityKey: Data,
-        authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     ) {
         if self.identityManager.saveRemoteIdentity(
             latestIdentityKey,
             address: address,
-            authedAccount: authedAccount,
             transaction: transaction
         ) {
             Logger.info("updated identity key with fetched profile for recipient: \(address)")

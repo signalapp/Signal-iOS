@@ -299,13 +299,23 @@ extension AppSetup.FinalContinuation {
 
     private func setUpLocalIdentifiers(willResumeInProgressRegistration: Bool) -> Bool {
         let databaseStorage = sskEnvironment.databaseStorageRef
+        let storageServiceManager = sskEnvironment.storageServiceManagerRef
         let tsAccountManager = sskEnvironment.tsAccountManagerRef
+
+        let updateLocalIdentifiers: (LocalIdentifiersObjC) -> Void = { [weak storageServiceManager] localIdentifiers in
+            storageServiceManager?.setLocalIdentifiers(localIdentifiers)
+        }
+
+        // If we're not registered, listen for when we become registered. If we are
+        // registered, listen for when we learn about our PNI or change our number.
+        tsAccountManager.didStoreLocalNumber = updateLocalIdentifiers
 
         if tsAccountManager.isOnboarded && !willResumeInProgressRegistration {
             let localIdentifiers = databaseStorage.read { tsAccountManager.localIdentifiers(transaction: $0) }
-            guard localIdentifiers != nil else {
+            guard let localIdentifiers else {
                 return false
             }
+            updateLocalIdentifiers(LocalIdentifiersObjC(localIdentifiers))
         }
 
         return true

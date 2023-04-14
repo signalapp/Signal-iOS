@@ -1033,10 +1033,7 @@ extension RecipientPickerViewController {
                     transaction: transaction.asV2Write
                 )
 
-                self.storageServiceManager.recordPendingUpdates(
-                    updatedAccountIds: [recipient.accountId],
-                    authedAccount: .implicit()
-                )
+                self.storageServiceManager.recordPendingUpdates(updatedAccountIds: [recipient.accountId])
             } else {
                 // If we have a better identifier for this address, we can
                 // throw away any stored username info for it.

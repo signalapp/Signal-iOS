@@ -130,9 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[OWSIdentityManager shared] saveRemoteIdentity:newIdentityKey
-                                            address:self.recipientAddress
-                                      authedAccount:AuthedAccount.implicit];
+    [[OWSIdentityManager shared] saveRemoteIdentity:newIdentityKey address:self.recipientAddress];
 }
 
 - (nullable NSData *)throws_newIdentityKey

@@ -78,7 +78,7 @@ public struct _RegistrationCoordinator_AppExpiryWrapper: _RegistrationCoordinato
 
 public protocol _RegistrationCoordinator_ContactsManagerShim {
 
-    func fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: AuthedAccount)
+    func fetchSystemContactsOnceIfAlreadyAuthorized()
 
     func setIsPrimaryDevice()
 }
@@ -88,8 +88,8 @@ public class _RegistrationCoordinator_ContactsManagerWrapper: _RegistrationCoord
     private let manager: OWSContactsManager
     public init(_ manager: OWSContactsManager) { self.manager = manager }
 
-    public func fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: AuthedAccount) {
-        manager.fetchSystemContactsOnceIfAlreadyAuthorized(with: authedAccount)
+    public func fetchSystemContactsOnceIfAlreadyAuthorized() {
+        manager.fetchSystemContactsOnceIfAlreadyAuthorized()
     }
 
     public func setIsPrimaryDevice() {

@@ -343,7 +343,7 @@ public class Deprecated_OnboardingController: NSObject {
         // We start the contact fetch/intersection now so that by the time
         // they get to conversation list we can show meaningful contact in
         // the suggested contact bubble.
-        contactsManagerImpl.fetchSystemContactsOnceIfAlreadyAuthorized(with: .implicit())
+        contactsManagerImpl.fetchSystemContactsOnceIfAlreadyAuthorized()
 
         showNextMilestone(navigationController: navigationController)
     }

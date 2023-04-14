@@ -1621,7 +1621,7 @@ NS_ASSUME_NONNULL_BEGIN
                 if (groupId != nil) {
                     [self.profileManager addGroupIdToProfileWhitelist:groupId];
                 } else {
-                    [self.profileManager addUserToProfileWhitelist:destination authedAccount:AuthedAccount.implicit];
+                    [self.profileManager addUserToProfileWhitelist:destination];
                 }
             }
 

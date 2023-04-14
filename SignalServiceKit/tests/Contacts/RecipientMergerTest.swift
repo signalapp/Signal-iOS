@@ -64,13 +64,14 @@ private class MockRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
 
 private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingDeletions(deletedGroupV1Ids: [Data]) {}
-    func recordPendingUpdates(updatedAccountIds: [AccountId], authedAccount: AuthedAccount) {}
-    func recordPendingUpdates(updatedAddresses: [SignalServiceAddress], authedAccount: AuthedAccount) {}
+    func recordPendingUpdates(updatedAccountIds: [AccountId]) {}
+    func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
     func recordPendingUpdates(updatedGroupV1Ids: [Data]) {}
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
     func recordPendingUpdates(groupModel: TSGroupModel) {}
     func recordPendingLocalAccountUpdates() {}
+    func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) {}
     func backupPendingChanges(authedAccount: AuthedAccount) {}
     func resetLocalData(transaction: SDSAnyWriteTransaction) {}
     func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) -> AnyPromise {

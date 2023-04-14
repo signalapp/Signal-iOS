@@ -9,16 +9,8 @@ import Foundation
 public protocol StorageServiceManager {
     func recordPendingDeletions(deletedGroupV1Ids: [Data])
 
-    // NOTE: auth used to validate local address, not make requests.
-    func recordPendingUpdates(
-        updatedAccountIds: [AccountId],
-        authedAccount: AuthedAccount
-    )
-    // NOTE: auth used to validate local address, not make requests.
-    func recordPendingUpdates(
-        updatedAddresses: [SignalServiceAddress],
-        authedAccount: AuthedAccount
-    )
+    func recordPendingUpdates(updatedAccountIds: [AccountId])
+    func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
     func recordPendingUpdates(updatedGroupV1Ids: [Data])
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data])
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data])
@@ -29,12 +21,15 @@ public protocol StorageServiceManager {
 
     func recordPendingLocalAccountUpdates()
 
+    /// Updates the local user's identity.
+    ///
+    /// Called during app launch, registration, and change number.
+    func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC)
+
     func backupPendingChanges(authedAccount: AuthedAccount)
 
     @discardableResult
-    func restoreOrCreateManifestIfNecessary(
-        authedAccount: AuthedAccount
-    ) -> AnyPromise
+    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) -> AnyPromise
 
     /// Waits for pending restores to finish.
     ///

@@ -56,7 +56,6 @@ public class IdentityStore: IdentityKeyStore {
         identityManager.saveRemoteIdentity(
             identity.serializeAsData(),
             address: SignalServiceAddress(from: address),
-            authedAccount: .implicit(),
             transaction: context.asTransaction
         )
     }
@@ -178,7 +177,7 @@ extension OWSIdentityManager {
         if shouldSaveIdentityKey {
             // Ensure a remote identity exists for this key. We may be learning about
             // it for the first time.
-            saveRemoteIdentity(identityKey, address: address, authedAccount: .implicit(), transaction: transaction)
+            saveRemoteIdentity(identityKey, address: address, transaction: transaction)
             recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: transaction)
         }
 
@@ -476,7 +475,7 @@ extension OWSIdentityManager {
 extension OWSIdentityManager {
 
     @discardableResult
-    public func batchUpdateIdentityKeys(addresses: [SignalServiceAddress], authedAccount: AuthedAccount) -> Promise<Void> {
+    public func batchUpdateIdentityKeys(addresses: [SignalServiceAddress]) -> Promise<Void> {
         guard !addresses.isEmpty else { return .value(()) }
 
         let addresses = Set(addresses)
@@ -547,14 +546,13 @@ extension OWSIdentityManager {
                     self.saveRemoteIdentity(
                         identityKey,
                         address: address,
-                        authedAccount: authedAccount,
                         transaction: transaction
                     )
                 }
             }
         }.then { () -> Promise<Void> in
             guard !remainingAddresses.isEmpty else { return .value(()) }
-            return self.batchUpdateIdentityKeys(addresses: remainingAddresses, authedAccount: authedAccount)
+            return self.batchUpdateIdentityKeys(addresses: remainingAddresses)
         }.catch { error in
             owsFailDebug("Batch identity key update failed with error \(error)")
         }

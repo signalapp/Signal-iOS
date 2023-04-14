@@ -166,7 +166,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = AccountId
     typealias RecordType = StorageServiceProtoContactRecord
 
-    private let localAddress: SignalServiceAddress
+    private let localIdentifiers: LocalIdentifiers
     private let authedAccount: AuthedAccount
     private let blockingManager: BlockingManager
     private let bulkProfileFetch: BulkProfileFetch
@@ -177,7 +177,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let usernameLookupManager: UsernameLookupManager
 
     init(
-        localAddress: SignalServiceAddress,
+        localIdentifiers: LocalIdentifiers,
         authedAccount: AuthedAccount,
         blockingManager: BlockingManager,
         bulkProfileFetch: BulkProfileFetch,
@@ -187,7 +187,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager
     ) {
-        self.localAddress = localAddress
+        self.localIdentifiers = localIdentifiers
         self.authedAccount = authedAccount
         self.blockingManager = blockingManager
         self.bulkProfileFetch = bulkProfileFetch
@@ -214,7 +214,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }
 
         let address = recipient.address
-        if address.isEqualToAddress(localAddress) {
+
+        if localIdentifiers.contains(address: address) {
             Logger.warn("Tried to create contact record from local account address")
             return nil
         }
@@ -363,8 +364,12 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             owsFailDebug("address unexpectedly missing for contact")
             return .invalid
         }
-        guard !immutableAddress.isLocalAddress && !authedAccount.isAddressForLocalUser(immutableAddress) else {
-            owsFailDebug("Unexpectedly merging contact record for local user.")
+        if localIdentifiers.contains(serviceId: ServiceId(contact.serviceId)) {
+            owsFailDebug("Trying to merge contact with our own serviceId.")
+            return .invalid
+        }
+        if let phoneNumber = contact.serviceE164, localIdentifiers.contains(phoneNumber: phoneNumber) {
+            owsFailDebug("Trying to merge contact with our own phone number.")
             return .invalid
         }
 
@@ -444,7 +449,6 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 identityKey: identityKey,
                 address: address,
                 isUserInitiatedChange: false,
-                authedAccount: authedAccount,
                 transaction: transaction
             )
 
@@ -465,15 +469,17 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         // If our local whitelisted state differs from the service state, use the service's value.
         if record.whitelisted != localIsWhitelisted {
             if record.whitelisted {
-                profileManager.addUser(toProfileWhitelist: address,
-                                       userProfileWriter: .storageService,
-                                       authedAccount: authedAccount,
-                                       transaction: transaction)
+                profileManager.addUser(
+                    toProfileWhitelist: address,
+                    userProfileWriter: .storageService,
+                    transaction: transaction
+                )
             } else {
-                profileManager.removeUser(fromProfileWhitelist: address,
-                                          userProfileWriter: .storageService,
-                                          authedAccount: authedAccount,
-                                          transaction: transaction)
+                profileManager.removeUser(
+                    fromProfileWhitelist: address,
+                    userProfileWriter: .storageService,
+                    transaction: transaction
+                )
             }
         }
 
@@ -940,10 +946,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = Void
     typealias RecordType = StorageServiceProtoAccountRecord
 
-    private let localAddress: SignalServiceAddress
-    private let localAci: UUID
+    private let localIdentifiers: LocalIdentifiers
     private let authedAccount: AuthedAccount
-
     private let legacyChangePhoneNumber: LegacyChangePhoneNumber
     private let paymentsHelper: PaymentsHelperSwift
     private let preferences: OWSPreferences
@@ -959,8 +963,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let usernameEducationManager: UsernameEducationManager
 
     init(
-        localAddress: SignalServiceAddress,
-        localAci: UUID,
+        localIdentifiers: LocalIdentifiers,
         authedAccount: AuthedAccount,
         legacyChangePhoneNumber: LegacyChangePhoneNumber,
         paymentsHelper: PaymentsHelperSwift,
@@ -976,8 +979,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         usernameLookupManager: UsernameLookupManager,
         usernameEducationManager: UsernameEducationManager
     ) {
-        self.localAddress = localAddress
-        self.localAci = localAci
+        self.localIdentifiers = localIdentifiers
         self.authedAccount = authedAccount
         self.legacyChangePhoneNumber = legacyChangePhoneNumber
         self.paymentsHelper = paymentsHelper
@@ -1006,6 +1008,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         transaction: SDSAnyReadTransaction
     ) -> StorageServiceProtoAccountRecord? {
         var builder = StorageServiceProtoAccountRecord.builder()
+
+        let localAddress = localIdentifiers.aciAddress
+        let localAci = localIdentifiers.aci.uuidValue
 
         if let profileKey = profileManager.profileKeyData(for: localAddress, transaction: transaction) {
             builder.setProfileKey(profileKey)
@@ -1133,6 +1138,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         transaction: SDSAnyWriteTransaction
     ) -> StorageServiceMergeResult<Void> {
         var needsUpdate = false
+
+        let localAddress = localIdentifiers.aciAddress
+        let localAci = localIdentifiers.aci.uuidValue
 
         // Gather some local contact state to do comparisons against.
         let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)

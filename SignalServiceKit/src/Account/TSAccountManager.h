@@ -32,6 +32,7 @@ extern NSString *const TSAccountManager_DeviceIdKey;
 
 @class AnyPromise;
 @class E164ObjC;
+@class LocalIdentifiersObjC;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
@@ -120,6 +121,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
                                pni:(NSUUID *)pni
                          authToken:(NSString *)authToken
                        transaction:(SDSAnyWriteTransaction *)transaction;
+
+@property (nonatomic, copy, nullable) void (^didStoreLocalNumber)(LocalIdentifiersObjC *);
 
 #pragma mark - Re-registration
 

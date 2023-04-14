@@ -384,7 +384,6 @@ public extension MessageSender {
             identityManager.saveRemoteIdentity(
                 newRecipientIdentityKey,
                 address: recipientAddress,
-                authedAccount: .implicit(),
                 transaction: transaction
             )
         } catch {

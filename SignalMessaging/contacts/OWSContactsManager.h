@@ -100,7 +100,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 
 // Ensure's the app has the latest contacts, but won't prompt the user for contact
 // access if they haven't granted it.
-- (void)fetchSystemContactsOnceIfAlreadyAuthorizedWithAuthedAccount:(AuthedAccount *)authedAccount;
+- (void)fetchSystemContactsOnceIfAlreadyAuthorized;
 
 // This variant will fetch system contacts if contact access has already been granted,
 // but not prompt for contact access. Also, it will always notify delegates, even if

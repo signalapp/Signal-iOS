@@ -145,10 +145,7 @@ class RecipientMergerImpl: RecipientMerger {
         case .some(let updatedRecipient):
             mergedRecipient = updatedRecipient
             dataStore.updateRecipient(mergedRecipient, transaction: transaction)
-            storageServiceManager.recordPendingUpdates(
-                updatedAccountIds: [mergedRecipient.accountId],
-                authedAccount: .implicit()
-            )
+            storageServiceManager.recordPendingUpdates(updatedAccountIds: [mergedRecipient.accountId])
         case .none:
             mergedRecipient = SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: E164ObjC(phoneNumber))
             dataStore.insertRecipient(mergedRecipient, transaction: transaction)

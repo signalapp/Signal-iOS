@@ -259,6 +259,12 @@ public extension TSAccountManager {
             pniAwaitingVerification = nil
         }
 
+        didStoreLocalNumber?(LocalIdentifiersObjC(LocalIdentifiers(
+            aci: newAci.wrappedValue,
+            pni: newPni?.wrappedValue,
+            phoneNumber: newLocalNumber
+        )))
+
         let localRecipient = SignalRecipient.mergeHighTrust(
             serviceId: newAci.wrappedValue,
             phoneNumber: E164(newLocalNumber),
