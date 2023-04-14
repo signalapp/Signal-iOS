@@ -906,6 +906,7 @@
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
 		66FC636929DE21A600F00DAC /* NSRangeUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC636829DE21A600F00DAC /* NSRangeUtil.swift */; };
 		66FC636B29DE27A500F00DAC /* NSRangeUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC636A29DE27A500F00DAC /* NSRangeUtilTests.swift */; };
+		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
 		7609818C2936EF22008F8300 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7609818B2936EF22008F8300 /* AudioPlayer.swift */; };
@@ -3373,6 +3374,7 @@
 		66FC636A29DE27A500F00DAC /* NSRangeUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangeUtilTests.swift; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlaybackControls.swift; sourceTree = "<group>"; };
 		760981872936DE90008F8300 /* BezierPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierPathView.swift; sourceTree = "<group>"; };
 		760981892936EC8D008F8300 /* OWSTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTextView.swift; sourceTree = "<group>"; };
 		7609818B2936EF22008F8300 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
@@ -6309,6 +6311,7 @@
 				45CADA8A298DD2B4009EBDF5 /* MediaTileScrollFlag.swift */,
 				454A84032059C787008B8C75 /* MediaTileViewController.swift */,
 				45B821F82981F7D400BB08BE /* VideoDurationHelper.swift */,
+				76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */,
 			);
 			path = MediaGallery;
 			sourceTree = "<group>";
@@ -11535,6 +11538,7 @@
 				D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */,
 				D95C39EA296E108100A9DA23 /* UsernameSelectionViewController.swift in Sources */,
 				45B821F92981F7D400BB08BE /* VideoDurationHelper.swift in Sources */,
+				76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */,
 				66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */,
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,
 				88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */,

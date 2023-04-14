@@ -162,7 +162,15 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
     /**
      * If enabled, `GalleryRailView` will hide itself if there is less than two items.
      */
-    public var hidesAutomatically = true
+    public var hidesAutomatically = true {
+        didSet {
+            guard let itemProvider else { return }
+            // Unhide automatically if there's more than 1 item.
+            if hidesAutomatically && isHiddenInStackView && itemProvider.railItems.count > 1 {
+                isHiddenInStackView = false
+            }
+        }
+    }
 
     public var isScrollEnabled: Bool {
         get { scrollView.isScrollEnabled }
@@ -187,7 +195,11 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         preservesSuperviewLayoutMargins = true
 
         addSubview(scrollView)
-        scrollView.autoPinEdgesToSuperviewMargins()
+        // Constrain width to view and not layout guide because as of iOS 16.4
+        // UIStackView, that GalleryRailView is placed in, was messing with view's layout margins.
+        scrollView.autoPinWidthToSuperview()
+        // Constrain height to margins because view controller adjusts those to control view spacing.
+        scrollView.autoPinHeightToSuperviewMargins()
     }
 
     public required init?(coder aDecoder: NSCoder) {

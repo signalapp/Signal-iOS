@@ -100,6 +100,8 @@ public class VideoPlayer: NSObject {
         seek(to: newTime)
     }
 
+    public var isPlaying: Bool { avPlayer.timeControlStatus == .playing }
+
     public var currentTimeSeconds: Double {
         return avPlayer.currentTime().seconds
     }
