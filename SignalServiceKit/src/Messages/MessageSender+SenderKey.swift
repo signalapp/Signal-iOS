@@ -344,25 +344,9 @@ extension MessageSender {
         forSenderKeyRecipients senderKeyRecipients: [ServiceIdObjC],
         senderCertificates: SenderCertificates
     ) -> SenderCertificate {
-        let phoneNumberSharingMode = udManager.phoneNumberSharingMode
-        switch phoneNumberSharingMode {
+        switch udManager.phoneNumberSharingMode {
         case .everybody:
             return senderCertificates.defaultCert
-        case .contactsOnly:
-            let areAllSystemContacts: Bool = databaseStorage.read { transaction in
-                for serviceId in senderKeyRecipients {
-                    let address = SignalServiceAddress(serviceId.wrappedValue)
-                    if !Self.contactsManager.isSystemContact(address: address, transaction: transaction) {
-                        return false
-                    }
-                }
-                return true
-            }
-            if areAllSystemContacts {
-                return senderCertificates.defaultCert
-            } else {
-                return senderCertificates.uuidOnlyCert
-            }
         case .nobody:
             return senderCertificates.uuidOnlyCert
         }

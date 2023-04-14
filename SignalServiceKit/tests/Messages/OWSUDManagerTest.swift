@@ -269,44 +269,6 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
                            self.uuidOnlySenderCert.serialize())
         }.expect(timeout: 1.0)
-
-        // Contacts-only sharing?
-        write { transaction in
-            udManagerImpl.setPhoneNumberSharingMode(.contactsOnly,
-                                                    updateStorageService: false,
-                                                    transaction: transaction.unwrapGrdbWrite)
-        }
-
-        firstly {
-            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
-        }.done { senderCertificates in
-            let sendingAccess = self.udManagerImpl.udSendingAccess(
-                for: bobRecipientAddress.serviceIdObjC!,
-                requireSyncAccess: false,
-                senderCertificates: senderCertificates
-            )!
-            XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
-            XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
-            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
-                           self.uuidOnlySenderCert.serialize())
-        }.expect(timeout: 1.0)
-
-        // Add Bob to our contacts.
-        (contactsManager as! FakeContactsManager).systemContacts.append(bobRecipientAddress)
-
-        firstly {
-            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
-        }.done { senderCertificates in
-            let sendingAccess = self.udManagerImpl.udSendingAccess(
-                for: bobRecipientAddress.serviceIdObjC!,
-                requireSyncAccess: false,
-                senderCertificates: senderCertificates
-            )!
-            XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
-            XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
-            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
-                           self.defaultSenderCert.serialize())
-        }.expect(timeout: 1.0)
     }
 
     func test_certificateChoiceWithPhoneNumberShared() {
@@ -348,25 +310,6 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         // Turn off phone number sharing.
         write { transaction in
             udManagerImpl.setPhoneNumberSharingMode(.nobody,
-                                                    updateStorageService: false,
-                                                    transaction: transaction.unwrapGrdbWrite)
-        }
-
-        firstly {
-            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
-        }.done { senderCertificates in
-            let sendingAccess = self.udManagerImpl.udSendingAccess(
-                for: bobRecipientAddress.serviceIdObjC!,
-                requireSyncAccess: false,
-                senderCertificates: senderCertificates
-            )!
-            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
-                           self.defaultSenderCert.serialize())
-        }.expect(timeout: 1.0)
-
-        // Contacts-only sharing?
-        write { transaction in
-            udManagerImpl.setPhoneNumberSharingMode(.contactsOnly,
                                                     updateStorageService: false,
                                                     transaction: transaction.unwrapGrdbWrite)
         }

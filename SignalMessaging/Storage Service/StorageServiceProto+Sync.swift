@@ -1429,7 +1429,6 @@ extension PhoneNumberSharingMode {
     var asProtoMode: StorageServiceProtoAccountRecordPhoneNumberSharingMode {
         switch self {
         case .everybody: return .everybody
-        case .contactsOnly: return .contactsOnly
         case .nobody: return .nobody
         }
     }
@@ -1439,7 +1438,7 @@ extension StorageServiceProtoAccountRecordPhoneNumberSharingMode {
     var asLocalMode: PhoneNumberSharingMode? {
         switch self {
         case .everybody: return .everybody
-        case .contactsOnly: return .contactsOnly
+        case .contactsOnly: return nil
         case .nobody: return .nobody
         default:
             owsFailDebug("unexpected case \(self)")

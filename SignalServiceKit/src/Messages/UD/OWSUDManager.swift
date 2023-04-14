@@ -544,26 +544,17 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         senderCertificates: SenderCertificates
     ) -> OWSUDSendingAccess {
         databaseStorage.read { transaction in
-            let senderCertificate: SenderCertificate
+            let shouldSharePhoneNumber: Bool
             switch phoneNumberSharingMode {
             case .everybody:
-                senderCertificate = senderCertificates.defaultCert
-            case .contactsOnly:
-                let address = SignalServiceAddress(serviceId)
-                if Self.contactsManager.isSystemContact(address: address, transaction: transaction) {
-                    senderCertificate = senderCertificates.defaultCert
-                    break
-                }
-                fallthrough
+                shouldSharePhoneNumber = true
             case .nobody:
-                if identityManager.shouldSharePhoneNumber(with: serviceId, transaction: transaction) {
-                    senderCertificate = senderCertificates.defaultCert
-                    break
-                }
-                senderCertificate = senderCertificates.uuidOnlyCert
+                shouldSharePhoneNumber = identityManager.shouldSharePhoneNumber(with: serviceId, transaction: transaction)
             }
-
-            return OWSUDSendingAccess(udAccess: udAccess, senderCertificate: senderCertificate)
+            return OWSUDSendingAccess(
+                udAccess: udAccess,
+                senderCertificate: shouldSharePhoneNumber ? senderCertificates.defaultCert : senderCertificates.uuidOnlyCert
+            )
         }
     }
 
@@ -814,9 +805,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
 // MARK: -
 
+/// These are persisted to disk, so they must remain stable.
 @objc
 public enum PhoneNumberSharingMode: Int {
-    case everybody
-    case contactsOnly
-    case nobody
+    case everybody = 0
+    case nobody = 2
 }
