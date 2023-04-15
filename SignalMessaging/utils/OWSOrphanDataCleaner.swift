@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalCoreKit
+import SignalServiceKit
 
 extension OWSOrphanDataCleaner {
     @objc
@@ -138,7 +139,7 @@ extension OWSOrphanDataCleaner {
         }
 
         findAttachmentIds(
-            label: IncomingGroupSyncJobRecord.defaultLabel,
+            label: IncomingContactSyncJobRecord.defaultLabel,
             transaction: transaction,
             jobRecordAttachmentIds: { (jobRecord: IncomingContactSyncJobRecord) in [jobRecord.attachmentId] }
         )
