@@ -190,7 +190,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
                     let paymentIntentId = jobRecord.paymentIntentId,
                     let paymentMethodId = jobRecord.paymentMethodId
                 else {
-                    throw JobError.assertionFailure(description: "Tried to use Stripe as payment processor but data was missing")
+                    throw JobError.permanentFailure(description: "Tried to use Stripe as payment processor but data was missing")
                 }
                 return Payment.forStripe(
                     paymentIntentClientSecret: paymentIntentClientSecret,
@@ -203,7 +203,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
                     let paypalPaymentId = jobRecord.paypalPaymentId,
                     let paypalPaymentToken = jobRecord.paypalPaymentToken
                 else {
-                    throw JobError.assertionFailure(description: "Tried to use Braintree as payment processor but data was missing")
+                    throw JobError.permanentFailure(description: "Tried to use Braintree as payment processor but data was missing")
                 }
                 return Payment.forBraintree(paypalApprovalParams: .init(
                     payerId: paypalPayerId,

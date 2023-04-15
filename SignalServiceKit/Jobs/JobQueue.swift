@@ -23,7 +23,7 @@ import GRDB
 /// an error where `error.isRetryable == false`, the operation will fail, regardless of available retries.
 
 public enum JobError: Error {
-    case assertionFailure(description: String)
+    case permanentFailure(description: String)
     case obsolete(description: String)
 }
 
@@ -191,8 +191,8 @@ public extension JobQueue {
                 Logger.debug("adding operation: \(durableOperation) with remainingRetries: \(remainingRetries)")
                 operationQueue.addOperation(durableOperation.operation)
             }
-        } catch JobError.assertionFailure(let description) {
-            owsFailDebug("assertion failure: \(description)")
+        } catch JobError.permanentFailure(let description) {
+            owsFailDebug("permanent failure: \(description)")
             nextJob.saveAsPermanentlyFailed(transaction: transaction)
         } catch JobError.obsolete(let description) {
             // TODO is this even worthwhile to have obsolete state? Should we just delete the task outright?
