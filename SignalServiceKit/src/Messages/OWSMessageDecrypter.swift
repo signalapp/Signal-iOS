@@ -871,10 +871,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
 private extension SSKProtoEnvelope {
     func buildIdentifiedCopy(using error: SecretSessionKnownSenderError) -> SSKProtoEnvelope {
-        owsAssert(error.senderAddress.isValid)
-
         let identifiedEnvelopeBuilder = asBuilder()
-        error.senderAddress.uuidString.map { identifiedEnvelopeBuilder.setSourceUuid($0) }
+        identifiedEnvelopeBuilder.setSourceUuid(error.senderServiceId.uuidValue.uuidString)
         identifiedEnvelopeBuilder.setSourceDevice(error.senderDeviceId)
         identifiedEnvelopeBuilder.setContent(error.unsealedContent)
 

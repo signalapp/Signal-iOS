@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Curve25519Kit
-import SignalCoreKit
+import Foundation
 import LibSignalClient
+import SignalCoreKit
 
 public struct SecretSessionKnownSenderError: Error {
-    public let senderAddress: SignalServiceAddress
+    public let senderServiceId: ServiceId
     public let senderDeviceId: UInt32
     public let cipherType: CiphertextMessage.MessageType
     public let groupId: Data?
@@ -17,8 +17,8 @@ public struct SecretSessionKnownSenderError: Error {
     public let contentHint: UnidentifiedSenderMessageContent.ContentHint
     public let underlyingError: Error
 
-    init(messageContent: UnidentifiedSenderMessageContent, underlyingError: Error) {
-        self.senderAddress = SignalServiceAddress(messageContent.senderCertificate.sender)
+    init(senderServiceId: ServiceId, messageContent: UnidentifiedSenderMessageContent, underlyingError: Error) {
+        self.senderServiceId = senderServiceId
         self.senderDeviceId = messageContent.senderCertificate.sender.deviceId
         self.cipherType = messageContent.messageType
         self.groupId = messageContent.groupId.map { Data($0) }
@@ -266,8 +266,11 @@ public class SMKSecretSessionCipher: NSObject {
                 messageType: SMKMessageType(messageContent.messageType)
             )
         } catch {
-            throw SecretSessionKnownSenderError(messageContent: messageContent,
-                                                underlyingError: error)
+            throw SecretSessionKnownSenderError(
+                senderServiceId: senderServiceId,
+                messageContent: messageContent,
+                underlyingError: error
+            )
         }
     }
 

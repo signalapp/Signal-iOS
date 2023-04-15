@@ -14,7 +14,7 @@ class MockClient {
 
     var sealedSenderAddress: SealedSenderAddress {
         try! SealedSenderAddress(
-            e164: nil,
+            e164: phoneNumber.stringValue,
             uuidString: serviceId.uuidValue.uuidString,
             deviceId: UInt32(deviceId)
         )

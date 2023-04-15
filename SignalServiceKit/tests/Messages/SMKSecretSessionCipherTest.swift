@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // https://github.com/signalapp/libsignal-metadata-java/blob/4a0e0c87ea733d5c007488671b74ace0dc5dcbef/tests/src/test/java/org/signal/libsignal/metadata/SealedSessionCipherTest.java
 // public class SecretSessionCipherTest extends TestCase {
-class SMKSecretSessionCipherTest: SSKBaseTestSwift {
+class SMKSecretSessionCipherTest: XCTestCase {
 
     private lazy var aliceMockClient = MockClient(
         serviceId: ServiceId(uuidString: "aaaaaaaa-7000-11eb-b32a-33b8a8a487a6")!,
@@ -82,7 +82,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "smert za smert")
         XCTAssertEqual(bobPlaintext.senderDeviceId, Int(aliceMockClient.deviceId))
         XCTAssertEqual(bobPlaintext.senderServiceId.wrappedValue, aliceMockClient.serviceId)
-        XCTAssertEqual(bobPlaintext.senderE164, nil)
+        XCTAssertEqual(bobPlaintext.senderE164, aliceMockClient.phoneNumber.stringValue)
     }
 
     // public void testEncryptDecryptUntrusted() throws Exception {
@@ -158,9 +158,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
                     originalSenderDeviceId: knownSenderError.senderDeviceId
                 )
             )
-            XCTAssertEqual(knownSenderError.senderAddress.serviceId, aliceMockClient.serviceId)
-            // The certificate was invalid, so we don't trust the phone number.
-            XCTAssertNil(knownSenderError.senderAddress.phoneNumber)
+            XCTAssertEqual(knownSenderError.senderServiceId, aliceMockClient.serviceId)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -239,9 +237,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
                     originalSenderDeviceId: knownSenderError.senderDeviceId
                 )
             )
-            XCTAssertEqual(knownSenderError.senderAddress.serviceId, aliceMockClient.serviceId)
-            // The certificate was invalid, so we don't trust the phone number.
-            XCTAssertNil(knownSenderError.senderAddress.phoneNumber)
+            XCTAssertEqual(knownSenderError.senderServiceId, aliceMockClient.serviceId)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -420,9 +416,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
             // Verify: We need to make sure that the sender, group, and contentHint are preserved
             // through decryption failures because of missing a missing sender key. This will
             // help with recovery.
-            XCTAssertEqual(knownSenderError.senderAddress.serviceId, aliceMockClient.serviceId)
-            // The certificate was invalid, so we don't trust the phone number.
-            XCTAssertNil(knownSenderError.senderAddress.phoneNumber)
+            XCTAssertEqual(knownSenderError.senderServiceId, aliceMockClient.serviceId)
             XCTAssertEqual(knownSenderError.senderDeviceId, UInt32(aliceMockClient.deviceId))
             XCTAssertEqual(Data(knownSenderError.groupId!), "inyalowda".data(using: String.Encoding.utf8)!)
             XCTAssertEqual(knownSenderError.contentHint, .resendable)
