@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
-    OWSLogInfo(@"");
-
     [super setUp];
 
     SetCurrentAppContext([TestAppContext new], YES);
@@ -29,8 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tearDown
 {
-    OWSLogInfo(@"");
-
+    [MockSSKEnvironment flushAndWait];
     [super tearDown];
 }
 

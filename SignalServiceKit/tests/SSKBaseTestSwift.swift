@@ -39,15 +39,7 @@ public class SSKBaseTestSwift: XCTestCase {
 
     @objc
     public override func tearDown() {
-        AssertIsOnMainThread()
-
-        // Spin the main run loop to flush any remaining async work.
-        var done = false
-        DispatchQueue.main.async { done = true }
-        while !done {
-            CFRunLoopRunInMode(.defaultMode, 0.0, true)
-        }
-
+        MockSSKEnvironment.flushAndWait()
         super.tearDown()
     }
 

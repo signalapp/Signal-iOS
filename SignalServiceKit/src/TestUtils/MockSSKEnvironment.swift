@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import GRDB
+import SignalCoreKit
 
 #if TESTABLE_BUILD
 
@@ -16,6 +18,28 @@ public class MockSSKEnvironment: SSKEnvironment {
 
         sskEnvironment.configureGrdb()
         sskEnvironment.warmCaches()
+    }
+
+    @objc
+    public static func flushAndWait() {
+        AssertIsOnMainThread()
+
+        waitForMainQueue()
+
+        // Wait for all pending readers/writers to finish.
+        grdbStorageAdapter.pool.barrierWriteWithoutTransaction { _ in }
+
+        // Wait for the main queue *again* in case more work was scheduled.
+        waitForMainQueue()
+    }
+
+    private static func waitForMainQueue() {
+        // Spin the main run loop to flush any remaining async work.
+        var done = false
+        DispatchQueue.main.async { done = true }
+        while !done {
+            CFRunLoopRunInMode(.defaultMode, 0.0, true)
+        }
     }
 
     public init() {
