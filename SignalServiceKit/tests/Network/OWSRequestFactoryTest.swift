@@ -6,7 +6,7 @@
 import XCTest
 import SignalServiceKit
 
-class OWSRequestFactoryTest: SSKBaseTestSwift {
+class OWSRequestFactoryTest: XCTestCase {
     private func getUdAccessKey() throws -> SMKUDAccessKey {
         let profileKey = Data(count: Int(kAES256_KeyByteLength))
         let result = try? SMKUDAccessKey(profileKey: profileKey)

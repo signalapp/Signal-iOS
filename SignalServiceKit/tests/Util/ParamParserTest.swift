@@ -5,7 +5,9 @@
 
 import XCTest
 
-class ParamParserTest: SignalBaseTest {
+import SignalServiceKit
+
+class ParamParserTest: XCTestCase {
     let dict: [String: Any] = ["some_int": 11, "some_string": "asdf", "large_int": Int64.max, "negative_int": -10]
     var parser: ParamParser {
         return ParamParser(dictionary: dict)

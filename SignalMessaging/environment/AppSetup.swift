@@ -32,6 +32,7 @@ public class AppSetup {
         OWSBackgroundTaskManager.shared().observeNotifications()
 
         let storageCoordinator = StorageCoordinator()
+        Logger.info("hasGrdbFile: \(StorageCoordinator.hasGrdbFile)")
         let databaseStorage = storageCoordinator.nonGlobalDatabaseStorage
 
         // AFNetworking (via CFNetworking) spools its attachments in

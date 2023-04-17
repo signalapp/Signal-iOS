@@ -8,7 +8,7 @@ import XCTest
 @testable import SignalMessaging
 @testable import SignalUI
 
-class ImageEditorModelTest: SignalBaseTest {
+class ImageEditorModelTest: XCTestCase {
 
     func testImageEditorTransform0() {
         let imageSizePixels = CGSize(width: 200, height: 300)

@@ -80,11 +80,6 @@ NSString *NSStringForDataStore(DataStore value)
 
 - (void)configure
 {
-    OWSLogInfo(@"storageMode: %@", SSKFeatureFlags.storageModeDescription);
-
-    BOOL hasGrdbFile = self.class.hasGrdbFile;
-    OWSLogInfo(@"hasGrdbFile: %d", hasGrdbFile);
-
     switch (SSKFeatureFlags.storageMode) {
         case StorageModeGrdb:
             self.state = StorageCoordinatorStateGRDB;
@@ -104,8 +99,6 @@ NSString *NSStringForDataStore(DataStore value)
             self.state = StorageCoordinatorStateGRDBTests;
             break;
     }
-
-    OWSLogInfo(@"state: %@", NSStringFromStorageCoordinatorState(self.state));
 }
 
 - (BOOL)isDatabasePasswordAccessible

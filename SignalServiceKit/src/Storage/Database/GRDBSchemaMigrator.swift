@@ -105,7 +105,6 @@ public class GRDBSchemaMigrator: NSObject {
 
     private static func hasCreatedInitialSchema(transaction: GRDBReadTransaction) throws -> Bool {
         let appliedMigrations = try DatabaseMigrator().appliedIdentifiers(transaction.database)
-        Logger.info("appliedMigrations: \(appliedMigrations.sorted()).")
         return appliedMigrations.contains(MigrationId.createInitialSchema.rawValue)
     }
 

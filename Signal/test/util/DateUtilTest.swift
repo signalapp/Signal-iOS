@@ -4,11 +4,10 @@
 //
 
 import XCTest
-@testable import SignalServiceKit
-@testable import Signal
+
 @testable import SignalMessaging
 
-class DateUtilTest: SignalBaseTest {
+class DateUtilTest: XCTestCase {
     func buildDate(year: Int = 0,
                    month: Int = 0,
                    day: Int = 0,

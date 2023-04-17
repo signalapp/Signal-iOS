@@ -6,7 +6,7 @@
 import Foundation
 @testable import Signal
 
-class ConverstationViewControllerTest: SignalBaseTest {
+class ConversationViewControllerTest: SignalBaseTest {
 
     func testCVCBottomViewType() {
         XCTAssertEqual(CVCBottomViewType.none, CVCBottomViewType.none)

@@ -46,6 +46,11 @@ extension AppDelegate {
 
         enableLoggingIfNeeded()
 
+        if CurrentAppContext().isRunningTests {
+            _ = initializeWindow(mainAppContext: mainAppContext, rootViewController: UIViewController())
+            return
+        }
+
         Logger.warn("application: didFinishLaunchingWithOptions.")
         defer { Logger.info("application: didFinishLaunchingWithOptions completed.") }
 
@@ -61,11 +66,6 @@ extension AppDelegate {
         #endif
 
         Cryptography.seedRandom()
-
-        if CurrentAppContext().isRunningTests {
-            _ = initializeWindow(mainAppContext: mainAppContext, rootViewController: UIViewController())
-            return
-        }
 
         // This *must* happen before we try and access or verify the database,
         // since we may be in a state where the database has been partially

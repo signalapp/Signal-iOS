@@ -697,7 +697,6 @@
 		4C30E226234FB033009558B7 /* Deprecated_SecondaryLinkingQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E225234FB033009558B7 /* Deprecated_SecondaryLinkingQRCodeViewController.swift */; };
 		4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */; };
 		4C3A2BC72356620E004B3986 /* Deprecated_ProvisioningController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3A2BC62356620E004B3986 /* Deprecated_ProvisioningController.swift */; };
-		4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */; };
 		4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */; };
 		4C42960E2318E5EB00D9D240 /* MessageProcessingPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42960D2318E5EB00D9D240 /* MessageProcessingPerformanceTest.swift */; };
 		4C429610231A1AA400D9D240 /* MessageSendingPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42960F231A1AA400D9D240 /* MessageSendingPerformanceTest.swift */; };
@@ -767,6 +766,7 @@
 		503C2F432977752B00217527 /* OWSURLSessionEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */; };
 		5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */; };
 		5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C3636233D198300D52012 /* LaunchJobs.swift */; };
+		50468F2529EDD46500948E02 /* ParamParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */; };
 		5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */; };
 		5049FA3028BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */; };
 		5049FA3228BEAAD800D6E099 /* cdsi.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA3128BEAAD800D6E099 /* cdsi.pb.swift */; };
@@ -6297,7 +6297,6 @@
 		4C3EF8002109184A0007EBF7 /* SSKTests */ = {
 			isa = PBXGroup;
 			children = (
-				4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */,
 				4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */,
 			);
 			path = SSKTests;
@@ -7959,6 +7958,7 @@
 				F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */,
 				F94261EE289B1B5400460798 /* OWSFormatTest.swift */,
 				F94261FB289B1B5400460798 /* OWSOperationTest.swift */,
+				4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */,
 				F9CAC7842919B5A400EEC1DE /* PhoneNumberRegionsTest.swift */,
 				F908AA7728CB894400472E68 /* PngChunkerTest.swift */,
 				F94261F0289B1B5400460798 /* RefineryTest.swift */,
@@ -11624,7 +11624,6 @@
 				454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */,
 				45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */,
 				F963164B291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift in Sources */,
-				4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */,
 				3452851D26DFD12300824983 /* PaymentsFormatTest.swift in Sources */,
 				3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */,
 				346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */,
@@ -12387,6 +12386,7 @@
 				F9426244289B1B5500460798 /* OWSRequestFactoryTest.swift in Sources */,
 				F942629F289B1B5600460798 /* OWSUDManagerTest.swift in Sources */,
 				F9426242289B1B5500460798 /* OWSURLBuilderUtilTest.swift in Sources */,
+				50468F2529EDD46500948E02 /* ParamParserTest.swift in Sources */,
 				F9CAC7852919B5A400EEC1DE /* PhoneNumberRegionsTest.swift in Sources */,
 				F9426280289B1B5600460798 /* PhoneNumberTest.m in Sources */,
 				F9426274289B1B5500460798 /* PhoneNumberTest.swift in Sources */,

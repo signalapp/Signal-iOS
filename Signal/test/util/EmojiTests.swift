@@ -7,7 +7,7 @@ import XCTest
 @testable import Signal
 @testable import SignalServiceKit
 
-class EmojiTests: SignalBaseTest {
+class EmojiTests: XCTestCase {
     func testSimpleEmojiCases() {
         XCTAssertFalse("".isSingleEmojiUsingEmojiWithSkinTones)
         XCTAssertTrue("😃".isSingleEmojiUsingEmojiWithSkinTones)

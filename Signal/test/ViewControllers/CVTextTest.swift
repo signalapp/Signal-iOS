@@ -8,7 +8,7 @@ import Foundation
 @testable import SignalUI
 import BonMot
 
-class CVTextTest: SignalBaseTest {
+class CVTextTest: XCTestCase {
     func testTextViewMeasurement() {
         let configs = [
             CVTextViewConfig(text: "short", font: .ows_dynamicTypeBody, textColor: .black),

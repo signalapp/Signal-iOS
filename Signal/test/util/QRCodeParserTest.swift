@@ -6,7 +6,7 @@
 import XCTest
 @testable import Signal
 
-class QRCodeParserTest: SignalBaseTest {
+class QRCodeParserTest: XCTestCase {
     func testParse() {
         struct SampleQRCode {
             let qrCodeBase64: String

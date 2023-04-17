@@ -20,7 +20,7 @@ enum Letter: Hashable {
     case b
 }
 
-class JournalingOrderedDictionaryTest: SignalBaseTest {
+class JournalingOrderedDictionaryTest: XCTestCase {
     func testPrepend() {
         var sut = JournalingOrderedDictionary<Letter, String, StringChange>()
         sut.prepend(key: .a, value: "a")
