@@ -31,7 +31,7 @@ public class CLVReminderViews: NSObject {
         reminderViewCell.contentView.addSubview(reminderStackView)
         reminderStackView.autoPinEdgesToSuperviewEdges()
         reminderViewCell.accessibilityIdentifier = "reminderViewCell"
-        reminderViewCell.accessibilityIdentifier = "reminderStackView"
+        reminderStackView.accessibilityIdentifier = "reminderStackView"
 
         deregisteredView = ReminderView.nag(text: (TSAccountManager.shared.isPrimaryDevice
                                                     ? NSLocalizedString("DEREGISTRATION_WARNING",
