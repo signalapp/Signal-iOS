@@ -589,7 +589,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             guard let certificateDate = certificateDateValue else {
                 return nil
             }
-            guard certificateDate.timeIntervalSinceNow < kDayInterval else {
+            guard -certificateDate.timeIntervalSinceNow < kDayInterval else {
                 // Discard certificates that we obtained more than 24 hours ago.
                 return nil
             }
