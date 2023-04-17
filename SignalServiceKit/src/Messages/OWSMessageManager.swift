@@ -335,6 +335,68 @@ extension OWSMessageManager {
     }
 
     @objc
+    func handleIncomingEnvelope(
+        _ envelope: SSKProtoEnvelope,
+        withEditMessage editMessage: SSKProtoEditMessage,
+        wasReceivedByUD: Bool,
+        serverDeliveryTimestamp: UInt64,
+        transaction writeTx: SDSAnyWriteTransaction
+    ) {
+        guard FeatureFlags.editMessageReceive else {
+            Logger.info("Ignoring edit message (author: \(envelope.formattedAddress), timestamp: \(editMessage) related to message (timestamp: \(editMessage.dataMessage?.timestamp ?? 0)")
+            return
+        }
+
+        guard let dataMessage = editMessage.dataMessage else {
+            Logger.warn("Missing edit message data.")
+            return
+        }
+
+        guard let thread = preprocessDataMessage(
+            dataMessage,
+            envelope: envelope,
+            transaction: writeTx
+        ) else {
+            Logger.warn("Missing edit message thread.")
+            return
+        }
+
+        guard let sourceAddress = envelope.sourceAddress else {
+            Logger.warn("Missing edit source address.")
+            return
+        }
+
+        let editManager = EditManager(
+            context: .init(
+                dataStore: EditManager.Wrappers.DataStore(),
+                groupsShim: EditManager.Wrappers.Groups(groupsV2: groupsV2),
+                linkPreviewShim: EditManager.Wrappers.LinkPreview()
+            )
+        )
+
+        let result = editManager.processIncomingEditMessage(
+            dataMessage,
+            thread: thread,
+            serverTimestamp: envelope.serverTimestamp,
+            targetTimestamp: editMessage.targetSentTimestamp,
+            author: sourceAddress,
+            tx: writeTx.asV2Write
+        )
+
+        if !result {
+            Logger.info("Failed to insert edit message")
+        }
+
+        DispatchQueue.main.async {
+            self.typingIndicatorsImpl.didReceiveIncomingMessage(
+                inThread: thread,
+                address: sourceAddress,
+                deviceId: UInt(envelope.sourceDevice)
+            )
+        }
+    }
+
+    @objc
     public static func descriptionForDataMessageContents(_ dataMessage: SSKProtoDataMessage) -> String {
         var splits = [String]()
         if !dataMessage.attachments.isEmpty {
@@ -470,6 +532,8 @@ extension SSKProtoContent {
             message.append("<DecryptionErrorMessage: \(decryptionErrorMessage) />")
         } else if let storyMessage = self.storyMessage {
             message.append("<StoryMessage: \(storyMessage) />")
+        } else if let editMessage = self.editMessage {
+            message.append("<EditMessage: \(editMessage) />")
         }
 
          // SKDM's are not mutually exclusive with other content types
@@ -734,6 +798,9 @@ class MessageManagerRequest: NSObject {
         }
         if protoContent?.hasSenderKeyDistributionMessage ?? false {
             return .hasSenderKeyDistributionMessage
+        }
+        if protoContent?.editMessage != nil {
+            return .editMessage
         }
         return .unknown
     }

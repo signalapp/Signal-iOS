@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoDataMessage;
 @class SSKProtoEnvelope;
 @class SSKProtoSyncMessage;
+@class TSThread;
 
 typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
 {
@@ -26,6 +27,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
     OWSMessageManagerMessageTypeDecryptionErrorMessage,
     OWSMessageManagerMessageTypeStoryMessage,
     OWSMessageManagerMessageTypeHasSenderKeyDistributionMessage,
+    OWSMessageManagerMessageTypeEditMessage,
     OWSMessageManagerMessageTypeUnknown
 };
 
@@ -43,6 +45,10 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
           transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)canProcessEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (TSThread *_Nullable)preprocessDataMessage:(SSKProtoDataMessage *)dataMessage
+                                    envelope:(SSKProtoEnvelope *)envelope
+                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)finishProcessingEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction;
 

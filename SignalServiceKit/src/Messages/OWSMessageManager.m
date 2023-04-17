@@ -511,6 +511,14 @@ NS_ASSUME_NONNULL_BEGIN
             //
             // See: OWSMessageManager.preprocessEnvelope(envelope:plaintext:transaction:)
             break;
+        case OWSMessageManagerMessageTypeEditMessage:
+            if (SSKFeatureFlags.editMessageReceive) {
+                [self handleIncomingEnvelope:request.envelope
+                             withEditMessage:contentProto.editMessage
+                             wasReceivedByUD:request.wasReceivedByUD
+                     serverDeliveryTimestamp:request.serverDeliveryTimestamp
+                                 transaction:transaction];
+            }
         case OWSMessageManagerMessageTypeUnknown:
             OWSLogWarn(@"Ignoring envelope. Content with no known payload");
             break;

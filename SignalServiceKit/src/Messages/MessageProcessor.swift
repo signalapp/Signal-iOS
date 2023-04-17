@@ -537,7 +537,8 @@ struct ProcessingRequest {
                 }
                 return receiptMessage.timestamp
             case .syncMessage, .dataMessage, .callMessage, .typingMessage, .nullMessage,
-                    .decryptionErrorMessage, .storyMessage, .hasSenderKeyDistributionMessage, .unknown:
+                    .decryptionErrorMessage, .storyMessage, .hasSenderKeyDistributionMessage,
+                    .editMessage, .unknown:
                 return nil
             }
         }

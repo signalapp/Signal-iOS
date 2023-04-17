@@ -122,6 +122,9 @@ public class FeatureFlags: BaseFlags {
             logFlag("FeatureFlag", key, value)
         }
     }
+
+    @objc
+    public static let editMessageReceive: Bool = false
 }
 
 // MARK: -

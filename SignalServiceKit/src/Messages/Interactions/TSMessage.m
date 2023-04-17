@@ -309,6 +309,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (nullable SignalServiceAddress *)storyAuthorAddress
 {
+    if (self.storyAuthorUuidString == nil) {
+        return nil;
+    }
     return [[SignalServiceAddress alloc] initWithUuidString:self.storyAuthorUuidString];
 }
 
