@@ -167,8 +167,7 @@ extension ChatListViewController {
         deregisteredView.isHidden = !tsAccountManager.isDeregistered || tsAccountManager.isTransferInProgress
         outageView.isHidden = !OutageDetection.shared.hasOutage
 
-        expiredView.isHidden = !AppExpiry.shared.isExpiringSoon
-        expiredView.updateText()
+        expiredView.update()
 
         if unreadPaymentNotificationsCount == 1,
            let firstUnreadPaymentModel = self.firstUnreadPaymentModel {

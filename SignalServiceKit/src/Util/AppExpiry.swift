@@ -55,7 +55,9 @@ public class AppExpiry: NSObject {
         if isExpired {
             Logger.info("Build is expired.")
         } else {
-            Logger.info("Build expires in \(daysUntilBuildExpiry) days")
+            let oneDayInSeconds: TimeInterval = 86400
+            let daysUntilExpiry = Int(floor(expirationDate.timeIntervalSinceNow / oneDayInSeconds))
+            Logger.info("Build expires in \(daysUntilExpiry) day(s)")
         }
     }
 
@@ -159,24 +161,6 @@ public class AppExpiry: NSObject {
         case .immediately:
             return .distantPast
         }
-    }
-
-    @objc
-    public var daysUntilBuildExpiry: Int {
-        guard let daysUntilExpiry = Calendar.current.dateComponents(
-            [.day],
-            from: Date(),
-            to: expirationDate
-        ).day else {
-            owsFailDebug("Unexpectedly found nil daysUntilExpiry, this should not be possible.")
-            return 0
-        }
-        return daysUntilExpiry
-    }
-
-    @objc
-    public var isExpiringSoon: Bool {
-        return daysUntilBuildExpiry <= 10
     }
 
     @objc
