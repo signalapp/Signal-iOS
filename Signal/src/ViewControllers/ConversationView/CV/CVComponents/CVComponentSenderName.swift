@@ -73,7 +73,8 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         CVLabelConfig(attributedText: senderName,
                       font: UIFont.ows_dynamicTypeFootnote.ows_semibold,
                       textColor: senderNameColor,
-                      lineBreakMode: .byTruncatingTail)
+                      numberOfLines: 0,
+                      lineBreakMode: .byWordWrapping)
     }
 
     private var outerStackConfig: CVStackViewConfig {
