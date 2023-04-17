@@ -33,7 +33,7 @@ pod 'SignalArgon2', git: 'https://github.com/signalapp/Argon2.git', submodules: 
 pod 'GRDB.swift/SQLCipher'
 # pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 
-pod 'SQLCipher', ">= 4.0.1"
+pod 'SQLCipher', git: 'https://github.com/signalapp/sqlcipher.git', commit: 'f29e7df0d5b58a706781d5ae0a1173600046ebd4'
 
 ###
 # forked third party pods
