@@ -2995,6 +2995,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     remainingAttempts: remainingAttempts
                 ),
                 error: error,
+                contactSupportMode: .v2WithUnknownReglockState,
                 exitConfiguration: mode.pinExitConfig
             )
         }
@@ -3006,6 +3007,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             return RegistrationPinState(
                 operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
                 error: error,
+                contactSupportMode: .v2WithUnknownReglockState,
                 exitConfiguration: mode.pinExitConfig
             )
         }
@@ -3102,6 +3104,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             return RegistrationPinState(
                 operation: .enteringExistingPin(skippability: .unskippable, remainingAttempts: nil),
                 error: error,
+                contactSupportMode: .v2WithReglock,
                 exitConfiguration: mode.pinExitConfig
             )
         }
@@ -3116,6 +3119,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     remainingAttempts: nil
                 ),
                 error: error,
+                contactSupportMode: .v2NoReglock,
                 exitConfiguration: mode.pinExitConfig
             )
         }
@@ -3127,6 +3131,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             return RegistrationPinState(
                 operation: .creatingNewPin,
                 error: nil,
+                contactSupportMode: .v2NoReglock,
                 exitConfiguration: exitConfigOverride ?? mode.pinExitConfig
             )
         }
@@ -3139,6 +3144,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             return RegistrationPinState(
                 operation: .confirmingNewPin(.stub()),
                 error: error,
+                contactSupportMode: .v2NoReglock,
                 exitConfiguration: exitConfigOverride ?? mode.pinExitConfig
             )
         }

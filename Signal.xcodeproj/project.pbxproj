@@ -906,6 +906,7 @@
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
 		66FC636929DE21A600F00DAC /* NSRangeUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC636829DE21A600F00DAC /* NSRangeUtil.swift */; };
 		66FC636B29DE27A500F00DAC /* NSRangeUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC636A29DE27A500F00DAC /* NSRangeUtilTests.swift */; };
+		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
@@ -3376,6 +3377,7 @@
 		66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMyStoryRecipientsViewController.swift; sourceTree = "<group>"; };
 		66FC636829DE21A600F00DAC /* NSRangeUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangeUtil.swift; sourceTree = "<group>"; };
 		66FC636A29DE27A500F00DAC /* NSRangeUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangeUtilTests.swift; sourceTree = "<group>"; };
+		66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactSupportAlert+Registration.swift"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlaybackControls.swift; sourceTree = "<group>"; };
@@ -5033,6 +5035,7 @@
 				34ACA7BB2733159600E47AD4 /* DeviceTransfer */,
 				34ACA7BF2733159600E47AD4 /* Onboarding */,
 				4C3A2BC5235661AB004B3986 /* SecondaryLinking */,
+				66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */,
 				34ACA7EE2733161000E47AD4 /* Deprecated_RegistrationBaseViewController.swift */,
 				34ACA7EF2733161000E47AD4 /* Deprecated_RegistrationCaptchaViewController.swift */,
 				34ACA7ED2733161000E47AD4 /* Deprecated_RegistrationHelper.swift */,
@@ -11055,6 +11058,7 @@
 				8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */,
 				8806EF1B248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
+				66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */,
 				4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */,
 				32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */,
 				34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */,

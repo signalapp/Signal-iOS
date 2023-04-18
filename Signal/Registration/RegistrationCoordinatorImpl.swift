@@ -324,6 +324,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             remainingAttempts: remainingAttempts
                         ),
                         error: .wrongPin(wrongPin: code),
+                        contactSupportMode: contactSupportRegistrationPINMode(),
                         exitConfiguration: pinCodeEntryExitConfiguration()
                     )))
                 }
@@ -1102,6 +1103,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // We can skip which will stop trying to use reg recovery.
                 operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
                 error: nil,
+                contactSupportMode: self.contactSupportRegistrationPINMode(),
                 exitConfiguration: pinCodeEntryExitConfiguration()
             )))
         }
@@ -1114,6 +1116,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(.pinEntry(RegistrationPinState(
                 operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
                 error: .wrongPin(wrongPin: pinFromUser),
+                contactSupportMode: self.contactSupportRegistrationPINMode(),
                 exitConfiguration: pinCodeEntryExitConfiguration()
             )))
         }
@@ -1326,6 +1329,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .value(.pinEntry(RegistrationPinState(
                 operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
                 error: nil,
+                contactSupportMode: self.contactSupportRegistrationPINMode(),
                 exitConfiguration: pinCodeEntryExitConfiguration()
             )))
         }
@@ -1359,6 +1363,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             remainingAttempts: UInt(remainingAttempts)
                         ),
                         error: .wrongPin(wrongPin: pin),
+                        contactSupportMode: self.contactSupportRegistrationPINMode(),
                         exitConfiguration: self.pinCodeEntryExitConfiguration()
                     )))
                 case .backupMissing:
@@ -1513,6 +1518,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         remainingAttempts: nil
                     ),
                     error: .none,
+                    contactSupportMode: self.contactSupportRegistrationPINMode(),
                     exitConfiguration: pinCodeEntryExitConfiguration()
                 )))
             }
@@ -2431,6 +2437,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             remainingAttempts: UInt(remainingAttempts)
                         ),
                         error: .wrongPin(wrongPin: pin),
+                        contactSupportMode: self.contactSupportRegistrationPINMode(),
                         exitConfiguration: self.pinCodeEntryExitConfiguration()
                     )))
                 case .backupMissing:
@@ -2694,18 +2701,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             remainingAttempts: nil
                         ),
                         error: nil,
+                        contactSupportMode: self.contactSupportRegistrationPINMode(),
                         exitConfiguration: pinCodeEntryExitConfiguration()
                     )))
                 } else if let blob = inMemoryState.unconfirmedPinBlob {
                     return .value(.pinEntry(RegistrationPinState(
                         operation: .confirmingNewPin(blob),
                         error: nil,
+                        contactSupportMode: self.contactSupportRegistrationPINMode(),
                         exitConfiguration: pinCodeEntryExitConfiguration()
                     )))
                 } else {
                     return .value(.pinEntry(RegistrationPinState(
                         operation: .creatingNewPin,
                         error: nil,
+                        contactSupportMode: self.contactSupportRegistrationPINMode(),
                         exitConfiguration: pinCodeEntryExitConfiguration()
                     )))
                 }
@@ -2769,6 +2779,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             remainingAttempts: UInt(remainingAttempts)
                         ),
                         error: .wrongPin(wrongPin: pin),
+                        contactSupportMode: self.contactSupportRegistrationPINMode(),
                         exitConfiguration: self.pinCodeEntryExitConfiguration()
                     )))
                 case .backupMissing:
@@ -3497,6 +3508,32 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .exitReRegistration
         case .changingNumber:
             return .exitChangeNumber
+        }
+    }
+
+    private func contactSupportRegistrationPINMode() -> ContactSupportRegistrationPINMode {
+        switch getPathway() {
+        case .opening:
+            owsFailBeta("Should not be asking for PIN during opening path.")
+            return .v2WithUnknownReglockState
+        case .kbsAuthCredential, .kbsAuthCredentialCandidates, .registrationRecoveryPassword:
+            if
+                let e164 = persistedState.e164,
+                e164 == persistedState.e164WithKnownReglockEnabled
+            {
+                return .v2WithReglock
+            }
+            return .v2WithUnknownReglockState
+        case .session:
+            return .v2WithReglock
+        case .profileSetup:
+            if inMemoryState.isV12faUser {
+                return .v1
+            } else {
+                // If they are in profile setup that means they
+                // would have gotten past reglock already.
+                return .v2NoReglock
+            }
         }
     }
 
