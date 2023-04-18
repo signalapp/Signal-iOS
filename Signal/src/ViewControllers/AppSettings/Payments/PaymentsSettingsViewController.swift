@@ -243,18 +243,17 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             return
         }
 
-        let reminderView = ReminderView.nag(
+        let reminderView = ReminderView(
+            style: .warning,
             text: NSLocalizedString(
                 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT",
                 comment: "Label warning the user that they should update Signal to continue using payments."
             ),
-            tapAction: { [weak self] in
-                self?.didTapOutdatedPaymentClientReminder()
-            },
             actionTitle: NSLocalizedString(
                 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE",
                 comment: "Label for action link when the user has an outdated payment client"
-            )
+            ),
+            tapAction: { [weak self] in self?.didTapOutdatedPaymentClientReminder() }
         )
         reminderView.accessibilityIdentifier = "outdatedClientView"
         topHeaderStackView.addArrangedSubview(reminderView)

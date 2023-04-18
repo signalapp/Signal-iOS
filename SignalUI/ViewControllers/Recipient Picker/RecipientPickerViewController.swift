@@ -385,10 +385,12 @@ extension RecipientPickerViewController {
 
     private func contactAccessDeniedReminderItem() -> OWSTableItem {
         return OWSTableItem(customCellBlock: {
-            let reminderView = ReminderView.nag(
+            let reminderView = ReminderView(
+                style: .warning,
                 text: OWSLocalizedString(
                     "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
-                    comment: "Multi-line label explaining why compose-screen contact picker is empty."),
+                    comment: "Multi-line label explaining why compose-screen contact picker is empty."
+                ),
                 tapAction: { CurrentAppContext().openSystemSettings() }
             )
 
