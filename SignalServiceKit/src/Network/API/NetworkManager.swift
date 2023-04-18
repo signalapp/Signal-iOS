@@ -18,22 +18,15 @@ public class NetworkManager: NSObject {
     }
 
     // This method can be called from any thread.
-    public func makePromise(request: TSRequest, canTryWebSocket: Bool = false) -> Promise<HTTPResponse> {
+    public func makePromise(request: TSRequest, canUseWebSocket: Bool = false) -> Promise<HTTPResponse> {
         // If REST is deprecated, don't bother trying it.
         if FeatureFlags.deprecateREST {
             return websocketRequestPromise(request: request)
         }
 
         // Otherwise, try the web socket first if it's allowed for this request.
-        let useWebSocket = canTryWebSocket && OWSWebSocket.canAppUseSocketsToMakeRequests
-        return firstly { () -> Promise<HTTPResponse> in
-            useWebSocket ? websocketRequestPromise(request: request) : restRequestPromise(request: request)
-        }.recover(on: DispatchQueue.global()) { error -> Promise<HTTPResponse> in
-            guard useWebSocket, error.isRetryable else {
-                throw error
-            }
-            return self.makePromise(request: request, canTryWebSocket: false)
-        }
+        let useWebSocket = canUseWebSocket && OWSWebSocket.canAppUseSocketsToMakeRequests
+        return useWebSocket ? websocketRequestPromise(request: request) : restRequestPromise(request: request)
     }
 
     private func restRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
@@ -52,7 +45,7 @@ public class NetworkManager: NSObject {
 @objc
 public class OWSFakeNetworkManager: NetworkManager {
 
-    public override func makePromise(request: TSRequest, canTryWebSocket: Bool = false) -> Promise<HTTPResponse> {
+    public override func makePromise(request: TSRequest, canUseWebSocket: Bool = false) -> Promise<HTTPResponse> {
         Logger.info("Ignoring request: \(request)")
         // Never resolve.
         let (promise, _) = Promise<HTTPResponse>.pending()

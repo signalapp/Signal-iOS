@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 open class OWSDevicesService: NSObject {
@@ -52,7 +53,7 @@ open class OWSDevicesService: NSObject {
     private static func getDevices() -> Promise<[OWSDevice]> {
         let request = OWSRequestFactory.getDevicesRequest()
         return firstly(on: DispatchQueue.global()) {
-            Self.networkManager.makePromise(request: request)
+            Self.networkManager.makePromise(request: request, canUseWebSocket: true)
         }.map(on: DispatchQueue.global()) { response in
             Logger.verbose("Get devices request succeeded")
 

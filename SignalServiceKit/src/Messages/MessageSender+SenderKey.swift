@@ -759,7 +759,7 @@ extension MessageSender {
             isStory: isStory
         )
 
-        return networkManager.makePromise(request: request, canTryWebSocket: true)
+        return networkManager.makePromise(request: request, canUseWebSocket: true)
     }
 }
 

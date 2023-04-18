@@ -288,7 +288,7 @@ extension UsernameValidationManagerTest {
 
         override public func makePromise(
             request: TSRequest,
-            canTryWebSocket: Bool = false) -> Promise<HTTPResponse> {
+            canUseWebSocket: Bool = false) -> Promise<HTTPResponse> {
             return mockURLSession.promiseForTSRequest(request)
         }
     }

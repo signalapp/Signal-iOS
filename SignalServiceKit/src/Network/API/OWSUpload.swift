@@ -140,7 +140,7 @@ public class OWSAttachmentUploadV2: NSObject {
     private func performRequest(_ request: TSRequest) -> Promise<HTTPResponse> {
         networkManager.makePromise(
             request: request,
-            canTryWebSocket: (
+            canUseWebSocket: (
                 OWSWebSocket.canAppUseSocketsToMakeRequests
                 && socketManager.canMakeRequests(webSocketType: .identified)
             )

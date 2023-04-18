@@ -206,6 +206,10 @@ public class MessageFetcherJob: NSObject {
     fileprivate class func fetchMessages(future: Future<Void>) {
         Logger.info("")
 
+        guard CurrentAppContext().shouldProcessIncomingMessages else {
+            return future.reject(OWSAssertionError("This extension should not fetch messages."))
+        }
+
         guard tsAccountManager.isRegisteredAndReady else {
             assert(AppReadiness.isAppReady)
             Logger.warn("Not registered.")
@@ -213,26 +217,13 @@ public class MessageFetcherJob: NSObject {
         }
 
         if shouldUseWebSocket {
-            Logger.info("delegating message fetching to SocketManager since we're using normal transport.")
+            Logger.info("Fetching messages via Web Socket.")
             socketManager.didReceivePush()
             // Should we wait to resolve the future until we know the WebSocket is open? Wait until it empties?
             return future.resolve()
-        } else if CurrentAppContext().shouldProcessIncomingMessages {
-            // Main app should use REST if censorship circumvention is active.
-            // Notification extension that should always use REST.
         } else {
-            return future.reject(OWSAssertionError("App extensions should not fetch messages."))
-        }
-
-        Logger.info("Fetching messages via REST.")
-
-        firstly {
-            fetchMessagesViaRestWhenReady()
-        }.done {
-            future.resolve()
-        }.catch { error in
-            Logger.error("Error: \(error).")
-            future.reject(error)
+            Logger.info("Fetching messages via REST.")
+            future.resolve(with: fetchMessagesViaRestWhenReady())
         }
     }
 
@@ -272,12 +263,6 @@ public class MessageFetcherJob: NSObject {
     }
 
     private class func fetchMessagesViaRest() -> Promise<Void> {
-        if DebugFlags.internalLogging {
-            Logger.info("")
-        } else {
-            Logger.debug("")
-        }
-
         return firstly(on: DispatchQueue.global()) {
             fetchBatchViaRest()
         }.map(on: DispatchQueue.global()) { (batch: RESTBatch) -> ([EnvelopeJob], UInt64, Bool) in
