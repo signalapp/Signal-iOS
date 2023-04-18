@@ -255,9 +255,6 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     private func changeNumberState() -> ChangeNumberState {
-        guard RemoteConfig.changePhoneNumberUI else {
-            return .disallowed
-        }
         return databaseStorage.read { transaction -> ChangeNumberState in
             guard self.legacyChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction) else {
                 return .disallowed

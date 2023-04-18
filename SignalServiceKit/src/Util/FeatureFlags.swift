@@ -469,11 +469,6 @@ public class DebugFlags: BaseFlags {
     })
 
     @objc
-    public static let forceChangePhoneNumberUI = TestableFlag(build.includes(.beta),
-                                                              title: LocalizationNotNeeded("Force 'change phone number' UI."),
-                                                              details: LocalizationNotNeeded("The UI will appear in settings."))
-
-    @objc
     public static let deviceTransferPreserveOldDevice = false
 
     @objc

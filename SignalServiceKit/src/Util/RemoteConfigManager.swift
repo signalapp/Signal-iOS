@@ -196,14 +196,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var changePhoneNumberUI: Bool {
-        if DebugFlags.forceChangePhoneNumberUI.get() {
-            return true
-        }
-        return isEnabled(.changePhoneNumberUI)
-    }
-
-    @objc
     public static var stories: Bool {
         if DebugFlags.forceStories {
             return true
@@ -484,7 +476,6 @@ private struct Flags {
         case senderKeyKillSwitch
         case messageResendKillSwitch
         case donorBadgeDisplayKillSwitch
-        case changePhoneNumberUI
         case groupRings2
         case inboundGroupRingsKillSwitch
         case storiesKillSwitch
