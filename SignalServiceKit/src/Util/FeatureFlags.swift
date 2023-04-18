@@ -98,10 +98,6 @@ public class FeatureFlags: BaseFlags {
         return false
     }
 
-    // TODO: remove this once we are confident we won't wanna undo it
-    // with a single line code change.
-    public static let useNewRegistrationFlow: Bool = true
-
     public static let textFormattingReceiveSupport: Bool = build.includes(.internal)
 
     public static let periodicallyCheckDatabaseIntegrity: Bool = build.includes(.internal)

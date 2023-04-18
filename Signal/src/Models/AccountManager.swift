@@ -25,13 +25,6 @@ public class AccountManager: NSObject, Dependencies {
 
     // MARK: registration
 
-    func deprecated_requestRegistrationVerification(e164: String, captchaToken: String?, isSMS: Bool) -> Promise<Void> {
-        deprecated_requestAccountVerification(e164: e164,
-                                   captchaToken: captchaToken,
-                                   isSMS: isSMS,
-                                   mode: .registration)
-    }
-
     public enum VerificationMode {
         case registration
         case changePhoneNumber

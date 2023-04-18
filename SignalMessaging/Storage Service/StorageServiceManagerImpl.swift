@@ -216,15 +216,13 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         switch authedAccount.info {
         case .explicit(let info):
             localIdentifiers = info.localIdentifiers
-        case .implicit where FeatureFlags.useNewRegistrationFlow:
+        case .implicit:
             // Under the new reg flow, we will sync kbs keys before being fully ready with
             // ts account manager auth set up. skip if so.
             guard tsAccountManager.isRegisteredAndReady else {
                 Logger.info("Skipping storage service operation with implicit auth during registration.")
                 return nil
             }
-            fallthrough
-        case .implicit:
             // The `isRegisteredAndReady` property only returns true when
             // `LocalIdentifiers` are ready on `TSAccountManager`. These should have
             // been provided to this object before we reach this point.

@@ -220,7 +220,7 @@ public class Deprecated_OnboardingController: NSObject {
 
         Logger.info("")
 
-        if FeatureFlags.useNewRegistrationFlow, onboardingMode == .provisioning {
+        if onboardingMode == .provisioning {
             let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
             signalApp.showRegistration(loader: loader, desiredMode: .registering)
             return

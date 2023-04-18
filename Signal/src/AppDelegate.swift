@@ -248,10 +248,9 @@ extension AppDelegate {
         let regLoader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
 
         // Before we mark ready, block message processing on any pending change numbers.
-        let hasPendingChangeNumber: Bool = (
-            FeatureFlags.useNewRegistrationFlow
-            && databaseStorage.read(block: { regLoader.hasPendingChangeNumber(transaction: $0.asV2Read) })
-        )
+        let hasPendingChangeNumber = databaseStorage.read { transaction in
+            regLoader.hasPendingChangeNumber(transaction: transaction.asV2Read)
+        }
         if hasPendingChangeNumber {
             // The registration loader will clear the suspension later on.
             messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
@@ -431,14 +430,6 @@ extension AppDelegate {
 
     private func buildLaunchInterface(regLoader: RegistrationCoordinatorLoader) -> LaunchInterface {
         let onboardingController = Deprecated_OnboardingController()
-
-        guard FeatureFlags.useNewRegistrationFlow else {
-            if onboardingController.isComplete {
-                return .chatList(onboardingController)
-            } else {
-                return .deprecatedOnboarding(onboardingController)
-            }
-        }
 
         if let lastMode = databaseStorage.read(block: { regLoader.restoreLastMode(transaction: $0.asV2Read) }) {
             Logger.info("Found ongoing registration; continuing")

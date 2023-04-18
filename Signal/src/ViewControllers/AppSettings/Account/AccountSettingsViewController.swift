@@ -145,47 +145,27 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 }
             ))
         } else if tsAccountManager.isRegisteredPrimaryDevice {
-            if FeatureFlags.useNewRegistrationFlow {
-                switch self.changeNumberState() {
-                case .disallowed:
-                    break
-                case .allowed:
-                    accountSection.add(.actionItem(
-                        withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
-                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
-                        actionBlock: { [weak self] in
-                            guard let self else {
-                                return
-                            }
-                            // Fetch the state again in case it changed from under us
-                            // between when the button was rendered and when it was tapped.
-                            switch self.changeNumberState() {
-                            case .disallowed:
-                                return
-                            case .allowed(let changeNumberParams):
-                                self.changePhoneNumber(changeNumberParams)
-                            }
+            switch self.changeNumberState() {
+            case .disallowed:
+                break
+            case .allowed:
+                accountSection.add(.actionItem(
+                    withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
+                    actionBlock: { [weak self] in
+                        guard let self else {
+                            return
                         }
-                    ))
-                }
-            } else {
-                let shouldShowChangePhoneNumber: Bool = {
-                    guard RemoteConfig.changePhoneNumberUI else {
-                        return false
-                    }
-                    return Self.databaseStorage.read { transaction in
-                        self.legacyChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction)
-                    }
-                }()
-                if shouldShowChangePhoneNumber {
-                    accountSection.add(.actionItem(
-                        withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
-                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
-                        actionBlock: { [weak self] in
-                            self?.deprecated_changePhoneNumber()
+                        // Fetch the state again in case it changed from under us
+                        // between when the button was rendered and when it was tapped.
+                        switch self.changeNumberState() {
+                        case .disallowed:
+                            return
+                        case .allowed(let changeNumberParams):
+                            self.changePhoneNumber(changeNumberParams)
                         }
-                    ))
-                }
+                    }
+                ))
             }
             accountSection.add(.actionItem(
                 withText: NSLocalizedString(
@@ -322,9 +302,6 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     private func changePhoneNumber(_ params: RegistrationMode.ChangeNumberParams) {
-        guard FeatureFlags.useNewRegistrationFlow else {
-            return
-        }
         Logger.info("Attempting to start change number from settings")
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.changingNumber(params)
