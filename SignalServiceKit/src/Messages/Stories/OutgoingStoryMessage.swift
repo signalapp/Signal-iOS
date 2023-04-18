@@ -88,7 +88,8 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             authorUuid: tsAccountManager.localUuid!,
             groupId: (thread as? TSGroupThread)?.groupId,
             manifest: storyManifest,
-            attachment: attachment
+            attachment: attachment,
+            replyCount: 0
         )
         storyMessage.anyInsert(transaction: transaction)
 

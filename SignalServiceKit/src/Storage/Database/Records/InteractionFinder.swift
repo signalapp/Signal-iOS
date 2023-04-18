@@ -40,8 +40,6 @@ protocol InteractionFinderAdapter {
 
     static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     static func hasLocalUserReplied(storyTimestamp: UInt64, storyAuthorUuidString: String, transaction: ReadTransaction) -> Bool
-    static func countReplies(for storyMessage: StoryMessage, transaction: ReadTransaction) -> UInt
-    static func hasReplies(for stories: [StoryMessage], transaction: ReadTransaction) -> Bool
     static func groupReplyUniqueIds(for storyMessage: StoryMessage, transaction: ReadTransaction) -> [String]
 
     // MARK: - instance methods
@@ -232,20 +230,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             return GRDBInteractionFinder.hasLocalUserReplied(storyTimestamp: storyTimestamp, storyAuthorUuidString: storyAuthorUuidString, transaction: grdbRead)
-        }
-    }
-
-    public static func countReplies(for storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> UInt {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            return GRDBInteractionFinder.countReplies(for: storyMessage, transaction: grdbRead)
-        }
-    }
-
-    public static func hasReplies(for stories: [StoryMessage], transaction: SDSAnyReadTransaction) -> Bool {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            return GRDBInteractionFinder.hasReplies(for: stories, transaction: grdbRead)
         }
     }
 
@@ -990,81 +974,6 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                     storyAuthorUuidString
                 ]
             ) ?? false
-        } catch {
-            owsFail("error: \(error)")
-        }
-    }
-
-    static func countReplies(for storyMessage: StoryMessage, transaction: GRDBReadTransaction) -> UInt {
-        guard !storyMessage.authorAddress.isSystemStoryAddress else {
-            // No replies on system stories.
-            return 0
-        }
-        do {
-            guard let threadUniqueId = storyMessage.context.threadUniqueId(transaction: transaction.asAnyRead) else {
-                owsFailDebug("Unexpected context for StoryMessage")
-                return 0
-            }
-
-            let sql: String = """
-                SELECT COUNT(*)
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .storyTimestamp) = ?
-                AND \(interactionColumn: .storyAuthorUuidString) = ?
-                AND \(interactionColumn: .threadUniqueId) = ?
-            """
-            guard let count = try UInt.fetchOne(
-                transaction.database,
-                sql: sql,
-                arguments: [storyMessage.timestamp, storyMessage.authorUuid.uuidString, threadUniqueId]
-            ) else {
-                throw OWSAssertionError("count was unexpectedly nil")
-            }
-            return count
-        } catch {
-            owsFail("error: \(error)")
-        }
-    }
-
-    static func hasReplies(for stories: [StoryMessage], transaction: GRDBReadTransaction) -> Bool {
-        // Return early so we don't end up with an empty query string when they're all system stories.
-        guard stories.contains(where: \.authorAddress.isSystemStoryAddress.negated) else {
-            return false
-        }
-        var storyFilters = ""
-        for story in stories {
-            guard !story.authorAddress.isSystemStoryAddress else {
-                // No replies on system stories.
-                continue
-            }
-            guard let threadUniqueId = story.context.threadUniqueId(transaction: transaction.asAnyRead) else {
-                owsFailDebug("Unexpected context for StoryMessage")
-                continue
-            }
-
-            if !storyFilters.isEmpty { storyFilters += " OR "}
-            storyFilters += """
-                (
-                    \(interactionColumn: .storyTimestamp) = \(story.timestamp)
-                    AND \(interactionColumn: .storyAuthorUuidString) = '\(story.authorUuid.uuidString)'
-                    AND \(interactionColumn: .threadUniqueId) = '\(threadUniqueId)'
-                )
-            """
-        }
-        guard !storyFilters.isEmpty else {
-            return false
-        }
-
-        let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(storyFilters)
-                LIMIT 1
-            )
-        """
-        do {
-            return try Bool.fetchOne(transaction.database, sql: sql) ?? false
         } catch {
             owsFail("error: \(error)")
         }

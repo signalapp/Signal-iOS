@@ -24,6 +24,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         case direction
         case manifest
         case attachment
+        case replyCount
     }
 
     public var id: Int64?
@@ -131,6 +132,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
+    public var replyCount: UInt64
+
+    public var hasReplies: Bool { replyCount > 0 }
+
     public var context: StoryContext { groupId.map { .groupId($0) } ?? .authorUuid(authorUuid) }
 
     public init(
@@ -138,7 +143,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         authorUuid: UUID,
         groupId: Data?,
         manifest: StoryManifest,
-        attachment: StoryMessageAttachment
+        attachment: StoryMessageAttachment,
+        replyCount: UInt64
     ) {
         self.uniqueId = UUID().uuidString
         self.timestamp = timestamp
@@ -152,6 +158,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
         self.manifest = manifest
         self.attachment = attachment
+        self.replyCount = replyCount
     }
 
     @discardableResult
@@ -202,12 +209,22 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
 
+        // Count replies in case any came in out of order (e.g. from a recipient
+        // who got the story and replied before we even got it.
+        let replyCount = Self.countReplies(
+            authorUuid: authorUuid,
+            timestamp: timestamp,
+            isGroupStory: groupId != nil,
+            transaction
+        )
+
         let record = StoryMessage(
             timestamp: timestamp,
             authorUuid: authorUuid,
             groupId: groupId,
             manifest: manifest,
-            attachment: attachment
+            attachment: attachment,
+            replyCount: replyCount
         )
         record.anyInsert(transaction: transaction)
 
@@ -265,12 +282,24 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
 
+        let authorUuid = tsAccountManager.localUuid!
+
+        // Count replies in some recipient replied and sent us the reply
+        // before our linked device sent us the transcript.
+        let replyCount = Self.countReplies(
+            authorUuid: authorUuid,
+            timestamp: proto.timestamp,
+            isGroupStory: groupId != nil,
+            transaction
+        )
+
         let record = StoryMessage(
             timestamp: proto.timestamp,
-            authorUuid: tsAccountManager.localUuid!,
+            authorUuid: authorUuid,
             groupId: groupId,
             manifest: manifest,
-            attachment: attachment
+            attachment: attachment,
+            replyCount: replyCount
         )
         record.anyInsert(transaction: transaction)
 
@@ -319,7 +348,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             authorUuid: Self.systemStoryAuthorUUID,
             groupId: nil,
             manifest: manifest,
-            attachment: attachment
+            attachment: attachment,
+            replyCount: 0
         )
         record.anyInsert(transaction: transaction)
 
@@ -416,6 +446,57 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             recipientStates[recipientUuid] = recipientState
 
             record.manifest = .outgoing(recipientStates: recipientStates)
+        }
+    }
+
+    // MARK: - Reply Counts
+
+    public func incrementReplyCount(_ tx: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: tx) { record in
+            record.replyCount += 1
+        }
+    }
+
+    public func decrementReplyCount(_ tx: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: tx) { record in
+            record.replyCount = max(0, record.replyCount - 1)
+        }
+    }
+
+    private static func countReplies(
+        authorUuid: UUID,
+        timestamp: UInt64,
+        isGroupStory: Bool,
+        _ tx: SDSAnyReadTransaction
+    ) -> UInt64 {
+        let transaction: GRDBReadTransaction
+        switch tx.readTransaction {
+        case .grdbRead(let grdbRead):
+            transaction = grdbRead
+        }
+
+        guard !SignalServiceAddress(uuid: authorUuid).isSystemStoryAddress else {
+            // No replies on system stories.
+            return 0
+        }
+        do {
+            let sql: String = """
+                SELECT COUNT(*)
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .storyTimestamp) = ?
+                AND \(interactionColumn: .storyAuthorUuidString) = ?
+                AND \(interactionColumn: .isGroupStoryReply) = ?
+            """
+            guard let count = try UInt64.fetchOne(
+                transaction.database,
+                sql: sql,
+                arguments: [timestamp, authorUuid.uuidString, isGroupStory]
+            ) else {
+                throw OWSAssertionError("count was unexpectedly nil")
+            }
+            return count
+        } catch {
+            owsFail("error: \(error)")
         }
     }
 
@@ -716,6 +797,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         direction = try container.decode(Direction.self, forKey: .direction)
         manifest = try container.decode(StoryManifest.self, forKey: .manifest)
         attachment = try container.decode(StoryMessageAttachment.self, forKey: .attachment)
+        replyCount = try container.decode(UInt64.self, forKey: .replyCount)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -730,6 +812,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         try container.encode(direction, forKey: .direction)
         try container.encode(manifest, forKey: .manifest)
         try container.encode(attachment, forKey: .attachment)
+        try container.encode(replyCount, forKey: .replyCount)
     }
 }
 

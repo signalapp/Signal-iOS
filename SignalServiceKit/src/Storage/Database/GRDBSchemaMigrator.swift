@@ -219,6 +219,8 @@ public class GRDBSchemaMigrator: NSObject {
         case dropUsernameColumnFromOWSUserProfile
         case migrateVoiceMessageDrafts
         case addIsPniCapableColumnToOWSUserProfile
+        case addStoryMessageReplyCount
+        case populateStoryMessageReplyCount
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -276,7 +278,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 54
+    public static let grdbSchemaVersionLatest: UInt = 55
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2147,6 +2149,61 @@ public class GRDBSchemaMigrator: NSObject {
                 table.add(column: "isPniCapable", .boolean).notNull().defaults(to: false)
             }
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.addStoryMessageReplyCount) { transaction in
+            try transaction.database.alter(table: "model_StoryMessage") { table in
+                table.add(column: "replyCount", .integer).notNull().defaults(to: 0)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.populateStoryMessageReplyCount) { transaction in
+            let storyMessagesSql = """
+                SELECT id, timestamp, authorUuid, groupId
+                FROM model_StoryMessage
+            """
+            let storyMessages = try Row.fetchAll(transaction.database, sql: storyMessagesSql)
+            for storyMessage in storyMessages {
+                guard
+                    let id = storyMessage["id"] as? Int64,
+                    let timestamp = storyMessage["timestamp"] as? Int64,
+                    let authorUuid = storyMessage["authorUuid"] as? String
+                else {
+                    continue
+                }
+                guard authorUuid != "00000000-0000-0000-0000-000000000001" else {
+                    // Skip the system story
+                    continue
+                }
+                let groupId = storyMessage["groupId"] as? Data
+                let isGroupStoryMessage = groupId != nil
+                // Use the index we have on storyTimestamp, storyAuthorUuidString, isGroupStoryReply
+                let replyCountSql = """
+                    SELECT COUNT(*)
+                    FROM model_TSInteraction
+                    WHERE (
+                        storyTimestamp = ?
+                        AND storyAuthorUuidString = ?
+                        AND isGroupStoryReply = ?
+                    )
+                """
+                let replyCount = try Int.fetchOne(
+                    transaction.database,
+                    sql: replyCountSql,
+                    arguments: [timestamp, authorUuid, isGroupStoryMessage]
+                ) ?? 0
+
+                try transaction.database.execute(
+                    sql: """
+                        UPDATE model_StoryMessage
+                        SET replyCount = ?
+                        WHERE id = ?
+                    """,
+                    arguments: [replyCount, id]
+                )
+            }
             return .success(())
         }
 

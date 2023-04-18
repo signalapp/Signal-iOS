@@ -1254,6 +1254,7 @@ CREATE
             ,"direction" INTEGER NOT NULL
             ,"manifest" BLOB NOT NULL
             ,"attachment" BLOB NOT NULL
+            ,"replyCount" INTEGER NOT NULL DEFAULT 0
         )
 ;
 

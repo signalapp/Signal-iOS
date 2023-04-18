@@ -507,6 +507,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             // Always notify for replies to group stories you sent
             if storyAuthorAddress.isLocalAddress { return true }
 
+            // TODO: notify people who were @mentioned in the reply.
+
             // Notify people who did not author the story if they've previously replied to it
             return InteractionFinder.hasLocalUserReplied(
                 storyTimestamp: storyTimestamp,

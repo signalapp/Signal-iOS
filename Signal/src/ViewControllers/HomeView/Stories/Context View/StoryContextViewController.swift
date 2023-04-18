@@ -317,7 +317,7 @@ class StoryContextViewController: OWSViewController {
     }
 
     private func buildStoryItem(for message: StoryMessage, transaction: SDSAnyReadTransaction) -> StoryItem? {
-        let replyCount = InteractionFinder.countReplies(for: message, transaction: transaction)
+        let replyCount = message.replyCount
 
         switch message.attachment {
         case .file(let attachmentId):

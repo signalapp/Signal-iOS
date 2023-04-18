@@ -810,7 +810,7 @@ class StoryItemMediaView: UIView {
 
 class StoryItem: NSObject {
     let message: StoryMessage
-    let numberOfReplies: UInt
+    let numberOfReplies: UInt64
     enum Attachment: Equatable {
         case pointer(TSAttachmentPointer)
         case stream(TSAttachmentStream)
@@ -818,7 +818,7 @@ class StoryItem: NSObject {
     }
     var attachment: Attachment
 
-    init(message: StoryMessage, numberOfReplies: UInt, attachment: Attachment) {
+    init(message: StoryMessage, numberOfReplies: UInt64, attachment: Attachment) {
         self.message = message
         self.numberOfReplies = numberOfReplies
         self.attachment = attachment
