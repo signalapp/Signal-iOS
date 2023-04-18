@@ -122,6 +122,20 @@ extension ActionSheetController {
         didConfirm: @escaping () -> Void,
         didRequestEdit: @escaping () -> Void
     ) -> ActionSheetController {
+        let message: String
+        switch mode {
+        case .sms:
+            message = OWSLocalizedString(
+                "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE",
+                comment: "Message for confirmation alert during phone number registration."
+            )
+        case .voice:
+            message = OWSLocalizedString(
+                "REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE",
+                comment: "Message for confirmation alert when requesting a voice code during phone number registration."
+            )
+
+        }
         let result = ActionSheetController(
             title: {
                 let format = OWSLocalizedString(
@@ -130,10 +144,7 @@ extension ActionSheetController {
                 )
                 return String(format: format, e164.e164FormattedAsPhoneNumberWithoutBreaks)
             }(),
-            message: OWSLocalizedString(
-                "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE",
-                comment: "Message for confirmation alert during phone number registration."
-            )
+            message: message
         )
 
         let confirmButtonTitle = CommonStrings.yesButton
