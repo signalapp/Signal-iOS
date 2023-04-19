@@ -577,6 +577,11 @@
 		34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FCCA03264AEDFE00A63EDE /* CustomColorViewController.swift */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
 		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
+		45069FC629D3A7C800D0DD14 /* WideMediaTileViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FC529D3A7C800D0DD14 /* WideMediaTileViewLayout.swift */; };
+		45069FC829D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FC729D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift */; };
+		45069FCA29D4FFBB00D0DD14 /* MediaTileDateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */; };
+		45069FCC29D4FFD200D0DD14 /* MediaTileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FCB29D4FFD200D0DD14 /* MediaTileCell.swift */; };
+		45069FCE29D64CB300D0DD14 /* SelectionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FCD29D64CB300D0DD14 /* SelectionButton.swift */; };
 		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */; };
 		450D19131F85236600970622 /* RemoteVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450D19121F85236600970622 /* RemoteVideoView.m */; };
@@ -614,6 +619,7 @@
 		4585B4A3291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585B4A2291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift */; };
 		4585B4A5291B39F9003A8F8E /* MediaGalleryCollectionViewUpdaterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585B4A4291B39F9003A8F8E /* MediaGalleryCollectionViewUpdaterTest.swift */; };
 		458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458967101DC117CC00E9DD21 /* AccountManagerTest.swift */; };
+		45906C6B29D238560025906D /* WidePhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45906C6A29D238560025906D /* WidePhotoCell.swift */; };
 		45A2F005204473A3002E978A /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45A2F004204473A3002E978A /* NewMessage.aifc */; };
 		45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A3579727DAAC6A0051CE8B /* UserProfileTest.swift */; };
 		45A66116299EDF3000632EE2 /* VideoAttachmentDetection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A66115299EDF3000632EE2 /* VideoAttachmentDetection.swift */; };
@@ -3020,6 +3026,11 @@
 		4224D4E5D7921F25823ECDCA /* Pods-SignalPerformanceTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.testable release.xcconfig"; sourceTree = "<group>"; };
 		4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "classic-quiet.aifc"; sourceTree = "<group>"; };
 		4503F1BC20470A5B00CEE724 /* classic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = classic.aifc; sourceTree = "<group>"; };
+		45069FC529D3A7C800D0DD14 /* WideMediaTileViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WideMediaTileViewLayout.swift; sourceTree = "<group>"; };
+		45069FC729D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquareMediaTileViewLayout.swift; sourceTree = "<group>"; };
+		45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileDateFormatter.swift; sourceTree = "<group>"; };
+		45069FCB29D4FFD200D0DD14 /* MediaTileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileCell.swift; sourceTree = "<group>"; };
+		45069FCD29D64CB300D0DD14 /* SelectionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionButton.swift; sourceTree = "<group>"; };
 		450D19111F85236600970622 /* RemoteVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteVideoView.h; sourceTree = "<group>"; };
 		450D19121F85236600970622 /* RemoteVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RemoteVideoView.m; sourceTree = "<group>"; };
 		451166BF1FD86B98000739BA /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
@@ -3057,6 +3068,7 @@
 		4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafetyNumberConfirmationSheet.swift; sourceTree = "<group>"; };
 		4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SignalTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
+		45906C6A29D238560025906D /* WidePhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidePhotoCell.swift; sourceTree = "<group>"; };
 		45A2F004204473A3002E978A /* NewMessage.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = NewMessage.aifc; path = Signal/AudioFiles/NewMessage.aifc; sourceTree = SOURCE_ROOT; };
 		45A3579727DAAC6A0051CE8B /* UserProfileTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileTest.swift; sourceTree = "<group>"; };
 		45A66115299EDF3000632EE2 /* VideoAttachmentDetection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAttachmentDetection.swift; sourceTree = "<group>"; };
@@ -6317,8 +6329,10 @@
 				45F32C1D205718B000A300D5 /* MediaPageViewController.swift */,
 				45CADA8A298DD2B4009EBDF5 /* MediaTileScrollFlag.swift */,
 				454A84032059C787008B8C75 /* MediaTileViewController.swift */,
+				45069FC729D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift */,
 				45B821F82981F7D400BB08BE /* VideoDurationHelper.swift */,
 				76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */,
+				45069FC529D3A7C800D0DD14 /* WideMediaTileViewLayout.swift */,
 			);
 			path = MediaGallery;
 			sourceTree = "<group>";
@@ -6757,17 +6771,21 @@
 				32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */,
 				88A941982409A391000E9700 /* LottieToggleButton.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
+				45069FCB29D4FFD200D0DD14 /* MediaTileCell.swift */,
+				45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */,
 				8829883A25B9FD6700DEE1E3 /* MockConversationView.swift */,
 				3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */,
 				4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */,
 				88A4CC11246CE2F50082211F /* QRCodeView.swift */,
 				457F671A20746193000EABCD /* QuotedReplyPreview.swift */,
 				88863A55280CD04A00977F69 /* ReactionFlybyAnimation.swift */,
+				45069FCD29D64CB300D0DD14 /* SelectionButton.swift */,
 				88A4CC0F246CE2760082211F /* TransferProgressView.swift */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 				88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */,
 				88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */,
 				4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */,
+				45906C6A29D238560025906D /* WidePhotoCell.swift */,
 			);
 			name = Views;
 			path = views;
@@ -11365,6 +11383,8 @@
 				76BB06FA29AD84DB00978856 /* MediaItemViewController.swift in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
+				45069FCC29D4FFD200D0DD14 /* MediaTileCell.swift in Sources */,
+				45069FCA29D4FFBB00D0DD14 /* MediaTileDateFormatter.swift in Sources */,
 				45CADA8B298DD2B4009EBDF5 /* MediaTileScrollFlag.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				76DFBF8C29AE6B80004A771D /* MediaTransitionImageView.swift in Sources */,
@@ -11495,6 +11515,7 @@
 				342FFE7E271EF5B2000AC89F /* ReturnToCallViewController.swift in Sources */,
 				348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */,
 				66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */,
+				45069FCE29D64CB300D0DD14 /* SelectionButton.swift in Sources */,
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
 				4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */,
 				346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */,
@@ -11513,6 +11534,7 @@
 				88BE44A626153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift in Sources */,
 				F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */,
 				34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */,
+				45069FC829D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift in Sources */,
 				349767E425B8744700ECE1B0 /* StickerPackViewController.swift in Sources */,
 				8852572927DD366D0032073C /* StoriesViewController.swift in Sources */,
 				884DB94727DD754700C6A309 /* StoryCell.swift in Sources */,
@@ -11576,6 +11598,8 @@
 				4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */,
 				8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */,
 				88D23D2723CEC0C700B0E74B /* WebRTCCallMessageHandler.swift in Sources */,
+				45069FC629D3A7C800D0DD14 /* WideMediaTileViewLayout.swift in Sources */,
+				45906C6B29D238560025906D /* WidePhotoCell.swift in Sources */,
 				667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

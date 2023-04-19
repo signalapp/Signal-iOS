@@ -262,28 +262,13 @@ public class ContactCellView: ManualStackView {
             if let customName = configuration.customName?.nilIfEmpty {
                 return customName.asAttributedString
             }
-            func nameForAddress(_ address: SignalServiceAddress) -> NSAttributedString {
-                let name: String
-                if address.isLocalAddress {
-                    switch configuration.localUserDisplayMode {
-                    case .noteToSelf:
-                        name = MessageStrings.noteToSelf
-                    case .asLocalUser:
-                        name = CommonStrings.you
-                    case .asUser:
-                        name = contactsManager.displayName(for: address,
-                                                           transaction: transaction)
-                    }
-                } else {
-                    name = contactsManager.displayName(for: address,
-                                                       transaction: transaction)
-                }
-                return name.asAttributedString
-            }
 
             switch configuration.dataSource {
             case .address(let address):
-                return nameForAddress(address)
+                return contactsManager.nameForAddress(address,
+                                                      localUserDisplayMode: configuration.localUserDisplayMode,
+                                                      short: false,
+                                                      transaction: transaction)
             case .groupThread(let thread):
                 // TODO: Ensure nameLabel.textColor.
                 let threadName = contactsManager.displayName(for: thread,

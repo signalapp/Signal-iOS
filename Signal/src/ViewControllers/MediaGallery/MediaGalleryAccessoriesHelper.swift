@@ -16,12 +16,44 @@ protocol MediaGalleryPrimaryViewController: UIViewController {
     func didEndSelectMode()
     func deleteSelectedItems()
     func shareSelectedItems(_ sender: Any)
+    func enterListMode()
+    func enterGridMode()
+    func mediaGalleryAccessoriesHelperToolbarHeightWillChange(to height: CGFloat)
 }
 
 public class MediaGalleryAccessoriesHelper: NSObject {
     private var footerBarBottomConstraint: NSLayoutConstraint!
     let kFooterBarHeight: CGFloat = 40
     weak var viewController: MediaGalleryPrimaryViewController?
+    private enum Mode {
+        case list
+        case grid
+
+        var titleString: String {
+            switch self {
+            case .list:
+                return OWSLocalizedString(
+                    "ALL_MEDIA_LIST_MODE",
+                    comment: "Menu option to show All Media items in a single-column list")
+
+            case .grid:
+                return OWSLocalizedString(
+                    "ALL_MEDIA_GRID_MODE",
+                    comment: "Menu option to show All Media items in a grid of square thumbnails")
+
+            }
+        }
+    }
+
+    private var mode: Mode = .grid {
+        didSet {
+            if oldValue == mode {
+                return
+            }
+            modeButton = createModeButton()
+            reloadFooter()
+        }
+    }
 
     func add(toView view: UIView) {
         view.addSubview(footerBar)
@@ -45,10 +77,16 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         var title: String
         var icon: UIImage?
         var handler: () -> Void
+        var checked = false
+
+        @available(iOS 13, *)
+        private var state: UIMenuElement.State {
+            return checked ? .on : .off
+        }
 
         @available(iOS 13, *)
         var uiAction: UIAction {
-            return UIAction(title: title, image: icon) { _ in handler() }
+            return UIAction(title: title, image: icon, state: state) { _ in handler() }
         }
 
         @available(iOS, deprecated: 14.0)
@@ -141,14 +179,14 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         viewController?.mediaGalleryFilterMenuActions ?? []
     }()
 
-    private lazy var filterButton: UIBarButtonItem? = {
+    private lazy var filterButton: UIBarButtonItem = {
         if #available(iOS 14, *) {
             return modernFilterButton()
         }
         return legacyFilterButton()
     }()
 
-    private lazy var selectedFilterButton: UIBarButtonItem? = {
+    private lazy var selectedFilterButton: UIBarButtonItem = {
         return UIBarButtonItem(image: selectedAllMediaFilterIcon,
                                style: .plain,
                                target: self,
@@ -192,6 +230,136 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         return UIBarButtonItem(image: allMediaFilterIcon, menu: menu)
     }
 
+    // MARK: - List/Grid
+
+    private lazy var listMenuAction = {
+        MenuAction(
+            title: Mode.list.titleString,
+            icon: UIImage(named: "all-media-list"),
+            handler: { [weak self] in
+                self?.mode = .list
+                self?.viewController?.enterListMode()
+            })
+    }()
+
+    private lazy var gridMenuAction = {
+        MenuAction(
+            title: Mode.grid.titleString,
+            icon: UIImage(named: "all-media-grid"),
+            handler: { [weak self] in
+                self?.mode = .grid
+                self?.viewController?.enterGridMode()
+            })
+    }()
+
+    private var modeMenuActions: [MenuAction] {
+        guard #available(iOS 13, *) else {
+            return []
+        }
+        return [
+            listMenuAction,
+            gridMenuAction
+        ]
+    }
+
+    private var currentModeString: String {
+        return mode.titleString
+    }
+
+    func createButtonWithImageAndText(image: UIImage, text: String) -> UIButton {
+        let button = UIButton(type: .custom)
+        button.setTitle(text, for: .normal)
+        if #available(iOS 13, *) {
+            button.setTitleColor(.label, for: .normal)
+        } else {
+            button.setTitleColor(.ows_black, for: .normal)
+        }
+        button.setImage(image, for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        let languageDirection = UIApplication.shared.userInterfaceLayoutDirection
+        let insetBeforeImage = 16.0
+        let insetAfterImage = 8.0
+        let insetBeforeTitle = 8.0
+        switch languageDirection {
+        case .leftToRight:
+            button.semanticContentAttribute = .forceRightToLeft
+            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: insetBeforeImage, bottom: 0, right: insetAfterImage)
+            button.titleEdgeInsets = UIEdgeInsets(top: 0, left: insetBeforeTitle, bottom: 0, right: 0)
+        case .rightToLeft:
+            button.semanticContentAttribute = .forceLeftToRight
+            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: insetAfterImage, bottom: 0, right: insetBeforeImage)
+            button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: insetBeforeTitle)
+        @unknown default:
+            owsFailDebug("Unexpected language direction")
+            button.semanticContentAttribute = .forceRightToLeft
+            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: insetBeforeImage, bottom: 0, right: insetAfterImage)
+            button.titleEdgeInsets = UIEdgeInsets(top: 0, left: insetBeforeTitle, bottom: 0, right: 0)
+        }
+
+        button.sizeToFit()
+        var frame = button.frame
+        frame.size.width += insetBeforeImage + insetAfterImage + insetBeforeTitle
+        button.frame = frame
+
+        return button
+    }
+
+    @available(iOS 13, *)
+    private func createLegacyModeButton() -> UIBarButtonItem {
+        let menuButton = createButtonWithImageAndText(image: UIImage(systemName: "chevron.down")!,
+                                                      text: currentModeString)
+        menuButton.addTarget(self, action: #selector(showModeMenu(_:)), for: .touchUpInside)
+
+        return UIBarButtonItem(customView: menuButton)
+    }
+
+    @available(iOS 13, *)
+    private func createModeMenu() -> UIMenu {
+        var options = UIMenu.Options()
+        if #available(iOS 15, *) {
+            options = .singleSelection
+        }
+        listMenuAction.checked = mode == .list
+        gridMenuAction.checked = mode == .grid
+        return UIMenu(title: "",
+                      options: options,
+                      children: modeMenuActions.map { $0.uiAction })
+    }
+
+    @available(iOS 14, *)
+    private func createModernModeButton() -> UIBarButtonItem {
+        let button = createButtonWithImageAndText(image: UIImage(systemName: "chevron.down")!, text: currentModeString)
+        button.contentHorizontalAlignment = .left
+        button.menu = createModeMenu()
+        button.showsMenuAsPrimaryAction = true
+        let barButtonItem = UIBarButtonItem(customView: button)
+
+        return barButtonItem
+    }
+
+    lazy var modeButton: UIBarButtonItem? = {
+        createModeButton()
+    }()
+
+    private func createModeButton() -> UIBarButtonItem? {
+        if #available(iOS 14, *) {
+            return createModernModeButton()
+        }
+        if #available(iOS 13, *) {
+            return createLegacyModeButton()
+        }
+        return nil
+    }
+
+    @objc
+    func showModeMenu(_ sender: Any) {
+        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        for action in modeMenuActions.map({ $0.uiAlertAction}) {
+            menu.addAction(action)
+        }
+        viewController?.present(menu, animated: true, completion: nil)
+    }
+
     // MARK: - Footer
 
     private lazy var footerBar: UIToolbar = {
@@ -226,31 +394,49 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             } else if !wasHidden && willBeHidden {
                 hideToolbar()
             }
-            switch newValue {
-            case .hidden:
-                break
-            case .selection, .selectionFiltering:
+        }
+        didSet {
+            reloadFooter()
+        }
+
+    }
+
+    private func reloadFooter() {
+        switch footerBarState {
+        case .hidden:
+            break
+        case .selection, .selectionFiltering:
+            let footerItems = [
+                shareButton,
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                deleteButton
+            ]
+            footerBar.setItems(footerItems, animated: false)
+        case .regular:
+            if let modeButton {
                 let footerItems = [
-                    shareButton,
+                    filterButton,
+                    UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                    modeButton,
                     UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
                     deleteButton
                 ]
                 footerBar.setItems(footerItems, animated: false)
-            case .regular:
+            } else {
                 let footerItems = [
-                    filterButton!,
-                    UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                    deleteButton
-                ]
-                footerBar.setItems(footerItems, animated: false)
-            case .filtering:
-                let footerItems = [
-                    selectedFilterButton!,
+                    filterButton,
                     UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
                     deleteButton
                 ]
                 footerBar.setItems(footerItems, animated: false)
             }
+        case .filtering:
+            let footerItems = [
+                selectedFilterButton,
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                deleteButton
+            ]
+            footerBar.setItems(footerItems, animated: false)
         }
     }
 
@@ -286,6 +472,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
     // MARK: - Toolbar
 
     private func showToolbar() {
+        viewController?.mediaGalleryAccessoriesHelperToolbarHeightWillChange(to: footerBar.frame.height)
         UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
             self._showToolbar()
         }, completion: nil)
@@ -308,6 +495,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
     }
 
     private func hideToolbar() {
+        viewController?.mediaGalleryAccessoriesHelperToolbarHeightWillChange(to: 0.0)
         UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
             self._hideToolbar()
         }, completion: nil)

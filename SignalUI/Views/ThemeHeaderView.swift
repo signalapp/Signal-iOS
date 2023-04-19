@@ -7,7 +7,6 @@ import Foundation
 
 public class ThemeHeaderView: UIView {
     let label: UILabel
-    private let blurEffectView: UIVisualEffectView?
 
     static var labelFont: UIFont {
         return UIFont.dynamicTypeBodyClamped.semibold()
@@ -31,19 +30,8 @@ public class ThemeHeaderView: UIView {
         label = UILabel()
         label.font = Self.labelFont
 
-        if #available(iOS 14, *) {
-            blurEffectView = nil
-        } else {
-            blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
-            blurEffectView!.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        }
         super.init(frame: .zero)
         self.preservesSuperviewLayoutMargins = true
-
-        if let blurEffectView {
-            self.addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
-        }
         updateColors()
 
         self.addSubview(label)
@@ -71,12 +59,7 @@ public class ThemeHeaderView: UIView {
     }
 
     private func updateColors() {
-        if blurEffectView != nil {
-            self.backgroundColor = Theme.navbarBackgroundColor
-                .withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-        } else {
-            self.backgroundColor = .clear
-        }
+        self.backgroundColor = .clear
         label.textColor = Self.textColor
     }
 }
@@ -88,6 +71,7 @@ public class ThemeCollectionViewSectionHeader: UICollectionReusableView {
 
     public override init(frame: CGRect) {
         super.init(frame: frame)
+        backgroundColor = .clear
         preservesSuperviewLayoutMargins = true
         addSubview(headerView)
         headerView.autoPinEdgesToSuperviewEdges()

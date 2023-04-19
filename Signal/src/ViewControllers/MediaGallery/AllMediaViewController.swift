@@ -10,6 +10,7 @@ class AllMediaViewController: OWSViewController {
     private let tileViewController: MediaTileViewController
     private let name: String?
     private let accessoriesHelper = MediaGalleryAccessoriesHelper()
+    private static let lightModeBackground = UIColor(rgbHex: 0xE5E5E5)
 
     override var navigationItem: UINavigationItem {
         return tileViewController.navigationItem
@@ -52,12 +53,12 @@ class AllMediaViewController: OWSViewController {
     @available(iOS 14, *)
     private var dynamicDesiredBackgroundColor: UIColor {
         return UIColor(dynamicProvider: { _ in
-            return Theme.tableView2PresentedBackgroundColor
+            return Theme.isDarkThemeEnabled ? UIColor.ows_gray90 : Self.lightModeBackground
         })
     }
 
     private var desiredBackgroundColor: UIColor {
-        Theme.tableView2PresentedBackgroundColor
+        Self.lightModeBackground
     }
 }
 

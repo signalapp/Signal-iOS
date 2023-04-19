@@ -519,7 +519,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             collectionView.deselectItem(at: indexPath, animated: false)
         }
         photoGridViewCell.isSelected = isSelected
-        photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
+        photoGridViewCell.setAllowsMultipleSelection(collectionView.allowsMultipleSelection, animated: false)
     }
 
     private func updateVisibleCells() {
@@ -537,7 +537,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             }
 
             photoGridViewCell.isSelected = dataSource.imagePicker(self, isAssetSelected: assetItem.asset)
-            photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
+            photoGridViewCell.setAllowsMultipleSelection(collectionView.allowsMultipleSelection, animated: true)
         }
     }
 }

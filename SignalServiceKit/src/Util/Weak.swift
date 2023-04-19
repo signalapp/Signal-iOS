@@ -66,3 +66,14 @@ extension WeakArray: ExpressibleByArrayLiteral {
         }
     }
 }
+
+extension WeakArray where Element: Equatable {
+    public func contains(_ element: Element) -> Bool {
+        return array.contains { box in
+            guard let value = box.value else {
+                return false
+            }
+            return value == element
+        }
+    }
+}

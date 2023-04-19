@@ -1251,3 +1251,37 @@ private extension SignalAccount {
         return "\(fullName) (\(label))"
     }
 }
+
+extension ContactsManagerProtocol {
+    public func nameForAddress(_ address: SignalServiceAddress,
+                               localUserDisplayMode: LocalUserDisplayMode,
+                               short: Bool,
+                               transaction: SDSAnyReadTransaction) -> NSAttributedString {
+        let name: String
+        if address.isLocalAddress {
+            switch localUserDisplayMode {
+            case .noteToSelf:
+                name = MessageStrings.noteToSelf
+            case .asLocalUser:
+                name = CommonStrings.you
+            case .asUser:
+                if short {
+                    name = shortDisplayName(for: address,
+                                            transaction: transaction)
+                } else {
+                    name = displayName(for: address,
+                                       transaction: transaction)
+                }
+            }
+        } else {
+            if short {
+                name = shortDisplayName(for: address,
+                                        transaction: transaction)
+            } else {
+                name = displayName(for: address,
+                                   transaction: transaction)
+            }
+        }
+        return name.asAttributedString
+    }
+}

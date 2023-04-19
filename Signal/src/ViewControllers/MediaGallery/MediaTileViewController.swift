@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 fileprivate extension IndexSet {
@@ -66,6 +67,8 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
 }
 
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
+    private typealias Cell = (UICollectionViewCell & MediaTileCell)
+    typealias Layout = UICollectionViewFlowLayout & ScrollPositionPreserving
     private let thread: TSThread
     private let accessoriesHelper: MediaGalleryAccessoriesHelper
     private lazy var mediaGallery: MediaGallery = {
@@ -73,15 +76,43 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         mediaGallery.addDelegate(self)
         return mediaGallery
     }()
-    fileprivate let mediaTileViewLayout: MediaTileViewLayout
+    fileprivate var mediaTileViewLayout: Layout
+    private var allCells = WeakArray<UICollectionViewCell>()
 
     /// This is used to avoid running two animations concurrently. It doesn't look good on iOS 16 (and probably all other versions).
     private var activeAnimationCount = 0
+    private enum Mode {
+        case list
+        case grid
+
+        var reuseIdentifier: String {
+            switch self {
+            case .list:
+                return WidePhotoCell.reuseIdentifier
+            case .grid:
+                return PhotoGridViewCell.reuseIdentifier
+            }
+        }
+    }
+    private var mode = Mode.grid {
+        didSet {
+            if oldValue == mode {
+                return
+            }
+            let indexPath = oldestVisibleIndexPath
+            rebuildLayout()
+            if let indexPath {
+                collectionView.layoutIfNeeded()
+                collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
+            }
+        }
+    }
+    private var toolbarHeight = CGFloat(0)
 
     public init(thread: TSThread, accessoriesHelper: MediaGalleryAccessoriesHelper) {
         self.thread = thread
         self.accessoriesHelper = accessoriesHelper
-        let layout: MediaTileViewLayout = type(of: self).buildLayout()
+        let layout: Layout = Self.buildLayout(mode: mode)
         self.mediaTileViewLayout = layout
 
         super.init(collectionViewLayout: layout)
@@ -151,6 +182,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     // MARK: View Lifecycle Overrides
 
+    override public func loadView() {
+        collectionView = MediaTileCollectionView(frame: .zero, collectionViewLayout: mediaTileViewLayout)
+    }
+
     override public func viewDidLoad() {
         super.viewDidLoad()
 
@@ -162,13 +197,13 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }
 
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
+        collectionView.register(WidePhotoCell.self, forCellWithReuseIdentifier: WidePhotoCell.reuseIdentifier)
         collectionView.register(ThemeCollectionViewSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ThemeCollectionViewSectionHeader.reuseIdentifier)
         collectionView.register(MediaGalleryStaticHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier)
 
         collectionView.delegate = self
 
-        // feels a bit weird to have content smashed all the way to the bottom edge.
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
+        updateContentInset()
 
         accessoriesHelper.add(toView: self.view)
 
@@ -219,14 +254,28 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     @objc
     func applyTheme() {
         accessoriesHelper.applyTheme()
-
-        collectionView.backgroundColor = Theme.backgroundColor
     }
 
     // MARK: Orientation
 
     override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.defaultSupportedOrientations
+    }
+
+    // MARK: - List View / Grid View
+
+    func enterListMode() {
+        mode = .list
+    }
+
+    func enterGridMode() {
+        mode = .grid
+    }
+
+    private func rebuildLayout() {
+        mediaTileViewLayout = Self.buildLayout(mode: mode)
+        collectionView.setCollectionViewLayout(mediaTileViewLayout, animated: false)
+        collectionView.reloadData()
     }
 
     // MARK: UICollectionViewDelegate
@@ -470,7 +519,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     override public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         Logger.info("")
 
-        guard let gridCell = self.collectionView(collectionView, cellForItemAt: indexPath) as? PhotoGridViewCell else {
+        guard let gridCell = self.collectionView(collectionView, cellForItemAt: indexPath) as? Cell else {
             owsFailDebug("galleryCell was unexpectedly nil")
             return
         }
@@ -593,11 +642,16 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         Logger.debug("indexPath: \(indexPath)")
 
-        guard let cell = self.collectionView?.dequeueReusableCell(withReuseIdentifier: PhotoGridViewCell.reuseIdentifier, for: indexPath) as? PhotoGridViewCell else {
+        guard let cell = self.collectionView?.dequeueReusableCell(withReuseIdentifier: mode.reuseIdentifier, for: indexPath) as? Cell else {
             owsFailDebug("unexpected cell for indexPath: \(indexPath)")
             return UICollectionViewCell()
         }
-
+        allCells.cullExpired()
+        if !allCells.contains(cell) {
+            allCells.append(cell)
+        }
+        cell.indexPathDidChange(indexPath,
+                                itemCount: collectionView.numberOfItems(inSection: indexPath.section))
         guard !mediaGallery.galleryDates.isEmpty else {
             owsFailDebug("unexpected cell for loadNewerSectionIdx")
             cell.makePlaceholder()
@@ -632,12 +686,12 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     private lazy var videoDurationContext = { VideoDurationHelper.Context() }()
 
     override public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let photoGridViewCell = cell as? PhotoGridViewCell else {
+        guard let cell = cell as? Cell else {
             owsFailDebug("unexpected cell: \(cell)")
             return
         }
 
-        photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
+        cell.setAllowsMultipleSelection(collectionView.allowsMultipleSelection, animated: false)
     }
 
     func galleryItem(at indexPath: IndexPath, loadAsync: Bool = false) -> MediaGalleryItem? {
@@ -659,24 +713,30 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     func updateVisibleCells() {
         for cell in collectionView.visibleCells {
-            guard let photoGridViewCell = cell as? PhotoGridViewCell else {
+            guard let cell = cell as? Cell else {
                 owsFailDebug("unexpected cell: \(cell)")
                 continue
             }
 
-            photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
+            cell.setAllowsMultipleSelection(collectionView.allowsMultipleSelection, animated: true)
         }
     }
 
     // MARK: UICollectionViewDelegateFlowLayout
 
-    static let kInterItemSpacing: CGFloat = 2
-    private class func buildLayout() -> MediaTileViewLayout {
-        let layout = MediaTileViewLayout()
+    private class func makeLayout(mode: Mode) -> Layout {
+        switch mode {
+        case .list:
+            return WideMediaTileViewLayout(sectionSpacing: 20.0)
+        case .grid:
+            return SquareMediaTileViewLayout()
+        }
+    }
+
+    private class func buildLayout(mode: Mode) -> Layout {
+        let layout = makeLayout(mode: mode)
 
         layout.sectionInsetReference = .fromSafeArea
-        layout.minimumInteritemSpacing = kInterItemSpacing
-        layout.minimumLineSpacing = kInterItemSpacing
         if #available(iOS 12, *) {
             // Modern design
             layout.sectionHeadersPinToVisibleBounds = false
@@ -689,6 +749,15 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     func updateLayout() {
+        switch mode {
+        case .grid:
+            updateSquareLayout()
+        case .list:
+            updateWideLayout()
+        }
+    }
+
+    private func updateSquareLayout() {
         let rawSize = view.safeAreaLayoutGuide.layoutFrame.size
 
         let containerSize = CGSize(width: floor(rawSize.width), height: floor(rawSize.height))
@@ -698,13 +767,27 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         let approxItemWidth = minimumViewWidth / CGFloat(kItemsPerPortraitRow)
 
         let itemCount = round(containerSize.width / approxItemWidth)
-        let interSpaceWidth = (itemCount - 1) * type(of: self).kInterItemSpacing
+        let interSpaceWidth = (itemCount - 1) * mediaTileViewLayout.minimumInteritemSpacing
         let availableWidth = max(0, containerSize.width - interSpaceWidth)
 
         let itemWidth = floor(availableWidth / CGFloat(itemCount))
         let newItemSize = CGSize(square: itemWidth)
         let remainingSpace = availableWidth - (itemCount * itemWidth)
         let hInset = remainingSpace / 2
+        if newItemSize != mediaTileViewLayout.itemSize || hInset != mediaTileViewLayout.sectionInset.left {
+            mediaTileViewLayout.itemSize = newItemSize
+            // Inset any remaining space around the outside edges to ensure all inter-item spacing is exactly equal, otherwise
+            // we may get slightly different gaps between rows vs. columns
+            mediaTileViewLayout.sectionInset = UIEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset)
+            mediaTileViewLayout.invalidateLayout()
+        }
+    }
+
+    private func updateWideLayout() {
+        let hInset = 20.0
+        let newItemSize = CGSize(
+            width: floor(view.safeAreaLayoutGuide.layoutFrame.size.width) - hInset * 2,
+            height: WidePhotoCell.desiredHeight)
         if newItemSize != mediaTileViewLayout.itemSize || hInset != mediaTileViewLayout.sectionInset.left {
             mediaTileViewLayout.itemSize = newItemSize
             // Inset any remaining space around the outside edges to ensure all inter-item spacing is exactly equal, otherwise
@@ -773,10 +856,21 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                 self?.activeAnimationCount -= 1
             }
         }
+        updateCellIndexPaths()
 
         UIView.setAnimationsEnabled(saved)
         if shouldAnimate {
             activeAnimationCount += 1
+        }
+    }
+
+    private func updateCellIndexPaths() {
+        for cell in allCells.elements {
+            guard let indexPath = collectionView.indexPath(for: cell) else {
+                continue
+            }
+            (cell as? Cell)?.indexPathDidChange(indexPath,
+                                                itemCount: collectionView.numberOfItems(inSection: indexPath.section))
         }
     }
 
@@ -917,26 +1011,11 @@ extension MediaTileViewController: MediaPresentationContextProvider {
             return nil
         }
 
-        guard let cell = collectionView.visibleCells[safe: visibleIndex] as? PhotoGridViewCell else {
+        guard let cell = collectionView.visibleCells[safe: visibleIndex] as? Cell else {
             owsFailDebug("cell was unexpectedly nil")
             return nil
         }
-
-        let mediaView = cell.imageView
-
-        guard let mediaSuperview = mediaView.superview else {
-            owsFailDebug("mediaSuperview was unexpectedly nil")
-            return nil
-        }
-
-        let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
-        let clippingAreaInsets = UIEdgeInsets(top: collectionView.adjustedContentInset.top, leading: 0, bottom: 0, trailing: 0)
-
-        return MediaPresentationContext(
-            mediaView: mediaView,
-            presentationFrame: presentationFrame,
-            clippingAreaInsets: clippingAreaInsets
-        )
+        return cell.mediaPresentationContext(collectionView: collectionView, in: coordinateSpace)
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
@@ -945,27 +1024,6 @@ extension MediaTileViewController: MediaPresentationContextProvider {
 }
 
 // MARK: - Private Helper Classes
-
-// Accommodates remaining scrolled to the same "apparent" position when new content is inserted
-// into the top of a collectionView. There are multiple ways to solve this problem, but this
-// is the only one which avoided a perceptible flicker.
-private class MediaTileViewLayout: UICollectionViewFlowLayout {
-    private var contentSizeBeforeInsertingToTop: CGSize?
-
-    func recordContentSizeBeforeInsertingToTop() {
-        contentSizeBeforeInsertingToTop = collectionViewContentSize
-    }
-
-    override public func prepare() {
-        super.prepare()
-
-        if let collectionView = collectionView, let oldContentSize = contentSizeBeforeInsertingToTop {
-            let newContentSize = collectionViewContentSize
-            collectionView.contentOffset.y += newContentSize.height - oldContentSize.height
-            contentSizeBeforeInsertingToTop = nil
-        }
-    }
-}
 
 private class MediaGalleryStaticHeader: UICollectionViewCell {
 
@@ -1017,8 +1075,6 @@ class GalleryGridCellItem: PhotoGridItem {
         }
     }
 
-    var creationDate: Date? { nil }
-
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
         return galleryItem.thumbnailImage(async: completion)
     }
@@ -1027,6 +1083,43 @@ class GalleryGridCellItem: PhotoGridItem {
         owsAssert(galleryItem.isVideo)
         return VideoDurationHelper.shared.promisedDuration(attachment: galleryItem.attachmentStream)
     }
+
+    lazy var photoMetadata: PhotoMetadata? = {
+        let authorAddress: SignalServiceAddress
+        if let incomingMessage = galleryItem.message as? TSIncomingMessage {
+            authorAddress = incomingMessage.authorAddress
+        } else if let localAddress = TSAccountManager.shared.localAddress {
+            authorAddress = localAddress
+        } else {
+            owsFailDebug("Local address lookup failed unexpectedly")
+            return nil
+        }
+        let filename = galleryItem.attachmentStream.originalFilePath.map {
+            ($0 as NSString).lastPathComponent as String
+        }
+        let (sender, abbreviatedSender) =
+        SDSDatabaseStorage.shared.read { transaction in
+            let contactsManager = SSKEnvironment.shared.contactsManager
+            return (
+                contactsManager.nameForAddress(
+                    authorAddress,
+                    localUserDisplayMode: .asLocalUser,
+                    short: false,
+                    transaction: transaction),
+
+                contactsManager.nameForAddress(
+                    authorAddress,
+                    localUserDisplayMode: .asLocalUser,
+                    short: true,
+                    transaction: transaction))
+        }
+        return PhotoMetadata(
+            sender: sender.string,
+            abbreviatedSender: abbreviatedSender.string,
+            filename: filename,
+            byteSize: Int(galleryItem.attachmentStream.byteCount),
+            creationDate: galleryItem.attachmentStream.creationTimestamp)
+    }()
 }
 
 extension MediaTileViewController: MediaGalleryPrimaryViewController {
@@ -1162,4 +1255,18 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
 
         AttachmentSharing.showShareUI(forAttachments: items, sender: sender)
     }
+
+    func mediaGalleryAccessoriesHelperToolbarHeightWillChange(to height: CGFloat) {
+        toolbarHeight = height
+        updateContentInset()
+    }
+
+    private func updateContentInset() {
+        // It feels a bit weird to have content smashed all the way to the bottom edge of the screen.
+        // This is here for iOS 12. Newer versions of iOS always show a toolbar.
+        let minimumInset = 20.0
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: max(minimumInset, toolbarHeight), right: 0)
+    }
 }
+
+class MediaTileCollectionView: UICollectionView { }
