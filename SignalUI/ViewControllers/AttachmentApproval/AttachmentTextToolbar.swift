@@ -234,7 +234,7 @@ class AttachmentTextToolbar: UIView {
         button.setTitleColor(.ows_white, for: .normal)
         button.titleLabel?.lineBreakMode = .byTruncatingTail
         button.titleLabel?.textAlignment = .center
-        button.titleLabel?.font = .ows_dynamicTypeBodyClamped
+        button.titleLabel?.font = .dynamicTypeBodyClamped
         button.addTarget(self, action: #selector(didTapAddMessage), for: .touchDown)
         return button
     }()
@@ -246,7 +246,7 @@ class AttachmentTextToolbar: UIView {
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         label.textColor = .ows_whiteAlpha50
-        label.font = .ows_dynamicTypeBodyClamped
+        label.font = .dynamicTypeBodyClamped
         return label
     }()
 
@@ -302,7 +302,7 @@ class AttachmentTextToolbar: UIView {
         textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
         textView.backgroundColor = .clear
         textView.tintColor = Theme.darkThemePrimaryColor
-        textView.font = .ows_dynamicTypeBodyClamped
+        textView.font = .dynamicTypeBodyClamped
         textView.textColor = Theme.darkThemePrimaryColor
         return textView
     }

@@ -70,7 +70,7 @@ open class ReminderView: UIStackView {
 
     private lazy var textLabel: UILabel = {
         let result = UILabel()
-        result.font = .ows_dynamicTypeFootnote
+        result.font = .dynamicTypeFootnote
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         return result
@@ -78,7 +78,7 @@ open class ReminderView: UIStackView {
 
     private lazy var actionLabel: UILabel = {
         let result = UILabel()
-        result.font = .ows_dynamicTypeFootnote.ows_semibold
+        result.font = .dynamicTypeFootnote.semibold()
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         return result

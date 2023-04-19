@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Photos
 import PhotosUI
 import SignalMessaging
+import SignalUI
 
 protocol RecentPhotosDelegate: AnyObject {
     var isMediaLibraryAccessGranted: Bool { get }
@@ -199,7 +199,7 @@ class SelectMorePhotosCell: UICollectionViewCell {
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
-        titleLabel.font = fixedFont.ows_semibold
+        titleLabel.font = fixedFont.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.text = NSLocalizedString(
             "IMAGE_PICKER_CHANGE_PHOTOS_TITLE",
@@ -319,7 +319,7 @@ class RecentPhotoCell: UICollectionViewCell {
 
     private static func durationLabelFont() -> UIFont {
         let fontDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1)
-        return UIFont.ows_semiboldFont(withSize: max(12, fontDescriptor.pointSize))
+        return UIFont.semiboldFont(ofSize: max(12, fontDescriptor.pointSize))
     }
 
     private func setContentTypeBadge(image: UIImage?) {

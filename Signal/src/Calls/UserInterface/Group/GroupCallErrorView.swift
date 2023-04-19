@@ -39,7 +39,7 @@ class GroupCallErrorView: UIView {
 
     private let label: UILabel = {
         let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeSubheadline
+        label.font = UIFont.dynamicTypeSubheadline
         label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .center
         label.textColor = .ows_white
@@ -60,7 +60,7 @@ class GroupCallErrorView: UIView {
         button.clipsToBounds = true
 
         button.titleLabel?.textAlignment = .center
-        button.titleLabel?.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
+        button.titleLabel?.font = UIFont.dynamicTypeSubheadline.semibold()
         button.setTitle(buttonLabel, for: .normal)
 
         button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)

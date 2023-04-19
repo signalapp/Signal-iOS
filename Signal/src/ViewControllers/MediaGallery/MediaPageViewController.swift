@@ -733,7 +733,7 @@ class MediaPageViewController: UIPageViewController {
     private lazy var headerNameLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.darkThemePrimaryColor
-        label.font = UIFont.ows_regularFont(withSize: 17)
+        label.font = UIFont.regularFont(ofSize: 17)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.8
@@ -744,7 +744,7 @@ class MediaPageViewController: UIPageViewController {
     private lazy var headerDateLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.darkThemePrimaryColor
-        label.font = UIFont.ows_regularFont(withSize: 12)
+        label.font = UIFont.regularFont(ofSize: 12)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.8

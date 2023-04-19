@@ -121,7 +121,7 @@ class CallHeader: UIView {
         // Add trailing space after the name scrolls before it wraps around and scrolls back in.
         callTitleLabel.trailingBuffer = ScaleFromIPhone5(80.0)
 
-        callTitleLabel.font = UIFont.ows_dynamicTypeHeadline.ows_semibold
+        callTitleLabel.font = UIFont.dynamicTypeHeadline.semibold()
         callTitleLabel.textAlignment = .center
         callTitleLabel.textColor = UIColor.white
         addShadow(to: callTitleLabel)
@@ -145,7 +145,7 @@ class CallHeader: UIView {
 
         // Status label
 
-        callStatusLabel.font = UIFont.ows_dynamicTypeFootnote.ows_monospaced
+        callStatusLabel.font = UIFont.dynamicTypeFootnote.monospaced()
         callStatusLabel.textAlignment = .center
         callStatusLabel.textColor = UIColor.white
         callStatusLabel.numberOfLines = 0
@@ -450,7 +450,7 @@ private class GroupMembersButton: UIButton {
         iconImageView.autoSetDimensions(to: CGSize(square: 22))
         iconImageView.autoPinEdge(toSuperviewEdge: .top, withInset: 2)
 
-        countLabel.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_monospaced
+        countLabel.font = UIFont.dynamicTypeFootnoteClamped.monospaced()
         countLabel.textColor = .ows_white
         addSubview(countLabel)
         countLabel.autoPinEdge(.leading, to: .trailing, of: iconImageView, withOffset: 5)

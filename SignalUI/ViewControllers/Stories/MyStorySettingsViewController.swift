@@ -274,7 +274,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
             let titleLabel = UILabel()
             titleLabel.text = title
             titleLabel.numberOfLines = 0
-            titleLabel.font = .ows_dynamicTypeBodyClamped
+            titleLabel.font = .dynamicTypeBodyClamped
             titleLabel.textColor = Theme.primaryTextColor
             vStack.addArrangedSubview(titleLabel)
 
@@ -282,7 +282,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
                 let detailLabel = UILabel()
                 detailLabel.text = detailText
                 detailLabel.numberOfLines = 0
-                detailLabel.font = .ows_dynamicTypeCaption1Clamped
+                detailLabel.font = .dynamicTypeCaption1Clamped
                 detailLabel.textColor = Theme.secondaryTextAndIconColor
                 vStack.addArrangedSubview(detailLabel)
             }
@@ -295,7 +295,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
                 button.setTitle(title, for: .normal)
                 button.setTitleColor(Theme.primaryTextColor, for: .normal)
                 button.setTitleColor(Theme.primaryTextColor.withAlphaComponent(0.6), for: .highlighted)
-                button.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped.ows_semibold
+                button.titleLabel?.font = .dynamicTypeSubheadlineClamped.semibold()
                 button.sizeToFit()
                 cell.accessoryView = button
             case .disclosure:
@@ -322,14 +322,14 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
                 comment: "Title for the my story settings sheet"
             )
             titleLabel.textAlignment = .center
-            titleLabel.font = .ows_dynamicTypeHeadline.ows_semibold
+            titleLabel.font = .dynamicTypeHeadline.semibold()
             titleLabel.textColor = Theme.primaryTextColor
             addSubview(titleLabel)
 
             addSubview(subtitleView)
 
             doneButton.setTitle(CommonStrings.doneButton, for: .normal)
-            doneButton.titleLabel?.font = .ows_dynamicTypeHeadline.ows_semibold
+            doneButton.titleLabel?.font = .dynamicTypeHeadline.semibold()
             doneButton.setTitleColor(Theme.primaryTextColor, for: .normal)
             doneButton.setTitleColor(Theme.primaryTextColor.withAlphaComponent(0.5), for: .disabled)
             doneButton.addTarget(dataSource, action: #selector(didTapDoneButton), for: .touchUpInside)
@@ -382,7 +382,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
             "\n",
             learnMoreString
         ]).styled(
-            with: .font(.ows_dynamicTypeCaption1Clamped),
+            with: .font(.dynamicTypeCaption1Clamped),
             .color(Theme.secondaryTextAndIconColor),
             .alignment(textAlignment)
         )

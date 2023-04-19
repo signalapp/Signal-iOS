@@ -221,7 +221,7 @@ class StoryReplyInputToolbar: UIView {
         textView.backgroundColor = .clear
         textView.tintColor = Theme.darkThemePrimaryColor
 
-        let textViewFont = UIFont.ows_dynamicTypeBody
+        let textViewFont = UIFont.dynamicTypeBody
         textView.font = textViewFont
         textView.textColor = Theme.darkThemePrimaryColor
         return textView
@@ -249,7 +249,7 @@ class StoryReplyInputToolbar: UIView {
 
         let label = UILabel()
         label.textColor = Theme.darkThemeSecondaryTextAndIconColor
-        label.font = .ows_dynamicTypeFootnote
+        label.font = .dynamicTypeFootnote
         label.text = headerText
 
         let container = UIView()

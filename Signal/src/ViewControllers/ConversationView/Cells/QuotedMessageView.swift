@@ -109,12 +109,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var quotedAuthorName: String { state.quotedAuthorName }
 
         let stripeThickness: CGFloat = 4
-        var quotedAuthorFont: UIFont { UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold }
+        var quotedAuthorFont: UIFont { UIFont.dynamicTypeSubheadlineClamped.semibold() }
         var quotedAuthorColor: UIColor { conversationStyle.quotedReplyAuthorColor() }
         var quotedTextColor: UIColor { conversationStyle.quotedReplyTextColor() }
-        var quotedTextFont: UIFont { UIFont.ows_dynamicTypeBody2 }
+        var quotedTextFont: UIFont { UIFont.dynamicTypeBody2 }
         var fileTypeTextColor: UIColor { conversationStyle.quotedReplyAttachmentColor() }
-        var fileTypeFont: UIFont { quotedTextFont.ows_italic }
+        var fileTypeFont: UIFont { quotedTextFont.italic() }
         var filenameTextColor: UIColor { conversationStyle.quotedReplyAttachmentColor() }
         var filenameFont: UIFont { quotedTextFont }
         var quotedAuthorHeight: CGFloat { quotedAuthorFont.lineHeight }
@@ -306,7 +306,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             let text = NSLocalizedString("QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
                                          comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender.")
             return CVLabelConfig(text: text,
-                                 font: UIFont.ows_dynamicTypeFootnote,
+                                 font: UIFont.dynamicTypeFootnote,
                                  textColor: Theme.lightThemePrimaryColor,
                                  numberOfLines: 0,
                                  lineBreakMode: .byWordWrapping)
@@ -324,7 +324,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             }
 
             return CVLabelConfig(text: text,
-                                 font: UIFont.ows_dynamicTypeFootnote,
+                                 font: UIFont.dynamicTypeFootnote,
                                  textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming))
         }
 

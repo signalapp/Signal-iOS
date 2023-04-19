@@ -104,9 +104,9 @@ public class StickerPackViewController: OWSViewController {
         titleLabel.textColor = Theme.darkThemePrimaryColor
         titleLabel.numberOfLines = 2
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle1.semibold()
 
-        authorLabel.font = UIFont.ows_dynamicTypeBody
+        authorLabel.font = UIFont.dynamicTypeBody
 
         defaultPackIconView.setTemplateImageName("check-circle-filled-16", tintColor: Theme.accentBlueColor)
         defaultPackIconView.isHidden = true
@@ -149,7 +149,7 @@ public class StickerPackViewController: OWSViewController {
         stickerCollectionView.autoPinEdge(.top, to: .bottom, of: headerStack)
 
         let installButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
-                                             font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                             font: UIFont.dynamicTypeBody.semibold(),
                                              titleColor: Theme.accentBlueColor,
                                              backgroundColor: UIColor.white,
                                              target: self,
@@ -157,7 +157,7 @@ public class StickerPackViewController: OWSViewController {
         self.installButton = installButton
         installButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "installButton")
         let uninstallButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
-                                             font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                             font: UIFont.dynamicTypeBody.semibold(),
                                              titleColor: Theme.accentBlueColor,
                                              backgroundColor: UIColor.white,
                                              target: self,
@@ -177,7 +177,7 @@ public class StickerPackViewController: OWSViewController {
 
         loadFailedLabel.text = NSLocalizedString("STICKERS_PACK_VIEW_FAILED_TO_LOAD",
                                                  comment: "Label indicating that the sticker pack failed to load.")
-        loadFailedLabel.font = UIFont.ows_dynamicTypeBody
+        loadFailedLabel.font = UIFont.dynamicTypeBody
         loadFailedLabel.textColor = Theme.darkThemePrimaryColor
         loadFailedLabel.textAlignment = .center
         loadFailedLabel.numberOfLines = 0

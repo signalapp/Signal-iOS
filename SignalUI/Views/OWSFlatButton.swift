@@ -193,7 +193,7 @@ public class OWSFlatButton: UIView {
         // Cap the "button height" at 40pt or button text can look
         // excessively large.
         let fontPointSize = round(min(40, height) * 0.45)
-        return UIFont.ows_semiboldFont(withSize: fontPointSize)
+        return UIFont.semiboldFont(ofSize: fontPointSize)
     }
 
     public class func heightForFont(_ font: UIFont) -> CGFloat {

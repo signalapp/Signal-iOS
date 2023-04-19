@@ -13,7 +13,6 @@
 #import <SignalUI/BlockListUIUtils.h>
 #import <SignalUI/ContactsViewHelper.h>
 #import <SignalUI/OWSTableViewController.h>
-#import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN

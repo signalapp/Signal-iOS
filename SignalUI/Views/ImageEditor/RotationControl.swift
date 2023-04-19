@@ -170,7 +170,7 @@ class RotationControl: UIControl {
     }
 
     private func updateFont() {
-        textLabel.font = .ows_dynamicTypeBody2Clamped.ows_monospaced
+        textLabel.font = .dynamicTypeBody2Clamped.monospaced()
     }
 
     private func updateColors() {

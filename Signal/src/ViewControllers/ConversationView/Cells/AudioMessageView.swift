@@ -381,7 +381,7 @@ class AudioMessageView: ManualStackView {
                                                 conversationStyle: ConversationStyle) -> CVLabelConfig {
         return CVLabelConfig(
             text: text,
-            font: UIFont.ows_dynamicTypeCaption1Clamped,
+            font: UIFont.dynamicTypeCaption1Clamped,
             textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
         )
     }
@@ -389,7 +389,7 @@ class AudioMessageView: ManualStackView {
     // MARK: - Constants
 
     fileprivate enum Constants {
-        static let labelFont: UIFont = .ows_dynamicTypeCaption2
+        static let labelFont: UIFont = .dynamicTypeCaption2
         static let waveformHeight: CGFloat = 32
         static let animationSize: CGFloat = 40
         static let vSpacing: CGFloat = 2

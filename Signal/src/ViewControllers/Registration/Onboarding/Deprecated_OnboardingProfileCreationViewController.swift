@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 @objc
 public class Deprecated_OnboardingProfileCreationViewController: Deprecated_OnboardingBaseViewController {
@@ -31,7 +31,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
 
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeTitle1.ows_semibold
+        label.font = UIFont.dynamicTypeTitle1.semibold()
         label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .center
         label.text = NSLocalizedString(
@@ -83,7 +83,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
 
     private lazy var givenNameTextField: OWSTextField = {
         let label = OWSTextField()
-        label.font = .ows_dynamicTypeSubheadlineClamped
+        label.font = .dynamicTypeSubheadlineClamped
         label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .natural
         label.autocorrectionType = .no
@@ -103,7 +103,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
 
     private lazy var familyNameTextField: OWSTextField = {
         let label = OWSTextField()
-        label.font = .ows_dynamicTypeSubheadlineClamped
+        label.font = .dynamicTypeSubheadlineClamped
         label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .natural
         label.autocorrectionType = .no
@@ -135,11 +135,11 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
         let learnMoreString = CommonStrings.learnMore
 
         return NSAttributedString.composed(of: [
-            descriptionString.styled(with: .font(.ows_dynamicTypeCaption1), .color(Theme.secondaryTextAndIconColor)),
-            spacerString.styled(with: .font(. ows_dynamicTypeCaption1), .color(Theme.secondaryTextAndIconColor)),
+            descriptionString.styled(with: .font(.dynamicTypeCaption1), .color(Theme.secondaryTextAndIconColor)),
+            spacerString.styled(with: .font(.dynamicTypeCaption1), .color(Theme.secondaryTextAndIconColor)),
             learnMoreString.styled(with:
                 .link(URL(string: "https://support.signal.org/hc/articles/360007459591")!),
-                .font(.ows_dynamicTypeCaption1),
+                .font(.dynamicTypeCaption1),
                 .color(Theme.accentBlueColor),
                 .underline([], nil)
             )
@@ -148,7 +148,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
 
     private lazy var footerTextView: LinkingTextView = {
         let footerTextView = LinkingTextView()
-        footerTextView.font = .ows_dynamicTypeCaption1
+        footerTextView.font = .dynamicTypeCaption1
         footerTextView.adjustsFontForContentSizeCategory = true
         footerTextView.attributedText = footerText
         footerTextView.isUserInteractionEnabled = true

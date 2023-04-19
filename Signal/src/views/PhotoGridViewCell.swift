@@ -189,7 +189,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
     private static func durationLabelFont() -> UIFont {
         let fontDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1)
-        return UIFont.ows_semiboldFont(withSize: max(12, fontDescriptor.pointSize))
+        return UIFont.semiboldFont(ofSize: max(12, fontDescriptor.pointSize))
     }
 
     private func setMedia(itemType: PhotoGridItemType) {

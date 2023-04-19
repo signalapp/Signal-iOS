@@ -59,7 +59,7 @@ class ContactNameFieldView: UIView {
 
         let nameLabel = UILabel()
         nameLabel.text = name
-        nameLabel.font = UIFont.ows_dynamicTypeBody
+        nameLabel.font = UIFont.dynamicTypeBody
         nameLabel.textColor = Theme.accentBlueColor
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
@@ -70,7 +70,7 @@ class ContactNameFieldView: UIView {
         if let initialValue = initialValue {
             valueView.text = initialValue
         }
-        valueView.font = UIFont.ows_dynamicTypeBody
+        valueView.font = UIFont.dynamicTypeBody
         valueView.textColor = Theme.primaryTextColor
         stackView.addArrangedSubview(valueView)
 

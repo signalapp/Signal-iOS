@@ -98,7 +98,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
             stackView.setCustomSpacing(14, after: badgeImageView)
 
             let badgeLabel = UILabel()
-            badgeLabel.font = .ows_dynamicTypeTitle3.ows_semibold
+            badgeLabel.font = .dynamicTypeTitle3.semibold()
             badgeLabel.textColor = Theme.primaryTextColor
             badgeLabel.textAlignment = .center
             badgeLabel.numberOfLines = 0
@@ -117,7 +117,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
             stackView.setCustomSpacing(36, after: badgeLabel)
 
             let badgeDescription = UILabel()
-            badgeDescription.font = .ows_dynamicTypeBody
+            badgeDescription.font = .dynamicTypeBody
             badgeDescription.textColor = Theme.primaryTextColor
             badgeDescription.textAlignment = .center
             badgeDescription.numberOfLines = 0
@@ -141,7 +141,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
                         "BADGE_DETAILS_DONATE_TO_SIGNAL",
                         comment: "When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button."
                     ),
-                    font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                    font: UIFont.dynamicTypeBody.semibold(),
                     titleColor: .white,
                     backgroundColor: .ows_accentBlue,
                     target: self,

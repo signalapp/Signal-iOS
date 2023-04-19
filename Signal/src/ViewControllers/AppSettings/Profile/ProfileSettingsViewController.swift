@@ -101,7 +101,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 with: .link(URL(string: "https://support.signal.org/hc/articles/360007459591")!)
             )
         ]).styled(
-            with: .font(.ows_dynamicTypeCaption1Clamped),
+            with: .font(.dynamicTypeCaption1Clamped),
             .color(Theme.secondaryTextAndIconColor)
         )
         mainSection.add(.disclosureItem(
@@ -522,7 +522,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let changeButton = UIButton(type: .custom)
 
         changeButton.setTitle(NSLocalizedString("CHANGE_AVATAR_BUTTON_LABEL", comment: "Button label to allow user to change avatar"), for: .normal)
-        changeButton.titleLabel?.font = .ows_dynamicTypeBody2.ows_semibold
+        changeButton.titleLabel?.font = .dynamicTypeBody2.semibold()
         changeButton.contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
         changeButton.layer.cornerRadius = 16
 

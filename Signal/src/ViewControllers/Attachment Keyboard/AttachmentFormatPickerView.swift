@@ -169,7 +169,7 @@ class AttachmentFormatCell: UICollectionViewCell {
         imageView.autoSetDimensions(to: CGSize(square: 32))
         imageView.contentMode = .scaleAspectFit
 
-        label.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold
+        label.font = UIFont.dynamicTypeFootnoteClamped.semibold()
         label.textColor = Theme.attachmentKeyboardItemImageColor
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true

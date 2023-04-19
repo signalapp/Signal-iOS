@@ -79,7 +79,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
         let footerView = UIView()
         let continueButton = OWSFlatButton.insetButton(
             title: CommonStrings.continueButton,
-            font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            font: UIFont.dynamicTypeBodyClamped.semibold(),
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
@@ -153,7 +153,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
 
             let button = OWSFlatButton.button(
                 title: CommonStrings.learnMore,
-                font: UIFont.ows_dynamicTypeSubheadlineClamped,
+                font: UIFont.dynamicTypeSubheadlineClamped,
                 titleColor: Theme.accentBlueColor,
                 backgroundColor: .clear,
                 target: self,
@@ -190,7 +190,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
 
             let titleLabel = UILabel()
             titleLabel.text = description
-            titleLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+            titleLabel.font = UIFont.dynamicTypeSubheadlineClamped
             titleLabel.numberOfLines = 0
             titleLabel.textAlignment = .left
             titleLabel.lineBreakMode = .byWordWrapping
@@ -302,7 +302,7 @@ extension UsernameEducationViewController {
         // MARK: - Style views
 
         func updateFontsForCurrentPreferredContentSize() {
-            usernameTitleLabel.font = .ows_dynamicTypeTitle1Clamped.ows_semibold
+            usernameTitleLabel.font = .dynamicTypeTitle1Clamped.semibold()
         }
 
         func setColorsForCurrentTheme() {

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
+import SignalUI
 
 protocol MockConversationDelegate: AnyObject {
     var mockConversationViewWidth: CGFloat { get }

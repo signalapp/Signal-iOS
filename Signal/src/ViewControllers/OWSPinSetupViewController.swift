@@ -16,7 +16,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     lazy private var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semibold
+        label.font = UIFont.dynamicTypeTitle1Clamped.semibold()
         label.textAlignment = .center
         label.text = titleText
         return label
@@ -99,7 +99,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
     private lazy var pinTypeToggle: OWSFlatButton = {
         let pinTypeToggle = OWSFlatButton()
-        pinTypeToggle.setTitle(font: .ows_dynamicTypeSubheadlineClamped, titleColor: Theme.accentBlueColor)
+        pinTypeToggle.setTitle(font: .dynamicTypeSubheadlineClamped, titleColor: Theme.accentBlueColor)
         pinTypeToggle.setBackgroundColors(upColor: .clear)
 
         pinTypeToggle.enableMultilineLabel()
@@ -116,7 +116,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         let nextButton = OWSFlatButton()
         nextButton.setTitle(
             title: CommonStrings.nextButton,
-            font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            font: UIFont.dynamicTypeBodyClamped.semibold(),
             titleColor: .white)
         nextButton.setBackgroundColors(upColor: .ows_accentBlue)
 
@@ -133,7 +133,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         let validationWarningLabel = UILabel()
         validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.textAlignment = .center
-        validationWarningLabel.font = UIFont.ows_dynamicTypeFootnoteClamped
+        validationWarningLabel.font = UIFont.dynamicTypeFootnoteClamped
         validationWarningLabel.numberOfLines = 0
         validationWarningLabel.accessibilityIdentifier = "pinCreation.validationWarningLabel"
         return validationWarningLabel
@@ -143,7 +143,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         let recommendationLabel = UILabel()
         recommendationLabel.textColor = Theme.secondaryTextAndIconColor
         recommendationLabel.textAlignment = .center
-        recommendationLabel.font = UIFont.ows_dynamicTypeFootnoteClamped
+        recommendationLabel.font = UIFont.dynamicTypeFootnoteClamped
         recommendationLabel.numberOfLines = 0
         recommendationLabel.accessibilityIdentifier = "pinCreation.recommendationLabel"
         return recommendationLabel

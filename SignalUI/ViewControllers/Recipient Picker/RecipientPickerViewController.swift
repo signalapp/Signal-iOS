@@ -130,7 +130,7 @@ extension RecipientPickerViewController {
             comment: "Full width label displayed when attempting to compose message"
         )
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = .ows_semiboldFont(withSize: ScaleFromIPhone5To7Plus(17, 20))
+        titleLabel.font = .semiboldFont(ofSize: ScaleFromIPhone5To7Plus(17, 20))
         titleLabel.textAlignment = .center
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.numberOfLines = 0
@@ -141,7 +141,7 @@ extension RecipientPickerViewController {
             comment: "Full width label displayed when attempting to compose message"
         )
         subtitleLabel.textColor = Theme.secondaryTextAndIconColor
-        subtitleLabel.font = .ows_regularFont(withSize: ScaleFromIPhone5To7Plus(12, 14))
+        subtitleLabel.font = .regularFont(ofSize: ScaleFromIPhone5To7Plus(12, 14))
         subtitleLabel.textAlignment = .center
         subtitleLabel.lineBreakMode = .byWordWrapping
         subtitleLabel.numberOfLines = 0
@@ -184,7 +184,7 @@ extension RecipientPickerViewController {
 
             let label = UILabel()
             label.text = title
-            label.font = .ows_regularFont(withSize: 17)
+            label.font = .regularFont(ofSize: 17)
             label.textColor = Theme.primaryTextColor
             label.lineBreakMode = .byTruncatingTail
 

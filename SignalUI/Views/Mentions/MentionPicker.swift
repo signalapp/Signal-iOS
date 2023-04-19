@@ -316,7 +316,7 @@ private class MentionableUserCell: UITableViewCell {
         avatarView.autoVCenterInSuperview()
         avatarView.autoMatch(.height, to: .height, of: avatarContainer, withOffset: 0, relation: .lessThanOrEqual)
 
-        displayNameLabel.font = .ows_dynamicTypeBody2
+        displayNameLabel.font = .dynamicTypeBody2
 
         let stackView = UIStackView(arrangedSubviews: [
             avatarContainer,

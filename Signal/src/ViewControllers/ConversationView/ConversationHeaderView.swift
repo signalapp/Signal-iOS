@@ -47,9 +47,9 @@ public class ConversationHeaderView: UIView {
         }
     }
 
-    public let titlePrimaryFont: UIFont =  UIFont.ows_semiboldFont(withSize: 17)
-    public let titleSecondaryFont: UIFont =  UIFont.ows_regularFont(withSize: 9)
-    public let subtitleFont: UIFont = UIFont.ows_regularFont(withSize: 12)
+    public let titlePrimaryFont = UIFont.semiboldFont(ofSize: 17)
+    public let titleSecondaryFont = UIFont.regularFont(ofSize: 9)
+    public let subtitleFont = UIFont.regularFont(ofSize: 12)
 
     private let titleLabel: UILabel
     private let titleIconView: UIImageView

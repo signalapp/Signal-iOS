@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 public class CreditOrDebitCardReadMoreSheetViewController: OWSTableSheetViewController {
     override public func updateTableContents(shouldReload: Bool = true) {
@@ -15,7 +15,7 @@ public class CreditOrDebitCardReadMoreSheetViewController: OWSTableSheetViewCont
 
         section.add(.init(customCellBlock: {
             let headerLabel = UILabel()
-            headerLabel.font = .ows_dynamicTypeTitle2.ows_semibold
+            headerLabel.font = .dynamicTypeTitle2.semibold()
             headerLabel.textAlignment = .center
             headerLabel.numberOfLines = 0
             headerLabel.text = NSLocalizedString(
@@ -24,7 +24,7 @@ public class CreditOrDebitCardReadMoreSheetViewController: OWSTableSheetViewCont
             )
 
             let descriptionLabel = UILabel()
-            descriptionLabel.font = .ows_dynamicTypeBody
+            descriptionLabel.font = .dynamicTypeBody
             descriptionLabel.numberOfLines = 0
             descriptionLabel.text = NSLocalizedString(
                 "CARD_DONATION_READ_MORE_SHEET_BODY",

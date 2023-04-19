@@ -46,14 +46,14 @@ public class GroupLinkQRCodeViewController: OWSViewController {
         descriptionLabel.text = NSLocalizedString("GROUP_LINK_QR_CODE_VIEW_DESCRIPTION",
                                                   comment: "Description text in the 'group link QR code' view.")
         descriptionLabel.textColor = Theme.secondaryTextAndIconColor
-        descriptionLabel.font = .ows_dynamicTypeFootnote
+        descriptionLabel.font = .dynamicTypeFootnote
         descriptionLabel.textAlignment = .center
         descriptionLabel.numberOfLines = 0
         descriptionLabel.lineBreakMode = .byWordWrapping
 
         let shareCodeButton = OWSFlatButton.button(title: NSLocalizedString("GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON",
                                                                             comment: "Label for the 'share code' button in the 'group link QR code' view."),
-                                                   font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                   font: UIFont.dynamicTypeBody.semibold(),
                                                    titleColor: .white,
                                                    backgroundColor: .ows_accentBlue,
                                                    target: self,

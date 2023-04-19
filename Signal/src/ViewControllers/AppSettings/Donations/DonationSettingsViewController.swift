@@ -293,7 +293,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             button.dimsWhenHighlighted = true
             button.layer.cornerRadius = 8
             button.backgroundColor = .ows_accentBlue
-            button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+            button.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
             heroStack.addArrangedSubview(button)
             button.autoSetDimension(.height, toSize: 48)
             button.autoPinWidthToSuperviewMargins()

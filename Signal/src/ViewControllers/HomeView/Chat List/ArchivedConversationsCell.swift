@@ -69,7 +69,7 @@ public class ArchivedConversationsCell: UITableViewCell {
 
     func configure(enabled: Bool) {
         OWSTableItem.configureCell(self)
-        label.font = .ows_dynamicTypeBody
+        label.font = .dynamicTypeBody
         self.enabled = enabled
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self,

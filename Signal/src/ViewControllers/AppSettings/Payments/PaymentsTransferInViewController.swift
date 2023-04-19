@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 @objc
 class PaymentsTransferInViewController: OWSTableViewController2 {
@@ -69,7 +69,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             let label = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
                 text: NSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
                                         comment: "Explanation of the process for adding money in the 'add money' settings view."),
-                font: .ows_dynamicTypeBody2Clamped,
+                font: .dynamicTypeBody2Clamped,
                 learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_transfer_from_exchange")
             label.textAlignment = .center
             cell.contentView.addSubview(label)
@@ -114,7 +114,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             label.text = NSLocalizedString("SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS",
                                            comment: "Indicator that the payments wallet address is invalid.")
             label.textColor = Theme.primaryTextColor
-            label.font = UIFont.ows_dynamicTypeBody2Clamped.ows_semibold
+            label.font = UIFont.dynamicTypeBody2Clamped.semibold()
 
             configureWithSubviews(subviews: [label])
         }
@@ -148,20 +148,20 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL",
                                             comment: "Label for the payments wallet address.")
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.ows_dynamicTypeBody2Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeBody2Clamped.semibold()
         titleLabel.textAlignment = .center
 
         let walletAddressLabel = UILabel()
         walletAddressLabel.text = walletAddressBase58
         walletAddressLabel.textColor = Theme.secondaryTextAndIconColor
-        walletAddressLabel.font = UIFont.ows_monospacedDigitFont(withSize: UIFont.ows_dynamicTypeBody2Clamped.pointSize)
+        walletAddressLabel.font = UIFont.monospacedDigitFont(ofSize: UIFont.dynamicTypeBody2Clamped.pointSize)
         walletAddressLabel.lineBreakMode = .byTruncatingMiddle
         walletAddressLabel.textAlignment = .center
 
         let copyLabel = UILabel()
         copyLabel.text = CommonStrings.copyButton
         copyLabel.textColor = Theme.accentBlueColor
-        copyLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        copyLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
 
         let copyStack = UIStackView(arrangedSubviews: [copyLabel])
         copyStack.axis = .vertical

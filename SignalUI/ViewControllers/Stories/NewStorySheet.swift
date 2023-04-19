@@ -32,7 +32,7 @@ public class NewStorySheet: OWSTableSheetViewController {
         contents.addSection(headerSection)
         headerSection.add(.init(customCellBlock: {
             let label = UILabel()
-            label.font = UIFont.ows_dynamicTypeHeadlineClamped
+            label.font = UIFont.dynamicTypeHeadlineClamped
             label.textColor = Theme.primaryTextColor
             label.text = OWSLocalizedString("NEW_STORY_SHEET_TITLE", comment: "Title for the new story sheet")
             label.textAlignment = .center
@@ -94,13 +94,13 @@ public class NewStorySheet: OWSTableSheetViewController {
             let rowTitleLabel = UILabel()
             rowTitleLabel.text = title
             rowTitleLabel.textColor = Theme.primaryTextColor
-            rowTitleLabel.font = .ows_dynamicTypeBodyClamped
+            rowTitleLabel.font = .dynamicTypeBodyClamped
             rowTitleLabel.numberOfLines = 0
 
             let rowSubtitleLabel = UILabel()
             rowSubtitleLabel.text = subtitle
             rowSubtitleLabel.textColor = Theme.secondaryTextAndIconColor
-            rowSubtitleLabel.font = .ows_dynamicTypeSubheadlineClamped
+            rowSubtitleLabel.font = .dynamicTypeSubheadlineClamped
             rowSubtitleLabel.numberOfLines = 0
 
             let titleStack = UIStackView(arrangedSubviews: [ rowTitleLabel, rowSubtitleLabel ])

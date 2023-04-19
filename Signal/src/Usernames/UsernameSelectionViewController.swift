@@ -270,7 +270,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         return NSAttributedString
             .composed(of: components)
             .styled(
-                with: .font(.ows_dynamicTypeCaption1Clamped),
+                with: .font(.dynamicTypeCaption1Clamped),
                 .color(Theme.secondaryTextAndIconColor)
             )
     }

@@ -77,7 +77,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         memberBar.delegate = self
 
         // Don't use dynamic type in this label.
-        memberCountLabel.font = UIFont.ows_dynamicTypeBody2.withSize(12)
+        memberCountLabel.font = UIFont.regularFont(ofSize: 12)
         memberCountLabel.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray60
         memberCountLabel.textAlignment = CurrentAppContext().isRTL ? .left : .right
 

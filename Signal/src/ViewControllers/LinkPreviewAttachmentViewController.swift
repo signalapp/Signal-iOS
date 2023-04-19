@@ -38,7 +38,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         let textField = UITextField()
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
-        textField.font = .ows_dynamicTypeBodyClamped
+        textField.font = .dynamicTypeBodyClamped
         textField.keyboardAppearance = .dark
         textField.keyboardType = .URL
         textField.textColor = .ows_gray05
@@ -272,7 +272,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             icon.setContentHuggingHigh()
 
             let label = UILabel()
-            label.font = .ows_dynamicTypeBody2Clamped
+            label.font = .dynamicTypeBody2Clamped
             label.lineBreakMode = .byWordWrapping
             label.numberOfLines = 0
             label.textAlignment = .center
@@ -303,7 +303,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             exclamationMark.setContentHuggingHigh()
 
             let label = UILabel()
-            label.font = .ows_dynamicTypeBody2Clamped
+            label.font = .dynamicTypeBody2Clamped
             label.lineBreakMode = .byWordWrapping
             label.numberOfLines = 0
             label.textAlignment = .center

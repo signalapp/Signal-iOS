@@ -367,7 +367,7 @@ extension ContactSupportViewController {
                 // FAQ prompt
                 OWSTableItem(customCellBlock: {
                     let cell = OWSTableItem.newCell()
-                    cell.textLabel?.font = UIFont.ows_dynamicTypeBody
+                    cell.textLabel?.font = UIFont.dynamicTypeBody
                     cell.textLabel?.adjustsFontForContentSizeCategory = true
                     cell.textLabel?.numberOfLines = 0
                     cell.textLabel?.text = faqPromptText
@@ -397,7 +397,7 @@ extension ContactSupportViewController {
         let label = UILabel()
         label.text = NSLocalizedString("SUPPORT_INCLUDE_DEBUG_LOG",
                                        comment: "Label describing support switch to attach debug logs")
-        label.font = UIFont.ows_dynamicTypeBody
+        label.font = UIFont.dynamicTypeBody
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
         label.textColor = Theme.primaryTextColor

@@ -16,7 +16,7 @@ class StoryGroupReplyCell: UITableViewCell {
     }()
     lazy var authorNameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold
+        label.font = UIFont.dynamicTypeFootnoteClamped.semibold()
         return label
     }()
     lazy var reactionLabel: UILabel = {
@@ -278,18 +278,18 @@ class StoryGroupReplyCell: UITableViewCell {
         guard let messageText: NSAttributedString = {
             if item.wasRemotelyDeleted {
                 return NSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
-                    with: .font(UIFont.ows_dynamicTypeBodyClamped.ows_italic),
+                    with: .font(UIFont.dynamicTypeBodyClamped.italic()),
                     .color(.ows_gray05)
                 )
             } else if cellType.isReaction {
                 return NSLocalizedString("STORY_REPLY_REACTION", comment: "Text indicating a story has been reacted to").styled(
-                    with: .font(.ows_dynamicTypeBodyClamped),
+                    with: .font(.dynamicTypeBodyClamped),
                     .color(.ows_gray05),
                     .alignment(.natural)
                 )
             } else if let displayableText = item.displayableText {
                 return displayableText.displayAttributedText.styled(
-                    with: .font(.ows_dynamicTypeBodyClamped),
+                    with: .font(.dynamicTypeBodyClamped),
                     .color(.ows_gray05),
                     .alignment(displayableText.displayTextNaturalAlignment)
                 )
@@ -338,7 +338,7 @@ class StoryGroupReplyCell: UITableViewCell {
 
         // Style footer
         footerText.addAttributesToEntireString([
-            .font: UIFont.ows_dynamicTypeCaption1Clamped,
+            .font: UIFont.dynamicTypeCaption1Clamped,
             .foregroundColor: UIColor.ows_gray25
         ])
 

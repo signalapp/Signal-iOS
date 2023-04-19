@@ -344,7 +344,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
         if font.pointSize > Constants.maxFontSize {
             font = font.withSize(Constants.maxFontSize)
         }
-        font = font.ows_semibold
+        font = font.semibold()
         return CVLabelConfig(
             text: text,
             font: font,
@@ -355,7 +355,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
 
     fileprivate enum Constants {
         static let cornerRadius: CGFloat = 6
-        static var font: UIFont { UIFont.ows_dynamicTypeFootnote }
+        static var font: UIFont { UIFont.dynamicTypeFootnote }
         static let maxFontSize: CGFloat = 20
 
         static var imageSize: CGFloat {

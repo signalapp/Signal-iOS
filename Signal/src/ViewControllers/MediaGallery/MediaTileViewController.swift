@@ -976,7 +976,7 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_dynamicTypeBody
+        label.font = UIFont.dynamicTypeBody
         addSubview(label)
 
         label.textAlignment = .center
@@ -996,7 +996,7 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
     public override func prepareForReuse() {
         label.text = nil
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_dynamicTypeBody
+        label.font = UIFont.dynamicTypeBody
     }
 }
 

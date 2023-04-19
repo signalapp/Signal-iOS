@@ -60,13 +60,13 @@ public class PaymentModelCell: UITableViewCell {
 
         var arrangedSubviews = [UIView]()
 
-        nameLabel.font = .ows_dynamicTypeBodyClamped
+        nameLabel.font = .dynamicTypeBodyClamped
         nameLabel.textColor = Theme.primaryTextColor
 
-        statusLabel.font = .ows_dynamicTypeSubheadlineClamped
+        statusLabel.font = .dynamicTypeSubheadlineClamped
         statusLabel.textColor = Theme.ternaryTextColor
 
-        amountLabel.font = .ows_dynamicTypeBodyClamped
+        amountLabel.font = .dynamicTypeBodyClamped
         amountLabel.textColor = (paymentItem.isIncoming
                                     ? UIColor.ows_accentGreen
                                     : Theme.primaryTextColor)

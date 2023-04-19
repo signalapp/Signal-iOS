@@ -170,7 +170,7 @@ class MessageRequestView: UIStackView {
 
             return prepareTextView(
                 attributedString: NSAttributedString(string: string, attributes: [
-                    .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+                    .font: UIFont.dynamicTypeSubheadlineClamped,
                     .foregroundColor: Theme.secondaryTextAndIconColor
                 ]),
                 appendLearnMoreLink: appendLearnMoreLink
@@ -285,7 +285,7 @@ class MessageRequestView: UIStackView {
 
         return prepareTextView(
             attributedString: NSAttributedString(string: string, attributes: [
-                .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+                .font: UIFont.dynamicTypeSubheadlineClamped,
                 .foregroundColor: Theme.secondaryTextAndIconColor
             ]),
             appendLearnMoreLink: false
@@ -317,7 +317,7 @@ class MessageRequestView: UIStackView {
 
     func prepareButton(title: String, titleColor: UIColor, touchHandler: @escaping () -> Void) -> OWSFlatButton {
         let flatButton = OWSFlatButton()
-        flatButton.setTitle(title: title, font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold, titleColor: titleColor)
+        flatButton.setTitle(title: title, font: UIFont.dynamicTypeBodyClamped.semibold(), titleColor: titleColor)
         flatButton.setBackgroundColors(upColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_gray05)
         flatButton.setPressedBlock(touchHandler)
         flatButton.useDefaultCornerRadius()
@@ -327,12 +327,12 @@ class MessageRequestView: UIStackView {
 
     private func preparePromptTextView(formatString: String, embeddedString: String, appendLearnMoreLink: Bool) -> UITextView {
         let defaultAttributes: AttributedFormatArg.Attributes = [
-            .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+            .font: UIFont.dynamicTypeSubheadlineClamped,
             .foregroundColor: Theme.secondaryTextAndIconColor
         ]
 
         let attributesForEmbedded: AttributedFormatArg.Attributes = [
-            .font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold,
+            .font: UIFont.dynamicTypeSubheadlineClamped.semibold(),
             .foregroundColor: Theme.secondaryTextAndIconColor
         ]
 
@@ -363,7 +363,7 @@ class MessageRequestView: UIStackView {
                 " ",
                 CommonStrings.learnMore.styled(
                     with: .link(URL(string: "https://support.signal.org/hc/articles/360007459591")!),
-                    .font(.ows_dynamicTypeSubheadlineClamped)
+                    .font(.dynamicTypeSubheadlineClamped)
                 )
             ])
         } else {

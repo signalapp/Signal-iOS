@@ -118,14 +118,14 @@ public class ContactFieldView: UIView {
 
         let nameLabel = UILabel()
         nameLabel.text = name.lowercased()
-        nameLabel.font = UIFont.ows_dynamicTypeSubheadline
+        nameLabel.font = UIFont.dynamicTypeSubheadline
         nameLabel.textColor = Theme.secondaryTextAndIconColor
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
 
         let valueLabel = UILabel()
         valueLabel.text = value
-        valueLabel.font = UIFont.ows_dynamicTypeBody
+        valueLabel.font = UIFont.dynamicTypeBody
         valueLabel.textColor = Theme.primaryTextColor
         valueLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(valueLabel)
@@ -148,7 +148,7 @@ public class ContactFieldView: UIView {
 
         let nameLabel = UILabel()
         nameLabel.text = address.localizedLabel()
-        nameLabel.font = UIFont.ows_dynamicTypeSubheadline
+        nameLabel.font = UIFont.dynamicTypeSubheadline
         nameLabel.textColor = Theme.secondaryTextAndIconColor
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
@@ -169,7 +169,7 @@ public class ContactFieldView: UIView {
 
             let nameLabel = UILabel()
             nameLabel.text = propertyName
-            nameLabel.font = UIFont.ows_dynamicTypeBody
+            nameLabel.font = UIFont.dynamicTypeBody
             nameLabel.textColor = Theme.secondaryTextAndIconColor
             nameLabel.lineBreakMode = .byTruncatingTail
             row.addArrangedSubview(nameLabel)
@@ -178,7 +178,7 @@ public class ContactFieldView: UIView {
 
             let valueLabel = UILabel()
             valueLabel.text = propertyValue
-            valueLabel.font = UIFont.ows_dynamicTypeBody
+            valueLabel.font = UIFont.dynamicTypeBody
             valueLabel.textColor = Theme.primaryTextColor
             valueLabel.lineBreakMode = .byTruncatingTail
             row.addArrangedSubview(valueLabel)

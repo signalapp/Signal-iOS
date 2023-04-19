@@ -74,7 +74,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
         textField.textColor = Theme.primaryTextColor
-        textField.font = .ows_dynamicTypeBodyClamped
+        textField.font = .dynamicTypeBodyClamped
         textField.keyboardAppearance = Theme.keyboardAppearance
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
@@ -97,7 +97,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         textfieldStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor, cornerRadius: 10)
 
         let nextButton = OWSFlatButton.button(title: CommonStrings.nextButton,
-                                              font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                              font: UIFont.dynamicTypeBody.semibold(),
                                               titleColor: .white,
                                               backgroundColor: .ows_accentBlue,
                                               target: self,

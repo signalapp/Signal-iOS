@@ -165,7 +165,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                     comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive."
                 )
                 titleLabel.textAlignment = .center
-                titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+                titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
                 titleLabel.numberOfLines = 0
                 titleLabel.lineBreakMode = .byWordWrapping
                 titleLabel.autoPinWidthToSuperview(withMargin: 26)
@@ -177,7 +177,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                     comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive."
                 )
                 paragraphLabel.textAlignment = .center
-                paragraphLabel.font = UIFont.ows_dynamicTypeBody
+                paragraphLabel.font = UIFont.dynamicTypeBody
                 paragraphLabel.numberOfLines = 0
                 paragraphLabel.lineBreakMode = .byWordWrapping
                 paragraphLabel.autoPinWidthToSuperview(withMargin: 26)
@@ -226,7 +226,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             stackView.addArrangedSubview(textLabel)
             textLabel.text = NSLocalizedString("DONATION_VIEW_LOAD_FAILED",
                                                comment: "Text that's shown when the donation view fails to load data, probably due to network failure")
-            textLabel.font = .ows_dynamicTypeBody2
+            textLabel.font = .dynamicTypeBody2
             textLabel.textAlignment = .center
             textLabel.textColor = Theme.primaryTextColor
             textLabel.numberOfLines = 0
@@ -331,7 +331,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         nextButton.dimsWhenHighlighted = true
         nextButton.layer.cornerRadius = 8
         nextButton.backgroundColor = .ows_accentBlue
-        nextButton.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        nextButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
         nextButton.autoSetDimension(.height, toSize: 48)
         nextButton.autoPinWidthToSuperviewMargins()
 

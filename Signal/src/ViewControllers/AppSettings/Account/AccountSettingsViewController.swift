@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 @objc
 class AccountSettingsViewController: OWSTableViewController2 {
@@ -51,7 +51,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 " ",
                 CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/hc/articles/360007059792")!))
             ]).styled(
-                with: .font(.ows_dynamicTypeCaption1Clamped),
+                with: .font(.dynamicTypeCaption1Clamped),
                 .color(Theme.secondaryTextAndIconColor)
             )
 

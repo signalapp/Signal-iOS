@@ -62,7 +62,7 @@ public class Mention: NSObject {
     public var attributes: [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = [
             .mention: self,
-            .font: UIFont.ows_dynamicTypeBody
+            .font: UIFont.dynamicTypeBody
         ]
 
         switch style {

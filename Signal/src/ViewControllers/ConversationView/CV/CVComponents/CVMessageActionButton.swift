@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 public class CVMessageActionButton: CVLabel {
     let action: CVMessageAction
@@ -31,9 +31,7 @@ public class CVMessageActionButton: CVLabel {
         textAlignment = .center
     }
 
-    private static var buttonFont: UIFont {
-        UIFont.ows_dynamicTypeBody2Clamped.ows_semibold
-    }
+    private static var buttonFont: UIFont { UIFont.dynamicTypeBody2Clamped.semibold() }
 
     private static let buttonVMargin: CGFloat = 5
 

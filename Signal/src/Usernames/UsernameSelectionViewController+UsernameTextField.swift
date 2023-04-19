@@ -101,7 +101,7 @@ extension UsernameSelectionViewController {
             }
 
             func updateFontsForCurrentPreferredContentSize() {
-                discriminatorLabel.font = .ows_dynamicTypeBodyClamped
+                discriminatorLabel.font = .dynamicTypeBodyClamped
             }
 
             /// Configure which subviews to present based on the current mode.
@@ -189,7 +189,7 @@ extension UsernameSelectionViewController {
         // MARK: - Configure views
 
         func updateFontsForCurrentPreferredContentSize() {
-            font = .ows_dynamicTypeBodyClamped
+            font = .dynamicTypeBodyClamped
             discriminatorView.updateFontsForCurrentPreferredContentSize()
         }
 

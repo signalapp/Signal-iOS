@@ -87,13 +87,13 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE",
                                             comment: "Title for the content section of the  'payments lock prompt' view shown after payemts activation.")
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
         let explanationLabel = UILabel()
         explanationLabel.text = localizedExplanationLabelText()
-        explanationLabel.font = .ows_dynamicTypeBody2Clamped
+        explanationLabel.font = .dynamicTypeBody2Clamped
         explanationLabel.textColor = Theme.primaryTextColor
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0
@@ -111,7 +111,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         topStack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
 
         let enableButton = OWSFlatButton.insetButton(title: enableButtonTitle(),
-                                               font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                               font: UIFont.dynamicTypeBody.semibold(),
                                                titleColor: .white,
                                                backgroundColor: .ows_accentBlue,
                                                target: self,
@@ -119,7 +119,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         enableButton.autoSetHeightUsingFont()
 
         let notNowButton = OWSFlatButton.insetButton(title: CommonStrings.notNowButton,
-                                               font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                               font: UIFont.dynamicTypeBody.semibold(),
                                                titleColor: .ows_accentBlue,
                                                backgroundColor: .clear,
                                                target: self,

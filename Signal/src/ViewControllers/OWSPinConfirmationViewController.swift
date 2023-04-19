@@ -4,9 +4,8 @@
 //
 
 import SignalMessaging
-import UIKit
+import SignalUI
 
-@objc(OWSPinConfirmationViewController)
 public class PinConfirmationViewController: OWSViewController {
 
     private let completionHandler: ((Bool) -> Void)
@@ -43,7 +42,6 @@ public class PinConfirmationViewController: OWSViewController {
 
     private let context: ViewControllerContext
 
-    @objc
     init(title: String, explanation: String, actionText: String, completionHandler: @escaping (Bool) -> Void) {
         // TODO[ViewContextPiping]
         self.context = ViewControllerContext.shared
@@ -108,7 +106,7 @@ public class PinConfirmationViewController: OWSViewController {
 
         let titleLabel = UILabel()
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle3Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle3Clamped.semibold()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -121,7 +119,7 @@ public class PinConfirmationViewController: OWSViewController {
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.accessibilityIdentifier = "pinConfirmation.explanationLabel"
         explanationLabel.text = explanationText
 
@@ -130,7 +128,7 @@ public class PinConfirmationViewController: OWSViewController {
         pinTextField.delegate = self
         pinTextField.keyboardType = context.keyBackupService.currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
         pinTextField.textColor = Theme.primaryTextColor
-        pinTextField.font = .ows_dynamicTypeBodyClamped
+        pinTextField.font = .dynamicTypeBodyClamped
         pinTextField.textAlignment = .center
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
@@ -142,7 +140,7 @@ public class PinConfirmationViewController: OWSViewController {
 
         validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.textAlignment = .center
-        validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+        validationWarningLabel.font = UIFont.dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "pinConfirmation.validationWarningLabel"
 
         let pinStack = UIStackView(arrangedSubviews: [
@@ -160,7 +158,7 @@ public class PinConfirmationViewController: OWSViewController {
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
 
-        let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        let font = UIFont.dynamicTypeBodyClamped.semibold()
         let buttonHeight = OWSFlatButton.heightForFont(font)
         let submitButton = OWSFlatButton.button(
             title: actionText,
@@ -177,7 +175,7 @@ public class PinConfirmationViewController: OWSViewController {
         let cancelButton = UIButton()
         cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
         cancelButton.setTitleColor(Theme.accentBlueColor, for: .normal)
-        cancelButton.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
+        cancelButton.titleLabel?.font = .dynamicTypeSubheadlineClamped
         cancelButton.addTarget(self, action: #selector(cancelPressed), for: .touchUpInside)
         cancelButton.accessibilityIdentifier = "pinConfirmation.cancelButton"
 

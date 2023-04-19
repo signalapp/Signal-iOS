@@ -14,7 +14,7 @@ public class Deprecated_RegistrationBaseViewController: OWSViewController, OWSNa
         let titleLabel = UILabel()
         titleLabel.text = text
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle1Clamped.semibold()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -24,7 +24,7 @@ public class Deprecated_RegistrationBaseViewController: OWSViewController, OWSNa
     func createExplanationLabel(explanationText: String) -> UILabel {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = UIFont.dynamicTypeSubheadlineClamped
         explanationLabel.text = explanationText
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
@@ -51,7 +51,7 @@ public class Deprecated_RegistrationBaseViewController: OWSViewController, OWSNa
     func primaryButton(title: String, target: Any, selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton.button(
             title: title,
-            font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            font: UIFont.dynamicTypeBodyClamped.semibold(),
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: target,
@@ -68,7 +68,7 @@ public class Deprecated_RegistrationBaseViewController: OWSViewController, OWSNa
     func linkButton(title: String, target: Any, selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton.button(
             title: title,
-            font: UIFont.ows_dynamicTypeSubheadlineClamped,
+            font: UIFont.dynamicTypeSubheadlineClamped,
             titleColor: Theme.accentBlueColor,
             backgroundColor: .clear,
             target: target,

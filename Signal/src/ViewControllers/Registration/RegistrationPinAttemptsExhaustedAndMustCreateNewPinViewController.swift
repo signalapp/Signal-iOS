@@ -92,7 +92,7 @@ class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSView
         result.dimsWhenHighlighted = true
         result.layer.cornerRadius = 8
         result.backgroundColor = .ows_accentBlue
-        result.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        result.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
         result.titleLabel?.numberOfLines = 0
         result.contentEdgeInsets = .init(margin: 14)
         result.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
@@ -105,7 +105,7 @@ class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSView
                 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE",
                 comment: "Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view."
             ),
-            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            font: UIFont.dynamicTypeBody.semibold(),
             titleColor: Theme.accentBlueColor,
             backgroundColor: .clear,
             target: self,

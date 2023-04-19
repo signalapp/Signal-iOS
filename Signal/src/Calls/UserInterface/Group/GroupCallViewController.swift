@@ -227,7 +227,7 @@ class GroupCallViewController: UIViewController {
         icon.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
 
         let label = UILabel()
-        label.font = .ows_dynamicTypeCaption1
+        label.font = .dynamicTypeCaption1
         label.text = NSLocalizedString("CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
                                        comment: "Indicates to the user that their camera is currently off.")
         label.textAlignment = .center

@@ -276,7 +276,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
             let nameLabel = UILabel()
             nameLabel.text = recipientName
-            nameLabel.font = .ows_dynamicTypeBody
+            nameLabel.font = .dynamicTypeBody
             nameLabel.numberOfLines = 0
             nameLabel.minimumScaleFactor = 0.5
 
@@ -297,7 +297,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                     seconds: disappearingMessagesDuration,
                     useShortFormat: true
                 )
-                disappearingMessagesTimerLabelView.font = .ows_dynamicTypeBody2
+                disappearingMessagesTimerLabelView.font = .dynamicTypeBody2
                 disappearingMessagesTimerLabelView.textAlignment = .center
                 disappearingMessagesTimerLabelView.minimumScaleFactor = 0.8
 
@@ -327,7 +327,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO",
                 comment: "Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message."
             )
-            messageInfoLabel.font = .ows_dynamicTypeBody2
+            messageInfoLabel.font = .dynamicTypeBody2
             messageInfoLabel.textColor = Theme.primaryTextColor
             messageInfoLabel.numberOfLines = 0
             cell.contentView.addSubview(messageInfoLabel)
@@ -363,7 +363,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
 
                 let disappearingMessagesInfoLabel = UILabel()
-                disappearingMessagesInfoLabel.font = .ows_dynamicTypeBody2
+                disappearingMessagesInfoLabel.font = .dynamicTypeBody2
                 disappearingMessagesInfoLabel.textColor = Theme.secondaryTextAndIconColor
                 disappearingMessagesInfoLabel.numberOfLines = 0
 
@@ -415,12 +415,12 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION",
                 comment: "Users can donate on a friend's behalf. This tells users that this will be a one-time donation."
             )
-            descriptionLabel.font = .ows_dynamicTypeBody
+            descriptionLabel.font = .dynamicTypeBody
             descriptionLabel.numberOfLines = 0
 
             let priceLabel = UILabel()
             priceLabel.text = DonationUtilities.format(money: price)
-            priceLabel.font = .ows_dynamicTypeBody.ows_semibold
+            priceLabel.font = .dynamicTypeBody.semibold()
             priceLabel.numberOfLines = 0
 
             let view = UIStackView(arrangedSubviews: [descriptionLabel, priceLabel])
@@ -438,7 +438,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         continueButton.dimsWhenHighlighted = true
         continueButton.layer.cornerRadius = 8
         continueButton.backgroundColor = .ows_accentBlue
-        continueButton.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        continueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
 
         for view in [amountView, continueButton] {
             bottomFooterStackView.addArrangedSubview(view)

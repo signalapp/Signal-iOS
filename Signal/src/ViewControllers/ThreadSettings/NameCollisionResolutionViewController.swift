@@ -127,7 +127,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
             let label = UILabel()
 
             label.textColor = Theme.secondaryTextAndIconColor
-            label.font = UIFont.ows_dynamicTypeFootnote
+            label.font = UIFont.dynamicTypeFootnote
             label.adjustsFontForContentSizeCategory = true
             label.numberOfLines = 0
 

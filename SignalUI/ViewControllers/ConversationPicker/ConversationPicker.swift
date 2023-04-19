@@ -1092,7 +1092,7 @@ private class VideoSegmentingTooltipView: TooltipView {
     public override func bubbleContentView() -> UIView {
         let label = UILabel()
         label.text = text
-        label.font = .ows_dynamicTypeFootnoteClamped
+        label.font = .dynamicTypeFootnoteClamped
         label.textColor = .ows_white
         label.numberOfLines = 0
 

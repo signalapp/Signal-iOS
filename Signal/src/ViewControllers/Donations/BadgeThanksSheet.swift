@@ -313,7 +313,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             stackView.autoPinEdgesToSuperviewMargins()
 
             let titleLabel = UILabel()
-            titleLabel.font = .ows_dynamicTypeTitle2.ows_semibold
+            titleLabel.font = .dynamicTypeTitle2.semibold()
             titleLabel.textColor = Theme.primaryTextColor
             titleLabel.textAlignment = .center
             titleLabel.numberOfLines = 0
@@ -322,7 +322,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             stackView.setCustomSpacing(12, after: titleLabel)
 
             let bodyLabel = UILabel()
-            bodyLabel.font = .ows_dynamicTypeBody
+            bodyLabel.font = .dynamicTypeBody
             bodyLabel.textColor = Theme.primaryTextColor
             bodyLabel.textAlignment = .center
             bodyLabel.numberOfLines = 0
@@ -347,7 +347,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
 
             if shouldShowBadgeLabel {
                 let badgeLabel = UILabel()
-                badgeLabel.font = .ows_dynamicTypeTitle3.ows_semibold
+                badgeLabel.font = .dynamicTypeTitle3.semibold()
                 badgeLabel.textColor = Theme.primaryTextColor
                 badgeLabel.textAlignment = .center
                 badgeLabel.numberOfLines = 0
@@ -426,7 +426,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             let button = OWSFlatButton()
             button.setTitle(
                 title: CommonStrings.doneButton,
-                font: .ows_dynamicTypeBody.ows_semibold,
+                font: .dynamicTypeBody.semibold(),
                 titleColor: .white
             )
             button.setBackgroundColors(upColor: .ows_accentBlue)
@@ -466,7 +466,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             let redeemButton = OWSFlatButton()
             redeemButton.setTitle(
                 title: CommonStrings.redeemGiftButton,
-                font: .ows_dynamicTypeBody.ows_semibold,
+                font: .dynamicTypeBody.semibold(),
                 titleColor: .white
             )
             redeemButton.setBackgroundColors(upColor: .ows_accentBlue)
@@ -497,7 +497,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 notNowAction()
                 self?.dismiss(animated: true)
             }
-            notNowButton.titleLabel?.font = .ows_dynamicTypeBody
+            notNowButton.titleLabel?.font = .dynamicTypeBody
             notNowButton.setTitleColor(Theme.accentBlueColor, for: .normal)
             notNowButton.dimsWhenHighlighted = true
             stackView.addArrangedSubview(notNowButton)

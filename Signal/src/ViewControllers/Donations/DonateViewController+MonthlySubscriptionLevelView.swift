@@ -25,7 +25,7 @@ extension DonateViewController {
 
         private let headingLabel: UILabel = {
             let result = UILabel()
-            result.font = .ows_dynamicTypeBody
+            result.font = .dynamicTypeBody
             result.numberOfLines = 0
             result.setContentHuggingHorizontalHigh()
             result.setCompressionResistanceHorizontalHigh()
@@ -34,7 +34,7 @@ extension DonateViewController {
 
         private let subheadingLabel: UILabel = {
             let result = UILabel()
-            result.font = .ows_dynamicTypeBody2
+            result.font = .dynamicTypeBody2
             result.numberOfLines = 0
             return result
         }()

@@ -48,7 +48,7 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
         doneButton.dimsWhenHighlighted = true
         doneButton.layer.cornerRadius = 8
         doneButton.backgroundColor = .ows_accentBlue
-        doneButton.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        doneButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
         footerStack.addArrangedSubview(doneButton)
         doneButton.autoSetDimension(.height, toSize: 48)
         doneButton.autoPinWidthToSuperview(withMargin: 48)
@@ -155,14 +155,14 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
 
             titleLabel.text = title
             titleLabel.textAlignment = .center
-            titleLabel.font = .ows_dynamicTypeTitle2.ows_semibold
+            titleLabel.font = .dynamicTypeTitle2.semibold()
             titleLabel.textColor = Theme.primaryTextColor
             addSubview(titleLabel)
 
             subtitleLabel.numberOfLines = 0
             subtitleLabel.text = subtitle
             subtitleLabel.textAlignment = .center
-            subtitleLabel.font = .ows_dynamicTypeSubheadline
+            subtitleLabel.font = .dynamicTypeSubheadline
             subtitleLabel.textColor = Theme.primaryTextColor
             addSubview(subtitleLabel)
 

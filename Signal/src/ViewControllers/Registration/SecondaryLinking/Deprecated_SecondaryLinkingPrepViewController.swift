@@ -48,7 +48,7 @@ public class Deprecated_SecondaryLinkingPrepViewController: Deprecated_Onboardin
         dontHaveSignalButton.text = NSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY",
                                                       comment: "Link explaining what to do when trying to link a device before having a primary device.")
         dontHaveSignalButton.textColor = Theme.accentBlueColor
-        dontHaveSignalButton.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        dontHaveSignalButton.font = UIFont.dynamicTypeSubheadlineClamped
         dontHaveSignalButton.numberOfLines = 0
         dontHaveSignalButton.textAlignment = .center
         dontHaveSignalButton.lineBreakMode = .byWordWrapping

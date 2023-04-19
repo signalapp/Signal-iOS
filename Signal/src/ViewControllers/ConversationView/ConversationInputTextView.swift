@@ -56,7 +56,7 @@ class ConversationInputTextView: MentionTextView {
         addSubview(placeholderView)
 
         // We need to do these steps _after_ placeholderView is configured.
-        font = .ows_dynamicTypeBody
+        font = .dynamicTypeBody
         textColor = Theme.primaryTextColor
         textAlignment = .natural
         textContainer.lineFragmentPadding = 0

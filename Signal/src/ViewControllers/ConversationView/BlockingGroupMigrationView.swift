@@ -54,7 +54,7 @@ class BlockingGroupMigrationView: UIStackView {
         forSubstring: learnMoreText)
 
         let label = UILabel()
-        label.font = .ows_dynamicTypeSubheadlineClamped
+        label.font = .dynamicTypeSubheadlineClamped
         label.textColor = Theme.secondaryTextAndIconColor
         label.attributedText = attributedString
         label.numberOfLines = 0
@@ -64,7 +64,7 @@ class BlockingGroupMigrationView: UIStackView {
         addArrangedSubview(label)
 
         let continueButton = OWSFlatButton.button(title: CommonStrings.continueButton,
-                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                 font: UIFont.dynamicTypeBody.semibold(),
                                                  titleColor: .white,
                                                  backgroundColor: .ows_accentBlue,
                                                  target: self,

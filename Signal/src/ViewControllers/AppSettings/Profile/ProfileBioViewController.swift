@@ -204,12 +204,12 @@ class ProfileBioViewController: OWSTableViewController2 {
         bioSection.add(OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.newCell()
 
-            bioEmojiLabel.font = .ows_dynamicTypeBodyClamped
+            bioEmojiLabel.font = .dynamicTypeBodyClamped
             bioEmojiLabel.textColor = Theme.primaryTextColor
             bioEmojiLabel.setContentHuggingHorizontalHigh()
             bioEmojiLabel.setCompressionResistanceHorizontalHigh()
 
-            bioTextField.font = .ows_dynamicTypeBodyClamped
+            bioTextField.font = .dynamicTypeBodyClamped
             bioTextField.textColor = Theme.primaryTextColor
             bioTextField.setContentHuggingHorizontalLow()
             bioTextField.setCompressionResistanceHorizontalLow()
@@ -233,12 +233,12 @@ class ProfileBioViewController: OWSTableViewController2 {
 
                 let emojiLabel = UILabel()
                 emojiLabel.text = defaultBio.emoji
-                emojiLabel.font = .ows_dynamicTypeBodyClamped
+                emojiLabel.font = .dynamicTypeBodyClamped
                 emojiLabel.textColor = Theme.primaryTextColor
 
                 let bioLabel = UILabel()
                 bioLabel.text = defaultBio.bio
-                bioLabel.font = .ows_dynamicTypeBodyClamped
+                bioLabel.font = .dynamicTypeBodyClamped
                 bioLabel.textColor = Theme.primaryTextColor
 
                 emojiLabel.setContentHuggingHorizontalHigh()

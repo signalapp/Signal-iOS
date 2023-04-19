@@ -17,7 +17,7 @@ public class ActionSheetContentBuilder {
         let label = UILabel()
         label.text = text
         label.textColor = textColor ?? Theme.primaryTextColor
-        label.font = font ?? UIFont.ows_dynamicTypeBody
+        label.font = font ?? UIFont.dynamicTypeBody
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.textAlignment = textAlignment
@@ -26,7 +26,7 @@ public class ActionSheetContentBuilder {
 
     func buildTitleLabel(text: String) -> UILabel {
         buildLabel(text: text,
-                   font: UIFont.ows_dynamicTypeTitle2.ows_semibold,
+                   font: UIFont.dynamicTypeTitle2.semibold(),
                    textAlignment: .center)
     }
 
@@ -45,7 +45,7 @@ public class ActionSheetContentBuilder {
         target: Any,
         selector: Selector
     ) {
-        let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        let buttonFont = UIFont.dynamicTypeBodyClamped.semibold()
         let buttonHeight = OWSFlatButton.heightForFont(buttonFont)
         let upgradeButton = OWSFlatButton.button(title: title,
                                                  font: buttonFont,

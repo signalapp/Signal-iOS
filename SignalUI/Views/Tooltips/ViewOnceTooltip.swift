@@ -32,7 +32,7 @@ public class ViewOnceTooltip: TooltipView {
         let label = UILabel()
         label.text = OWSLocalizedString("VIEW_ONCE_MESSAGES_TOOLTIP",
                                        comment: "Tooltip highlighting the view once messages button.")
-        label.font = UIFont.ows_dynamicTypeSubheadline
+        label.font = UIFont.dynamicTypeSubheadline
         label.textColor = UIColor.ows_white
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

@@ -283,7 +283,7 @@ class AvatarEditViewController: OWSTableViewController2 {
             comment: "Text prompting the user to choose a color when editing their avatar"
         )
         label.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90
-        label.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        label.font = UIFont.dynamicTypeBodyClamped.semibold()
         themeHeaderContainer.addSubview(label)
         label.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(hMargin: Self.cellHInnerMargin * 0.5, vMargin: 0))
     }

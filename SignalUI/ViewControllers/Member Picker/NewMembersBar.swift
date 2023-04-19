@@ -172,10 +172,8 @@ private class NewMemberCell: UICollectionViewCell {
     static let vMargin: CGFloat = 6
     static let removeButtonXSize: CGFloat = 12
     static let removeButtonInset: CGFloat = 5
-    static var nameFont: UIFont {
-        // Don't use dynamic type in these cells.
-        return UIFont.ows_dynamicTypeBody2.withSize(15)
-    }
+    // Don't use dynamic type in these cells.
+    static var nameFont = UIFont.regularFont(ofSize: 15)
 
     override init(frame: CGRect) {
         super.init(frame: frame)

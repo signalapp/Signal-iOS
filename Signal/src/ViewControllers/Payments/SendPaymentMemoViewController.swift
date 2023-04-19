@@ -85,7 +85,7 @@ public class SendPaymentMemoViewController: OWSViewController {
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
         memoTextField.backgroundColor = .clear
-        memoTextField.font = .ows_dynamicTypeBodyClamped
+        memoTextField.font = .dynamicTypeBodyClamped
         memoTextField.textColor = Theme.primaryTextColor
         let placeholder = NSAttributedString(string: NSLocalizedString("PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER",
                                                                        comment: "Placeholder for the new payment or payment request message."),
@@ -96,7 +96,7 @@ public class SendPaymentMemoViewController: OWSViewController {
         memoTextField.delegate = self
         memoTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
-        memoCharacterCountLabel.font = .ows_dynamicTypeBodyClamped
+        memoCharacterCountLabel.font = .dynamicTypeBodyClamped
         memoCharacterCountLabel.textColor = Theme.ternaryTextColor
 
         memoCharacterCountLabel.setCompressionResistanceHorizontalHigh()

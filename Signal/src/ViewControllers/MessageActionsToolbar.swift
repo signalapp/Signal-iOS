@@ -173,7 +173,7 @@ public class MessageActionsToolbar: UIToolbar {
         let labelTitle = String.localizedStringWithFormat(labelFormat, selectedCount)
         let label = UILabel()
         label.text = labelTitle
-        label.font = UIFont.ows_dynamicTypeBodyClamped
+        label.font = UIFont.dynamicTypeBodyClamped
         label.textColor = Theme.primaryTextColor
         label.sizeToFit()
         let labelItem = UIBarButtonItem(customView: label)

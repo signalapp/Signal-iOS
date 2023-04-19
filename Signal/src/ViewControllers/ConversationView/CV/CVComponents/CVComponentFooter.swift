@@ -264,7 +264,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
     private func timestampLabelConfig(textColor: UIColor) -> CVLabelConfig {
         return CVLabelConfig(text: timestampText,
-                             font: .ows_dynamicTypeCaption1,
+                             font: .dynamicTypeCaption1,
                              textColor: textColor)
     }
 
@@ -279,7 +279,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         let text = NSLocalizedString("CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
                                      comment: "Indicator on truncated text messages that they can be tapped to see the entire text message.")
         return CVLabelConfig(text: text,
-                             font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold,
+                             font: UIFont.dynamicTypeSubheadlineClamped.semibold(),
                              textColor: conversationStyle.bubbleReadMoreTextColor(message: message),
                              textAlignment: UIView.textAlignmentUnnatural())
     }

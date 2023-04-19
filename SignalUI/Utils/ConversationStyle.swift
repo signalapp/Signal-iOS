@@ -164,7 +164,7 @@ public class ConversationStyle: NSObject {
             fullWidthGutterTrailing = thread.isGroupThread ? 12 : 16
         }
 
-        let messageTextFont = UIFont.ows_dynamicTypeBody
+        let messageTextFont = UIFont.dynamicTypeBody
 
         dynamicBodyTypePointSize = messageTextFont.pointSize
 

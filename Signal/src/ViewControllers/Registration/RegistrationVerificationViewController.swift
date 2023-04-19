@@ -112,7 +112,7 @@ class RegistrationVerificationViewController: OWSViewController {
 
         result.setTitle(title, for: .normal)
         if let titleLabel = result.titleLabel {
-            titleLabel.font = .ows_dynamicTypeSubheadlineClamped
+            titleLabel.font = .dynamicTypeSubheadlineClamped
             titleLabel.numberOfLines = 0
             titleLabel.lineBreakMode = .byWordWrapping
             titleLabel.textAlignment = .center
@@ -561,7 +561,7 @@ private class RegistrationVerificationHelpSheetViewController: InteractiveSheetV
     let header: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+        label.font = UIFont.dynamicTypeTitle2.semibold()
         label.text = NSLocalizedString(
             "ONBOARDING_VERIFICATION_HELP_LINK",
             comment: "Label for a button to get help entering a verification code when registering."
@@ -601,7 +601,7 @@ private class RegistrationVerificationHelpSheetViewController: InteractiveSheetV
         label.text = text
         label.numberOfLines = 0
         label.textColor = Theme.primaryTextColor
-        label.font = .ows_dynamicTypeBodyClamped
+        label.font = .dynamicTypeBodyClamped
 
         let bulletPoint = UIView()
         bulletPoint.backgroundColor = UIColor(rgbHex: 0xC4C4C4)

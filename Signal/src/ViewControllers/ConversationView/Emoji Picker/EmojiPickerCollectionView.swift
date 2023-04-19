@@ -429,7 +429,7 @@ private class EmojiSectionHeader: UICollectionReusableView {
             trailing: EmojiPickerCollectionView.margins
         )
 
-        label.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold
+        label.font = UIFont.dynamicTypeFootnoteClamped.semibold()
         label.textColor = Theme.secondaryTextAndIconColor
         addSubview(label)
         label.autoPinEdgesToSuperviewMargins()

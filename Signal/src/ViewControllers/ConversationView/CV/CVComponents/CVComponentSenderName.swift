@@ -71,7 +71,7 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
 
     private var labelConfig: CVLabelConfig {
         CVLabelConfig(attributedText: senderName,
-                      font: UIFont.ows_dynamicTypeFootnote.ows_semibold,
+                      font: UIFont.dynamicTypeFootnote.semibold(),
                       textColor: senderNameColor,
                       numberOfLines: 0,
                       lineBreakMode: .byWordWrapping)

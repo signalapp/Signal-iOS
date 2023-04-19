@@ -32,7 +32,7 @@ public class Deprecated_SecondaryLinkingQRCodeViewController: Deprecated_Onboard
         titleLabel.setContentHuggingHigh()
 
         let bodyLabel = self.createTitleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_SCAN_CODE_BODY", comment: "body text while displaying a QR code which, when scanned, will link this device."))
-        bodyLabel.font = UIFont.ows_dynamicTypeBody
+        bodyLabel.font = UIFont.dynamicTypeBody
         bodyLabel.numberOfLines = 0
         primaryView.addSubview(bodyLabel)
         bodyLabel.accessibilityIdentifier = "onboarding.linking.bodyLabel"
@@ -44,7 +44,7 @@ public class Deprecated_SecondaryLinkingQRCodeViewController: Deprecated_Onboard
         explanationLabel.text = NSLocalizedString("SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT",
                                                   comment: "Link text for page with troubleshooting info shown on the QR scanning screen")
         explanationLabel.textColor = Theme.accentBlueColor
-        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = UIFont.dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping

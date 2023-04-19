@@ -1060,7 +1060,7 @@ extension AttachmentApprovalViewController {
         }
 
         let titleLabel = UILabel()
-        titleLabel.font = .ows_dynamicTypeSubheadlineClamped
+        titleLabel.font = .dynamicTypeSubheadlineClamped
         titleLabel.textColor = Theme.darkThemePrimaryColor
         titleLabel.textAlignment = .center
         titleLabel.text = AttachmentApprovalViewController.mediaQualityLocalizedString
@@ -1146,14 +1146,14 @@ extension AttachmentApprovalViewController {
             let topLabel: UILabel = {
                 let label = UILabel()
                 label.textColor = Theme.darkThemePrimaryColor
-                label.font = .ows_dynamicTypeFootnoteClamped.ows_medium
+                label.font = .dynamicTypeFootnoteClamped.medium()
                 return label
             }()
 
             let bottomLabel: UILabel = {
                 let label = UILabel()
                 label.textColor = Theme.darkThemePrimaryColor
-                label.font = .ows_dynamicTypeCaption1Clamped
+                label.font = .dynamicTypeCaption1Clamped
                 label.lineBreakMode = .byWordWrapping
                 label.numberOfLines = 0
                 return label

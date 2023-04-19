@@ -309,12 +309,12 @@ public extension ChatListViewController {
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
 
         let viewLabel = UILabel()
         viewLabel.text = CommonStrings.viewButton
         viewLabel.textColor = Theme.accentBlueColor
-        viewLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        viewLabel.font = UIFont.dynamicTypeSubheadlineClamped
 
         let textStack = UIStackView(arrangedSubviews: [ titleLabel, viewLabel ])
         textStack.axis = .vertical
@@ -611,7 +611,7 @@ extension ChatListViewController {
         let attributedString = NSAttributedString.make(
             fromFormat: formatString,
             attributedFormatArgs: contactNames.map { name in
-                return .string(name, attributes: [.font: firstConversationLabel.font.ows_semibold])
+                return .string(name, attributes: [.font: firstConversationLabel.font.semibold()])
             }
         )
 

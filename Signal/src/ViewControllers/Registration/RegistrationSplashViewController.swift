@@ -98,7 +98,7 @@ public class RegistrationSplashViewController: OWSViewController {
             comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view."
         )
         explanationLabel.textColor = Theme.accentBlueColor
-        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = UIFont.dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping

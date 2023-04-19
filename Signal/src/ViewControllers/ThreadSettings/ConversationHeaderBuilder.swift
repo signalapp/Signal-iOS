@@ -202,7 +202,7 @@ struct ConversationHeaderBuilder: Dependencies {
         ) == .verified
         if isVerified {
             let subtitle = NSMutableAttributedString()
-            subtitle.appendTemplatedImage(named: "check-12", font: .ows_dynamicTypeSubheadlineClamped)
+            subtitle.appendTemplatedImage(named: "check-12", font: .dynamicTypeSubheadlineClamped)
             subtitle.append(" ")
             subtitle.append(NSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                               comment: "Badge indicating that the user is verified."))
@@ -380,7 +380,7 @@ struct ConversationHeaderBuilder: Dependencies {
         imageView.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
 
         let label = UILabel()
-        label.font = .ows_dynamicTypeCaption2Clamped
+        label.font = .dynamicTypeCaption2Clamped
         label.textColor = Theme.primaryTextColor
         label.textAlignment = .center
         label.text = text
@@ -407,7 +407,7 @@ struct ConversationHeaderBuilder: Dependencies {
             renderLocalUserAsNoteToSelf: true,
             transaction: transaction
         )
-        previewView.font = .ows_dynamicTypeSubheadlineClamped
+        previewView.font = .dynamicTypeSubheadlineClamped
         previewView.textColor = Theme.secondaryTextAndIconColor
         previewView.textAlignment = .center
         previewView.numberOfLines = 2
@@ -424,7 +424,7 @@ struct ConversationHeaderBuilder: Dependencies {
             comment: "Placeholder text for 'group description' field."
         ), for: .normal)
         button.setTitleColor(Theme.secondaryTextAndIconColor, for: .normal)
-        button.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
+        button.titleLabel?.font = .dynamicTypeSubheadlineClamped
 
         subviews.append(UIView.spacer(withHeight: hasSubtitleLabel ? 4 : 8))
         subviews.append(button)
@@ -455,7 +455,7 @@ struct ConversationHeaderBuilder: Dependencies {
         )
         label.textColor = Theme.primaryTextColor
         // TODO: See if design really wants this custom font size.
-        label.font = UIFont.ows_semiboldFont(withSize: UIFont.ows_dynamicTypeTitle1Clamped.pointSize * (13/14))
+        label.font = UIFont.semiboldFont(ofSize: UIFont.dynamicTypeTitle1Clamped.pointSize * (13/14))
         label.lineBreakMode = .byTruncatingTail
         return label
     }
@@ -498,7 +498,7 @@ struct ConversationHeaderBuilder: Dependencies {
         // or the attributes will get overridden
         label.textColor = Theme.secondaryTextAndIconColor
         label.lineBreakMode = .byTruncatingTail
-        label.font = .ows_dynamicTypeSubheadlineClamped
+        label.font = .dynamicTypeSubheadlineClamped
 
         label.attributedText = attributedText
 

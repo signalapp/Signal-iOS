@@ -178,7 +178,7 @@ class ProfileNameViewController: OWSTableViewController2 {
 
         cell.selectionStyle = .none
 
-        textField.font = .ows_dynamicTypeBodyClamped
+        textField.font = .dynamicTypeBodyClamped
         textField.textColor = Theme.primaryTextColor
 
         cell.addSubview(textField)

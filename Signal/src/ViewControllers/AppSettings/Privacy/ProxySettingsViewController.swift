@@ -64,7 +64,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         let textField = UITextField()
 
         textField.text = SignalProxy.host
-        textField.font = .ows_dynamicTypeBody
+        textField.font = .dynamicTypeBody
         textField.backgroundColor = .clear
         textField.placeholder = OWSLocalizedString(
             "PROXY_PLACEHOLDER",
@@ -99,7 +99,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
             " ",
             CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/hc/en-us/articles/360056052052-Proxy-Support")!))
         ]).styled(
-            with: .font(.ows_dynamicTypeCaption1Clamped),
+            with: .font(.dynamicTypeCaption1Clamped),
             .color(Theme.secondaryTextAndIconColor)
         )
         useProxySection.add(.switch(
@@ -115,7 +115,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         let proxyAddressSection = OWSTableSection()
         proxyAddressSection.headerAttributedTitle = NSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy").styled(
             with: .color((Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90).withAlphaComponent(useProxy ? 1 : 0.25)),
-            .font(UIFont.ows_dynamicTypeBodyClamped.ows_semibold)
+            .font(UIFont.dynamicTypeBodyClamped.semibold())
         )
         proxyAddressSection.add(.init(
             customCellBlock: { [weak self] in

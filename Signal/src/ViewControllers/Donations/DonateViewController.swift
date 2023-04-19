@@ -915,7 +915,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         field.layer.cornerRadius = Self.cornerRadius
         field.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
-        field.font = .ows_dynamicTypeBodyClamped
+        field.font = .dynamicTypeBodyClamped
 
         let tap = UITapGestureRecognizer(
             target: self,
@@ -934,7 +934,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         button.dimsWhenDisabled = true
         button.layer.cornerRadius = 8
         button.backgroundColor = .ows_accentBlue
-        button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        button.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
         button.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
         return button
     }()
@@ -994,7 +994,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 )
                 button.setTitle(
                     title: DonationUtilities.format(money: amount),
-                    font: .ows_regularFont(withSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20),
+                    font: .regularFont(ofSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20),
                     titleColor: Theme.primaryTextColor
                 )
                 button.autoSetDimension(.height, toSize: 52, relation: .greaterThanOrEqual)
@@ -1153,7 +1153,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     self?.didTapToUpdateMonthlyDonation()
                 }
                 updateButton.backgroundColor = .ows_accentBlue
-                updateButton.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+                updateButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
                 updateButton.isEnabled = {
                     if currentSubscription.amount.currencyCode != monthly.selectedCurrencyCode {
                         return true
@@ -1184,7 +1184,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             }
             continueButton.layer.cornerRadius = 8
             continueButton.backgroundColor = .ows_accentBlue
-            continueButton.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+            continueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
 
             buttons.append(continueButton)
         }

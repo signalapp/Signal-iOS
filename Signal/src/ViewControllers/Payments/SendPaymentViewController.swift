@@ -5,16 +5,14 @@
 
 import Lottie
 import SignalMessaging
-import UIKit
+import SignalUI
 
-@objc
-public protocol SendPaymentViewDelegate {
+public protocol SendPaymentViewDelegate: AnyObject {
     func didSendPayment(success: Bool)
 }
 
 // MARK: -
 
-@objc
 public enum SendPaymentMode: UInt {
     case fromConversationView
     case fromPaymentSettings
@@ -33,14 +31,12 @@ public enum SendPaymentMode: UInt {
 
 // MARK: -
 
-@objc
 public class SendPaymentViewController: OWSViewController {
 
     private let mode: SendPaymentMode
 
     fileprivate typealias PaymentInfo = SendPaymentInfo
 
-    @objc
     public weak var delegate: SendPaymentViewDelegate?
 
     private let recipient: SendPaymentRecipient
@@ -77,19 +73,16 @@ public class SendPaymentViewController: OWSViewController {
         recipient.isIdentifiedPayment
     }
 
-    @objc
     public var isUsingPresentedStyle: Bool {
         return presentingViewController != nil
     }
 
-    @objc
     open var tableBackgroundColor: UIColor {
         AssertIsOnMainThread()
 
         return Self.tableBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
     }
 
-    @objc
     public static func tableBackgroundColor(isUsingPresentedStyle: Bool) -> UIColor {
         AssertIsOnMainThread()
 
@@ -100,7 +93,6 @@ public class SendPaymentViewController: OWSViewController {
         }
     }
 
-    @objc
     public var cellBackgroundColor: UIColor {
         Self.cellBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
     }
@@ -342,7 +334,6 @@ public class SendPaymentViewController: OWSViewController {
                                                                    comment: "Message for error alert indicating that a given user cannot receive payments because they have not enabled payments."))
     }
 
-    @objc
     public static func presentFromConversationView(_ fromViewController: UIViewController,
                                                    delegate: SendPaymentViewDelegate,
                                                    recipientAddress: SignalServiceAddress,
@@ -359,7 +350,6 @@ public class SendPaymentViewController: OWSViewController {
                 mode: .fromConversationView)
     }
 
-    @objc
     public static func present(inNavigationController navigationController: UINavigationController,
                                delegate: SendPaymentViewDelegate,
                                recipientAddress: SignalServiceAddress,
@@ -482,7 +472,7 @@ public class SendPaymentViewController: OWSViewController {
             let addMemoLabel = UILabel()
             addMemoLabel.text = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
                                                   comment: "Label for the 'add memo' ui in the 'send payment' UI.")
-            addMemoLabel.font = .ows_dynamicTypeBodyClamped
+            addMemoLabel.font = .dynamicTypeBodyClamped
             addMemoLabel.textColor = Theme.accentBlueColor
             memoView = addMemoLabel
         }
@@ -570,7 +560,7 @@ public class SendPaymentViewController: OWSViewController {
     private func buildKeyboard(spacerFactory: SpacerFactory) -> KeyboardViews {
 
         let keyboardHSpacing: CGFloat = 32
-        let buttonFont = UIFont.ows_dynamicTypeTitle1Clamped
+        let buttonFont = UIFont.dynamicTypeTitle1Clamped
         func buildAmountKeyboardButton(title: String, block: @escaping () -> Void) -> OWSButton {
             let button = OWSButton(block: block)
 
@@ -730,14 +720,14 @@ public class SendPaymentViewController: OWSViewController {
         rootStack.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         rootStack.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
-        bigAmountLabel.font = UIFont.ows_dynamicTypeLargeTitle1Clamped.withSize(60)
+        bigAmountLabel.font = UIFont.regularFont(ofSize: 60)
         bigAmountLabel.textAlignment = .center
         bigAmountLabel.adjustsFontSizeToFitWidth = true
         bigAmountLabel.minimumScaleFactor = 0.25
         bigAmountLabel.setContentHuggingVerticalHigh()
         bigAmountLabel.setCompressionResistanceVerticalHigh()
 
-        smallAmountLabel.font = UIFont.ows_dynamicTypeBody2
+        smallAmountLabel.font = UIFont.dynamicTypeBody2
         smallAmountLabel.textColor = Theme.secondaryTextAndIconColor
         smallAmountLabel.textAlignment = .center
         smallAmountLabel.setContentHuggingVerticalHigh()

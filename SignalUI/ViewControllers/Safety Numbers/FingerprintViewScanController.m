@@ -11,7 +11,6 @@
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalUI/SignalUI-Swift.h>
-#import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIView+SignalUI.h>
 #import <SignalUI/UIViewController+Permissions.h>
 
@@ -84,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *cameraInstructionLabel = [UILabel new];
     cameraInstructionLabel.text
         = NSLocalizedString(@"SCAN_CODE_INSTRUCTIONS", @"label presented once scanning (camera) view is visible.");
-    cameraInstructionLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 18.f)];
+    cameraInstructionLabel.font = [UIFont systemFontOfSize:ScaleFromIPhone5To7Plus(14.f, 18.f)];
     cameraInstructionLabel.textColor = [UIColor whiteColor];
     cameraInstructionLabel.textAlignment = NSTextAlignmentCenter;
     cameraInstructionLabel.numberOfLines = 0;

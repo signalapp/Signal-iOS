@@ -32,7 +32,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.secondaryTextAndIconColor
-        label.font = .ows_dynamicTypeBody
+        label.font = .dynamicTypeBody
         label.numberOfLines = 0
         label.textAlignment = .center
         label.text = NSLocalizedString("STORIES_NO_RECENT_MESSAGES", comment: "Indicates that there are no recent stories to render")

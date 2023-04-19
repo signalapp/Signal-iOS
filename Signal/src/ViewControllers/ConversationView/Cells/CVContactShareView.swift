@@ -96,7 +96,7 @@ public class CVContactShareView: ManualStackView {
     private static func topLabelConfig(state: State) -> CVLabelConfig {
         let textColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
         return CVLabelConfig(text: state.contactShare.displayName,
-                             font: .ows_dynamicTypeBody2.ows_semibold,
+                             font: .dynamicTypeBody2.semibold(),
                              textColor: textColor,
                              lineBreakMode: .byTruncatingTail)
     }
@@ -108,7 +108,7 @@ public class CVContactShareView: ManualStackView {
         let text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: firstPhoneNumber)
         let textColor = state.conversationStyle.bubbleSecondaryTextColor(isIncoming: state.isIncoming)
         return CVLabelConfig(text: text,
-                             font: .ows_dynamicTypeCaption1,
+                             font: .dynamicTypeCaption1,
                              textColor: textColor,
                              lineBreakMode: .byTruncatingTail)
     }

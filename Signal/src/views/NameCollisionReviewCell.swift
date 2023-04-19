@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 struct NameCollisionCellModel {
     let address: SignalServiceAddress
@@ -96,7 +96,7 @@ class NameCollisionCell: UITableViewCell {
         let label = UILabel()
 
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_dynamicTypeBody
+        label.font = UIFont.dynamicTypeBody
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
 
@@ -107,7 +107,7 @@ class NameCollisionCell: UITableViewCell {
         let label = UILabel()
 
         label.textColor = Theme.secondaryTextAndIconColor
-        label.font = UIFont.ows_dynamicTypeFootnote
+        label.font = UIFont.dynamicTypeFootnote
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
 
@@ -118,7 +118,7 @@ class NameCollisionCell: UITableViewCell {
         let label = UILabel()
 
         label.textColor = Theme.secondaryTextAndIconColor
-        label.font = UIFont.ows_dynamicTypeFootnote
+        label.font = UIFont.dynamicTypeFootnote
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
         label.text = NSLocalizedString(
@@ -132,7 +132,7 @@ class NameCollisionCell: UITableViewCell {
         let label = UILabel()
 
         label.textColor = Theme.secondaryTextAndIconColor
-        label.font = UIFont.ows_dynamicTypeFootnote
+        label.font = UIFont.dynamicTypeFootnote
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
 
@@ -145,7 +145,7 @@ class NameCollisionCell: UITableViewCell {
         let label = UILabel()
 
         label.textColor = Theme.secondaryTextAndIconColor
-        label.font = UIFont.ows_dynamicTypeFootnote.ows_italic
+        label.font = UIFont.dynamicTypeFootnote.italic()
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
 
@@ -277,7 +277,7 @@ class NameCollisionCell: UITableViewCell {
         let button = OWSButton(title: action.title, block: action.action)
         button.setTitleColor(Theme.accentBlueColor, for: .normal)
         button.setTitleColor(Theme.accentBlueColor.withAlphaComponent(0.7), for: .highlighted)
-        button.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        button.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.titleLabel?.numberOfLines = 0
         button.contentHorizontalAlignment = .leading

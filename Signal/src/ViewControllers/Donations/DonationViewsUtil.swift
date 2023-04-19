@@ -7,6 +7,7 @@ import BonMot
 import Foundation
 import Lottie
 import SignalMessaging
+import SignalUI
 import UIKit
 
 // MARK: - Profile badge lookup
@@ -70,7 +71,7 @@ public class DonationCurrencyPickerButton: UIStackView {
 
         if hasLabel {
             let label = UILabel()
-            label.font = .ows_dynamicTypeBodyClamped
+            label.font = .dynamicTypeBodyClamped
             label.textColor = Theme.primaryTextColor
             label.text = NSLocalizedString(
                 "DONATIONS_CURRENCY_PICKER_LABEL",
@@ -85,12 +86,12 @@ public class DonationCurrencyPickerButton: UIStackView {
             Special.noBreakSpace,
             NSAttributedString.with(
                 image: #imageLiteral(resourceName: "chevron-down-18").withRenderingMode(.alwaysTemplate),
-                font: .ows_regularFont(withSize: 17)
+                font: .regularFont(ofSize: 17)
             ).styled(
                 with: .color(DonationViewsUtil.bubbleBorderColor)
             )
         ]).styled(
-            with: .font(.ows_regularFont(withSize: 17)),
+            with: .font(.regularFont(ofSize: 17)),
             .color(Theme.primaryTextColor)
         ), for: .normal)
 
@@ -140,7 +141,7 @@ public class GiftBadgeCellView: UIStackView {
         let titleLabel = UILabel()
         titleLabel.text = badge.localizedName
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = .ows_dynamicTypeBody.ows_semibold
+        titleLabel.font = .dynamicTypeBody.semibold()
         titleLabel.numberOfLines = 0
 
         let secondLineLabel = UILabel()
@@ -180,7 +181,7 @@ public class GiftBadgeCellView: UIStackView {
             )
         }()
         secondLineLabel.textColor = Theme.primaryTextColor
-        secondLineLabel.font = .ows_dynamicTypeBody2
+        secondLineLabel.font = .dynamicTypeBody2
         secondLineLabel.numberOfLines = 0
 
         let vStackView = UIStackView(arrangedSubviews: [titleLabel, secondLineLabel])
@@ -271,7 +272,7 @@ public final class DonationViewsUtil {
                     let titleLabel = UILabel()
                     titleLabel.text = subscriptionLevel?.name
                     titleLabel.textColor = Theme.primaryTextColor
-                    titleLabel.font = .ows_dynamicTypeBody.ows_semibold
+                    titleLabel.font = .dynamicTypeBody.semibold()
                     titleLabel.numberOfLines = 0
                     return titleLabel
                 }()
@@ -282,7 +283,7 @@ public final class DonationViewsUtil {
                     let currencyString = DonationUtilities.format(money: currentSubscription.amount)
                     pricingLabel.text = String(format: pricingFormat, currencyString)
                     pricingLabel.textColor = Theme.primaryTextColor
-                    pricingLabel.font = .ows_dynamicTypeBody2
+                    pricingLabel.font = .dynamicTypeBody2
                     pricingLabel.numberOfLines = 0
                     return pricingLabel
                 }()
@@ -290,13 +291,13 @@ public final class DonationViewsUtil {
                 let statusText: NSMutableAttributedString
                 if isPending {
                     let text = NSLocalizedString("SUSTAINER_VIEW_PROCESSING_TRANSACTION", comment: "Status text while processing a badge redemption")
-                    statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
+                    statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.dynamicTypeBody2])
                 } else if didFail {
                     let helpFormat = subscriptionRedemptionFailureReason == .paymentFailed ? NSLocalizedString("SUSTAINER_VIEW_PAYMENT_ERROR", comment: "Payment error occurred text, embeds {{link to contact support}}")
                     : NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE", comment: "Couldn't add badge text, embeds {{link to contact support}}")
                     let contactSupport = NSLocalizedString("SUSTAINER_VIEW_CONTACT_SUPPORT", comment: "Contact support link")
                     let text = String(format: helpFormat, contactSupport)
-                    let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
+                    let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.dynamicTypeBody2])
                     attributedText.addAttributes([.link: NSURL()], range: NSRange(location: text.utf16.count - contactSupport.utf16.count, length: contactSupport.utf16.count))
                     statusText = attributedText
                 } else {
@@ -306,7 +307,7 @@ public final class DonationViewsUtil {
                     let renewalDate = Date(timeIntervalSince1970: currentSubscription.endOfCurrentPeriod)
                     let renewalString = dateFormatter.string(from: renewalDate)
                     let text = String(format: renewalFormat, renewalString)
-                    statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
+                    statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.dynamicTypeBody2])
                 }
 
                 statusLabelToModify.attributedText = statusText

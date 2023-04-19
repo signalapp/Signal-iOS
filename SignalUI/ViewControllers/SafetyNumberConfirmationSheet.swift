@@ -192,7 +192,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeBody2.semibold()
         titleLabel.textColor = theme.headerTitleColor
         titleLabel.text = OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_TITLE",
                                              comment: "Title for the 'safety number confirmation' view")
@@ -201,7 +201,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         messageLabel.textAlignment = .center
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
-        messageLabel.font = .ows_dynamicTypeBody2
+        messageLabel.font = .dynamicTypeBody2
         messageLabel.textColor = theme.headerMessageColor
         messageLabel.text = OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_MESSAGE",
                                                comment: "Message for the 'safety number confirmation' view")
@@ -566,7 +566,7 @@ private class SafetyNumberCell: ContactTableViewCell {
         button.setTitle(
             title: OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION",
                                       comment: "View safety number action for the 'safety number confirmation' view"),
-            font: UIFont.ows_dynamicTypeBody2.ows_semibold,
+            font: UIFont.dynamicTypeBody2.semibold(),
             titleColor: Theme.ActionSheet.default.safetyNumberChangeButtonTextColor
         )
         button.useDefaultCornerRadius()
@@ -635,7 +635,7 @@ private extension NSAttributedString {
     ) -> NSAttributedString {
         let string = NSMutableAttributedString()
 
-        string.appendTemplatedImage(named: "check-12", font: UIFont.ows_regularFont(withSize: 11))
+        string.appendTemplatedImage(named: "check-12", font: UIFont.regularFont(ofSize: 11))
         string.append(" ")
         string.append(text)
 

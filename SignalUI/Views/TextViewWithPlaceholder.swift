@@ -92,7 +92,7 @@ public class TextViewWithPlaceholder: UIView {
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
 
-        textView.font = UIFont.ows_dynamicTypeBody
+        textView.font = UIFont.dynamicTypeBody
         textView.adjustsFontForContentSizeCategory = true
         textView.textContainer.lineFragmentPadding = 0
 

@@ -136,7 +136,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
         result.dimsWhenHighlighted = true
         result.layer.cornerRadius = 8
         result.backgroundColor = .ows_accentBlue
-        result.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        result.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
         result.titleLabel?.numberOfLines = 0
         result.contentEdgeInsets = .init(margin: 14)
         result.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
@@ -149,7 +149,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
                 "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON",
                 comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information."
             ),
-            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            font: UIFont.dynamicTypeBody.semibold(),
             titleColor: Theme.accentBlueColor,
             backgroundColor: .clear,
             target: self,

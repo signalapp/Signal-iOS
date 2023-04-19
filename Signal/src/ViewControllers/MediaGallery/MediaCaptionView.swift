@@ -113,7 +113,7 @@ class MediaCaptionView: UIView {
 
     private class func buildCaptionTextView() -> CaptionTextView {
         let textView = CaptionTextView()
-        textView.font = UIFont.ows_dynamicTypeBodyClamped
+        textView.font = UIFont.dynamicTypeBodyClamped
         textView.textColor = .white
         textView.backgroundColor = .clear
         textView.textContainerInset = UIEdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0)
@@ -234,7 +234,7 @@ class MediaCaptionView: UIView {
             // 3 lines of text.
             let collapsedTextConfig = CVTextLabel.Config(
                 attributedString: attributedText,
-                font: font ?? .ows_dynamicTypeBodyClamped,
+                font: font ?? .dynamicTypeBodyClamped,
                 textColor: textColor ?? .white,
                 selectionStyling: [:],
                 textAlignment: textAlignment,
@@ -247,7 +247,7 @@ class MediaCaptionView: UIView {
             // 9 lines of text or `maxHeight`, whichever is smaller.
             let expandedTextConfig = CVTextLabel.Config(
                 attributedString: attributedText,
-                font: font ?? .ows_dynamicTypeBodyClamped,
+                font: font ?? .dynamicTypeBodyClamped,
                 textColor: textColor ?? .white,
                 selectionStyling: [:],
                 textAlignment: textAlignment,
@@ -261,7 +261,7 @@ class MediaCaptionView: UIView {
             // Unrestricted text height is necessary so that we could enable scrolling in the text view.
             let fullTextConfig = CVTextLabel.Config(
                 attributedString: attributedText,
-                font: font ?? .ows_dynamicTypeBodyClamped,
+                font: font ?? .dynamicTypeBodyClamped,
                 textColor: textColor ?? .white,
                 selectionStyling: [:],
                 textAlignment: textAlignment,

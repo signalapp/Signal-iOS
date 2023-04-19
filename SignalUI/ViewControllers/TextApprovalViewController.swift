@@ -158,7 +158,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         textView.mentionDelegate = self
         textView.backgroundColor = Theme.backgroundColor
         textView.textColor = Theme.primaryTextColor
-        textView.font = UIFont.ows_dynamicTypeBody
+        textView.font = UIFont.dynamicTypeBody
         textView.messageBody = self.initialMessageBody
         textView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         textView.textContainerInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)

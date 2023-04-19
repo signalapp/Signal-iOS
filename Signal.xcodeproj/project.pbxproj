@@ -465,9 +465,7 @@
 		34A954E7271B4F6A00B05242 /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A954E4271B4F6A00B05242 /* AttachmentSharing.m */; };
 		34A954E8271B4F6A00B05242 /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954E5271B4F6A00B05242 /* VideoPlayer.swift */; };
 		34A954F7271B4FB000B05242 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A954EC271B4FB000B05242 /* UIViewController+OWS.m */; };
-		34A954FC271B4FB000B05242 /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A954F1271B4FB000B05242 /* UIFont+OWS.m */; };
 		34A954FD271B4FB000B05242 /* UIViewController+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A954F2271B4FB000B05242 /* UIViewController+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34A954FF271B4FB000B05242 /* UIFont+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A954F4271B4FB000B05242 /* UIFont+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34A95501271B503E00B05242 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95500271B503E00B05242 /* DisplayableText.swift */; };
 		34A955AC271B521500B05242 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AD271B532F00B05242 /* FullTextSearcher.swift */; };
@@ -926,6 +924,7 @@
 		7666D54628331E4800A3BDB9 /* ImageEditorViewController+Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */; };
 		7666D54828331E6900A3BDB9 /* ImageEditorViewController+Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */; };
 		76725D2D29143CEC000E8AE1 /* ConversationInputToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */; };
+		7685DFFF29EA1F6400542CBC /* UIFont+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */; };
 		76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */; };
 		76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */; };
 		76896BFC2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BFB2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift */; };
@@ -2772,9 +2771,7 @@
 		34A954E4271B4F6A00B05242 /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentSharing.m; sourceTree = "<group>"; };
 		34A954E5271B4F6A00B05242 /* VideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
 		34A954EC271B4FB000B05242 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+OWS.m"; sourceTree = "<group>"; };
-		34A954F1271B4FB000B05242 /* UIFont+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+OWS.m"; sourceTree = "<group>"; };
 		34A954F2271B4FB000B05242 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+OWS.h"; sourceTree = "<group>"; };
-		34A954F4271B4FB000B05242 /* UIFont+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIFont+OWS.h"; sourceTree = "<group>"; };
 		34A95500271B503E00B05242 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
 		34A95503271B510400B05242 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		34A95504271B510400B05242 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
@@ -3399,6 +3396,7 @@
 		7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Blur.swift"; sourceTree = "<group>"; };
 		7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Text.swift"; sourceTree = "<group>"; };
 		76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputToolbar.swift; sourceTree = "<group>"; };
+		7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+OWS.swift"; sourceTree = "<group>"; };
 		76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAttachmentPrepViewController.swift; sourceTree = "<group>"; };
 		76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
 		76896BFB2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAttachmentPrepViewController.swift; sourceTree = "<group>"; };
@@ -5588,8 +5586,7 @@
 			isa = PBXGroup;
 			children = (
 				F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */,
-				34A954F4271B4FB000B05242 /* UIFont+OWS.h */,
-				34A954F1271B4FB000B05242 /* UIFont+OWS.m */,
+				7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */,
 				76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */,
 				7609819329382EFF008F8300 /* UIGeometry+Signal.swift */,
 				76F4B580293ACCD200A7CF2F /* UIKit+SignalUI.swift */,
@@ -9359,7 +9356,6 @@
 				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
 				34A954DB271B4F3E00B05242 /* Theme.h in Headers */,
-				34A954FF271B4FB000B05242 /* UIFont+OWS.h in Headers */,
 				3402A9E9271D97090084CBAE /* UIView+SignalUI.h in Headers */,
 				34A954FD271B4FB000B05242 /* UIViewController+OWS.h in Headers */,
 				3402AA51271D9DCD0084CBAE /* UIViewController+Permissions.h in Headers */,
@@ -10796,7 +10792,7 @@
 				88C980D427F3AD2C009750C0 /* TSMessage+SignalUI.swift in Sources */,
 				8803C2F628B02FDB00183D2B /* TSOutgoingMessage+AttachmentMultisend.swift in Sources */,
 				F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */,
-				34A954FC271B4FB000B05242 /* UIFont+OWS.m in Sources */,
+				7685DFFF29EA1F6400542CBC /* UIFont+OWS.swift in Sources */,
 				76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */,
 				7609819429382EFF008F8300 /* UIGeometry+Signal.swift in Sources */,
 				76F4B581293ACCD200A7CF2F /* UIKit+SignalUI.swift in Sources */,

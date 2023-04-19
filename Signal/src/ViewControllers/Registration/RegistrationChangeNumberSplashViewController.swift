@@ -105,7 +105,7 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE",
                                             comment: "Title text in the 'change phone number splash' view.")
-        titleLabel.font = .ows_dynamicTypeTitle2.ows_semibold
+        titleLabel.font = .dynamicTypeTitle2.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
@@ -114,14 +114,14 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
         let descriptionLabel = UILabel()
         descriptionLabel.text = NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION",
                                             comment: "Description text in the 'change phone number splash' view.")
-        descriptionLabel.font = .ows_dynamicTypeBody
+        descriptionLabel.font = .dynamicTypeBody
         descriptionLabel.textColor = Theme.secondaryTextAndIconColor
         descriptionLabel.textAlignment = .center
         descriptionLabel.numberOfLines = 0
         descriptionLabel.lineBreakMode = .byWordWrapping
 
         let continueButton = OWSFlatButton.button(title: CommonStrings.continueButton,
-                                                  font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                  font: UIFont.dynamicTypeBody.semibold(),
                                                   titleColor: .ows_white,
                                                   backgroundColor: .ows_accentBlue,
                                                   target: self,

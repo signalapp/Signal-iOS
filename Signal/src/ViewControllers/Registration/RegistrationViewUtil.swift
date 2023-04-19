@@ -47,7 +47,7 @@ extension UIColor {
 // MARK: - Fonts
 
 extension UIFont {
-    static var fontForRegistrationExplanationLabel: UIFont { .ows_dynamicTypeSubheadlineClamped }
+    static var fontForRegistrationExplanationLabel: UIFont { .dynamicTypeSubheadlineClamped }
 }
 
 // MARK: - Labels
@@ -57,7 +57,7 @@ extension UILabel {
         let result = UILabel()
         result.text = text
         result.textColor = .colorForRegistrationTitleLabel
-        result.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semibold
+        result.font = UIFont.dynamicTypeTitle1Clamped.semibold()
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
@@ -82,7 +82,7 @@ extension OWSFlatButton {
     static func primaryButtonForRegistration(title: String, target: Any, selector: Selector) -> OWSFlatButton {
         let result = insetButton(
             title: title,
-            font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            font: UIFont.dynamicTypeBodyClamped.semibold(),
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: target,
@@ -95,7 +95,7 @@ extension OWSFlatButton {
     static func linkButtonForRegistration(title: String, target: Any, selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton.button(
             title: title,
-            font: UIFont.ows_dynamicTypeSubheadlineClamped,
+            font: UIFont.dynamicTypeSubheadlineClamped,
             titleColor: Theme.accentBlueColor,
             backgroundColor: .clear,
             target: target,

@@ -461,7 +461,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 {
     OWSAssertDebug(self.quoteContentSourceLabel);
 
-    self.quoteContentSourceLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
+    self.quoteContentSourceLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     self.quoteContentSourceLabel.textColor = Theme.lightThemePrimaryColor;
     self.quoteContentSourceLabel.text = NSLocalizedString(@"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
         @"Footer label that appears below quoted messages when the quoted content was not derived locally. When the "
@@ -616,7 +616,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIFont *)quotedAuthorFont
 {
-    return UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
+    CGFloat pointSize = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline].pointSize;
+    return [UIFont systemFontOfSize:pointSize weight:UIFontWeightSemibold];
 }
 
 - (UIColor *)quotedAuthorColor
@@ -631,7 +632,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIFont *)quotedTextFont
 {
-    return [UIFont ows_dynamicTypeBodyFont];
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 - (UIColor *)fileTypeTextColor
@@ -641,7 +642,9 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIFont *)fileTypeFont
 {
-    return self.quotedTextFont.ows_italic;
+    UIFontDescriptor *fontDescriptor =
+        [self.quotedTextFont.fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic];
+    return [UIFont fontWithDescriptor:fontDescriptor size:0];
 }
 
 - (UIColor *)filenameTextColor

@@ -123,7 +123,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             " ",
             CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/hc/en-us/articles/360056052052-Proxy-Support")!))
         ]).styled(
-            with: .font(.ows_dynamicTypeCaption1Clamped),
+            with: .font(.dynamicTypeCaption1Clamped),
             .color(Theme.secondaryTextAndIconColor)
         )
         proxySection.add(.disclosureItem(
@@ -170,7 +170,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 with: .link(URL(string: "https://signal.org/blog/sealed-sender/")!)
             )
         ]).styled(
-            with: .font(.ows_dynamicTypeCaption1Clamped),
+            with: .font(.dynamicTypeCaption1Clamped),
             .color(Theme.secondaryTextAndIconColor)
         )
         sealedSenderSection.add(.init(

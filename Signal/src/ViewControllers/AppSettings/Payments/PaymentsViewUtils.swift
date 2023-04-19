@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 @objc
 public class PaymentsViewUtils: NSObject {
@@ -20,7 +20,7 @@ public class PaymentsViewUtils: NSObject {
         let label = UILabel()
         label.text = memoMessage
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_dynamicTypeBody2Clamped
+        label.font = UIFont.dynamicTypeBody2Clamped
         label.textAlignment = .center
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
@@ -115,22 +115,22 @@ public class PaymentsViewUtils: NSObject {
                 let attributedText = NSMutableAttributedString()
                 attributedText.append(OWSFormat.formatInt(wordAndIndex.index + 1),
                                       attributes: [
-                                        .font: UIFont.ows_dynamicTypeBodyClamped,
+                                        .font: UIFont.dynamicTypeBodyClamped,
                                         .foregroundColor: Theme.secondaryTextAndIconColor
                                       ])
                 attributedText.append(":",
                                       attributes: [
-                                        .font: UIFont.ows_dynamicTypeBodyClamped,
+                                        .font: UIFont.dynamicTypeBodyClamped,
                                         .foregroundColor: Theme.secondaryTextAndIconColor
                                       ])
                 attributedText.append(" ",
                                       attributes: [
-                                        .font: UIFont.ows_dynamicTypeBodyClamped,
+                                        .font: UIFont.dynamicTypeBodyClamped,
                                         .foregroundColor: Theme.secondaryTextAndIconColor
                                       ])
                 attributedText.append(wordAndIndex.word,
                                       attributes: [
-                                        .font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+                                        .font: UIFont.dynamicTypeBodyClamped.semibold(),
                                         .foregroundColor: Theme.primaryTextColor
                                       ])
                 let wordLabel = UILabel()
@@ -182,7 +182,7 @@ public class PaymentsViewUtils: NSObject {
         textView.textColor = (Theme.isDarkThemeEnabled
                                 ? UIColor.ows_gray05
                                 : UIColor.ows_gray90)
-        textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        textView.font = UIFont.dynamicTypeBodyClamped.semibold()
         textView.textContainerInset = .zero
 
         textView.attributedText = NSAttributedString.composed(of: [

@@ -68,7 +68,7 @@ open class ActionSheetController: OWSViewController {
         return stackView.height + view.safeAreaInsets.bottom
     }
 
-    public static var messageLabelFont: UIFont { .ows_dynamicTypeSubheadlineClamped }
+    public static var messageLabelFont: UIFont { .dynamicTypeSubheadlineClamped }
 
     public static var messageBaseStyle: BonMot.StringStyle {
         return BonMot.StringStyle(.font(messageLabelFont), .alignment(.center))
@@ -279,7 +279,7 @@ open class ActionSheetController: OWSViewController {
         if let title = title {
             let titleLabel = UILabel()
             titleLabel.textColor = theme.headerTitleColor
-            titleLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+            titleLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
             titleLabel.numberOfLines = 0
             titleLabel.lineBreakMode = .byWordWrapping
             titleLabel.textAlignment = .center
@@ -482,13 +482,13 @@ public class ActionSheetAction: NSObject {
 
             switch action.style {
             case .default:
-                titleLabel?.font = .ows_dynamicTypeBodyClamped
+                titleLabel?.font = .dynamicTypeBodyClamped
                 setTitleColor(Theme.ActionSheet.default.buttonTextColor, for: .init())
             case .cancel:
-                titleLabel?.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+                titleLabel?.font = UIFont.dynamicTypeBodyClamped.semibold()
                 setTitleColor(Theme.ActionSheet.default.buttonTextColor, for: .init())
             case .destructive:
-                titleLabel?.font = .ows_dynamicTypeBodyClamped
+                titleLabel?.font = .dynamicTypeBodyClamped
                 setTitleColor(Theme.ActionSheet.default.destructiveButtonTextColor, for: .init())
             }
 

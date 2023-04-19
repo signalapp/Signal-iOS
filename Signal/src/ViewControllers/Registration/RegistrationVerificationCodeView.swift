@@ -67,7 +67,7 @@ class RegistrationVerificationCodeView: UIView {
     private var digitLabels = [UILabel]()
     private var digitStrokes = [UIView]()
 
-    private let cellFont: UIFont = UIFont.ows_dynamicTypeLargeTitle1Clamped
+    private let cellFont: UIFont = UIFont.dynamicTypeLargeTitle1Clamped
     private let interCellSpacing: CGFloat = 8
     private let segmentSpacing: CGFloat = 24
     private let strokeWidth: CGFloat = 3
@@ -114,7 +114,7 @@ class RegistrationVerificationCodeView: UIView {
         textfield.delegate = self
         textfield.codeDelegate = self
 
-        textfield.font = UIFont.ows_dynamicTypeLargeTitle1Clamped
+        textfield.font = UIFont.dynamicTypeLargeTitle1Clamped
         textfield.keyboardType = .numberPad
         textfield.textContentType = .oneTimeCode
 

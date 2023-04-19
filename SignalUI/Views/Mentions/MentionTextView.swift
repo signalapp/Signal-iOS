@@ -456,7 +456,7 @@ open class MentionTextView: OWSTextView {
     public func updateTextContainerInset() {
         var newTextContainerInset = defaultTextContainerInset
 
-        let currentFont = font ?? UIFont.ows_dynamicTypeBody
+        let currentFont = font ?? UIFont.dynamicTypeBody
         let systemDefaultFont = UIFont.preferredFont(
             forTextStyle: .body,
             compatibleWith: .init(preferredContentSizeCategory: .large)

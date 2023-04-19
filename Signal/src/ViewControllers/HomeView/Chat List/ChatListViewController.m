@@ -143,6 +143,17 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                         completion:nil];
 }
 
++ (UIFont *)dynamicTypeFontForTextStyle:(UIFontTextStyle)textStyle clampedTo:(CGFloat)maxPointSize
+{
+    UITraitCollection *defaultTraitCollection =
+        [UITraitCollection traitCollectionWithPreferredContentSizeCategory:UIContentSizeCategoryLarge];
+    UIFont *unscaledFont = [UIFont preferredFontForTextStyle:textStyle
+                               compatibleWithTraitCollection:defaultTraitCollection];
+
+    UIFontMetrics *desiredStyleMetrics = [[UIFontMetrics alloc] initForTextStyle:textStyle];
+    return [desiredStyleMetrics scaledFontForFont:unscaledFont maximumPointSize:maxPointSize];
+}
+
 #pragma mark - View Life Cycle
 
 - (void)loadView
@@ -194,7 +205,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UILabel *emptyInboxLabel = [UILabel new];
     emptyInboxLabel.text = NSLocalizedString(
         @"INBOX_VIEW_EMPTY_INBOX", @"Message shown in the conversation list when the inbox is empty.");
-    emptyInboxLabel.font = UIFont.ows_dynamicTypeSubheadlineClampedFont;
+    emptyInboxLabel.font = [ChatListViewController dynamicTypeFontForTextStyle:UIFontTextStyleSubheadline clampedTo:21];
     emptyInboxLabel.textColor
         = Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : UIColor.ows_gray45Color;
     emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
@@ -212,7 +223,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     UILabel *label = [UILabel new];
     label.textColor = UIColor.ows_whiteColor;
-    label.font = UIFont.ows_dynamicTypeBodyClampedFont;
+    label.font = [ChatListViewController dynamicTypeFontForTextStyle:UIFontTextStyleBody clampedTo:23];
     label.numberOfLines = 0;
     label.lineBreakMode = NSLineBreakByWordWrapping;
 

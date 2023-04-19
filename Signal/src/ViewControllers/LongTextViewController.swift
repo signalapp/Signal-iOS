@@ -65,7 +65,7 @@ public class LongTextViewController: OWSViewController {
         if let displayableText = displayableText {
             let mutableText = NSMutableAttributedString(attributedString: fullAttributedText)
             mutableText.addAttributes(
-                [.font: UIFont.ows_dynamicTypeBody, .foregroundColor: Theme.primaryTextColor],
+                [.font: UIFont.dynamicTypeBody, .foregroundColor: Theme.primaryTextColor],
                 range: mutableText.entireRange
             )
 
@@ -125,7 +125,7 @@ public class LongTextViewController: OWSViewController {
 
         let messageTextView = OWSTextView()
         self.messageTextView = messageTextView
-        messageTextView.font = UIFont.ows_dynamicTypeBody
+        messageTextView.font = UIFont.dynamicTypeBody
         messageTextView.backgroundColor = Theme.backgroundColor
         messageTextView.isOpaque = true
         messageTextView.isEditable = false

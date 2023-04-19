@@ -66,11 +66,11 @@ public extension ConversationViewController {
 
             self.ensureBannerState()
         }
-        dismissButton.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        dismissButton.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         let viewRequestsLabel = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS",
                                                   comment: "Label for the 'view requests' button in the pending member requests banner.")
         let viewRequestsButton = OWSButton(title: viewRequestsLabel, block: viewMemberRequestsBlock)
-        viewRequestsButton.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        viewRequestsButton.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
 
         return Self.createBanner(title: title,
                                  buttons: [dismissButton, viewRequestsButton],
@@ -239,14 +239,14 @@ fileprivate extension ConversationViewController {
             self.databaseStorage.write { viewState.hideDroppedGroupMembersBanner(transaction: $0) }
             self.ensureBannerState()
         }
-        notNowButton.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        notNowButton.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
 
         let addMembersButtonText = NSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON",
                                                      comment: "Label for the 'add members' button in the 're-add dropped groups members' banner.")
         let addMembersButton = OWSButton(title: addMembersButtonText) { [weak self] in
             self?.reAddDroppedGroupMembers(droppedMembersInfo: droppedMembersInfo)
         }
-        addMembersButton.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        addMembersButton.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
 
         return Self.createBanner(title: title,
                                  buttons: [notNowButton, addMembersButton],
@@ -263,7 +263,7 @@ fileprivate extension ConversationViewController {
 
     static func buildBannerLabel(title: String) -> UILabel {
         let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         label.text = title
         label.textColor = .white
         label.numberOfLines = 0
@@ -276,7 +276,7 @@ fileprivate extension ConversationViewController {
                              accessibilityIdentifier: String) -> UIView {
 
         let titleLabel = buildBannerLabel(title: title)
-        titleLabel.font = .ows_dynamicTypeSubheadlineClamped
+        titleLabel.font = .dynamicTypeSubheadlineClamped
 
         let buttonRow = UIStackView(arrangedSubviews: [UIView.hStretchingSpacer()] + buttons)
         buttonRow.axis = .horizontal
@@ -376,7 +376,7 @@ private class NameCollisionBanner: UIView {
     private let label: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = UIFont.ows_dynamicTypeFootnote
+        label.font = UIFont.dynamicTypeFootnote
         label.textColor = Theme.secondaryTextAndIconColor
         return label
     }()
@@ -429,7 +429,7 @@ private class NameCollisionBanner: UIView {
         let button = OWSButton()
         button.setTitleColor(Theme.accentBlueColor, for: .normal)
         button.setTitleColor(Theme.accentBlueColor.withAlphaComponent(0.7), for: .highlighted)
-        button.titleLabel?.font = UIFont.ows_dynamicTypeFootnote
+        button.titleLabel?.font = UIFont.dynamicTypeFootnote
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()

@@ -16,7 +16,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
     private lazy var instructionLabel: UILabel = {
         let label = UILabel()
         label.text = NSLocalizedString("TAP_REPLACE_EMOJI", comment: "Tap to Replace Emoji string for reaction configuration")
-        label.font = UIFont.ows_dynamicTypeBody2
+        label.font = UIFont.dynamicTypeBody2
         label.textColor = Theme.secondaryTextAndIconColor
         return label
     }()

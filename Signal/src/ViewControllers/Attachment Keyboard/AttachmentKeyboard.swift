@@ -279,7 +279,7 @@ private class RecentPhotosErrorView: UIView {
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.textColor = Theme.primaryTextColor
-        label.font = .ows_dynamicTypeSubheadlineClamped
+        label.font = .dynamicTypeSubheadlineClamped
         label.textAlignment = .center
 
         stackView.addArrangedSubview(label)
@@ -291,7 +291,7 @@ private class RecentPhotosErrorView: UIView {
                 "ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS",
                 comment: "A message on a button prompting the user to go settings to grant Signal photos access."
             ),
-            font: .ows_dynamicTypeBodyClamped,
+            font: .dynamicTypeBodyClamped,
             titleColor: .white
         )
         button.useDefaultCornerRadius()

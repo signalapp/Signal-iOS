@@ -20,7 +20,7 @@ class DonationReceiptViewController: OWSTableViewController2 {
         let button = OWSButton()
         button.setTitle(NSLocalizedString("DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON", comment: "Text on the button that exports the receipt"),
                         for: .normal)
-        button.titleLabel?.font = .ows_dynamicTypeBodyClamped.ows_semibold
+        button.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
         button.clipsToBounds = true
         button.layer.cornerRadius = 8
         button.contentEdgeInsets = UIEdgeInsets(top: 13, leading: 13, bottom: 13, trailing: 13)

@@ -240,7 +240,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
     private func valueLabelAttributedText(name: String, value: String) -> NSAttributedString {
         .composed(of: [
-            name.styled(with: .font(UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold)),
+            name.styled(with: .font(UIFont.dynamicTypeFootnoteClamped.semibold())),
             " ",
             value
         ])
@@ -249,7 +249,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
     private func buildValueLabel(name: String, value: String) -> UILabel {
         let label = UILabel()
         label.textColor = Theme.darkThemePrimaryColor
-        label.font = .ows_dynamicTypeFootnoteClamped
+        label.font = .dynamicTypeFootnoteClamped
         label.attributedText = valueLabelAttributedText(name: name, value: value)
         return label
     }
@@ -289,7 +289,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
         let label = CVLabel()
         let labelConfig = CVLabelConfig(
             text: text,
-            font: .ows_dynamicTypeFootnoteClamped,
+            font: .dynamicTypeFootnoteClamped,
             textColor: Theme.darkThemeSecondaryTextAndIconColor
         )
         labelConfig.applyForRendering(label: label)

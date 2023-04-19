@@ -80,7 +80,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
 
     private func createViews() {
         addressTextfield.delegate = self
-        addressTextfield.font = .ows_dynamicTypeBodyClamped
+        addressTextfield.font = .dynamicTypeBodyClamped
         addressTextfield.keyboardAppearance = Theme.keyboardAppearance
         addressTextfield.accessibilityIdentifier = "payments.transfer.out.addressTextfield"
         addressTextfield.addTarget(self, action: #selector(addressDidChange), for: .editingChanged)

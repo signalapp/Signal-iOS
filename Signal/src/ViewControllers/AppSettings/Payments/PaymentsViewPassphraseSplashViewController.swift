@@ -102,13 +102,13 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
         let titleLabel = UILabel()
         titleLabel.text = style.title
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: self.style.explanationText,
-            font: .ows_dynamicTypeBody2Clamped,
+            font: .dynamicTypeBody2Clamped,
             learnMoreUrl: self.style.explanationUrl)
         explanationLabel.textAlignment = .center
 
@@ -126,7 +126,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
         let nextButton = OWSFlatButton.insetButton(
             title: CommonStrings.nextButton,
-            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            font: UIFont.dynamicTypeBody.semibold(),
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
@@ -138,7 +138,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
         let cancelButton = OWSFlatButton.insetButton(
             title: CommonStrings.notNowButton,
-            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            font: UIFont.dynamicTypeBody.semibold(),
             titleColor: .ows_accentBlue,
             backgroundColor: .clear,
             target: self,

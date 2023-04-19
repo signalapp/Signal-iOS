@@ -141,12 +141,12 @@ public class ContactCellView: ManualStackView {
     }
 
     private var nameLabelFont: UIFont { OWSTableItem.primaryLabelFont }
-    fileprivate static var subtitleFont: UIFont { .ows_dynamicTypeCaption1Clamped }
+    fileprivate static var subtitleFont: UIFont { .dynamicTypeCaption1Clamped }
 
     private func configureFontsAndColors(forceDarkAppearance: Bool) {
         nameLabel.font = nameLabelFont
         subtitleLabel.font = Self.subtitleFont
-        accessoryLabel.font = .ows_dynamicTypeSubheadlineClamped
+        accessoryLabel.font = .dynamicTypeSubheadlineClamped
 
         nameLabel.textColor = forceDarkAppearance ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
         subtitleLabel.textColor = (forceDarkAppearance ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor)

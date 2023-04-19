@@ -53,7 +53,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
         result.dimsWhenHighlighted = true
         result.layer.cornerRadius = 8
         result.backgroundColor = .ows_accentBlue
-        result.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        result.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
         result.autoSetDimension(.height, toSize: 48)
         return result
     }()
@@ -79,7 +79,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
 
                 let titleLabel = UILabel()
                 titleLabel.textAlignment = .center
-                titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+                titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
                 titleLabel.text = OWSLocalizedString(
                     "ACCOUNT_DATA_REPORT_TITLE",
                     comment: "Users can request a report of their account data. This is the title on the screen where they do this."
@@ -96,7 +96,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
                         ),
                         CommonStrings.learnMore.styled(with: .link(self.learnMoreUrl))
                     ],
-                    baseStyle: .init(.color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody)),
+                    baseStyle: .init(.color(Theme.primaryTextColor), .font(.dynamicTypeBody)),
                     separator: " "
                 )
                 descriptionTextView.linkTextAttributes = [

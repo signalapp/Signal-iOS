@@ -459,8 +459,8 @@ private class DeviceTableViewCell: UITableViewCell {
 
         configureLabelColors()
         nameLabel.font = OWSTableItem.primaryLabelFont
-        linkedLabel.font = .ows_dynamicTypeFootnote
-        lastSeenLabel.font = .ows_dynamicTypeFootnote
+        linkedLabel.font = .dynamicTypeFootnote
+        lastSeenLabel.font = .dynamicTypeFootnote
 
         if DebugFlags.internalSettings {
             nameLabel.text = LocalizationNotNeeded(String(

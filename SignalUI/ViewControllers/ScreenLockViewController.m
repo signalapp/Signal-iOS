@@ -4,7 +4,6 @@
 //
 
 #import "ScreenLockViewController.h"
-#import "UIFont+OWS.h"
 #import "UIView+SignalUI.h"
 #import <SignalUI/SignalUI-Swift.h>
 

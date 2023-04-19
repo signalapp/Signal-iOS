@@ -21,7 +21,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
 
     private let header: UILabel = {
         let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        label.font = UIFont.dynamicTypeBodyClamped.semibold()
         label.adjustsFontForContentSizeCategory = true
         label.text = NSLocalizedString(
             "GET_STARTED_BANNER_TITLE",

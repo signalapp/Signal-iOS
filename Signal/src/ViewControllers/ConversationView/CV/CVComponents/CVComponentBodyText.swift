@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 public class CVComponentBodyText: CVComponentBase, CVComponent {
 
@@ -480,26 +480,26 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         owsAssertDebug(DisplayableText.kMaxJumbomojiCount == 5)
 
         if let jumbomojiCount = bodyText.jumbomojiCount {
-            let basePointSize = UIFont.ows_dynamicTypeBodyClamped.pointSize
+            let basePointSize = UIFont.dynamicTypeBodyClamped.pointSize
             switch jumbomojiCount {
             case 0:
                 break
             case 1:
-                return UIFont.ows_regularFont(withSize: basePointSize * 3.5)
+                return UIFont.regularFont(ofSize: basePointSize * 3.5)
             case 2:
-                return UIFont.ows_regularFont(withSize: basePointSize * 3.0)
+                return UIFont.regularFont(ofSize: basePointSize * 3.0)
             case 3:
-                return UIFont.ows_regularFont(withSize: basePointSize * 2.75)
+                return UIFont.regularFont(ofSize: basePointSize * 2.75)
             case 4:
-                return UIFont.ows_regularFont(withSize: basePointSize * 2.5)
+                return UIFont.regularFont(ofSize: basePointSize * 2.5)
             case 5:
-                return UIFont.ows_regularFont(withSize: basePointSize * 2.25)
+                return UIFont.regularFont(ofSize: basePointSize * 2.25)
             default:
                 owsFailDebug("Unexpected jumbomoji count: \(jumbomojiCount)")
             }
         }
 
-        return UIFont.ows_dynamicTypeBody
+        return UIFont.dynamicTypeBody
     }
 
     private var bodyTextColor: UIColor {
@@ -617,7 +617,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                         ? NSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted")
                         : NSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you"))
         return CVLabelConfig(text: text,
-                             font: textMessageFont.ows_italic,
+                             font: textMessageFont.italic(),
                              textColor: bodyTextColor,
                              numberOfLines: 0,
                              lineBreakMode: .byWordWrapping,
@@ -628,7 +628,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let text = NSLocalizedString("MESSAGE_STATUS_DOWNLOADING",
                                      comment: "message status while message is downloading.")
         return CVLabelConfig(text: text,
-                             font: textMessageFont.ows_italic,
+                             font: textMessageFont.italic(),
                              textColor: bodyTextColor,
                              numberOfLines: 0,
                              lineBreakMode: .byWordWrapping,

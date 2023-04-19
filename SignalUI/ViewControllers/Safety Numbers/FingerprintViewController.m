@@ -15,7 +15,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 #import <SignalUI/SignalUI-Swift.h>
-#import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIView+SignalUI.h>
 
 @import SafariServices;
@@ -211,7 +210,7 @@ typedef void (^CustomLayoutBlock)(void);
 
     UILabel *verifyUnverifyButtonLabel = [UILabel new];
     self.verifyUnverifyButtonLabel = verifyUnverifyButtonLabel;
-    verifyUnverifyButtonLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 20.f)];
+    verifyUnverifyButtonLabel.font = [UIFont systemFontOfSize:ScaleFromIPhone5To7Plus(14.f, 20.f) weight:UIFontWeightSemibold];
     verifyUnverifyButtonLabel.textColor = [UIColor whiteColor];
     verifyUnverifyButtonLabel.textAlignment = NSTextAlignmentCenter;
     [verifyUnverifyPillbox addSubview:verifyUnverifyButtonLabel];
@@ -234,7 +233,7 @@ typedef void (^CustomLayoutBlock)(void);
             attributes:@{
                 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
             }];
-    learnMoreLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 16.f)];
+    learnMoreLabel.font = [UIFont systemFontOfSize:ScaleFromIPhone5To7Plus(13.f, 16.f)];
     learnMoreLabel.textColor = Theme.accentBlueColor;
     learnMoreLabel.textAlignment = NSTextAlignmentCenter;
     [learnMoreButton addSubview:learnMoreLabel];
@@ -247,7 +246,7 @@ typedef void (^CustomLayoutBlock)(void);
         @"Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}}");
     UILabel *instructionsLabel = [UILabel new];
     instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
-    instructionsLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 14.f)];
+    instructionsLabel.font = [UIFont systemFontOfSize:ScaleFromIPhone5To7Plus(11.f, 14.f)];
     instructionsLabel.textColor = Theme.secondaryTextAndIconColor;
     instructionsLabel.textAlignment = NSTextAlignmentCenter;
     instructionsLabel.numberOfLines = 0;
@@ -309,7 +308,7 @@ typedef void (^CustomLayoutBlock)(void);
 
     UILabel *scanLabel = [UILabel new];
     scanLabel.text = NSLocalizedString(@"PRIVACY_TAP_TO_SCAN", @"Button that shows the 'scan with camera' view.");
-    scanLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+    scanLabel.font = [UIFont systemFontOfSize:ScaleFromIPhone5To7Plus(14.f, 16.f) weight:UIFontWeightSemibold];
     scanLabel.textColor = Theme.secondaryTextAndIconColor;
     [scanLabel sizeToFit];
     [fingerprintView addSubview:scanLabel];
@@ -327,7 +326,7 @@ typedef void (^CustomLayoutBlock)(void);
     // Verification State
     UILabel *verificationStateLabel = [UILabel new];
     self.verificationStateLabel = verificationStateLabel;
-    verificationStateLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(16.f, 20.f)];
+    verificationStateLabel.font = [UIFont systemFontOfSize:ScaleFromIPhone5To7Plus(16.f, 20.f) weight:UIFontWeightSemibold];
     verificationStateLabel.textColor = Theme.secondaryTextAndIconColor;
     verificationStateLabel.textAlignment = NSTextAlignmentCenter;
     verificationStateLabel.numberOfLines = 0;
@@ -361,13 +360,11 @@ typedef void (^CustomLayoutBlock)(void);
 
         if (isVerified) {
             // Show a "checkmark" if this user is verified.
+            UIFont *symbolFont = [UIFont fontWithName:@"FontAwesome" size:self.verificationStateLabel.font.pointSize];
             [labelText
-                appendAttributedString:[[NSAttributedString alloc]
-                                           initWithString:LocalizationNotNeeded(@"\uf00c ")
-                                               attributes:@{
-                                                   NSFontAttributeName : [UIFont
-                                                       ows_fontAwesomeFont:self.verificationStateLabel.font.pointSize],
-                                               }]];
+             appendAttributedString:[[NSAttributedString alloc]
+                                     initWithString:LocalizationNotNeeded(@"\uf00c ")
+                                     attributes:@{ NSFontAttributeName : symbolFont }]];
         }
 
         [labelText
@@ -390,11 +387,9 @@ typedef void (^CustomLayoutBlock)(void);
 
         NSMutableAttributedString *buttonText = [NSMutableAttributedString new];
         // Show a "checkmark" if this user is not verified.
+        UIFont *symbolFont = [UIFont fontWithName:@"FontAwesome" size:self.verifyUnverifyButtonLabel.font.pointSize];
         [buttonText append:LocalizationNotNeeded(@"\uf00c  ")
-                                           attributes:@{
-                                               NSFontAttributeName : [UIFont
-                                                   ows_fontAwesomeFont:self.verifyUnverifyButtonLabel.font.pointSize],
-                                           }];
+                attributes:@{ NSFontAttributeName : symbolFont }];
         [buttonText append:NSLocalizedString(@"PRIVACY_VERIFY_BUTTON",
                                                @"Button that lets user mark another user's identity as verified.")
                 attributes:@{}];

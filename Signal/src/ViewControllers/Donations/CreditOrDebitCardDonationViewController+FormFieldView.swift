@@ -22,7 +22,7 @@ extension CreditOrDebitCardDonationViewController {
         private lazy var textField: UITextField = {
             let result = OWSTextField()
 
-            result.font = .ows_dynamicTypeBodyClamped
+            result.font = .dynamicTypeBodyClamped
             result.textColor = Theme.primaryTextColor
             result.autocorrectionType = .no
             result.spellCheckingType = .no
@@ -49,7 +49,7 @@ extension CreditOrDebitCardDonationViewController {
 
         private lazy var errorLabel: UILabel = {
             let result = UILabel()
-            result.font = .ows_dynamicTypeCaption1
+            result.font = .dynamicTypeCaption1
             result.textColor = .ows_accentRed
             result.numberOfLines = 1
             return result
@@ -113,7 +113,7 @@ extension CreditOrDebitCardDonationViewController {
 
         private class func titleView(_ title: String) -> UIView {
             let result = UILabel()
-            result.font = .ows_dynamicTypeBody2.ows_semibold
+            result.font = .dynamicTypeBody2.semibold()
             result.numberOfLines = 0
             result.text = title
 

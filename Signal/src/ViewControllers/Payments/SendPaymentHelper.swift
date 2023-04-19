@@ -125,12 +125,12 @@ class SendPaymentHelper: Dependencies {
     }
 
     public static var bottomButtonFont: UIFont {
-        UIFont.ows_dynamicTypeBody.ows_semibold
+        UIFont.dynamicTypeBody.semibold()
     }
 
     public static func buildBottomLabel() -> UILabel {
         let label = UILabel()
-        label.font = .ows_dynamicTypeBody2Clamped
+        label.font = .dynamicTypeBody2Clamped
         label.textColor = Theme.secondaryTextAndIconColor
         label.textAlignment = .center
         return label

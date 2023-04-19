@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 class PaymentsDetailViewController: OWSTableViewController2 {
 
@@ -26,7 +26,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
            FeatureFlags.paymentsScrubDetails {
             let removeButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_REMOVE_BUTTON",
                                                                              comment: "Label for the 'remove payments details' button in the app settings."),
-                                                    font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                    font: UIFont.dynamicTypeBody.semibold(),
                                                     titleColor: Theme.secondaryTextAndIconColor,
                                                     backgroundColor: Theme.washColor,
                                                     target: self,
@@ -293,7 +293,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                                 comment: "Footer string for the status section of the payment details view in the app settings."))
         let footerLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: footerText,
-            font: .ows_dynamicTypeCaption1Clamped,
+            font: .dynamicTypeCaption1Clamped,
             learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_details")
         let footerStack = UIStackView(arrangedSubviews: [footerLabel])
         footerStack.axis = .vertical
@@ -312,12 +312,12 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             let topLabel = UILabel()
             topLabel.text = topText
             topLabel.textColor = Theme.primaryTextColor
-            topLabel.font = UIFont.ows_dynamicTypeBodyClamped
+            topLabel.font = UIFont.dynamicTypeBodyClamped
 
             let bottomLabel = UILabel()
             bottomLabel.text = bottomText
             bottomLabel.textColor = Theme.secondaryTextAndIconColor
-            bottomLabel.font = UIFont.ows_dynamicTypeFootnoteClamped
+            bottomLabel.font = UIFont.dynamicTypeFootnoteClamped
             bottomLabel.numberOfLines = 0
             bottomLabel.lineBreakMode = .byWordWrapping
 
@@ -352,7 +352,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         let usernameLabel = UILabel()
         usernameLabel.textColor = Theme.primaryTextColor
-        usernameLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        usernameLabel.font = UIFont.dynamicTypeSubheadlineClamped
         usernameLabel.textAlignment = .center
         usernameLabel.numberOfLines = 0
         usernameLabel.lineBreakMode = .byWordWrapping
@@ -402,7 +402,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         let usernameLabel = UILabel()
         usernameLabel.text = paymentItem.displayName
         usernameLabel.textColor = Theme.primaryTextColor
-        usernameLabel.font = UIFont.ows_dynamicTypeBodyClamped
+        usernameLabel.font = UIFont.dynamicTypeBodyClamped
         usernameLabel.textAlignment = .center
         usernameLabel.numberOfLines = 0
         usernameLabel.lineBreakMode = .byWordWrapping
@@ -411,7 +411,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         let amountLabel = UILabel()
         amountLabel.textColor = Theme.primaryTextColor
-        amountLabel.font = UIFont.ows_dynamicTypeLargeTitle1Clamped.withSize(54)
+        amountLabel.font = UIFont.regularFont(ofSize: 54)
         amountLabel.textAlignment = .center
         amountLabel.adjustsFontSizeToFitWidth = true
 
@@ -430,7 +430,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         let amountLabel = UILabel()
         amountLabel.textColor = Theme.primaryTextColor
-        amountLabel.font = UIFont.ows_dynamicTypeLargeTitle1Clamped.withSize(54)
+        amountLabel.font = UIFont.regularFont(ofSize: 54)
         amountLabel.textAlignment = .center
         amountLabel.adjustsFontSizeToFitWidth = true
 

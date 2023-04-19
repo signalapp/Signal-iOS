@@ -444,7 +444,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         imageView.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
 
         let label = UILabel()
-        label.font = .ows_dynamicTypeCaption2Clamped
+        label.font = .dynamicTypeCaption2Clamped
         label.textColor = Theme.primaryTextColor
         label.textAlignment = .center
         label.text = text

@@ -171,7 +171,7 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
         button.autoSetDimension(.height, toSize: 28)
         button.layer.cornerRadius = 14
         button.clipsToBounds = true
-        button.titleLabel?.font = UIFont.ows_semiboldFont(withSize: 15)
+        button.titleLabel?.font = UIFont.semiboldFont(ofSize: 15)
         button.contentEdgeInsets = UIEdgeInsets(hMargin: 12, vMargin: 4)
         button.setTitle(title, for: .normal)
         button.setTitleColor(Theme.darkThemePrimaryColor, for: .normal)

@@ -156,7 +156,7 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
 
             let label = UILabel()
             label.textColor = .ows_gray05
-            label.font = .ows_dynamicTypeBodyClamped
+            label.font = .dynamicTypeBodyClamped
             label.text = asset.text
             label.numberOfLines = 0
             label.textAlignment = .center
@@ -187,7 +187,7 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
             ),
             for: .normal
         )
-        confirmButton.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped.ows_semibold
+        confirmButton.titleLabel?.font = .dynamicTypeSubheadlineClamped.semibold()
         confirmButton.backgroundColor = .ows_white
         confirmButton.setTitleColor(.ows_black, for: .normal)
         confirmButton.contentEdgeInsets = UIEdgeInsets(hMargin: 23, vMargin: 8)

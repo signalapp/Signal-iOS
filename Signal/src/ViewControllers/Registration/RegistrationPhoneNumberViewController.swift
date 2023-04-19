@@ -167,7 +167,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         let result = UILabel()
         result.textColor = .ows_accentRed
         result.numberOfLines = 0
-        result.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        result.font = UIFont.dynamicTypeSubheadlineClamped
         result.accessibilityIdentifier = "registration.phonenumber.validationWarningLabel"
         return result
     }()

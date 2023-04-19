@@ -345,7 +345,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             textColor = Theme.conversationButtonTextColor
         }
         return CVLabelConfig(text: action.title,
-                             font: UIFont.ows_dynamicTypeFootnote.ows_semibold,
+                             font: UIFont.dynamicTypeFootnote.semibold(),
                              textColor: textColor,
                              textAlignment: .center)
     }
@@ -355,7 +355,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
     }
 
     private static var textLabelFont: UIFont {
-        UIFont.ows_dynamicTypeFootnote
+        UIFont.dynamicTypeFootnote
     }
 
     private static let measurementKey_outerHStack = "CVComponentSystemMessage.measurementKey_outerHStack"

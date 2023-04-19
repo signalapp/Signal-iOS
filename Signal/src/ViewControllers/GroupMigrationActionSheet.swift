@@ -105,7 +105,7 @@ public class GroupMigrationActionSheet: UIView {
             let label = UILabel()
             label.text = text
             label.textColor = Theme.primaryTextColor
-            label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+            label.font = UIFont.dynamicTypeTitle2.semibold()
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
             label.textAlignment = .center
@@ -156,7 +156,7 @@ public class GroupMigrationActionSheet: UIView {
 
         mutating func addBodyLabel(_ text: String) {
             let label = buildLabel()
-            label.font = .ows_dynamicTypeBody
+            label.font = .dynamicTypeBody
             label.text = text
             addRow(subview: label, hasBulletPoint: true)
         }
@@ -170,7 +170,7 @@ public class GroupMigrationActionSheet: UIView {
             }
 
             let label = buildLabel()
-            label.font = .ows_dynamicTypeBody
+            label.font = .dynamicTypeBody
             label.text = Self.contactsManagerImpl.displayName(for: address, transaction: transaction)
             label.setContentHuggingHorizontalLow()
 
@@ -188,7 +188,7 @@ public class GroupMigrationActionSheet: UIView {
                                       backgroundColor: UIColor,
                                       target: Any,
                                       selector: Selector) {
-            let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+            let buttonFont = UIFont.dynamicTypeBodyClamped.semibold()
             let buttonHeight = OWSFlatButton.heightForFont(buttonFont)
             let upgradeButton = OWSFlatButton.button(title: title,
                                                      font: buttonFont,

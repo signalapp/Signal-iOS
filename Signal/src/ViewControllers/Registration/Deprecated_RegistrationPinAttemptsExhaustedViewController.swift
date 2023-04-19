@@ -61,7 +61,7 @@ public class Deprecated_RegistrationPinAttemptsExhaustedViewController: Deprecat
         titleLabel.accessibilityIdentifier = "onboarding.pinAtttemptsExhausted." + "titleLabel"
 
         let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
-        explanationLabel.font = UIFont.ows_dynamicTypeBodyClamped
+        explanationLabel.font = UIFont.dynamicTypeBodyClamped
         explanationLabel.textColor = Theme.primaryTextColor
         explanationLabel.accessibilityIdentifier = "onboarding.pinAtttemptsExhausted." + "explanationLabel"
 

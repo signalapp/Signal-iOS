@@ -58,7 +58,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
     private let headlineLabel: UILabel = {
         let label = UILabel()
-        label.font = .ows_dynamicTypeTitle2.ows_semibold
+        label.font = .dynamicTypeTitle2.semibold()
         label.textColor = Theme.primaryTextColor
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -67,7 +67,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .ows_dynamicTypeBody2
+        label.font = .dynamicTypeBody2
         label.textColor = Theme.secondaryTextAndIconColor
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -106,7 +106,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
     private lazy var progressLabel: UILabel = {
         let label = UILabel()
-        label.font = .ows_dynamicTypeBody2
+        label.font = .dynamicTypeBody2
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -581,7 +581,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private func button(title: String, selector: Selector, backgroundColor: UIColor = .ows_accentBlue) -> UIView {
         let button = OWSFlatButton.button(
             title: title,
-            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            font: UIFont.dynamicTypeBody.semibold(),
             titleColor: .white,
             backgroundColor: backgroundColor,
             target: self,

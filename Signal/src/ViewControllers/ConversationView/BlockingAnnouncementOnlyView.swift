@@ -60,7 +60,7 @@ class BlockingAnnouncementOnlyView: UIStackView {
         forSubstring: adminsText)
 
         let label = UILabel()
-        label.font = .ows_dynamicTypeSubheadlineClamped
+        label.font = .dynamicTypeSubheadlineClamped
         label.textColor = forceDarkMode ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
         label.attributedText = attributedString
         label.textAlignment = .center
@@ -158,7 +158,7 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
         let header = NSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
                                        comment: "Label indicating the user can contact a group administrators of an 'announcement-only' group.")
         section.headerAttributedTitle = NSAttributedString(string: header, attributes: [
-            .font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            .font: UIFont.dynamicTypeBodyClamped.semibold(),
             .foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
             ])
         contents.addSection(section)

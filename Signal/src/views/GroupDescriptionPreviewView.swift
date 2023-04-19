@@ -160,7 +160,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
                     with: .link(Self.viewFullDescriptionURL)
                 )
             ]).styled(
-                with: .font(font ?? .ows_dynamicTypeBody),
+                with: .font(font ?? .dynamicTypeBody),
                 .color(textColor ?? Theme.secondaryTextAndIconColor),
                 .alignment(textAlignment)
             )

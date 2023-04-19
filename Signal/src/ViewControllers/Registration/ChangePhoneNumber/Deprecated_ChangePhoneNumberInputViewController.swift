@@ -347,7 +347,7 @@ private class ChangePhoneNumberValueViews: NSObject {
 
     let phoneNumberTextField: UITextField = {
         let field = UITextField()
-        field.font = UIFont.ows_dynamicTypeBodyClamped
+        field.font = UIFont.dynamicTypeBodyClamped
         field.textColor = Theme.primaryTextColor
         field.textAlignment = (CurrentAppContext().isRTL
                                ? .left

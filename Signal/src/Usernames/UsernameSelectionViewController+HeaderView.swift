@@ -82,7 +82,7 @@ extension UsernameSelectionViewController {
         // MARK: - Configure views
 
         func updateFontsForCurrentPreferredContentSize() {
-            usernameDisplayLabel.font = .ows_dynamicTypeSubheadlineClamped
+            usernameDisplayLabel.font = .dynamicTypeSubheadlineClamped
         }
 
         func setColorsForCurrentTheme() {

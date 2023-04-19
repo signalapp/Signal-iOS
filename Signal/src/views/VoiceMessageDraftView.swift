@@ -65,7 +65,7 @@ class VoiceMessageDraftView: UIStackView {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
         addGestureRecognizer(panGestureRecognizer)
 
-        playbackTimeLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_monospaced
+        playbackTimeLabel.font = UIFont.dynamicTypeSubheadlineClamped.monospaced()
         playbackTimeLabel.textColor = Theme.ternaryTextColor
         updateAudioProgress(currentTime: 0)
         addArrangedSubview(playbackTimeLabel)

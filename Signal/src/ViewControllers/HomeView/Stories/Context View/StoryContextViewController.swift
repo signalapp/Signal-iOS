@@ -381,7 +381,7 @@ class StoryContextViewController: OWSViewController {
             sendingSpinner.play()
 
             let sendingLabel = UILabel()
-            sendingLabel.font = .ows_dynamicTypeBody
+            sendingLabel.font = .dynamicTypeBody
             sendingLabel.textColor = Theme.darkThemePrimaryColor
             sendingLabel.textAlignment = .center
             sendingLabel.text = NSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
@@ -410,7 +410,7 @@ class StoryContextViewController: OWSViewController {
             sendingIndicatorStackView.addArrangedSubview(failedIcon)
 
             let failedLabel = UILabel()
-            failedLabel.font = .ows_dynamicTypeBody
+            failedLabel.font = .dynamicTypeBody
             failedLabel.textColor = Theme.darkThemePrimaryColor
             failedLabel.textAlignment = .center
             failedLabel.text = currentItem.message.hasSentToAnyRecipients

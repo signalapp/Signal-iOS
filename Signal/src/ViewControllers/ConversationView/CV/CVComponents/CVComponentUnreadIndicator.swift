@@ -116,7 +116,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
     private var titleLabelConfig: CVLabelConfig {
         CVLabelConfig(text: NSLocalizedString("MESSAGES_VIEW_UNREAD_INDICATOR",
                                               comment: "Indicator that separates read from unread messages."),
-                      font: UIFont.ows_dynamicTypeFootnote.ows_semibold,
+                      font: UIFont.dynamicTypeFootnote.semibold(),
                       textColor: Theme.primaryTextColor,
                       numberOfLines: 0,
                       lineBreakMode: .byTruncatingTail,

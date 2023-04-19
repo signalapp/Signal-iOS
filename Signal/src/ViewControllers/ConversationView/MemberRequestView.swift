@@ -47,7 +47,7 @@ class MemberRequestView: UIStackView {
         backgroundView.autoPinEdgesToSuperviewEdges()
 
         let label = UILabel()
-        label.font = .ows_dynamicTypeSubheadlineClamped
+        label.font = .dynamicTypeSubheadlineClamped
         label.textColor = Theme.secondaryTextAndIconColor
         label.text = NSLocalizedString("MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR",
                                        comment: "Indicator that you have requested to join this group.")
@@ -58,7 +58,7 @@ class MemberRequestView: UIStackView {
         let cancelTitle = NSLocalizedString("MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON",
                                             comment: "Label for button to cancel your request to join the group.")
         let cancelButton = OWSFlatButton.button(title: cancelTitle,
-                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                 font: UIFont.dynamicTypeBody.semibold(),
                                                  titleColor: Theme.secondaryTextAndIconColor,
                                                  backgroundColor: Theme.washColor,
                                                  target: self,

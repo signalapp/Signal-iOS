@@ -22,8 +22,8 @@ public class GroupTableViewCell: UITableViewCell {
         super.init(style: .default, reuseIdentifier: GroupTableViewCell.logTag())
 
         // Font config
-        nameLabel.font = .ows_dynamicTypeBody
-        subtitleLabel.font = UIFont.ows_regularFont(withSize: 11.0)
+        nameLabel.font = .dynamicTypeBody
+        subtitleLabel.font = .regularFont(ofSize: 11)
 
         // Layout
 
@@ -41,7 +41,7 @@ public class GroupTableViewCell: UITableViewCell {
         columns.autoPinHeightToSuperview(withMargin: 7)
 
         // Accessory Label
-        accessoryLabel.font = .ows_semiboldFont(withSize: 13)
+        accessoryLabel.font = .semiboldFont(ofSize: 13)
         accessoryLabel.textColor = Theme.middleGrayColor
         accessoryLabel.textAlignment = .right
         accessoryLabel.isHidden = true

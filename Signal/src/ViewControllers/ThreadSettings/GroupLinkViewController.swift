@@ -63,7 +63,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
                     let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
                     let urlLabel = UILabel()
                     urlLabel.text = inviteLinkUrl.absoluteString
-                    urlLabel.font = .ows_dynamicTypeSubheadline
+                    urlLabel.font = .dynamicTypeSubheadline
                     urlLabel.textColor = Theme.secondaryTextAndIconColor
                     urlLabel.numberOfLines = 0
                     urlLabel.lineBreakMode = .byCharWrapping

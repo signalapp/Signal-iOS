@@ -66,7 +66,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
         StringStyle(
             .color(Theme.secondaryTextAndIconColor),
             .xmlRules([
-                .style(FullTextSearchFinder.matchTag, StringStyle(.font(UIFont.ows_dynamicTypeBody2.ows_semibold)))
+                .style(FullTextSearchFinder.matchTag, StringStyle(.font(UIFont.dynamicTypeBody2.semibold())))
             ])
         )
     }
@@ -439,7 +439,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
 
         let textView = LinkingTextView()
         textView.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-        textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        textView.font = UIFont.dynamicTypeBodyClamped.semibold()
         textView.text = title
 
         var textContainerInset = UIEdgeInsets(
@@ -667,7 +667,7 @@ class EmptySearchResultCell: UITableViewCell {
             messageLabel.text = String(format: format, searchText)
 
             messageLabel.textColor = Theme.primaryTextColor
-            messageLabel.font = UIFont.ows_dynamicTypeBody
+            messageLabel.font = UIFont.dynamicTypeBody
         }
     }
 }
