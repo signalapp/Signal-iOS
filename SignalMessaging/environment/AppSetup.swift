@@ -114,6 +114,7 @@ public class AppSetup {
         let messagePipelineSupervisor = MessagePipelineSupervisor.createStandardSupervisor()
         let appExpiry = AppExpiry(
             keyValueStoreFactory: SDSKeyValueStoreFactory(),
+            dateProvider: Date.provider,
             schedulers: DispatchQueueSchedulers()
         )
         let paymentsHelper = PaymentsHelperImpl()

@@ -111,6 +111,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let messagePipelineSupervisor = MessagePipelineSupervisor.createStandardSupervisor()
         let appExpiry = AppExpiry(
             keyValueStoreFactory: SDSKeyValueStoreFactory(),
+            dateProvider: Date.provider,
             schedulers: DispatchQueueSchedulers()
         )
         let paymentsHelper = MockPaymentsHelper()

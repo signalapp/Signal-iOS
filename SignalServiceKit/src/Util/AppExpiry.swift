@@ -11,6 +11,7 @@ public class AppExpiry: NSObject {
     public static let appExpiredStatusCode: UInt = 499
 
     private let keyValueStore: KeyValueStore
+    private let dateProvider: DateProvider
     private let schedulers: Schedulers
 
     private struct ExpirationState: Codable, Equatable {
@@ -43,9 +44,11 @@ public class AppExpiry: NSObject {
 
     public required init(
         keyValueStoreFactory: KeyValueStoreFactory,
+        dateProvider: @escaping DateProvider,
         schedulers: Schedulers
     ) {
         self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: Self.keyValueCollection)
+        self.dateProvider = dateProvider
         self.schedulers = schedulers
 
         super.init()
@@ -58,7 +61,8 @@ public class AppExpiry: NSObject {
             Logger.info("Build is expired.")
         } else {
             let oneDayInSeconds: TimeInterval = 86400
-            let daysUntilExpiry = Int(floor(expirationDate.timeIntervalSinceNow / oneDayInSeconds))
+            let now = dateProvider()
+            let daysUntilExpiry = Int(floor(expirationDate.timeIntervalSince(now) / oneDayInSeconds))
             Logger.info("Build expires in \(daysUntilExpiry) day(s)")
         }
     }
@@ -165,9 +169,7 @@ public class AppExpiry: NSObject {
     }
 
     @objc
-    public var isExpired: Bool {
-        return expirationDate < Date()
-    }
+    public var isExpired: Bool { expirationDate < dateProvider() }
 }
 
 // MARK: - Build time
