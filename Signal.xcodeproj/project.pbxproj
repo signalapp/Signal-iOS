@@ -1369,6 +1369,7 @@
 		F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */; };
 		F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999F728C8204800E34899 /* Data+MessagePadding.swift */; };
 		F93A76ED29133A4B005FDE4F /* OWSDisappearingMessagesJobTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93A76EC29133A4B005FDE4F /* OWSDisappearingMessagesJobTest.swift */; };
+		F93BCB9A29EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93BCB9929EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift */; };
 		F941B17028412D5F00498CCD /* ApplePayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F941B16F28412D5F00498CCD /* ApplePayButton.swift */; };
 		F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261C8289B1B5300460798 /* OWSDeviceProvisionerTest.swift */; };
 		F942623D289B1B5500460798 /* OWSProvisioningCipherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F94261CA289B1B5300460798 /* OWSProvisioningCipherTest.m */; };
@@ -3927,6 +3928,7 @@
 		F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataMessagePaddingTests.swift; sourceTree = "<group>"; };
 		F93999F728C8204800E34899 /* Data+MessagePadding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+MessagePadding.swift"; sourceTree = "<group>"; };
 		F93A76EC29133A4B005FDE4F /* OWSDisappearingMessagesJobTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDisappearingMessagesJobTest.swift; sourceTree = "<group>"; };
+		F93BCB9929EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice+CanUpgradeOperatingSystem.swift"; sourceTree = "<group>"; };
 		F941B16F28412D5F00498CCD /* ApplePayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayButton.swift; sourceTree = "<group>"; };
 		F94261C8289B1B5300460798 /* OWSDeviceProvisionerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisionerTest.swift; sourceTree = "<group>"; };
 		F94261CA289B1B5300460798 /* OWSProvisioningCipherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProvisioningCipherTest.m; sourceTree = "<group>"; };
@@ -6752,6 +6754,7 @@
 				8822558C26B9D1D7001A33C4 /* SignalMe.swift */,
 				6675F64E29261C39007A311E /* SyncPushTokensJob.swift */,
 				4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */,
+				F93BCB9929EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift */,
 				8811CF832295D8DA00FF6549 /* VolumeButtons.swift */,
 				667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */,
 			);
@@ -11576,6 +11579,7 @@
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
 				342FFE77271EF581000AC89F /* UIApplication+OWS.swift in Sources */,
+				F93BCB9A29EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift in Sources */,
 				342FFE7A271EF581000AC89F /* UIResponder+OWS.swift in Sources */,
 				342FFE7B271EF581000AC89F /* UIStoryboard+OWS.swift in Sources */,
 				346CD5C226306578004162D6 /* UnknownThreadWarningInteraction.swift in Sources */,
