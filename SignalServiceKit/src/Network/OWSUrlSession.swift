@@ -472,7 +472,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                   return
               }
 
-        AppExpiry.shared.setHasAppExpiredAtCurrentVersion()
+        AppExpiry.shared.setHasAppExpiredAtCurrentVersion(db: DependenciesBridge.shared.db)
     }
 
     // MARK: Request building

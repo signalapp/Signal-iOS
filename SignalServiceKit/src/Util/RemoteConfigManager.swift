@@ -854,12 +854,13 @@ private extension ServiceRemoteConfigManager {
             if let minimumVersions = minimumVersions {
                 Logger.info("Minimum client versions: \(minimumVersions)")
 
+                let db = DependenciesBridge.shared.db
                 if let remoteExpirationDate = remoteExpirationDate(minimumVersions: minimumVersions) {
                     Logger.info("Setting client expiration date: \(remoteExpirationDate)")
-                    AppExpiry.shared.setExpirationDateForCurrentVersion(remoteExpirationDate)
+                    AppExpiry.shared.setExpirationDateForCurrentVersion(remoteExpirationDate, db: db)
                 } else {
                     Logger.info("Clearing client expiration date")
-                    AppExpiry.shared.setExpirationDateForCurrentVersion(nil)
+                    AppExpiry.shared.setExpirationDateForCurrentVersion(nil, db: db)
                 }
             }
         }

@@ -43,7 +43,7 @@ extension HTTPUtils {
         }
 
         if httpError.responseStatusCode == AppExpiry.appExpiredStatusCode {
-            appExpiry.setHasAppExpiredAtCurrentVersion()
+            appExpiry.setHasAppExpiredAtCurrentVersion(db: DependenciesBridge.shared.db)
         }
     }
 

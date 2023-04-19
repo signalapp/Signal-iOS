@@ -10,8 +10,8 @@ public class AppExpiry: NSObject {
     @objc
     public static let appExpiredStatusCode: UInt = 499
 
-    @objc
-    public let keyValueStore = SDSKeyValueStore(collection: "AppExpiry")
+    private let keyValueStore: KeyValueStore
+    private let schedulers: Schedulers
 
     private struct ExpirationState: Codable, Equatable {
         let version4: String
@@ -37,18 +37,20 @@ public class AppExpiry: NSObject {
         }
     }
     private let expirationState = AtomicValue<ExpirationState>(.init(mode: .default))
-    private static var expirationStateKey: String { "expirationState" }
 
-    @objc
-    public required override init() {
+    static let keyValueCollection = "AppExpiry"
+    static let keyValueKey = "expirationState"
+
+    public required init(
+        keyValueStoreFactory: KeyValueStoreFactory,
+        schedulers: Schedulers
+    ) {
+        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: Self.keyValueCollection)
+        self.schedulers = schedulers
+
         super.init()
 
         SwiftSingletons.register(self)
-
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
-            // We don't need to re-warm this cache after a device migration.
-            self.warmCaches()
-        }
     }
 
     private func logExpirationState() {
@@ -61,41 +63,40 @@ public class AppExpiry: NSObject {
         }
     }
 
-    private func warmCaches() {
+    public func warmCaches(with tx: DBReadTransaction) {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        if let persistedExpirationState: ExpirationState = databaseStorage.read(block: { transaction in
-            guard let persistedExpirationState: ExpirationState = try? self.keyValueStore.getCodableValue(
-                forKey: Self.expirationStateKey,
-                transaction: transaction
-            ) else {
-                return nil
-            }
+        let persistedExpirationState: ExpirationState? = try? self.keyValueStore.getCodableValue(
+            forKey: Self.keyValueKey,
+            transaction: tx
+        )
 
-            // We only want to restore the persisted state if it's for our current version.
-            guard persistedExpirationState.version4 == AppVersion.shared.currentAppVersion4 else {
-                return nil
-            }
-
-            return persistedExpirationState
-        }) {
-            expirationState.set(persistedExpirationState)
+        // We only want to restore the persisted state if it's for our current version.
+        guard
+            let persistedExpirationState,
+            persistedExpirationState.version4 == AppVersion.shared.currentAppVersion4
+        else {
+            return
         }
+
+        expirationState.set(persistedExpirationState)
 
         logExpirationState()
     }
 
-    private func updateExpirationState(_ state: ExpirationState) {
+    private func updateExpirationState(_ state: ExpirationState, db: DB) {
         expirationState.set(state)
 
         logExpirationState()
 
-        databaseStorage.asyncWrite { transaction in
+        db.asyncWrite { transaction in
             do {
                 // Don't write or fire notification if the value hasn't changed.
-                if let oldState: ExpirationState = try self.keyValueStore.getCodableValue(forKey: Self.expirationStateKey,
-                                                                                          transaction: transaction),
-                   oldState == state {
+                let oldState: ExpirationState? = try self.keyValueStore.getCodableValue(
+                    forKey: Self.keyValueKey,
+                    transaction: transaction
+                )
+                if let oldState, oldState == state {
                     return
                 }
             } catch {
@@ -104,13 +105,14 @@ public class AppExpiry: NSObject {
             do {
                 try self.keyValueStore.setCodable(
                     state,
-                    key: Self.expirationStateKey,
+                    key: Self.keyValueKey,
                     transaction: transaction
                 )
             } catch {
                 owsFailDebug("Error persisting expiration state \(error)")
             }
-            transaction.addAsyncCompletionOffMain {
+
+            transaction.addAsyncCompletion(on: self.schedulers.global()) {
                 NotificationCenter.default.postNotificationNameAsync(
                     Self.AppExpiryDidChange,
                     object: nil
@@ -119,28 +121,28 @@ public class AppExpiry: NSObject {
         }
     }
 
-    @objc
-    public func setHasAppExpiredAtCurrentVersion() {
+    public func setHasAppExpiredAtCurrentVersion(db: DB) {
         Logger.warn("")
 
-        updateExpirationState(ExpirationState(mode: .immediately))
+        updateExpirationState(ExpirationState(mode: .immediately), db: db)
     }
 
-    @objc
-    public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?) {
+    public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?, db: DB) {
         guard !isExpired else {
             return owsFailDebug("Ignoring expiration date change for expired build.")
         }
 
         Logger.warn("\(String(describing: newExpirationDate))")
 
+        let newState: ExpirationState
         if let newExpirationDate = newExpirationDate {
             // Ignore any expiration date that is later than when the app expires by default.
             guard newExpirationDate < AppVersion.shared.defaultExpirationDate else { return }
-            updateExpirationState(ExpirationState(mode: .atDate, expirationDate: newExpirationDate))
+            newState = .init(mode: .atDate, expirationDate: newExpirationDate)
         } else {
-            updateExpirationState(ExpirationState(mode: .default))
+            newState = .init(mode: .default)
         }
+        updateExpirationState(newState, db: db)
     }
 
     @objc

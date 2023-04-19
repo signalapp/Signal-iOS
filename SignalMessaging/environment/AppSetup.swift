@@ -112,7 +112,10 @@ public class AppSetup {
         let modelReadCaches = ModelReadCaches(factory: ModelReadCacheFactory())
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor.createStandardSupervisor()
-        let appExpiry = AppExpiry()
+        let appExpiry = AppExpiry(
+            keyValueStoreFactory: SDSKeyValueStoreFactory(),
+            schedulers: DispatchQueueSchedulers()
+        )
         let paymentsHelper = PaymentsHelperImpl()
         let paymentsCurrencies = PaymentsCurrenciesImpl()
         let spamChallengeResolver = SpamChallengeResolver()

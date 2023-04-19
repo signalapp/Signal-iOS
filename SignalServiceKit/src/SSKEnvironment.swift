@@ -243,6 +243,11 @@ public class SSKEnvironment: NSObject {
         warmCachesForObject("paymentsCurrencies", paymentsCurrencies.warmCaches)
         warmCachesForObject("storyManager", StoryManager.setup)
         warmCachesForObject("deviceManager", DependenciesBridge.shared.deviceManager.warmCaches)
+        warmCachesForObject("appExpiry") {
+            DependenciesBridge.shared.db.read { tx in
+                self.appExpiry.warmCaches(with: tx)
+            }
+        }
 
         NotificationCenter.default.post(name: SSKEnvironment.warmCachesNotification, object: nil)
     }

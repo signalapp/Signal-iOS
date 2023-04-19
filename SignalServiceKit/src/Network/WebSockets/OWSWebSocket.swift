@@ -469,7 +469,7 @@ public class OWSWebSocket: NSObject {
         // The websocket is only used to connect to the main signal
         // service, so we need to check for remote deprecation.
         if responseStatus == AppExpiry.appExpiredStatusCode {
-            appExpiry.setHasAppExpiredAtCurrentVersion()
+            appExpiry.setHasAppExpiredAtCurrentVersion(db: DependenciesBridge.shared.db)
         }
 
         let headers = OWSHttpHeaders()
@@ -1186,7 +1186,7 @@ extension OWSWebSocket {
             },
             failure: { (failure: OWSHTTPErrorWrapper) in
                 if failure.error.responseStatusCode == AppExpiry.appExpiredStatusCode {
-                    Self.appExpiry.setHasAppExpiredAtCurrentVersion()
+                    Self.appExpiry.setHasAppExpiredAtCurrentVersion(db: DependenciesBridge.shared.db)
                 }
 
                 failureParam(failure)

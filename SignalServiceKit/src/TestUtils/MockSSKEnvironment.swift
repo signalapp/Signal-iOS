@@ -109,7 +109,10 @@ public class MockSSKEnvironment: SSKEnvironment {
         let modelReadCaches = ModelReadCaches(factory: TestableModelReadCacheFactory())
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor.createStandardSupervisor()
-        let appExpiry = AppExpiry()
+        let appExpiry = AppExpiry(
+            keyValueStoreFactory: SDSKeyValueStoreFactory(),
+            schedulers: DispatchQueueSchedulers()
+        )
         let paymentsHelper = MockPaymentsHelper()
         let paymentsCurrencies = MockPaymentsCurrencies()
         let paymentsEvents = PaymentsEventsNoop()
