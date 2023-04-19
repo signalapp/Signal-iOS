@@ -583,7 +583,13 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             if style.contains(.spoiler) {
                 SpoilerAttribute.fromOriginalRange(range).addToAttributes(&attrs)
             }
-            string.addAttributes(attrs, range: range)
+            // Desktop could send a range that extends past the end of the string;
+            // long term this should be corrected elsewhere but for now catch it here.
+            // TODO[TextFormatting]: correct for out of bounds style ranges in received protos.
+            guard let overlapRange = range.intersection(string.entireRange) else {
+                continue
+            }
+            string.addAttributes(attrs, range: overlapRange)
         }
     }
 
