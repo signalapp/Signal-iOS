@@ -310,10 +310,10 @@ public class MessageProcessor: NSObject {
     private var isDrainingPendingEnvelopes = AtomicBool(false, lock: .init())
 
     private func drainPendingEnvelopes() {
-        guard Self.messagePipelineSupervisor.isMessageProcessingPermitted else { return }
-        guard TSAccountManager.shared.isRegisteredAndReady else { return }
-
         guard CurrentAppContext().shouldProcessIncomingMessages else { return }
+        guard tsAccountManager.isRegisteredAndReady else { return }
+
+        guard Self.messagePipelineSupervisor.isMessageProcessingPermitted else { return }
 
         serialQueue.async {
             self.isDrainingPendingEnvelopes.set(true)
@@ -329,6 +329,10 @@ public class MessageProcessor: NSObject {
     private func drainNextBatch() -> Bool {
         assertOnQueue(serialQueue)
 
+        guard messagePipelineSupervisor.isMessageProcessingPermitted else {
+            return false
+        }
+
         // We want a value that is just high enough to yield perf benefits.
         let kIncomingMessageBatchSize = 16
         // If the app is in the background, use batch size of 1.
@@ -340,35 +344,32 @@ public class MessageProcessor: NSObject {
         let batchEnvelopes = batch.batchEnvelopes
         let pendingEnvelopesCount = batch.pendingEnvelopesCount
 
-        guard !batchEnvelopes.isEmpty, messagePipelineSupervisor.isMessageProcessingPermitted else {
-            if DebugFlags.internalLogging {
-                Logger.info("Processing complete: \(self.queuedContentCount) (memoryUsage: \(LocalDevice.memoryUsageString).")
-            }
+        guard !batchEnvelopes.isEmpty else {
             return false
         }
 
         let startTime = CACurrentMediaTime()
         Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s). (memoryUsage: \(LocalDevice.memoryUsageString)")
 
-        var processedEnvelopes: [PendingEnvelope] = []
-        SDSDatabaseStorage.shared.write { transaction in
+        var processedEnvelopesCount = 0
+        databaseStorage.write { tx in
             var remainingEnvelopes = batchEnvelopes
-            while messagePipelineSupervisor.isMessageProcessingPermitted && !remainingEnvelopes.isEmpty {
+            while !remainingEnvelopes.isEmpty {
+                guard messagePipelineSupervisor.isMessageProcessingPermitted else {
+                    break
+                }
                 autoreleasepool {
-                    let combinedRequest = buildNextCombinedRequest(envelopes: &remainingEnvelopes,
-                                                                   transaction: transaction)
-                    let processed = handle(combinedRequest: combinedRequest,
-                                           transaction: transaction)
-                    if processed {
-                        let envelopes = combinedRequest.processingRequests.lazy.map { $0.pendingEnvelope }
-                        processedEnvelopes.append(contentsOf: envelopes)
-                    }
+                    // If we build a request, we must handle it to ensure it's not lost if we
+                    // stop processing envelopes.
+                    let combinedRequest = buildNextCombinedRequest(envelopes: &remainingEnvelopes, transaction: tx)
+                    handle(combinedRequest: combinedRequest, transaction: tx)
                 }
             }
+            processedEnvelopesCount += batchEnvelopes.count - remainingEnvelopes.count
         }
-        pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopes)
+        pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopesCount)
         let duration = CACurrentMediaTime() - startTime
-        Logger.info(String.init(format: "Processed %.0d envelopes in %0.2fms -> %.2f envelopes per second", batchEnvelopes.count, duration * 1000, duration > 0 ? Double(batchEnvelopes.count) / duration : 0))
+        Logger.info(String(format: "Processed %.0d envelopes in %0.2fms -> %.2f envelopes per second", batchEnvelopes.count, duration * 1000, duration > 0 ? Double(batchEnvelopes.count) / duration : 0))
         return true
     }
 
@@ -393,27 +394,21 @@ public class MessageProcessor: NSObject {
         return result
     }
 
-    private func handle(combinedRequest: RelatedProcessingRequests,
-                        transaction: SDSAnyWriteTransaction) -> Bool {
-        guard messagePipelineSupervisor.isMessageProcessingPermitted else {
-            // If we're skipping one message, we have to skip them all to preserve ordering
-            // Next time around we can process the skipped messages in order
-            return false
-        }
+    private func handle(combinedRequest: RelatedProcessingRequests, transaction: SDSAnyWriteTransaction) {
         Logger.info("Process \(combinedRequest.processingRequests.count) related requests")
         // Efficiently handle delivery receipts for the same message by fetching the sent message only
         // once and only using one transaction to update the message with new recipient state.
         // If `relation` doesn't contain a bunch of delivery receipts, handle the envelopes individually.
         BatchingDeliveryReceiptContext.withDeferredUpdates(transaction: transaction) { context in
             for request in combinedRequest.processingRequests {
-                if handleProcessingRequest(request, context: context, transaction: transaction),
-                   let protoEnvelope = request.protoEnvelope {
-                    messageManager.finishProcessingEnvelope(protoEnvelope,
-                                                            transaction: transaction)
+                guard handleProcessingRequest(request, context: context, transaction: transaction) else {
+                    continue
+                }
+                if let protoEnvelope = request.protoEnvelope {
+                    messageManager.finishProcessingEnvelope(protoEnvelope, transaction: transaction)
                 }
             }
         }
-        return true
     }
 
     private func reallyHandleProcessingRequest(_ request: ProcessingRequest,
@@ -552,13 +547,6 @@ struct ProcessingRequest {
 
 class RelatedProcessingRequests {
     private(set) var processingRequests = [ProcessingRequest]()
-
-    var deliveryReceiptMessageTimestamps: [UInt64]? {
-        guard let request = processingRequests.first else {
-            return nil
-        }
-        return request.deliveryReceiptMessageTimestamps
-    }
 
     func add(_ processingRequest: ProcessingRequest) {
         processingRequests.append(processingRequest)
@@ -897,39 +885,36 @@ public enum EnvelopeSource: UInt, CustomStringConvertible {
 
 // MARK: -
 
-public class PendingEnvelopes {
+private class PendingEnvelopes {
     private let unfairLock = UnfairLock()
     private var pendingEnvelopes = [PendingEnvelope]()
 
-    @objc
-    public var isEmpty: Bool {
+    var isEmpty: Bool {
         unfairLock.withLock { pendingEnvelopes.isEmpty }
     }
 
-    public var count: Int {
+    var count: Int {
         unfairLock.withLock { pendingEnvelopes.count }
     }
 
-    fileprivate struct Batch {
+    struct Batch {
         let batchEnvelopes: [PendingEnvelope]
         let pendingEnvelopesCount: Int
     }
 
-    fileprivate func nextBatch(batchSize: Int) -> Batch {
+    func nextBatch(batchSize: Int) -> Batch {
         unfairLock.withLock {
-            Batch(batchEnvelopes: Array(pendingEnvelopes.prefix(batchSize)),
-                  pendingEnvelopesCount: pendingEnvelopes.count)
+            Batch(
+                batchEnvelopes: Array(pendingEnvelopes.prefix(batchSize)),
+                pendingEnvelopesCount: pendingEnvelopes.count
+            )
         }
     }
 
-    fileprivate func removeProcessedEnvelopes(_ processedEnvelopes: [PendingEnvelope]) {
+    func removeProcessedEnvelopes(_ processedEnvelopesCount: Int) {
         unfairLock.withLock {
-            guard pendingEnvelopes.count > processedEnvelopes.count else {
-                pendingEnvelopes = []
-                return
-            }
             let oldCount = pendingEnvelopes.count
-            pendingEnvelopes = Array(pendingEnvelopes.suffix(from: processedEnvelopes.count))
+            pendingEnvelopes.removeFirst(processedEnvelopesCount)
             let newCount = pendingEnvelopes.count
             if DebugFlags.internalLogging {
                 Logger.info("\(oldCount) -> \(newCount)")
@@ -937,7 +922,7 @@ public class PendingEnvelopes {
         }
     }
 
-    fileprivate func enqueue(decryptedEnvelope: DecryptedEnvelope) {
+    func enqueue(decryptedEnvelope: DecryptedEnvelope) {
         unfairLock.withLock {
             let oldCount = pendingEnvelopes.count
             pendingEnvelopes.append(decryptedEnvelope)
@@ -948,12 +933,12 @@ public class PendingEnvelopes {
         }
     }
 
-    public enum EnqueueResult {
+    enum EnqueueResult {
         case duplicate
         case enqueued
     }
 
-    fileprivate func enqueue(encryptedEnvelope: EncryptedEnvelope) -> EnqueueResult {
+    func enqueue(encryptedEnvelope: EncryptedEnvelope) -> EnqueueResult {
         unfairLock.withLock {
             let oldCount = pendingEnvelopes.count
 

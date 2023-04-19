@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc(OWSMessagePipelineSupervisor)
 public class MessagePipelineSupervisor: NSObject {
@@ -44,7 +45,7 @@ public class MessagePipelineSupervisor: NSObject {
     @objc
     public var isMessageProcessingPermitted: Bool {
         if CurrentAppContext().shouldProcessIncomingMessages {
-            return lock.withLock { (suspensions.isEmpty) }
+            return lock.withLock { suspensions.isEmpty }
         } else {
             return false
         }
