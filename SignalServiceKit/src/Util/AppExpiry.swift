@@ -136,8 +136,7 @@ public class AppExpiry: NSObject {
 
         if let newExpirationDate = newExpirationDate {
             // Ignore any expiration date that is later than when the app expires by default.
-            guard newExpirationDate < Self.defaultExpirationDate else { return }
-
+            guard newExpirationDate < AppVersion.shared.defaultExpirationDate else { return }
             updateExpirationState(ExpirationState(mode: .atDate, expirationDate: newExpirationDate))
         } else {
             updateExpirationState(ExpirationState(mode: .default))
@@ -151,7 +150,7 @@ public class AppExpiry: NSObject {
         let state = expirationState.get()
         switch state.mode {
         case .default:
-            return Self.defaultExpirationDate
+            return AppVersion.shared.defaultExpirationDate
         case .atDate:
             guard let expirationDate = state.expirationDate else {
                 owsFailDebug("Missing expiration date, expiring immediately")
@@ -167,27 +166,10 @@ public class AppExpiry: NSObject {
     public var isExpired: Bool {
         return expirationDate < Date()
     }
+}
 
-    // MARK: - Build Time
+// MARK: - Build time
 
-    private static let defaultExpirationDate: Date = {
-        guard let buildTime = loadBuildTime() else {
-            owsAssert(OWSIsTestableBuild(), "Production builds should always expire.")
-            Logger.debug("No build timestamp, assuming app never expires.")
-            return .distantFuture
-        }
-        // By default, we expire 90 days after the app was compiled.
-        return buildTime.addingTimeInterval(90 * kDayInterval)
-    }()
-
-    private static func loadBuildTime() -> Date? {
-        guard
-            let buildDetails = Bundle.main.app.object(forInfoDictionaryKey: "BuildDetails") as? [String: Any],
-            let buildTimestamp = buildDetails["Timestamp"] as? TimeInterval
-        else {
-            return nil
-        }
-        return Date(timeIntervalSince1970: buildTimestamp)
-    }
-
+fileprivate extension AppVersion {
+    var defaultExpirationDate: Date { buildDate.addingTimeInterval(90 * kDayInterval) }
 }
