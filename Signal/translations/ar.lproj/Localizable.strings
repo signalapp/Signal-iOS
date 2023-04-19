@@ -29,40 +29,40 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "رسالة صوتية";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Export Report";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "تصدير التقرير";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Only share your Signal account data with people or apps you trust.";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "لا تُشارك بيانات حساب Signal الخاص بك إلا مع الأشخاص أو التطبيقات التي تثق بها.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
-"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Check your connection and try again.";
+"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "تحقّق من اتصالك بالشبكة ثم حاول مُجددًا.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
-"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Couldn’t Generate Report";
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "تعذّر إنشاء تقرير";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Machine-readable file";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "ملف قابل للقراءة آليًا";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Export as JSON";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "تصدير بصيغة JSON";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Easy-to-read text file";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "ملف نصّي سهل القراءة";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Export as TXT";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "تصدير بصيغة TXT";
 
 /* Users can request a report of their account data. Users tap this button to export their data. */
-"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Export Report";
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "تصدير التقرير";
 
 /* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
-"ACCOUNT_DATA_REPORT_FOOTER" = "Your report is generated only at the time of export and is not stored by Signal on your device.";
+"ACCOUNT_DATA_REPORT_FOOTER" = "يتم إنشاء تقريرك فقط في وقت التصدير ولا يتم تخزينُه بواسطة Signal على جهازك.";
 
 /* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
-"ACCOUNT_DATA_REPORT_SUBTITLE" = "Download and export a report of your Signal account data. This report does not include any messages or media.";
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "تنزيل وتصدير تقرير عن بيانات حساب Signal الخاص بك. لا يتضمّن هذا التقرير أي رسائل أو وسائط.";
 
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
-"ACCOUNT_DATA_REPORT_TITLE" = "Your Account Data";
+"ACCOUNT_DATA_REPORT_TITLE" = "بيانات حسابك";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "مكالمة Signal";
@@ -4124,7 +4124,7 @@
 "NOTE_TO_SELF" = "الملاحظات الشخصية";
 
 /* Body for a notification representing a message request. */
-"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Message Request";
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "طلب تراسُل";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "قد تكون قد استلمت رسائل اثناء إعادة تشغيل %1$@ الخاص بك.";
@@ -5669,7 +5669,7 @@
 "SETTINGS_ACCOUNT" = "الحِساب";
 
 /* Label for button in settings to get your account data report */
-"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Your Account Data";
+"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "بيانات حسابك";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "حظر";

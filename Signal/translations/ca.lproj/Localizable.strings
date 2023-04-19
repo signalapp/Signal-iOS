@@ -29,40 +29,40 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Missatge de veu";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Export Report";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Exportar informe";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Only share your Signal account data with people or apps you trust.";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Comparteix les dades del teu compte de Signal només amb persones o aplicacions de confiança.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
-"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Check your connection and try again.";
+"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Comprova la connexió i torna-ho a provar.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
-"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Couldn’t Generate Report";
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "No s'ha pogut generar l'informe";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Machine-readable file";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Arxiu llegible per màquina";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Export as JSON";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Exportar com a JSON";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Easy-to-read text file";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Arxiu de text fàcil de llegir";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Export as TXT";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Exportar com a TXT";
 
 /* Users can request a report of their account data. Users tap this button to export their data. */
-"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Export Report";
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Exportar informe";
 
 /* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
-"ACCOUNT_DATA_REPORT_FOOTER" = "Your report is generated only at the time of export and is not stored by Signal on your device.";
+"ACCOUNT_DATA_REPORT_FOOTER" = "El teu informe només es genera en el moment de l'exportació i Signal no l'emmagatzema al teu dispositiu.";
 
 /* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
-"ACCOUNT_DATA_REPORT_SUBTITLE" = "Download and export a report of your Signal account data. This report does not include any messages or media.";
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "Descarrega i exporta un informe de les dades del teu compte de Signal. Aquest informe no inclou missatges ni arxius multimèdia.";
 
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
-"ACCOUNT_DATA_REPORT_TITLE" = "Your Account Data";
+"ACCOUNT_DATA_REPORT_TITLE" = "Les dades del teu compte";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Trucada del Signal";
@@ -4124,7 +4124,7 @@
 "NOTE_TO_SELF" = "Notes personals";
 
 /* Body for a notification representing a message request. */
-"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Message Request";
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Sol·licitud de missatge";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Podeu haver rebut missatges mentre el vostre %1$@ es reiniciava.";
@@ -5669,7 +5669,7 @@
 "SETTINGS_ACCOUNT" = "Compte";
 
 /* Label for button in settings to get your account data report */
-"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Your Account Data";
+"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Les dades del teu compte";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Bloquejar";

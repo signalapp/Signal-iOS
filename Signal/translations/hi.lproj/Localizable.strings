@@ -29,40 +29,40 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "ध्वनि संदेश";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Export Report";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "निर्यात रिपोर्ट करें";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Only share your Signal account data with people or apps you trust.";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "अपने Signal अकाउंट के डेटा को केवल उन लोगों या ऐप्स के साथ साझा करें जिन पर आप भरोसा करते हैं।";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
-"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Check your connection and try again.";
+"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "अपना कनेक्शन जाँचें और फिर से प्रयास करें।";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
-"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Couldn’t Generate Report";
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "रिपोर्ट जनरेट नहीं की जा सकी";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Machine-readable file";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "मशीन-पठनीय फ़ाइल";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Export as JSON";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "JSON के रूप में निर्यात करें";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Easy-to-read text file";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "आसानी से पढ़ी जाने वाली टेक्स्ट फ़ाइल";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Export as TXT";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "TXT के रूप में निर्यात करें";
 
 /* Users can request a report of their account data. Users tap this button to export their data. */
-"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Export Report";
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "निर्यात रिपोर्ट करें";
 
 /* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
-"ACCOUNT_DATA_REPORT_FOOTER" = "Your report is generated only at the time of export and is not stored by Signal on your device.";
+"ACCOUNT_DATA_REPORT_FOOTER" = "आपकी रिपोर्ट केवल निर्यात के समय उत्पन्न होती है और आपके डिवाइस पर Signal द्वारा संग्रहित नहीं की जाती है।";
 
 /* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
-"ACCOUNT_DATA_REPORT_SUBTITLE" = "Download and export a report of your Signal account data. This report does not include any messages or media.";
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "अपने Signal अकाउंट के डेटा की रिपोर्ट डाउनलोड और निर्यात करें। इस रिपोर्ट में कोई संदेश या मीडिया शामिल नहीं है।";
 
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
-"ACCOUNT_DATA_REPORT_TITLE" = "Your Account Data";
+"ACCOUNT_DATA_REPORT_TITLE" = "आपका अकाउंट डेटा";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal कॉल";
@@ -4124,7 +4124,7 @@
 "NOTE_TO_SELF" = "स्वयं को लिखें";
 
 /* Body for a notification representing a message request. */
-"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Message Request";
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "बाच-चीत का निवेदन";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "जब आपका %1$@ शुरु हो रहा था तब आपके पास मेसेज प्राप्त हुए हो सकते हैं।";
@@ -5669,7 +5669,7 @@
 "SETTINGS_ACCOUNT" = "खाता";
 
 /* Label for button in settings to get your account data report */
-"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Your Account Data";
+"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "आपका अकाउंट डेटा";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "ब्लॉक करें";

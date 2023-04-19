@@ -29,40 +29,40 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Tin nhắn thoại";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Export Report";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Xuất Báo cáo";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Only share your Signal account data with people or apps you trust.";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Chỉ chia sẻ dữ liệu tài khoản Signal của bạn với người hoặc ứng dụng bạn tin tưởng.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
-"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Check your connection and try again.";
+"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Kiểm tra kết nối của bạn và thử lại.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
-"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Couldn’t Generate Report";
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Không thể tạo báo cáo";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Machine-readable file";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Tệp dành cho thiết bị";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Export as JSON";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Xuất định dạng JSON";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Easy-to-read text file";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Tệp văn bản dễ đọc";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Export as TXT";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Xuất định dạng TXT";
 
 /* Users can request a report of their account data. Users tap this button to export their data. */
-"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Export Report";
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Xuất Báo cáo";
 
 /* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
-"ACCOUNT_DATA_REPORT_FOOTER" = "Your report is generated only at the time of export and is not stored by Signal on your device.";
+"ACCOUNT_DATA_REPORT_FOOTER" = "Báo cáo của bạn chỉ được tạo ra tại thời điểm bạn chọn xuất báo cáo và không được lưu bởi Signal trên thiết bị của bạn.";
 
 /* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
-"ACCOUNT_DATA_REPORT_SUBTITLE" = "Download and export a report of your Signal account data. This report does not include any messages or media.";
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "Tải xuống và xuất báo cáo về dữ liệu tài khoản Signal của bạn. Báo cáo này không bao gồm nội dung tin nhắn hay tệp đa phương tiện nào.";
 
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
-"ACCOUNT_DATA_REPORT_TITLE" = "Your Account Data";
+"ACCOUNT_DATA_REPORT_TITLE" = "Dữ liệu Tài khoản của bạn";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Cuộc gọi Signal";
@@ -4124,7 +4124,7 @@
 "NOTE_TO_SELF" = "Ghi chú";
 
 /* Body for a notification representing a message request. */
-"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Message Request";
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Yêu cầu gửi Tin nhắn";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Bạn có thể đã nhận tin nhắn này khi %1$@ đang khởi động nguồn trở lại.";
@@ -5669,7 +5669,7 @@
 "SETTINGS_ACCOUNT" = "Tài khoản";
 
 /* Label for button in settings to get your account data report */
-"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Your Account Data";
+"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Dữ liệu Tài khoản của bạn";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Chặn";
