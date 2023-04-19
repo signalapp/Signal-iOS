@@ -285,22 +285,6 @@
 			<string>ग्रुप में अधिकतम %1$d सदस्य पूरे हो गए हैं।</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>आपका Signal का संस्करण %1$d दिन में समाप्त हो जाएगा। नवीनतम संस्करण में अपडेट करने के लिए टैप करें।</string>
-			<key>other</key>
-			<string>आपका Signal का संस्करण %1$d दिनों में समाप्त हो जाएगा। नवीनतम संस्करण में अपडेट करने के लिए टैप करें।</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

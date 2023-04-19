@@ -285,22 +285,6 @@
 			<string>Je hebt de maximale groepsomvang van %1$d leden bereikt.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Deze versie van Signal zal binnen %1$d dag verlopen. Tik hier om bij te werken naar de meest recente versie.</string>
-			<key>other</key>
-			<string>Deze versie van Signal zal binnen %1$d dagen verlopen. Tik hier om bij te werken naar de meest recente versie.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

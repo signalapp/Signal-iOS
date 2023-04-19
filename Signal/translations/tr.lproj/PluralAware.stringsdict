@@ -285,22 +285,6 @@
 			<string>%1$d üyelik maksimum grup kapasitesine ulaşıldı.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Signal sürümün %1$d gün içinde kullanım dışı kalacak. En yeni sürüme güncellemek için dokun.</string>
-			<key>other</key>
-			<string>Signal sürümün %1$d gün içinde kullanım dışı kalacak. En yeni sürüme güncellemek için dokun.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

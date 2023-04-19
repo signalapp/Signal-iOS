@@ -285,22 +285,6 @@
 			<string>Se alcanzó el número máximo de participantes (%1$d).</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Esta versión de Signal caducará en %1$d día. Toca para actualizar a la versión más reciente.</string>
-			<key>other</key>
-			<string>Esta versión de Signal caducará en %1$d días. Toca para actualizar a la versión más reciente.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

@@ -357,26 +357,6 @@
 			<string>Dosegnuta je maksimalna veličina grupe od %1$d članova.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Vaša verzija Signala istječe za %1$d dan. Dodirnite za ažuriranje na najnoviju verziju.</string>
-			<key>few</key>
-			<string>Vaša verzija Signala istječe za %1$d dana. Dodirnite za ažuriranje na najnoviju verziju.</string>
-			<key>many</key>
-			<string>Vaša verzija Signala istječe za %1$d dana. Dodirnite za ažuriranje na najnoviju verziju.</string>
-			<key>other</key>
-			<string>Vaša verzija Signala istječe za %1$d dana. Dodirnite za ažuriranje na najnoviju verziju.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

@@ -357,26 +357,6 @@
 			<string>Bola dosiahnutá maximálna veľkosť skupiny, %1$d členov.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Platnosť vašej verzie Signal vyprší o %1$d deň. Ťuknutím aktualizujete na najnovšiu verziu.</string>
-			<key>few</key>
-			<string>Platnosť vašej verzie Signal vyprší o %1$d dni. Ťuknutím aktualizujete na najnovšiu verziu.</string>
-			<key>many</key>
-			<string>Platnosť vašej verzie Signal vyprší o %1$d dňa. Ťuknutím aktualizujete na najnovšiu verziu.</string>
-			<key>other</key>
-			<string>Platnosť vašej verzie Signal vyprší o %1$d dní. Ťuknutím aktualizujete na najnovšiu verziu.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

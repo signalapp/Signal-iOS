@@ -393,28 +393,6 @@
 			<string>Uasmhéid an ghrúpa de %1$d ball bainte amach.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Rachaidh do leagan Signal as feidhm i gceann %1$d lae. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
-			<key>two</key>
-			<string>Rachaidh do leagan Signal as feidhm i gceann %1$d lá. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
-			<key>few</key>
-			<string>Rachaidh do leagan Signal as feidhm i gceann %1$d lá. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
-			<key>many</key>
-			<string>Rachaidh do leagan Signal as feidhm i gceann %1$d lá. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
-			<key>other</key>
-			<string>Rachaidh do leagan Signal as feidhm i gceann %1$d lá. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

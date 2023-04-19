@@ -285,22 +285,6 @@
 			<string>Maks gruppestørrelse på %1$d medlemmer er nådd.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Din nåværende Signal-versjon utløper om %1$d dag. Trykk for å oppdatere til den nyeste versjonen.</string>
-			<key>other</key>
-			<string>Din nåværende Signal-versjon utløper om %1$d dager. Trykk for å oppdatere til den nyeste versjonen.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

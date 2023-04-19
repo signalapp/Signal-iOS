@@ -285,22 +285,6 @@
 			<string>Достигнут је максималан број чланова у групи (%1$d).</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Ваша верзија Signal-а истиче за %1$d дан. Додирните овде да ажурирате апликацију на најновију верзију.</string>
-			<key>other</key>
-			<string>Ваша верзија Signal-а истиче за %1$d дан(а). Додирните овде да ажурирате апликацију на најновију верзију.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

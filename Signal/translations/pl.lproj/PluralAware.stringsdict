@@ -357,26 +357,6 @@
 			<string>Osiągnięto maksymalny rozmiar grupy %1$d członków grupy.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Twoja wersja Signal wygaśnie za %1$d dzień. Stuknij, aby zaktualizować do najnowszej wersji.</string>
-			<key>few</key>
-			<string>Twoja wersja Signal wygaśnie za %1$d dni. Stuknij, aby zaktualizować do najnowszej wersji.</string>
-			<key>many</key>
-			<string>Twoja wersja Signal wygaśnie za %1$d dni. Stuknij, aby zaktualizować do najnowszej wersji.</string>
-			<key>other</key>
-			<string>Twoja wersja Signal wygaśnie za %1$d dni. Stuknij, aby zaktualizować do najnowszej wersji.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

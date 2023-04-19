@@ -285,22 +285,6 @@
 			<string>گروه به حداکثر تعداد %1$d عضو رسید.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>نسخه سیگنال شما طی %1$d روز منقضی خواهد شد. برای به‌روزرسانی به آخرین نسخه ضربه بزنید.</string>
-			<key>other</key>
-			<string>نسخه سیگنال شما ظرف %1$d روز منقضی خواهد شد. برای به‌روزرسانی به آخرین نسخه ضربه بزنید.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

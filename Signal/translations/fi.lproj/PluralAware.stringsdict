@@ -285,22 +285,6 @@
 			<string>Ryhmän enimmäiskoko, %1$d jäsentä, on saavutettu.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Tämä Signal-versio vanhenee %1$d päivän kuluttua. Päivitä uusimpaan versioon napauttamalla.</string>
-			<key>other</key>
-			<string>Tämä Signal-versio vanhenee %1$d päivän kuluttua. Päivitä uusimpaan versioon napauttamalla.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
