@@ -18,7 +18,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
 
     init(
         messageId: String?,
-        threadId: String,
+        threadId: String?,
         invisibleMessage: TSOutgoingMessage?,
         isMediaMessage: Bool,
         removeMessageAfterSending: Bool,

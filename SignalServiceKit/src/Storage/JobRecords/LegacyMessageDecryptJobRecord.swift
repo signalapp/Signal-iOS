@@ -13,7 +13,7 @@ final class LegacyMessageDecryptJobRecord: JobRecord, FactoryInitializableFromRe
     public let serverDeliveryTimestamp: UInt64
 
     public init(
-        envelopeData: Data,
+        envelopeData: Data?,
         serverDeliveryTimestamp: UInt64,
         label: String,
         exclusiveProcessIdentifier: String? = nil,

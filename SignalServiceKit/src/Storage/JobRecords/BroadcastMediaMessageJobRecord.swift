@@ -31,7 +31,7 @@ public final class BroadcastMediaMessageJobRecord: JobRecord, FactoryInitializab
 
     public init(
         attachmentIdMap: [String: [String]],
-        unsavedMessagesToSend: [TSOutgoingMessage],
+        unsavedMessagesToSend: [TSOutgoingMessage]?,
         label: String,
         exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,

@@ -69,10 +69,15 @@ public final class ReceiptCredentialRedemptionJobRecord: JobRecord, FactoryIniti
         targetSubscriptionLevel = try container.decode(UInt.self, forKey: .targetSubscriptionLevel)
         priorSubscriptionLevel = try container.decode(UInt.self, forKey: .priorSubscriptionLevel)
         isBoost = try container.decode(Bool.self, forKey: .isBoost)
-        amount = try LegacySDSSerializer().deserializeLegacySDSData(
-            try container.decode(Data.self, forKey: .amount),
-            propertyName: "amount"
-        )
+        amount = try container.decodeIfPresent(
+            Data.self,
+            forKey: .amount
+        ).map { amountData in
+            return try LegacySDSSerializer().deserializeLegacySDSData(
+                amountData,
+                propertyName: "amount"
+            )
+        }
         currencyCode = try container.decodeIfPresent(String.self, forKey: .currencyCode)
         boostPaymentIntentID = try container.decode(String.self, forKey: .boostPaymentIntentID)
 
@@ -92,7 +97,10 @@ public final class ReceiptCredentialRedemptionJobRecord: JobRecord, FactoryIniti
         try container.encode(targetSubscriptionLevel, forKey: .targetSubscriptionLevel)
         try container.encode(priorSubscriptionLevel, forKey: .priorSubscriptionLevel)
         try container.encode(isBoost, forKey: .isBoost)
-        try container.encode(LegacySDSSerializer().serializeAsLegacySDSData(property: amount), forKey: .amount)
+        try container.encodeIfPresent(
+            LegacySDSSerializer().serializeAsLegacySDSData(property: amount),
+            forKey: .amount
+        )
         try container.encodeIfPresent(currencyCode, forKey: .currencyCode)
         try container.encode(boostPaymentIntentID, forKey: .boostPaymentIntentID)
     }
