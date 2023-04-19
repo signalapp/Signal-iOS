@@ -5,13 +5,16 @@
 
 // MARK: -
 
+import Foundation
+import SignalCoreKit
+
 @objc
 public class TSConstants: NSObject {
 
     private enum Environment {
         case production, staging
     }
-    private static var environment: Environment {
+    private static let environment: Environment = {
         // You can set "USE_STAGING=1" in your Xcode Scheme. This allows you to
         // prepare a series of commits without accidentally committing the change
         // to the environment.
@@ -25,7 +28,7 @@ public class TSConstants: NSObject {
         // change this value. (Scheme environment variables are only set when
         // launching via Xcode, so this approach is still quite useful.)
         return .production
-    }
+    }()
 
     @objc
     public static var isUsingProductionService: Bool {
@@ -88,14 +91,14 @@ public class TSConstants: NSObject {
     @objc
     public static var serverPublicParamsBase64: String { shared.serverPublicParamsBase64 }
 
-    public static var shared: TSConstantsProtocol {
+    public static let shared: TSConstantsProtocol = {
         switch environment {
         case .production:
             return TSConstantsProduction()
         case .staging:
             return TSConstantsStaging()
         }
-    }
+    }()
 }
 
 // MARK: -
