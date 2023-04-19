@@ -387,10 +387,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         try db.execute(sql: "PRAGMA \(prefix)key = \"\(keyspec)\"")
         try db.execute(sql: "PRAGMA \(prefix)cipher_plaintext_header_size = 32")
         try db.execute(sql: "PRAGMA \(prefix)checkpoint_fullfsync = ON")
-
-        // This will use F_BARRIERFSYNC because of our fork of SQLCipher.
-        try db.execute(sql: "PRAGMA \(prefix)fullfsync = ON")
-
         if !CurrentAppContext().isMainApp {
             let perConnectionCacheSizeInKibibytes = 2000 / (GRDBStorage.maximumReaderCountInExtensions + 1)
             // Limit the per-connection cache size based on the number of possible readers.

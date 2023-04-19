@@ -100,7 +100,7 @@ DEPENDENCIES:
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.26.0`)
-  - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, commit `f29e7df0d5b58a706781d5ae0a1173600046ebd4`)
+  - SQLCipher (>= 4.0.1)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - SwiftProtobuf (>= 1.14.0)
@@ -118,6 +118,7 @@ SPEC REPOS:
     - PureLayout
     - Reachability
     - SAMKeychain
+    - SQLCipher
     - SwiftProtobuf
 
 EXTERNAL SOURCES:
@@ -153,9 +154,6 @@ EXTERNAL SOURCES:
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
     :tag: v2.26.0
-  SQLCipher:
-    :commit: f29e7df0d5b58a706781d5ae0a1173600046ebd4
-    :git: https://github.com/signalapp/sqlcipher.git
   SSZipArchive:
     :podspec: ThirdParty/SSZipArchive.podspec
   Starscream:
@@ -199,9 +197,6 @@ CHECKOUT OPTIONS:
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
     :tag: v2.26.0
-  SQLCipher:
-    :commit: f29e7df0d5b58a706781d5ae0a1173600046ebd4
-    :git: https://github.com/signalapp/sqlcipher.git
   Starscream:
     :commit: 71ebc08f248256497a237ece262e42e7ad05c4a5
     :git: https://github.com/signalapp/Starscream.git
@@ -236,6 +231,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: b49dddc741483c8497989cb01f234a5e5471b8c8
+PODFILE CHECKSUM: 342fbe7238d9f4d56115186f888b89cb13daad8b
 
 COCOAPODS: 1.11.3
