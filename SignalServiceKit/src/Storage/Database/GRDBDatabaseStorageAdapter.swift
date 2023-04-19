@@ -924,7 +924,9 @@ private struct GRDBStorage {
         configuration.prepareDatabase { db in
             try GRDBDatabaseStorageAdapter.prepareDatabase(db: db, keyspec: keyspec)
 
+            #if DEBUG
             db.trace { dbQueryLog("\($0)") }
+            #endif
 
             MediaGalleryManager.setup(database: db)
         }
