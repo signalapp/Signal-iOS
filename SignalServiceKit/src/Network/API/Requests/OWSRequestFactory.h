@@ -101,7 +101,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)currentSignedPreKeyRequest;
 
 + (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
-                                          deviceId:(NSString *)deviceId
+                                          deviceId:(uint32_t)deviceId
                                        udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 
 + (TSRequest *)registerSignedPrekeyRequestForIdentity:(OWSIdentity)identity

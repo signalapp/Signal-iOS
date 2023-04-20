@@ -150,18 +150,14 @@ public class SMKSecretSessionCipher: NSObject {
 
     public func encryptMessage(
         for serviceId: ServiceId,
-        deviceId: Int32,
+        deviceId: UInt32,
         paddedPlaintext: Data,
         contentHint: UnidentifiedSenderMessageContent.ContentHint,
         groupId: Data?,
         senderCertificate: SenderCertificate,
         protocolContext: StoreContext
     ) throws -> Data {
-
-        guard deviceId > 0 else {
-            throw SMKError.assertionError(description: "\(logTag) invalid deviceId")
-        }
-        let recipientAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: UInt32(bitPattern: deviceId))
+        let recipientAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: deviceId)
 
         let ciphertextMessage = try signalEncrypt(
             message: paddedPlaintext,

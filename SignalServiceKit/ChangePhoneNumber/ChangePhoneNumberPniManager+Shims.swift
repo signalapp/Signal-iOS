@@ -41,7 +41,7 @@ protocol _ChangePhoneNumberPniManager_MessageSenderShim {
         messageEncryptionStyle: EncryptionStyle,
         recipientId: String,
         serviceId: ServiceId,
-        deviceId: NSNumber,
+        deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         isStoryMessage: Bool,
@@ -110,7 +110,7 @@ class _ChangePhoneNumberPniManager_MessageSenderWrapper: _ChangePhoneNumberPniMa
         messageEncryptionStyle: EncryptionStyle,
         recipientId: String,
         serviceId: ServiceId,
-        deviceId: NSNumber,
+        deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         isStoryMessage: Bool,
@@ -118,10 +118,10 @@ class _ChangePhoneNumberPniManager_MessageSenderWrapper: _ChangePhoneNumberPniMa
         udSendingParamsProvider: UDSendingParamsProvider?
     ) throws -> DeviceMessage? {
         try messageSender.buildDeviceMessage(
-            forMessagePlaintextContent: messagePlaintextContent,
+            messagePlaintextContent: messagePlaintextContent,
             messageEncryptionStyle: messageEncryptionStyle,
             recipientId: recipientId,
-            serviceId: ServiceIdObjC(serviceId),
+            serviceId: serviceId,
             deviceId: deviceId,
             isOnlineMessage: isOnlineMessage,
             isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,

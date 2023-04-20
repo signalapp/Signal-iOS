@@ -149,13 +149,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 }
 
 + (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
-                                          deviceId:(NSString *)deviceId
+                                          deviceId:(uint32_t)deviceId
                                        udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
-    OWSAssertDebug(deviceId.length > 0);
-
     NSString *path =
-        [NSString stringWithFormat:@"%@/%@/%@", self.textSecureKeysAPI, serviceId.uuidValue.UUIDString, deviceId];
+        [NSString stringWithFormat:@"%@/%@/%u", self.textSecureKeysAPI, serviceId.uuidValue.UUIDString, deviceId];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {

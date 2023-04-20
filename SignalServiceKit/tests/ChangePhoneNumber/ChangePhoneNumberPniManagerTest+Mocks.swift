@@ -56,7 +56,7 @@ class _ChangePhoneNumberPniManager_MessageSenderMock: _ChangePhoneNumberPniManag
         messageEncryptionStyle: EncryptionStyle,
         recipientId: String,
         serviceId: ServiceId,
-        deviceId: NSNumber,
+        deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         isStoryMessage: Bool,
@@ -74,7 +74,7 @@ class _ChangePhoneNumberPniManager_MessageSenderMock: _ChangePhoneNumberPniManag
         case let .valid(registrationId):
             return DeviceMessage(
                 type: .ciphertext,
-                destinationDeviceId: deviceId.uint32Value,
+                destinationDeviceId: deviceId,
                 destinationRegistrationId: registrationId,
                 serializedMessage: Cryptography.generateRandomBytes(32)
             )

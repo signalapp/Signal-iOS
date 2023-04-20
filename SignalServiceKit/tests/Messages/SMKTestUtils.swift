@@ -28,10 +28,10 @@ class MockClient {
 
     let address: SignalServiceAddress
     var protocolAddress: ProtocolAddress {
-        try! ProtocolAddress(name: address.uuid!.uuidString, deviceId: UInt32(deviceId))
+        try! ProtocolAddress(name: address.uuid!.uuidString, deviceId: deviceId)
     }
 
-    let deviceId: Int32
+    let deviceId: UInt32
     let registrationId: Int32
 
     let identityKeyPair: IdentityKeyPair
@@ -42,7 +42,7 @@ class MockClient {
     let identityStore: InMemorySignalProtocolStore
     let senderKeyStore: InMemorySignalProtocolStore
 
-    init(address: SignalServiceAddress, deviceId: Int32, registrationId: Int32) {
+    init(address: SignalServiceAddress, deviceId: UInt32, registrationId: Int32) {
         self.address = address
         self.deviceId = deviceId
         self.registrationId = registrationId
@@ -101,20 +101,23 @@ class MockClient {
         let bobSignedPreKey = bobMockClient.generateMockSignedPreKey()
 
         // PreKeyBundle bobBundle             = new PreKeyBundle(1, 1, 1, bobPreKey.getPublicKey(), 2, bobSignedPreKey.getKeyPair().getPublicKey(), bobSignedPreKey.getSignature(), bobIdentityKey.getPublicKey());
-        let bobBundle = try! PreKeyBundle(registrationId: UInt32(bitPattern: bobMockClient.registrationId),
-                                          deviceId: UInt32(bitPattern: bobMockClient.deviceId),
-                                          prekeyId: bobPreKey.id,
-                                          prekey: bobPreKey.publicKey,
-                                          signedPrekeyId: bobSignedPreKey.id,
-                                          signedPrekey: bobSignedPreKey.publicKey,
-                                          signedPrekeySignature: bobSignedPreKey.signature,
-                                          identity: bobIdentityKey.identityKey)
+        let bobBundle = try! PreKeyBundle(
+            registrationId: UInt32(bitPattern: bobMockClient.registrationId),
+            deviceId: bobMockClient.deviceId,
+            prekeyId: bobPreKey.id,
+            prekey: bobPreKey.publicKey,
+            signedPrekeyId: bobSignedPreKey.id,
+            signedPrekey: bobSignedPreKey.publicKey,
+            signedPrekeySignature: bobSignedPreKey.signature,
+            identity: bobIdentityKey.identityKey
+        )
 
         // SessionBuilder aliceSessionBuilder = new SessionBuilder(aliceStore, new SignalProtocolAddress("+14152222222", 1));
         // aliceSessionBuilder.process(bobBundle);
         let bobProtocolAddress = try! ProtocolAddress(
             name: bobMockClient.address.uuid?.uuidString ?? bobMockClient.address.phoneNumber!,
-            deviceId: UInt32(bitPattern: bobMockClient.deviceId))
+            deviceId: bobMockClient.deviceId
+        )
         try! processPreKeyBundle(bobBundle,
                                  for: bobProtocolAddress,
                                  sessionStore: sessionStore,
@@ -125,5 +128,4 @@ class MockClient {
         // bobStore.storePreKey(1, new PreKeyRecord(1, bobPreKey));
         // NOTE: These stores are taken care of in the mocks' createKey() methods above.
     }
-
 }

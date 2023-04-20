@@ -359,7 +359,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
                 messageEncryptionStyle: .whisper,
                 recipientId: recipientId,
                 serviceId: recipientAci,
-                deviceId: NSNumber(value: recipientDeviceId),
+                deviceId: recipientDeviceId,
                 isOnlineMessage: false,
                 isTransientSenderKeyDistributionMessage: false,
                 isStoryMessage: false,

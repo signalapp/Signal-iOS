@@ -104,25 +104,6 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
                         success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *error))failureHandler;
 
-/// Build a ``DeviceMessage`` for the given parameters describing a message.
-/// This method may make blocking network requests.
-///
-/// A `nil` return value with a `nil` error indicates that the given message
-/// could not be built due to an invalid device ID.
-- (nullable DeviceMessage *)buildDeviceMessageForMessagePlaintextContent:(nullable NSData *)messagePlaintextContent
-                                                  messageEncryptionStyle:(EncryptionStyle)messageEncryptionStyle
-                                                             recipientId:(NSString *)recipientId
-                                                               serviceId:(ServiceIdObjC *)serviceId
-                                                                deviceId:(NSNumber *)deviceId
-                                                         isOnlineMessage:(BOOL)isOnlineMessage
-                                 isTransientSenderKeyDistributionMessage:(BOOL)isTransientSenderKeyDistributionMessage
-                                                          isStoryMessage:(BOOL)isStoryMessage
-                                                  isResendRequestMessage:(BOOL)isResendRequestMessage
-                                                 udSendingParamsProvider:
-                                                     (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
-                                                                   error:(NSError **)errorHandle
-    __attribute__((swift_error(nonnull_error)));
-
 + (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message;
 
 // TODO: Make this private.

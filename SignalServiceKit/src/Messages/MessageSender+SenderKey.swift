@@ -626,13 +626,13 @@ extension MessageSender {
                 case 409:
                     // Incorrect device set. We should add/remove devices and try again.
                     let responseBody = try Self.decode409Response(data: responseData)
-                    self.databaseStorage.write { writeTx in
+                    self.databaseStorage.write { tx in
                         for account in responseBody {
-                            MessageSender.updateDevices(
-                                serviceId: ServiceIdObjC(uuidValue: account.uuid),
-                                devicesToAdd: account.devices.missingDevices.map { NSNumber(value: $0) },
-                                devicesToRemove: account.devices.extraDevices.map { NSNumber(value: $0) },
-                                transaction: writeTx
+                            Self.updateDevices(
+                                serviceId: ServiceId(account.uuid),
+                                devicesToAdd: account.devices.missingDevices,
+                                devicesToRemove: account.devices.extraDevices,
+                                transaction: tx
                             )
                         }
                     }
@@ -645,7 +645,7 @@ extension MessageSender {
                     for account in responseBody {
                         let address = SignalServiceAddress(uuid: account.uuid)
                         self.handleStaleDevices(
-                            staleDevices: account.devices.staleDevices.map { Int($0) },
+                            staleDevices: account.devices.staleDevices,
                             address: address)
                     }
                     throw SenderKeyError.staleDevices

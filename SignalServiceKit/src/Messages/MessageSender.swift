@@ -18,8 +18,7 @@ public extension MessageSender {
 
 // MARK: - Message "isXYZ" properties
 
-@objc
-extension TSOutgoingMessage {
+private extension TSOutgoingMessage {
     var isTransientSKDM: Bool {
         (self as? OWSOutgoingSenderKeyDistributionMessage)?.isSentOnBehalfOfOnlineMessage ?? false
     }
@@ -96,31 +95,19 @@ extension MessageSender {
             Logger.verbose("Fetching prekey for: \(messageSend.serviceId), \(deviceId)")
 
             let promise: Promise<Void> = firstly(on: DispatchQueue.global()) { () -> Promise<SignalServiceKit.PreKeyBundle> in
-                let (promise, future) = Promise<SignalServiceKit.PreKeyBundle>.pending()
-
                 let isOnlineMessage = messageSend.message.isOnline
                 let isTransientSenderKeyDistributionMessage = messageSend.message.isTransientSKDM
                 let isStoryMessage = messageSend.message.isStorySend
 
-                self.makePrekeyRequest(
+                return self.makePrekeyRequest(
                     recipientId: recipientId,
-                    serviceId: messageSend.serviceId,
-                    deviceId: NSNumber(value: deviceId),
+                    serviceId: messageSend.serviceId.wrappedValue,
+                    deviceId: deviceId,
                     isOnlineMessage: isOnlineMessage,
                     isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
                     isStoryMessage: isStoryMessage,
-                    udSendingParamsProvider: messageSend,
-                    success: { preKeyBundle in
-                        guard let preKeyBundle = preKeyBundle else {
-                            return future.reject(OWSAssertionError("Missing preKeyBundle."))
-                        }
-                        future.resolve(preKeyBundle)
-                    },
-                    failure: { error in
-                        future.reject(error)
-                    }
+                    udSendingParamsProvider: messageSend
                 )
-                return promise
             }.done(on: DispatchQueue.global()) { (preKeyBundle: SignalServiceKit.PreKeyBundle) -> Void in
                 try self.databaseStorage.write { transaction in
                     // Since we successfully fetched the prekey bundle, we know this device is
@@ -134,8 +121,8 @@ extension MessageSender {
                     try self.createSession(
                         for: preKeyBundle,
                         recipientId: recipient.accountId,
-                        serviceId: messageSend.serviceId,
-                        deviceId: NSNumber(value: deviceId),
+                        serviceId: messageSend.serviceId.wrappedValue,
+                        deviceId: deviceId,
                         transaction: transaction
                     )
                 }
@@ -144,9 +131,9 @@ extension MessageSender {
                 case MessageSenderError.missingDevice:
                     self.databaseStorage.write { transaction in
                         MessageSender.updateDevices(
-                            serviceId: messageSend.serviceId,
+                            serviceId: messageSend.serviceId.wrappedValue,
                             devicesToAdd: [],
-                            devicesToRemove: [NSNumber(value: deviceId)],
+                            devicesToRemove: [deviceId],
                             transaction: transaction
                         )
                     }
@@ -175,31 +162,72 @@ extension MessageSender {
 
 // MARK: -
 
-@objc
-public extension MessageSender {
-    class func makePrekeyRequest(
-        recipientId: AccountId?,
-        serviceId: ServiceIdObjC,
-        deviceId: NSNumber,
+private extension MessageSender {
+    /// Establishes a session with the recipient if one doesn't already exist.
+    ///
+    /// This may make blocking network requests.
+    func ensureRecipientHasSession(
+        recipientId: AccountId,
+        serviceId: ServiceId,
+        deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         isStoryMessage: Bool,
-        udSendingParamsProvider: UDSendingParamsProvider?,
-        success: @escaping (SignalServiceKit.PreKeyBundle?) -> Void,
-        failure: @escaping (Error) -> Void
-    ) {
-        assert(!Thread.isMainThread)
+        udSendingParamsProvider: UDSendingParamsProvider?
+    ) throws {
+        owsAssertDebug(!Thread.isMainThread)
 
-        let serviceId = serviceId.wrappedValue
+        let hasSession = databaseStorage.read { tx in
+            signalProtocolStore(for: .aci).sessionStore.containsActiveSession(
+                forAccountId: recipientId,
+                deviceId: Int32(bitPattern: deviceId),
+                transaction: tx
+            )
+        }
+        if hasSession {
+            return
+        }
+
+        let preKeyBundle = try Self.makePrekeyRequest(
+            recipientId: recipientId,
+            serviceId: serviceId,
+            deviceId: deviceId,
+            isOnlineMessage: isOnlineMessage,
+            isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
+            isStoryMessage: isStoryMessage,
+            udSendingParamsProvider: udSendingParamsProvider
+        ).wait()
+
+        try databaseStorage.write { tx in
+            try Self.createSession(
+                for: preKeyBundle,
+                recipientId: recipientId,
+                serviceId: serviceId,
+                deviceId: deviceId,
+                transaction: tx
+            )
+        }
+    }
+
+    static func makePrekeyRequest(
+        recipientId: AccountId?,
+        serviceId: ServiceId,
+        deviceId: UInt32,
+        isOnlineMessage: Bool,
+        isTransientSenderKeyDistributionMessage: Bool,
+        isStoryMessage: Bool,
+        udSendingParamsProvider: UDSendingParamsProvider?
+    ) -> Promise<SignalServiceKit.PreKeyBundle> {
+        assert(!Thread.isMainThread)
 
         Logger.info("serviceId: \(serviceId), deviceId: \(deviceId)")
 
-        if deviceRecentlyReportedMissing(serviceId: serviceId, deviceId: deviceId.uint32Value) {
+        if deviceRecentlyReportedMissing(serviceId: serviceId, deviceId: deviceId) {
             // We don't want to retry prekey requests if we've recently gotten a "404
             // missing device" for the same recipient/device. Fail immediately as
             // though we hit the "404 missing device" error again.
             Logger.info("Skipping prekey request to avoid missing device error.")
-            return failure(MessageSenderError.missingDevice)
+            return Promise(error: MessageSenderError.missingDevice)
         }
 
         // If we've never interacted with this account before, we won't have a
@@ -211,13 +239,13 @@ public extension MessageSender {
                 // We don't want to make prekey requests if we can anticipate that
                 // we're going to get an untrusted identity error.
                 Logger.info("Skipping prekey request due to untrusted identity.")
-                return failure(UntrustedIdentityError(address: recipientAddress))
+                return Promise(error: UntrustedIdentityError(address: recipientAddress))
             }
         }
 
         if isOnlineMessage || isTransientSenderKeyDistributionMessage {
             Logger.info("Skipping prekey request for transient message")
-            return failure(MessageSenderNoSessionForTransientMessageError())
+            return Promise(error: MessageSenderNoSessionForTransientMessageError())
         }
 
         // Don't use UD for story preKey fetches, we don't have a valid UD auth key
@@ -229,7 +257,7 @@ public extension MessageSender {
                 Logger.verbose("Building prekey request for serviceId: \(serviceId), deviceId: \(deviceId)")
                 return OWSRequestFactory.recipientPreKeyRequest(
                     withServiceId: ServiceIdObjC(serviceId),
-                    deviceId: deviceId.stringValue,
+                    deviceId: deviceId,
                     udAccessKey: udAccessKeyForRequest
                 )
             },
@@ -246,68 +274,64 @@ public extension MessageSender {
             options: [.allowIdentifiedFallback, .skipWebSocket]
         )
 
-        firstly(on: DispatchQueue.global()) { () -> Promise<RequestMakerResult> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<RequestMakerResult> in
             return requestMaker.makeRequest()
-        }.done(on: DispatchQueue.global()) { (result: RequestMakerResult) in
+        }.map(on: DispatchQueue.global()) { (result: RequestMakerResult) -> SignalServiceKit.PreKeyBundle in
             guard let responseObject = result.responseJson as? [String: Any] else {
                 throw OWSAssertionError("Prekey fetch missing response object.")
             }
-            let bundle = SignalServiceKit.PreKeyBundle(from: responseObject, forDeviceNumber: deviceId)
-            success(bundle)
-        }.catch(on: DispatchQueue.global()) { error in
-            if let httpStatusCode = error.httpStatusCode {
-                if httpStatusCode == 404 {
-                    self.reportMissingDeviceError(serviceId: serviceId, deviceId: deviceId.uint32Value)
-                    return failure(MessageSenderError.missingDevice)
-                } else if httpStatusCode == 413 || httpStatusCode == 429 {
-                    return failure(MessageSenderError.prekeyRateLimit)
-                } else if httpStatusCode == 428 {
-                    // SPAM TODO: Only retry messages with -hasRenderableContent
-                    let responseData = error.httpResponseData
-
-                    if let body = responseData,
-                       let expiry = error.httpRetryAfterDate {
-                        // The resolver has 10s to asynchronously resolve a challenge
-                        // If it resolves, great! We'll let MessageSender auto-retry
-                        // Otherwise, it'll be marked as "pending"
-                        spamChallengeResolver.handleServerChallengeBody(
-                            body,
-                            retryAfter: expiry
-                        ) { didResolve in
-                            if didResolve {
-                                failure(SpamChallengeResolvedError())
-                            } else {
-                                failure(SpamChallengeRequiredError())
-                            }
+            guard let bundle = SignalServiceKit.PreKeyBundle(from: responseObject, forDeviceNumber: NSNumber(value: deviceId)) else {
+                throw OWSAssertionError("Prekey fetch returned an invalid bundle.")
+            }
+            return bundle
+        }.recover(on: DispatchQueue.global()) { error -> Promise<SignalServiceKit.PreKeyBundle> in
+            switch error.httpStatusCode {
+            case 404:
+                self.reportMissingDeviceError(serviceId: serviceId, deviceId: deviceId)
+                return Promise(error: MessageSenderError.missingDevice)
+            case 413, 429:
+                return Promise(error: MessageSenderError.prekeyRateLimit)
+            case 428:
+                // SPAM TODO: Only retry messages with -hasRenderableContent
+                if let body = error.httpResponseData, let expiry = error.httpRetryAfterDate {
+                    // The resolver has 10s to asynchronously resolve a challenge. If it
+                    // resolves, great! We'll let MessageSender auto-retry. Otherwise, it'll be
+                    // marked as "pending".
+                    let (promise, future) = Promise<SignalServiceKit.PreKeyBundle>.pending()
+                    spamChallengeResolver.handleServerChallengeBody(body, retryAfter: expiry) { didResolve in
+                        if didResolve {
+                            future.reject(SpamChallengeResolvedError())
+                        } else {
+                            future.reject(SpamChallengeRequiredError())
                         }
-                    } else {
-                        owsFailDebug("No response body for spam challenge")
-                        return failure(SpamChallengeRequiredError())
                     }
+                    return promise
                 }
-            } else {
-                failure(error)
+                owsFailDebug("No response body for spam challenge")
+                return Promise(error: SpamChallengeRequiredError())
+            default:
+                return Promise(error: error)
             }
         }
     }
 
-    class func createSession(
+    static func createSession(
         for preKeyBundle: SignalServiceKit.PreKeyBundle,
         recipientId: String,
-        serviceId: ServiceIdObjC,
-        deviceId: NSNumber,
+        serviceId: ServiceId,
+        deviceId: UInt32,
         transaction: SDSAnyWriteTransaction
     ) throws {
         assert(!Thread.isMainThread)
 
-        let recipientAddress = SignalServiceAddress(serviceIdObjC: serviceId)
+        let recipientAddress = SignalServiceAddress(serviceId)
 
         Logger.info("Creating session for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
 
         let containsActiveSession = { () -> Bool in
             signalProtocolStore(for: .aci).sessionStore.containsActiveSession(
                 forAccountId: recipientId,
-                deviceId: deviceId.int32Value,
+                deviceId: Int32(bitPattern: deviceId),
                 transaction: transaction
             )
         }
@@ -339,7 +363,7 @@ public extension MessageSender {
         }
 
         do {
-            let protocolAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: deviceId.uint32Value)
+            let protocolAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: deviceId)
             try processPreKeyBundle(
                 bundle,
                 for: protocolAddress,
@@ -359,10 +383,12 @@ public extension MessageSender {
         owsAssertDebug(containsActiveSession(), "Session does not exist.")
     }
 
-    class func handleUntrustedIdentityKeyError(accountId: String,
-                                               recipientAddress: SignalServiceAddress,
-                                               preKeyBundle: SignalServiceKit.PreKeyBundle,
-                                               transaction: SDSAnyWriteTransaction) {
+    private class func handleUntrustedIdentityKeyError(
+        accountId: String,
+        recipientAddress: SignalServiceAddress,
+        preKeyBundle: SignalServiceKit.PreKeyBundle,
+        transaction: SDSAnyWriteTransaction
+    ) {
         saveRemoteIdentity(recipientAddress: recipientAddress,
                            preKeyBundle: preKeyBundle,
                            transaction: transaction)
@@ -375,9 +401,11 @@ public extension MessageSender {
         }
     }
 
-    private class func saveRemoteIdentity(recipientAddress: SignalServiceAddress,
-                                          preKeyBundle: SignalServiceKit.PreKeyBundle,
-                                          transaction: SDSAnyWriteTransaction) {
+    private class func saveRemoteIdentity(
+        recipientAddress: SignalServiceAddress,
+        preKeyBundle: SignalServiceKit.PreKeyBundle,
+        transaction: SDSAnyWriteTransaction
+    ) {
         Logger.info("recipientAddress: \(recipientAddress)")
         do {
             let newRecipientIdentityKey: Data = try (preKeyBundle.identityKey as NSData).removeKeyType() as Data
@@ -394,7 +422,7 @@ public extension MessageSender {
 
 // MARK: - Prekey Rate Limits & Untrusted Identities
 
-fileprivate extension MessageSender {
+private extension MessageSender {
 
     static let cacheQueue = DispatchQueue(label: "org.signal.message-sender.cache")
 
@@ -479,7 +507,7 @@ fileprivate extension MessageSender {
 
 // MARK: - Missing Devices
 
-fileprivate extension MessageSender {
+private extension MessageSender {
     private struct CacheKey: Hashable {
         let serviceId: ServiceId
         let deviceId: UInt32
@@ -798,7 +826,6 @@ public extension TSMessage {
 
 // MARK: -
 
-@objc
 extension MessageSender {
 
     private static let completionQueue: DispatchQueue = {
@@ -807,6 +834,138 @@ extension MessageSender {
                              autoreleaseFrequency: .workItem)
     }()
 
+    @objc
+    func buildDeviceMessages(messageSend: OWSMessageSend) throws -> [DeviceMessage] {
+        let recipient = databaseStorage.read { tx in
+            SignalRecipient.get(address: messageSend.address, mustHaveDevices: false, transaction: tx)
+        }
+        guard let recipient else {
+            throw InvalidMessageError()
+        }
+
+        var recipientDeviceIds = recipient.deviceIds ?? []
+
+        if messageSend.isLocalAddress {
+            let localDeviceId = tsAccountManager.storedDeviceId
+            recipientDeviceIds.removeAll(where: { $0 == localDeviceId })
+        }
+
+        return try recipientDeviceIds.compactMap { deviceId in
+            try buildDeviceMessage(
+                messagePlaintextContent: messageSend.plaintextContent,
+                messageEncryptionStyle: messageSend.message.encryptionStyle,
+                recipientId: recipient.accountId,
+                serviceId: messageSend.serviceId.wrappedValue,
+                deviceId: deviceId,
+                isOnlineMessage: messageSend.message.isOnline,
+                isTransientSenderKeyDistributionMessage: messageSend.message.isTransientSKDM,
+                isStoryMessage: messageSend.message.isStorySend,
+                isResendRequestMessage: messageSend.message.isResendRequest,
+                udSendingParamsProvider: messageSend
+            )
+        }
+    }
+
+    /// Build a ``DeviceMessage`` for the given parameters describing a message.
+    /// This method may make blocking network requests.
+    ///
+    /// A `nil` return value indicates that the given message could not be built
+    /// due to an invalid device ID.
+    func buildDeviceMessage(
+        messagePlaintextContent: Data?,
+        messageEncryptionStyle: EncryptionStyle,
+        recipientId: AccountId,
+        serviceId: ServiceId,
+        deviceId: UInt32,
+        isOnlineMessage: Bool,
+        isTransientSenderKeyDistributionMessage: Bool,
+        isStoryMessage: Bool,
+        isResendRequestMessage: Bool,
+        udSendingParamsProvider: UDSendingParamsProvider?
+    ) throws -> DeviceMessage? {
+        AssertNotOnMainThread()
+
+        guard let messagePlaintextContent else {
+            throw InvalidMessageError()
+        }
+
+        do {
+            try ensureRecipientHasSession(
+                recipientId: recipientId,
+                serviceId: serviceId,
+                deviceId: deviceId,
+                isOnlineMessage: isOnlineMessage,
+                isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
+                isStoryMessage: isStoryMessage,
+                udSendingParamsProvider: udSendingParamsProvider
+            )
+        } catch let error {
+            switch error {
+            case MessageSenderError.missingDevice:
+                // If we have an invalid device exception, remove this device from the
+                // recipient and suppress the error.
+                databaseStorage.write { tx in
+                    Self.updateDevices(
+                        serviceId: serviceId,
+                        devicesToAdd: [],
+                        devicesToRemove: [deviceId],
+                        transaction: tx
+                    )
+                }
+                return nil
+            case is MessageSenderNoSessionForTransientMessageError:
+                // When users re-register, we don't want transient messages (like typing
+                // indicators) to cause users to hit the prekey fetch rate limit. So we
+                // silently discard these message if there is no pre-existing session for
+                // the recipient.
+                throw error
+            case is UntrustedIdentityError:
+                // This *can* happen under normal usage, but it should happen relatively
+                // rarely. We expect it to happen whenever Bob reinstalls, and Alice
+                // messages Bob before she can pull down his latest identity. If it's
+                // happening a lot, we should rethink our profile fetching strategy.
+                throw error
+            case MessageSenderError.prekeyRateLimit:
+                throw SignalServiceRateLimitedError()
+            case is SpamChallengeRequiredError, is SpamChallengeResolvedError:
+                throw error
+            default:
+                owsAssertDebug(error.isNetworkConnectivityFailure)
+                throw OWSRetryableMessageSenderError()
+            }
+        }
+
+        do {
+            return try databaseStorage.write { tx in
+                switch messageEncryptionStyle {
+                case .whisper:
+                    return try encryptMessage(
+                        plaintextContent: messagePlaintextContent,
+                        serviceId: serviceId,
+                        deviceId: deviceId,
+                        udSendingParamsProvider: udSendingParamsProvider,
+                        transaction: tx
+                    )
+                case .plaintext:
+                    return try wrapPlaintextMessage(
+                        plaintextContent: messagePlaintextContent,
+                        serviceId: serviceId,
+                        deviceId: deviceId,
+                        isResendRequestMessage: isResendRequestMessage,
+                        udSendingParamsProvider: udSendingParamsProvider,
+                        transaction: tx
+                    )
+                @unknown default:
+                    throw OWSAssertionError("Unrecognized encryption style")
+                }
+            }
+        } catch {
+            Logger.warn("Failed to encrypt message \(error)")
+            throw error
+        }
+    }
+
+    @objc
     func performMessageSendRequest(
         _ messageSend: OWSMessageSend,
         deviceMessages: [DeviceMessage]
@@ -958,9 +1117,9 @@ extension MessageSender {
 
     private struct MessageSendFailureResponse: Decodable {
         let code: Int?
-        let extraDevices: [Int]?
-        let missingDevices: [Int]?
-        let staleDevices: [Int]?
+        let extraDevices: [UInt32]?
+        let missingDevices: [UInt32]?
+        let staleDevices: [UInt32]?
 
         static func parse(_ responseData: Data?) -> MessageSendFailureResponse? {
             guard let responseData = responseData else {
@@ -1071,7 +1230,7 @@ extension MessageSender {
         }
     }
 
-    func failSendForUnregisteredRecipient(_ messageSend: OWSMessageSend) {
+    private func failSendForUnregisteredRecipient(_ messageSend: OWSMessageSend) {
         owsAssertDebug(!Thread.isMainThread)
 
         let message: TSOutgoingMessage = messageSend.message
@@ -1093,7 +1252,6 @@ extension MessageSender {
         messageSend.failure(error)
     }
 
-    @nonobjc
     func markAsUnregistered(
         serviceId: ServiceId,
         message: TSOutgoingMessage,
@@ -1125,26 +1283,21 @@ extension MessageSender {
     private func handleMismatchedDevices(_ response: MessageSendFailureResponse, messageSend: OWSMessageSend) {
         owsAssertDebug(!Thread.isMainThread)
 
-        let extraDevices: [Int] = response.extraDevices ?? []
-        let missingDevices: [Int] = response.missingDevices ?? []
-        let devicesToAdd = missingDevices.map { NSNumber(value: $0) }
-        let devicesToRemove = extraDevices.map { NSNumber(value: $0) }
-
         Self.databaseStorage.write { transaction in
             MessageSender.updateDevices(
-                serviceId: messageSend.serviceId,
-                devicesToAdd: devicesToAdd,
-                devicesToRemove: devicesToRemove,
+                serviceId: messageSend.serviceId.wrappedValue,
+                devicesToAdd: response.missingDevices ?? [],
+                devicesToRemove: response.extraDevices ?? [],
                 transaction: transaction
             )
         }
     }
 
     // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
-    func handleStaleDevices(staleDevices devicesIn: [Int]?,
-                            address: SignalServiceAddress) {
+    func handleStaleDevices(staleDevices: [UInt32]?, address: SignalServiceAddress) {
         owsAssertDebug(!Thread.isMainThread)
-        let staleDevices = devicesIn ?? []
+
+        let staleDevices = staleDevices ?? []
 
         Logger.info("staleDevices: \(staleDevices) for \(address)")
 
@@ -1163,11 +1316,10 @@ extension MessageSender {
         }
     }
 
-    @objc
-    public static func updateDevices(
-        serviceId: ServiceIdObjC,
-        devicesToAdd: [NSNumber],
-        devicesToRemove: [NSNumber],
+    static func updateDevices(
+        serviceId: ServiceId,
+        devicesToAdd: [UInt32],
+        devicesToRemove: [UInt32],
         transaction: SDSAnyWriteTransaction
     ) {
         owsAssertDebug(!Thread.isMainThread)
@@ -1177,23 +1329,27 @@ extension MessageSender {
         }
         owsAssertDebug(Set(devicesToAdd).isDisjoint(with: devicesToRemove))
 
-        if !devicesToAdd.isEmpty, SignalServiceAddress(serviceId.wrappedValue).isLocalAddress {
+        if !devicesToAdd.isEmpty, SignalServiceAddress(serviceId).isLocalAddress {
             DependenciesBridge.shared.deviceManager.setMayHaveLinkedDevices(
                 true,
                 transaction: transaction.asV2Write
             )
         }
 
-        let recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId.wrappedValue, transaction: transaction)
-        recipient.updateWithDevices(toAdd: devicesToAdd, devicesToRemove: devicesToRemove, transaction: transaction)
+        let recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: transaction)
+        recipient.updateWithDevices(
+            toAdd: devicesToAdd.map { NSNumber(value: $0) },
+            devicesToRemove: devicesToRemove.map { NSNumber(value: $0) },
+            transaction: transaction
+        )
 
         if !devicesToRemove.isEmpty {
             Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")
             let sessionStore = signalProtocolStore(for: .aci).sessionStore
             for deviceId in devicesToRemove {
                 sessionStore.archiveSession(
-                    for: SignalServiceAddress(serviceId.wrappedValue),
-                    deviceId: deviceId.int32Value,
+                    for: SignalServiceAddress(serviceId),
+                    deviceId: Int32(bitPattern: deviceId),
                     transaction: transaction
                 )
             }
@@ -1203,32 +1359,25 @@ extension MessageSender {
 
 // MARK: - Message encryption
 
-extension MessageSender {
-
-    @objc
+private extension MessageSender {
     func encryptMessage(
-        plaintextContent: Data?,
-        serviceId: ServiceIdObjC,
-        deviceId: Int32,
+        plaintextContent plainText: Data,
+        serviceId: ServiceId,
+        deviceId: UInt32,
         udSendingParamsProvider: UDSendingParamsProvider?,
         transaction: SDSAnyWriteTransaction
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
-        let serviceId = serviceId.wrappedValue
-
         let signalProtocolStore = signalProtocolStore(for: .aci)
         guard
             signalProtocolStore.sessionStore.containsActiveSession(
                 for: serviceId,
-                deviceId: deviceId,
+                deviceId: Int32(bitPattern: deviceId),
                 transaction: transaction
             )
         else {
-            throw MessageSendEncryptionError(recipientAddress: SignalServiceAddress(serviceId), deviceId: deviceId)
-        }
-        guard let plainText = plaintextContent else {
-            throw OWSAssertionError("Missing message content")
+            throw MessageSendEncryptionError(serviceId: serviceId, deviceId: deviceId)
         }
 
         let paddedPlaintext = plainText.paddedMessageBody
@@ -1236,7 +1385,7 @@ extension MessageSender {
         let serializedMessage: Data
         let messageType: SSKProtoEnvelopeType
 
-        let protocolAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: UInt32(bitPattern: deviceId))
+        let protocolAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: deviceId)
 
         if let udSendingParamsProvider, let udSendingAccess = udSendingParamsProvider.udSendingAccess {
             let secretCipher = try SMKSecretSessionCipher(
@@ -1301,26 +1450,23 @@ extension MessageSender {
         )
     }
 
-    @objc
     func wrapPlaintextMessage(
-        plaintextContent: Data?,
-        serviceId: ServiceIdObjC,
-        deviceId: Int32,
+        plaintextContent rawPlaintext: Data,
+        serviceId: ServiceId,
+        deviceId: UInt32,
         isResendRequestMessage: Bool,
         udSendingParamsProvider: UDSendingParamsProvider?,
         transaction: SDSAnyWriteTransaction
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
-        let serviceId = serviceId.wrappedValue
-        let protocolAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: UInt32(bitPattern: deviceId))
+        let protocolAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: deviceId)
 
         // Only resend request messages are allowed to use this codepath.
         guard isResendRequestMessage else {
             throw OWSAssertionError("Unexpected message type")
         }
 
-        guard let rawPlaintext = plaintextContent else { throw OWSAssertionError("Missing plaintext") }
         let plaintext = try PlaintextContent(bytes: rawPlaintext)
 
         let serializedMessage: Data
