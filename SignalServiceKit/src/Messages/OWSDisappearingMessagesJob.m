@@ -228,6 +228,11 @@ void AssertIsOnDisappearingMessagesQueue(void)
         if (self.hasStarted) {
             return;
         }
+
+        if ([[self class] isDatabaseCorrupted]) {
+            return;
+        }
+
         self.hasStarted = YES;
 
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{

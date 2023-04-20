@@ -13,7 +13,7 @@ public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertibl
         case corrupted = 1
         case corruptedButAlreadyDumpedAndRestored = 2
 
-        fileprivate var isCorrupted: Bool {
+        public var isCorrupted: Bool {
             switch self {
             case .notCorrupted: return false
             case .corrupted, .corruptedButAlreadyDumpedAndRestored: return true

@@ -1465,6 +1465,7 @@
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
 		F952C0A629C8DA5E00D93766 /* RequestAccountDataReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F952C0A529C8DA5E00D93766 /* RequestAccountDataReportViewController.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
+		F959E0C729EF2ECD00A396CF /* OWSDisappearingMessagesJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = F959E0C629EF2ECD00A396CF /* OWSDisappearingMessagesJob.swift */; };
 		F95A64F3299589CA007FDBDF /* RegistrationNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */; };
 		F95A64F529959065007FDBDF /* RegistrationPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */; };
 		F95D71A3299305C400ED3102 /* RegistrationViewUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */; };
@@ -4025,6 +4026,7 @@
 		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
 		F952C0A529C8DA5E00D93766 /* RequestAccountDataReportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestAccountDataReportViewController.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
+		F959E0C629EF2ECD00A396CF /* OWSDisappearingMessagesJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDisappearingMessagesJob.swift; sourceTree = "<group>"; };
 		F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationNavigationController.swift; sourceTree = "<group>"; };
 		F95A64F429959065007FDBDF /* RegistrationPhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewUtil.swift; sourceTree = "<group>"; };
@@ -8314,6 +8316,7 @@
 				F9C5C958289453B100548EEE /* OWSAddToProfileWhitelistOfferMessage.m */,
 				F9C5C93D289453B100548EEE /* OWSDisappearingMessagesJob.h */,
 				F9C5C970289453B100548EEE /* OWSDisappearingMessagesJob.m */,
+				F959E0C629EF2ECD00A396CF /* OWSDisappearingMessagesJob.swift */,
 				F9C5C956289453B100548EEE /* OWSGroupCallMessage+SDS.swift */,
 				F9C5C945289453B100548EEE /* OWSGroupCallMessage.h */,
 				F9C5C97D289453B100548EEE /* OWSGroupCallMessage.m */,
@@ -11958,6 +11961,7 @@
 				F9C5CCDA289453B300548EEE /* OWSDisappearingMessagesConfiguration.swift in Sources */,
 				F9C5CBEF289453B300548EEE /* OWSDisappearingMessagesConfigurationMessage.m in Sources */,
 				F9C5CC5E289453B300548EEE /* OWSDisappearingMessagesJob.m in Sources */,
+				F959E0C729EF2ECD00A396CF /* OWSDisappearingMessagesJob.swift in Sources */,
 				F9C5CC01289453B300548EEE /* OWSDynamicOutgoingMessage.m in Sources */,
 				F9C5CBE8289453B300548EEE /* OWSEndSessionMessage.m in Sources */,
 				F9C5CE51289453B400548EEE /* OWSError.m in Sources */,
