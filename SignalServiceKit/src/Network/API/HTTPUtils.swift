@@ -42,8 +42,10 @@ extension HTTPUtils {
             Self.outageDetection.reportConnectionFailure()
         }
 
-        if httpError.responseStatusCode == AppExpiry.appExpiredStatusCode {
-            appExpiry.setHasAppExpiredAtCurrentVersion(db: DependenciesBridge.shared.db)
+        if httpError.responseStatusCode == AppExpiryImpl.appExpiredStatusCode {
+            let appExpiry = DependenciesBridge.shared.appExpiry
+            let db = DependenciesBridge.shared.db
+            appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
         }
     }
 

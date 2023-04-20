@@ -215,7 +215,7 @@ public class LegacyChangePhoneNumber: NSObject {
             return
         }
 
-        guard !appExpiry.isExpired else {
+        if DependenciesBridge.shared.appExpiry.isExpired {
             owsFailDebug("appExpiry.")
             return
         }

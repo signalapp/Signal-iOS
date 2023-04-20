@@ -52,6 +52,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         // Set up DependenciesBridge
 
         let accountServiceClient = FakeAccountServiceClient()
+        let dateProvider = Date.provider
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
         let messageProcessor = MessageProcessor()
         let messageSender = FakeMessageSender()
@@ -65,7 +66,9 @@ public class MockSSKEnvironment: SSKEnvironment {
 
         DependenciesBridge.setupSingleton(
             accountServiceClient: accountServiceClient,
+            appVersion: AppVersion.shared,
             databaseStorage: databaseStorage,
+            dateProvider: dateProvider,
             identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
@@ -80,6 +83,7 @@ public class MockSSKEnvironment: SSKEnvironment {
 
         // Set up ourselves
 
+        let appExpiry = DependenciesBridge.shared.appExpiry
         let contactsManager = FakeContactsManager()
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = NoopPendingReceiptRecorder()
@@ -91,7 +95,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let udManager = OWSUDManagerImpl()
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
-        let socketManager = SocketManager()
+        let socketManager = SocketManager(appExpiry: appExpiry, db: DependenciesBridge.shared.db)
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let receiptManager = OWSReceiptManager()
         let outgoingReceiptManager = OWSOutgoingReceiptManager()
@@ -109,11 +113,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let modelReadCaches = ModelReadCaches(factory: TestableModelReadCacheFactory())
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor.createStandardSupervisor()
-        let appExpiry = AppExpiry(
-            keyValueStoreFactory: SDSKeyValueStoreFactory(),
-            dateProvider: Date.provider,
-            schedulers: DispatchQueueSchedulers()
-        )
         let paymentsHelper = MockPaymentsHelper()
         let paymentsCurrencies = MockPaymentsCurrencies()
         let paymentsEvents = PaymentsEventsNoop()

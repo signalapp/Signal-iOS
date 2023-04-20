@@ -39,6 +39,8 @@ public class DependenciesBridge {
     public let db: DB
     public let keyValueStoreFactory: KeyValueStoreFactory
 
+    public let appExpiry: AppExpiry
+
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
 
     public let deviceManager: OWSDeviceManager
@@ -55,7 +57,9 @@ public class DependenciesBridge {
     /// Initialize and configure the ``DependenciesBridge`` singleton.
     public static func setupSingleton(
         accountServiceClient: AccountServiceClient,
+        appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
+        dateProvider: @escaping DateProvider,
         identityManager: OWSIdentityManager,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
@@ -69,7 +73,9 @@ public class DependenciesBridge {
     ) {
         _shared = .init(
             accountServiceClient: accountServiceClient,
+            appVersion: appVersion,
             databaseStorage: databaseStorage,
+            dateProvider: dateProvider,
             identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
@@ -86,7 +92,9 @@ public class DependenciesBridge {
 
     private init(
         accountServiceClient: AccountServiceClient,
+        appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
+        dateProvider: @escaping DateProvider,
         identityManager: OWSIdentityManager,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
@@ -102,6 +110,13 @@ public class DependenciesBridge {
         self.schedulers = DispatchQueueSchedulers()
         self.db = SDSDB(databaseStorage: databaseStorage)
         self.keyValueStoreFactory = SDSKeyValueStoreFactory()
+
+        self.appExpiry = AppExpiryImpl(
+            keyValueStoreFactory: keyValueStoreFactory,
+            dateProvider: dateProvider,
+            appVersion: appVersion,
+            schedulers: schedulers
+        )
 
         self.changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
             schedulers: schedulers,
@@ -134,7 +149,7 @@ public class DependenciesBridge {
         )
 
         self.registrationSessionManager = RegistrationSessionManagerImpl(
-            dateProvider: { Date() },
+            dateProvider: dateProvider,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers,

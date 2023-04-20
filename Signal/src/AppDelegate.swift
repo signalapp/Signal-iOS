@@ -181,6 +181,7 @@ extension AppDelegate {
 
         let databaseContinuation = AppSetup().start(
             appContext: CurrentAppContext(),
+            appVersion: AppVersion.shared,
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
             webSocketFactory: WebSocketFactoryHybrid(),

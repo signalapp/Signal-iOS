@@ -637,8 +637,7 @@ public extension OWSUpload {
                         uploadForm: OWSUploadFormV2,
                         uploadUrlPath: String,
                         progressBlock: ProgressBlock? = nil) -> Promise<String> {
-
-        guard !AppExpiry.shared.isExpired else {
+        if DependenciesBridge.shared.appExpiry.isExpired {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 

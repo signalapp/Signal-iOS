@@ -275,14 +275,6 @@ public extension NSObject {
         SSKEnvironment.shared.signalProtocolStoreRef(for: identity)
     }
 
-    final var appExpiry: AppExpiry {
-        SSKEnvironment.shared.appExpiryRef
-    }
-
-    static var appExpiry: AppExpiry {
-        SSKEnvironment.shared.appExpiryRef
-    }
-
     @nonobjc
     final var signalService: OWSSignalServiceProtocol {
         SSKEnvironment.shared.signalServiceRef
@@ -754,14 +746,6 @@ public extension Dependencies {
         SSKEnvironment.shared.signalProtocolStoreRef(for: identity)
     }
 
-    var appExpiry: AppExpiry {
-        SSKEnvironment.shared.appExpiryRef
-    }
-
-    static var appExpiry: AppExpiry {
-        SSKEnvironment.shared.appExpiryRef
-    }
-
     var signalService: OWSSignalServiceProtocol {
         SSKEnvironment.shared.signalServiceRef
     }
@@ -1121,15 +1105,6 @@ public extension OWSReceiptManager {
 public extension TSAccountManager {
     static var shared: TSAccountManager {
         SSKEnvironment.shared.tsAccountManagerRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension AppExpiry {
-    static var shared: AppExpiry {
-        SSKEnvironment.shared.appExpiryRef
     }
 }
 

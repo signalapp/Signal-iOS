@@ -30,7 +30,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private var coordinator: RegistrationCoordinatorImpl!
 
     private var accountManagerMock: RegistrationCoordinatorImpl.TestMocks.AccountManager!
-    private var appExpiryMock: RegistrationCoordinatorImpl.TestMocks.AppExpiry!
+    private var appExpiryMock: MockAppExpiry!
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
     private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
@@ -55,7 +55,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         dateProvider = { self.date }
 
         accountManagerMock = RegistrationCoordinatorImpl.TestMocks.AccountManager()
-        appExpiryMock = RegistrationCoordinatorImpl.TestMocks.AppExpiry()
+        appExpiryMock = MockAppExpiry()
         changeNumberPniManager = ChangePhoneNumberPniManagerMock()
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
@@ -174,7 +174,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Don't care about timing, just start it.
             scheduler.start()
 
-            appExpiryMock.isExpired = true
+            appExpiryMock.expirationDate = .distantPast
 
             setupDefaultAccountAttributes()
 

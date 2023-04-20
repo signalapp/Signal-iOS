@@ -12,6 +12,7 @@ public class AppSetup {
 
     public func start(
         appContext: AppContext,
+        appVersion: AppVersion,
         paymentsEvents: PaymentsEvents,
         mobileCoinHelper: MobileCoinHelper,
         webSocketFactory: WebSocketFactory,
@@ -46,6 +47,7 @@ public class AppSetup {
         // MARK: DependenciesBridge
 
         let accountServiceClient = AccountServiceClient()
+        let dateProvider = Date.provider
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
         let messageProcessor = MessageProcessor()
         let messageSender = MessageSender()
@@ -59,7 +61,9 @@ public class AppSetup {
 
         DependenciesBridge.setupSingleton(
             accountServiceClient: accountServiceClient,
+            appVersion: appVersion,
             databaseStorage: databaseStorage,
+            dateProvider: dateProvider,
             identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
@@ -83,18 +87,25 @@ public class AppSetup {
 
         // MARK: SSK environment properties
 
+        let appExpiry = DependenciesBridge.shared.appExpiry
         let contactsManager = OWSContactsManager(swiftValues: .makeWithValuesFromDependenciesBridge())
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = MessageRequestPendingReceipts()
         let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
         let messageManager = OWSMessageManager()
         let blockingManager = BlockingManager()
-        let remoteConfigManager = ServiceRemoteConfigManager()
+        let remoteConfigManager = ServiceRemoteConfigManager(
+            appExpiry: appExpiry,
+            db: DependenciesBridge.shared.db,
+            keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
+            tsAccountManager: tsAccountManager,
+            serviceClient: SignalServiceRestClient.shared
+        )
         let aciSignalProtocolStore = SignalProtocolStore(for: .aci)
         let udManager = OWSUDManagerImpl()
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
-        let socketManager = SocketManager()
+        let socketManager = SocketManager(appExpiry: appExpiry, db: DependenciesBridge.shared.db)
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let receiptManager = OWSReceiptManager()
         let outgoingReceiptManager = OWSOutgoingReceiptManager()
@@ -112,11 +123,6 @@ public class AppSetup {
         let modelReadCaches = ModelReadCaches(factory: ModelReadCacheFactory())
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor.createStandardSupervisor()
-        let appExpiry = AppExpiry(
-            keyValueStoreFactory: SDSKeyValueStoreFactory(),
-            dateProvider: Date.provider,
-            schedulers: DispatchQueueSchedulers()
-        )
         let paymentsHelper = PaymentsHelperImpl()
         let paymentsCurrencies = PaymentsCurrenciesImpl()
         let spamChallengeResolver = SpamChallengeResolver()

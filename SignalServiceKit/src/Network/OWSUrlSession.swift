@@ -194,8 +194,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     }
 
     public func dataTaskPromise(request: URLRequest, ignoreAppExpiry: Bool = false) -> Promise<HTTPResponse> {
-
-        guard ignoreAppExpiry || !Self.appExpiry.isExpired else {
+        let appExpiry = DependenciesBridge.shared.appExpiry
+        guard ignoreAppExpiry || !appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
@@ -466,13 +466,14 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
     private class func checkForRemoteDeprecation(task: URLSessionTask,
                                                  response: URLResponse?) {
-
         guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == AppExpiry.appExpiredStatusCode else {
+              httpResponse.statusCode == AppExpiryImpl.appExpiredStatusCode else {
                   return
               }
 
-        AppExpiry.shared.setHasAppExpiredAtCurrentVersion(db: DependenciesBridge.shared.db)
+        let appExpiry = DependenciesBridge.shared.appExpiry
+        let db = DependenciesBridge.shared.db
+        appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
     }
 
     // MARK: Request building
@@ -502,6 +503,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             owsFailDebug("Missing requestUrl.")
             return Promise(error: OWSHTTPError.missingRequest)
         }
+
+        let appExpiry = DependenciesBridge.shared.appExpiry
         guard !appExpiry.isExpired else {
             owsFailDebug("App is expired.")
             return Promise(error: OWSHTTPError.invalidAppState(requestUrl: rawRequestUrl))
@@ -598,8 +601,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         ignoreAppExpiry: Bool = false,
         progress progressBlock: ProgressBlock? = nil
     ) -> Promise<HTTPResponse> {
-
-        guard ignoreAppExpiry || !Self.appExpiry.isExpired else {
+        let appExpiry = DependenciesBridge.shared.appExpiry
+        guard ignoreAppExpiry || !appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
@@ -639,8 +642,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         progress progressBlock: ProgressBlock? = nil,
         taskBlock: () -> URLSessionDownloadTask
     ) -> Promise<OWSUrlDownloadResponse> {
-
-        guard !Self.appExpiry.isExpired else {
+        let appExpiry = DependenciesBridge.shared.appExpiry
+        if appExpiry.isExpired {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 

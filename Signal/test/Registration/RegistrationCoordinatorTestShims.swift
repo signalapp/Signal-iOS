@@ -12,7 +12,6 @@ extension RegistrationCoordinatorImpl {
 
     public enum TestMocks {
         public typealias AccountManager = _RegistrationCoordinator_AccountManagerMock
-        public typealias AppExpiry = _RegistrationCoordinator_AppExpiryMock
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerMock
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreMock
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerMock
@@ -41,11 +40,7 @@ public class _RegistrationCoordinator_AccountManagerMock: _RegistrationCoordinat
     }
 }
 
-// MARK: - AppExpiry
-
-public class _RegistrationCoordinator_AppExpiryMock: _RegistrationCoordinator_AppExpiryShim {
-    public var isExpired = false
-}
+// MARK: - ContactsManager
 
 public class _RegistrationCoordinator_ContactsManagerMock: _RegistrationCoordinator_ContactsManagerShim {
 

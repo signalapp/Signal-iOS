@@ -212,7 +212,7 @@ class NotificationService: UNNotificationServiceExtension {
 
     // This method is thread-safe.
     private func fetchAndProcessMessages(logger: NSELogger) {
-        guard !AppExpiry.shared.isExpired else {
+        if DependenciesBridge.shared.appExpiry.isExpired {
             owsFailDebug("Not processing notifications for expired application.")
             return completeSilently(logger: logger)
         }

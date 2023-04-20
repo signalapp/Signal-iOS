@@ -69,7 +69,6 @@ public class SSKEnvironment: NSObject {
     public let modelReadCachesRef: ModelReadCaches
     public let earlyMessageManagerRef: EarlyMessageManager
     public let messagePipelineSupervisorRef: MessagePipelineSupervisor
-    public let appExpiryRef: AppExpiry
     public let messageProcessorRef: MessageProcessor
     public let paymentsCurrenciesRef: PaymentsCurrenciesSwift
     public let paymentsEventsRef: PaymentsEvents
@@ -87,6 +86,7 @@ public class SSKEnvironment: NSObject {
     public let callMessageHandlerRef: OWSCallMessageHandler
     public let notificationsManagerRef: NotificationsProtocol
 
+    private let appExpiryRef: AppExpiry
     private let aciSignalProtocolStoreRef: SignalProtocolStore
     private let pniSignalProtocolStoreRef: SignalProtocolStore
 
@@ -245,7 +245,7 @@ public class SSKEnvironment: NSObject {
         warmCachesForObject("deviceManager", DependenciesBridge.shared.deviceManager.warmCaches)
         warmCachesForObject("appExpiry") {
             DependenciesBridge.shared.db.read { tx in
-                self.appExpiry.warmCaches(with: tx)
+                self.appExpiryRef.warmCaches(with: tx)
             }
         }
 

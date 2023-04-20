@@ -6,10 +6,15 @@
 import Foundation
 import UIKit
 import SignalMessaging
+import SignalServiceKit
 
 public class ExpirationNagView: ReminderView {
-    convenience init() {
-        self.init(
+    private let appExpiry: AppExpiry
+
+    required init(appExpiry: AppExpiry) {
+        self.appExpiry = appExpiry
+
+        super.init(
             style: .warning,
             text: "",
             tapAction: { UIApplication.shared.open(TSConstants.appStoreUrl, options: [:]) }

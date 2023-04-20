@@ -1336,12 +1336,14 @@
 		F908179628EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */; };
 		F908AA7D28CE629700472E68 /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
 		F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */; };
+		F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908C67A29F08E4E00C3EFC4 /* AppExpiryTest.swift */; };
 		F909E27C293D0F78003B41D1 /* AppDelegate+Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F909E27B293D0F78003B41D1 /* AppDelegate+Lifecycle.swift */; };
 		F90B731B2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */; };
 		F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */; };
 		F90B731F2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731E2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift */; };
 		F90B7BC02912B8E000F50A59 /* DonationUtilitiesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B42912B8C8004FFFAA /* DonationUtilitiesTest.swift */; };
 		F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B22912B8B7004FFFAA /* DonateViewControllerTest.swift */; };
+		F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90E4AAB29F0798C00F54191 /* MockAppExpiry.swift */; };
 		F915A76C29CB669800EB6F68 /* AccountDataReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76B29CB669800EB6F68 /* AccountDataReport.swift */; };
 		F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76D29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift */; };
 		F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F915A76F29CB6D4C00EB6F68 /* ShareActivityUtil.swift */; };
@@ -3899,10 +3901,12 @@
 		F908AA7928CB89CC00472E68 /* PngChunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PngChunker.swift; sourceTree = "<group>"; };
 		F908AA7C28CE629700472E68 /* test-apng.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-apng.png"; sourceTree = "<group>"; };
 		F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupThreadTest.swift; sourceTree = "<group>"; };
+		F908C67A29F08E4E00C3EFC4 /* AppExpiryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppExpiryTest.swift; sourceTree = "<group>"; };
 		F909E27B293D0F78003B41D1 /* AppDelegate+Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Lifecycle.swift"; sourceTree = "<group>"; };
 		F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+PaymentInProgressView.swift"; sourceTree = "<group>"; };
 		F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+WaitForSubscriptionJob.swift"; sourceTree = "<group>"; };
 		F90B731E2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+MonthlyReceiptRedemption.swift"; sourceTree = "<group>"; };
+		F90E4AAB29F0798C00F54191 /* MockAppExpiry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAppExpiry.swift; sourceTree = "<group>"; };
 		F915A76B29CB669800EB6F68 /* AccountDataReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataReport.swift; sourceTree = "<group>"; };
 		F915A76D29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataReportRequestFactory.swift; sourceTree = "<group>"; };
 		F915A76F29CB6D4C00EB6F68 /* ShareActivityUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareActivityUtil.swift; sourceTree = "<group>"; };
@@ -7960,6 +7964,7 @@
 		F94261E4289B1B5400460798 /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				F908C67A29F08E4E00C3EFC4 /* AppExpiryTest.swift */,
 				F94261F4289B1B5400460798 /* AppVersionTests.swift */,
 				661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */,
 				F962B38B293F9F9F00765BD8 /* CRC32Test.swift */,
@@ -9274,6 +9279,7 @@
 				F9C5CB90289453B200548EEE /* FakeContactsManager.swift */,
 				F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */,
 				F9C5CB84289453B200548EEE /* FakeStorageServiceManager.swift */,
+				F90E4AAB29F0798C00F54191 /* MockAppExpiry.swift */,
 				F9C57FAC28E5F1E2001D3596 /* MockSSKEnvironment.swift */,
 				F9C5CB86289453B200548EEE /* MockSubscriptionManager.swift */,
 				F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */,
@@ -11900,6 +11906,7 @@
 				F9C5CC19289453B300548EEE /* MessageSticker.swift in Sources */,
 				F9C5CE30289453B400548EEE /* MIMETypeUtil.m in Sources */,
 				F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */,
+				F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */,
 				D9E335A42993269100825677 /* MockDBV2.swift in Sources */,
 				F9C57FAD28E5F1E2001D3596 /* MockSSKEnvironment.swift in Sources */,
 				F9C5CE56289453B400548EEE /* MockSubscriptionManager.swift in Sources */,
@@ -12347,6 +12354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
+				F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */,
 				F9426261289B1B5500460798 /* AppVersionTests.swift in Sources */,
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,

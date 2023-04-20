@@ -65,6 +65,8 @@ public class OWSWebSocket: NSObject {
     // MARK: -
 
     private let webSocketType: OWSWebSocketType
+    private let appExpiry: AppExpiry
+    private let db: DB
 
     private static let socketReconnectDelaySeconds: TimeInterval = 5
 
@@ -234,10 +236,12 @@ public class OWSWebSocket: NSObject {
 
     // MARK: -
 
-    public required init(webSocketType: OWSWebSocketType) {
+    public required init(webSocketType: OWSWebSocketType, appExpiry: AppExpiry, db: DB) {
         AssertIsOnMainThread()
 
         self.webSocketType = webSocketType
+        self.appExpiry = appExpiry
+        self.db = db
 
         super.init()
 
@@ -293,7 +297,7 @@ public class OWSWebSocket: NSObject {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(appExpiryDidChange),
-                                               name: AppExpiry.AppExpiryDidChange,
+                                               name: AppExpiryImpl.AppExpiryDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
     }
@@ -468,8 +472,8 @@ public class OWSWebSocket: NSObject {
 
         // The websocket is only used to connect to the main signal
         // service, so we need to check for remote deprecation.
-        if responseStatus == AppExpiry.appExpiredStatusCode {
-            appExpiry.setHasAppExpiredAtCurrentVersion(db: DependenciesBridge.shared.db)
+        if responseStatus == AppExpiryImpl.appExpiredStatusCode {
+            appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
         }
 
         let headers = OWSHttpHeaders()
@@ -1185,8 +1189,8 @@ extension OWSWebSocket {
                 Self.outageDetection.reportConnectionSuccess()
             },
             failure: { (failure: OWSHTTPErrorWrapper) in
-                if failure.error.responseStatusCode == AppExpiry.appExpiredStatusCode {
-                    Self.appExpiry.setHasAppExpiredAtCurrentVersion(db: DependenciesBridge.shared.db)
+                if failure.error.responseStatusCode == AppExpiryImpl.appExpiredStatusCode {
+                    self.appExpiry.setHasAppExpiredAtCurrentVersion(db: self.db)
                 }
 
                 failureParam(failure)

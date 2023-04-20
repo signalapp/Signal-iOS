@@ -588,17 +588,18 @@ public class StubbableRemoteConfigManager: NSObject, RemoteConfigManager {
 
 // MARK: -
 
-@objc
-public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
-
-    let keyValueStore: SDSKeyValueStore = SDSKeyValueStore(collection: "RemoteConfigManager")
+public class ServiceRemoteConfigManager: RemoteConfigManager {
+    private let appExpiry: AppExpiry
+    private let db: DB
+    private let keyValueStore: KeyValueStore
+    private let tsAccountManager: TSAccountManager
+    private let serviceClient: SignalServiceClient
 
     // MARK: -
 
     private let hasWarmedCache = AtomicBool(false)
 
     private var _cachedConfig = AtomicOptional<RemoteConfig>(nil)
-    @objc
     public private(set) var cachedConfig: RemoteConfig? {
         get {
             if !hasWarmedCache.get() {
@@ -610,9 +611,18 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         set { _cachedConfig.set(newValue) }
     }
 
-    @objc
-    public override init() {
-        super.init()
+    public init(
+        appExpiry: AppExpiry,
+        db: DB,
+        keyValueStoreFactory: KeyValueStoreFactory,
+        tsAccountManager: TSAccountManager,
+        serviceClient: SignalServiceClient
+    ) {
+        self.appExpiry = appExpiry
+        self.db = db
+        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: "RemoteConfigManager")
+        self.tsAccountManager = tsAccountManager
+        self.serviceClient = serviceClient
 
         // The fetched config won't take effect until the *next* launch.
         // That's not ideal, but we can't risk changing configs in the middle
@@ -663,7 +673,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     private func cacheCurrent() {
         var isEnabledFlags = [String: Bool]()
         var valueFlags = [String: AnyObject]()
-        self.databaseStorage.read { transaction in
+        db.read { transaction in
             isEnabledFlags = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) ?? [:]
             valueFlags = self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) ?? [:]
         }
@@ -690,7 +700,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         let backoffDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: consecutiveFailures)
         let earliestPermittedAttempt = lastAttempt.addingTimeInterval(backoffDelay)
 
-        let lastSuccess = databaseStorage.read { keyValueStore.getLastFetched(transaction: $0) }
+        let lastSuccess = db.read { keyValueStore.getLastFetched(transaction: $0) }
         let nextScheduledRefresh = (lastSuccess ?? .distantPast).addingTimeInterval(Self.refreshInterval)
 
         return max(earliestPermittedAttempt, nextScheduledRefresh)
@@ -774,7 +784,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
             // Persist all flags in the database to be applied on next launch.
 
-            self.databaseStorage.write { transaction in
+            self.db.write { transaction in
                 // Preserve any sticky flags.
                 if let existingConfig = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) {
                     existingConfig.forEach { (key: String, value: Bool) in
@@ -854,13 +864,12 @@ private extension ServiceRemoteConfigManager {
             if let minimumVersions = minimumVersions {
                 Logger.info("Minimum client versions: \(minimumVersions)")
 
-                let db = DependenciesBridge.shared.db
                 if let remoteExpirationDate = remoteExpirationDate(minimumVersions: minimumVersions) {
                     Logger.info("Setting client expiration date: \(remoteExpirationDate)")
-                    AppExpiry.shared.setExpirationDateForCurrentVersion(remoteExpirationDate, db: db)
+                    appExpiry.setExpirationDateForCurrentVersion(remoteExpirationDate, db: db)
                 } else {
                     Logger.info("Clearing client expiration date")
-                    AppExpiry.shared.setExpirationDateForCurrentVersion(nil, db: db)
+                    appExpiry.setExpirationDateForCurrentVersion(nil, db: db)
                 }
             }
         }
@@ -932,13 +941,13 @@ private extension ServiceRemoteConfigManager {
 
 // MARK: -
 
-private extension SDSKeyValueStore {
+private extension KeyValueStore {
 
     // MARK: - Remote Config Enabled Flags
 
     private static var remoteConfigIsEnabledFlagsKey: String { "remoteConfigKey" }
 
-    func getRemoteConfigIsEnabledFlags(transaction: SDSAnyReadTransaction) -> [String: Bool]? {
+    func getRemoteConfigIsEnabledFlags(transaction: DBReadTransaction) -> [String: Bool]? {
         guard let object = getObject(forKey: Self.remoteConfigIsEnabledFlagsKey,
                                      transaction: transaction) else {
             return nil
@@ -952,7 +961,7 @@ private extension SDSKeyValueStore {
         return remoteConfig
     }
 
-    func setRemoteConfigIsEnabledFlags(_ newValue: [String: Bool], transaction: SDSAnyWriteTransaction) {
+    func setRemoteConfigIsEnabledFlags(_ newValue: [String: Bool], transaction: DBWriteTransaction) {
         return setObject(newValue,
                          key: Self.remoteConfigIsEnabledFlagsKey,
                          transaction: transaction)
@@ -962,7 +971,7 @@ private extension SDSKeyValueStore {
 
     private static var remoteConfigValueFlagsKey: String { "remoteConfigValueFlags" }
 
-    func getRemoteConfigValueFlags(transaction: SDSAnyReadTransaction) -> [String: AnyObject]? {
+    func getRemoteConfigValueFlags(transaction: DBReadTransaction) -> [String: AnyObject]? {
         guard let object = getObject(forKey: Self.remoteConfigValueFlagsKey, transaction: transaction) else {
             return nil
         }
@@ -975,7 +984,7 @@ private extension SDSKeyValueStore {
         return remoteConfig
     }
 
-    func setRemoteConfigValueFlags(_ newValue: [String: AnyObject], transaction: SDSAnyWriteTransaction) {
+    func setRemoteConfigValueFlags(_ newValue: [String: AnyObject], transaction: DBWriteTransaction) {
         return setObject(newValue, key: Self.remoteConfigValueFlagsKey, transaction: transaction)
     }
 
@@ -983,11 +992,11 @@ private extension SDSKeyValueStore {
 
     var lastFetchedKey: String { "lastFetchedKey" }
 
-    func getLastFetched(transaction: SDSAnyReadTransaction) -> Date? {
+    func getLastFetched(transaction: DBReadTransaction) -> Date? {
         return getDate(lastFetchedKey, transaction: transaction)
     }
 
-    func setLastFetched(_ newValue: Date, transaction: SDSAnyWriteTransaction) {
+    func setLastFetched(_ newValue: Date, transaction: DBWriteTransaction) {
         return setDate(newValue, key: lastFetchedKey, transaction: transaction)
     }
 }
