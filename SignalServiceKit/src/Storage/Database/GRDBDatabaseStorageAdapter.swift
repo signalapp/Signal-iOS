@@ -375,21 +375,14 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
     }
 
-    static func prepareDatabase(db: Database, keyspec: GRDBKeySpecSource, name: String? = nil) throws {
-        let prefix: String
-        if let name = name, !name.isEmpty {
-            prefix = name + "."
-        } else {
-            prefix = ""
-        }
-
+    static func prepareDatabase(db: Database, keyspec: GRDBKeySpecSource) throws {
         let keyspec = try keyspec.fetchString()
-        try db.execute(sql: "PRAGMA \(prefix)key = \"\(keyspec)\"")
-        try db.execute(sql: "PRAGMA \(prefix)cipher_plaintext_header_size = 32")
-        try db.execute(sql: "PRAGMA \(prefix)checkpoint_fullfsync = ON")
+        try db.execute(sql: "PRAGMA key = \"\(keyspec)\"")
+        try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
+        try db.execute(sql: "PRAGMA checkpoint_fullfsync = ON")
 
         // This will use F_BARRIERFSYNC because of our fork of SQLCipher.
-        try db.execute(sql: "PRAGMA \(prefix)fullfsync = ON")
+        try db.execute(sql: "PRAGMA fullfsync = ON")
 
         if !CurrentAppContext().isMainApp {
             let perConnectionCacheSizeInKibibytes = 2000 / (GRDBStorage.maximumReaderCountInExtensions + 1)
@@ -398,7 +391,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             // The minus sign indicates that this is in KiB rather than the database's page size.
             // An alternative would be to use SQLite's "shared cache" mode to have a single memory pool,
             // but unfortunately that changes the locking model in a way GRDB doesn't support.
-            try db.execute(sql: "PRAGMA \(prefix)cache_size = -\(perConnectionCacheSizeInKibibytes)")
+            try db.execute(sql: "PRAGMA cache_size = -\(perConnectionCacheSizeInKibibytes)")
         }
     }
 }
