@@ -592,6 +592,7 @@ public class Deprecated_OnboardingController: NSObject {
     // TODO: Review
     public enum VerificationOutcome: Equatable {
         case success
+        case invalidPhoneNumber
         case invalidVerificationCode
         case invalid2FAPin
         case invalidV2RegistrationLockPin(remainingAttempts: UInt32)
@@ -669,8 +670,8 @@ public class Deprecated_OnboardingController: NSObject {
             return
         }
 
-        guard let phoneNumber = phoneNumber else {
-            owsFailDebug("Missing phoneNumber.")
+        guard let phoneNumber = E164(phoneNumber?.e164) else {
+            completion(.invalidPhoneNumber)
             return
         }
         guard let verificationCode = verificationCode else {
@@ -681,7 +682,7 @@ public class Deprecated_OnboardingController: NSObject {
         // Ensure the account manager state is up-to-date.
         //
         // TODO: We could skip this in production.
-        tsAccountManager.phoneNumberAwaitingVerification = phoneNumber.e164
+        tsAccountManager.phoneNumberAwaitingVerification = E164ObjC(phoneNumber)
 
         let twoFAPin = self.twoFAPin ?? {
             // Initially set the value to any stored PIN code so we try that before asking the user to

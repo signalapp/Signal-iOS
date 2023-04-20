@@ -315,12 +315,14 @@ public class LegacyChangePhoneNumber: NSObject {
             """
         )
 
-        SignalRecipient.mergeHighTrust(
-            serviceId: ServiceId(serviceAci),
+        let recipientMerger = DependenciesBridge.shared.recipientMerger
+        let localRecipient = recipientMerger.applyMergeForLocalAccount(
+            aci: ServiceId(serviceAci),
+            pni: ServiceId(servicePni),
             phoneNumber: serviceE164,
-            transaction: transaction
+            tx: transaction.asV2Write
         )
-        .markAsRegistered(transaction: transaction)
+        localRecipient.markAsRegistered(transaction: transaction)
 
         if
             serviceE164 != localE164

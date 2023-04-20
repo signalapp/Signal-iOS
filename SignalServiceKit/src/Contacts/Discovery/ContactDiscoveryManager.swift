@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 /// A ContactDiscoveryManager coordinates CDS lookup requests.
 ///
@@ -112,8 +113,18 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         SwiftSingletons.register(self)
     }
 
-    public convenience override init() {
-        self.init(contactDiscoveryTaskQueue: ContactDiscoveryTaskQueueImpl())
+    public convenience init(
+        db: DB,
+        recipientFetcher: RecipientFetcher,
+        recipientMerger: RecipientMerger,
+        tsAccountManager: TSAccountManager
+    ) {
+        self.init(contactDiscoveryTaskQueue: ContactDiscoveryTaskQueueImpl(
+            db: db,
+            recipientFetcher: recipientFetcher,
+            recipientMerger: recipientMerger,
+            tsAccountManager: tsAccountManager
+        ))
     }
 
     public func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {

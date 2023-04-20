@@ -218,7 +218,7 @@ public extension TSAccountManager {
 
     @objc
     func storeLocalNumber(
-        _ newLocalNumber: String,
+        _ newLocalNumber: E164ObjC,
         aci newAci: ServiceIdObjC,
         pni newPni: ServiceIdObjC?,
         transaction: SDSAnyWriteTransaction
@@ -235,7 +235,7 @@ public extension TSAccountManager {
             objc_sync_enter(self)
             defer { objc_sync_exit(self) }
 
-            setIdentifier(newLocalNumber, for: TSAccountManager_RegisteredNumberKey)
+            setIdentifier(newLocalNumber.stringValue, for: TSAccountManager_RegisteredNumberKey)
             setIdentifier(newAci.uuidValue.uuidString, for: TSAccountManager_RegisteredUUIDKey)
             if let newPni {
                 setIdentifier(newPni.uuidValue.uuidString, for: TSAccountManager_RegisteredPNIKey)
@@ -262,13 +262,14 @@ public extension TSAccountManager {
         didStoreLocalNumber?(LocalIdentifiersObjC(LocalIdentifiers(
             aci: newAci.wrappedValue,
             pni: newPni?.wrappedValue,
-            phoneNumber: newLocalNumber
+            phoneNumber: newLocalNumber.stringValue
         )))
 
-        let localRecipient = SignalRecipient.mergeHighTrust(
-            serviceId: newAci.wrappedValue,
-            phoneNumber: E164(newLocalNumber),
-            transaction: transaction
+        let localRecipient = DependenciesBridge.shared.recipientMerger.applyMergeForLocalAccount(
+            aci: newAci.wrappedValue,
+            pni: newPni?.wrappedValue,
+            phoneNumber: newLocalNumber.wrappedValue,
+            tx: transaction.asV2Write
         )
         localRecipient.markAsRegistered(transaction: transaction)
     }

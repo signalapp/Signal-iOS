@@ -1015,7 +1015,9 @@ extension RecipientPickerViewController {
         forUsername username: String
     ) {
         self.databaseStorage.write { transaction in
-            let recipient = SignalRecipient.fetchOrCreate(serviceId: ServiceId(aci), transaction: transaction)
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
+            let recipient = recipientFetcher.fetchOrCreate(serviceId: ServiceId(aci), tx: transaction.asV2Write)
             recipient.markAsRegistered(transaction: transaction)
 
             let isUsernameBestIdentifier = Usernames.BetterIdentifierChecker.assembleByQuerying(

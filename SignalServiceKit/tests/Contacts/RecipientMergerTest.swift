@@ -86,12 +86,20 @@ class RecipientMergerTest: XCTestCase {
     func testTwoWayMergeCases() {
         let aci_A = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000A")!
         let aci_B = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000B")!
+        let aciMe = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000C")!
         let e164_A = E164("+16505550101")!
         let e164_B = E164("+16505550102")!
+        let e164Me = E164("+16505550103")!
+        let localIdentifiers = LocalIdentifiers(aci: aciMe, pni: nil, phoneNumber: e164Me.stringValue)
+
+        enum TrustLevel {
+            case high
+            case low
+        }
 
         // Taken from the "ACI-E164 Merging Test Cases" document.
         let testCases: [(
-            trustLevel: SignalRecipientTrustLevel,
+            trustLevel: TrustLevel,
             mergeRequest: (serviceId: ServiceId?, phoneNumber: E164?),
             initialState: [(rowId: Int, serviceId: ServiceId?, phoneNumber: E164?)],
             finalState: [(rowId: Int, serviceId: ServiceId?, phoneNumber: E164?)]
@@ -110,19 +118,26 @@ class RecipientMergerTest: XCTestCase {
             (.low, (aci_A, e164_A), [(1, nil, e164_A)], [(1, nil, e164_A), (2, aci_A, nil)]),
             (.high, (aci_B, e164_A), [(1, aci_A, e164_A)], [(1, aci_A, nil), (2, aci_B, e164_A)]),
             (.low, (aci_B, e164_A), [(1, aci_A, e164_A)], [(1, aci_A, e164_A), (2, aci_B, nil)]),
+            (.high, (aci_B, e164Me), [(1, aciMe, e164Me)], [(1, aciMe, e164Me), (2, aci_B, nil)]),
+            (.low, (aci_B, e164Me), [(1, aciMe, e164Me)], [(1, aciMe, e164Me), (2, aci_B, nil)]),
             (.high, (aci_A, e164_A), [(1, aci_A, e164_A)], [(1, aci_A, e164_A)]),
             (.low, (aci_A, e164_A), [(1, aci_A, e164_A)], [(1, aci_A, e164_A)]),
             (.high, (aci_A, e164_A), [(1, aci_A, nil), (2, nil, e164_A)], [(1, aci_A, e164_A)]),
             (.low, (aci_A, e164_A), [(1, aci_A, nil), (2, nil, e164_A)], [(1, aci_A, nil), (2, nil, e164_A)]),
             (.high, (aci_A, e164_A), [(1, aci_A, e164_B), (2, aci_B, e164_A)], [(1, aci_A, e164_A), (2, aci_B, nil)]),
-            (.low, (aci_A, e164_A), [(1, aci_A, e164_B), (2, aci_B, e164_A)], [(1, aci_A, e164_B), (2, aci_B, e164_A)])
+            (.low, (aci_A, e164_A), [(1, aci_A, e164_B), (2, aci_B, e164_A)], [(1, aci_A, e164_B), (2, aci_B, e164_A)]),
+            (.high, (aci_A, e164Me), [(1, aciMe, e164Me), (2, aci_A, nil)], [(1, aciMe, e164Me), (2, aci_A, nil)]),
+            (.low, (aci_A, e164Me), [(1, aciMe, e164Me), (2, aci_A, nil)], [(1, aciMe, e164Me), (2, aci_A, nil)])
         ]
 
         for (idx, testCase) in testCases.enumerated() {
             let mockDB = MockDB()
             let mockDataStore = MockRecipientDataStore()
+            let recipientFetcher = RecipientFetcherImpl(recipientStore: mockDataStore)
             let recipientMerger = RecipientMergerImpl(
                 temporaryShims: MockRecipientMergerTemporaryShims(),
+                observers: [],
+                recipientFetcher: recipientFetcher,
                 dataStore: mockDataStore,
                 storageServiceManager: MockStorageServiceManager()
             )
@@ -138,12 +153,19 @@ class RecipientMergerTest: XCTestCase {
                     )
                 }
 
-                _ = recipientMerger.merge(
-                    trustLevel: testCase.trustLevel,
-                    serviceId: testCase.mergeRequest.serviceId,
-                    phoneNumber: testCase.mergeRequest.phoneNumber,
-                    transaction: transaction
-                )
+                switch (testCase.trustLevel, testCase.mergeRequest.serviceId, testCase.mergeRequest.phoneNumber) {
+                case (.high, let serviceId?, let phoneNumber?):
+                    _ = recipientMerger.applyMergeFromLinkedDevice(
+                        localIdentifiers: localIdentifiers,
+                        serviceId: serviceId,
+                        phoneNumber: phoneNumber,
+                        tx: transaction
+                    )
+                case (_, let serviceId?, _):
+                    _ = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction)
+                case (_, _, let phoneNumber):
+                    _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber!, tx: transaction)
+                }
 
                 for finalRecipient in testCase.finalState.reversed() {
                     let signalRecipient = mockDataStore.recipientTable.removeValue(forKey: finalRecipient.rowId)

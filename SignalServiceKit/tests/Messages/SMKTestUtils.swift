@@ -8,29 +8,24 @@ import SignalServiceKit
 import LibSignalClient
 
 class MockClient {
-
-    // Two manipulated-but-valid v1 UUIDs.
-    // These are computed rather than stored because SignalServiceAddress expects an SSKEnvironment.
-    static var aliceAddress: SignalServiceAddress {
-        return SignalServiceAddress(uuid: UUID(uuidString: "aaaaaaaa-7000-11eb-b32a-33b8a8a487a6")!)
-    }
-    static var bobAddress: SignalServiceAddress {
-        SignalServiceAddress(uuid: UUID(uuidString: "bbbbbbbb-7000-11eb-b32a-33b8a8a487a6")!)
-    }
-
-    var recipientUuid: UUID? {
-        return address.uuid
-    }
-
-    var recipientE164: String? {
-        return address.phoneNumber
-    }
-
-    let address: SignalServiceAddress
     var protocolAddress: ProtocolAddress {
-        try! ProtocolAddress(name: address.uuid!.uuidString, deviceId: deviceId)
+        try! ProtocolAddress(name: serviceId.uuidValue.uuidString, deviceId: deviceId)
     }
 
+    var sealedSenderAddress: SealedSenderAddress {
+        try! SealedSenderAddress(
+            e164: nil,
+            uuidString: serviceId.uuidValue.uuidString,
+            deviceId: UInt32(deviceId)
+        )
+    }
+
+    var localIdentifiers: LocalIdentifiers {
+        LocalIdentifiers(aci: serviceId, pni: nil, phoneNumber: phoneNumber.stringValue)
+    }
+
+    let serviceId: ServiceId
+    let phoneNumber: E164
     let deviceId: UInt32
     let registrationId: Int32
 
@@ -42,8 +37,9 @@ class MockClient {
     let identityStore: InMemorySignalProtocolStore
     let senderKeyStore: InMemorySignalProtocolStore
 
-    init(address: SignalServiceAddress, deviceId: UInt32, registrationId: Int32) {
-        self.address = address
+    init(serviceId: ServiceId, phoneNumber: E164, deviceId: UInt32, registrationId: Int32) {
+        self.serviceId = serviceId
+        self.phoneNumber = phoneNumber
         self.deviceId = deviceId
         self.registrationId = registrationId
         self.identityKeyPair = IdentityKeyPair.generate()
@@ -114,10 +110,7 @@ class MockClient {
 
         // SessionBuilder aliceSessionBuilder = new SessionBuilder(aliceStore, new SignalProtocolAddress("+14152222222", 1));
         // aliceSessionBuilder.process(bobBundle);
-        let bobProtocolAddress = try! ProtocolAddress(
-            name: bobMockClient.address.uuid?.uuidString ?? bobMockClient.address.phoneNumber!,
-            deviceId: bobMockClient.deviceId
-        )
+        let bobProtocolAddress = bobMockClient.protocolAddress
         try! processPreKeyBundle(bobBundle,
                                  for: bobProtocolAddress,
                                  sessionStore: sessionStore,

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 public extension Notification.Name {
     static let IncomingContactSyncDidComplete = Notification.Name("IncomingContactSyncDidComplete")
@@ -54,7 +55,10 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     }
 
     public func buildOperation(jobRecord: IncomingContactSyncJobRecord, transaction: SDSAnyReadTransaction) throws -> IncomingContactSyncOperation {
-        return IncomingContactSyncOperation(jobRecord: jobRecord)
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+            throw OWSAssertionError("Not registered.")
+        }
+        return IncomingContactSyncOperation(jobRecord: jobRecord, localIdentifiers: localIdentifiers)
     }
 
     @objc
@@ -72,7 +76,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     public typealias JobRecordType = IncomingContactSyncJobRecord
     public typealias DurableOperationDelegateType = IncomingContactSyncJobQueue
     public weak var durableOperationDelegate: IncomingContactSyncJobQueue?
-    public var jobRecord: IncomingContactSyncJobRecord
+    public let jobRecord: IncomingContactSyncJobRecord
     public var operation: OWSOperation {
         return self
     }
@@ -81,8 +85,11 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
     // MARK: -
 
-    init(jobRecord: IncomingContactSyncJobRecord) {
+    private let localIdentifiers: LocalIdentifiers
+
+    init(jobRecord: IncomingContactSyncJobRecord, localIdentifiers: LocalIdentifiers) {
         self.jobRecord = jobRecord
+        self.localIdentifiers = localIdentifiers
     }
 
     // MARK: - Durable Operation Overrides
@@ -222,18 +229,22 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     private func process(contactDetails: ContactDetails, transaction: SDSAnyWriteTransaction) throws -> SignalServiceAddress {
         Logger.debug("contactDetails: \(contactDetails)")
 
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipientMerger = DependenciesBridge.shared.recipientMerger
+
         let recipient: SignalRecipient
         if let serviceId = contactDetails.serviceId {
-            recipient = SignalRecipient.mergeHighTrust(
+            recipient = recipientMerger.applyMergeFromLinkedDevice(
+                localIdentifiers: localIdentifiers,
                 serviceId: serviceId,
                 phoneNumber: contactDetails.phoneNumber,
-                transaction: transaction
+                tx: transaction.asV2Write
             )
-            // Mark as registered as long as we have a UUID. If we don't have a UUID,
-            // contacts can't be registered.
+            // Mark as registered only if we have a UUID (we always do in this branch).
+            // If we don't have a UUID, contacts can't be registered.
             recipient.markAsRegistered(transaction: transaction)
         } else if let phoneNumber = contactDetails.phoneNumber {
-            recipient = SignalRecipient.fetchOrCreate(phoneNumber: phoneNumber, transaction: transaction)
+            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: transaction.asV2Write)
         } else {
             throw OWSAssertionError("No identifier in ContactDetails.")
         }
@@ -312,9 +323,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         // Every contact sync includes your own address. However, we shouldn't
         // create a SignalAccount for your own address. (If you're a primary, this
         // is handled by ContactsMaps.phoneNumbers(…).)
-        let addressesToIgnore = [TSAccountManager.localAddress].compacted()
-
-        let setOfAddresses = Set(addresses).subtracting(addressesToIgnore)
+        let setOfAddresses = Set(addresses.lazy.filter { !self.localIdentifiers.contains(address: $0) })
         self.databaseStorage.write { transaction in
             // Rather than collecting SignalAccount objects, collect their unique IDs.
             // This operation can run in the memory-constrainted NSE, so trade off a

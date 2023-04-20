@@ -11,20 +11,21 @@ import XCTest
 class SignalRecipientTest: SSKBaseTestSwift {
 
     private lazy var localAci = ServiceId(UUID())
-    private lazy var localPhoneNumber = E164("+16505550100")!
-    private var localAddress: SignalServiceAddress {
-        SignalServiceAddress(uuid: localAci.uuidValue, phoneNumber: localPhoneNumber.stringValue)
-    }
+    private lazy var localPhoneNumber = E164("+16505550199")!
+    private lazy var localIdentifiers = LocalIdentifiers(
+        aci: localAci,
+        pni: ServiceId(UUID()),
+        phoneNumber: localPhoneNumber.stringValue
+    )
 
     override func setUp() {
         super.setUp()
-
-        tsAccountManager.registerForTests(withLocalNumber: localPhoneNumber.stringValue, uuid: localAci.uuidValue)
+        tsAccountManager.registerForTests(withLocalNumber: localIdentifiers.phoneNumber, uuid: localIdentifiers.aci.uuidValue)
     }
 
     func testSelfRecipientWithExistingRecord() {
         write { transaction in
-            SignalRecipient.mergeHighTrust(serviceId: localAci, phoneNumber: localPhoneNumber, transaction: transaction)
+            mergeHighTrust(serviceId: localAci, phoneNumber: localPhoneNumber, transaction: transaction)
             XCTAssertNotNil(fetchRecipient(serviceId: localAci, transaction: transaction))
             XCTAssertNotNil(fetchRecipient(phoneNumber: localPhoneNumber, transaction: transaction))
         }
@@ -34,7 +35,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         let serviceId = ServiceId(UUID())
         let phoneNumber = E164("+16505550101")!
         write { transaction in
-            SignalRecipient.mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
+            mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
             XCTAssertNotNil(fetchRecipient(serviceId: serviceId, transaction: transaction))
             XCTAssertNotNil(fetchRecipient(phoneNumber: phoneNumber, transaction: transaction))
         }
@@ -44,19 +45,21 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
     func testLowTrustPhoneNumberOnly() {
         // Phone number only recipients are recorded
-        write { transaction in
+        write { tx in
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             let phoneNumber = E164(CommonGenerator.e164())!
-            _ = SignalRecipient.fetchOrCreate(phoneNumber: phoneNumber, transaction: transaction)
-            XCTAssertNotNil(fetchRecipient(phoneNumber: phoneNumber, transaction: transaction))
+            _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
+            XCTAssertNotNil(fetchRecipient(phoneNumber: phoneNumber, transaction: tx))
         }
     }
 
     func testLowTrustUUIDOnly() {
         // UUID only recipients are recorded
-        write { transaction in
+        write { tx in
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             let serviceId = ServiceId(UUID())
-            _ = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: transaction)
-            XCTAssertNotNil(fetchRecipient(serviceId: serviceId, transaction: transaction))
+            _ = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
+            XCTAssertNotNil(fetchRecipient(serviceId: serviceId, transaction: tx))
         }
     }
 
@@ -66,7 +69,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         // UUID only recipients are recorded
         write { transaction in
             let serviceId = ServiceId(UUID())
-            _ = SignalRecipient.mergeHighTrust(serviceId: serviceId, phoneNumber: nil, transaction: transaction)
+            _ = mergeHighTrust(serviceId: serviceId, phoneNumber: nil, transaction: transaction)
             XCTAssertNotNil(fetchRecipient(serviceId: serviceId, transaction: transaction))
         }
     }
@@ -81,7 +84,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         XCTAssertNil(addressToBeUpdated.serviceId)
 
         write { transaction in
-            let recipient = SignalRecipient.mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
+            let recipient = mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
             XCTAssertEqual(recipient.recipientUUID, serviceId.uuidValue.uuidString)
             XCTAssertEqual(recipient.recipientPhoneNumber, phoneNumber.stringValue)
 
@@ -100,13 +103,14 @@ class SignalRecipientTest: SSKBaseTestSwift {
         let serviceId = ServiceId(UUID())
         let phoneNumber = E164("+16505550101")!
 
-        write { transaction in
-            let uuidRecipient = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: transaction)
-            let phoneNumberRecipient = SignalRecipient.fetchOrCreate(phoneNumber: phoneNumber, transaction: transaction)
-            let mergedRecipient = SignalRecipient.mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
+        write { tx in
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+            let uuidRecipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
+            let phoneNumberRecipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
+            let mergedRecipient = mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: tx)
 
             XCTAssertEqual(mergedRecipient.uniqueId, uuidRecipient.uniqueId)
-            XCTAssertNil(SignalRecipient.anyFetch(uniqueId: phoneNumberRecipient.uniqueId, transaction: transaction))
+            XCTAssertNil(SignalRecipient.anyFetch(uniqueId: phoneNumberRecipient.uniqueId, transaction: tx))
         }
     }
 
@@ -140,8 +144,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
 
-            SignalRecipient.mergeHighTrust(serviceId: aci, phoneNumber: oldPhoneNumber, transaction: transaction)
-            SignalRecipient.mergeHighTrust(serviceId: aci, phoneNumber: newPhoneNumber, transaction: transaction)
+            mergeHighTrust(serviceId: aci, phoneNumber: oldPhoneNumber, transaction: transaction)
+            mergeHighTrust(serviceId: aci, phoneNumber: newPhoneNumber, transaction: transaction)
 
             let newAddress = SignalServiceAddress(uuid: aci.uuidValue, e164: newPhoneNumber)
 
@@ -217,8 +221,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
 
-            SignalRecipient.mergeHighTrust(serviceId: oldAci, phoneNumber: phoneNumber, transaction: transaction)
-            SignalRecipient.mergeHighTrust(serviceId: newAci, phoneNumber: phoneNumber, transaction: transaction)
+            mergeHighTrust(serviceId: oldAci, phoneNumber: phoneNumber, transaction: transaction)
+            mergeHighTrust(serviceId: newAci, phoneNumber: phoneNumber, transaction: transaction)
 
             let newAddress = SignalServiceAddress(uuid: newAci.uuidValue, e164: phoneNumber)
 
@@ -329,10 +333,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
+            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
 
             // uuid1 becomes associated with phoneNumber2.
-            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber2, transaction: transaction)
+            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber2, transaction: transaction)
 
             // We should still have two group members: (u1, p2) and (u2, nil).
             XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
@@ -401,10 +405,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
+            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
 
             // uuid1 becomes associated with phoneNumber2.
-            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber2, transaction: transaction)
+            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber2, transaction: transaction)
 
             // We should now have two group members: (u1, p2), (fake uuid, nil).
             XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
@@ -474,10 +478,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
+            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
 
             // uuid2 becomes associated with phoneNumber1.
-            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid2), phoneNumber: phoneNumber1, transaction: transaction)
+            mergeHighTrust(serviceId: ServiceId(uuid2), phoneNumber: phoneNumber1, transaction: transaction)
 
             // We should still have two group members: (u2, p1) and (u1, nil).
             XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
@@ -546,10 +550,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
+            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
 
             // uuid2 becomes associated with phoneNumber1.
-            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid2), phoneNumber: phoneNumber1, transaction: transaction)
+            mergeHighTrust(serviceId: ServiceId(uuid2), phoneNumber: phoneNumber1, transaction: transaction)
 
             // We should now have two group members: (u2, p1), (fake uuid, nil).
             XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
@@ -561,18 +565,19 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
     func testUnregisteredTimestamps() {
         let serviceId = ServiceId(UUID())
-        write {
-            let recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: $0)
+        write { tx in
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+            let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
             XCTAssertNotNil(recipient.unregisteredAtTimestamp)
 
-            recipient.markAsRegistered(transaction: $0)
-            XCTAssertNil(fetchRecipient(serviceId: serviceId, transaction: $0)!.unregisteredAtTimestamp)
+            recipient.markAsRegistered(transaction: tx)
+            XCTAssertNil(fetchRecipient(serviceId: serviceId, transaction: tx)!.unregisteredAtTimestamp)
 
-            recipient.markAsUnregistered(transaction: $0)
-            XCTAssertGreaterThan(fetchRecipient(serviceId: serviceId, transaction: $0)!.unregisteredAtTimestamp!.doubleValue, 0)
+            recipient.markAsUnregistered(transaction: tx)
+            XCTAssertGreaterThan(fetchRecipient(serviceId: serviceId, transaction: tx)!.unregisteredAtTimestamp!.doubleValue, 0)
 
-            recipient.markAsRegistered(transaction: $0)
-            XCTAssertNil(fetchRecipient(serviceId: serviceId, transaction: $0)!.unregisteredAtTimestamp)
+            recipient.markAsRegistered(transaction: tx)
+            XCTAssertNil(fetchRecipient(serviceId: serviceId, transaction: tx)!.unregisteredAtTimestamp)
         }
     }
 
@@ -596,21 +601,33 @@ class SignalRecipientTest: SSKBaseTestSwift {
             TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 1, expectedDeviceIds: [1, 2, 3]),
             TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3])
         ]
-        write { transaction in
+        write { tx in
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             for testCase in testCases {
-                let recipient = SignalRecipient.fetchOrCreate(serviceId: ServiceId(UUID()), transaction: transaction)
+                let recipient = recipientFetcher.fetchOrCreate(serviceId: ServiceId(UUID()), tx: tx.asV2Write)
                 if !testCase.initialDeviceIds.isEmpty {
-                    recipient.anyUpdate(transaction: transaction) {
+                    recipient.anyUpdate(transaction: tx) {
                         $0.addDevices(Set(testCase.initialDeviceIds.map { NSNumber(value: $0) }), source: .local)
                     }
                 }
-                recipient.markAsRegistered(deviceId: testCase.addedDeviceId, transaction: transaction)
+                recipient.markAsRegistered(deviceId: testCase.addedDeviceId, transaction: tx)
                 XCTAssertEqual(recipient.deviceIds.map { Set($0) }, testCase.expectedDeviceIds, "\(testCase)")
             }
         }
     }
 
     // MARK: - Helpers
+
+    @discardableResult
+    private func mergeHighTrust(serviceId: ServiceId, phoneNumber: E164?, transaction tx: SDSAnyWriteTransaction) -> SignalRecipient {
+        let recipientMerger = DependenciesBridge.shared.recipientMerger
+        return recipientMerger.applyMergeFromLinkedDevice(
+            localIdentifiers: localIdentifiers,
+            serviceId: serviceId,
+            phoneNumber: phoneNumber,
+            tx: tx.asV2Write
+        )
+    }
 
     private func fetchRecipient(serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
         SignalRecipient.get(address: SignalServiceAddress(serviceId), mustHaveDevices: false, transaction: transaction)

@@ -13,20 +13,15 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
         // Create local account.
-        tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!,
-                                          uuid: localAddress.uuid!)
+        tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!, uuid: localAddress.uuid!)
     }
 
     private func createAccount(serviceId: ServiceId, phoneNumber: E164?) -> SignalAccount {
-        let account = SignalAccount(
-            address: SignalServiceAddress(uuid: serviceId.uuidValue, phoneNumber: phoneNumber?.stringValue)
-        )
         write {
-            let recipient = SignalRecipient.mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: $0)
-            recipient.markAsRegistered(transaction: $0)
+            let account = SignalAccount(address: SignalServiceAddress(uuid: serviceId.uuidValue, phoneNumber: phoneNumber?.stringValue))
             account.anyInsert(transaction: $0)
+            return account
         }
-        return account
     }
 
     func testFetchAccounts() {

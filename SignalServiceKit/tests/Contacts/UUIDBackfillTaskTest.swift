@@ -38,11 +38,15 @@ final class UUIDBackfillTaskTest: SSKBaseTestSwift {
         }
     }
 
+    private lazy var localIdentifiers = LocalIdentifiers(
+        aci: ServiceId(UUID()),
+        pni: ServiceId(UUID()),
+        phoneNumber: "+16505550199"
+    )
+
     override func setUp() {
         super.setUp()
-
-        let localAddress = CommonGenerator.address()
-        tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!, uuid: localAddress.uuid!)
+        tsAccountManager.registerForTests(withLocalNumber: localIdentifiers.phoneNumber, uuid: localIdentifiers.aci.uuidValue)
     }
 
     func testRetryOnError() throws {
@@ -51,14 +55,19 @@ final class UUIDBackfillTaskTest: SSKBaseTestSwift {
             E164("+16505550100")!,
             E164("+16505550101")!
         ]
-        databaseStorage.write { transaction in
+        databaseStorage.write { tx in
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             for phoneNumber in phoneNumbers {
-                SignalRecipient.fetchOrCreate(phoneNumber: phoneNumber, transaction: transaction)
-                    .markAsRegistered(transaction: transaction)
+                recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write).markAsRegistered(transaction: tx)
             }
-            SignalRecipient
-                .mergeHighTrust(serviceId: ServiceId(UUID()), phoneNumber: E164("+16505550102")!, transaction: transaction)
-                .markAsRegistered(transaction: transaction)
+            let recipientMerger = DependenciesBridge.shared.recipientMerger
+            let mergedRecipient = recipientMerger.applyMergeFromLinkedDevice(
+                localIdentifiers: localIdentifiers,
+                serviceId: ServiceId(UUID()),
+                phoneNumber: E164("+16505550102")!,
+                tx: tx.asV2Write
+            )
+            mergedRecipient.markAsRegistered(transaction: tx)
         }
 
         let manager = MockContactDiscoveryManager()

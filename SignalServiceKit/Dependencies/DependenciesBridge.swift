@@ -48,15 +48,21 @@ public class DependenciesBridge {
     public let kbsCredentialStorage: KBSAuthCredentialStorage
     public let keyBackupService: KeyBackupService
 
+    public let recipientFetcher: RecipientFetcher
+    public let recipientMerger: RecipientMerger
+
     public let registrationSessionManager: RegistrationSessionManager
 
     public let usernameLookupManager: UsernameLookupManager
     public let usernameEducationManager: UsernameEducationManager
     public let usernameValidationManager: UsernameValidationManager
 
+    let groupMemberUpdater: GroupMemberUpdater
+
     /// Initialize and configure the ``DependenciesBridge`` singleton.
     public static func setupSingleton(
         accountServiceClient: AccountServiceClient,
+        aciProtocolStore: SignalProtocolStore,
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
@@ -67,12 +73,14 @@ public class DependenciesBridge {
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
         signalService: OWSSignalServiceProtocol,
+        signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager
-    ) {
-        _shared = .init(
+    ) -> DependenciesBridge {
+        let result = DependenciesBridge(
             accountServiceClient: accountServiceClient,
+            aciProtocolStore: aciProtocolStore,
             appVersion: appVersion,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
@@ -83,15 +91,19 @@ public class DependenciesBridge {
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniProtocolStore,
             signalService: signalService,
+            signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             tsConstants: TSConstants.shared // This is safe to hard-code.
         )
+        _shared = result
+        return result
     }
 
     private init(
         accountServiceClient: AccountServiceClient,
+        aciProtocolStore: SignalProtocolStore,
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
@@ -102,6 +114,7 @@ public class DependenciesBridge {
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
         signalService: OWSSignalServiceProtocol,
+        signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager,
@@ -154,6 +167,30 @@ public class DependenciesBridge {
             keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers,
             signalService: signalService
+        )
+
+        let groupMemberDataStore = GroupMemberDataStoreImpl()
+
+        self.groupMemberUpdater = GroupMemberUpdaterImpl(
+            temporaryShims: GroupMemberUpdaterTemporaryShimsImpl(),
+            groupMemberDataStore: groupMemberDataStore,
+            signalServiceAddressCache: signalServiceAddressCache
+        )
+
+        let recipientStore = RecipientDataStoreImpl()
+
+        self.recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
+
+        self.recipientMerger = RecipientMergerImpl(
+            temporaryShims: SignalRecipientMergerTemporaryShims(
+                sessionStore: aciProtocolStore.sessionStore
+            ),
+            observers: RecipientMergerImpl.buildObservers(
+                signalServiceAddressCache: signalServiceAddressCache
+            ),
+            recipientFetcher: self.recipientFetcher,
+            dataStore: recipientStore,
+            storageServiceManager: storageServiceManager
         )
 
         self.usernameLookupManager = UsernameLookupManagerImpl()

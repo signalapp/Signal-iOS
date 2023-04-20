@@ -112,9 +112,10 @@ extension MessageSender {
                 try self.databaseStorage.write { transaction in
                     // Since we successfully fetched the prekey bundle, we know this device is
                     // registered and can mark it as such to acquire a stable recipientId.
-                    let recipient = SignalRecipient.fetchOrCreate(
+                    let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+                    let recipient = recipientFetcher.fetchOrCreate(
                         serviceId: messageSend.serviceId.wrappedValue,
-                        transaction: transaction
+                        tx: transaction.asV2Write
                     )
                     recipient.markAsRegistered(deviceId: deviceId, transaction: transaction)
 
@@ -1098,9 +1099,10 @@ extension MessageSender {
             // This is low trust because we don't actually know for sure the fully
             // qualified address is valid.
             if !message.isStorySend {
-                let recipient = SignalRecipient.fetchOrCreate(
+                let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+                let recipient = recipientFetcher.fetchOrCreate(
                     serviceId: messageSend.serviceId.wrappedValue,
-                    transaction: transaction
+                    tx: transaction.asV2Write
                 )
                 recipient.markAsRegistered(transaction: transaction)
             }
@@ -1271,7 +1273,8 @@ extension MessageSender {
             return
         }
 
-        let recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: transaction)
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)
         recipient.markAsUnregistered(transaction: transaction)
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every
@@ -1336,7 +1339,8 @@ extension MessageSender {
             )
         }
 
-        let recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: transaction)
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)
         recipient.updateWithDevices(
             toAdd: devicesToAdd.map { NSNumber(value: $0) },
             devicesToRemove: devicesToRemove.map { NSNumber(value: $0) },

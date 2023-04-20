@@ -23,7 +23,7 @@ class StorageServiceContactTest: XCTestCase {
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {
             let storageServiceContact = try XCTUnwrap(StorageServiceContact(
-                serviceId: UUID(),
+                serviceId: ServiceId(UUID()),
                 serviceE164: nil,
                 unregisteredAtTimestamp: unregisteredAtTimestamp
             ))
@@ -47,7 +47,7 @@ class StorageServiceContactTest: XCTestCase {
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {
             let storageServiceContact = try XCTUnwrap(StorageServiceContact(
-                serviceId: UUID(),
+                serviceId: ServiceId(UUID()),
                 serviceE164: nil,
                 unregisteredAtTimestamp: unregisteredAtTimestamp
             ))

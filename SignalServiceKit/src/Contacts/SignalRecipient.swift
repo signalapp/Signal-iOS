@@ -51,57 +51,6 @@ extension SignalRecipient {
 
     // MARK: -
 
-    @discardableResult
-    public class func mergeHighTrust(
-        serviceId: ServiceId,
-        phoneNumber: E164?,
-        transaction: SDSAnyWriteTransaction
-    ) -> SignalRecipient {
-        _fetchOrCreate(
-            serviceId: serviceId,
-            phoneNumber: phoneNumber,
-            trustLevel: .high,
-            transaction: transaction
-        )!
-    }
-
-    public class func fetchOrCreate(serviceId: ServiceId, transaction: SDSAnyWriteTransaction) -> SignalRecipient {
-        // Note: The trust level doesn't matter if we provide only one identifier.
-        _fetchOrCreate(serviceId: serviceId, phoneNumber: nil, trustLevel: .low, transaction: transaction)!
-    }
-
-    public class func fetchOrCreate(phoneNumber: E164, transaction: SDSAnyWriteTransaction) -> SignalRecipient {
-        // Note: The trust level doesn't matter if we provide only one identifier.
-        _fetchOrCreate(serviceId: nil, phoneNumber: phoneNumber, trustLevel: .low, transaction: transaction)!
-    }
-
-    private class func _fetchOrCreate(
-        serviceId: ServiceId?,
-        phoneNumber: E164?,
-        trustLevel: SignalRecipientTrustLevel,
-        transaction: SDSAnyWriteTransaction
-    ) -> SignalRecipient? {
-        let recipientMerger = RecipientMergerImpl(
-            temporaryShims: SignalRecipientMergerTemporaryShims(
-                sessionStore: Self.signalProtocolStore(for: .aci).sessionStore
-            ),
-            dataStore: RecipientDataStoreImpl(),
-            storageServiceManager: Self.storageServiceManager
-        )
-        let result = recipientMerger.merge(
-            trustLevel: trustLevel,
-            serviceId: serviceId,
-            phoneNumber: phoneNumber,
-            transaction: transaction.asV2Write
-        )
-        if let result {
-            signalServiceAddressCache.updateRecipient(result)
-        }
-        return result
-    }
-
-    // MARK: -
-
     public static let phoneNumberDidChange = Notification.Name("phoneNumberDidChange")
     public static let notificationKeyPhoneNumber = "phoneNumber"
     public static let notificationKeyUUID = "UUID"

@@ -52,6 +52,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         // Set up DependenciesBridge
 
         let accountServiceClient = FakeAccountServiceClient()
+        let aciSignalProtocolStore = SignalProtocolStore(for: .aci)
         let dateProvider = Date.provider
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
         let messageProcessor = MessageProcessor()
@@ -60,12 +61,14 @@ public class MockSSKEnvironment: SSKEnvironment {
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStore(for: .pni)
         let signalService = OWSSignalServiceMock()
+        let signalServiceAddressCache = SignalServiceAddressCache()
         let storageServiceManager = FakeStorageServiceManager()
         let syncManager = OWSMockSyncManager()
         let tsAccountManager = TSAccountManager()
 
-        DependenciesBridge.setupSingleton(
+        let dependenciesBridge = DependenciesBridge.setupSingleton(
             accountServiceClient: accountServiceClient,
+            aciProtocolStore: aciSignalProtocolStore,
             appVersion: AppVersion.shared,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
@@ -76,6 +79,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniSignalProtocolStore,
             signalService: signalService,
+            signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager
@@ -91,7 +95,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let messageManager = OWSMessageManager()
         let blockingManager = BlockingManager()
         let remoteConfigManager = StubbableRemoteConfigManager()
-        let aciSignalProtocolStore = SignalProtocolStore(for: .aci)
         let udManager = OWSUDManagerImpl()
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
@@ -103,7 +106,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let typingIndicators = TypingIndicatorsImpl()
         let attachmentDownloads = OWSAttachmentDownloads()
         let stickerManager = StickerManager()
-        let signalServiceAddressCache = SignalServiceAddressCache()
         let sskPreferences = SSKPreferences()
         let groupsV2 = MockGroupsV2()
         let groupV2Updates = MockGroupV2Updates()
@@ -126,7 +128,12 @@ public class MockSSKEnvironment: SSKEnvironment {
         let systemStoryManager = SystemStoryManagerMock()
         let remoteMegaphoneFetcher = RemoteMegaphoneFetcher()
         let sskJobQueues = SSKJobQueues()
-        let contactDiscoveryManager = ContactDiscoveryManagerImpl()
+        let contactDiscoveryManager = ContactDiscoveryManagerImpl(
+            db: dependenciesBridge.db,
+            recipientFetcher: dependenciesBridge.recipientFetcher,
+            recipientMerger: dependenciesBridge.recipientMerger,
+            tsAccountManager: tsAccountManager
+        )
 
         super.init(
             contactsManager: contactsManager,

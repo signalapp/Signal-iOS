@@ -82,15 +82,15 @@ struct StorageServiceContact {
     }
 
     /// All contact records must have a UUID.
-    var serviceId: UUID
+    var serviceId: ServiceId
 
     /// Contact records may have a phone number.
-    var serviceE164: String?
+    var serviceE164: E164?
 
     /// Contact records may be unregistered.
     var unregisteredAtTimestamp: UInt64?
 
-    init?(serviceId: UUID?, serviceE164: String?, unregisteredAtTimestamp: UInt64?) {
+    init?(serviceId: ServiceId?, serviceE164: E164?, unregisteredAtTimestamp: UInt64?) {
         guard let serviceId else {
             return nil
         }
@@ -126,8 +126,8 @@ struct StorageServiceContact {
             unregisteredAtTimestamp = contactRecord.unregisteredAtTimestamp
         }
         self.init(
-            serviceId: contactRecord.serviceUuid.flatMap { UUID(uuidString: $0) },
-            serviceE164: contactRecord.serviceE164,
+            serviceId: ServiceId.expectNilOrValid(uuidString: contactRecord.serviceUuid),
+            serviceE164: E164.expectNilOrValid(stringValue: contactRecord.serviceE164),
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
     }
@@ -146,8 +146,8 @@ struct StorageServiceContact {
             )
         }
         self.init(
-            serviceId: signalRecipient.address.uuid,
-            serviceE164: signalRecipient.recipientPhoneNumber,
+            serviceId: ServiceId.expectNilOrValid(uuidString: signalRecipient.recipientUUID),
+            serviceE164: E164.expectNilOrValid(stringValue: signalRecipient.recipientPhoneNumber),
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
     }
@@ -175,6 +175,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let profileManager: OWSProfileManager
     private let tsAccountManager: TSAccountManager
     private let usernameLookupManager: UsernameLookupManager
+    private let recipientMerger: RecipientMerger
 
     init(
         localIdentifiers: LocalIdentifiers,
@@ -185,7 +186,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         identityManager: OWSIdentityManager,
         profileManager: OWSProfileManager,
         tsAccountManager: TSAccountManager,
-        usernameLookupManager: UsernameLookupManager
+        usernameLookupManager: UsernameLookupManager,
+        recipientMerger: RecipientMerger
     ) {
         self.localIdentifiers = localIdentifiers
         self.authedAccount = authedAccount
@@ -196,6 +198,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.profileManager = profileManager
         self.tsAccountManager = tsAccountManager
         self.usernameLookupManager = usernameLookupManager
+        self.recipientMerger = recipientMerger
     }
 
     func unknownFields(for record: StorageServiceProtoContactRecord) -> UnknownStorage? { record.unknownFields }
@@ -226,15 +229,11 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         /// this address.
         var usernameBetterIdentifierChecker = Usernames.BetterIdentifierChecker(forRecipient: recipient)
 
-        builder.setServiceUuid(contact.serviceId.uuidString)
+        builder.setServiceUuid(contact.serviceId.uuidValue.uuidString)
 
         if let serviceE164 = contact.serviceE164 {
-            if serviceE164.isStructurallyValidE164 {
-                builder.setServiceE164(serviceE164)
-                usernameBetterIdentifierChecker.add(e164: serviceE164)
-            } else {
-                owsFailDebug("Invalid e164.")
-            }
+            builder.setServiceE164(serviceE164.stringValue)
+            usernameBetterIdentifierChecker.add(e164: serviceE164.stringValue)
         }
 
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
@@ -329,7 +328,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         if
             usernameBetterIdentifierChecker.usernameIsBestIdentifier(),
             let username = usernameLookupManager.fetchUsername(
-                forAci: contact.serviceId,
+                forAci: contact.serviceId.uuidValue,
                 transaction: transaction.asV2Read
             )
         {
@@ -364,7 +363,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             owsFailDebug("address unexpectedly missing for contact")
             return .invalid
         }
-        if localIdentifiers.contains(serviceId: ServiceId(contact.serviceId)) {
+        if localIdentifiers.contains(serviceId: contact.serviceId) {
             owsFailDebug("Trying to merge contact with our own serviceId.")
             return .invalid
         }
@@ -373,10 +372,11 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             return .invalid
         }
 
-        let recipient = SignalRecipient.mergeHighTrust(
-            serviceId: ServiceId(contact.serviceId),
-            phoneNumber: E164(contact.serviceE164),
-            transaction: transaction
+        let recipient = recipientMerger.applyMergeFromLinkedDevice(
+            localIdentifiers: localIdentifiers,
+            serviceId: contact.serviceId,
+            phoneNumber: contact.serviceE164,
+            tx: transaction.asV2Write
         )
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
             recipient.markAsUnregistered(at: unregisteredAtTimestamp, source: .storageService, transaction: transaction)
@@ -499,7 +499,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }
 
         let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
-            sourceContext: .contact(contactUuid: contact.serviceId),
+            sourceContext: .contact(contactUuid: contact.serviceId.uuidValue),
             transaction: transaction
         )
         if record.hideStory != localStoryContextAssociatedData.isHidden {
@@ -521,7 +521,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         usernameLookupManager.saveUsername(
             usernameIsBestIdentifierOnRecord ? record.username : nil,
-            forAci: contact.serviceId,
+            forAci: contact.serviceId.uuidValue,
             transaction: transaction.asV2Write
         )
 

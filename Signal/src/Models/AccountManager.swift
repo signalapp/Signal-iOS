@@ -42,8 +42,10 @@ public class AccountManager: NSObject, Dependencies {
                 guard !self.tsAccountManager.isRegistered else {
                     throw OWSAssertionError("requesting account verification when already registered")
                 }
-
-                self.tsAccountManager.phoneNumberAwaitingVerification = e164
+                guard let phoneNumber = E164(e164) else {
+                    throw OWSAssertionError("Requesting account verification for an invalid E164")
+                }
+                self.tsAccountManager.phoneNumberAwaitingVerification = E164ObjC(phoneNumber)
 
             case .changePhoneNumber:
                 // Don't set phoneNumberAwaitingVerification in the "change phone number" flow.
@@ -341,7 +343,11 @@ public class AccountManager: NSObject, Dependencies {
             }
         }
 
-        tsAccountManager.phoneNumberAwaitingVerification = provisionMessage.phoneNumber
+        guard let phoneNumber = E164(provisionMessage.phoneNumber) else {
+            return Promise(error: OWSAssertionError("Primary E164 isn't valid"))
+        }
+
+        tsAccountManager.phoneNumberAwaitingVerification = E164ObjC(phoneNumber)
         tsAccountManager.uuidAwaitingVerification = provisionMessage.aci
         tsAccountManager.pniAwaitingVerification = provisionMessage.pni
 
@@ -481,7 +487,7 @@ public class AccountManager: NSObject, Dependencies {
 
             let request = OWSRequestFactory.deprecated_verifyPrimaryDeviceRequest(
                 verificationCode: verificationCode,
-                phoneNumber: phoneNumber,
+                phoneNumber: phoneNumber.stringValue,
                 authPassword: serverAuthToken,
                 checkForAvailableTransfer: checkForAvailableTransfer,
                 attributes: accountAttributes

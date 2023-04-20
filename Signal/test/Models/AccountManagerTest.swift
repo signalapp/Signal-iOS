@@ -23,7 +23,7 @@ class FailingTSAccountManager: TSAccountManager {
 
         super.init()
 
-        self.phoneNumberAwaitingVerification = "+13235555555"
+        self.phoneNumberAwaitingVerification = E164ObjC(E164("+13235555555")!)
     }
 
     override func verifyRegistration(request: TSRequest,

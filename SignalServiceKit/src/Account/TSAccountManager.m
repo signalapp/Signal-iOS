@@ -112,7 +112,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 #pragma mark -
 
-- (nullable NSString *)phoneNumberAwaitingVerification
+- (nullable E164ObjC *)phoneNumberAwaitingVerification
 {
     @synchronized(self) {
         return _phoneNumberAwaitingVerification;
@@ -133,7 +133,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }
 }
 
-- (void)setPhoneNumberAwaitingVerification:(NSString *_Nullable)phoneNumberAwaitingVerification
+- (void)setPhoneNumberAwaitingVerification:(E164ObjC *_Nullable)phoneNumberAwaitingVerification
 {
     @synchronized(self) {
         _phoneNumberAwaitingVerification = phoneNumberAwaitingVerification;
@@ -163,7 +163,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                            pni:(NSUUID *_Nullable)pni
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self storeLocalNumber:e164.stringValue
+    [self storeLocalNumber:e164
                        aci:[[ServiceIdObjC alloc] initWithUuidValue:uuid]
                        pni:(pni == nil ? nil : [[ServiceIdObjC alloc] initWithUuidValue:pni])
                transaction:transaction];
@@ -231,7 +231,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (void)didRegister
 {
     OWSLogInfo(@"");
-    NSString *phoneNumber;
+    E164ObjC *phoneNumber;
     NSUUID *aci;
     NSUUID *pni;
     @synchronized(self) {
@@ -268,7 +268,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                          authToken:(NSString *)authToken
                        transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self storeLocalNumber:e164.stringValue
+    [self storeLocalNumber:e164
                        aci:[[ServiceIdObjC alloc] initWithUuidValue:aci]
                        pni:[[ServiceIdObjC alloc] initWithUuidValue:pni]
                transaction:transaction];
@@ -295,9 +295,9 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 {
     @synchronized(self)
     {
-        NSString *awaitingVerif = self.phoneNumberAwaitingVerification;
+        E164ObjC *awaitingVerif = self.phoneNumberAwaitingVerification;
         if (awaitingVerif) {
-            return awaitingVerif;
+            return awaitingVerif.stringValue;
         }
     }
 
@@ -516,11 +516,10 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 {
     OWSAssertDebug(SSKFeatureFlags.storageMode == StorageModeGrdbTests);
     OWSAssertDebug(CurrentAppContext().isRunningTests);
-    OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(uuid != nil);
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self storeLocalNumber:localNumber
+        [self storeLocalNumber:[[E164ObjC alloc] init:localNumber]
                            aci:[[ServiceIdObjC alloc] initWithUuidValue:uuid]
                            pni:(pni == nil ? nil : [[ServiceIdObjC alloc] initWithUuidValue:pni])
                    transaction:transaction];

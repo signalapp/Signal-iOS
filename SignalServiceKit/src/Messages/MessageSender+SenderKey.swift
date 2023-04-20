@@ -282,9 +282,9 @@ extension MessageSender {
             }.done(on: self.senderKeyQueue) { (sendResult: SenderKeySendResult) in
                 Logger.info("Sender key message with timestamp \(message.timestamp) sent! Recipients: \(sendResult.successServiceIds). Unregistered: \(sendResult.unregisteredServiceIds)")
 
-                return self.databaseStorage.write { writeTx in
+                return self.databaseStorage.write { tx in
                     sendResult.unregisteredServiceIds.forEach { serviceId in
-                        self.markAsUnregistered(serviceId: serviceId, message: message, thread: thread, transaction: writeTx)
+                        self.markAsUnregistered(serviceId: serviceId, message: message, thread: thread, transaction: tx)
 
                         let error = MessageSenderNoSuchSignalRecipientError()
                         wrappedSendErrorBlock(ServiceIdObjC(serviceId), error)
@@ -294,20 +294,21 @@ extension MessageSender {
                         message.update(
                             withSentRecipient: ServiceIdObjC(recipient.serviceId),
                             wasSentByUD: true,
-                            transaction: writeTx
+                            transaction: tx
                         )
 
                         // If we're sending a story, we generally get a 200, even if the account
                         // doesn't exist. Therefore, don't use this to mark accounts as registered.
                         if !message.isStorySend {
-                            SignalRecipient.fetchOrCreate(serviceId: recipient.serviceId, transaction: writeTx)
-                                .markAsRegistered(transaction: writeTx)
+                            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+                            recipientFetcher.fetchOrCreate(serviceId: recipient.serviceId, tx: tx.asV2Write)
+                                .markAsRegistered(transaction: tx)
                         }
 
                         self.profileManager.didSendOrReceiveMessage(
                             from: SignalServiceAddress(recipient.serviceId),
                             authedAccount: .implicit(),
-                            transaction: writeTx
+                            transaction: tx
                         )
 
                         guard let payloadId = payloadId else { return }
@@ -317,7 +318,7 @@ extension MessageSender {
                                 recipientUuid: recipient.serviceId.uuidValue,
                                 recipientDeviceId: Int64(deviceId),
                                 message: message,
-                                transaction: writeTx
+                                transaction: tx
                             )
                         }
                     }

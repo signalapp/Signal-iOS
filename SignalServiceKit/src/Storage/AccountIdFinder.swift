@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public typealias AccountId = String
 
@@ -24,16 +25,20 @@ public class OWSAccountIdFinder: NSObject {
         return SignalRecipient.get(address: address, mustHaveDevices: false, transaction: transaction)?.accountId
     }
 
+    /// Fetches (or creates) a SignalRecipient for a provided address.
+    ///
+    /// In general, callers should prefer using ``RecipientFetcher`` directly.
     @objc
     public class func ensureAccountId(
         forAddress address: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
     ) -> AccountId {
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipient: SignalRecipient
         if let serviceId = address.serviceId {
-            recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: transaction)
+            recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)
         } else if let phoneNumber = address.e164 {
-            recipient = SignalRecipient.fetchOrCreate(phoneNumber: phoneNumber, transaction: transaction)
+            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: transaction.asV2Write)
         } else {
             // This can happen for historical reasons. It shouldn't happen, but it
             // could. We could return [[NSUUID UUID] UUIDString] and avoid persisting

@@ -66,30 +66,39 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    private func localIdentity(forDestinationUuidString destinationUuidString: String?,
-                               transaction: SDSAnyReadTransaction) throws -> OWSIdentity {
-        guard let destinationUuidString = destinationUuidString else {
+    private func localIdentity(
+        forDestinationUuidString destinationUuidString: String?,
+        localIdentifiers: LocalIdentifiers,
+        transaction: SDSAnyReadTransaction
+    ) throws -> OWSIdentity {
+        guard let destinationUuidString else {
             return .aci
         }
-        guard let destinationUuid = UUID(uuidString: destinationUuidString) else {
+        guard let destinationServiceId = ServiceId(uuidString: destinationUuidString) else {
             throw OWSAssertionError("incoming envelope has invalid destinationUuid: \(destinationUuidString)")
         }
 
-        switch destinationUuid {
-        case tsAccountManager.localUuid(with: transaction):
+        switch destinationServiceId {
+        case localIdentifiers.aci:
             return .aci
-        case tsAccountManager.localPni(with: transaction):
+        case localIdentifiers.pni:
             return .pni
         default:
-            // PNI TODO: Handle past PNIs?
             throw MessageProcessingError.wrongDestinationUuid
         }
     }
 
-    public func decryptEnvelope(_ envelope: SSKProtoEnvelope,
-                                envelopeData: Data?,
-                                transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
-        owsAssertDebug(tsAccountManager.isRegistered)
+    public func decryptEnvelope(
+        _ envelope: SSKProtoEnvelope,
+        envelopeData: Data?,
+        transaction: SDSAnyWriteTransaction
+    ) -> Result<OWSMessageDecryptResult, Error> {
+        // This is only called via `drainPendingEnvelopes`, and that confirms that
+        // we're registered. If we're registered, we must have `LocalIdentifiers`,
+        // so this shouldn't fail.
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+            return .failure(OWSAssertionError("Not registered."))
+        }
         OWSMessageHandler.logInvalidEnvelope(envelope)
         Logger.info("decrypting envelope: \(description(for: envelope))")
 
@@ -117,8 +126,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let identity: OWSIdentity
         do {
-            identity = try localIdentity(forDestinationUuidString: envelope.destinationUuid,
-                                         transaction: transaction)
+            identity = try localIdentity(
+                forDestinationUuidString: envelope.destinationUuid,
+                localIdentifiers: localIdentifiers,
+                transaction: transaction
+            )
             // Check expected envelope types.
             switch (identity, envelope.unwrappedType) {
             case (.aci, _):
@@ -148,7 +160,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 transaction: transaction
             ))
         case .unidentifiedSender:
-            return decryptUnidentifiedSenderEnvelope(envelope, sentTo: identity, transaction: transaction)
+            return decryptUnidentifiedSenderEnvelope(envelope, sentTo: identity, localIdentifiers: localIdentifiers, transaction: transaction)
         case .senderkeyMessage:
             plaintextDataOrError = decrypt(envelope, sentTo: identity, cipherType: .senderKey, transaction: transaction)
         case .plaintextContent:
@@ -655,6 +667,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     private func decryptUnidentifiedSenderEnvelope(
         _ envelope: SSKProtoEnvelope,
         sentTo identity: OWSIdentity,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) -> Result<OWSMessageDecryptResult, Error> {
         guard let encryptedData = envelope.content else {
@@ -691,6 +704,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 trustRoot: Self.udManager.trustRoot.key,
                 cipherTextData: encryptedData,
                 timestamp: envelope.serverTimestamp,
+                localIdentifiers: localIdentifiers,
                 protocolContext: transaction
             )
         } catch let outerError as SecretSessionKnownSenderError {
@@ -725,10 +739,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
         let sourceDeviceId = UInt32(rawSourceDeviceId)
 
-        let recipient = SignalRecipient.mergeHighTrust(
-            serviceId: decryptResult.senderServiceId.wrappedValue,
+        let recipient = DependenciesBridge.shared.recipientMerger.applyMergeFromSealedSender(
+            localIdentifiers: localIdentifiers,
+            aci: decryptResult.senderServiceId.wrappedValue,
             phoneNumber: E164(decryptResult.senderE164),
-            transaction: transaction
+            tx: transaction.asV2Write
         )
         recipient.markAsRegistered(deviceId: sourceDeviceId, transaction: transaction)
 

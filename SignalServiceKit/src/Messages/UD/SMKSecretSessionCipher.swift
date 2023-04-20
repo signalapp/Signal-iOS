@@ -215,10 +215,13 @@ public class SMKSecretSessionCipher: NSObject {
 
     // public Pair<SignalProtocolAddress, byte[]> decrypt(CertificateValidator validator, byte[] ciphertext, long timestamp)
     //    throws InvalidMetadataMessageException, InvalidMetadataVersionException, ProtocolInvalidMessageException, ProtocolInvalidKeyException, ProtocolNoSessionException, ProtocolLegacyMessageException, ProtocolInvalidVersionException, ProtocolDuplicateMessageException, ProtocolInvalidKeyIdException, ProtocolUntrustedIdentityException
-    public func decryptMessage(trustRoot: PublicKey,
-                               cipherTextData: Data,
-                               timestamp: UInt64,
-                               protocolContext: StoreContext?) throws -> SMKDecryptResult {
+    public func decryptMessage(
+        trustRoot: PublicKey,
+        cipherTextData: Data,
+        timestamp: UInt64,
+        localIdentifiers: LocalIdentifiers,
+        protocolContext: StoreContext?
+    ) throws -> SMKDecryptResult {
         guard timestamp > 0 else {
             throw SMKError.assertionError(description: "\(logTag) invalid timestamp")
         }
@@ -231,7 +234,15 @@ public class SMKSecretSessionCipher: NSObject {
 
         let sender = messageContent.senderCertificate.sender
 
-        guard !SignalServiceAddress(sender).isLocalAddress || sender.deviceId != tsAccountManager.storedDeviceId else {
+        // NOTE: We use the sender properties from the sender certificate, not from this class' properties.
+        guard sender.deviceId <= Int32.max else {
+            throw SMKError.assertionError(description: "\(logTag) Invalid senderDeviceId.")
+        }
+        guard let senderServiceId = ServiceId(uuidString: sender.uuidString) else {
+            throw SMKError.assertionError(description: "\(logTag) Invalid senderServiceId.")
+        }
+
+        if localIdentifiers.contains(serviceId: senderServiceId) && sender.deviceId == tsAccountManager.storedDeviceId {
             Logger.info("Discarding self-sent message")
             throw SMKSecretSessionCipherError.selfSentMessage
         }
@@ -247,14 +258,6 @@ public class SMKSecretSessionCipher: NSObject {
             // return new Pair<>(new SignalProtocolAddress(content.getSenderCertificate().getSender(),
             //     content.getSenderCertificate().getSenderDeviceId()),
             //     decrypt(content));
-            //
-            // NOTE: We use the sender properties from the sender certificate, not from this class' properties.
-            guard sender.deviceId <= Int32.max else {
-                throw SMKError.assertionError(description: "\(logTag) Invalid senderDeviceId.")
-            }
-            guard let senderServiceId = ServiceId(uuidString: sender.uuidString) else {
-                throw SMKError.assertionError(description: "\(logTag) Invalid senderServiceId.")
-            }
             return SMKDecryptResult(
                 senderServiceId: ServiceIdObjC(senderServiceId),
                 senderE164: sender.e164,

@@ -47,6 +47,7 @@ public class AppSetup {
         // MARK: DependenciesBridge
 
         let accountServiceClient = AccountServiceClient()
+        let aciSignalProtocolStore = SignalProtocolStore(for: .aci)
         let dateProvider = Date.provider
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
         let messageProcessor = MessageProcessor()
@@ -55,12 +56,14 @@ public class AppSetup {
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStore(for: .pni)
         let signalService = OWSSignalService()
+        let signalServiceAddressCache = SignalServiceAddressCache()
         let storageServiceManager = StorageServiceManagerImpl.shared
         let syncManager = OWSSyncManager(default: ())
         let tsAccountManager = TSAccountManager()
 
-        DependenciesBridge.setupSingleton(
+        let dependenciesBridge = DependenciesBridge.setupSingleton(
             accountServiceClient: accountServiceClient,
+            aciProtocolStore: aciSignalProtocolStore,
             appVersion: appVersion,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
@@ -71,6 +74,7 @@ public class AppSetup {
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniSignalProtocolStore,
             signalService: signalService,
+            signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager
@@ -101,7 +105,6 @@ public class AppSetup {
             tsAccountManager: tsAccountManager,
             serviceClient: SignalServiceRestClient.shared
         )
-        let aciSignalProtocolStore = SignalProtocolStore(for: .aci)
         let udManager = OWSUDManagerImpl()
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
@@ -113,7 +116,6 @@ public class AppSetup {
         let typingIndicators = TypingIndicatorsImpl()
         let attachmentDownloads = OWSAttachmentDownloads()
         let stickerManager = StickerManager()
-        let signalServiceAddressCache = SignalServiceAddressCache()
         let sskPreferences = SSKPreferences()
         let groupsV2 = GroupsV2Impl()
         let groupV2Updates = GroupV2UpdatesImpl()
@@ -133,7 +135,12 @@ public class AppSetup {
         let systemStoryManager = SystemStoryManager()
         let remoteMegaphoneFetcher = RemoteMegaphoneFetcher()
         let sskJobQueues = SSKJobQueues()
-        let contactDiscoveryManager = ContactDiscoveryManagerImpl()
+        let contactDiscoveryManager = ContactDiscoveryManagerImpl(
+            db: dependenciesBridge.db,
+            recipientFetcher: dependenciesBridge.recipientFetcher,
+            recipientMerger: dependenciesBridge.recipientMerger,
+            tsAccountManager: tsAccountManager
+        )
 
         Environment.shared = Environment(
             preferences: preferences,

@@ -13,11 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class ServiceIdObjC;
 @class SignalServiceAddress;
 
-typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientTrustLevel) {
-    SignalRecipientTrustLevelLow,
-    SignalRecipientTrustLevelHigh
-};
-
 typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientSource) {
     SignalRecipientSourceLocal,
     SignalRecipientSourceStorageService,

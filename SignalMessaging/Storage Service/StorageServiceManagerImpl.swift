@@ -522,7 +522,7 @@ class StorageServiceOperation: OWSOperation {
     private static func recordPendingMutations(
         _ pendingMutations: PendingMutations,
         in state: inout State,
-        transaction: SDSAnyWriteTransaction
+        transaction tx: SDSAnyWriteTransaction
     ) {
         // Coalesce addresses to account IDs. There may be duplicates among the
         // addresses and account IDs.
@@ -531,8 +531,9 @@ class StorageServiceOperation: OWSOperation {
 
         allAccountIds.formUnion(pendingMutations.updatedAccountIds)
 
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         allAccountIds.formUnion(pendingMutations.updatedServiceIds.lazy.map {
-            SignalRecipient.fetchOrCreate(serviceId: $0, transaction: transaction).uniqueId
+            recipientFetcher.fetchOrCreate(serviceId: $0, tx: tx.asV2Write).uniqueId
         })
 
         // Then, update State with all these pending mutations.
@@ -1494,7 +1495,8 @@ class StorageServiceOperation: OWSOperation {
                 identityManager: identityManager,
                 profileManager: profileManagerImpl,
                 tsAccountManager: tsAccountManager,
-                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
+                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
+                recipientMerger: DependenciesBridge.shared.recipientMerger
             ),
             changeState: \.accountIdChangeMap,
             storageIdentifier: \.accountIdToIdentifierMap,

@@ -4,14 +4,62 @@
 //
 
 import Foundation
+import SignalCoreKit
 
-protocol RecipientMerger {
-    func merge(
-        trustLevel: SignalRecipientTrustLevel,
-        serviceId: ServiceId?,
+public protocol RecipientMerger {
+    /// We're registering, linking, changing our number, etc. This is the only
+    /// time we're allowed to "merge" the identifiers for our own account.
+    func applyMergeForLocalAccount(
+        aci: ServiceId,
+        pni: ServiceId?,
+        phoneNumber: E164,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient
+
+    /// We've learned about an association from another device. These sources
+    /// don't indicate whether a ServiceId is an ACI or PNI.
+    func applyMergeFromLinkedDevice(
+        localIdentifiers: LocalIdentifiers,
+        serviceId: ServiceId,
         phoneNumber: E164?,
-        transaction: DBWriteTransaction
-    ) -> SignalRecipient?
+        tx: DBWriteTransaction
+    ) -> SignalRecipient
+
+    /// We've learned about an association from CDS.
+    func applyMergeFromContactDiscovery(
+        localIdentifiers: LocalIdentifiers,
+        aci: ServiceId,
+        phoneNumber: E164,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient
+
+    /// We've learned about an association from a Sealed Sender message. These
+    /// always come from an ACI, but they might not have a phone number if phone
+    /// number sharing is disabled.
+    func applyMergeFromSealedSender(
+        localIdentifiers: LocalIdentifiers,
+        aci: ServiceId,
+        phoneNumber: E164?,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient
+}
+
+protocol RecipientMergeObserver {
+    /// We just learned a new association between identifiers.
+    ///
+    /// If you provide only a single identifier to a merge, then it's not
+    /// possible for us to learn about an association. However, if you provide
+    /// two or more identifiers, and if it's the first time we've learned that
+    /// they're linked, this callback will be invoked.
+    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction)
+}
+
+struct MergedRecipient {
+    let serviceId: ServiceId
+    let oldPhoneNumber: String?
+    let newPhoneNumber: E164
+    let isLocalRecipient: Bool
+    let signalRecipient: SignalRecipient
 }
 
 protocol RecipientMergerTemporaryShims {
@@ -30,76 +78,100 @@ protocol RecipientMergerTemporaryShims {
 
 class RecipientMergerImpl: RecipientMerger {
     private let temporaryShims: RecipientMergerTemporaryShims
+    private let observers: [RecipientMergeObserver]
+    private let recipientFetcher: RecipientFetcher
     private let dataStore: RecipientDataStore
     private let storageServiceManager: StorageServiceManager
 
     init(
         temporaryShims: RecipientMergerTemporaryShims,
+        observers: [RecipientMergeObserver],
+        recipientFetcher: RecipientFetcher,
         dataStore: RecipientDataStore,
         storageServiceManager: StorageServiceManager
     ) {
         self.temporaryShims = temporaryShims
+        self.observers = observers
+        self.recipientFetcher = recipientFetcher
         self.dataStore = dataStore
         self.storageServiceManager = storageServiceManager
     }
 
-    func merge(
-        trustLevel: SignalRecipientTrustLevel,
-        serviceId: ServiceId?,
+    static func buildObservers(
+        signalServiceAddressCache: SignalServiceAddressCache
+    ) -> [RecipientMergeObserver] {
+        [
+            signalServiceAddressCache
+        ]
+    }
+
+    func applyMergeForLocalAccount(
+        aci: ServiceId,
+        pni: ServiceId?,
+        phoneNumber: E164,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient {
+        return mergeAlways(serviceId: aci, phoneNumber: phoneNumber, isLocalRecipient: true, tx: tx)
+    }
+
+    func applyMergeFromLinkedDevice(
+        localIdentifiers: LocalIdentifiers,
+        serviceId: ServiceId,
         phoneNumber: E164?,
-        transaction: DBWriteTransaction
-    ) -> SignalRecipient? {
-        guard serviceId != nil || phoneNumber != nil else {
-            return nil
+        tx: DBWriteTransaction
+    ) -> SignalRecipient {
+        guard let phoneNumber else {
+            return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
         }
-        switch trustLevel {
-        case .low:
-            return mergeLowTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
-        case .high:
-            return mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
-        }
+        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, serviceId: serviceId, phoneNumber: phoneNumber, tx: tx)
     }
 
-    /// Fetches (or creates) a low-trust recipient.
-    ///
-    /// Low trust fetches don't indicate any relation between `serviceId` and
-    /// `phoneNumber`. They might be the same account, but they also may refer
-    /// to different accounts.
-    ///
-    /// In this method, we first try to fetch based on `serviceId`. If there's a
-    /// recipient for `serviceId`, we return it as-is, even if its phone number
-    /// doesn't match `phoneNumber`. If there's no recipient for `serviceId`
-    /// (but `serviceId` is nonnil), we'll create a ServiceId-only recipient
-    /// (i.e., we ignore `phoneNumber`).
-    ///
-    /// Otherwise, we try to fetch based on `phoneNumber`. If there's a
-    /// recipient for the phone number, we return it as-is (even if it already
-    /// has a different ServiceId specified). If there's not a recipient, we'll
-    /// create a phone number-only recipient (b/c `serviceId` is nil).
-    private func mergeLowTrust(serviceId: ServiceId?, phoneNumber: E164?, transaction: DBWriteTransaction) -> SignalRecipient? {
-        if let serviceId {
-            if let serviceIdRecipient = dataStore.fetchRecipient(serviceId: serviceId, transaction: transaction) {
-                return serviceIdRecipient
-            }
-            let newInstance = SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: nil)
-            dataStore.insertRecipient(newInstance, transaction: transaction)
-            return newInstance
+    func applyMergeFromSealedSender(
+        localIdentifiers: LocalIdentifiers,
+        aci: ServiceId,
+        phoneNumber: E164?,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient {
+        guard let phoneNumber else {
+            return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         }
-        if let phoneNumber {
-            if let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: transaction) {
-                return phoneNumberRecipient
-            }
-            let newInstance = SignalRecipient(serviceId: nil, phoneNumber: E164ObjC(phoneNumber))
-            dataStore.insertRecipient(newInstance, transaction: transaction)
-            return newInstance
-        }
-        return nil
+        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, serviceId: aci, phoneNumber: phoneNumber, tx: tx)
     }
 
-    /// Fetches (or creates) a high-trust recipient.
+    func applyMergeFromContactDiscovery(
+        localIdentifiers: LocalIdentifiers,
+        aci: ServiceId,
+        phoneNumber: E164,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient {
+        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, serviceId: aci, phoneNumber: phoneNumber, tx: tx)
+    }
+
+    /// Performs a merge unless a provided identifier refers to the local user.
     ///
-    /// High trust fetches indicate that `serviceId` & `phoneNumber` refer to
-    /// the same account. As part of the fetch, the database will be updated to
+    /// With the exception of registration, change number, etc., we're never
+    /// allowed to initiate a merge with our own identifiers. Instead, we simply
+    /// return whichever recipient exists for the provided `serviceId`.
+    private func mergeIfNotLocalIdentifier(
+        localIdentifiers: LocalIdentifiers,
+        serviceId: ServiceId,
+        phoneNumber: E164,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient {
+        if localIdentifiers.contains(serviceId: serviceId) || localIdentifiers.contains(phoneNumber: phoneNumber) {
+            return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+        }
+        return mergeAlways(serviceId: serviceId, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
+    }
+
+    /// Performs a merge for the provided identifiers.
+    ///
+    /// There may be a ``SignalRecipient`` for one or more of the provided
+    /// identifiers. If there is, we'll update and return that value (see the
+    /// rules below). Otherwise, we'll create a new instance.
+    ///
+    /// A merge indicates that `serviceId` & `phoneNumber` refer to the same
+    /// account. As part of this operation, the database will be updated to
     /// reflect that relationship.
     ///
     /// In general, the rules we follow when applying changes are:
@@ -111,13 +183,12 @@ class RecipientMergerImpl: RecipientMerger {
     ///
     /// * Phone numbers are transient and can move freely between ACIs. When
     /// they do, we must backfill the database to reflect the change.
-    private func mergeHighTrust(serviceId: ServiceId?, phoneNumber: E164?, transaction: DBWriteTransaction) -> SignalRecipient? {
-        // If we don't have both identifiers, we can't merge anything, so just
-        // fetch or create a recipient with whichever identifier was provided.
-        guard let serviceId, let phoneNumber else {
-            return mergeLowTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
-        }
-
+    private func mergeAlways(
+        serviceId: ServiceId,
+        phoneNumber: E164,
+        isLocalRecipient: Bool,
+        tx transaction: DBWriteTransaction
+    ) -> SignalRecipient {
         let serviceIdRecipient = dataStore.fetchRecipient(serviceId: serviceId, transaction: transaction)
 
         // If these values have already been merged, we can return the result
@@ -134,6 +205,8 @@ class RecipientMergerImpl: RecipientMerger {
         // would match the the prior `if` check and return early without making any
         // modifications.
 
+        let oldPhoneNumber = serviceIdRecipient?.recipientPhoneNumber
+
         let mergedRecipient: SignalRecipient
 
         switch _mergeHighTrust(
@@ -149,6 +222,19 @@ class RecipientMergerImpl: RecipientMerger {
         case .none:
             mergedRecipient = SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: E164ObjC(phoneNumber))
             dataStore.insertRecipient(mergedRecipient, transaction: transaction)
+        }
+
+        for observer in observers {
+            observer.didLearnAssociation(
+                mergedRecipient: MergedRecipient(
+                    serviceId: serviceId,
+                    oldPhoneNumber: oldPhoneNumber,
+                    newPhoneNumber: phoneNumber,
+                    isLocalRecipient: isLocalRecipient,
+                    signalRecipient: mergedRecipient
+                ),
+                transaction: transaction
+            )
         }
 
         return mergedRecipient
@@ -326,5 +412,13 @@ class RecipientMergerImpl: RecipientMerger {
         )
 
         return winningRecipient
+    }
+}
+
+// MARK: - SignalServiceAddressCache
+
+extension SignalServiceAddressCache: RecipientMergeObserver {
+    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
+        updateRecipient(mergedRecipient.signalRecipient)
     }
 }

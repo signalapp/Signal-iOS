@@ -36,10 +36,10 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             uuid: localServiceId.uuidValue
         )
         // Create recipients.
-        write { transaction in
+        write { tx in
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             for recipient in self.recipients {
-                SignalRecipient.fetchOrCreate(serviceId: recipient, transaction: transaction)
-                    .markAsRegistered(transaction: transaction)
+                recipientFetcher.fetchOrCreate(serviceId: recipient, tx: tx.asV2Write).markAsRegistered(transaction: tx)
             }
         }
         // Create identities for our recipients.

@@ -151,11 +151,7 @@ public extension TSGroupThread {
     static let membershipDidChange = Notification.Name("TSGroupThread.membershipDidChange")
 
     func updateGroupMemberRecords(transaction: SDSAnyWriteTransaction) {
-        let groupMemberUpdater = GroupMemberUpdaterImpl(
-            temporaryShims: GroupMemberUpdaterTemporaryShimsImpl(),
-            groupMemberDataStore: GroupMemberDataStoreImpl(),
-            signalServiceAddressCache: Self.signalServiceAddressCache
-        )
+        let groupMemberUpdater = DependenciesBridge.shared.groupMemberUpdater
         groupMemberUpdater.updateRecords(groupThread: self, transaction: transaction.asV2Write)
     }
 

@@ -13,13 +13,25 @@ import SignalCoreKit
 // public class SecretSessionCipherTest extends TestCase {
 class SMKSecretSessionCipherTest: SSKBaseTestSwift {
 
+    private lazy var aliceMockClient = MockClient(
+        serviceId: ServiceId(uuidString: "aaaaaaaa-7000-11eb-b32a-33b8a8a487a6")!,
+        phoneNumber: E164("+16505550100")!,
+        deviceId: 1,
+        registrationId: 1234
+    )
+
+    private lazy var bobMockClient = MockClient(
+        serviceId: ServiceId(uuidString: "bbbbbbbb-7000-11eb-b32a-33b8a8a487a6")!,
+        phoneNumber: E164("+16505550101")!,
+        deviceId: 1,
+        registrationId: 1234
+    )
+
     // public void testEncryptDecrypt() throws UntrustedIdentityException, InvalidKeyException, InvalidCertificateException, InvalidProtocolBufferException, InvalidMetadataMessageException, ProtocolDuplicateMessageException, ProtocolUntrustedIdentityException, ProtocolLegacyMessageException, ProtocolInvalidKeyException, InvalidMetadataVersionException, ProtocolInvalidVersionException, ProtocolInvalidMessageException, ProtocolInvalidKeyIdException, ProtocolNoSessionException, SelfSendException {
     func testEncryptDecrypt() {
         // TestInMemorySignalProtocolStore aliceStore = new TestInMemorySignalProtocolStore();
         // TestInMemorySignalProtocolStore bobStore   = new TestInMemorySignalProtocolStore();
         // NOTE: We use MockClient to ensure consistency between of our session state.
-        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
 
         // initializeSessions(aliceStore, bobStore);
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
@@ -30,11 +42,10 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
         let senderCertificate = Self.createCertificateFor(
             trustRoot: trustRoot,
-            senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
-                                                    uuidString: aliceMockClient.recipientUuid!.uuidString,
-                                                    deviceId: UInt32(aliceMockClient.deviceId)),
+            senderAddress: aliceMockClient.sealedSenderAddress,
             identityKey: aliceMockClient.identityKeyPair.publicKey,
-            expirationTimestamp: 31337)
+            expirationTimestamp: 31337
+        )
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
         let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
@@ -42,9 +53,9 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // byte[] ciphertext = aliceCipher.encrypt(new SignalProtocolAddress("+14152222222", 1),
         // senderCertificate, "smert za smert".getBytes());
         // NOTE: The java tests don't bother padding the plaintext.
-        let alicePlaintext = "smert za smert".data(using: String.Encoding.utf8)!
+        let alicePlaintext = "smert za smert".data(using: .utf8)!
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.address.serviceId!,
+            for: bobMockClient.serviceId,
             deviceId: bobMockClient.deviceId,
             paddedPlaintext: alicePlaintext,
             contentHint: .default,
@@ -57,18 +68,21 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let bobCipher: SMKSecretSessionCipher = try! bobMockClient.createSecretSessionCipher()
 
         // Pair<SignalProtocolAddress, byte[]> plaintext = bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31335);
-        let bobPlaintext = try! bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
-                                                         cipherTextData: ciphertext,
-                                                         timestamp: 31335,
-                                                         protocolContext: nil)
+        let bobPlaintext = try! bobCipher.decryptMessage(
+            trustRoot: trustRoot.publicKey,
+            cipherTextData: ciphertext,
+            timestamp: 31335,
+            localIdentifiers: bobMockClient.localIdentifiers,
+            protocolContext: nil
+        )
 
         // assertEquals(new String(plaintext.second()), "smert za smert");
         // assertEquals(plaintext.first().getName(), "+14151111111");
         // assertEquals(plaintext.first().getDeviceId(), 1);
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "smert za smert")
         XCTAssertEqual(bobPlaintext.senderDeviceId, Int(aliceMockClient.deviceId))
-        XCTAssertEqual(bobPlaintext.senderServiceId.uuidValue, aliceMockClient.address.uuid)
-        XCTAssertEqual(bobPlaintext.senderE164, aliceMockClient.address.phoneNumber)
+        XCTAssertEqual(bobPlaintext.senderServiceId.wrappedValue, aliceMockClient.serviceId)
+        XCTAssertEqual(bobPlaintext.senderE164, nil)
     }
 
     // public void testEncryptDecryptUntrusted() throws Exception {
@@ -76,8 +90,6 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // TestInMemorySignalProtocolStore aliceStore = new TestInMemorySignalProtocolStore();
         // TestInMemorySignalProtocolStore bobStore   = new TestInMemorySignalProtocolStore();
         // NOTE: We use MockClient to ensure consistency between of our session state.
-        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
 
         // initializeSessions(aliceStore, bobStore);
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
@@ -89,9 +101,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // SenderCertificate   senderCertificate = createCertificateFor(falseTrustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
         let senderCertificate = Self.createCertificateFor(
             trustRoot: falseTrustRoot,
-            senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
-                                                    uuidString: aliceMockClient.recipientUuid!.uuidString,
-                                                    deviceId: UInt32(aliceMockClient.deviceId)),
+            senderAddress: aliceMockClient.sealedSenderAddress,
             identityKey: aliceMockClient.identityKeyPair.publicKey,
             expirationTimestamp: 31337)
 
@@ -105,7 +115,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let aliceGroupId = Randomness.generateRandomBytes(6)
         let aliceContentHint = UnidentifiedSenderMessageContent.ContentHint.implicit
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.address.serviceId!,
+            for: bobMockClient.serviceId,
             deviceId: bobMockClient.deviceId,
             paddedPlaintext: alicePlaintext,
             contentHint: aliceContentHint,
@@ -124,10 +134,13 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         //   // good
         // }
         do {
-            _ = try bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
-                                             cipherTextData: ciphertext,
-                                             timestamp: 31335,
-                                             protocolContext: nil)
+            _ = try bobCipher.decryptMessage(
+                trustRoot: trustRoot.publicKey,
+                cipherTextData: ciphertext,
+                timestamp: 31335,
+                localIdentifiers: bobMockClient.localIdentifiers,
+                protocolContext: nil
+            )
             XCTFail("Decryption should have failed.")
         } catch let knownSenderError as SecretSessionKnownSenderError {
             // Decryption is expected to fail.
@@ -145,7 +158,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
                     originalSenderDeviceId: knownSenderError.senderDeviceId
                 )
             )
-            XCTAssertEqual(knownSenderError.senderAddress.uuid, aliceMockClient.address.uuid)
+            XCTAssertEqual(knownSenderError.senderAddress.serviceId, aliceMockClient.serviceId)
             // The certificate was invalid, so we don't trust the phone number.
             XCTAssertNil(knownSenderError.senderAddress.phoneNumber)
         } catch {
@@ -158,8 +171,6 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // TestInMemorySignalProtocolStore aliceStore = new TestInMemorySignalProtocolStore();
         // TestInMemorySignalProtocolStore bobStore   = new TestInMemorySignalProtocolStore();
         // NOTE: We use MockClient to ensure consistency between of our session state.
-        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
 
         // initializeSessions(aliceStore, bobStore);
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
@@ -170,9 +181,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
         let senderCertificate = Self.createCertificateFor(
             trustRoot: trustRoot,
-            senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
-                                                    uuidString: aliceMockClient.recipientUuid!.uuidString,
-                                                    deviceId: UInt32(aliceMockClient.deviceId)),
+            senderAddress: aliceMockClient.sealedSenderAddress,
             identityKey: aliceMockClient.identityKeyPair.publicKey,
             expirationTimestamp: 31337)
 
@@ -187,7 +196,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let aliceContentHint = UnidentifiedSenderMessageContent.ContentHint.resendable
 
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.address.serviceId!,
+            for: bobMockClient.serviceId,
             deviceId: bobMockClient.deviceId,
             paddedPlaintext: alicePlaintext,
             contentHint: aliceContentHint,
@@ -206,10 +215,13 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         //   // good
         // }
         do {
-            _ = try bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
-                                             cipherTextData: ciphertext,
-                                             timestamp: 31338,
-                                             protocolContext: nil)
+            _ = try bobCipher.decryptMessage(
+                trustRoot: trustRoot.publicKey,
+                cipherTextData: ciphertext,
+                timestamp: 31338,
+                localIdentifiers: bobMockClient.localIdentifiers,
+                protocolContext: nil
+            )
             XCTFail("Decryption should have failed.")
         } catch let knownSenderError as SecretSessionKnownSenderError {
             // Decryption is expected to fail.
@@ -227,7 +239,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
                     originalSenderDeviceId: knownSenderError.senderDeviceId
                 )
             )
-            XCTAssertEqual(knownSenderError.senderAddress.uuid, aliceMockClient.address.uuid)
+            XCTAssertEqual(knownSenderError.senderAddress.serviceId, aliceMockClient.serviceId)
             // The certificate was invalid, so we don't trust the phone number.
             XCTAssertNil(knownSenderError.senderAddress.phoneNumber)
         } catch {
@@ -240,12 +252,9 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // TestInMemorySignalProtocolStore aliceStore = new TestInMemorySignalProtocolStore();
         // TestInMemorySignalProtocolStore bobStore   = new TestInMemorySignalProtocolStore();
         // NOTE: We use MockClient to ensure consistency between of our session state.
-        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
 
         // initializeSessions(aliceStore, bobStore);
-        initializeSessions(aliceMockClient: aliceMockClient,
-                           bobMockClient: bobMockClient)
+        initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
 
         // ECKeyPair           trustRoot         = Curve.generateKeyPair();
         let trustRoot = IdentityKeyPair.generate()
@@ -254,9 +263,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, randomKeyPair.getPublicKey(), 31337);
          let senderCertificate = Self.createCertificateFor(
              trustRoot: trustRoot,
-             senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
-                                                     uuidString: aliceMockClient.recipientUuid!.uuidString,
-                                                     deviceId: UInt32(aliceMockClient.deviceId)),
+             senderAddress: aliceMockClient.sealedSenderAddress,
              identityKey: randomKeyPair.publicKey,
              expirationTimestamp: 31337)
 
@@ -268,7 +275,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // NOTE: The java tests don't bother padding the plaintext.
         let alicePlaintext = "smert za smert".data(using: String.Encoding.utf8)!
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.address.serviceId!,
+            for: bobMockClient.serviceId,
             deviceId: bobMockClient.deviceId,
             paddedPlaintext: alicePlaintext,
             contentHint: .default,
@@ -286,10 +293,13 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         //   // good
         // }
         do {
-            _ = try bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
-                                             cipherTextData: ciphertext,
-                                             timestamp: 31335,
-                                             protocolContext: nil)
+            _ = try bobCipher.decryptMessage(
+                trustRoot: trustRoot.publicKey,
+                cipherTextData: ciphertext,
+                timestamp: 31335,
+                localIdentifiers: bobMockClient.localIdentifiers,
+                protocolContext: nil
+            )
             XCTFail("Decryption should have failed.")
         } catch SignalError.invalidMessage(_) {
             // Decryption is expected to fail.
@@ -303,16 +313,12 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
 
     func testGroupEncryptDecrypt_Success() {
         // Setup: Initialize sessions and sender certificate
-        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
 
         let trustRoot = IdentityKeyPair.generate()
         let senderCertificate = Self.createCertificateFor(
             trustRoot: trustRoot,
-            senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
-                                                    uuidString: aliceMockClient.recipientUuid!.uuidString,
-                                                    deviceId: UInt32(aliceMockClient.deviceId)),
+            senderAddress: aliceMockClient.sealedSenderAddress,
             identityKey: aliceMockClient.identityKeyPair.publicKey,
             expirationTimestamp: 31337)
 
@@ -352,27 +358,25 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
             trustRoot: trustRoot.publicKey,
             cipherTextData: Data(singleRecipientCiphertext),
             timestamp: 31335,
-            protocolContext: nil)
+            localIdentifiers: bobMockClient.localIdentifiers,
+            protocolContext: nil
+        )
 
         // Verify
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "beltalowda")
-        XCTAssertEqual(bobPlaintext.senderServiceId, aliceMockClient.address.serviceIdObjC)
+        XCTAssertEqual(bobPlaintext.senderServiceId.wrappedValue, aliceMockClient.serviceId)
         XCTAssertEqual(bobPlaintext.senderDeviceId, Int(aliceMockClient.deviceId))
         XCTAssertEqual(bobPlaintext.messageType, .senderKey)
     }
 
     func testGroupEncryptDecrypt_Failure() {
         // Setup: Initialize sessions and sender certificate
-        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
 
         let trustRoot = IdentityKeyPair.generate()
         let senderCertificate = Self.createCertificateFor(
             trustRoot: trustRoot,
-            senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
-                                                    uuidString: aliceMockClient.recipientUuid!.uuidString,
-                                                    deviceId: UInt32(aliceMockClient.deviceId)),
+            senderAddress: aliceMockClient.sealedSenderAddress,
             identityKey: aliceMockClient.identityKeyPair.publicKey,
             expirationTimestamp: 31337)
 
@@ -408,14 +412,15 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
                 trustRoot: trustRoot.publicKey,
                 cipherTextData: Data(singleRecipientCiphertext),
                 timestamp: 31335,
-                protocolContext: nil)
+                localIdentifiers: bobMockClient.localIdentifiers,
+                protocolContext: nil
+            )
             XCTFail("Decryption should have failed.")
         } catch let knownSenderError as SecretSessionKnownSenderError {
             // Verify: We need to make sure that the sender, group, and contentHint are preserved
             // through decryption failures because of missing a missing sender key. This will
             // help with recovery.
-            XCTAssertEqual(knownSenderError.senderAddress, aliceMockClient.address)
-            XCTAssertEqual(knownSenderError.senderAddress.uuid, aliceMockClient.address.uuid)
+            XCTAssertEqual(knownSenderError.senderAddress.serviceId, aliceMockClient.serviceId)
             // The certificate was invalid, so we don't trust the phone number.
             XCTAssertNil(knownSenderError.senderAddress.phoneNumber)
             XCTAssertEqual(knownSenderError.senderDeviceId, UInt32(aliceMockClient.deviceId))

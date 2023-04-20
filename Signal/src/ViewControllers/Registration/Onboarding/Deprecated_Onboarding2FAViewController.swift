@@ -293,6 +293,9 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
 
         onboardingController.submitVerification(fromViewController: self, completion: { (outcome) in
             switch outcome {
+            case .invalidPhoneNumber:
+                owsFailDebug("Invalid phone number in 2FA view.")
+                animateProgressFail()
             case .invalid2FAPin:
                 // In the past, we used to truncate pins. To support legacy users,
                 // also attempt the truncated version of the pin if the original

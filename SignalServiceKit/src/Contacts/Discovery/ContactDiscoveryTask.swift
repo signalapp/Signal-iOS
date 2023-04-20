@@ -4,13 +4,31 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 /// The primary interface for discovering contacts through the CDS service.
 protocol ContactDiscoveryTaskQueue {
     func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>>
 }
 
-final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependencies {
+final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
+    private let db: DB
+    private let recipientFetcher: RecipientFetcher
+    private let recipientMerger: RecipientMerger
+    private let tsAccountManager: TSAccountManager
+
+    init(
+        db: DB,
+        recipientFetcher: RecipientFetcher,
+        recipientMerger: RecipientMerger,
+        tsAccountManager: TSAccountManager
+    ) {
+        self.db = db
+        self.recipientFetcher = recipientFetcher
+        self.recipientMerger = recipientMerger
+        self.tsAccountManager = tsAccountManager
+    }
+
     func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {
         let e164s = Set(phoneNumbers.compactMap { E164($0) })
         guard !e164s.isEmpty else {
@@ -27,14 +45,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
         return firstly {
             Self.createContactDiscoveryOperation(for: e164s, mode: mode).perform(on: workQueue)
         }.map(on: workQueue) { (discoveredContacts: Set<DiscoveredContactInfo>) -> Set<SignalRecipient> in
-            let undiscoverableE164s = e164s.subtracting(discoveredContacts.lazy.map { $0.e164 })
-            return Self.databaseStorage.write {
-                Self.storeResults(
-                    discoveredContacts: discoveredContacts,
-                    undiscoverableE164s: undiscoverableE164s,
-                    transaction: $0
-                )
-            }
+            try self.processResults(requestedPhoneNumbers: e164s, discoveryResults: discoveredContacts)
         }
     }
 
@@ -42,18 +53,39 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
         return ContactDiscoveryV2CompatibilityOperation(e164sToLookup: e164s, mode: mode)
     }
 
-    private static func storeResults(
+    private func processResults(
+        requestedPhoneNumbers: Set<E164>,
+        discoveryResults: Set<DiscoveredContactInfo>
+    ) throws -> Set<SignalRecipient> {
+        let undiscoverableE164s = requestedPhoneNumbers.subtracting(discoveryResults.lazy.map { $0.e164 })
+
+        return try db.write { tx in
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx)) else {
+                throw OWSAssertionError("Not registered.")
+            }
+            return storeResults(
+                discoveredContacts: discoveryResults,
+                undiscoverableE164s: undiscoverableE164s,
+                localIdentifiers: localIdentifiers,
+                tx: tx
+            )
+        }
+    }
+
+    private func storeResults(
         discoveredContacts: Set<DiscoveredContactInfo>,
         undiscoverableE164s: Set<E164>,
-        transaction: SDSAnyWriteTransaction
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
     ) -> Set<SignalRecipient> {
         let registeredRecipients = Set(discoveredContacts.map { discoveredContact -> SignalRecipient in
-            let recipient = SignalRecipient.mergeHighTrust(
-                serviceId: ServiceId(discoveredContact.uuid),
+            let recipient = recipientMerger.applyMergeFromContactDiscovery(
+                localIdentifiers: localIdentifiers,
+                aci: ServiceId(discoveredContact.uuid),
                 phoneNumber: discoveredContact.e164,
-                transaction: transaction
+                tx: tx
             )
-            recipient.markAsRegistered(transaction: transaction)
+            recipient.markAsRegistered(transaction: SDSDB.shimOnlyBridge(tx))
             return recipient
         })
 
@@ -83,8 +115,8 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
                 continue
             }
 
-            let recipient = SignalRecipient.fetchOrCreate(phoneNumber: undiscoverableE164, transaction: transaction)
-            recipient.markAsUnregistered(transaction: transaction)
+            let recipient = recipientFetcher.fetchOrCreate(phoneNumber: undiscoverableE164, tx: tx)
+            recipient.markAsUnregistered(transaction: SDSDB.shimOnlyBridge(tx))
         }
 
         return registeredRecipients
