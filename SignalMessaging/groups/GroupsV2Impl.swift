@@ -1099,14 +1099,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         remainingRetries: UInt = 3
     ) -> Promise<HTTPResponse> {
         guard
-            let localAci = tsAccountManager.localUuid,
-            let localPni = tsAccountManager.localPni
+            let localAci = tsAccountManager.localUuid
         else {
-            return Promise(error: OWSAssertionError("Missing local ACI/PNI."))
+            return Promise(error: OWSAssertionError("Missing local ACI"))
         }
 
         return firstly {
-            self.ensureTemporalCredentials(localAci: localAci, localPni: localPni)
+            self.ensureTemporalCredentials(localAci: localAci, localPni: tsAccountManager.localPni)
         }.then(on: DispatchQueue.global()) { (authCredential: AuthCredentialWithPni) -> Promise<GroupsV2Request> in
             try requestBuilder(authCredential)
         }.then(on: DispatchQueue.global()) { (request: GroupsV2Request) -> Promise<HTTPResponse> in
@@ -1469,7 +1468,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     private func ensureTemporalCredentials(
         localAci: UUID,
-        localPni: UUID
+        localPni: UUID?
     ) -> Promise<AuthCredentialWithPni> {
         let redemptionTime = Self.todaySecondsSinceEpoch
 
@@ -1521,7 +1520,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     private func retrieveTemporalCredentialsFromService(
         localAci: UUID,
-        localPni: UUID
+        localPni: UUID?
     ) -> Promise<AuthCredentialWithPniMap> {
         let sevenDaysSeconds = 7 * Self.dayInSeconds
         let todaySeconds = Self.todaySecondsSinceEpoch
@@ -1541,7 +1540,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
             let (temporalCredentials, pni) = try self.parseCredentialResponse(responseObject: json)
 
-            if pni != localPni {
+            if let localPni, pni != localPni {
                 Logger.error("PNI from fetching auth credentials (\(pni)) did not match local PNI \(localPni)! Did the phone number change?")
             }
 
