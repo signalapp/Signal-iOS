@@ -331,4 +331,24 @@ public enum RegistrationServiceResponses {
             try container.encode(kbsAuthCredential.credential, forKey: .kbsAuthCredential)
         }
     }
+
+    // MARK: Check Proxy Connection
+
+    public enum CheckProxyConnectionResponseCodes: Int, UnknownEnumCodable {
+        case connected = 400
+        case failure = -1
+
+        static public var unknown: Self { .failure }
+
+        public init(rawValue: RawValue) {
+            switch rawValue {
+            case 200..<300:
+                self = .connected
+            case 400..<500:
+                self = .connected
+            default:
+                self = .failure
+            }
+        }
+    }
 }

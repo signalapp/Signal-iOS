@@ -316,4 +316,17 @@ public enum RegistrationRequestFactory {
         result.setAuth(auth)
         return result
     }
+
+    /// See `RegistrationServiceResponses.FetchSessionResponseCodes` for possible responses.
+    public static func checkProxyConnectionRequest() -> TSRequest {
+        // What we _want_ is an way to check that we get a response from the server. Because
+        // this is used during registration, we don't have auth credentials yet so we need to do this
+        // in an unauthenticated way.
+        // In an ideal future, we could do this by establishing an unauthenticated websocket that
+        // we use for registration purposes. We don't use websockets during reg right now.
+        // Instead, we use a REST endpoint to get registration session metadata, which we feed a
+        // bogus session id and expect to get a 4xx response. Getting a 4xx means we connected; that's
+        // all we care about. (A 2xx too, is fine, though would be quite unusual)
+        return fetchSessionRequest(sessionId: UUID().data.base64EncodedString())
+    }
 }

@@ -9,17 +9,27 @@ import SignalMessaging
 class ProxySettingsViewController: OWSTableViewController2 {
     private var useProxy = SignalProxy.useProxy
 
-    // TODO[Registration]: We should have some alternative way to check
-    // that the proxy actually works, maybe a health check request via REST?
-    // For now this is no worse than it was before.
-    /// Whether we should wait for a websocket to reconnect, or fail to do so,
-    /// when saving proxy info.
-    /// Might be false, for example, if setting up proxy info before any websocket
-    /// connections are established, e.g. during registration.
-    private let shouldWaitForWebsocketOnSave: Bool
+    /// How we check that the proxy settings worked once they are enabled.
+    public enum ValidationMethod {
+        /// Wait for a succesful websocket connection.
+        case websocket
+        /// Wait for a succesful unauthenticated REST request to get a bogus registration session.
+        ///
+        /// What we _want_ is an way to check that we get a response from the server. Because
+        /// this is used during registration, we don't have auth credentials yet so we need to do this
+        /// in an unauthenticated way.
+        /// In an ideal future, we could do this by establishing an unauthenticated websocket that
+        /// we use for registration purposes. We don't use websockets during reg right now.
+        /// Instead, we use a REST endpoint to get registration session metadata, which we feed a
+        /// bogus session id and expect to get a 4xx response. Getting a 4xx means we connected; that's
+        /// all we care about. (A 2xx too, is fine, though would be quite unusual)
+        case restGetRegistrationSession
+    }
 
-    public init(shouldWaitForWebsocketOnSave: Bool = true) {
-        self.shouldWaitForWebsocketOnSave = shouldWaitForWebsocketOnSave
+    private let validationMethod: ValidationMethod
+
+    public init(validationMethod: ValidationMethod = .websocket) {
+        self.validationMethod = validationMethod
         super.init()
     }
 
@@ -201,12 +211,9 @@ class ProxySettingsViewController: OWSTableViewController2 {
             return
         }
 
-        guard shouldWaitForWebsocketOnSave else {
-            self.dismiss(animated: true)
-            return
-        }
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-            ProxyConnectionChecker.checkConnectionAndNotify { [weak self] connected in
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modal in
+            guard let self else { return }
+            self.checkConnection().done { [weak self] connected in
                 modal.dismiss { [weak self] in
                     guard let self else { return }
                     if connected {
@@ -226,6 +233,42 @@ class ProxySettingsViewController: OWSTableViewController2 {
                     }
                 }
             }
+        }
+    }
+
+    private func checkConnection() -> Guarantee<Bool> {
+        switch validationMethod {
+        case .websocket:
+            let (guarantee, future) = Guarantee<Bool>.pending()
+            ProxyConnectionChecker.checkConnectionAndNotify { connected in
+                future.resolve(connected)
+            }
+            return guarantee
+        case .restGetRegistrationSession:
+            let request = RegistrationRequestFactory.checkProxyConnectionRequest()
+
+            func isConnected(_ statusCode: Int) -> Bool {
+                switch RegistrationServiceResponses.CheckProxyConnectionResponseCodes(rawValue: statusCode) {
+                case .connected:
+                    return true
+                case .failure:
+                    return false
+                }
+            }
+
+            return networkManager.makePromise(request: request)
+                .map { (response: HTTPResponse) -> Bool in
+                    return isConnected(response.responseStatusCode)
+                }
+                .recover { (error: Error) -> Guarantee<Bool> in
+                    guard
+                        !error.isNetworkConnectivityFailure,
+                        let error = error as? OWSHTTPError
+                    else {
+                        return .value(false)
+                    }
+                    return .value(isConnected(error.responseStatusCode))
+                }
         }
     }
 
