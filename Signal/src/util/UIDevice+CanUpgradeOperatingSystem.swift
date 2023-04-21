@@ -5,7 +5,19 @@
 
 import Foundation
 
-extension UIDevice {
+// MARK: - Protocol
+
+protocol UpgradableDevice {
+    var iosMajorVersion: Int { get }
+
+    func canUpgrade(to iosMajorVersion: Int) -> Bool
+}
+
+// MARK: - Implementation
+
+extension UIDevice: UpgradableDevice {
+    public var iosMajorVersion: Int { ProcessInfo().operatingSystemVersion.majorVersion }
+
     /// Can this device upgrade to this iOS version?
     ///
     /// This method is meant to be low-maintenance for Signal developers. Therefore, if we aren't
@@ -23,8 +35,7 @@ extension UIDevice {
         }
 
         // If we're already past that version, no need to consult the list below.
-        let currentMajorVersion = ProcessInfo().operatingSystemVersion.majorVersion
-        if currentMajorVersion >= iosMajorVersion { return true }
+        if self.iosMajorVersion >= iosMajorVersion { return true }
 
         // This list, lifted from [iOS Ref][0], is incomplete in two ways:
         //

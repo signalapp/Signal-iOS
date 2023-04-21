@@ -17,7 +17,7 @@ open class ReminderView: UIStackView {
     public var actionTitle: String? {
         didSet { render() }
     }
-    private let tapAction: () -> Void
+    public var tapAction: () -> Void
 
     @available(*, unavailable, message: "use other constructor instead.")
     required public init(coder: NSCoder) {

@@ -17,6 +17,8 @@ public class MockAppExpiry: AppExpiry {
     public func setHasAppExpiredAtCurrentVersion(db: DB) {}
 
     public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?, db: DB) {}
+
+    public init() {}
 }
 
 #endif

@@ -11,7 +11,10 @@ public class CLVReminderViews: NSObject {
     fileprivate let reminderViewCell = UITableViewCell()
     fileprivate let reminderStackView = UIStackView()
     fileprivate let expiredView = ExpirationNagView(
-        appExpiry: DependenciesBridge.shared.appExpiry
+        dateProvider: Date.provider,
+        appExpiry: DependenciesBridge.shared.appExpiry,
+        osExpiry: OsExpiry.default,
+        device: UIDevice.current
     )
     fileprivate var deregisteredView = UIView()
     fileprivate var outageView = UIView()
