@@ -6,6 +6,7 @@
 import Foundation
 import IntentsUI
 import SignalMessaging
+import SignalUI
 
 @objc
 class ChatsSettingsViewController: OWSTableViewController2 {
@@ -181,9 +182,24 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
                 comment: "Confirmation text for button which deletes all message, calling, attachments, etc."
             ),
-            proceedStyle: .destructive
-        ) { _ in
-            ThreadUtil.deleteAllContentWithSneakyTransaction()
-        }
+            proceedStyle: .destructive,
+            proceedAction: { [weak self] _ in self?.clearHistory() }
+        )
+    }
+
+    private func clearHistory() {
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false,
+            presentationDelay: 0.5,
+            backgroundBlock: { modal in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    ThreadUtil.deleteAllContentWithSneakyTransaction()
+                    DispatchQueue.main.async {
+                        modal.dismiss()
+                    }
+                }
+            }
+        )
     }
 }
