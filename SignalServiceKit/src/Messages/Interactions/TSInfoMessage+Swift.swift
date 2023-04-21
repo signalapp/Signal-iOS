@@ -17,8 +17,11 @@ public extension TSInfoMessage {
 
         guard let newGroupModel = self.newGroupModel else {
             // Legacy info message before we began embedding user info.
-            return GroupUpdateCopy.defaultGroupUpdateDescription(groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                 transaction: transaction)
+            return GroupUpdateCopy.defaultGroupUpdateDescription(
+                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                localAci: tsAccountManager.localIdentifiers(transaction: transaction)?.aci,
+                transaction: transaction
+            )
         }
 
         return groupUpdateDescription(oldGroupModel: self.oldGroupModel,
@@ -79,6 +82,7 @@ extension TSInfoMessage {
         ) else {
             return GroupUpdateCopy.defaultGroupUpdateDescription(
                 groupUpdateSourceAddress: groupUpdateSourceAddress,
+                localAci: tsAccountManager.localUuid.map { ServiceId($0) },
                 transaction: transaction
             )
         }
@@ -138,8 +142,8 @@ extension TSInfoMessage {
         }
 
         return GroupUpdateCopy(
-            newGroupModel: newGroupModel,
             oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel,
             oldDisappearingMessageToken: oldDisappearingMessageToken,
             newDisappearingMessageToken: newDisappearingMessageToken,
             localAddress: localAddress,

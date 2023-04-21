@@ -95,12 +95,8 @@ struct GroupUpdateCopy: Dependencies {
 
     // MARK: -
 
-    private let newGroupModel: TSGroupModel
-    private let newGroupMembership: GroupMembership
     private let localAddress: SignalServiceAddress
-    private let groupUpdateSourceAddress: SignalServiceAddress?
     private let updater: Updater
-    private let transaction: SDSAnyReadTransaction
     private let isReplacingJoinRequestPlaceholder: Bool
 
     // The update items, in order.
@@ -113,21 +109,23 @@ struct GroupUpdateCopy: Dependencies {
 
     public var isEmptyUpdate = false
 
-    init(newGroupModel: TSGroupModel,
-         oldGroupModel: TSGroupModel?,
-         oldDisappearingMessageToken: DisappearingMessageToken?,
-         newDisappearingMessageToken: DisappearingMessageToken?,
-         localAddress: SignalServiceAddress,
-         groupUpdateSourceAddress: SignalServiceAddress?,
-         updateMessages: TSInfoMessage.UpdateMessages?,
-         transaction: SDSAnyReadTransaction) {
-        self.newGroupModel = newGroupModel
+    init(
+        oldGroupModel: TSGroupModel?,
+        newGroupModel: TSGroupModel,
+        oldDisappearingMessageToken: DisappearingMessageToken?,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        localAddress: SignalServiceAddress,
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        updateMessages: TSInfoMessage.UpdateMessages?,
+        transaction: SDSAnyReadTransaction
+    ) {
         self.localAddress = localAddress
-        self.groupUpdateSourceAddress = groupUpdateSourceAddress
-        self.transaction = transaction
-        self.newGroupMembership = newGroupModel.groupMembership
-        self.updater = GroupUpdateCopy.updater(groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                               transaction: transaction)
+        self.updater = Self.buildUpdater(
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            localAci: localAddress.serviceId,
+            transaction: transaction
+        )
+
         if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
             self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isPlaceholderModel
         } else {
@@ -136,9 +134,11 @@ struct GroupUpdateCopy: Dependencies {
 
         populate(
             oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel,
             oldDisappearingMessageToken: oldDisappearingMessageToken,
             newDisappearingMessageToken: newDisappearingMessageToken,
-            updateMessages: updateMessages
+            updateMessages: updateMessages,
+            tx: transaction
         )
 
         switch updater {
@@ -161,13 +161,37 @@ struct GroupUpdateCopy: Dependencies {
         }
     }
 
+    private static func buildUpdater(
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        localAci: ServiceId?,
+        transaction: SDSAnyReadTransaction
+    ) -> Updater {
+        guard let updaterAddress = groupUpdateSourceAddress else {
+            return .unknown
+        }
+
+        if updaterAddress.serviceId == localAci {
+            return .localUser
+        }
+
+        return .otherUser(
+            updaterName: contactsManager.displayName(
+                for: updaterAddress,
+                transaction: transaction
+            ),
+            updaterAddress: updaterAddress
+        )
+    }
+
     // MARK: -
 
     mutating func populate(
         oldGroupModel: TSGroupModel?,
+        newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        updateMessages: TSInfoMessage.UpdateMessages?
+        updateMessages: TSInfoMessage.UpdateMessages?,
+        tx: SDSAnyReadTransaction
     ) {
         if
             let updateMessageParams = updateMessages?.groupUpdateTypeAndCopyForMessages(withUpdater: updater),
@@ -177,30 +201,59 @@ struct GroupUpdateCopy: Dependencies {
                 addItem(groupUpdateType, attributedCopy: attributedCopy)
             }
         } else if let oldGroupModel = oldGroupModel {
-            let oldGroupMembership = oldGroupModel.groupMembership
-
             if isReplacingJoinRequestPlaceholder {
-                addMembershipUpdates(oldGroupMembership: oldGroupMembership,
-                                     forLocalUserOnly: true)
-            } else if wasJustMigrated {
-                addMigrationUpdates(oldGroupMembership: oldGroupMembership)
+                addMembershipUpdates(
+                    oldGroupMembership: oldGroupModel.groupMembership,
+                    newGroupMembership: newGroupModel.groupMembership,
+                    newGroupModel: newGroupModel,
+                    forLocalUserOnly: true,
+                    tx: tx
+                )
+            } else if wasJustMigrated(newGroupModel: newGroupModel) {
+                addMigrationUpdates(
+                    oldGroupMembership: oldGroupModel.groupMembership,
+                    newGroupMembership: newGroupModel.groupMembership,
+                    newGroupModel: newGroupModel
+                )
             } else {
-                addMembershipUpdates(oldGroupMembership: oldGroupMembership)
+                addMembershipUpdates(
+                    oldGroupMembership: oldGroupModel.groupMembership,
+                    newGroupMembership: newGroupModel.groupMembership,
+                    newGroupModel: newGroupModel,
+                    forLocalUserOnly: false,
+                    tx: tx
+                )
 
-                addAttributesUpdates(oldGroupModel: oldGroupModel)
+                addAttributesUpdates(
+                    oldGroupModel: oldGroupModel,
+                    newGroupModel: newGroupModel
+                )
 
-                addAccessUpdates(oldGroupModel: oldGroupModel)
+                addAccessUpdates(
+                    oldGroupModel: oldGroupModel,
+                    newGroupModel: newGroupModel
+                )
 
                 addDisappearingMessageUpdates(oldToken: oldDisappearingMessageToken,
                                               newToken: newDisappearingMessageToken)
 
-                addGroupInviteLinkUpdates(oldGroupModel: oldGroupModel)
+                addGroupInviteLinkUpdates(
+                    oldGroupModel: oldGroupModel,
+                    newGroupModel: newGroupModel
+                )
 
-                addIsAnnouncementOnlyLinkUpdates(oldGroupModel: oldGroupModel)
+                addIsAnnouncementOnlyLinkUpdates(
+                    oldGroupModel: oldGroupModel,
+                    newGroupModel: newGroupModel
+                )
             }
         } else {
             // We're just learning of the group.
-            addGroupWasInserted()
+            addGroupWasInserted(
+                newGroupModel: newGroupModel,
+                newGroupMembership: newGroupModel.groupMembership,
+                tx: tx
+            )
 
             // Skip description of overall group state (current name, avatar, members, etc.).
             //
@@ -378,7 +431,10 @@ extension GroupUpdateCopy {
 
     // MARK: - Attributes
 
-    mutating func addAttributesUpdates(oldGroupModel: TSGroupModel) {
+    mutating func addAttributesUpdates(
+        oldGroupModel: TSGroupModel,
+        newGroupModel: TSGroupModel
+    ) {
 
         let groupName = { (groupModel: TSGroupModel) -> String? in
             groupModel.groupName?.stripped.nilIfEmpty
@@ -542,7 +598,10 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addAccessUpdates(oldGroupModel: TSGroupModel) {
+    mutating func addAccessUpdates(
+        oldGroupModel: TSGroupModel,
+        newGroupModel: TSGroupModel
+    ) {
         guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
             return
         }
@@ -605,7 +664,13 @@ extension GroupUpdateCopy {
         var inviteRevokedCount: UInt = 0
     }
 
-    mutating func addMembershipUpdates(oldGroupMembership: GroupMembership, forLocalUserOnly: Bool = false) {
+    mutating func addMembershipUpdates(
+        oldGroupMembership: GroupMembership,
+        newGroupMembership: GroupMembership,
+        newGroupModel: TSGroupModel,
+        forLocalUserOnly: Bool,
+        tx: SDSAnyReadTransaction
+    ) {
         var membershipCounts = MembershipCounts()
 
         let allUsersUnsorted = oldGroupMembership.allMembersOfAnyKind.union(newGroupMembership.allMembersOfAnyKind)
@@ -614,10 +679,17 @@ extension GroupUpdateCopy {
         if allUsersSorted.contains(localAddress) {
             allUsersSorted = [localAddress] + allUsersSorted.filter { $0 != localAddress}
         }
+
         // If the updater has changed their membership status, ensure it appears _last_.
         // This trumps the re-ordering of the local user above.
-        if let groupUpdateSourceAddress = groupUpdateSourceAddress {
-            allUsersSorted = allUsersSorted.filter { $0 != groupUpdateSourceAddress} + [groupUpdateSourceAddress]
+        if let updaterAddress = {
+            switch updater {
+            case .localUser: return localAddress
+            case let .otherUser(_, updaterAddress): return updaterAddress
+            case .unknown: return nil
+            }
+        }() {
+            allUsersSorted = allUsersSorted.filter { $0 != updaterAddress } + [updaterAddress]
         }
 
         for address in allUsersSorted {
@@ -634,15 +706,21 @@ extension GroupUpdateCopy {
                 case .normalMember:
                     // Membership status didn't change.
                     // Check for role changes.
-                    addMemberRoleUpdates(for: address, oldGroupMembership: oldGroupMembership)
+                    addMemberRoleUpdates(
+                        address: address,
+                        oldGroupMembership: oldGroupMembership,
+                        newGroupMembership: newGroupMembership,
+                        newGroupModel: newGroupModel,
+                        tx: tx
+                    )
                 case .invited:
-                    addUserLeftOrWasKickedOutOfGroupThenWasInvitedToTheGroup(for: address)
+                    addUserLeftOrWasKickedOutOfGroupThenWasInvitedToTheGroup(address: address, tx: tx)
                 case .requesting:
                     // This could happen if a user leaves a group, the requests to rejoin
                     // and we do have access to the intervening revisions.
-                    addUserRequestedToJoinGroup(for: address)
+                    addUserRequestedToJoinGroup(address: address, tx: tx)
                 case .none:
-                    addUserLeftOrWasKickedOutOfGroup(for: address)
+                    addUserLeftOrWasKickedOutOfGroup(address: address, tx: tx)
                 }
             case .invited:
                 switch newMembershipStatus {
@@ -658,47 +736,71 @@ extension GroupUpdateCopy {
                     }
 
                     if wasInviteAccepted {
-                        addUserInviteWasAccepted(for: address,
-                                                 oldGroupMembership: oldGroupMembership)
+                        addUserInviteWasAccepted(
+                            address: address,
+                            oldGroupMembership: oldGroupMembership,
+                            tx: tx
+                        )
                     } else {
-                        addUserWasAddedToTheGroup(for: address)
+                        addUserWasAddedToTheGroup(
+                            address: address,
+                            newGroupModel: newGroupModel,
+                            tx: tx
+                        )
                     }
                 case .invited:
                     // Membership status didn't change.
                     break
                 case .requesting:
-                    addUserRequestedToJoinGroup(for: address)
+                    addUserRequestedToJoinGroup(address: address, tx: tx)
                 case .none:
-                    addUserInviteWasDeclinedOrRevoked(for: address,
-                                                      oldGroupMembership: oldGroupMembership,
-                                                      membershipCounts: &membershipCounts)
+                    addUserInviteWasDeclinedOrRevoked(
+                        address: address,
+                        oldGroupMembership: oldGroupMembership,
+                        membershipCounts: &membershipCounts,
+                        tx: tx
+                    )
                 }
             case .requesting:
                 switch newMembershipStatus {
                 case .normalMember:
-                    addUserRequestWasApproved(for: address, oldGroupMembership: oldGroupMembership)
+                    addUserRequestWasApproved(
+                        address: address,
+                        oldGroupMembership: oldGroupMembership,
+                        tx: tx
+                    )
                 case .invited:
-                    addUserWasInvitedToTheGroup(for: address,
-                                                membershipCounts: &membershipCounts)
+                    addUserWasInvitedToTheGroup(
+                        address: address,
+                        membershipCounts: &membershipCounts,
+                        tx: tx
+                    )
                 case .requesting:
                     // Membership status didn't change.
                     break
                 case .none:
-                    addUserRequestWasRejected(for: address)
+                    addUserRequestWasRejected(address: address, tx: tx)
                 }
             case .none:
                 switch newMembershipStatus {
                 case .normalMember:
                     if newGroupMembership.didJoinFromInviteLink(forFullMember: address) {
-                        addUserJoinedFromInviteLink(for: address)
+                        addUserJoinedFromInviteLink(address: address, tx: tx)
                     } else {
-                        addUserWasAddedToTheGroup(for: address)
+                        addUserWasAddedToTheGroup(
+                            address: address,
+                            newGroupModel: newGroupModel,
+                            tx: tx
+                        )
                     }
                 case .invited:
-                    addUserWasInvitedToTheGroup(for: address,
-                                                membershipCounts: &membershipCounts)
+                    addUserWasInvitedToTheGroup(
+                        address: address,
+                        membershipCounts: &membershipCounts,
+                        tx: tx
+                    )
                 case .requesting:
-                    addUserRequestedToJoinGroup(for: address)
+                    addUserRequestedToJoinGroup(address: address, tx: tx)
                 case .none:
                     // Membership status didn't change.
                     break
@@ -795,8 +897,13 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addMemberRoleUpdates(for address: SignalServiceAddress,
-                                       oldGroupMembership: GroupMembership) {
+    mutating func addMemberRoleUpdates(
+        address: SignalServiceAddress,
+        oldGroupMembership: GroupMembership,
+        newGroupMembership: GroupMembership,
+        newGroupModel: TSGroupModel,
+        tx: SDSAnyReadTransaction
+    ) {
 
         let oldIsAdministrator = oldGroupMembership.isFullMemberAndAdministrator(address)
         let newIsAdministrator = newGroupMembership.isFullMemberAndAdministrator(address)
@@ -807,13 +914,17 @@ extension GroupUpdateCopy {
         }
 
         if newIsAdministrator {
-            addUserWasGrantedAdministrator(for: address)
+            addUserWasGrantedAdministrator(address: address, newGroupModel: newGroupModel, tx: tx)
         } else {
-            addUserWasRevokedAdministrator(for: address)
+            addUserWasRevokedAdministrator(address: address, tx: tx)
         }
     }
 
-    mutating func addUserWasGrantedAdministrator(for address: SignalServiceAddress) {
+    mutating func addUserWasGrantedAdministrator(
+        address: SignalServiceAddress,
+        newGroupModel: TSGroupModel,
+        tx: SDSAnyReadTransaction
+    ) {
 
         if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
             newGroupModelV2.wasJustMigrated {
@@ -861,7 +972,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user was granted administrator role."))
             }
         } else {
-            let userName = self.contactsManager.displayName(for: address, transaction: transaction)
+            let userName = self.contactsManager.displayName(for: address, transaction: tx)
 
             switch updater {
             case .localUser:
@@ -899,7 +1010,10 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addUserWasRevokedAdministrator(for address: SignalServiceAddress) {
+    mutating func addUserWasRevokedAdministrator(
+        address: SignalServiceAddress,
+        tx: SDSAnyReadTransaction
+    ) {
         let isLocalUser = localAddress == address
         if isLocalUser {
             switch updater {
@@ -928,7 +1042,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user had their administrator role revoked."))
             }
         } else {
-            let userName = contactsManager.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: tx)
 
             switch updater {
             case .localUser:
@@ -961,7 +1075,10 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addUserLeftOrWasKickedOutOfGroup(for address: SignalServiceAddress) {
+    mutating func addUserLeftOrWasKickedOutOfGroup(
+        address: SignalServiceAddress,
+        tx: SDSAnyReadTransaction
+    ) {
 
         let isLocalUser = localAddress == address
         if isLocalUser {
@@ -985,7 +1102,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user was removed from the group by an unknown user."))
             }
         } else {
-            let userName = contactsManager.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: tx)
 
             switch updater {
             case .localUser:
@@ -1018,7 +1135,10 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addUserLeftOrWasKickedOutOfGroupThenWasInvitedToTheGroup(for address: SignalServiceAddress) {
+    mutating func addUserLeftOrWasKickedOutOfGroupThenWasInvitedToTheGroup(
+        address: SignalServiceAddress,
+        tx: SDSAnyReadTransaction
+    ) {
 
         let isLocalUser = localAddress == address
         if isLocalUser {
@@ -1031,7 +1151,7 @@ extension GroupUpdateCopy {
                     copy: OWSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
                                             comment: "Message indicating that the local user was invited to the group."))
         } else {
-            let userName = contactsManager.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: tx)
             do {
                 let format = OWSLocalizedString("GROUP_REMOTE_USER_LEFT_GROUP_FORMAT",
                                                comment: "Message indicating that a remote user has left the group. Embeds {{remote user name}}.")
@@ -1049,15 +1169,18 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addUserInviteWasAccepted(for address: SignalServiceAddress,
-                                           oldGroupMembership: GroupMembership) {
+    mutating func addUserInviteWasAccepted(
+        address: SignalServiceAddress,
+        oldGroupMembership: GroupMembership,
+        tx: SDSAnyReadTransaction
+    ) {
 
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
         if let inviterUuid = oldGroupMembership.addedByUuid(forInvitedMember: address) {
             inviterAddress = SignalServiceAddress(uuid: inviterUuid)
             inviterName = contactsManager.displayName(for: SignalServiceAddress(uuid: inviterUuid),
-                                                      transaction: transaction)
+                                                      transaction: tx)
         }
 
         let isLocalUser = localAddress == address
@@ -1097,7 +1220,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user has joined the group."))
             }
         } else {
-            let userName = contactsManager.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: tx)
 
             switch updater {
             case .localUser:
@@ -1152,16 +1275,19 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addUserInviteWasDeclinedOrRevoked(for address: SignalServiceAddress,
-                                                    oldGroupMembership: GroupMembership,
-                                                    membershipCounts: inout MembershipCounts) {
+    mutating func addUserInviteWasDeclinedOrRevoked(
+        address: SignalServiceAddress,
+        oldGroupMembership: GroupMembership,
+        membershipCounts: inout MembershipCounts,
+        tx: SDSAnyReadTransaction
+    ) {
 
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
         if let inviterUuid = oldGroupMembership.addedByUuid(forInvitedMember: address) {
             inviterAddress = SignalServiceAddress(uuid: inviterUuid)
             inviterName = contactsManager.displayName(for: SignalServiceAddress(uuid: inviterUuid),
-                                                      transaction: transaction)
+                                                      transaction: tx)
         }
 
         let isLocalUser = localAddress == address
@@ -1201,7 +1327,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user's invite was revoked by an unknown user."))
             }
         } else {
-            let userName = contactsManager.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: tx)
 
             switch updater {
             case .localUser:
@@ -1267,7 +1393,11 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addUserWasAddedToTheGroup(for address: SignalServiceAddress) {
+    mutating func addUserWasAddedToTheGroup(
+        address: SignalServiceAddress,
+        newGroupModel: TSGroupModel,
+        tx: SDSAnyReadTransaction
+    ) {
 
         let isLocalUser = localAddress == address
         if isLocalUser {
@@ -1302,7 +1432,7 @@ extension GroupUpdateCopy {
                 }
             }
         } else {
-            let userName = contactsManager.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: tx)
 
             switch updater {
             case .localUser:
@@ -1342,7 +1472,10 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addUserJoinedFromInviteLink(for address: SignalServiceAddress) {
+    mutating func addUserJoinedFromInviteLink(
+        address: SignalServiceAddress,
+        tx: SDSAnyReadTransaction
+    ) {
 
         let isLocalUser = localAddress == address
         if isLocalUser {
@@ -1365,7 +1498,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user has joined the group."))
             }
         } else {
-            let userName = contactsManager.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: tx)
 
             switch updater {
             case .otherUser(let updaterName, let updaterAddress):
@@ -1391,8 +1524,11 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addUserWasInvitedToTheGroup(for address: SignalServiceAddress,
-                                              membershipCounts: inout MembershipCounts) {
+    mutating func addUserWasInvitedToTheGroup(
+        address: SignalServiceAddress,
+        membershipCounts: inout MembershipCounts,
+        tx: SDSAnyReadTransaction
+    ) {
 
         let isLocalUser = localAddress == address
         if isLocalUser {
@@ -1420,7 +1556,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user was invited to the group."))
             }
         } else {
-            let userName = contactsManager.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: tx)
 
             switch updater {
             case .localUser:
@@ -1466,7 +1602,10 @@ extension GroupUpdateCopy {
 
     // MARK: - Requesting Members
 
-    mutating func addUserRequestedToJoinGroup(for address: SignalServiceAddress) {
+    mutating func addUserRequestedToJoinGroup(
+        address: SignalServiceAddress,
+        tx: SDSAnyReadTransaction
+    ) {
         let isLocalUser = localAddress == address
         if isLocalUser {
             addItem(.userMembershipState,
@@ -1474,15 +1613,18 @@ extension GroupUpdateCopy {
                     copy: OWSLocalizedString("GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP",
                                             comment: "Message indicating that the local user requested to join the group."))
         } else {
-            let requesterName = contactsManager.displayName(for: address, transaction: transaction)
+            let requesterName = contactsManager.displayName(for: address, transaction: tx)
             let format = OWSLocalizedString("GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT",
                                            comment: "Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}.")
             addItem(.userMembershipState, address: address, format: format, .name(requesterName, address))
         }
     }
 
-    mutating func addUserRequestWasApproved(for address: SignalServiceAddress,
-                                            oldGroupMembership: GroupMembership) {
+    mutating func addUserRequestWasApproved(
+        address: SignalServiceAddress,
+        oldGroupMembership: GroupMembership,
+        tx: SDSAnyReadTransaction
+    ) {
         let isLocalUser = localAddress == address
         if isLocalUser {
             switch updater {
@@ -1515,7 +1657,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user was added to the group."))
             }
         } else {
-            let requesterName = contactsManager.displayName(for: address, transaction: transaction)
+            let requesterName = contactsManager.displayName(for: address, transaction: tx)
             switch updater {
             case .localUser:
                 // A user with a "pending request to join the group" can be "added" or "approved".
@@ -1557,7 +1699,10 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addUserRequestWasRejected(for address: SignalServiceAddress) {
+    mutating func addUserRequestWasRejected(
+        address: SignalServiceAddress,
+        tx: SDSAnyReadTransaction
+    ) {
         let isLocalUser = localAddress == address
         if isLocalUser {
             switch updater {
@@ -1572,7 +1717,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user's request to join the group was rejected."))
             }
         } else {
-            let requesterName = contactsManager.displayName(for: address, transaction: transaction)
+            let requesterName = contactsManager.displayName(for: address, transaction: tx)
             switch updater {
             case .localUser:
                 let format = OWSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT",
@@ -1671,7 +1816,10 @@ extension GroupUpdateCopy {
 
     // MARK: - Group Invite Links
 
-    mutating func addGroupInviteLinkUpdates(oldGroupModel: TSGroupModel) {
+    mutating func addGroupInviteLinkUpdates(
+        oldGroupModel: TSGroupModel,
+        newGroupModel: TSGroupModel
+    ) {
         guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
             return
         }
@@ -1793,7 +1941,10 @@ extension GroupUpdateCopy {
 
     // MARK: - Announcement-Only Groups
 
-    mutating func addIsAnnouncementOnlyLinkUpdates(oldGroupModel: TSGroupModel) {
+    mutating func addIsAnnouncementOnlyLinkUpdates(
+        oldGroupModel: TSGroupModel,
+        newGroupModel: TSGroupModel
+    ) {
         guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
             return
         }
@@ -1843,7 +1994,11 @@ extension GroupUpdateCopy {
 
     // MARK: -
 
-    mutating func addGroupWasInserted() {
+    mutating func addGroupWasInserted(
+        newGroupModel: TSGroupModel,
+        newGroupMembership: GroupMembership,
+        tx: SDSAnyReadTransaction
+    ) {
         guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
             // Group was just upserted.
             switch updater {
@@ -1910,10 +2065,9 @@ extension GroupUpdateCopy {
                 }
             }
         case .invited:
-            if let localAddress = Self.tsAccountManager.localAddress,
-               let inviterUuid = newGroupMembership.addedByUuid(forInvitedMember: localAddress) {
+            if let inviterUuid = newGroupMembership.addedByUuid(forInvitedMember: localAddress) {
                 let inviterAddress = SignalServiceAddress(uuid: inviterUuid)
-                let inviterName = contactsManager.displayName(for: inviterAddress, transaction: transaction)
+                let inviterName = contactsManager.displayName(for: inviterAddress, transaction: tx)
                 let format = OWSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_invited,
@@ -1926,11 +2080,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user was invited to the group."))
             }
         case .requesting:
-            if let localAddress = Self.tsAccountManager.localAddress {
-                addUserRequestedToJoinGroup(for: localAddress)
-            } else {
-                owsFailDebug("Missing localAddress.")
-            }
+            addUserRequestedToJoinGroup(address: localAddress, tx: tx)
         case .none:
             if !DebugFlags.permissiveGroupUpdateInfoMessages {
                 owsFailDebug("Learned of group without any membership status.")
@@ -1948,7 +2098,7 @@ extension GroupUpdateCopy {
 
     // MARK: - Migration
 
-    var wasJustMigrated: Bool {
+    func wasJustMigrated(newGroupModel: TSGroupModel) -> Bool {
         guard let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
             newGroupModelV2.wasJustMigrated else {
                 return false
@@ -1956,8 +2106,12 @@ extension GroupUpdateCopy {
         return true
     }
 
-    mutating func addMigrationUpdates(oldGroupMembership: GroupMembership) {
-        owsAssertDebug(wasJustMigrated)
+    mutating func addMigrationUpdates(
+        oldGroupMembership: GroupMembership,
+        newGroupMembership: GroupMembership,
+        newGroupModel: TSGroupModel
+    ) {
+        owsAssertDebug(wasJustMigrated(newGroupModel: newGroupModel))
 
         addItem(.groupMigrated,
                 copy: OWSLocalizedString("GROUP_WAS_MIGRATED",
@@ -2025,34 +2179,25 @@ extension GroupUpdateCopy {
         case unknown
     }
 
-    static func updater(groupUpdateSourceAddress: SignalServiceAddress?,
-                        transaction: SDSAnyReadTransaction) -> Updater {
-        guard let updaterAddress = groupUpdateSourceAddress else {
-            return .unknown
-        }
-        guard let localAddress = tsAccountManager.localAddress else {
-            Logger.warn("missing local address")
-            return .unknown
-        }
-        if localAddress == updaterAddress {
-            return .localUser
-        }
-
-        let updaterName = contactsManager.displayName(for: updaterAddress, transaction: transaction)
-        return .otherUser(updaterName: updaterName, updaterAddress: updaterAddress)
-    }
-
     // MARK: - Defaults
 
     var defaultGroupUpdateDescription: NSAttributedString {
-        return GroupUpdateCopy.defaultGroupUpdateDescription(groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                             transaction: transaction)
+        Self.defaultGroupUpdateDescription(updater: updater)
     }
 
-    static func defaultGroupUpdateDescription(groupUpdateSourceAddress: SignalServiceAddress?,
-                                              transaction: SDSAnyReadTransaction) -> NSAttributedString {
-        let updater = GroupUpdateCopy.updater(groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                              transaction: transaction)
+    static func defaultGroupUpdateDescription(
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        localAci: ServiceId?,
+        transaction: SDSAnyReadTransaction
+    ) -> NSAttributedString {
+        defaultGroupUpdateDescription(updater: buildUpdater(
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            localAci: localAci,
+            transaction: transaction
+        ))
+    }
+
+    static func defaultGroupUpdateDescription(updater: Updater) -> NSAttributedString {
         switch updater {
         case .localUser:
             let localizedString = OWSLocalizedString("GROUP_UPDATED_BY_LOCAL_USER",
