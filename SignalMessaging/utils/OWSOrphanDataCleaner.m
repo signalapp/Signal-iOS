@@ -37,6 +37,7 @@ NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleane
 @property (nonatomic) NSSet<NSString *> *reactionIds;
 @property (nonatomic) NSSet<NSString *> *mentionIds;
 @property (nonatomic) NSSet<NSString *> *fileAndDirectoryPaths;
+@property (nonatomic) BOOL hasOrphanedPacksOrStickers;
 
 @end
 
@@ -404,6 +405,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSMutableSet<NSString *> *allMessageMentionIds = [NSMutableSet new];
     // Stickers
     NSMutableSet<NSString *> *activeStickerFilePaths = [NSMutableSet new];
+    __block BOOL hasOrphanedPacksOrStickers = NO;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         [TSAttachmentStream
             anyEnumerateWithTransaction:transaction
@@ -535,7 +537,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         [allMessageAttachmentIds addObjectsFromArray:jobRecordAttachmentIds];
 
         [activeStickerFilePaths
-            addObjectsFromArray:[StickerManager filepathsForAllInstalledStickersWithTransaction:transaction]];
+            addObjectsFromArray:[StickerManager filePathsForAllInstalledStickersWithTransaction:transaction]];
+
+        hasOrphanedPacksOrStickers = [StickerManager hasOrphanedDataWithTx:transaction];
     }];
     if (shouldAbort) {
         return nil;
@@ -601,6 +605,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     result.reactionIds = [orphanReactionIds copy];
     result.mentionIds = [orphanMentionIds copy];
     result.fileAndDirectoryPaths = [orphanFileAndDirectoryPaths copy];
+    result.hasOrphanedPacksOrStickers = hasOrphanedPacksOrStickers;
     return result;
 }
 
@@ -862,6 +867,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             }
         }
         OWSLogInfo(@"Deleted orphan mentions: %zu", mentionsRemoved);
+
+        if (orphanData.hasOrphanedPacksOrStickers) {
+            [StickerManager cleanUpOrphanedDataWithTx:transaction];
+        }
     });
 
     if (shouldAbort) {
