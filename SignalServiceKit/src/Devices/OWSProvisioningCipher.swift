@@ -32,8 +32,7 @@ public class OWSProvisioningCipher: NSObject {
     }
 
     #if TESTABLE_BUILD
-    @objc
-    private convenience init(theirPublicKey: Data, ourKeyPair: ECKeyPair, initializationVector: Data) {
+    public convenience init(theirPublicKey: Data, ourKeyPair: ECKeyPair, initializationVector: Data) {
         self.init(
             theirPublicKey: theirPublicKey,
             ourKeyPair: ourKeyPair.identityKeyPair,
