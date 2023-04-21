@@ -482,7 +482,6 @@ extension ExperienceUpgradeManifest {
     private static func checkPreconditionsForIntroducingPins(transaction: SDSAnyReadTransaction) -> Bool {
         // The PIN setup flow requires an internet connection and you to not already have a PIN
         if
-            RemoteConfig.kbs,
             reachabilityManager.isReachable,
             !DependenciesBridge.shared.keyBackupService.hasMasterKey(transaction: transaction.asV2Read)
         {

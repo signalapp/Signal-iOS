@@ -30,11 +30,6 @@ public class RemoteConfig: BaseFlags {
         self.paypalDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .paypalDisabledRegions)
     }
 
-    @objc
-    public static var kbs: Bool {
-        return isEnabled(.kbs)
-    }
-
     private static let forceDisableUuidSafetyNumbers = true
 
     @objc
@@ -468,7 +463,6 @@ private struct Flags {
     // a sticky flag to 100% in beta then turn it back to 0% before going
     // to production.
     enum SupportedIsEnabledFlags: String, FlagType {
-        case kbs
         case uuidSafetyNumbers
         case groupCallingKillSwitch
         case automaticSessionResetKillSwitch
