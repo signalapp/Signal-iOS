@@ -31,6 +31,23 @@ final class SqliteUtilTest: XCTestCase {
         }
     }
 
+    func testBarrierFsync() throws {
+        let databasePath = OWSFileSystem.temporaryFilePath(fileExtension: "sqlite")
+
+        let databaseQueue = try DatabaseQueue(path: databasePath)
+        defer { try? databaseQueue.close() }
+
+        try databaseQueue.write { db in
+            XCTAssertFalse(SqliteUtil.isUsingBarrierFsync(db: db))
+
+            try SqliteUtil.setBarrierFsync(db: db, enabled: true)
+            XCTAssertTrue(SqliteUtil.isUsingBarrierFsync(db: db))
+
+            try SqliteUtil.setBarrierFsync(db: db, enabled: false)
+            XCTAssertFalse(SqliteUtil.isUsingBarrierFsync(db: db))
+        }
+    }
+
     func testIntegrityCheckResult() {
         let ok = SqliteUtil.IntegrityCheckResult.ok
         let notOk = SqliteUtil.IntegrityCheckResult.notOk

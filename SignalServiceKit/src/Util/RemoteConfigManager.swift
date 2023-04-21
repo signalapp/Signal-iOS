@@ -448,8 +448,7 @@ private struct Flags {
     // as soon as we fetch an update to the remote config. They will not
     // wait for an app restart.
     enum HotSwappableIsEnabledFlags: String, FlagType {
-        // This can't be empty, so we define a bogus case. Remove this if you add a flag here.
-        case __noHotSwappableIsEnabledFlags
+        case barrierFsyncKillSwitch
     }
 
     // We filter the received config down to just the supported flags.
@@ -458,6 +457,7 @@ private struct Flags {
     // a sticky flag to 100% in beta then turn it back to 0% before going
     // to production.
     enum SupportedIsEnabledFlags: String, FlagType {
+        case barrierFsyncKillSwitch
         case uuidSafetyNumbers
         case automaticSessionResetKillSwitch
         case paymentsResetKillSwitch
@@ -661,9 +661,14 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
     private func cacheCurrent() {
         var isEnabledFlags = [String: Bool]()
         var valueFlags = [String: AnyObject]()
+        var isUsingBarrierFsync = false
+
         db.read { transaction in
             isEnabledFlags = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) ?? [:]
             valueFlags = self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) ?? [:]
+            isUsingBarrierFsync = SqliteUtil.isUsingBarrierFsync(
+                db: SDSDB.shimOnlyBridge(transaction).unwrapGrdbRead.database
+            )
         }
 
         if !isEnabledFlags.isEmpty || !valueFlags.isEmpty {
@@ -671,6 +676,22 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
             self.cachedConfig = RemoteConfig(isEnabledFlags: isEnabledFlags, valueFlags: valueFlags)
         } else {
             Logger.info("no stored remote config")
+        }
+
+        // This will be tripped in the unlikely event that the kill switch is enabled,
+        // but typically won't result in a write.
+        let shouldUseBarrierFsync: Bool = {
+            let rawFlag = Flags.HotSwappableIsEnabledFlags.barrierFsyncKillSwitch.rawValue
+            let isKilled = isEnabledFlags[rawFlag] ?? false
+            return !isKilled
+        }()
+        if shouldUseBarrierFsync != isUsingBarrierFsync {
+            self.db.write { tx in
+                try? SqliteUtil.setBarrierFsync(
+                    db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+                    enabled: shouldUseBarrierFsync
+                )
+            }
         }
 
         checkClientExpiration(valueFlags: valueFlags)
@@ -793,9 +814,19 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                     }
                 }
 
+                try? SqliteUtil.setBarrierFsync(
+                    db: SDSDB.shimOnlyBridge(transaction).unwrapGrdbWrite.database,
+                    enabled: {
+                        let rawFlag = Flags.HotSwappableIsEnabledFlags.barrierFsyncKillSwitch.rawValue
+                        let isKilled = isEnabledFlags[rawFlag] ?? false
+                        return !isKilled
+                    }()
+                )
+
                 self.keyValueStore.setRemoteConfigIsEnabledFlags(isEnabledFlags, transaction: transaction)
                 self.keyValueStore.setRemoteConfigValueFlags(valueFlags, transaction: transaction)
                 self.keyValueStore.setLastFetched(Date(), transaction: transaction)
+
                 self.checkClientExpiration(valueFlags: valueFlags)
             }
 
