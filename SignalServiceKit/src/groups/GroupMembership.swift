@@ -5,41 +5,12 @@
 
 import Foundation
 
-public extension TSGroupMemberRole {
-    static func role(for value: GroupsProtoMemberRole) -> TSGroupMemberRole? {
-        switch value {
-        case .`default`:
-            return .normal
-        case .administrator:
-            return .administrator
-        default:
-            owsFailDebug("Invalid value: \(value.rawValue)")
-            return nil
-        }
-    }
-
-    var asProtoRole: GroupsProtoMemberRole {
-        switch self {
-        case .normal:
-            return .`default`
-        case .administrator:
-            return .administrator
-        }
-    }
-}
-
-// MARK: -
-
-extension TSGroupMemberRole: Codable {}
-
-// MARK: -
+// MARK: - GroupMemberState
 
 private enum GroupMemberState: Equatable {
     case fullMember(role: TSGroupMemberRole, didJoinFromInviteLink: Bool)
     case invited(role: TSGroupMemberRole, addedByUuid: UUID)
-    // These members don't yet have any attributes.
-    // We'll add RequestingMemberState if they ever do.
-    case Requesting
+    case requesting
 
     var role: TSGroupMemberRole {
         switch self {
@@ -47,7 +18,7 @@ private enum GroupMemberState: Equatable {
             return role
         case .invited(let role, _):
             return role
-        case .Requesting:
+        case .requesting:
             return .`normal`
         }
     }
@@ -58,40 +29,31 @@ private enum GroupMemberState: Equatable {
 
     var isFullMember: Bool {
         switch self {
-        case .fullMember:
-            return true
-        default:
-            return false
+        case .fullMember: return true
+        default: return false
         }
     }
 
     var isInvited: Bool {
         switch self {
-        case .invited:
-            return true
-        default:
-            return false
+        case .invited: return true
+        default: return false
         }
     }
 
     var isRequesting: Bool {
         switch self {
-        case .Requesting:
-            return true
-        default:
-            return false
+        case .requesting: return true
+        default: return false
         }
     }
 }
 
-// MARK: -
-
 extension GroupMemberState: Codable {
-
     private enum TypeKey: UInt, Codable {
         case fullMember = 0
         case invited = 1
-        case Requesting = 2
+        case requesting = 2
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -114,8 +76,8 @@ extension GroupMemberState: Codable {
             let role = try container.decode(TSGroupMemberRole.self, forKey: .role)
             let addedByUuid = try container.decode(UUID.self, forKey: .addedByUuid)
             self = .invited(role: role, addedByUuid: addedByUuid)
-        case .Requesting:
-            self = .Requesting
+        case .requesting:
+            self = .requesting
         }
     }
 
@@ -131,80 +93,46 @@ extension GroupMemberState: Codable {
             try container.encode(TypeKey.invited, forKey: .typeKey)
             try container.encode(role, forKey: .role)
             try container.encode(addedByUuid, forKey: .addedByUuid)
-        case .Requesting:
-            try container.encode(TypeKey.Requesting, forKey: .typeKey)
+        case .requesting:
+            try container.encode(TypeKey.requesting, forKey: .typeKey)
         }
     }
 }
-
-// MARK: -
 
 extension GroupMemberState: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .fullMember:
-            return ".fullMember"
-        case .invited:
-            return ".invited"
-        case .Requesting:
-            return ".Requesting"
+        case .fullMember: return ".fullMember"
+        case .invited: return ".invited"
+        case .requesting: return ".requesting"
         }
     }
 }
 
 // MARK: -
 
-// This class is immutable.
-@objc(GroupMembershipInvalidInviteModel)
-class InvalidInviteModel: MTLModel {
-    @objc
-    var userId: Data?
-
-    @objc
-    var addedByUserId: Data?
-
-    @objc
-    public override init() {
-        super.init()
-    }
-
-    init(userId: Data?, addedByUserId: Data? = nil) {
-        self.userId = userId
-        self.addedByUserId = addedByUserId
-
-        super.init()
-    }
-
-    @objc
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
-    }
-}
-
-// MARK: -
-
-// This class is immutable.
 @objc
 public class GroupMembership: MTLModel {
 
-    typealias LegacyMemberStateMap = [SignalServiceAddress: LegacyMemberState]
-
-    // By using a single dictionary we ensure that no address has more than one state.
-    fileprivate typealias MemberStateMap = [SignalServiceAddress: GroupMemberState]
-    fileprivate var memberStates: MemberStateMap
+    // MARK: Types
 
     public typealias BannedAtTimestampMillis = UInt64
     public typealias BannedMembersMap = [UUID: BannedAtTimestampMillis]
-    public fileprivate(set) var bannedMembers: BannedMembersMap
 
-    typealias InvalidInviteMap = [Data: InvalidInviteModel]
-    @objc
-    var invalidInviteMap: InvalidInviteMap
+    fileprivate typealias MemberStateMap = [SignalServiceAddress: GroupMemberState]
+    fileprivate typealias InvalidInviteMap = [Data: InvalidInviteModel]
+
+    private typealias LegacyMemberStateMap = [SignalServiceAddress: LegacyMemberState]
+
+    // MARK: Init
+
+    fileprivate var memberStates: MemberStateMap
+    public fileprivate(set) var bannedMembers: BannedMembersMap
+    private var invalidInviteMap: InvalidInviteMap
+
+    public var invalidInviteUserIds: [Data] {
+        return Array(invalidInviteMap.keys)
+    }
 
     @objc
     public override init() {
@@ -313,14 +241,14 @@ public class GroupMembership: MTLModel {
     public init(v1Members: Set<SignalServiceAddress>) {
         var builder = Builder()
         builder.addFullMembers(v1Members, role: .normal)
-        self.memberStates = builder.asMemberStateMap()
+        self.memberStates = builder.memberStates
         self.bannedMembers = [:]
         self.invalidInviteMap = [:]
 
         super.init()
     }
 
-    // MARK: -
+    // MARK: - Equality
 
     @objc
     public override func isEqual(_ object: Any!) -> Bool {
@@ -339,9 +267,9 @@ public class GroupMembership: MTLModel {
             return false
         }
 
-        let invalidInvitesSet = Set(invalidInvites.map { $0.userId })
-        let otherInvalidInvitesSet = Set(other.invalidInvites.map { $0.userId })
-        return invalidInvitesSet == otherInvalidInvitesSet
+        let invalidlyInvitedUserIdsSet = Set(invalidInviteUserIds)
+        let otherInvalidlyInvitedUserIdsSet = Set(other.invalidInviteUserIds)
+        return invalidlyInvitedUserIdsSet == otherInvalidlyInvitedUserIdsSet
     }
 
     /// When comparing member states, ignore the `didJoinFromInviteLink` field.
@@ -409,26 +337,6 @@ public class GroupMembership: MTLModel {
             .sorted(by: { (l, r) in l.compare(r) == .orderedAscending })
     }
 
-    public func hasInvalidInvite(forUserId userId: Data) -> Bool {
-        return invalidInviteMap[userId] != nil
-    }
-
-    public var invalidInvites: [InvalidInvite] {
-        var result = [InvalidInvite]()
-        for invalidInvite in invalidInviteMap.values {
-            guard let userId = invalidInvite.userId else {
-                owsFailDebug("Missing userId.")
-                continue
-            }
-            guard let addedByUserId = invalidInvite.addedByUserId else {
-                owsFailDebug("Missing addedByUserId.")
-                continue
-            }
-            result.append(InvalidInvite(userId: userId, addedByUserId: addedByUserId))
-        }
-        return result
-    }
-
     public var asBuilder: Builder {
         return Builder(
             memberStates: memberStates,
@@ -454,9 +362,8 @@ public class GroupMembership: MTLModel {
     }
 }
 
-// MARK: - Swift & Obj-C Accessors
+// MARK: - Accessors
 
-@objc
 public extension GroupMembership {
 
     var fullMemberAdministrators: Set<SignalServiceAddress> {
@@ -487,18 +394,10 @@ public extension GroupMembership {
         }.map { $0.key })
     }
 
-    // allMembersOfAnyKind includes _all_ members:
-    //
-    // * Normal and administrator.
-    // * Normal, pending profile key, requesting.
     var allMembersOfAnyKind: Set<SignalServiceAddress> {
         return Set(memberStates.keys)
     }
 
-    // allUsers includes _all_ members:
-    //
-    // * Normal and administrator.
-    // * Normal, pending profile key, requesting.
     var allMemberUuidsOfAnyKind: Set<UUID> {
         return Set(memberStates.keys.lazy.compactMap { $0.uuid })
     }
@@ -507,8 +406,6 @@ public extension GroupMembership {
         return Set(bannedMembers.keys.lazy.map { SignalServiceAddress(uuid: $0) })
     }
 }
-
-// MARK: - Swift Accessors
 
 public extension GroupMembership {
 
@@ -532,7 +429,7 @@ public extension GroupMembership {
             return role == .administrator
         case .invited(let role, _):
             return role == .administrator
-        case .Requesting:
+        case .requesting:
             return false
         }
     }
@@ -588,16 +485,6 @@ public extension GroupMembership {
         isRequestingMember(SignalServiceAddress(uuid: uuid))
     }
 
-    // Returns true for...
-    //
-    // * Any type: Full members, "pending invite" members, "requesting" members.
-    // * Any role: admin, non-admin.
-    //
-    // This method is intended tests the inclusive case: pending
-    // or non-pending, any role.
-    //
-    // This method does NOT return true for invalid invites,
-    // which don't have a UUID or address associated with them.
     func isMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
         return memberStates[address] != nil
     }
@@ -610,7 +497,11 @@ public extension GroupMembership {
         bannedMembers[uuid] != nil
     }
 
-    // This method should only be called for "pending profile key" members.
+    func hasInvalidInvite(forUserId userId: Data) -> Bool {
+        return invalidInviteMap[userId] != nil
+    }
+
+    /// This method should only be called on invited members.
     func addedByUuid(forInvitedMember address: SignalServiceAddress) -> UUID? {
         guard let memberState = memberStates[address] else {
             return nil
@@ -624,7 +515,7 @@ public extension GroupMembership {
         }
     }
 
-    // This method should only be called for full members.
+    /// This method should only be called for full members.
     func didJoinFromInviteLink(forFullMember address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             owsFailDebug("Missing member: \(address)")
@@ -642,10 +533,9 @@ public extension GroupMembership {
 
 // MARK: - Builder
 
-@objc
 public extension GroupMembership {
     struct Builder {
-        private var memberStates = MemberStateMap()
+        fileprivate var memberStates = MemberStateMap()
         private var bannedMembers = BannedMembersMap()
         private var invalidInviteMap = InvalidInviteMap()
 
@@ -726,7 +616,7 @@ public extension GroupMembership {
         }
 
         public mutating func addRequestingMembers(_ addresses: Set<SignalServiceAddress>) {
-            addMembers(addresses, withState: .Requesting)
+            addMembers(addresses, withState: .requesting)
         }
 
         private mutating func addMembers(
@@ -749,24 +639,8 @@ public extension GroupMembership {
             }
         }
 
-        public mutating func copyMember(_ address: SignalServiceAddress,
-                                        from oldGroupMembership: GroupMembership) {
-            guard let memberState = oldGroupMembership.memberStates[address] else {
-                owsFailDebug("Unknown address")
-                return
-            }
-            if memberStates[address] != nil {
-                owsFailDebug("Duplicate address.")
-            }
-            memberStates[address] = memberState
-        }
-
         public func hasMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
             nil != memberStates[address]
-        }
-
-        fileprivate func asMemberStateMap() -> MemberStateMap {
-            return memberStates
         }
 
         // MARK: Banned members
@@ -799,11 +673,6 @@ public extension GroupMembership {
             invalidInviteMap.removeValue(forKey: userId)
         }
 
-        public mutating func copyInvalidInvites(from other: GroupMembership) {
-            owsAssertDebug(invalidInviteMap.isEmpty)
-            invalidInviteMap = other.invalidInviteMap
-        }
-
         public func hasInvalidInvite(userId: Data) -> Bool {
             nil != invalidInviteMap[userId]
         }
@@ -829,11 +698,91 @@ public extension GroupMembership {
     }
 }
 
-// MARK: -
+// MARK: - Local user accessors
 
-// NOTE: We only use this class for backwards compatibility.
+public extension GroupMembership {
+    @objc
+    var isLocalUserMemberOfAnyKind: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return isMemberOfAnyKind(localAddress)
+    }
+
+    @objc
+    var isLocalUserFullMember: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return isFullMember(localAddress)
+    }
+
+    var isLocalUserInvitedMember: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return isInvitedMember(localAddress)
+    }
+
+    var isLocalUserRequestingMember: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return isRequestingMember(localAddress)
+    }
+
+    @objc
+    var isLocalUserFullOrInvitedMember: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return (isFullMember(localAddress) || isInvitedMember(localAddress))
+    }
+
+    var isLocalUserFullMemberAndAdministrator: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return isFullMemberAndAdministrator(localAddress)
+    }
+}
+
+// MARK: - InvalidInviteModel
+
+@objc(GroupMembershipInvalidInviteModel)
+private class InvalidInviteModel: MTLModel {
+    @objc
+    var userId: Data?
+
+    @objc
+    var addedByUserId: Data?
+
+    init(userId: Data?, addedByUserId: Data? = nil) {
+        self.userId = userId
+        self.addedByUserId = addedByUserId
+        super.init()
+    }
+
+    @objc
+    public override init() {
+        super.init()
+    }
+
+    @objc
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    @objc
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
+        try super.init(dictionary: dictionaryValue)
+    }
+}
+
+// MARK: - LegacyMemberState
+
 @objc(_TtCC16SignalServiceKit15GroupMembership11MemberState)
-class LegacyMemberState: MTLModel {
+private class LegacyMemberState: MTLModel {
     @objc
     var role: TSGroupMemberRole = .normal
 
@@ -872,52 +821,5 @@ class LegacyMemberState: MTLModel {
     @objc
     public var isAdministrator: Bool {
         return role == .administrator
-    }
-}
-
-// MARK: - -
-
-@objc
-public extension GroupMembership {
-    var isLocalUserMemberOfAnyKind: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return false
-        }
-        return isMemberOfAnyKind(localAddress)
-    }
-
-    var isLocalUserFullMember: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return false
-        }
-        return isFullMember(localAddress)
-    }
-
-    var isLocalUserInvitedMember: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return false
-        }
-        return isInvitedMember(localAddress)
-    }
-
-    var isLocalUserRequestingMember: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return false
-        }
-        return isRequestingMember(localAddress)
-    }
-
-    var isLocalUserFullOrInvitedMember: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return false
-        }
-        return (isFullMember(localAddress) || isInvitedMember(localAddress))
-    }
-
-    var isLocalUserFullMemberAndAdministrator: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return false
-        }
-        return isFullMemberAndAdministrator(localAddress)
     }
 }

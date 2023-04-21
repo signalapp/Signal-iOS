@@ -338,7 +338,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
         // MARK: - Invalid Invites
 
-        let invalidInvitesCount = groupMembership.invalidInvites.count
+        let invalidInvitesCount = groupMembership.invalidInviteUserIds.count
         if canRevokeInvites, invalidInvitesCount > 0 {
             let invalidInvitesSection = OWSTableSection()
             invalidInvitesSection.headerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES",

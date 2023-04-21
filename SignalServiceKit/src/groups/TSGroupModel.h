@@ -20,11 +20,6 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) {
     GroupsVersionV2
 };
 
-typedef NS_CLOSED_ENUM(NSUInteger, TSGroupMemberRole) {
-    TSGroupMemberRole_Normal = 0,
-    TSGroupMemberRole_Administrator = 1
-};
-
 typedef NS_CLOSED_ENUM(NSUInteger, TSGroupModelComparisonMode) {
     TSGroupModelComparisonMode_CompareAll,
     TSGroupModelComparisonMode_UserFacingOnly,

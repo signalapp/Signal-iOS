@@ -568,14 +568,15 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         }
 
         if shouldRevokeInvalidInvites {
-            if currentGroupMembership.invalidInvites.count < 1 {
+            if currentGroupMembership.invalidInviteUserIds.count < 1 {
                 // Another user has already revoked any invalid invites.
                 // We don't treat that as a conflict.
                 owsFailDebug("No invalid invites to revoke.")
             }
-            for invalidInvite in currentGroupMembership.invalidInvites {
+
+            for invalidlyInvitedUserId in currentGroupMembership.invalidInviteUserIds {
                 var actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
-                actionBuilder.setDeletedUserID(invalidInvite.userId)
+                actionBuilder.setDeletedUserID(invalidlyInvitedUserId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
                 didChange = true
             }

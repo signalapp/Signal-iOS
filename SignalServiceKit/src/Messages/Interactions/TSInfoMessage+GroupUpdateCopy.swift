@@ -717,8 +717,8 @@ extension GroupUpdateCopy {
 
     mutating func addInvalidInviteUpdates(oldGroupMembership: GroupMembership,
                                           newGroupMembership: GroupMembership) {
-        let oldInvalidInviteUserIds = Set(oldGroupMembership.invalidInvites.map { $0.userId })
-        let newInvalidInviteUserIds = Set(newGroupMembership.invalidInvites.map { $0.userId })
+        let oldInvalidInviteUserIds = Set(oldGroupMembership.invalidInviteUserIds)
+        let newInvalidInviteUserIds = Set(newGroupMembership.invalidInviteUserIds)
         let addedInvalidInviteCount = newInvalidInviteUserIds.subtracting(oldInvalidInviteUserIds).count
         let removedInvalidInviteCount = oldInvalidInviteUserIds.subtracting(newInvalidInviteUserIds).count
 

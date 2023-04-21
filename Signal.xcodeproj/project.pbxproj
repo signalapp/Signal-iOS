@@ -1279,6 +1279,7 @@
 		D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */; };
 		D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */; };
 		D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */; };
+		D99A0F5829F1ABBB002E02E3 /* TSGroupMemberRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
@@ -3837,6 +3838,7 @@
 		D99840C5297A0F9500F7ED6D /* Usernames+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+API.swift"; sourceTree = "<group>"; };
 		D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+HeaderView.swift"; sourceTree = "<group>"; };
 		D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareMyUsernameSheetViewController.swift; sourceTree = "<group>"; };
+		D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupMemberRole.swift; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
@@ -9333,6 +9335,7 @@
 				F9C5CBA4289453B200548EEE /* GroupMembership.swift */,
 				F9C5CBAA289453B200548EEE /* GroupsV2.swift */,
 				F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */,
+				D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */,
 				F9C5CBA6289453B200548EEE /* TSGroupModel.h */,
 				F9C5CBA8289453B200548EEE /* TSGroupModel.m */,
 				F9C5CBAB289453B200548EEE /* TSGroupModel.swift */,
@@ -12274,6 +12277,7 @@
 				F9C5CBFB289453B300548EEE /* TSErrorMessage.m in Sources */,
 				F9C5CBCF289453B300548EEE /* TSErrorMessage.swift in Sources */,
 				F9C5CCE3289453B300548EEE /* TSGroupMember.swift in Sources */,
+				D99A0F5829F1ABBB002E02E3 /* TSGroupMemberRole.swift in Sources */,
 				F9C5CE76289453B400548EEE /* TSGroupModel.m in Sources */,
 				F9C5CE79289453B400548EEE /* TSGroupModel.swift in Sources */,
 				F9C5CE75289453B400548EEE /* TSGroupModelBuilder.swift in Sources */,
