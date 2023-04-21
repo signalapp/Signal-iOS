@@ -61,7 +61,7 @@ extension ConversationViewController {
             return false
         }
         guard let contactThread = thread as? TSContactThread else {
-            return RemoteConfig.groupCalling && thread.isGroupV2Thread
+            return thread.isGroupV2Thread
         }
         guard !contactThread.isNoteToSelf else {
             return false

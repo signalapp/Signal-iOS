@@ -332,9 +332,6 @@ public class DebugFlags: BaseFlags {
     public static let allowV1GroupsUpdates = build.includes(.internal)
 
     @objc
-    public static let forceGroupCalling = build.includes(.beta)
-
-    @objc
     public static let forceStories = build.includes(.beta)
 
     @objc

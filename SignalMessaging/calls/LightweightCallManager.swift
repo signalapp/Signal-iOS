@@ -28,7 +28,7 @@ open class LightweightCallManager: NSObject, Dependencies {
         triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
         completion: (() -> Void)? = nil
     ) {
-        guard RemoteConfig.groupCalling, thread.isLocalUserFullMember else { return }
+        guard thread.isLocalUserFullMember else { return }
 
         firstly(on: DispatchQueue.global()) { () -> Promise<PeekInfo> in
             if let expectedEraId = expectedEraId {

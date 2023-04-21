@@ -53,11 +53,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var groupCalling: Bool {
-        return DebugFlags.forceGroupCalling || !isEnabled(.groupCallingKillSwitch)
-    }
-
-    @objc
     public static var cdsSyncInterval: TimeInterval {
         interval(.cdsSyncInterval, defaultInterval: kDayInterval * 2)
     }
@@ -464,7 +459,6 @@ private struct Flags {
     // to production.
     enum SupportedIsEnabledFlags: String, FlagType {
         case uuidSafetyNumbers
-        case groupCallingKillSwitch
         case automaticSessionResetKillSwitch
         case paymentsResetKillSwitch
         case senderKeyKillSwitch
