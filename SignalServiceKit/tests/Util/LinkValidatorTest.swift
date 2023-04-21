@@ -48,6 +48,22 @@ class LinkValidatorTest: XCTestCase {
             ("https://3g2upl4pq6kufc4m.oniony/onion", "https://3g2upl4pq6kufc4m.oniony/onion"),
             ("https://3g2upl4pq6kufc4m.oniony#onion", "https://3g2upl4pq6kufc4m.oniony#onion"),
 
+            // Invalid: invalid tld with trailing '.'
+            ("https://3g2upl4pq6kufc4m.example.", nil),
+            ("https://3g2upl4pq6kufc4m.test.", nil),
+
+            // Invalid: other invalid tld.
+            ("https://3g2upl4pq6kufc4m.example", nil),
+            ("https://3g2upl4pq6kufc4m.i2p", nil),
+            ("https://3g2upl4pq6kufc4m.invalid", nil),
+            ("https://3g2upl4pq6kufc4m.localhost", nil),
+
+            // Invalid: example.[com,org,net]
+            ("https://example.org", nil),
+            ("https://example.edu", "https://example.edu"),
+            ("https://example.test.org", "https://example.test.org"),
+            ("https://3g2upl4pq6kufc4m.example.com.", nil),
+
             // Invalid, mixed-ASCII
             ("https://www.wikipediа.org", nil), // (а is cyrillic)
             ("https://www.wikipediä.org", nil),
@@ -90,7 +106,7 @@ class LinkValidatorTest: XCTestCase {
     }
 
     func testFirstLinkPreviewURLPerformance() throws {
-        let entireMessage = String(repeating: "https://example.com ", count: 1_000_000)
+        let entireMessage = String(repeating: "https://signal.org ", count: 1_000_000)
         measure {
             let actualValue = LinkValidator.firstLinkPreviewURL(in: entireMessage)
             XCTAssertNil(actualValue)
