@@ -11,8 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSString (SSK)<SSKMaybeString>
 
-@property (nonatomic, nullable, readonly) NSString *dominantLanguageWithLegacyLinguisticTagger;
-
 - (NSString *)filterAsE164;
 
 - (NSString *)substringBeforeRange:(NSRange)range;
