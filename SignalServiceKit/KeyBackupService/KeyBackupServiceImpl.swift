@@ -676,12 +676,12 @@ public class KeyBackupServiceImpl: KeyBackupService {
         return keyValueStoreFactory.keyValueStore(collection: "kOWSKeyBackupService_Keys")
     }()
 
-    private static let masterKeyIdentifer = "masterKey"
+    private static let masterKeyIdentifier = "masterKey"
     private static let pinTypeIdentifier = "pinType"
     private static let encodedVerificationStringIdentifier = "encodedVerificationString"
     private static let hasBackupKeyRequestFailedIdentifier = "hasBackupKeyRequestFailed"
     private static let hasPendingRestorationIdentifier = "hasPendingRestoration"
-    private static let isMasterKeyBackedUpIdentifer = "isMasterKeyBackedUp"
+    private static let isMasterKeyBackedUpIdentifier = "isMasterKeyBackedUp"
     private static let enclaveNameIdentifier = "enclaveName"
     private let cacheQueue = DispatchQueue(label: "org.signal.key-backup-service")
 
@@ -697,7 +697,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
         let enclaveName: String?
 
         init(keyValueStore: KeyValueStore, transaction: DBReadTransaction) {
-            masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
+            masterKey = keyValueStore.getData(masterKeyIdentifier, transaction: transaction)
 
             if let rawPinType = keyValueStore.getInt(pinTypeIdentifier, transaction: transaction) {
                 pinType = KBS.PinType(rawValue: rawPinType)
@@ -723,7 +723,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
             )
 
             isMasterKeyBackedUp = keyValueStore.getBool(
-                isMasterKeyBackedUpIdentifer,
+                isMasterKeyBackedUpIdentifier,
                 defaultValue: false,
                 transaction: transaction
             )
@@ -822,8 +822,8 @@ public class KeyBackupServiceImpl: KeyBackupService {
         clearNextToken(transaction: transaction)
 
         keyValueStore.removeValues(forKeys: [
-            Self.masterKeyIdentifer,
-            Self.isMasterKeyBackedUpIdentifer,
+            Self.masterKeyIdentifier,
+            Self.isMasterKeyBackedUpIdentifier,
             Self.pinTypeIdentifier,
             Self.encodedVerificationStringIdentifier
         ], transaction: transaction)
@@ -855,13 +855,13 @@ public class KeyBackupServiceImpl: KeyBackupService {
 
         keyValueStore.setData(
             masterKey,
-            key: Self.masterKeyIdentifer,
+            key: Self.masterKeyIdentifier,
             transaction: transaction
         )
 
         keyValueStore.setBool(
             isMasterKeyBackedUp,
-            key: Self.isMasterKeyBackedUpIdentifer,
+            key: Self.isMasterKeyBackedUpIdentifier,
             transaction: transaction
         )
 
@@ -952,7 +952,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
     }
 
     public func setMasterKeyBackedUp(_ value: Bool, transaction: DBWriteTransaction) {
-        keyValueStore.setBool(value, key: Self.isMasterKeyBackedUpIdentifer, transaction: transaction)
+        keyValueStore.setBool(value, key: Self.isMasterKeyBackedUpIdentifier, transaction: transaction)
 
         reloadState(transaction: transaction)
     }

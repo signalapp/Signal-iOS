@@ -1498,7 +1498,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             return
         }
 
-        ImpactHapticFeedback.impactOccured(style: .medium)
+        ImpactHapticFeedback.impactOccurred(style: .medium)
 
         let cancelButton = OWSButton(block: { [weak self] in
             self?.inputToolbarDelegate?.voiceMemoGestureDidCancel()
@@ -1914,14 +1914,14 @@ extension ConversationInputToolbar {
             owsFailDebug("inputToolbarDelegate == nil")
             return
         }
-        ImpactHapticFeedback.impactOccured(style: .light)
+        ImpactHapticFeedback.impactOccurred(style: .light)
         inputToolbarDelegate.cameraButtonPressed()
     }
 
     @objc
     private func attachmentButtonPressed() {
         Logger.verbose("")
-        ImpactHapticFeedback.impactOccured(style: .light)
+        ImpactHapticFeedback.impactOccurred(style: .light)
         toggleKeyboardType(.attachment, animated: true)
     }
 
@@ -1951,7 +1951,7 @@ extension ConversationInputToolbar {
     private func stickerButtonPressed() {
         Logger.verbose("")
 
-        ImpactHapticFeedback.impactOccured(style: .light)
+        ImpactHapticFeedback.impactOccurred(style: .light)
 
         var hasInstalledStickerPacks: Bool = false
         databaseStorage.read { transaction in
@@ -1968,7 +1968,7 @@ extension ConversationInputToolbar {
     private func keyboardButtonPressed() {
         Logger.verbose("")
 
-        ImpactHapticFeedback.impactOccured(style: .light)
+        ImpactHapticFeedback.impactOccurred(style: .light)
 
         toggleKeyboardType(.system, animated: true)
     }

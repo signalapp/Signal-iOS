@@ -2292,11 +2292,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if didChangeActiveDirection {
             switch activeDirection {
             case .right:
-                ImpactHapticFeedback.impactOccured(style: .light)
+                ImpactHapticFeedback.impactOccurred(style: .light)
                 panHandler.percentDrivenTransition?.cancel()
                 panHandler.percentDrivenTransition = nil
             case .left:
-                ImpactHapticFeedback.impactOccured(style: .light)
+                ImpactHapticFeedback.impactOccurred(style: .light)
                 panHandler.percentDrivenTransition = UIPercentDrivenInteractiveTransition()
                 componentDelegate.didTapShowMessageDetail(CVItemViewModelImpl(renderItem: renderItem))
             case .none:

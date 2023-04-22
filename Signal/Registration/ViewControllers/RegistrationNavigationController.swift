@@ -510,7 +510,7 @@ extension RegistrationNavigationController: RegistrationTransferChoicePresenter 
         // We push these controllers right onto the same navigation stack, even though they
         // are not coordinator "steps". They have their own internal logic to proceed and go
         // back (direct calls to push and pop) and, when they complete, they will have _totally_
-        // overwriten our local database, thus wiping any in progress reg coordinator state
+        // overwritten our local database, thus wiping any in progress reg coordinator state
         // and putting us into the chat list.
         pushViewController(RegistrationTransferQRCodeViewController(), animated: true, completion: nil)
     }

@@ -92,7 +92,7 @@ public enum Registration {
     public struct ServerFailureResponse: Equatable {
         public let session: RegistrationSession
 
-        /// If true, whatever failure occured isn't likely to be resolved by retrying.
+        /// If true, whatever failure occurred isn't likely to be resolved by retrying.
         /// Otherwise a retry after some delay is appropriate. (e.g. let the user retry)
         public let isPermanent: Bool
 

@@ -633,7 +633,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         if (!_localUserProfile) {
             // We assert on the ivar directly here, as we want this to be cached already
             // by the time this method is called. If it's not, we've changed our caching
-            // logic and should re-evalulate this method.
+            // logic and should re-evaluate this method.
             OWSFailDebug(@"Missing local profile when setting key.");
 
             localUserProfile = [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress

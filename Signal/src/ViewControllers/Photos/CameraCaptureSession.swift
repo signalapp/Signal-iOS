@@ -717,7 +717,7 @@ class CameraCaptureSession: NSObject {
             return
         }
 
-        ImpactHapticFeedback.impactOccured(style: .medium)
+        ImpactHapticFeedback.impactOccurred(style: .medium)
 
         let previewLayer = previewView.previewLayer
         let captureRect = previewLayer.metadataOutputRectConverted(fromLayerRect: previewLayer.bounds)

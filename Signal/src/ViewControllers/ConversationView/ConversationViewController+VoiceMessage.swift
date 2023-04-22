@@ -46,7 +46,7 @@ extension ConversationViewController {
     private func startRecordingVoiceMessage(_ inProgressVoiceMessage: VoiceMessageInProgressDraft) {
         AssertIsOnMainThread()
 
-        ImpactHapticFeedback.impactOccured(style: .light)
+        ImpactHapticFeedback.impactOccurred(style: .light)
 
         do {
             try inProgressVoiceMessage.startRecording()
@@ -86,7 +86,7 @@ extension ConversationViewController {
             return
         }
 
-        ImpactHapticFeedback.impactOccured(style: .medium)
+        ImpactHapticFeedback.impactOccurred(style: .medium)
 
         configureScrollDownButtons()
 

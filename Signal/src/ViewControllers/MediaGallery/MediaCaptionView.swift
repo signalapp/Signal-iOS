@@ -88,7 +88,7 @@ class MediaCaptionView: UIView {
         addSubview(captionTextView)
         captionTextView.autoPinWidthToSuperviewMargins()
         captionTextView.autoPinEdge(toSuperviewEdge: .top)
-        // This constraint is designed to be overriden by `heightConstraint`
+        // This constraint is designed to be overridden by `heightConstraint`
         // during interactive transition between captions.
         // At the same time it must have a priority high enough
         // so that `currentCaptionView` defines height of the `MediaCaptionView`.

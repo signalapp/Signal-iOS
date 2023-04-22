@@ -36,7 +36,7 @@ open class OWSViewController: UIViewController {
 
     /// Current state of the view lifecycle.
     /// Note changes are triggered by the lifecycle methods `viewDidLoad` `viewWillAppear` `viewDidAppear`
-    /// `viewWillDisappear` `viewDidDisappear`; those can be overriden to get state change hooks as per normal.
+    /// `viewWillDisappear` `viewDidDisappear`; those can be overridden to get state change hooks as per normal.
     public private(set) final var lifecycle = ViewControllerLifecycle.notLoaded {
         didSet {
             achievedLifecycleStates.insert(lifecycle)

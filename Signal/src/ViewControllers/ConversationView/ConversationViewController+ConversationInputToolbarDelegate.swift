@@ -155,7 +155,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         Logger.verbose("Sending sticker.")
 
-        ImpactHapticFeedback.impactOccured(style: .light)
+        ImpactHapticFeedback.impactOccurred(style: .light)
 
         let message = ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
         messageWasSent(message)

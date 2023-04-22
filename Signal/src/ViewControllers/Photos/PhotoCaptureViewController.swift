@@ -676,7 +676,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         }
 
         // Don't "unrotate" the switch camera icon if the front facing camera had been selected.
-        let tranformFromCameraType: CGAffineTransform = cameraCaptureSession.desiredPosition == .front ? CGAffineTransform(rotationAngle: -.pi) : .identity
+        let transformFromCameraType: CGAffineTransform = cameraCaptureSession.desiredPosition == .front ? CGAffineTransform(rotationAngle: -.pi) : .identity
 
         var buttonsToUpdate: [UIView] = [ topBar.batchModeButton, topBar.flashModeButton, bottomBar.photoLibraryButton ]
         if let cameraZoomControl = frontCameraZoomControl {
@@ -687,7 +687,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         }
         let updateOrientation = {
             buttonsToUpdate.forEach { $0.transform = transformFromOrientation }
-            self.bottomBar.switchCameraButton.transform = transformFromOrientation.concatenating(tranformFromCameraType)
+            self.bottomBar.switchCameraButton.transform = transformFromOrientation.concatenating(transformFromCameraType)
         }
 
         if isAnimated {

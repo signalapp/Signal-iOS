@@ -163,7 +163,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         self.contextMenuController = contextMenuController
 
         delegate?.contextMenuInteraction(self, willDisplayMenuForConfiguration: contextMenuConfiguration)
-        ImpactHapticFeedback.impactOccured(style: .medium, intensity: 0.8)
+        ImpactHapticFeedback.impactOccurred(style: .medium, intensity: 0.8)
 
         window.addSubview(contextMenuController.view)
         contextMenuController.view.frame = window.bounds

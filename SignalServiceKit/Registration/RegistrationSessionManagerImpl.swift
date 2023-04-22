@@ -455,7 +455,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         /// This session is known to be invalid or timed out.
         /// It should be thrown away and another session started.
         case sessionInvalid
-        /// Some other error occured; an error might be shown to the user
+        /// Some other error occurred; an error might be shown to the user
         /// but the session shouldn't be discarded.
         case genericError
     }

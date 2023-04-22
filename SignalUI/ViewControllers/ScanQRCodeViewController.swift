@@ -371,7 +371,7 @@ public class QRCodeScanViewController: OWSViewController {
                 self.stopScanning()
 
                 // Vibrate
-                ImpactHapticFeedback.impactOccured(style: .medium)
+                ImpactHapticFeedback.impactOccurred(style: .medium)
 
             case .continueScanning:
                 break

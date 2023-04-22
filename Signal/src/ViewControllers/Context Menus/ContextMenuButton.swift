@@ -216,7 +216,7 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
     /// Note: If you override this method on UIButton on iOS 14 or later, whatever is returned is used for the
     /// context menu that is ultimately displayed.
     /// This class is meant to be a perfect replacement for UIButton to get context menu functionality prior to
-    /// iOS 14, so we mimic that behavior and use this method as the source of truth, allowing it to be overriden.
+    /// iOS 14, so we mimic that behavior and use this method as the source of truth, allowing it to be overridden.
     public func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
         configurationForMenuAtLocation location: CGPoint
