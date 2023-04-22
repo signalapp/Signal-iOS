@@ -1278,27 +1278,15 @@ class StorageServiceOperation: OWSOperation {
     // MARK: - Clean Up
 
     private func cleanUpUnknownData() {
-        databaseStorage.write { transaction in
-            var state = State.current(transaction: transaction)
-
-            normalizePendingMutations(in: &state, transaction: transaction)
-
-            var hasChanges = false
-
-            if self.cleanUpUnknownIdentifiers(in: &state) {
-                hasChanges = true
-            }
-            if self.cleanUpRecordsWithUnknownFields(in: &state, transaction: transaction) {
-                hasChanges = true
-            }
-            if self.cleanUpOrphanedAccounts(in: &state, transaction: transaction) {
-                hasChanges = true
-            }
-
-            if hasChanges {
-                state.save(transaction: transaction)
-            }
+        var state = databaseStorage.read { tx in
+            var state = State.current(transaction: tx)
+            normalizePendingMutations(in: &state, transaction: tx)
+            return state
         }
+
+        self.cleanUpUnknownIdentifiers(in: &state)
+        self.cleanUpRecordsWithUnknownFields(in: &state)
+        self.cleanUpOrphanedAccounts(in: &state)
 
         return self.reportSuccess()
     }
@@ -1320,7 +1308,7 @@ class StorageServiceOperation: OWSOperation {
         }
     }
 
-    private func cleanUpUnknownIdentifiers(in state: inout State) -> Bool {
+    private func cleanUpUnknownIdentifiers(in state: inout State) {
         let canParseAnyUnknownIdentifier = state.unknownIdentifiersTypeMap.contains { keyType, unknownIdentifiers in
             guard Self.isKnownKeyType(keyType) else {
                 // We don't know this type, so it's not parseable.
@@ -1334,18 +1322,20 @@ class StorageServiceOperation: OWSOperation {
         }
 
         guard canParseAnyUnknownIdentifier else {
-            return false
+            return
         }
 
         // We may have learned of new record types. If so, we should refetch the
         // latest manifest so that we can merge these items.
-        state.refetchLatestManifest = true
-        return true
+        databaseStorage.write { tx in
+            state.refetchLatestManifest = true
+            state.save(transaction: tx)
+        }
     }
 
-    private func cleanUpRecordsWithUnknownFields(in state: inout State, transaction: SDSAnyWriteTransaction) -> Bool {
+    private func cleanUpRecordsWithUnknownFields(in state: inout State) {
         guard state.unknownFieldLastCheckedAppVersion != AppVersion.shared.currentAppVersion4 else {
-            return false
+            return
         }
         state.unknownFieldLastCheckedAppVersion = AppVersion.shared.currentAppVersion4
 
@@ -1354,7 +1344,7 @@ class StorageServiceOperation: OWSOperation {
         // possible and expected that we might understand some of the fields that
         // were previously unknown but not all of them. Even if we can't fully
         // merge any values, we might partially merge all the values.
-        func mergeRecordsWithUnknownFields(stateUpdater: some StorageServiceStateUpdater) {
+        func mergeRecordsWithUnknownFields(stateUpdater: some StorageServiceStateUpdater, tx: SDSAnyWriteTransaction) {
             let recordsWithUnknownFields = stateUpdater.recordsWithUnknownFields(in: state)
             if recordsWithUnknownFields.isEmpty {
                 return
@@ -1372,7 +1362,7 @@ class StorageServiceOperation: OWSOperation {
                     identifier: storageIdentifier,
                     state: &state,
                     stateUpdater: stateUpdater,
-                    transaction: transaction
+                    transaction: tx
                 )
             }
             let remainingCount = stateUpdater.recordsWithUnknownFields(in: state).count
@@ -1380,17 +1370,18 @@ class StorageServiceOperation: OWSOperation {
             Logger.info("Unknown fields: Resolved \(resolvedCount) records (\(remainingCount) remaining) for \(debugDescription)")
         }
 
-        mergeRecordsWithUnknownFields(stateUpdater: buildAccountUpdater())
-        mergeRecordsWithUnknownFields(stateUpdater: buildContactUpdater())
-        mergeRecordsWithUnknownFields(stateUpdater: buildGroupV1Updater())
-        mergeRecordsWithUnknownFields(stateUpdater: buildGroupV2Updater())
-        mergeRecordsWithUnknownFields(stateUpdater: buildStoryDistributionListUpdater())
-
-        Logger.info("Resolved unknown fields using manifest version \(state.manifestVersion)")
-        return true
+        databaseStorage.write { tx in
+            mergeRecordsWithUnknownFields(stateUpdater: buildAccountUpdater(), tx: tx)
+            mergeRecordsWithUnknownFields(stateUpdater: buildContactUpdater(), tx: tx)
+            mergeRecordsWithUnknownFields(stateUpdater: buildGroupV1Updater(), tx: tx)
+            mergeRecordsWithUnknownFields(stateUpdater: buildGroupV2Updater(), tx: tx)
+            mergeRecordsWithUnknownFields(stateUpdater: buildStoryDistributionListUpdater(), tx: tx)
+            Logger.info("Resolved unknown fields using manifest version \(state.manifestVersion)")
+            state.save(transaction: tx)
+        }
     }
 
-    private func cleanUpOrphanedAccounts(in state: inout State, transaction: SDSAnyWriteTransaction) -> Bool {
+    private func cleanUpOrphanedAccounts(in state: inout State) {
         // We don't keep unregistered accounts in storage service after a certain
         // amount of time. We may also have records for accounts that no longer
         // exist, e.g. that SignalRecipient was merged with another recipient. We
@@ -1399,27 +1390,29 @@ class StorageServiceOperation: OWSOperation {
 
         let currentDate = Date()
 
-        func shouldRecipientBeInStorageService(accountId: AccountId) -> Bool {
-            guard let storageServiceContact = StorageServiceContact.fetch(for: accountId, transaction: transaction) else {
+        func shouldRecipientBeInStorageService(accountId: AccountId, tx: SDSAnyReadTransaction) -> Bool {
+            guard let storageServiceContact = StorageServiceContact.fetch(for: accountId, transaction: tx) else {
                 return false
             }
             return storageServiceContact.shouldBeInStorageService(currentDate: currentDate)
         }
 
-        let orphanedAccountIds = State.current(transaction: transaction).accountIdToIdentifierMap.keys.filter {
-            !shouldRecipientBeInStorageService(accountId: $0)
+        let orphanedAccountIds = databaseStorage.read { tx in
+            state.accountIdToIdentifierMap.keys.filter { !shouldRecipientBeInStorageService(accountId: $0, tx: tx) }
         }
 
         if orphanedAccountIds.isEmpty {
-            return false
+            return
         }
 
         Logger.info("Marking \(orphanedAccountIds.count) orphaned account(s) for deletion.")
 
-        var pendingMutations = PendingMutations()
-        pendingMutations.updatedAccountIds.formUnion(orphanedAccountIds)
-        Self.recordPendingMutations(pendingMutations, in: &state, transaction: transaction)
-        return true
+        databaseStorage.write { tx in
+            var pendingMutations = PendingMutations()
+            pendingMutations.updatedAccountIds.formUnion(orphanedAccountIds)
+            Self.recordPendingMutations(pendingMutations, in: &state, transaction: tx)
+            state.save(transaction: tx)
+        }
     }
 
     // MARK: - Record Merge
