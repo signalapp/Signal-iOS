@@ -199,8 +199,10 @@ extension OWSOrphanDataCleaner {
         let actualRelativePaths: [String]
         do {
             actualRelativePaths = try FileManager.default.subpathsOfDirectory(atPath: basePath)
+        } catch CocoaError.fileReadNoSuchFile {
+            return []
         } catch {
-            Logger.warn("Couldn't find any voice message drafts \(error.shortDescription)")
+            Logger.warn("Orphan data cleaner couldn't find any paths \(error.shortDescription)")
             return []
         }
 
