@@ -332,7 +332,7 @@ extension MemberActionSheet: CNContactViewControllerDelegate {
 extension MemberActionSheet: MediaPresentationContextProvider {
     func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         let mediaView: UIView
-        let cornerRadius: CGFloat
+        let mediaViewShape: MediaViewShape
         switch item {
         case .gallery:
             owsFailDebug("Unexpected item")
@@ -341,9 +341,9 @@ extension MemberActionSheet: MediaPresentationContextProvider {
             guard let avatarView = avatarView as? ConversationAvatarView else { return nil }
             mediaView = avatarView
             if case .circular = avatarView.configuration.shape {
-                cornerRadius = 0.5 * CGFloat(avatarView.configuration.sizeClass.diameter)
+                mediaViewShape = .circle
             } else {
-                cornerRadius = 0
+                mediaViewShape = .rectangle(0)
             }
         }
 
@@ -357,7 +357,7 @@ extension MemberActionSheet: MediaPresentationContextProvider {
         return MediaPresentationContext(
             mediaView: mediaView,
             presentationFrame: presentationFrame,
-            roundedCorners: .all(cornerRadius)
+            mediaViewShape: mediaViewShape
         )
     }
 

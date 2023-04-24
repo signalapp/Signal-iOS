@@ -28,28 +28,36 @@ struct RoundedCorners: Equatable {
     var bottomRight: CGFloat
     var bottomLeft: CGFloat
 
-    static var none: RoundedCorners { RoundedCorners.all(0) }
-
     static func all(_ radius: CGFloat) -> RoundedCorners {
         return RoundedCorners(topLeft: radius, topRight: radius, bottomRight: radius, bottomLeft: radius)
     }
+
+    var isAllCornerRadiiEqual: Bool {
+        topLeft == topRight && topLeft == bottomLeft && topLeft == bottomRight
+    }
+}
+
+enum MediaViewShape {
+    case circle
+    case rectangle(CGFloat)
+    case variableRoundedCorners(RoundedCorners)
 }
 
 struct MediaPresentationContext {
     let mediaView: UIView
     let presentationFrame: CGRect
-    let roundedCorners: RoundedCorners
+    let mediaViewShape: MediaViewShape
     let clippingAreaInsets: UIEdgeInsets?
 
     init(
         mediaView: UIView,
         presentationFrame: CGRect,
-        roundedCorners: RoundedCorners = .none,
+        mediaViewShape: MediaViewShape = .rectangle(0),
         clippingAreaInsets: UIEdgeInsets? = nil
     ) {
         self.mediaView = mediaView
         self.presentationFrame = presentationFrame
-        self.roundedCorners = roundedCorners
+        self.mediaViewShape = mediaViewShape
         self.clippingAreaInsets = clippingAreaInsets
     }
 }

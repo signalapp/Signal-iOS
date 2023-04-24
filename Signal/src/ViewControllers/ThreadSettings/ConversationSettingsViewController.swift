@@ -1078,19 +1078,19 @@ extension ConversationSettingsViewController: ReplaceAdminViewControllerDelegate
 extension ConversationSettingsViewController: MediaPresentationContextProvider {
     func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         let mediaView: UIView
-        let cornerRadius: CGFloat
+        let mediaViewShape: MediaViewShape
         switch item {
         case .gallery(let galleryItem):
             guard let imageView = recentMedia[galleryItem.attachmentStream.uniqueId]?.imageView else { return nil }
             mediaView = imageView
-            cornerRadius = imageView.layer.cornerRadius
+            mediaViewShape = .rectangle(imageView.layer.cornerRadius)
         case .image:
             guard let avatarView = avatarView as? ConversationAvatarView else { return nil }
             mediaView = avatarView
             if case .circular = avatarView.configuration.shape {
-                cornerRadius = 0.5 * CGFloat(avatarView.configuration.sizeClass.diameter)
+                mediaViewShape = .circle
             } else {
-                cornerRadius = 0
+                mediaViewShape = .rectangle(0)
             }
         }
 
@@ -1105,7 +1105,7 @@ extension ConversationSettingsViewController: MediaPresentationContextProvider {
         return MediaPresentationContext(
             mediaView: mediaView,
             presentationFrame: presentationFrame,
-            roundedCorners: .all(cornerRadius),
+            mediaViewShape: mediaViewShape,
             clippingAreaInsets: clippingAreaInsets
         )
     }

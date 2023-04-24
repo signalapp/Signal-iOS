@@ -162,7 +162,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
         imageView.contentMode = .scaleAspectFill
         imageView.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
         imageView.layer.masksToBounds = true
-        imageView.roundedCorners = fromMediaContext.roundedCorners
+        imageView.shape = fromMediaContext.mediaViewShape
         imageView.frame = transitionView.bounds
         transitionView.addSubview(imageView)
 
@@ -186,20 +186,20 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         let completion: (CGVector?) -> Void = { velocity in
             let destinationFrame: CGRect
-            let destinationRoundedCorners: RoundedCorners
+            let destinationMediaViewShape: MediaViewShape
             if transitionContext.transitionWasCancelled {
                 destinationFrame = fromMediaContext.presentationFrame
-                destinationRoundedCorners = fromMediaContext.roundedCorners
+                destinationMediaViewShape = fromMediaContext.mediaViewShape
             } else if let toMediaContext {
                 destinationFrame = toMediaContext.presentationFrame
-                destinationRoundedCorners = toMediaContext.roundedCorners
+                destinationMediaViewShape = toMediaContext.mediaViewShape
             } else {
                 // `toMediaContext` can be nil if the target item is scrolled off of the
                 // contextProvider's screen, so we synthesize a context to dismiss the item
                 // off screen
                 let offscreenFrame = fromMediaContext.presentationFrame.offsetBy(dx: 0, dy: fromMediaContext.presentationFrame.height)
                 destinationFrame = offscreenFrame
-                destinationRoundedCorners = fromMediaContext.roundedCorners
+                destinationMediaViewShape = fromMediaContext.mediaViewShape
             }
 
             if let clippingAreaInsets = toMediaContext?.clippingAreaInsets, clippingAreaInsets.isNonEmpty {
@@ -211,7 +211,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
             let animator = UIViewPropertyAnimator(
                 duration: duration,
-                springDamping: 0.77,
+                springDamping: 1,
                 springResponse: 0.3,
                 initialVelocity: velocity ?? .zero
             )
@@ -222,7 +222,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                     dimmerView?.alpha = 0
                 }
 
-                imageView.roundedCorners = destinationRoundedCorners
+                imageView.shape = destinationMediaViewShape
                 transitionView.transform = .identity
                 transitionView.bounds.size = destinationFrame.size
                 transitionView.center = destinationFrame.center

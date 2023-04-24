@@ -715,7 +715,7 @@ extension MessageDetailViewController: MediaPresentationContextProvider {
         return MediaPresentationContext(
             mediaView: mediaView,
             presentationFrame: presentationFrame,
-            roundedCorners: .all(CVComponentMessage.bubbleWideCornerRadius)
+            mediaViewShape: .rectangle(CVComponentMessage.bubbleWideCornerRadius)
         )
     }
 

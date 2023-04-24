@@ -159,7 +159,7 @@ extension AvatarViewController: MediaPresentationContextProvider {
         return MediaPresentationContext(
             mediaView: circleView,
             presentationFrame: circleView.frame,
-            roundedCorners: .all(circleView.layer.cornerRadius)
+            mediaViewShape: .circle
         )
     }
 

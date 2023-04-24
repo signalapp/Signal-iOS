@@ -117,7 +117,7 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         let transitionView = MediaTransitionImageView(image: presentationImage)
         transitionView.contentMode = .scaleAspectFill
         transitionView.layer.masksToBounds = true
-        transitionView.roundedCorners = fromMediaContext.roundedCorners
+        transitionView.shape = fromMediaContext.mediaViewShape
         transitionView.frame = fromMediaContext.presentationFrame
         clippingView.addSubview(transitionView)
 
@@ -156,7 +156,7 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             fromTransitionalOverlayView?.alpha = 0.0
             toView.alpha = 1.0
             toTransitionalOverlayView?.alpha = 1.0
-            transitionView.roundedCorners = toMediaContext.roundedCorners
+            transitionView.shape = toMediaContext.mediaViewShape
             transitionView.frame = toMediaContext.presentationFrame
 
             if let clippingAreaInsets = toMediaContext.clippingAreaInsets, clippingAreaInsets.isNonEmpty {

@@ -396,10 +396,19 @@ extension ConversationViewController: MediaPresentationContextProvider {
             }
         }
 
+        // Avoid using `variableRoundedCorners` as much as possible because that doesn't work well
+        // with spring animations.
+        let mediaViewShape: MediaViewShape
+        if roundedCorners.isAllCornerRadiiEqual {
+            mediaViewShape = .rectangle(roundedCorners.topLeft)
+        } else {
+            mediaViewShape = .variableRoundedCorners(roundedCorners)
+        }
+
         return MediaPresentationContext(
             mediaView: mediaView,
             presentationFrame: presentationFrame,
-            roundedCorners: roundedCorners,
+            mediaViewShape: mediaViewShape,
             clippingAreaInsets: collectionView.adjustedContentInset
         )
     }
