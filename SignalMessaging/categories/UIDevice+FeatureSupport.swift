@@ -7,10 +7,6 @@ import Foundation
 
 @objc
 public extension UIDevice {
-    var supportsCallKit: Bool {
-        return ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 0, patchVersion: 0))
-    }
-
     var hasIPhoneXNotch: Bool {
         // Only phones have notch
         guard !isIPad else { return false }
@@ -57,16 +53,6 @@ public extension UIDevice {
             owsFailDebug("unknown device format")
             return false
         }
-    }
-
-    var hasDynamicIsland: Bool {
-        // On Xcode 13.X and earlier, UIScreen.main and UIApplication.shared.statusBarHeight both
-        // mis-report pixel heights on the iPhone 14 pro and pro max models. They are, in actuality,
-        // slightly larger and have taller status bars than their previous gen counterparts.
-        // Instead, grab the device identifier info to determine if the current device is one of these
-        // two "Dynamic Island" devices.
-        // TODO: remove this once we move to Xcode 14.
-        return ["iPhone15,2", "iPhone15,3"].contains(String(sysctlKey: "hw.machine"))
     }
 
     var isPlusSizePhone: Bool {
