@@ -261,7 +261,7 @@ open class MentionTextView: OWSTextView {
                 return
         }
 
-        ImpactHapticFeedback.impactOccured(style: .light)
+        ImpactHapticFeedback.impactOccurred(style: .light)
 
         pickerParentView.layoutIfNeeded()
 

@@ -21,7 +21,7 @@ class EmojiSkinTonePicker: UIView {
     ) -> EmojiSkinTonePicker? {
         guard emoji.baseEmoji.hasSkinTones else { return nil }
 
-        ImpactHapticFeedback.impactOccured(style: .light)
+        ImpactHapticFeedback.impactOccurred(style: .light)
 
         let picker = EmojiSkinTonePicker(emoji: emoji, completion: completion)
 

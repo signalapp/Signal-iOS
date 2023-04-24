@@ -475,7 +475,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         }
 
         if highlightStateChanged {
-            ImpactHapticFeedback.impactOccured(style: .light)
+            ImpactHapticFeedback.impactOccurred(style: .light)
         }
     }
 

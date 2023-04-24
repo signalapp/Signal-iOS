@@ -185,7 +185,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             // nothing further to do
             break;
         case OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest:
-            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            OWSFailDebug(@"Unexpectedly had story receipt blocked by message request.");
             break;
         case OWSReceiptCircumstanceOnThisDevice: {
             // We only send read receipts to linked devices, not to the author.
@@ -194,7 +194,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             break;
         }
         case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
-            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            OWSFailDebug(@"Unexpectedly had story receipt blocked by message request.");
             break;
     }
 }
@@ -208,7 +208,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             // nothing further to do
             break;
         case OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest:
-            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            OWSFailDebug(@"Unexpectedly had story receipt blocked by message request.");
             break;
         case OWSReceiptCircumstanceOnThisDevice: {
             [self enqueueLinkedDeviceViewedReceiptForStoryMessage:storyMessage transaction:transaction];
@@ -221,7 +221,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             break;
         }
         case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
-            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            OWSFailDebug(@"Unexpectedly had story receipt blocked by message request.");
             break;
     }
 }

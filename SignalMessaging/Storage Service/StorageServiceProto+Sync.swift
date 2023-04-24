@@ -1561,7 +1561,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
         builder.setIdentifier(distributionListIdentifier)
 
         if let deletedAtTimestamp = TSPrivateStoryThread.deletedAtTimestamp(
-            forDistributionListIdentifer: distributionListIdentifier,
+            forDistributionListIdentifier: distributionListIdentifier,
             transaction: transaction
         ) {
             builder.setDeletedAtTimestamp(deletedAtTimestamp)
@@ -1606,7 +1606,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             existingStory?.anyRemove(transaction: transaction)
             TSPrivateStoryThread.recordDeletedAtTimestamp(
                 record.deletedAtTimestamp,
-                forDistributionListIdentifer: identifier,
+                forDistributionListIdentifier: identifier,
                 transaction: transaction
             )
 

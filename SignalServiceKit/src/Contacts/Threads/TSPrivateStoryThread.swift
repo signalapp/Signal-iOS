@@ -43,12 +43,12 @@ public extension TSPrivateStoryThread {
     private static let deletedAtTimestampKVS = SDSKeyValueStore(collection: "TSPrivateStoryThread+DeletedAtTimestamp")
     private static let deletedAtTimestampThreshold = kMonthInterval
 
-    static func deletedAtTimestamp(forDistributionListIdentifer identifier: Data, transaction: SDSAnyReadTransaction) -> UInt64? {
+    static func deletedAtTimestamp(forDistributionListIdentifier identifier: Data, transaction: SDSAnyReadTransaction) -> UInt64? {
         guard let uniqueId = UUID(data: identifier)?.uuidString else { return nil }
         return deletedAtTimestampKVS.getUInt64(uniqueId, transaction: transaction)
     }
 
-    static func recordDeletedAtTimestamp(_ timestamp: UInt64, forDistributionListIdentifer identifier: Data, transaction: SDSAnyWriteTransaction) {
+    static func recordDeletedAtTimestamp(_ timestamp: UInt64, forDistributionListIdentifier identifier: Data, transaction: SDSAnyWriteTransaction) {
         guard Date().timeIntervalSince(Date(millisecondsSince1970: timestamp)) < deletedAtTimestampThreshold else {
             Logger.warn("Ignorning stale deleted at timestamp")
             return

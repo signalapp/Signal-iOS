@@ -39,7 +39,7 @@ public class NotificationHapticFeedback {
 
 public class ImpactHapticFeedback {
 
-    public class func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle) {
+    public class func impactOccurred(style: UIImpactFeedbackGenerator.FeedbackStyle) {
         DispatchQueue.main.async {
             let generator = UIImpactFeedbackGenerator(style: style)
             generator.prepare()
@@ -47,7 +47,7 @@ public class ImpactHapticFeedback {
         }
     }
 
-    public class func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle, intensity: CGFloat) {
+    public class func impactOccurred(style: UIImpactFeedbackGenerator.FeedbackStyle, intensity: CGFloat) {
         DispatchQueue.main.async {
             let generator = UIImpactFeedbackGenerator(style: style)
             generator.prepare()

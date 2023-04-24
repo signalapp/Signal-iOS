@@ -232,7 +232,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
 
                 TSPrivateStoryThread.recordDeletedAtTimestamp(
                     Date.ows_millisecondTimestamp(),
-                    forDistributionListIdentifer: dlistIdentifier,
+                    forDistributionListIdentifier: dlistIdentifier,
                     transaction: transaction
                 )
 

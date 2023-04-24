@@ -154,7 +154,7 @@ class StoryPageViewController: UIPageViewController {
         // didFinishTransitioning delegate callbacks, calling the former and not the latter.
         // This happens rarely, and only when swiping rapidly between pages and cancelling a swipe.
         // Since the displaylink is firing off anyway, detect this (if we have pending controllers
-        // and an ongoing paging drag transition but the scrollview isnt dragging) and resolve it
+        // and an ongoing paging drag transition but the scrollview isn't dragging) and resolve it
         // by closing the transition out ourselves.
         if
             pendingTransitionViewControllers.isEmpty.negated,

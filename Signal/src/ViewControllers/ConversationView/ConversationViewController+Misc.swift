@@ -282,7 +282,7 @@ public extension ConversationViewController {
         AssertIsOnMainThread()
 
         if withHapticFeedback {
-            ImpactHapticFeedback.impactOccured(style: .light)
+            ImpactHapticFeedback.impactOccurred(style: .light)
         }
 
         var groupViewHelper: GroupViewHelper?
