@@ -169,14 +169,6 @@ public extension NSObject {
         SSKEnvironment.shared.socketManagerRef
     }
 
-    final var stickerManager: StickerManager {
-        SSKEnvironment.shared.stickerManagerRef
-    }
-
-    static var stickerManager: StickerManager {
-        SSKEnvironment.shared.stickerManagerRef
-    }
-
     final var storageCoordinator: StorageCoordinator {
         SSKEnvironment.shared.storageCoordinatorRef
     }
@@ -640,14 +632,6 @@ public extension Dependencies {
 
     static var socketManager: SocketManager {
         SSKEnvironment.shared.socketManagerRef
-    }
-
-    var stickerManager: StickerManager {
-        SSKEnvironment.shared.stickerManagerRef
-    }
-
-    static var stickerManager: StickerManager {
-        SSKEnvironment.shared.stickerManagerRef
     }
 
     var storageCoordinator: StorageCoordinator {
