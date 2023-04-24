@@ -1565,46 +1565,44 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             // If we have pending transport and can send, send.
-            if session.allowedToRequestCode {
-                switch pendingCodeTransport {
-                case .sms:
-                    if let nextSMSDate = session.nextSMSDate, nextSMSDate <= deps.dateProvider() {
-                        return requestSessionCode(session: session, transport: pendingCodeTransport)
-                    } else if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
-                        return .value(.verificationCodeEntry(self.verificationCodeEntryState(
-                            session: session,
-                            nextVerificationAttemptDate: nextVerificationAttemptDate,
-                            validationError: .smsResendTimeout
-                        )))
-                    } else if let nextSMSDate = session.nextSMSDate {
-                        return .value(.phoneNumberEntry(phoneNumberEntryState(
-                            validationError: .rateLimited(.init(
-                                expiration: nextSMSDate,
-                                e164: session.e164
-                            ))
-                        )))
-                    } else {
-                        return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
-                    }
-                case .voice:
-                    if let nextCallDate = session.nextCallDate, nextCallDate <= deps.dateProvider() {
-                        return requestSessionCode(session: session, transport: pendingCodeTransport)
-                    } else if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
-                        return .value(.verificationCodeEntry(self.verificationCodeEntryState(
-                            session: session,
-                            nextVerificationAttemptDate: nextVerificationAttemptDate,
-                            validationError: .voiceResendTimeout
-                        )))
-                    } else if let nextSMSDate = session.nextSMSDate {
-                        return .value(.phoneNumberEntry(phoneNumberEntryState(
-                            validationError: .rateLimited(.init(
-                                expiration: nextSMSDate,
-                                e164: session.e164
-                            ))
-                        )))
-                    } else {
-                        return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
-                    }
+            switch pendingCodeTransport {
+            case .sms:
+                if let nextSMSDate = session.nextSMSDate, nextSMSDate <= deps.dateProvider() {
+                    return requestSessionCode(session: session, transport: pendingCodeTransport)
+                } else if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                    return .value(.verificationCodeEntry(self.verificationCodeEntryState(
+                        session: session,
+                        nextVerificationAttemptDate: nextVerificationAttemptDate,
+                        validationError: .smsResendTimeout
+                    )))
+                } else if let nextSMSDate = session.nextSMSDate {
+                    return .value(.phoneNumberEntry(phoneNumberEntryState(
+                        validationError: .rateLimited(.init(
+                            expiration: nextSMSDate,
+                            e164: session.e164
+                        ))
+                    )))
+                } else {
+                    return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
+                }
+            case .voice:
+                if let nextCallDate = session.nextCallDate, nextCallDate <= deps.dateProvider() {
+                    return requestSessionCode(session: session, transport: pendingCodeTransport)
+                } else if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                    return .value(.verificationCodeEntry(self.verificationCodeEntryState(
+                        session: session,
+                        nextVerificationAttemptDate: nextVerificationAttemptDate,
+                        validationError: .voiceResendTimeout
+                    )))
+                } else if let nextSMSDate = session.nextSMSDate {
+                    return .value(.phoneNumberEntry(phoneNumberEntryState(
+                        validationError: .rateLimited(.init(
+                            expiration: nextSMSDate,
+                            e164: session.e164
+                        ))
+                    )))
+                } else {
+                    return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
                 }
             }
         }
