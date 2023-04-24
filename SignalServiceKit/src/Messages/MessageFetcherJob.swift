@@ -63,10 +63,6 @@ public class MessageFetcherJob: NSObject {
         return operationQueue
     }()
 
-    fileprivate var activeOperationCount: Int {
-        return fetchOperationQueue.operationCount
-    }
-
     private let unfairLock = UnfairLock()
 
     private let completionQueue = DispatchQueue(label: "org.signal.message-fetcher.completion")

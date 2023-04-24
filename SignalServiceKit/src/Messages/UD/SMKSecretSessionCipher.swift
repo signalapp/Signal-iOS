@@ -36,21 +36,6 @@ public enum SMKSecretSessionCipherError: Int, Error {
 
 // MARK: -
 
-private class SMKSecretKeySpec: NSObject {
-
-    @objc
-    public let keyData: Data
-    @objc
-    public let algorithm: String
-
-    init(keyData: Data, algorithm: String) {
-        self.keyData = keyData
-        self.algorithm = algorithm
-    }
-}
-
-// MARK: -
-
 @objc
 public enum SMKMessageType: Int {
     case whisper
@@ -121,11 +106,6 @@ fileprivate extension SMKMessageType {
 
 @objc
 public class SMKSecretSessionCipher: NSObject {
-
-    private let kUDPrefixString = "UnidentifiedDelivery"
-
-    private let kSMKSecretSessionCipherMacLength: UInt = 10
-
     private let currentSessionStore: SessionStore
     private let currentPreKeyStore: PreKeyStore
     private let currentSignedPreKeyStore: SignedPreKeyStore

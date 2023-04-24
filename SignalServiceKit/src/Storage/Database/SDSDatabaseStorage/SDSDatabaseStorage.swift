@@ -441,10 +441,6 @@ extension SDSDatabaseStorage {
         }
         return delegate.storageCoordinatorState
     }
-
-    private var storageCoordinatorStateDescription: String {
-        NSStringFromStorageCoordinatorState(storageCoordinatorState)
-    }
 }
 
 // MARK: -

@@ -462,7 +462,6 @@ public class OWSLinkPreviewManager: NSObject, Dependencies, LinkPreviewManager {
     // MARK: - Private, Constants
 
     private static let maxFetchedContentSize = 2 * 1024 * 1024
-    private static let allowedMIMETypes: Set = [OWSMimeTypeImagePng, OWSMimeTypeImageJpeg]
 
     // MARK: - Preview Thumbnails
 

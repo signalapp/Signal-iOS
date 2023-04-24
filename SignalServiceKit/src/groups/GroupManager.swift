@@ -1247,11 +1247,6 @@ public class GroupManager: NSObject {
         }
     }
 
-    private struct GroupUpdateMessageAttachment {
-        let contentType: String
-        let dataSource: DataSource
-    }
-
     private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
         guard thread.isGroupV2Thread, !DebugFlags.groupsV2dontSendUpdates.get() else {
             return Promise.value(())

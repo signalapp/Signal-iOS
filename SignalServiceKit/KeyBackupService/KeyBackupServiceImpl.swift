@@ -1235,10 +1235,6 @@ public class KeyBackupServiceImpl: KeyBackupService {
         return token
     }
 
-    private func clearNext() {
-        db.write { clearNextToken(transaction: $0) }
-    }
-
     private func clearNextToken(transaction: DBWriteTransaction) {
         tokenStore.setData(nil, key: Token.backupIdKey, transaction: transaction)
         tokenStore.setData(nil, key: Token.dataKey, transaction: transaction)

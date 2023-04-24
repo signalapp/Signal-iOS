@@ -121,24 +121,6 @@ public class SSKSessionStore: NSObject {
         }
     }
 
-    private func deleteSession(forAccountId accountId: String,
-                               deviceId: Int32,
-                               transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(!accountId.isEmpty)
-        owsAssertDebug(deviceId > 0)
-
-        Logger.info("deleting session for accountId: \(accountId) device: \(deviceId)")
-
-        guard var dictionary = keyValueStore.getObject(forKey: accountId,
-                                                       transaction: transaction) as! SessionsByDeviceDictionary? else {
-            // We never had a session for this account in the first place.
-            return
-        }
-
-        dictionary.removeValue(forKey: deviceId)
-        keyValueStore.setObject(dictionary, key: accountId, transaction: transaction)
-    }
-
     @objc(deleteAllSessionsForAddress:transaction:)
     public func deleteAllSessions(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(address.isValid)

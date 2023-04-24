@@ -112,12 +112,6 @@ public class OWSThumbnailService: NSObject {
         }
     }
 
-    private func processNextRequestAsync() {
-        serialQueue.async {
-            self.processNextRequestSync()
-        }
-    }
-
     // This should only be called on the serialQueue.
     private func processNextRequestSync() {
         guard let thumbnailRequest = thumbnailRequestStack.popLast() else {
