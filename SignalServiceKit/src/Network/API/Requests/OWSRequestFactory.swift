@@ -176,6 +176,28 @@ public extension OWSRequestFactory {
         result.shouldRedactUrlInLogs = true
         return result
     }
+
+    static func subscriptionSetDefaultPaymentMethod(
+        subscriberID: Data,
+        processor: String,
+        paymentID: String
+    ) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: [
+                "v1",
+                "subscription",
+                subscriberID.asBase64Url,
+                "default_payment_method",
+                processor,
+                paymentID
+            ])!,
+            method: "POST",
+            parameters: nil
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        result.shouldRedactUrlInLogs = true
+        return result
+    }
 }
 
 // MARK: - Messages

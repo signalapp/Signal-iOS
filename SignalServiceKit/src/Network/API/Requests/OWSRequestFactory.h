@@ -174,9 +174,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                                   returnUrl:(NSURL *)returnUrl
                                                   cancelUrl:(NSURL *)cancelUrl
     NS_SWIFT_NAME(subscriptionCreatePaypalPaymentMethodRequest(subscriberId:returnUrl:cancelUrl:));
-+ (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID
-                                                processor:(NSString *)processor
-                                                paymentID:(NSString *)paymentID;
 + (TSRequest *)subscriptionSetSubscriptionLevelRequest:(NSString *)base64SubscriberID level:(NSString *)level currency:(NSString *)currency idempotencyKey:(NSString *)idempotencyKey;
 + (TSRequest *)subscriptionReceiptCredentialsRequest:(NSString *)base64SubscriberID
                                              request:(NSString *)base64ReceiptCredentialRequest;

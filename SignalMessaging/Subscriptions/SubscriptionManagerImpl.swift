@@ -455,8 +455,8 @@ public class SubscriptionManagerImpl: NSObject {
         using processor: PaymentProcessor,
         paymentID: String
     ) -> Promise<Void> {
-        let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethodRequest(
-            subscriberID.asBase64Url,
+        let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethod(
+            subscriberID: subscriberID,
             processor: processor.rawValue,
             paymentID: paymentID
         )

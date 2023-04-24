@@ -643,23 +643,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-+ (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID
-                                                processor:(NSString *)processor
-                                                paymentID:(NSString *)paymentID
-{
-    TSRequest *request = [TSRequest
-        requestWithUrl:[NSURL
-                           URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/default_payment_method/%@/%@",
-                                                   base64SubscriberID,
-                                                   processor,
-                                                   paymentID]]
-                method:@"POST"
-            parameters:@{}];
-    request.shouldHaveAuthorizationHeaders = NO;
-    request.shouldRedactUrlInLogs = YES;
-    return request;
-}
-
 + (TSRequest *)subscriptionSetSubscriptionLevelRequest:(NSString *)base64SubscriberID level:(NSString *)level currency:(NSString *)currency idempotencyKey:(NSString *)idempotencyKey  {
     TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/level/%@/%@/%@", base64SubscriberID, level, currency, idempotencyKey]]
                                               method:@"PUT"

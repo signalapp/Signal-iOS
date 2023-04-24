@@ -182,6 +182,19 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertTrue(request.shouldRedactUrlInLogs)
     }
 
+    func testSubscriptionSetDefaultPaymentMethod() {
+        let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethod(
+            subscriberID: Data([255, 128]),
+            processor: "STRIPE",
+            paymentID: "xyz"
+        )
+
+        XCTAssertEqual(request.url?.path, "v1/subscription/_4A/default_payment_method/STRIPE/xyz")
+        XCTAssertEqual(request.httpMethod, "POST")
+        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
+        XCTAssertTrue(request.shouldRedactUrlInLogs)
+    }
+
     // MARK: - Spam
 
     func testReportSpamFromUuid() {
