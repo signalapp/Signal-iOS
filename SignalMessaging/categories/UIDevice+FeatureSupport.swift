@@ -114,10 +114,6 @@ public extension UIDevice {
         return CurrentAppContext().frame.height < 812
     }
 
-    var isCompatabilityModeIPad: Bool {
-        return userInterfaceIdiom == .phone && model.hasPrefix("iPad")
-    }
-
     var isIPad: Bool {
         return userInterfaceIdiom == .pad
     }
