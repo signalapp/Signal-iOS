@@ -627,36 +627,6 @@ public class GroupManager: NSObject {
         let newGroupModel: TSGroupModel
     }
 
-    fileprivate static func localUpdateExistingGroupV1(
-        groupModel proposedGroupModel: TSGroupModel,
-        groupUpdateSourceAddress: SignalServiceAddress?
-    ) -> Promise<TSGroupThread> {
-
-        return self.databaseStorage.write(.promise) { (transaction) throws -> UpsertGroupResult in
-            let updateInfo = try self.updateInfoV1(groupModel: proposedGroupModel,
-                                                   transaction: transaction)
-            let newGroupModel = updateInfo.newGroupModel
-            let upsertGroupResult = try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
-                                                                                                          newDisappearingMessageToken: nil,
-                                                                                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                                          canInsert: false,
-                                                                                                          didAddLocalUserToV2Group: false,
-                                                                                                          transaction: transaction)
-
-            return upsertGroupResult
-        }.then(on: DispatchQueue.global()) { (upsertGroupResult: UpsertGroupResult) throws -> Promise<TSGroupThread> in
-            let groupThread = upsertGroupResult.groupThread
-            guard upsertGroupResult.action != .unchanged else {
-                // Don't bother sending a message if the update was redundant.
-                return Promise.value(groupThread)
-            }
-            return self.sendGroupUpdateMessage(thread: groupThread)
-                .map(on: DispatchQueue.global()) { _ in
-                    return groupThread
-                }
-        }
-    }
-
     private static func updateInfoV1(groupModel proposedGroupModel: TSGroupModel,
                                      transaction: SDSAnyReadTransaction) throws -> UpdateInfoV1 {
         let groupId = proposedGroupModel.groupId
