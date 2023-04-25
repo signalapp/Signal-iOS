@@ -145,13 +145,13 @@ class PaymentsHistoryDataSource: Dependencies {
                 } else if let address = paymentModel.address {
                     displayName = Self.contactsManager.displayName(for: address, transaction: transaction)
                 } else if paymentModel.isOutgoingTransfer {
-                    displayName = NSLocalizedString("PAYMENTS_TRANSFER_OUT_PAYMENT",
+                    displayName = OWSLocalizedString("PAYMENTS_TRANSFER_OUT_PAYMENT",
                                                     comment: "Label for 'transfer out' payments.")
                 } else if paymentModel.isDefragmentation {
-                    displayName = NSLocalizedString("PAYMENTS_DEFRAGMENTATION_PAYMENT",
+                    displayName = OWSLocalizedString("PAYMENTS_DEFRAGMENTATION_PAYMENT",
                                                     comment: "Label for 'defragmentation' payments.")
                 } else {
-                    displayName = NSLocalizedString("PAYMENTS_UNKNOWN_PAYMENT",
+                    displayName = OWSLocalizedString("PAYMENTS_UNKNOWN_PAYMENT",
                                                     comment: "Label for unknown payments.")
                 }
                 return PaymentsHistoryItem(paymentModel: paymentModel, displayName: displayName)

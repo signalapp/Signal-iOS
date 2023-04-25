@@ -38,15 +38,15 @@ class DeviceTransferNavigationController: UINavigationController {
 
         if let topVC = topViewController as? DeviceTransferBaseViewController, topVC.requiresDismissConfirmation {
             let actionSheet = ActionSheetController(
-                title: NSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE",
+                title: OWSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE",
                                          comment: "The title of the dialog asking the user if they want to cancel a device transfer"),
-                message: NSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE",
+                message: OWSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE",
                                            comment: "The message of the dialog asking the user if they want to cancel a device transfer")
             )
             actionSheet.addAction(OWSActionSheets.cancelAction)
 
             let okAction = ActionSheetAction(
-                title: NSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION",
+                title: OWSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION",
                                          comment: "The stop action of the dialog asking the user if they want to cancel a device transfer"),
                 style: .destructive
             ) { _ in

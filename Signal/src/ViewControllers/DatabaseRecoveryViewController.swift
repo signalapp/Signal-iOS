@@ -175,15 +175,15 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     @objc
     private func didTapToResetSignal() {
         OWSActionSheets.showConfirmationAlert(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog."
             ),
-            message: NSLocalizedString(
+            message: OWSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog."
             ),
-            proceedTitle: NSLocalizedString(
+            proceedTitle: OWSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset."
             ),
@@ -375,13 +375,13 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
         stackView.removeAllSubviews()
 
-        headlineLabel.text = NSLocalizedString(
+        headlineLabel.text = OWSLocalizedString(
             "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE",
             comment: "In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue."
         )
         stackView.addArrangedSubview(headlineLabel)
 
-        descriptionLabel.text = NSLocalizedString(
+        descriptionLabel.text = OWSLocalizedString(
             "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION",
             comment: "In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue."
         )
@@ -411,13 +411,13 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private func renderDeviceSpaceWarning() {
         if case .showingDeviceSpaceWarning = previouslyRenderedState { return }
 
-        headlineLabel.text = NSLocalizedString(
+        headlineLabel.text = OWSLocalizedString(
             "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE",
             comment: "On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen."
         )
 
         descriptionLabel.text = {
-            let labelFormat = NSLocalizedString(
+            let labelFormat = OWSLocalizedString(
                 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION",
                 comment: "On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\"."
             )
@@ -429,7 +429,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         }()
 
         let continueButton = button(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY",
                 comment: "On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning."
             ),
@@ -453,12 +453,12 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         case .recovering:
             break
         default:
-            headlineLabel.text = NSLocalizedString(
+            headlineLabel.text = OWSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE",
                 comment: "On the database recovery screen, this is the title shown as the user's data is being recovered."
             )
 
-            descriptionLabel.text = NSLocalizedString(
+            descriptionLabel.text = OWSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION",
                 comment: "On the database recovery screen, this is the description text shown as the user's data is being recovered."
             )
@@ -486,18 +486,18 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private func renderRecoveryFailed() {
         if case .recoveryFailed = previouslyRenderedState { return }
 
-        headlineLabel.text = NSLocalizedString(
+        headlineLabel.text = OWSLocalizedString(
             "DATABASE_RECOVERY_RECOVERY_FAILED_TITLE",
             comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message."
         )
 
-        descriptionLabel.text = NSLocalizedString(
+        descriptionLabel.text = OWSLocalizedString(
             "DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION",
             comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message."
         )
 
         let resetSignalButton = self.button(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data."
             ),
@@ -506,7 +506,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         )
 
         let submitDebugLogsButton = self.button(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log."
             ),
@@ -531,12 +531,12 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private func renderRecoverySucceeded() {
         if case .recoverySucceeded = previouslyRenderedState { return }
 
-        headlineLabel.text = NSLocalizedString(
+        headlineLabel.text = OWSLocalizedString(
             "DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE",
             comment: "The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked."
         )
 
-        descriptionLabel.text = NSLocalizedString(
+        descriptionLabel.text = OWSLocalizedString(
             "DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION",
             comment: "The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked."
         )

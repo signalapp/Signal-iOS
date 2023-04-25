@@ -25,7 +25,7 @@ public class PaymentsQRScanViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_TITLE",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_TITLE",
                                   comment: "Label for 'scan payment address QR code' view in the payment settings.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
@@ -66,7 +66,7 @@ public class PaymentsQRScanViewController: OWSViewController {
         footer.autoPinEdge(.top, to: .bottom, of: qrView)
 
         let instructionsLabel = UILabel()
-        instructionsLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS",
+        instructionsLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS",
                                                         comment: "Instructions in the 'scan payment address QR code' view in the payment settings.")
         instructionsLabel.font = .dynamicTypeBody
         instructionsLabel.textColor = .ows_white
@@ -121,7 +121,7 @@ extension PaymentsQRScanViewController: QRCodeScanDelegate {
                 return .stopScanning
             }
         }
-        OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS",
+        OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS",
                                                                   comment: "Error indicating that a QR code does not contain a valid MobileCoin public address."))
         return .continueScanning
    }

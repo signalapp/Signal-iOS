@@ -18,7 +18,7 @@ public enum StoryUtil: Dependencies {
         transaction: SDSAnyReadTransaction
     ) -> String {
         guard !storyMessage.authorAddress.isSystemStoryAddress else {
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SYSTEM_ADDRESS_NAME",
                 comment: "Name to display for the 'system' sender, e.g. for release notes and the onboarding story"
             )
@@ -44,7 +44,7 @@ public enum StoryUtil: Dependencies {
                 )
             }
 
-            let nameFormat = NSLocalizedString(
+            let nameFormat = OWSLocalizedString(
                 "GROUP_STORY_NAME_FORMAT",
                 comment: "Name for a group story on the stories list. Embeds {author's name}, {group name}"
             )
@@ -100,12 +100,12 @@ public enum StoryUtil: Dependencies {
 
         let title: String
         if message.hasSentToAnyRecipients {
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET",
                 comment: "Title for the dialog asking user if they wish to resend a partially failed story message."
             )
         } else {
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET",
                 comment: "Title for the dialog asking user if they wish to resend a failed story message."
             )

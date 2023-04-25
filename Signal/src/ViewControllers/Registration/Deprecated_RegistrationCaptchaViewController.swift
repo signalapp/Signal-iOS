@@ -31,7 +31,7 @@ class Deprecated_RegistrationCaptchaViewModel: NSObject {
         let primaryView = vc.primaryView
         primaryView.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = vc.createTitleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE",
+        let titleLabel = vc.createTitleLabel(text: OWSLocalizedString("ONBOARDING_CAPTCHA_TITLE",
                                                                      comment: "Title of the 'onboarding Captcha' view."))
         titleLabel.accessibilityIdentifier = "captcha." + "titleLabel"
 

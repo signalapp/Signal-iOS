@@ -13,7 +13,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_CHATS", comment: "Title for the 'chats' link in settings.")
+        title = OWSLocalizedString("SETTINGS_CHATS", comment: "Title for the 'chats' link in settings.")
 
         updateTableContents()
 
@@ -30,12 +30,12 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let linkPreviewSection = OWSTableSection()
-        linkPreviewSection.footerTitle = NSLocalizedString(
+        linkPreviewSection.footerTitle = OWSLocalizedString(
             "SETTINGS_LINK_PREVIEWS_FOOTER",
             comment: "Footer for setting for enabling & disabling link previews."
         )
         linkPreviewSection.add(.switch(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_LINK_PREVIEWS",
                 comment: "Setting for enabling & disabling link previews."
             ),
@@ -49,19 +49,19 @@ class ChatsSettingsViewController: OWSTableViewController2 {
 
         let sharingSuggestionsSection = OWSTableSection()
         if #available(iOS 15, *) {
-            sharingSuggestionsSection.footerTitle = NSLocalizedString(
+            sharingSuggestionsSection.footerTitle = OWSLocalizedString(
                 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER",
                 comment: "Footer for setting for enabling & disabling contact and notification sharing with iOS."
             )
         } else {
-            sharingSuggestionsSection.footerTitle = NSLocalizedString(
+            sharingSuggestionsSection.footerTitle = OWSLocalizedString(
                 "SETTINGS_SHARING_SUGGESTIONS_FOOTER",
                 comment: "Footer for setting for enabling & disabling contact sharing with iOS."
             )
         }
 
         sharingSuggestionsSection.add(.switch(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_SHARING_SUGGESTIONS",
                 comment: "Setting for enabling & disabling iOS contact sharing."
             ),
@@ -74,11 +74,11 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         contents.addSection(sharingSuggestionsSection)
 
         let contactSection = OWSTableSection()
-        contactSection.footerTitle = NSLocalizedString(
+        contactSection.footerTitle = OWSLocalizedString(
             "SETTINGS_APPEARANCE_AVATAR_FOOTER",
             comment: "Footer for avatar section in appearance settings")
         contactSection.add(.switch(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL",
                 comment: "Title for switch to toggle preference between contact and profile avatars"),
             isOn: {
@@ -91,14 +91,14 @@ class ChatsSettingsViewController: OWSTableViewController2 {
 
         let keepMutedChatsArchived = OWSTableSection()
         keepMutedChatsArchived.add(.switch(
-            withText: NSLocalizedString("SETTINGS_KEEP_MUTED_ARCHIVED_LABEL", comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings."),
+            withText: OWSLocalizedString("SETTINGS_KEEP_MUTED_ARCHIVED_LABEL", comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings."),
             isOn: {
                 Self.databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
             },
             target: self,
             selector: #selector(didToggleShouldKeepMutedChatsArchivedSwitch)
         ))
-        keepMutedChatsArchived.footerTitle = NSLocalizedString(
+        keepMutedChatsArchived.footerTitle = OWSLocalizedString(
             "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION",
             comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings."
         )
@@ -106,7 +106,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
 
         let clearHistorySection = OWSTableSection()
         clearHistorySection.add(.actionItem(
-            withText: NSLocalizedString("SETTINGS_CLEAR_HISTORY", comment: ""),
+            withText: OWSLocalizedString("SETTINGS_CLEAR_HISTORY", comment: ""),
             textColor: .ows_accentRed,
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "clear_chat_history"),
             actionBlock: { [weak self] in
@@ -139,7 +139,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 if let error = error {
                     owsFailDebug("Failed to disable sharing suggestions \(error)")
                     sender.setOn(true, animated: true)
-                    OWSActionSheets.showActionSheet(title: NSLocalizedString(
+                    OWSActionSheets.showActionSheet(title: OWSLocalizedString(
                         "SHARING_SUGGESTIONS_DISABLE_ERROR",
                         comment: "Title of alert indicating sharing suggestions failed to deactivate"
                     ))
@@ -174,11 +174,11 @@ class ChatsSettingsViewController: OWSTableViewController2 {
 
     private func didTapClearHistory() {
         OWSActionSheets.showConfirmationAlert(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
                 comment: "Alert message before user confirms clearing history"
             ),
-            proceedTitle: NSLocalizedString(
+            proceedTitle: OWSLocalizedString(
                 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
                 comment: "Confirmation text for button which deletes all message, calling, attachments, etc."
             ),

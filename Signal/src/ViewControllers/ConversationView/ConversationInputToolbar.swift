@@ -172,11 +172,11 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private lazy var attachmentButton: AttachmentButton = {
         let button = AttachmentButton()
-        button.accessibilityLabel = NSLocalizedString(
+        button.accessibilityLabel = OWSLocalizedString(
             "ATTACHMENT_LABEL",
             comment: "Accessibility label for attaching photos"
         )
-        button.accessibilityHint = NSLocalizedString(
+        button.accessibilityHint = OWSLocalizedString(
             "ATTACHMENT_HINT",
             comment: "Accessibility hint describing what you can do with the attachment button"
         )
@@ -192,7 +192,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         let imageResourceName = Theme.isDarkThemeEnabled ? "sticker-solid-24" : "sticker-outline-24"
         let button = UIButton(type: .system)
         button.tintColor = Theme.primaryIconColor
-        button.accessibilityLabel = NSLocalizedString(
+        button.accessibilityLabel = OWSLocalizedString(
             "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL",
             comment: "accessibility label for the button which shows the sticker picker"
         )
@@ -209,7 +209,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         let imageResourceName = Theme.isDarkThemeEnabled ? "keyboard-solid-24" : "keyboard-outline-24"
         let button = UIButton(type: .system)
         button.tintColor = Theme.primaryIconColor
-        button.accessibilityLabel = NSLocalizedString(
+        button.accessibilityLabel = OWSLocalizedString(
             "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL",
             comment: "accessibility label for the button which shows the regular keyboard instead of sticker picker"
         )
@@ -625,11 +625,11 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         lazy var cameraButton: UIButton = {
             let button = UIButton(type: .system)
             button.tintColor = Theme.primaryIconColor
-            button.accessibilityLabel = NSLocalizedString(
+            button.accessibilityLabel = OWSLocalizedString(
                 "CAMERA_BUTTON_LABEL",
                 comment: "Accessibility label for camera button."
             )
-            button.accessibilityHint = NSLocalizedString(
+            button.accessibilityHint = OWSLocalizedString(
                 "CAMERA_BUTTON_HINT",
                 comment: "Accessibility hint describing what you can do with the camera button"
             )
@@ -642,11 +642,11 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         lazy var voiceMemoButton: UIButton = {
             let button = UIButton(type: .system)
             button.tintColor = Theme.primaryIconColor
-            button.accessibilityLabel = NSLocalizedString(
+            button.accessibilityLabel = OWSLocalizedString(
                 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
                 comment: "accessibility label for the button which records voice memos"
             )
-            button.accessibilityHint = NSLocalizedString(
+            button.accessibilityHint = OWSLocalizedString(
                 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT",
                 comment: "accessibility hint for the button which records voice memos"
             )
@@ -1343,7 +1343,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         )
         cancelString.append(
             NSAttributedString(
-                string: NSLocalizedString("VOICE_MESSAGE_CANCEL_INSTRUCTIONS", comment: "Indicates how to cancel a voice message."),
+                string: OWSLocalizedString("VOICE_MESSAGE_CANCEL_INSTRUCTIONS", comment: "Indicates how to cancel a voice message."),
                 attributes: [
                     .font: UIFont.dynamicTypeSubheadlineClamped,
                     .foregroundColor: Theme.secondaryTextAndIconColor

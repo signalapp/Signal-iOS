@@ -334,12 +334,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         switch oneTime.paymentRequest {
         case .noAmountSelected:
-            showError(NSLocalizedString(
+            showError(OWSLocalizedString(
                 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED",
                 comment: "If the user tries to donate to Signal but no amount is selected, this error message is shown."
             ))
         case let .amountIsTooSmall(minimumAmount):
-            let format = NSLocalizedString(
+            let format = OWSLocalizedString(
                 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT",
                 comment: "If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\"."
             )
@@ -428,18 +428,18 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
 
         let currencyString = DonationUtilities.format(money: monthlyPaymentRequest.amount)
-        let title = NSLocalizedString(
+        let title = OWSLocalizedString(
             "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE",
             comment: "Update Subscription? Action sheet title"
         )
         let message = String(
-            format: NSLocalizedString(
+            format: OWSLocalizedString(
                 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE",
                 comment: "Update Subscription? Action sheet message, embeds {{Price}}"
             ),
             currencyString
         )
-        let notNow = NSLocalizedString(
+        let notNow = OWSLocalizedString(
             "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW",
             comment: "Sustainer view Not Now Action sheet button"
         )
@@ -462,19 +462,19 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     private func didTapToCancelSubscription() {
-        let title = NSLocalizedString(
+        let title = OWSLocalizedString(
             "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE",
             comment: "Confirm Cancellation? Action sheet title"
         )
-        let message = NSLocalizedString(
+        let message = OWSLocalizedString(
             "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE",
             comment: "Confirm Cancellation? Action sheet message"
         )
-        let confirm = NSLocalizedString(
+        let confirm = OWSLocalizedString(
             "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM",
             comment: "Confirm Cancellation? Action sheet confirm button"
         )
-        let notNow = NSLocalizedString(
+        let notNow = OWSLocalizedString(
             "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW",
             comment: "Sustainer view Not Now Action sheet button"
         )
@@ -507,7 +507,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     guard let self = self else { return }
                     self.onFinished(.monthlySubscriptionCancelled(
                         donateSheet: self,
-                        toastText: NSLocalizedString(
+                        toastText: OWSLocalizedString(
                             "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED",
                             comment: "Toast indicating that the subscription has been cancelled"
                         )
@@ -856,7 +856,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     private lazy var donateModePickerView: UISegmentedControl = {
         let picker = UISegmentedControl()
         picker.insertSegment(
-            withTitle: NSLocalizedString(
+            withTitle: OWSLocalizedString(
                 "DONATE_SCREEN_ONE_TIME_CHOICE",
                 comment: "On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations."
             ),
@@ -864,7 +864,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             animated: false
         )
         picker.insertSegment(
-            withTitle: NSLocalizedString(
+            withTitle: OWSLocalizedString(
                 "DONATE_SCREEN_MONTHLY_CHOICE",
                 comment: "On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations."
             ),
@@ -903,7 +903,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         let field = OneTimeDonationCustomAmountTextField(currencyCode: currencyCode)
 
-        field.placeholder = NSLocalizedString(
+        field.placeholder = OWSLocalizedString(
             "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER",
             comment: "Default text for the custom amount field of the boost view."
         )
@@ -1145,7 +1145,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             currentSubscription.active
         {
             if Self.canMakeNewDonations(forDonateMode: .monthly) {
-                let updateTitle = NSLocalizedString(
+                let updateTitle = OWSLocalizedString(
                     "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON",
                     comment: "On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button."
                 )
@@ -1168,7 +1168,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 buttons.append(updateButton)
             }
 
-            let cancelTitle = NSLocalizedString(
+            let cancelTitle = OWSLocalizedString(
                 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION",
                 comment: "Sustainer view Cancel Subscription button title"
             )

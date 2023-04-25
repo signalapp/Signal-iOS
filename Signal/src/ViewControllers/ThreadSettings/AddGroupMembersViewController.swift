@@ -39,7 +39,7 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_TITLE",
+        title = OWSLocalizedString("ADD_GROUP_MEMBERS_VIEW_TITLE",
                                   comment: "The title for the 'add group members' view.")
     }
 
@@ -47,7 +47,7 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
 
     fileprivate func updateNavbar() {
         if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("EDIT_GROUP_UPDATE_BUTTON",
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: OWSLocalizedString("EDIT_GROUP_UPDATE_BUTTON",
                                                                                          comment: "The title for the 'update group' button."),
                                                                 style: .plain,
                                                                 target: self,
@@ -74,12 +74,12 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
         let alertTitle: String
         let alertMessage: String
         let actionTitle: String
-        let messageFormat = NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d", tableName: "PluralAware",
+        let messageFormat = OWSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d", tableName: "PluralAware",
                                               comment: "Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}.")
         alertMessage = String.localizedStringWithFormat(messageFormat, newRecipientSet.count, groupName)
-        alertTitle = String.localizedStringWithFormat(NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d", tableName: "PluralAware",
+        alertTitle = String.localizedStringWithFormat(OWSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d", tableName: "PluralAware",
                                                       comment: "Title for the 'add group members' confirmation alert."), newRecipientSet.count)
-        actionTitle = String.localizedStringWithFormat(NSLocalizedString("ADD_GROUP_MEMBERS_ACTION_TITLE_%d", tableName: "PluralAware",
+        actionTitle = String.localizedStringWithFormat(OWSLocalizedString("ADD_GROUP_MEMBERS_ACTION_TITLE_%d", tableName: "PluralAware",
                                         comment: "Label for the 'add group members' button."), newRecipientSet.count)
 
         let actionSheet = ActionSheetController(title: alertTitle, message: alertMessage)

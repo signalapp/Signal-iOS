@@ -562,7 +562,7 @@ private class RegistrationVerificationHelpSheetViewController: InteractiveSheetV
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont.dynamicTypeTitle2.semibold()
-        label.text = NSLocalizedString(
+        label.text = OWSLocalizedString(
             "ONBOARDING_VERIFICATION_HELP_LINK",
             comment: "Label for a button to get help entering a verification code when registering."
         )

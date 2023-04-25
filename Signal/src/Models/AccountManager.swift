@@ -106,7 +106,7 @@ public class AccountManager: NSObject, Dependencies {
     func register(verificationCode: String, pin: String?, checkForAvailableTransfer: Bool) -> Promise<Void> {
         if verificationCode.isEmpty {
             let error = OWSError(error: .userError,
-                                 description: NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
+                                 description: OWSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
                                                                 comment: "alert body during registration"),
                                  isRetryable: false)
             return Promise(error: error)

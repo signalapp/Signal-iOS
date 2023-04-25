@@ -249,7 +249,7 @@ extension PhoneNumberUtil {
     /// Convert country code to country name.
     @objc(countryNameFromCountryCode:)
     public class func countryName(fromCountryCode countryCode: String) -> String {
-        lazy var unknownValue =  NSLocalizedString(
+        lazy var unknownValue =  OWSLocalizedString(
             "UNKNOWN_VALUE",
             comment: "Indicates an unknown or unrecognizable value."
         )

@@ -28,19 +28,19 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         let addLearnMoreLink: Bool
         switch mode {
         case .deprecated_onboardingCreating, .creating:
-            explanationText = NSLocalizedString(
+            explanationText = OWSLocalizedString(
                 "PIN_CREATION_EXPLANATION",
                 comment: "The explanation in the 'pin creation' view."
             )
             addLearnMoreLink = true
         case .changing:
-            explanationText = NSLocalizedString(
+            explanationText = OWSLocalizedString(
                 "PIN_CREATION_RECREATION_EXPLANATION",
                 comment: "The re-creation explanation in the 'pin creation' view."
             )
             addLearnMoreLink = true
         case .confirming:
-            explanationText = NSLocalizedString(
+            explanationText = OWSLocalizedString(
                 "PIN_CREATION_CONFIRMATION_EXPLANATION",
                 comment: "The explanation of confirmation in the 'pin creation' view."
             )
@@ -420,11 +420,11 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     var titleText: String {
         switch mode {
         case .confirming:
-            return NSLocalizedString("PIN_CREATION_CONFIRM_TITLE", comment: "Title of the 'pin creation' confirmation view.")
+            return OWSLocalizedString("PIN_CREATION_CONFIRM_TITLE", comment: "Title of the 'pin creation' confirmation view.")
         case .changing:
-            return NSLocalizedString("PIN_CREATION_CHANGING_TITLE", comment: "Title of the 'pin creation' recreation view.")
+            return OWSLocalizedString("PIN_CREATION_CHANGING_TITLE", comment: "Title of the 'pin creation' recreation view.")
         case .creating, .deprecated_onboardingCreating:
-            return NSLocalizedString("PIN_CREATION_TITLE", comment: "Title of the 'pin creation' view.")
+            return OWSLocalizedString("PIN_CREATION_TITLE", comment: "Title of the 'pin creation' view.")
         }
     }
 
@@ -451,7 +451,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         let pinnedHeightConstraint = topSpacer.autoSetDimension(.height, toSize: topSpacer.height)
 
         let learnMoreAction = ActionSheetAction(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "PIN_CREATION_LEARN_MORE",
                 comment: "Learn more action on the pin creation view"
             )
@@ -466,7 +466,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         actionSheet.addAction(learnMoreAction)
 
         let skipAction = ActionSheetAction(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "PIN_CREATION_SKIP",
                 comment: "Skip action on the pin creation view"
             )
@@ -480,9 +480,9 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             }.catch { [weak self] error in
                 guard let self = self else { return }
                 OWSActionSheets.showActionSheet(
-                    title: NSLocalizedString("PIN_DISABLE_ERROR_TITLE",
+                    title: OWSLocalizedString("PIN_DISABLE_ERROR_TITLE",
                                              comment: "Error title indicating that the attempt to disable a PIN failed."),
-                    message: NSLocalizedString("PIN_DISABLE_ERROR_MESSAGE",
+                    message: OWSLocalizedString("PIN_DISABLE_ERROR_MESSAGE",
                                                comment: "Error body indicating that the attempt to disable a PIN failed.")
                 ) { _ in
                     self.completionHandler(self, error)
@@ -551,17 +551,17 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         case .tooShort:
             switch pinType {
             case .numeric:
-                validationWarningLabel.text = NSLocalizedString("PIN_CREATION_NUMERIC_HINT",
+                validationWarningLabel.text = OWSLocalizedString("PIN_CREATION_NUMERIC_HINT",
                                                                 comment: "Label indicating the user must use at least 4 digits")
             case .alphanumeric:
-                validationWarningLabel.text = NSLocalizedString("PIN_CREATION_ALPHANUMERIC_HINT",
+                validationWarningLabel.text = OWSLocalizedString("PIN_CREATION_ALPHANUMERIC_HINT",
                                                                 comment: "Label indicating the user must use at least 4 characters")
             }
         case .mismatch:
-            validationWarningLabel.text = NSLocalizedString("PIN_CREATION_MISMATCH_ERROR",
+            validationWarningLabel.text = OWSLocalizedString("PIN_CREATION_MISMATCH_ERROR",
                                                             comment: "Label indicating that the attempted PIN does not match the first PIN")
         case .weak:
-            validationWarningLabel.text = NSLocalizedString("PIN_CREATION_WEAK_ERROR",
+            validationWarningLabel.text = OWSLocalizedString("PIN_CREATION_WEAK_ERROR",
                                                             comment: "Label indicating that the attempted PIN is too weak")
         default:
             break
@@ -578,16 +578,16 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
         switch pinType {
         case .numeric:
-            pinTypeToggle.setTitle(title: NSLocalizedString("PIN_CREATION_CREATE_ALPHANUMERIC",
+            pinTypeToggle.setTitle(title: OWSLocalizedString("PIN_CREATION_CREATE_ALPHANUMERIC",
                                                             comment: "Button asking if the user would like to create an alphanumeric PIN"))
             pinTextField.keyboardType = .asciiCapableNumberPad
-            recommendationLabelText = NSLocalizedString("PIN_CREATION_NUMERIC_HINT",
+            recommendationLabelText = OWSLocalizedString("PIN_CREATION_NUMERIC_HINT",
                                                          comment: "Label indicating the user must use at least 4 digits")
         case .alphanumeric:
-            pinTypeToggle.setTitle(title: NSLocalizedString("PIN_CREATION_CREATE_NUMERIC",
+            pinTypeToggle.setTitle(title: OWSLocalizedString("PIN_CREATION_CREATE_NUMERIC",
                                                             comment: "Button asking if the user would like to create an numeric PIN"))
             pinTextField.keyboardType = .default
-            recommendationLabelText = NSLocalizedString("PIN_CREATION_ALPHANUMERIC_HINT",
+            recommendationLabelText = OWSLocalizedString("PIN_CREATION_ALPHANUMERIC_HINT",
                                                         comment: "Label indicating the user must use at least 4 characters")
         }
 
@@ -595,7 +595,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
         if mode.isConfirming {
             pinTypeToggle.isHidden = true
-            recommendationLabel.text = NSLocalizedString("PIN_CREATION_PIN_CONFIRMATION_HINT",
+            recommendationLabel.text = OWSLocalizedString("PIN_CREATION_PIN_CONFIRMATION_HINT",
                                                          comment: "Label indication the user must confirm their PIN.")
         } else {
             pinTypeToggle.isHidden = false
@@ -619,7 +619,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         pinTextField.resignFirstResponder()
 
         let progressView = AnimatedProgressView(
-            loadingText: NSLocalizedString("PIN_CREATION_PIN_PROGRESS",
+            loadingText: OWSLocalizedString("PIN_CREATION_PIN_PROGRESS",
                                            comment: "Indicates the work we are doing while creating the user's pin")
         )
         view.addSubview(progressView)
@@ -724,10 +724,10 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                 switch error {
                 case .enableRegistrationLock:
                     OWSActionSheets.showActionSheet(
-                        title: NSLocalizedString(
+                        title: OWSLocalizedString(
                             "PIN_CREATION_REGLOCK_ERROR_TITLE",
                             comment: "Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed."),
-                        message: NSLocalizedString(
+                        message: OWSLocalizedString(
                             "PIN_CREATION_REGLOCK_ERROR_MESSAGE",
                             comment: "Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed.")
                     ) { _ in
@@ -735,10 +735,10 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                     }
                 case .networkFailure:
                     OWSActionSheets.showActionSheet(
-                        title: NSLocalizedString(
+                        title: OWSLocalizedString(
                             "PIN_CREATION_NO_NETWORK_ERROR_TITLE",
                             comment: "Error title indicating that the attempt to create a PIN failed due to network issues."),
-                        message: NSLocalizedString(
+                        message: OWSLocalizedString(
                             "PIN_CREATION_NO_NETWORK_ERROR_MESSAGE",
                             comment: "Error body indicating that the attempt to create a PIN failed due to network issues.")
                     )
@@ -746,10 +746,10 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                     switch self.initialMode {
                     case .deprecated_onboardingCreating:
                         OWSActionSheets.showActionSheet(
-                            title: NSLocalizedString(
+                            title: OWSLocalizedString(
                                 "PIN_CREATION_ERROR_TITLE",
                                 comment: "Error title indicating that the attempt to create a PIN failed."),
-                            message: NSLocalizedString(
+                            message: OWSLocalizedString(
                                 "PIN_CREATION_ERROR_MESSAGE",
                                 comment: "Error body indicating that the attempt to create a PIN failed.")
                         ) { _ in
@@ -757,10 +757,10 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                         }
                     case .changing:
                         OWSActionSheets.showActionSheet(
-                            title: NSLocalizedString(
+                            title: OWSLocalizedString(
                                 "PIN_CHANGE_ERROR_TITLE",
                                 comment: "Error title indicating that the attempt to change a PIN failed."),
-                            message: NSLocalizedString(
+                            message: OWSLocalizedString(
                                 "PIN_CHANGE_ERROR_MESSAGE",
                                 comment: "Error body indicating that the attempt to change a PIN failed.")
                         ) { _ in
@@ -768,10 +768,10 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                         }
                     case .creating:
                         OWSActionSheets.showActionSheet(
-                            title: NSLocalizedString(
+                            title: OWSLocalizedString(
                                 "PIN_RECREATION_ERROR_TITLE",
                                 comment: "Error title indicating that the attempt to recreate a PIN failed."),
-                            message: NSLocalizedString(
+                            message: OWSLocalizedString(
                                 "PIN_RECRETION_ERROR_MESSAGE",
                                 comment: "Error body indicating that the attempt to recreate a PIN failed.")
                         ) { _ in
@@ -815,9 +815,9 @@ extension PinSetupViewController {
         let (promise, future) = Promise<Bool>.pending()
 
         let actionSheet = ActionSheetController(
-            title: NSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_TITLE",
+            title: OWSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_TITLE",
                                      comment: "Title of the 'pin disable' action sheet."),
-            message: NSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE",
+            message: OWSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE",
                                        comment: "Message of the 'pin disable' action sheet.")
         )
 
@@ -827,7 +827,7 @@ extension PinSetupViewController {
         actionSheet.addAction(cancelAction)
 
         let disableAction = ActionSheetAction(
-            title: NSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_ACTION",
+            title: OWSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_ACTION",
                                      comment: "Action of the 'pin disable' action sheet."),
             style: .destructive
         ) { _ in
@@ -859,9 +859,9 @@ extension PinSetupViewController {
         let (promise, future) = Promise<Bool>.pending()
 
         let actionSheet = ActionSheetController(
-            title: NSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_TITLE",
+            title: OWSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_TITLE",
                                      comment: "Title of the 'pin disable' reglock action sheet."),
-            message: NSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE",
+            message: OWSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE",
                                        comment: "Message of the 'pin disable' reglock action sheet.")
         )
 
@@ -871,7 +871,7 @@ extension PinSetupViewController {
         actionSheet.addAction(cancelAction)
 
         let disableAction = ActionSheetAction(
-            title: NSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_ACTION",
+            title: OWSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_ACTION",
                                      comment: "Action of the 'pin disable' reglock action sheet."),
             style: .destructive
         ) { _ in

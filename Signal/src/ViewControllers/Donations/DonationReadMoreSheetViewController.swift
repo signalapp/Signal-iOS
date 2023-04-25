@@ -43,7 +43,7 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
         let titleLabel = UILabel()
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
-        titleLabel.text = NSLocalizedString(
+        titleLabel.text = OWSLocalizedString(
             "DONATION_READ_MORE_SCREEN_TITLE",
             comment: "There is a screen where users can read more about their donation to Signal. This is the title of that screen."
         )
@@ -52,15 +52,15 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
         stackView.addArrangedSubview(titleLabel)
 
         let paragraphs: [String] = [
-            NSLocalizedString(
+            OWSLocalizedString(
                 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1",
                 comment: "There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen."
             ),
-            NSLocalizedString(
+            OWSLocalizedString(
                 "DONATION_READ_MORE_SCREEN_PARAGRAPH_2",
                 comment: "There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen."
             ),
-            NSLocalizedString(
+            OWSLocalizedString(
                 "DONATION_READ_MORE_SCREEN_PARAGRAPH_3",
                 comment: "There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen."
             )

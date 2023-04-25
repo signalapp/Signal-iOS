@@ -60,7 +60,7 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
     }
 
     private func showGroupFullAlert_HardLimit() {
-        let format = NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d", tableName: "PluralAware",
+        let format = OWSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d", tableName: "PluralAware",
                                        comment: "Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}.")
         let message = String.localizedStringWithFormat(format, GroupManager.groupsV2MaxGroupSizeHardLimit)
         OWSActionSheets.showErrorAlert(message: message)
@@ -69,9 +69,9 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
     private var ignoreSoftLimit = false
     private func showGroupFullAlert_SoftLimit(recipient: PickedRecipient,
                                               groupMemberViewDelegate: GroupMemberViewDelegate) {
-        let title = NSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE",
+        let title = OWSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE",
                                       comment: "Title for alert warning the user that they've reached the recommended limit on how many members can be in a group.")
-        let messageFormat = NSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d", tableName: "PluralAware",
+        let messageFormat = OWSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d", tableName: "PluralAware",
                                               comment: "Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}.")
         var message = String.localizedStringWithFormat(messageFormat, GroupManager.groupsV2MaxGroupSizeRecommended)
 
@@ -87,7 +87,7 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
             presentActionSheet(actionSheet)
         } else {
             message += ("\n\n"
-                            + NSLocalizedString("GROUPS_TOO_MANY_MEMBERS_CONFIRM",
+                            + OWSLocalizedString("GROUPS_TOO_MANY_MEMBERS_CONFIRM",
                                                 comment: "Message asking the user to confirm that they want to add a member to the group."))
             let actionSheet = ActionSheetController(title: title, message: message)
 

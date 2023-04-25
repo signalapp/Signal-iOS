@@ -23,17 +23,17 @@ class Deprecated_SecondaryLinkingSetDeviceNameViewController: Deprecated_Onboard
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.createTitleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME", comment: "header text when this device is being added as a secondary"))
+        let titleLabel = self.createTitleLabel(text: OWSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME", comment: "header text when this device is being added as a secondary"))
         primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "linking.deviceName.titleLabel"
         titleLabel.setContentHuggingHigh()
 
-        let explanationLabel = self.createExplanationLabel(explanationText: NSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION",
+        let explanationLabel = self.createExplanationLabel(explanationText: OWSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION",
                                                                                         comment: "label text"))
         explanationLabel.accessibilityIdentifier = "linking.deviceName.explanationLabel"
 
         textField.autoSetDimension(.width, toSize: 200)
-        textField.placeholder = NSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER", comment: "text field placeholder")
+        textField.placeholder = OWSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER", comment: "text field placeholder")
         textField.textColor = Theme.primaryTextColor
         textField.font = UIFont.dynamicTypeBodyClamped
         textField.accessibilityIdentifier = "linking.deviceName.textField"
@@ -57,7 +57,7 @@ class Deprecated_SecondaryLinkingSetDeviceNameViewController: Deprecated_Onboard
         textFieldStack.alignment = .center
         textFieldStack.setCompressionResistanceHigh()
 
-        let primaryButton = self.primaryButton(title: NSLocalizedString("SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS", comment: "body text while displaying a QR code which, when scanned, will link this device."),
+        let primaryButton = self.primaryButton(title: OWSLocalizedString("SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS", comment: "body text while displaying a QR code which, when scanned, will link this device."),
                                                selector: #selector(didTapFinalizeLinking))
         primaryButton.accessibilityIdentifier = "onboarding.confirmLink.confirmButton"
         let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: primaryButton)
@@ -129,9 +129,9 @@ class Deprecated_SecondaryLinkingSetDeviceNameViewController: Deprecated_Onboard
 
         switch textFieldValidationError {
         case .empty:
-            validationErrorLabel.text = NSLocalizedString("VALIDATION_ERROR_CANNOT_BE_BLANK", comment: "error label near a field")
+            validationErrorLabel.text = OWSLocalizedString("VALIDATION_ERROR_CANNOT_BE_BLANK", comment: "error label near a field")
         case .tooLong:
-            validationErrorLabel.text = NSLocalizedString("VALIDATION_ERROR_TOO_LONG", comment: "error label near a field")
+            validationErrorLabel.text = OWSLocalizedString("VALIDATION_ERROR_TOO_LONG", comment: "error label near a field")
         }
     }
 

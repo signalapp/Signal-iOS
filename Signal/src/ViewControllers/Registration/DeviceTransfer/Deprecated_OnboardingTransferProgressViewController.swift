@@ -25,7 +25,7 @@ public class Deprecated_OnboardingTransferProgressViewController: Deprecated_Onb
         view.backgroundColor = Theme.backgroundColor
 
         let titleLabel = self.createTitleLabel(
-            text: NSLocalizedString("DEVICE_TRANSFER_RECEIVING_TITLE",
+            text: OWSLocalizedString("DEVICE_TRANSFER_RECEIVING_TITLE",
                                     comment: "The title on the view that shows receiving progress")
         )
         primaryView.addSubview(titleLabel)
@@ -33,7 +33,7 @@ public class Deprecated_OnboardingTransferProgressViewController: Deprecated_Onb
         titleLabel.setContentHuggingHigh()
 
         let explanationLabel = self.createExplanationLabel(
-            explanationText: NSLocalizedString("DEVICE_TRANSFER_RECEIVING_EXPLANATION",
+            explanationText: OWSLocalizedString("DEVICE_TRANSFER_RECEIVING_EXPLANATION",
                                                comment: "The explanation on the view that shows receiving progress")
         )
         explanationLabel.accessibilityIdentifier = "onboarding.transferProgress.bodyLabel"
@@ -89,15 +89,15 @@ public class Deprecated_OnboardingTransferProgressViewController: Deprecated_Onb
         }
 
         let actionSheet = ActionSheetController(
-            title: NSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE",
+            title: OWSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE",
                                      comment: "The title of the dialog asking the user if they want to cancel a device transfer"),
-            message: NSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE",
+            message: OWSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE",
                                        comment: "The message of the dialog asking the user if they want to cancel a device transfer")
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         let okAction = ActionSheetAction(
-            title: NSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION",
+            title: OWSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION",
                                      comment: "The stop action of the dialog asking the user if they want to cancel a device transfer"),
             style: .destructive
         ) { _ in
@@ -125,7 +125,7 @@ extension Deprecated_OnboardingTransferProgressViewController: DeviceTransferSer
         switch error {
         case .assertion:
             progressView.renderError(
-                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
+                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
                                         comment: "An error indicating that something went wrong with the transfer and it could not complete")
             )
         case .cancel:
@@ -135,12 +135,12 @@ extension Deprecated_OnboardingTransferProgressViewController: DeviceTransferSer
             owsFailDebug("This should never happen on the new device")
         case .notEnoughSpace:
             progressView.renderError(
-                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE",
+                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE",
                                         comment: "An error indicating that the user does not have enough free space on their device to complete the transfer")
             )
         case .unsupportedVersion:
             progressView.renderError(
-                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
+                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
                                         comment: "An error indicating the user must update their device before trying to transfer.")
             )
         case .modeMismatch:

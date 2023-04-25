@@ -76,7 +76,7 @@ class ProfileNameViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        title = NSLocalizedString("PROFILE_NAME_VIEW_TITLE", comment: "Title for the profile name view.")
+        title = OWSLocalizedString("PROFILE_NAME_VIEW_TITLE", comment: "Title for the profile name view.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .cancel,
@@ -117,7 +117,7 @@ class ProfileNameViewController: OWSTableViewController2 {
         givenNameTextField.returnKeyType = .next
         givenNameTextField.autocorrectionType = .no
         givenNameTextField.spellCheckingType = .no
-        givenNameTextField.placeholder = NSLocalizedString(
+        givenNameTextField.placeholder = OWSLocalizedString(
             "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT",
             comment: "Default text for the given name field of the profile view."
         )
@@ -128,7 +128,7 @@ class ProfileNameViewController: OWSTableViewController2 {
         familyNameTextField.returnKeyType = .done
         familyNameTextField.autocorrectionType = .no
         familyNameTextField.spellCheckingType = .no
-        familyNameTextField.placeholder = NSLocalizedString(
+        familyNameTextField.placeholder = OWSLocalizedString(
             "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT",
             comment: "Default text for the family name field of the profile view."
         )
@@ -202,7 +202,7 @@ class ProfileNameViewController: OWSTableViewController2 {
     @objc
     func didTapDone() {
         if normalizedGivenName?.isEmpty != false {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString(
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
                 comment: "Error message shown when user tries to update profile without a given name"
             ))
@@ -210,7 +210,7 @@ class ProfileNameViewController: OWSTableViewController2 {
         }
 
         if profileManagerImpl.isProfileNameTooLong(normalizedGivenName) {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString(
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG",
                 comment: "Error message shown when user tries to update profile with a given name that is too long."
             ))
@@ -218,7 +218,7 @@ class ProfileNameViewController: OWSTableViewController2 {
         }
 
         if profileManagerImpl.isProfileNameTooLong(normalizedFamilyName) {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString(
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG",
                 comment: "Error message shown when user tries to update profile with a family name that is too long."
             ))

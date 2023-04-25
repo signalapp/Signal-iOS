@@ -203,12 +203,12 @@ extension StoryContextMenuGenerator {
         let icon: ThemeIcon
         if isHidden {
             if useShortTitle {
-                title = NSLocalizedString(
+                title = OWSLocalizedString(
                     "STORIES_UNHIDE_STORY_ACTION_SHORT",
                     comment: "Short context menu action to unhide the selected story"
                 )
             } else {
-                title = NSLocalizedString(
+                title = OWSLocalizedString(
                     "STORIES_UNHIDE_STORY_ACTION",
                     comment: "Context menu action to unhide the selected story"
                 )
@@ -216,12 +216,12 @@ extension StoryContextMenuGenerator {
             icon = .checkCircle20
         } else {
             if useShortTitle {
-                title = NSLocalizedString(
+                title = OWSLocalizedString(
                     "STORIES_HIDE_STORY_ACTION_SHORT",
                     comment: "Short context menu action to hide the selected story"
                 )
             } else {
-                title = NSLocalizedString(
+                title = OWSLocalizedString(
                     "STORIES_HIDE_STORY_ACTION",
                     comment: "Context menu action to hide the selected story"
                 )
@@ -255,12 +255,12 @@ extension StoryContextMenuGenerator {
 
         let actionTitle: String
         if shouldHide {
-            actionTitle = NSLocalizedString(
+            actionTitle = OWSLocalizedString(
                 "STORIES_HIDE_STORY_ACTION",
                 comment: "Context menu action to hide the selected story"
             )
         } else {
-            actionTitle = NSLocalizedString(
+            actionTitle = OWSLocalizedString(
                 "STORIES_UNHIDE_STORY_ACTION",
                 comment: "Context menu action to unhide the selected story"
             )
@@ -296,13 +296,13 @@ extension StoryContextMenuGenerator {
 
     private func createHidingActionSheetWithSneakyTransaction(context: StoryContext) -> ActionSheetController {
         return ActionSheetController(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE",
                 comment: "Title asking the user if they are sure they want to hide stories from another user"
             ),
             message: loadThreadDisplayNameWithSneakyTransaction(context: context).map {
                 String(
-                    format: NSLocalizedString(
+                    format: OWSLocalizedString(
                         "STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE",
                         comment: "Message asking the user if they are sure they want to hide stories from {{other user's name}}"
                     ),
@@ -319,7 +319,7 @@ extension StoryContextMenuGenerator {
                 return TSGroupThread.fetch(groupId: groupId, transaction: transaction)?.groupNameOrDefault
             case .authorUuid(let authorUuid):
                 if authorUuid.asSignalServiceAddress().isSystemStoryAddress {
-                    return NSLocalizedString(
+                    return OWSLocalizedString(
                         "SYSTEM_ADDRESS_NAME",
                         comment: "Name to display for the 'system' sender, e.g. for release notes and the onboarding story"
                     )
@@ -355,12 +355,12 @@ extension StoryContextMenuGenerator {
         }
         let toastText: String
         if shouldHide {
-            toastText = NSLocalizedString(
+            toastText = OWSLocalizedString(
                 "STORIES_HIDE_STORY_CONFIRMATION_TOAST",
                 comment: "Toast shown when a story is successfuly hidden"
             )
         } else {
-            toastText = NSLocalizedString(
+            toastText = OWSLocalizedString(
                 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST",
                 comment: "Toast shown when a story is successfuly unhidden"
             )
@@ -383,7 +383,7 @@ extension StoryContextMenuGenerator {
         guard let thread = thread else { return nil }
 
         return .init(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "STORIES_INFO_ACTION",
                 comment: "Context menu action to view metadata about the story"
             ),
@@ -429,7 +429,7 @@ extension StoryContextMenuGenerator {
         }
 
         return .init(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "STORIES_GO_TO_CHAT_ACTION",
                 comment: "Context menu action to open the chat associated with the selected story"
             ),
@@ -461,7 +461,7 @@ extension StoryContextMenuGenerator {
 
         return .init(
             style: .destructive,
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "STORIES_DELETE_STORY_ACTION",
                 comment: "Context menu action to delete the selected story"
             ),
@@ -505,7 +505,7 @@ extension StoryContextMenuGenerator {
         didDelete: @escaping (Bool) -> Void
     ) {
         let actionSheet = ActionSheetController(
-            message: NSLocalizedString(
+            message: OWSLocalizedString(
                 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE",
                 comment: "Title asking the user if they are sure they want to delete their story"
             )
@@ -546,7 +546,7 @@ extension StoryContextMenuGenerator {
             return nil
         }
         return .init(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "STORIES_SAVE_STORY_ACTION",
                 comment: "Context menu action to save the selected story"
             ),
@@ -671,7 +671,7 @@ extension StoryContextMenuGenerator: ForwardMessageDelegate {
             return nil
         }
         return .init(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "STORIES_FORWARD_STORY_ACTION",
                 comment: "Context menu action to forward the selected story"
             ),
@@ -731,7 +731,7 @@ extension StoryContextMenuGenerator {
             return nil
         }
         return .init(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "STORIES_SHARE_STORY_ACTION",
                 comment: "Context menu action to share the selected story"
             ),

@@ -228,7 +228,7 @@ class CallHeader: UIView {
                 let callerName = databaseStorage.read { transaction in
                     contactsManager.shortDisplayName(for: caller, transaction: transaction)
                 }
-                let formatString = NSLocalizedString(
+                let formatString = OWSLocalizedString(
                     "GROUP_CALL_INCOMING_RING_FORMAT",
                     comment: "Text explaining that someone has sent a ring to the group. Embeds {ring sender name}")
                 callStatusText = String(format: formatString, callerName)
@@ -244,13 +244,13 @@ class CallHeader: UIView {
                     count: joinedMembers.count,
                     names: memberNames,
                     zeroMemberString: "",
-                    oneMemberFormat: NSLocalizedString(
+                    oneMemberFormat: OWSLocalizedString(
                         "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
                         comment: "Text explaining that there is one person in the group call. Embeds {member name}"),
-                    twoMemberFormat: NSLocalizedString(
+                    twoMemberFormat: OWSLocalizedString(
                         "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
                         comment: "Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
-                    manyMemberFormat: NSLocalizedString(
+                    manyMemberFormat: OWSLocalizedString(
                         "GROUP_CALL_MANY_PEOPLE_HERE_%d",
                         tableName: "PluralAware",
                         comment: "Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
@@ -265,13 +265,13 @@ class CallHeader: UIView {
                         count: memberCount,
                         names: firstTwoNames,
                         zeroMemberString: "",
-                        oneMemberFormat: NSLocalizedString(
+                        oneMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT",
                             comment: "Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name}"),
-                        twoMemberFormat: NSLocalizedString(
+                        twoMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT",
                             comment: "Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
-                        manyMemberFormat: NSLocalizedString(
+                        manyMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_RING_MANY_PEOPLE_%d",
                             tableName: "PluralAware",
                             comment: "Text shown before the user starts a group call if the user has enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
@@ -280,13 +280,13 @@ class CallHeader: UIView {
                         count: memberCount,
                         names: firstTwoNames,
                         zeroMemberString: "",
-                        oneMemberFormat: NSLocalizedString(
+                        oneMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT",
                             comment: "Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name}"),
-                        twoMemberFormat: NSLocalizedString(
+                        twoMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT",
                             comment: "Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
-                        manyMemberFormat: NSLocalizedString(
+                        manyMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d",
                             tableName: "PluralAware",
                             comment: "Text shown before the user starts a group call if the user has not enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
@@ -294,7 +294,7 @@ class CallHeader: UIView {
             }
         case .joined:
             if call.groupCall.localDeviceState.connectionState == .reconnecting {
-                callStatusText = NSLocalizedString(
+                callStatusText = OWSLocalizedString(
                     "GROUP_CALL_RECONNECTING",
                     comment: "Text indicating that the user has lost their connection to the call and we are reconnecting.")
 
@@ -305,19 +305,19 @@ class CallHeader: UIView {
                         count: memberCount,
                         names: firstTwoNames,
                         zeroMemberString: "",
-                        oneMemberFormat: NSLocalizedString(
+                        oneMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT",
                             comment: "Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name}"),
-                        twoMemberFormat: NSLocalizedString(
+                        twoMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT",
                             comment: "Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
-                        manyMemberFormat: NSLocalizedString(
+                        manyMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d",
                             tableName: "PluralAware",
                             comment: "Text shown before the user starts a group call if the user has enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
 
                 } else {
-                    callStatusText = NSLocalizedString(
+                    callStatusText = OWSLocalizedString(
                         "GROUP_CALL_NO_ONE_HERE",
                         comment: "Text explaining that you are the only person currently in the group call")
                 }
@@ -354,7 +354,7 @@ class CallHeader: UIView {
                 contactsManager.shortDisplayName(for: SignalServiceAddress(uuid: firstMember.userId),
                                                  transaction: transaction)
             }
-            let formatString = NSLocalizedString(
+            let formatString = OWSLocalizedString(
                 "GROUP_CALL_PRESENTING_FORMAT",
                 comment: "Text explaining that a member is presenting. Embeds {member name}")
             callTitleText = String(format: formatString, presentingName)

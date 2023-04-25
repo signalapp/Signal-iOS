@@ -596,7 +596,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                 owsFailDebug("unable to build section header for kLoadOlderSectionIdx")
                 return defaultView
             }
-            let title = NSLocalizedString("GALLERY_TILES_EMPTY_GALLERY", comment: "Label indicating media gallery is empty")
+            let title = OWSLocalizedString("GALLERY_TILES_EMPTY_GALLERY", comment: "Label indicating media gallery is empty")
             sectionHeader.configure(title: title)
             return sectionHeader
         }
@@ -609,7 +609,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                     owsFailDebug("unable to build section header for kLoadOlderSectionIdx")
                     return defaultView
                 }
-                let title = NSLocalizedString("GALLERY_TILES_LOADING_OLDER_LABEL", comment: "Label indicating loading is in progress")
+                let title = OWSLocalizedString("GALLERY_TILES_LOADING_OLDER_LABEL", comment: "Label indicating loading is in progress")
                 sectionHeader.configure(title: title)
                 return sectionHeader
             case loadNewerSectionIdx:
@@ -618,7 +618,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                     owsFailDebug("unable to build section header for kLoadOlderSectionIdx")
                     return defaultView
                 }
-                let title = NSLocalizedString("GALLERY_TILES_LOADING_MORE_RECENT_LABEL", comment: "Label indicating loading is in progress")
+                let title = OWSLocalizedString("GALLERY_TILES_LOADING_MORE_RECENT_LABEL", comment: "Label indicating loading is in progress")
                 sectionHeader.configure(title: title)
                 return sectionHeader
             default:
@@ -1224,7 +1224,7 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
             return
         }
 
-        let format = NSLocalizedString("MEDIA_GALLERY_DELETE_MESSAGES_%d", tableName: "PluralAware",
+        let format = OWSLocalizedString("MEDIA_GALLERY_DELETE_MESSAGES_%d", tableName: "PluralAware",
                                        comment: "Confirmation button text to delete selected media message(s) from the gallery")
         let confirmationTitle = String.localizedStringWithFormat(format, indexPaths.count)
 

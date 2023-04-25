@@ -45,24 +45,24 @@ extension NameCollision {
         let commonGroups = TSGroupThread.groupThreads(with: address, transaction: transaction)
         switch (thread, commonGroups.count) {
         case (_, 2...):
-            let formatString = NSLocalizedString(
+            let formatString = OWSLocalizedString(
                 "MANY_GROUPS_IN_COMMON_%d", tableName: "PluralAware",
                 comment: "A string describing that the user has many groups in common with another user. Embeds {{common group count}}")
             return String.localizedStringWithFormat(formatString, commonGroups.count)
 
         case (is TSContactThread, 1):
-            let formatString = NSLocalizedString(
+            let formatString = OWSLocalizedString(
                 "THREAD_DETAILS_ONE_MUTUAL_GROUP",
                 comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}")
             return String(format: formatString, commonGroups[0].groupNameOrDefault)
 
         case (is TSGroupThread, 1):
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "NO_OTHER_GROUPS_IN_COMMON",
                 comment: "A string describing that the user has no groups in common other than the group implied by the current UI context")
 
         case (is TSContactThread, 0):
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "NO_GROUPS_IN_COMMON",
                 comment: "A string describing that the user has no groups in common with another user")
 
@@ -121,7 +121,7 @@ class NameCollisionCell: UITableViewCell {
         label.font = UIFont.dynamicTypeFootnote
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
-        label.text = NSLocalizedString(
+        label.text = OWSLocalizedString(
             "CONTACT_CELL_IS_BLOCKED",
             comment: "An indicator that a contact or group has been blocked.")
 
@@ -247,7 +247,7 @@ class NameCollisionCell: UITableViewCell {
         if let oldName = model.oldName {
             nameChangeSpacer.isHidden = false
             recentNameChangeLabel.isHidden = false
-            let formatString = NSLocalizedString(
+            let formatString = OWSLocalizedString(
                 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING",
                 comment: "Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }}")
             recentNameChangeLabel.text = String(format: formatString, oldName, model.name)

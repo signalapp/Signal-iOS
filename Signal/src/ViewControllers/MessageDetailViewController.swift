@@ -62,7 +62,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var expiryLabelTimer: Timer?
 
     private var expiryLabelName: String {
-        NSLocalizedString(
+        OWSLocalizedString(
             "MESSAGE_METADATA_VIEW_DISAPPEARS_IN",
             comment: "Label for the 'disappears' field of the 'message metadata' view."
         )
@@ -80,7 +80,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         let expiresAt = message.expiresAt
         guard expiresAt > 0 else {
             owsFailDebug("We should never hit this code, because we should never show the label")
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS",
                 comment: "On the 'message metadata' view, if a message never disappears, this text is shown as a fallback."
             )
@@ -139,7 +139,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString(
+        title = OWSLocalizedString(
             "MESSAGE_METADATA_VIEW_TITLE",
             comment: "Title for the 'message metadata' view."
         )
@@ -259,7 +259,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         // Sent time
 
         let sentTimeLabel = Self.buildValueLabel(
-            name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
+            name: OWSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                                     comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
             value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp)
         )
@@ -270,7 +270,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         if isIncoming {
             // Received time
             messageStack.addArrangedSubview(Self.buildValueLabel(
-                name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
+                name: OWSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                         comment: "Label for the 'received date & time' field of the 'message metadata' view."),
                 value: DateUtil.formatPastTimestampRelativeToNow(message.receivedAtTimestamp)
             ))
@@ -283,7 +283,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         if hasMediaAttachment, attachments?.count == 1, let attachment = attachments?.first {
             if let sourceFilename = attachment.sourceFilename {
                 messageStack.addArrangedSubview(Self.buildValueLabel(
-                    name: NSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
+                    name: OWSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
                                             comment: "Label for the original filename of any attachment in the 'message metadata' view."),
                     value: sourceFilename
                 ))
@@ -291,7 +291,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
             if let formattedByteCount = byteCountFormatter.string(for: attachment.byteCount) {
                 messageStack.addArrangedSubview(Self.buildValueLabel(
-                    name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
+                    name: OWSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
                                             comment: "Label for file size of attachments in the 'message metadata' view."),
                     value: formattedByteCount
                 ))
@@ -302,7 +302,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             if DebugFlags.messageDetailsExtraInfo {
                 let contentType = attachment.contentType
                 messageStack.addArrangedSubview(Self.buildValueLabel(
-                    name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
+                    name: OWSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
                                             comment: "Label for the MIME type of attachments in the 'message metadata' view."),
                     value: contentType
                 ))
@@ -344,7 +344,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         }
 
         let section = OWSTableSection()
-        section.headerTitle = NSLocalizedString(
+        section.headerTitle = OWSLocalizedString(
             "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE",
             comment: "Title for the 'sent from' section on the 'message details' view."
         )
@@ -536,31 +536,31 @@ class MessageDetailViewController: OWSTableViewController2 {
     private func sectionTitle(for messageReceiptStatus: MessageReceiptStatus) -> String {
         switch messageReceiptStatus {
         case .uploading:
-            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
+            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
                               comment: "Status label for messages which are uploading.")
         case .sending:
-            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING",
+            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING",
                                      comment: "Status label for messages which are sending.")
         case .pending:
-            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED",
+            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED",
                                      comment: "Status label for messages which are paused.")
         case .sent:
-            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT",
+            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT",
                               comment: "Status label for messages which are sent.")
         case .delivered:
-            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED",
+            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED",
                               comment: "Status label for messages which are delivered.")
         case .read:
-            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ",
+            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ",
                               comment: "Status label for messages which are read.")
         case .failed:
-            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED",
+            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED",
                                      comment: "Status label for messages which are failed.")
         case .skipped:
-            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
+            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
                                      comment: "Status label for messages which were skipped.")
         case .viewed:
-            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED",
+            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED",
                               comment: "Status label for messages which are viewed.")
         }
     }
@@ -620,7 +620,7 @@ extension MessageDetailViewController {
         let messageTimestamp = "\(message.timestamp)"
         UIPasteboard.general.string = messageTimestamp
 
-        let toast = ToastController(text: NSLocalizedString(
+        let toast = ToastController(text: OWSLocalizedString(
             "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP",
             comment: "Toast indicating that the user has copied the sent timestamp."
         ))

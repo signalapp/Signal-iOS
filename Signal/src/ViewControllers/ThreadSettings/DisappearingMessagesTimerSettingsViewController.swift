@@ -39,7 +39,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString(
+        title = OWSLocalizedString(
             "DISAPPEARING_MESSAGES",
             comment: "table cell label in conversation settings"
         )
@@ -93,11 +93,11 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
 
         let footerHeaderSection = OWSTableSection()
         footerHeaderSection.footerTitle = isUniversal
-            ? NSLocalizedString(
+            ? OWSLocalizedString(
                 "DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION",
                 comment: "subheading in privacy settings"
             )
-            : NSLocalizedString(
+            : OWSLocalizedString(
                 "DISAPPEARING_MESSAGES_DESCRIPTION",
                 comment: "subheading in conversation settings"
             )
@@ -153,7 +153,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
 
         section.add(.disclosureItem(
             icon: isCustomTime ? .accessoryCheckmark : .empty,
-            name: NSLocalizedString(
+            name: OWSLocalizedString(
                 "DISAPPEARING_MESSAGES_CUSTOM_TIME",
                 comment: "Disappearing message option to define a custom time"
             ),
@@ -249,23 +249,23 @@ private class CustomTimePicker: UIPickerView, UIPickerViewDataSource, UIPickerVi
 
         var name: String {
             switch self {
-            case .second: return NSLocalizedString(
+            case .second: return OWSLocalizedString(
                 "DISAPPEARING_MESSAGES_SECONDS",
                 comment: "The unit for a number of seconds"
             )
-            case .minute: return NSLocalizedString(
+            case .minute: return OWSLocalizedString(
                 "DISAPPEARING_MESSAGES_MINUTES",
                 comment: "The unit for a number of minutes"
             )
-            case .hour: return NSLocalizedString(
+            case .hour: return OWSLocalizedString(
                 "DISAPPEARING_MESSAGES_HOURS",
                 comment: "The unit for a number of hours"
             )
-            case .day: return NSLocalizedString(
+            case .day: return OWSLocalizedString(
                 "DISAPPEARING_MESSAGES_DAYS",
                 comment: "The unit for a number of days"
             )
-            case .week: return NSLocalizedString(
+            case .week: return OWSLocalizedString(
                 "DISAPPEARING_MESSAGES_WEEKS",
                 comment: "The unit for a number of weeks"
             )

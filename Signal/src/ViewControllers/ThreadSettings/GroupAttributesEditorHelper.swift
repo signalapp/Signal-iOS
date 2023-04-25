@@ -144,12 +144,12 @@ class GroupAttributesEditorHelper: NSObject {
         nameTextField.textColor = Theme.primaryTextColor
         nameTextField.delegate = self
         nameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        nameTextField.placeholder = NSLocalizedString("GROUP_NAME_PLACEHOLDER",
+        nameTextField.placeholder = OWSLocalizedString("GROUP_NAME_PLACEHOLDER",
                                                       comment: "Placeholder text for 'group name' field.")
 
         descriptionTextView.text = groupDescriptionOriginal
         descriptionTextView.delegate = self
-        descriptionTextView.placeholderText = NSLocalizedString("GROUP_DESCRIPTION_PLACEHOLDER",
+        descriptionTextView.placeholderText = OWSLocalizedString("GROUP_DESCRIPTION_PLACEHOLDER",
                                                                 comment: "Placeholder text for 'group description' field.")
     }
 
@@ -219,7 +219,7 @@ class GroupAttributesEditorHelper: NSObject {
                 return nil
             }
             guard let groupAvatar = GroupAvatar.build(image: image) else {
-                OWSActionSheets.showErrorAlert(message: NSLocalizedString("EDIT_GROUP_ERROR_INVALID_AVATAR",
+                OWSActionSheets.showErrorAlert(message: OWSLocalizedString("EDIT_GROUP_ERROR_INVALID_AVATAR",
                                                                           comment: "Error message indicating that an avatar image is invalid and cannot be used."))
                 owsFailDebug("Invalid image.")
                 return nil

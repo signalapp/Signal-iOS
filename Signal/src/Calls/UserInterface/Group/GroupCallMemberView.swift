@@ -390,17 +390,17 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     func configureErrorView(for address: SignalServiceAddress, isBlocked: Bool) {
         let displayName: String
         if address.isLocalAddress {
-            displayName = NSLocalizedString(
+            displayName = OWSLocalizedString(
                 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                 comment: "Text describing the local user in the group call members sheet when connected from another device.")
         } else {
             displayName = self.contactsManager.displayName(for: address)
         }
 
-        let blockFormat = NSLocalizedString(
+        let blockFormat = OWSLocalizedString(
             "GROUP_CALL_BLOCKED_USER_FORMAT",
             comment: "String displayed in group call grid cell when a user is blocked. Embeds {user's name}")
-        let missingKeyFormat = NSLocalizedString(
+        let missingKeyFormat = OWSLocalizedString(
             "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT",
             comment: "String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name}")
 

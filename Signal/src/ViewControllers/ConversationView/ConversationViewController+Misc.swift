@@ -88,7 +88,7 @@ public extension ConversationViewController {
             }
         })
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
                                                 accessibilityIdentifier: "send_again",
                                                 style: .default) { _ in
             Self.databaseStorage.asyncWrite { transaction in
@@ -182,7 +182,7 @@ public extension ConversationViewController {
     func presentMissingQuotedReplyToast() {
         Logger.info("")
 
-        let toastText = NSLocalizedString("QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED",
+        let toastText = OWSLocalizedString("QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED",
                                           comment: "Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted.")
         presentToastCVC(toastText)
     }
@@ -190,7 +190,7 @@ public extension ConversationViewController {
     func presentRemotelySourcedQuotedReplyToast() {
         Logger.info("")
 
-        let toastText = NSLocalizedString("QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED",
+        let toastText = OWSLocalizedString("QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED",
                                           comment: "Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received.")
         presentToastCVC(toastText)
     }
@@ -198,7 +198,7 @@ public extension ConversationViewController {
     func presentViewOnceAlreadyViewedToast() {
         Logger.info("")
 
-        let toastText = NSLocalizedString("VIEW_ONCE_ALREADY_VIEWED_TOAST",
+        let toastText = OWSLocalizedString("VIEW_ONCE_ALREADY_VIEWED_TOAST",
                                           comment: "Toast alert text shown when tapping on a view-once message that has already been viewed.")
         presentToastCVC(toastText)
     }
@@ -206,7 +206,7 @@ public extension ConversationViewController {
     func presentViewOnceOutgoingToast() {
         Logger.info("")
 
-        let toastText = NSLocalizedString("VIEW_ONCE_OUTGOING_TOAST",
+        let toastText = OWSLocalizedString("VIEW_ONCE_OUTGOING_TOAST",
                                           comment: "Toast alert text shown when tapping on a view-once message that you have sent.")
         presentToastCVC(toastText)
     }

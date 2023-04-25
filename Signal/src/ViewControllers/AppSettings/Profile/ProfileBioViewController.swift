@@ -90,11 +90,11 @@ class ProfileBioViewController: OWSTableViewController2 {
            let normalizedProfileBio = self.normalizedProfileBio,
            !normalizedProfileBio.isEmpty {
             let remainingGlyphCount = max(0, OWSUserProfile.kMaxBioLengthGlyphs - normalizedProfileBio.glyphCount)
-            let titleFormat = NSLocalizedString("PROFILE_BIO_VIEW_TITLE_FORMAT",
+            let titleFormat = OWSLocalizedString("PROFILE_BIO_VIEW_TITLE_FORMAT",
                                                 comment: "Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}.")
             title = String(format: titleFormat, OWSFormat.formatInt(remainingGlyphCount))
         } else {
-            title = NSLocalizedString("PROFILE_BIO_VIEW_TITLE", comment: "Title for the profile bio view.")
+            title = OWSLocalizedString("PROFILE_BIO_VIEW_TITLE", comment: "Title for the profile bio view.")
         }
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
@@ -173,7 +173,7 @@ class ProfileBioViewController: OWSTableViewController2 {
         updateEmojiViews()
 
         bioTextField.returnKeyType = .done
-        bioTextField.placeholder = NSLocalizedString("PROFILE_BIO_VIEW_BIO_PLACEHOLDER",
+        bioTextField.placeholder = OWSLocalizedString("PROFILE_BIO_VIEW_BIO_PLACEHOLDER",
                                                             comment: "Placeholder text for the bio field of the profile bio view.")
         bioTextField.delegate = self
         bioTextField.accessibilityIdentifier = "bio_textfield"
@@ -271,25 +271,25 @@ class ProfileBioViewController: OWSTableViewController2 {
 
         static let values = [
             DefaultBio(emoji: "👋",
-                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY",
+                       bio: OWSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY",
                                               comment: "The 'Speak Freely' default bio in the profile bio view.")),
             DefaultBio(emoji: "🤐",
-                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED",
+                       bio: OWSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED",
                                               comment: "The 'Encrypted' default bio in the profile bio view.")),
             DefaultBio(emoji: "👍",
-                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT",
+                       bio: OWSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT",
                                               comment: "The 'free to chat' default bio in the profile bio view.")),
             DefaultBio(emoji: "☕",
-                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER",
+                       bio: OWSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER",
                                               comment: "The 'Coffee lover' default bio in the profile bio view.")),
             DefaultBio(emoji: "📵",
-                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK",
+                       bio: OWSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK",
                                               comment: "The 'Taking a break' default bio in the profile bio view.")),
             DefaultBio(emoji: "🙏",
-                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND",
+                       bio: OWSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND",
                                               comment: "The 'Be kind' default bio in the profile bio view.")),
             DefaultBio(emoji: "🚀",
-                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW",
+                       bio: OWSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW",
                                               comment: "The 'Working on something new' default bio in the profile bio view."))
         ]
     }

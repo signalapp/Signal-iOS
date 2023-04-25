@@ -136,18 +136,18 @@ class MessageRequestView: UIStackView {
             var appendLearnMoreLink = false
             if thread.isGroupV1Thread {
                 if isThreadBlocked {
-                    string = NSLocalizedString(
+                    string = OWSLocalizedString(
                         "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT",
                         comment: "A prompt notifying that the user must unblock this group to continue."
                     )
                 } else if hasSentMessages {
-                    string = NSLocalizedString(
+                    string = OWSLocalizedString(
                         "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT",
                         comment: "A prompt notifying that the user must share their profile with this group."
                     )
                     appendLearnMoreLink = true
                 } else {
-                    string = NSLocalizedString(
+                    string = OWSLocalizedString(
                         "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT",
                         comment: "A prompt asking if the user wants to accept a group invite."
                     )
@@ -156,12 +156,12 @@ class MessageRequestView: UIStackView {
                 owsAssertDebug(thread.isGroupV2Thread)
 
                 if isThreadBlocked {
-                    string = NSLocalizedString(
+                    string = OWSLocalizedString(
                         "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2",
                         comment: "A prompt notifying that the user must unblock this group to continue."
                     )
                 } else {
-                    string = NSLocalizedString(
+                    string = OWSLocalizedString(
                         "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2",
                         comment: "A prompt asking if the user wants to accept a group invite."
                     )
@@ -180,18 +180,18 @@ class MessageRequestView: UIStackView {
             var appendLearnMoreLink = false
 
             if isThreadBlocked {
-                formatString = NSLocalizedString(
+                formatString = OWSLocalizedString(
                     "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT",
                     comment: "A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}."
                 )
             } else if hasSentMessages {
-                formatString = NSLocalizedString(
+                formatString = OWSLocalizedString(
                     "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT",
                     comment: "A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}."
                 )
                 appendLearnMoreLink = true
             } else {
-                formatString = NSLocalizedString(
+                formatString = OWSLocalizedString(
                     "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT",
                     comment: "A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}."
                 )
@@ -223,29 +223,29 @@ class MessageRequestView: UIStackView {
 
         if isThreadBlocked {
             buttons = [
-                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
                                                        comment: "incoming message request button text which deletes a conversation"),
                               titleColor: .ows_accentRed) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapDelete()
                 },
-                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON",
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON",
                                                        comment: "A button used to unlock a blocked conversation."),
                               titleColor: Theme.accentBlueColor) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapUnblock(mode: mode)
                 }]
         } else if hasSentMessages {
             buttons = [
-                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
                                                        comment: "A button used to block a user on an incoming message request."),
                               titleColor: .ows_accentRed) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
                 },
-                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
                                                        comment: "incoming message request button text which deletes a conversation"),
                               titleColor: .ows_accentRed) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapDelete()
                 },
-                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON",
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON",
                                                        comment: "A button used to continue a conversation and share your profile."),
                               titleColor: Theme.accentBlueColor) { [weak self] in
                     // This is the same action as accepting the message request, but displays
@@ -255,17 +255,17 @@ class MessageRequestView: UIStackView {
                 }]
         } else {
             buttons = [
-                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
                                                        comment: "A button used to block a user on an incoming message request."),
                               titleColor: .ows_accentRed) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
                 },
-                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
                                                        comment: "incoming message request button text which deletes a conversation"),
                               titleColor: .ows_accentRed) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapDelete()
                 },
-                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
                                                        comment: "A button used to accept a user on an incoming message request."),
                               titleColor: Theme.accentBlueColor) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapAccept(mode: mode)
@@ -278,7 +278,7 @@ class MessageRequestView: UIStackView {
     // MARK: - Group V2 Invites
 
     func prepareGroupV2InvitePrompt() -> UITextView {
-        let string = NSLocalizedString(
+        let string = OWSLocalizedString(
             "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT",
             comment: "A prompt asking if the user wants to accept a group invite."
         )
@@ -295,17 +295,17 @@ class MessageRequestView: UIStackView {
     func prepareGroupV2InviteButtons() -> UIStackView {
         let mode = self.mode
         let buttons = [
-            prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
+            prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
                                                    comment: "A button used to block a user on an incoming message request."),
                           titleColor: .ows_accentRed) { [weak self] in
                             self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
             },
-            prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
+            prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
                                                    comment: "incoming message request button text which deletes a conversation"),
                           titleColor: .ows_accentRed) { [weak self] in
                             self?.delegate?.messageRequestViewDidTapDelete()
             },
-            prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
+            prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
                                                    comment: "A button used to accept a user on an incoming message request."),
                           titleColor: Theme.accentBlueColor) { [weak self] in
                             self?.delegate?.messageRequestViewDidTapAccept(mode: mode)

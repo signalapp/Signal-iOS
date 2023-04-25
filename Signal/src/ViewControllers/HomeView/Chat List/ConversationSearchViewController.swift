@@ -466,25 +466,25 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
             return nil
         case .contactThreads:
             if searchResultSet.contactThreads.count > 0 {
-                return NSLocalizedString("SEARCH_SECTION_CONVERSATIONS", comment: "section header for search results that match existing 1:1 chats")
+                return OWSLocalizedString("SEARCH_SECTION_CONVERSATIONS", comment: "section header for search results that match existing 1:1 chats")
             } else {
                 return nil
             }
         case .groupThreads:
             if searchResultSet.groupThreads.count > 0 {
-                return NSLocalizedString("SEARCH_SECTION_GROUPS", comment: "section header for search results that match existing groups")
+                return OWSLocalizedString("SEARCH_SECTION_GROUPS", comment: "section header for search results that match existing groups")
             } else {
                 return nil
             }
         case .contacts:
             if searchResultSet.contacts.count > 0 {
-                return NSLocalizedString("SEARCH_SECTION_CONTACTS", comment: "section header for search results that match a contact who doesn't have an existing conversation")
+                return OWSLocalizedString("SEARCH_SECTION_CONTACTS", comment: "section header for search results that match a contact who doesn't have an existing conversation")
             } else {
                 return nil
             }
         case .messages:
             if searchResultSet.messages.count > 0 {
-                return NSLocalizedString("SEARCH_SECTION_MESSAGES", comment: "section header for search results that match a message in a conversation")
+                return OWSLocalizedString("SEARCH_SECTION_MESSAGES", comment: "section header for search results that match a message in a conversation")
             } else {
                 return nil
             }
@@ -660,7 +660,7 @@ class EmptySearchResultCell: UITableViewCell {
             activityIndicator.isHidden = true
             messageLabel.isHidden = false
 
-            let format = NSLocalizedString(
+            let format = OWSLocalizedString(
                 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT",
                 comment: "Format string when search returns no results. Embeds {{search term}}"
             )

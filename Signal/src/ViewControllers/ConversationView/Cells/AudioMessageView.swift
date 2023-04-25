@@ -333,7 +333,7 @@ class AudioMessageView: ManualStackView {
         if let fileName = attachment.sourceFilename?.stripped, !fileName.isEmpty {
             text = fileName
         } else {
-            text = NSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
+            text = OWSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
         }
 
         return CVLabelConfig(text: text,

@@ -16,7 +16,7 @@ class VoiceMessageTooltip: TooltipView {
 
     override func bubbleContentView() -> UIView {
         let label = UILabel()
-        label.text = NSLocalizedString(
+        label.text = OWSLocalizedString(
             "VOICE_MESSAGE_TOO_SHORT_TOOLTIP",
             comment: "Message for the tooltip indicating the 'voice message' needs to be held to be held down to record."
         )

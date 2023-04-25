@@ -269,10 +269,10 @@ public class PinConfirmationViewController: OWSViewController {
 
         switch validationState {
         case .tooShort:
-            validationWarningLabel.text = NSLocalizedString("PIN_REMINDER_TOO_SHORT_ERROR",
+            validationWarningLabel.text = OWSLocalizedString("PIN_REMINDER_TOO_SHORT_ERROR",
                                                             comment: "Label indicating that the attempted PIN is too short")
         case .mismatch:
-            validationWarningLabel.text = NSLocalizedString("PIN_REMINDER_MISMATCH_ERROR",
+            validationWarningLabel.text = OWSLocalizedString("PIN_REMINDER_MISMATCH_ERROR",
                                                             comment: "Label indicating that the attempted PIN does not match the user's PIN")
         default:
             break

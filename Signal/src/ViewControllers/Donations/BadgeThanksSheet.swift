@@ -259,12 +259,12 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     private var titleText: String {
         switch self.badgeType {
         case .boost, .subscription:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "BADGE_THANKS_TITLE",
                 comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet."
             )
         case let .gift(shortName, _, _):
-            let formatText = NSLocalizedString(
+            let formatText = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT",
                 comment: "A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}."
             )
@@ -275,13 +275,13 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     private var bodyText: String {
         switch self.badgeType {
         case .boost, .subscription:
-            let formatText = NSLocalizedString(
+            let formatText = OWSLocalizedString(
                 "BADGE_THANKS_BODY",
                 comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet."
             )
             return String(format: formatText, self.badge.localizedName)
         case let .gift(shortName, _, _):
-            let formatText = NSLocalizedString(
+            let formatText = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT",
                 comment: "A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}."
             )
@@ -381,13 +381,13 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         case .none:
             return nil
         case .displayOnProfile:
-            switchText = NSLocalizedString(
+            switchText = OWSLocalizedString(
                 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL",
                 comment: "Label prompting the user to display the new badge on their profile on the badge thank you sheet."
             )
             showFooter = false
         case .makeFeaturedBadge:
-            switchText = NSLocalizedString(
+            switchText = OWSLocalizedString(
                 "BADGE_THANKS_MAKE_FEATURED",
                 comment: "Label prompting the user to feature the new badge on their profile on the badge thank you sheet."
             )
@@ -402,7 +402,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             selector: #selector(didToggleDisplayOnProfile)
         ))
         if showFooter {
-            section.footerTitle = NSLocalizedString(
+            section.footerTitle = OWSLocalizedString(
                 "BADGE_THANKS_TOGGLE_FOOTER",
                 comment: "Footer explaining that only one badge can be featured at a time on the thank you sheet."
             )
@@ -477,11 +477,11 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                         .then(on: DispatchQueue.global()) { self.saveVisibilityChanges() }
                 } errorHandler: { error in
                     OWSActionSheets.showActionSheet(
-                        title: NSLocalizedString(
+                        title: OWSLocalizedString(
                             "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE",
                             comment: "Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
                         ),
-                        message: NSLocalizedString(
+                        message: OWSLocalizedString(
                             "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY",
                             comment: "Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
                         )

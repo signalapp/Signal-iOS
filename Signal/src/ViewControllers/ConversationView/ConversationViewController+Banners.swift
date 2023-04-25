@@ -49,7 +49,7 @@ public extension ConversationViewController {
     ) -> UIView {
         owsAssertDebug(!pendingMemberRequests.isEmpty)
 
-        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d", tableName: "PluralAware",
+        let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d", tableName: "PluralAware",
                                        comment: "Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}.")
         let title = String.localizedStringWithFormat(format, pendingMemberRequests.count)
 
@@ -67,7 +67,7 @@ public extension ConversationViewController {
             self.ensureBannerState()
         }
         dismissButton.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-        let viewRequestsLabel = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS",
+        let viewRequestsLabel = OWSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS",
                                                   comment: "Label for the 'view requests' button in the pending member requests banner.")
         let viewRequestsButton = OWSButton(title: viewRequestsLabel, block: viewMemberRequestsBlock)
         viewRequestsButton.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
@@ -110,10 +110,10 @@ public extension ConversationViewController {
         }
 
         let banner = NameCollisionBanner()
-        banner.labelText = NSLocalizedString(
+        banner.labelText = OWSLocalizedString(
             "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL",
             comment: "Banner label notifying user that a new message is from a user with the same name as an existing contact")
-        banner.reviewActionText = NSLocalizedString(
+        banner.reviewActionText = OWSLocalizedString(
             "MESSAGE_REQUEST_REVIEW_NAME_COLLISION",
             comment: "Button to allow user to review known name collisions with an incoming message request")
 
@@ -166,7 +166,7 @@ public extension ConversationViewController {
 
             let totalCollisionElementCount = collisionSets.reduce(0) { $0 + $1.elements.count }
 
-            let titleFormat = NSLocalizedString("GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d", tableName: "PluralAware",
+            let titleFormat = OWSLocalizedString("GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d", tableName: "PluralAware",
                                                 comment: "Banner title alerting user to a name collision set ub the group membership. Embeds {{ total number of colliding members }}")
             let title = String.localizedStringWithFormat(titleFormat, totalCollisionElementCount)
 
@@ -189,7 +189,7 @@ public extension ConversationViewController {
 
         let banner = NameCollisionBanner()
         banner.labelText = title
-        banner.reviewActionText = NSLocalizedString(
+        banner.reviewActionText = OWSLocalizedString(
             "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON",
             comment: "Button to allow user to review known name collisions in group membership")
         if let avatar1 = avatar1, let avatar2 = avatar2 {
@@ -229,7 +229,7 @@ fileprivate extension ConversationViewController {
 
     func createDroppedGroupMembersBanner(viewState: CVViewState,
                                          droppedMembersInfo: DroppedMembersInfo) -> UIView {
-        let titleFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d", tableName: "PluralAware",
+        let titleFormat = OWSLocalizedString("GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d", tableName: "PluralAware",
                                             comment: "Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}.")
         let title = String.localizedStringWithFormat(titleFormat, droppedMembersInfo.addableMembers.count)
 
@@ -241,7 +241,7 @@ fileprivate extension ConversationViewController {
         }
         notNowButton.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
 
-        let addMembersButtonText = NSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON",
+        let addMembersButtonText = OWSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON",
                                                      comment: "Label for the 'add members' button in the 're-add dropped groups members' banner.")
         let addMembersButton = OWSButton(title: addMembersButtonText) { [weak self] in
             self?.reAddDroppedGroupMembers(droppedMembersInfo: droppedMembersInfo)
@@ -417,7 +417,7 @@ private class NameCollisionBanner: UIView {
         let button = OWSButton(
             imageName: "x-circle-16",
             tintColor: Theme.secondaryTextAndIconColor)
-        button.accessibilityLabel = NSLocalizedString("BANNER_CLOSE_ACCESSIBILITY_LABEL",
+        button.accessibilityLabel = OWSLocalizedString("BANNER_CLOSE_ACCESSIBILITY_LABEL",
                                                       comment: "Accessibility label for banner close button")
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setCompressionResistanceHigh()
@@ -515,14 +515,14 @@ extension ConversationViewController {
                 let address = noLongerVerifiedAddressSample.first!
                 let displayName = contactsManager.displayName(for: address)
                 let format = (isGroupConversation
-                                ? NSLocalizedString("MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
+                                ? OWSLocalizedString("MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
                                                     comment: "Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}.")
-                                : NSLocalizedString("MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT",
+                                : OWSLocalizedString("MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT",
                                                     comment: "Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}."))
                 message = String(format: format, displayName)
 
             default:
-                message = NSLocalizedString("MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
+                message = OWSLocalizedString("MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
                                             comment: "Indicates that more than one member of this group conversation is no longer verified.")
             }
             if let message = message {
@@ -540,7 +540,7 @@ extension ConversationViewController {
                 let blockedGroupMemberCount = self.blockedGroupMemberCount
                 if blockedGroupMemberCount > 0 {
                     return String.localizedStringWithFormat(
-                        NSLocalizedString("MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d", tableName: "PluralAware",
+                        OWSLocalizedString("MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d", tableName: "PluralAware",
                                           comment: "Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}."),
                         blockedGroupMemberCount)
                 } else {
@@ -659,10 +659,10 @@ extension ConversationViewController {
         case 0:
             return
         case 1:
-            title = NSLocalizedString("VERIFY_PRIVACY",
+            title = OWSLocalizedString("VERIFY_PRIVACY",
                                       comment: "Label for button or row which allows users to verify the safety number of another user.")
         default:
-            title = NSLocalizedString("VERIFY_PRIVACY_MULTIPLE",
+            title = OWSLocalizedString("VERIFY_PRIVACY_MULTIPLE",
                                       comment: "Label for button or row which allows users to verify the safety numbers of multiple users.")
         }
 

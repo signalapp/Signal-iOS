@@ -108,7 +108,7 @@ class StoryViewsViewController: OWSViewController {
         if StoryManager.areViewReceiptsEnabled {
             label.font = .dynamicTypeBody
             label.textColor = .ows_gray45
-            label.text = NSLocalizedString(
+            label.text = OWSLocalizedString(
                 "STORIES_NO_VIEWS_YET",
                 comment: "Indicates that this story has no views yet"
             )
@@ -119,7 +119,7 @@ class StoryViewsViewController: OWSViewController {
         } else {
             label.font = .dynamicTypeCallout
             label.textColor = .ows_gray25
-            label.text = NSLocalizedString(
+            label.text = OWSLocalizedString(
                 "STORIES_VIEWS_OFF_DESCRIPTION",
                 comment: "Text explaining that you will not see any views for your story because you have view receipts turned off"
             )

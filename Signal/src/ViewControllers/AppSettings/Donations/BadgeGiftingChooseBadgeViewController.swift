@@ -160,7 +160,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
                 let titleLabel = UILabel()
                 introStack.addArrangedSubview(titleLabel)
-                titleLabel.text = NSLocalizedString(
+                titleLabel.text = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE",
                     comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive."
                 )
@@ -172,7 +172,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
                 let paragraphLabel = UILabel()
                 introStack.addArrangedSubview(paragraphLabel)
-                paragraphLabel.text = NSLocalizedString(
+                paragraphLabel.text = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION",
                     comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive."
                 )
@@ -224,7 +224,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
             let textLabel = UILabel()
             stackView.addArrangedSubview(textLabel)
-            textLabel.text = NSLocalizedString("DONATION_VIEW_LOAD_FAILED",
+            textLabel.text = OWSLocalizedString("DONATION_VIEW_LOAD_FAILED",
                                                comment: "Text that's shown when the donation view fails to load data, probably due to network failure")
             textLabel.font = .dynamicTypeBody2
             textLabel.textAlignment = .center

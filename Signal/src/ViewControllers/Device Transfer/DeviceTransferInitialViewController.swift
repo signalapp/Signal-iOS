@@ -14,7 +14,7 @@ class DeviceTransferInitialViewController: DeviceTransferBaseViewController {
         super.viewDidLoad()
 
         let titleLabel = self.titleLabel(
-            text: NSLocalizedString("DEVICE_TRANSFER_PROMPT_TITLE",
+            text: OWSLocalizedString("DEVICE_TRANSFER_PROMPT_TITLE",
                                     comment: "The title on the acttion sheet prompting the user if they want to transfer their device.")
         )
         contentView.addArrangedSubview(titleLabel)
@@ -22,7 +22,7 @@ class DeviceTransferInitialViewController: DeviceTransferBaseViewController {
         contentView.addArrangedSubview(.spacer(withHeight: 12))
 
         let explanationLabel = self.explanationLabel(
-            explanationText: NSLocalizedString("DEVICE_TRANSFER_PROMPT_EXPLANATION",
+            explanationText: OWSLocalizedString("DEVICE_TRANSFER_PROMPT_EXPLANATION",
                                                comment: "The explanation on the action sheet prompting the user if they want to transfer their device.")
         )
         contentView.addArrangedSubview(explanationLabel)

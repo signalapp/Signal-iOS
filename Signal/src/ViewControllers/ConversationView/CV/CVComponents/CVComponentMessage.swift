@@ -1147,14 +1147,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         if isIncoming {
             if let accessibilityAuthorName = itemViewState.accessibilityAuthorName {
-                let format = NSLocalizedString("CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT",
+                let format = OWSLocalizedString("CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT",
                                                comment: "Format for sender info for accessibility label for message. Embeds {{ the sender name }}.")
                 elements.append(String(format: format, accessibilityAuthorName))
             } else {
                 owsFailDebug("Missing accessibilityAuthorName.")
             }
         } else if isOutgoing {
-            elements.append(NSLocalizedString("CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER",
+            elements.append(OWSLocalizedString("CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER",
                                               comment: "Format for sender info for outgoing messages."))
         }
 

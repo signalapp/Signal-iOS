@@ -186,33 +186,33 @@ private class BannerView: UIView {
         let actionText: String
         if displayNames.count > 2 {
             let formatText = action == .join
-                ? NSLocalizedString(
+                ? OWSLocalizedString(
                     "GROUP_CALL_NOTIFICATION_MANY_JOINED_%d", tableName: "PluralAware",
                     comment: "Copy explaining that many new users have joined the group call. Embeds {number of additional members}, {first member name}, {second member name}"
                 )
-                : NSLocalizedString(
+                : OWSLocalizedString(
                     "GROUP_CALL_NOTIFICATION_MANY_LEFT_%d", tableName: "PluralAware",
                     comment: "Copy explaining that many users have left the group call. Embeds {number of additional members}, {first member name}, {second member name}"
                 )
             actionText = String.localizedStringWithFormat(formatText, displayNames.count - 2, displayNames[0], displayNames[1])
         } else if displayNames.count > 1 {
             let formatText = action == .join
-                ? NSLocalizedString(
+                ? OWSLocalizedString(
                     "GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT",
                     comment: "Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name}"
                 )
-                : NSLocalizedString(
+                : OWSLocalizedString(
                     "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT",
                     comment: "Copy explaining that two users have left the group call. Embeds {first member name}, {second member name}"
                 )
             actionText = String(format: formatText, displayNames[0], displayNames[1])
         } else {
             let formatText = action == .join
-                ? NSLocalizedString(
+                ? OWSLocalizedString(
                     "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT",
                     comment: "Copy explaining that a user has joined the group call. Embeds {member name}"
                 )
-                : NSLocalizedString(
+                : OWSLocalizedString(
                     "GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT",
                     comment: "Copy explaining that a user has left the group call. Embeds {member name}"
                 )

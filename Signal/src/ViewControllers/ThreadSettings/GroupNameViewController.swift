@@ -54,7 +54,7 @@ class GroupNameViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        title = NSLocalizedString(
+        title = OWSLocalizedString(
             "GROUP_NAME_VIEW_TITLE",
             comment: "Title for the group name view."
         )

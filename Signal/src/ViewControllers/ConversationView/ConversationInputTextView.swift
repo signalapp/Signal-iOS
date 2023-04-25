@@ -47,7 +47,7 @@ class ConversationInputTextView: MentionTextView {
         contentMode = .redraw
         dataDetectorTypes = []
 
-        placeholderView.text = NSLocalizedString(
+        placeholderView.text = OWSLocalizedString(
             "INPUT_TOOLBAR_MESSAGE_PLACEHOLDER",
             comment: "Placeholder text displayed in empty input box in chat screen."
         )

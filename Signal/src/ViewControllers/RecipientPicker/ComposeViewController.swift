@@ -11,7 +11,7 @@ class ComposeViewController: RecipientPickerContainerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("MESSAGE_COMPOSEVIEW_TITLE", comment: "Title for the compose view.")
+        title = OWSLocalizedString("MESSAGE_COMPOSEVIEW_TITLE", comment: "Title for the compose view.")
 
         view.backgroundColor = Theme.backgroundColor
 

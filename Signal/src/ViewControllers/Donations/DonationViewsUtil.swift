@@ -73,7 +73,7 @@ public class DonationCurrencyPickerButton: UIStackView {
             let label = UILabel()
             label.font = .dynamicTypeBodyClamped
             label.textColor = Theme.primaryTextColor
-            label.text = NSLocalizedString(
+            label.text = OWSLocalizedString(
                 "DONATIONS_CURRENCY_PICKER_LABEL",
                 comment: "Label for the currency picker button in donation views"
             )
@@ -165,7 +165,7 @@ public class GiftBadgeCellView: UIStackView {
                 return formattedDuration
             }()
             let formattedDurationText = String(
-                format: NSLocalizedString(
+                format: OWSLocalizedString(
                     "DONATION_FOR_A_FRIEND_ROW_DURATION",
                     comment: "When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}."
                 ),
@@ -173,7 +173,7 @@ public class GiftBadgeCellView: UIStackView {
             )
 
             return String(
-                format: NSLocalizedString(
+                format: OWSLocalizedString(
                     "JOINED_WITH_DOT",
                     comment: "Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot"
                 ),
@@ -279,7 +279,7 @@ public final class DonationViewsUtil {
 
                 let pricingLabel: UILabel = {
                     let pricingLabel = UILabel()
-                    let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
+                    let pricingFormat = OWSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
                     let currencyString = DonationUtilities.format(money: currentSubscription.amount)
                     pricingLabel.text = String(format: pricingFormat, currencyString)
                     pricingLabel.textColor = Theme.primaryTextColor
@@ -290,12 +290,12 @@ public final class DonationViewsUtil {
 
                 let statusText: NSMutableAttributedString
                 if isPending {
-                    let text = NSLocalizedString("SUSTAINER_VIEW_PROCESSING_TRANSACTION", comment: "Status text while processing a badge redemption")
+                    let text = OWSLocalizedString("SUSTAINER_VIEW_PROCESSING_TRANSACTION", comment: "Status text while processing a badge redemption")
                     statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.dynamicTypeBody2])
                 } else if didFail {
-                    let helpFormat = subscriptionRedemptionFailureReason == .paymentFailed ? NSLocalizedString("SUSTAINER_VIEW_PAYMENT_ERROR", comment: "Payment error occurred text, embeds {{link to contact support}}")
-                    : NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE", comment: "Couldn't add badge text, embeds {{link to contact support}}")
-                    let contactSupport = NSLocalizedString("SUSTAINER_VIEW_CONTACT_SUPPORT", comment: "Contact support link")
+                    let helpFormat = subscriptionRedemptionFailureReason == .paymentFailed ? OWSLocalizedString("SUSTAINER_VIEW_PAYMENT_ERROR", comment: "Payment error occurred text, embeds {{link to contact support}}")
+                    : OWSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE", comment: "Couldn't add badge text, embeds {{link to contact support}}")
+                    let contactSupport = OWSLocalizedString("SUSTAINER_VIEW_CONTACT_SUPPORT", comment: "Contact support link")
                     let text = String(format: helpFormat, contactSupport)
                     let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.dynamicTypeBody2])
                     attributedText.addAttributes([.link: NSURL()], range: NSRange(location: text.utf16.count - contactSupport.utf16.count, length: contactSupport.utf16.count))
@@ -303,7 +303,7 @@ public final class DonationViewsUtil {
                 } else {
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateStyle = .medium
-                    let renewalFormat = NSLocalizedString("SUSTAINER_VIEW_RENEWAL", comment: "Renewal date text for sustainer view level, embeds {{renewal date}}")
+                    let renewalFormat = OWSLocalizedString("SUSTAINER_VIEW_RENEWAL", comment: "Renewal date text for sustainer view level, embeds {{renewal date}}")
                     let renewalDate = Date(timeIntervalSince1970: currentSubscription.endOfCurrentPeriod)
                     let renewalString = dateFormatter.string(from: renewalDate)
                     let text = String(format: renewalFormat, renewalString)
@@ -396,7 +396,7 @@ public final class DonationViewsUtil {
         using paymentMethod: DonationPaymentMethod?
     ) {
         let actionSheet = ActionSheetController(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE",
                 comment: "Action sheet title for Error Processing Payment sheet"
             ),
@@ -417,8 +417,8 @@ public final class DonationViewsUtil {
             return
         }
 
-        let title = NSLocalizedString("SUSTAINER_STILL_PROCESSING_BADGE_TITLE", comment: "Action sheet title for Still Processing Badge sheet")
-        let message = NSLocalizedString("SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE", comment: "Action sheet message for Still Processing Badge sheet")
+        let title = OWSLocalizedString("SUSTAINER_STILL_PROCESSING_BADGE_TITLE", comment: "Action sheet title for Still Processing Badge sheet")
+        let message = OWSLocalizedString("SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE", comment: "Action sheet message for Still Processing Badge sheet")
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addAction(OWSActionSheets.okayAction)
         topViewController.presentActionSheet(actionSheet)
@@ -430,22 +430,22 @@ public final class DonationViewsUtil {
     ) {
         let failureReason = getSubscriptionRedemptionFailureReason(subscription: currentSubscription)
 
-        let title = failureReason == .paymentFailed ? NSLocalizedString("SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE", comment: "Action sheet title for Error Processing Payment sheet") : NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")
-        let message = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE", comment: "Action sheet message for Couldn't Add Badge sheet")
+        let title = failureReason == .paymentFailed ? OWSLocalizedString("SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE", comment: "Action sheet title for Error Processing Payment sheet") : OWSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")
+        let message = OWSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE", comment: "Action sheet message for Couldn't Add Badge sheet")
 
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addAction(ActionSheetAction(
-            title: NSLocalizedString("CONTACT_SUPPORT", comment: "Button text to initiate an email to signal support staff"),
+            title: OWSLocalizedString("CONTACT_SUPPORT", comment: "Button text to initiate an email to signal support staff"),
             style: .default,
             handler: { _ in
-                let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
+                let localizedSheetTitle = OWSLocalizedString("EMAIL_SIGNAL_TITLE",
                                                             comment: "Title for the fallback support sheet if user cannot send email")
-                let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
+                let localizedSheetMessage = OWSLocalizedString("EMAIL_SIGNAL_MESSAGE",
                                                               comment: "Description for the fallback support sheet if user cannot send email")
                 guard ComposeSupportEmailOperation.canSendEmails else {
                     let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
                                                               message: localizedSheetMessage)
-                    let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+                    let buttonTitle = OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
                     fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
                     viewController.presentActionSheet(fallbackSheet)
                     return
@@ -458,7 +458,7 @@ public final class DonationViewsUtil {
         ))
 
         actionSheet.addAction(ActionSheetAction(
-            title: NSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW", comment: "Sustainer view Not Now Action sheet button"),
+            title: OWSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW", comment: "Sustainer view Not Now Action sheet button"),
             style: .cancel,
             handler: nil
         ))

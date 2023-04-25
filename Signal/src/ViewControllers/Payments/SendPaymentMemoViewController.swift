@@ -53,7 +53,7 @@ public class SendPaymentMemoViewController: OWSViewController {
     }
 
     private func createContents() {
-        navigationItem.title = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
+        navigationItem.title = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
                                                  comment: "Label for the 'add memo' ui in the 'send payment' UI.")
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                            target: self,
@@ -87,7 +87,7 @@ public class SendPaymentMemoViewController: OWSViewController {
         memoTextField.backgroundColor = .clear
         memoTextField.font = .dynamicTypeBodyClamped
         memoTextField.textColor = Theme.primaryTextColor
-        let placeholder = NSAttributedString(string: NSLocalizedString("PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER",
+        let placeholder = NSAttributedString(string: OWSLocalizedString("PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER",
                                                                        comment: "Placeholder for the new payment or payment request message."),
                                              attributes: [
                                                 .foregroundColor: Theme.secondaryTextAndIconColor
@@ -143,7 +143,7 @@ public class SendPaymentMemoViewController: OWSViewController {
             return
         }
 
-        let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT",
+        let format = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT",
                                        comment: "Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}.")
         memoCharacterCountLabel.text = String(format: format,
                                               OWSFormat.formatInt(strippedMemoMessage.count),

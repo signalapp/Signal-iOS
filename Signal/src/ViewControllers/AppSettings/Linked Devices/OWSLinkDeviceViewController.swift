@@ -89,7 +89,7 @@ extension OWSLinkDeviceViewController {
 
         default:
             let actionSheet = ActionSheetController(
-                title: NSLocalizedString("LINKING_DEVICE_FAILED_TITLE", comment: "Alert Title"),
+                title: OWSLocalizedString("LINKING_DEVICE_FAILED_TITLE", comment: "Alert Title"),
                 message: error.userErrorDescription
             )
             actionSheet.addAction(ActionSheetAction(

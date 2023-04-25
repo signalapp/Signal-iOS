@@ -323,9 +323,9 @@ extension CLVTableDataSource: UITableViewDelegate {
             label.font = UIFont.dynamicTypeBody.semibold()
             label.textColor = Theme.primaryTextColor
             label.text = (section == .pinned
-                            ? NSLocalizedString("PINNED_SECTION_TITLE",
+                            ? OWSLocalizedString("PINNED_SECTION_TITLE",
                                                 comment: "The title for pinned conversation section on the conversation list")
-                            : NSLocalizedString("UNPINNED_SECTION_TITLE",
+                            : OWSLocalizedString("UNPINNED_SECTION_TITLE",
                                                 comment: "The title for unpinned conversation section on the conversation list"))
 
             return container

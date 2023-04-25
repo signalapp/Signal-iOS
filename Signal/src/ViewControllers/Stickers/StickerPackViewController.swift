@@ -148,7 +148,7 @@ public class StickerPackViewController: OWSViewController {
         stickerCollectionView.autoPinWidthToSuperview()
         stickerCollectionView.autoPinEdge(.top, to: .bottom, of: headerStack)
 
-        let installButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
+        let installButton = OWSFlatButton.button(title: OWSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
                                              font: UIFont.dynamicTypeBody.semibold(),
                                              titleColor: Theme.accentBlueColor,
                                              backgroundColor: UIColor.white,
@@ -156,7 +156,7 @@ public class StickerPackViewController: OWSViewController {
                                              selector: #selector(didTapInstall))
         self.installButton = installButton
         installButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "installButton")
-        let uninstallButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
+        let uninstallButton = OWSFlatButton.button(title: OWSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
                                              font: UIFont.dynamicTypeBody.semibold(),
                                              titleColor: Theme.accentBlueColor,
                                              backgroundColor: UIColor.white,
@@ -175,7 +175,7 @@ public class StickerPackViewController: OWSViewController {
         view.addSubview(loadingIndicator)
         loadingIndicator.autoCenterInSuperview()
 
-        loadFailedLabel.text = NSLocalizedString("STICKERS_PACK_VIEW_FAILED_TO_LOAD",
+        loadFailedLabel.text = OWSLocalizedString("STICKERS_PACK_VIEW_FAILED_TO_LOAD",
                                                  comment: "Label indicating that the sticker pack failed to load.")
         loadFailedLabel.font = UIFont.dynamicTypeBody
         loadFailedLabel.textColor = Theme.darkThemePrimaryColor
@@ -242,7 +242,7 @@ public class StickerPackViewController: OWSViewController {
             return
         }
 
-        let defaultTitle = NSLocalizedString("STICKERS_PACK_VIEW_DEFAULT_TITLE", comment: "The default title for the 'sticker pack' view.")
+        let defaultTitle = OWSLocalizedString("STICKERS_PACK_VIEW_DEFAULT_TITLE", comment: "The default title for the 'sticker pack' view.")
         if let title = stickerPack.title?.ows_stripped(), !title.isEmpty {
             titleLabel.text = title.filterForDisplay
         } else {

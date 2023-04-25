@@ -34,7 +34,7 @@ class SetWallpaperViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SET_WALLPAPER_TITLE", comment: "Title for the set wallpaper settings view.")
+        title = OWSLocalizedString("SET_WALLPAPER_TITLE", comment: "Title for the set wallpaper settings view.")
 
         updateTableContents()
     }
@@ -73,7 +73,7 @@ class SetWallpaperViewController: OWSTableViewController2 {
 
         let choosePhotoItem = OWSTableItem.disclosureItem(
             icon: .settingsAllMedia,
-            name: NSLocalizedString("SET_WALLPAPER_CHOOSE_PHOTO",
+            name: OWSLocalizedString("SET_WALLPAPER_CHOOSE_PHOTO",
                                     comment: "Title for the wallpaper choose from photos option"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "choose_photo")
         ) { [weak self] in
@@ -89,7 +89,7 @@ class SetWallpaperViewController: OWSTableViewController2 {
         contents.addSection(photosSection)
 
         let presetsSection = OWSTableSection()
-        presetsSection.headerTitle = NSLocalizedString("SET_WALLPAPER_PRESETS",
+        presetsSection.headerTitle = OWSLocalizedString("SET_WALLPAPER_PRESETS",
                                                        comment: "Title for the wallpaper presets section")
 
         let presetsItem = OWSTableItem { [weak self] in

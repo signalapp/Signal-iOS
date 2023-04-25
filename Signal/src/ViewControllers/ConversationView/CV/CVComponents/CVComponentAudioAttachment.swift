@@ -303,16 +303,16 @@ extension CVComponentAudioAttachment: CVAccessibilityComponent {
         if attachment.isVoiceMessage {
             if let attachmentStream = attachmentStream,
                attachmentStream.audioDurationSeconds() > 0 {
-                let format = NSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO_%d", tableName: "PluralAware",
+                let format = OWSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO_%d", tableName: "PluralAware",
                                                comment: "Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}.")
                 return String.localizedStringWithFormat(format, Int(attachmentStream.audioDurationSeconds()))
             } else {
-                return NSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO",
+                return OWSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO",
                                          comment: "Accessibility label for a voice memo.")
             }
         } else {
             // TODO: We could include information about the attachment format.
-            return NSLocalizedString("ACCESSIBILITY_LABEL_AUDIO",
+            return OWSLocalizedString("ACCESSIBILITY_LABEL_AUDIO",
                                      comment: "Accessibility label for audio.")
         }
     }

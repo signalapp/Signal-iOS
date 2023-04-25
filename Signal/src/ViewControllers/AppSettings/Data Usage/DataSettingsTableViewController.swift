@@ -10,7 +10,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_DATA_TITLE", comment: "The title for the data settings.")
+        title = OWSLocalizedString("SETTINGS_DATA_TITLE", comment: "The title for the data settings.")
 
         updateTableContents()
 
@@ -33,11 +33,11 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         defer { self.contents = contents }
 
         let autoDownloadSection = OWSTableSection()
-        autoDownloadSection.headerTitle = NSLocalizedString(
+        autoDownloadSection.headerTitle = OWSLocalizedString(
             "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER",
             comment: "Header for the 'media auto-download' section in the data settings."
         )
-        autoDownloadSection.footerTitle = NSLocalizedString(
+        autoDownloadSection.footerTitle = OWSLocalizedString(
             "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER",
             comment: "Footer for the 'media auto-download' section in the data settings."
         )
@@ -69,7 +69,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             })
         }
 
-        let resetCopy = NSLocalizedString(
+        let resetCopy = OWSLocalizedString(
             "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET",
             comment: "Label for for the 'reset media auto-download settings' button in the data settings."
         )
@@ -94,16 +94,16 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         contents.addSection(autoDownloadSection)
 
         let sentMediaSection = OWSTableSection()
-        sentMediaSection.headerTitle = NSLocalizedString(
+        sentMediaSection.headerTitle = OWSLocalizedString(
             "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER",
             comment: "Section header for the sent media section in data settings"
         )
-        sentMediaSection.footerTitle = NSLocalizedString(
+        sentMediaSection.footerTitle = OWSLocalizedString(
             "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER",
             comment: "Section footer for the sent media section in data settings"
         )
         sentMediaSection.add(.disclosureItem(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE",
                 comment: "Item title for the sent media quality setting"
             ),
@@ -115,11 +115,11 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         contents.addSection(sentMediaSection)
 
         let callsSection = OWSTableSection()
-        callsSection.headerTitle = NSLocalizedString(
+        callsSection.headerTitle = OWSLocalizedString(
             "SETTINGS_DATA_CALL_SECTION_HEADER",
             comment: "Section header for the call section in data settings"
         )
-        callsSection.footerTitle = NSLocalizedString(
+        callsSection.footerTitle = OWSLocalizedString(
             "SETTINGS_DATA_CALL_SECTION_FOOTER",
             comment: "Section footer for the call section in data settings"
         )
@@ -132,7 +132,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         )
 
         callsSection.add(.disclosureItem(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE",
                 comment: "Item title for the low bandwidth call setting"),
             detailText: currentCallBandwidthPreferenceString ?? "",
@@ -161,7 +161,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
                 }
             })
 
-        vc.title = NSLocalizedString(
+        vc.title = OWSLocalizedString(
             "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE",
             comment: "Item title for the low bandwidth call setting")
         navigationController?.pushViewController(vc, animated: true)

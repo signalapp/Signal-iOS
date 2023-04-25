@@ -152,7 +152,7 @@ struct GalleryDate: Hashable, Comparable, Equatable {
 
     var localizedString: String {
         if isThisMonth {
-            return NSLocalizedString("MEDIA_GALLERY_THIS_MONTH_HEADER", comment: "Section header in media gallery collection view")
+            return OWSLocalizedString("MEDIA_GALLERY_THIS_MONTH_HEADER", comment: "Section header in media gallery collection view")
         } else if isThisYear {
             return type(of: self).thisYearFormatter.string(from: self.interval.start)
         } else {

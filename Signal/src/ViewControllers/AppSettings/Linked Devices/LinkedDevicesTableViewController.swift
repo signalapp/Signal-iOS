@@ -26,7 +26,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager")
+        title = OWSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager")
 
         refreshControl.addTarget(self, action: #selector(refreshDevices), for: .valueChanged)
 
@@ -158,7 +158,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     private func showUpdateFailureAlert(error: Error) {
         AssertIsOnMainThread()
 
-        let alertTitle = NSLocalizedString("DEVICE_LIST_UPDATE_FAILED_TITLE",
+        let alertTitle = OWSLocalizedString("DEVICE_LIST_UPDATE_FAILED_TITLE",
                                            comment: "Alert title that can occur when viewing device manager.")
         let alert = ActionSheetController(title: alertTitle,
                                           message: error.userErrorDescription)
@@ -197,12 +197,12 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let addDeviceSection = OWSTableSection()
-        addDeviceSection.footerTitle = NSLocalizedString(
+        addDeviceSection.footerTitle = OWSLocalizedString(
             "LINK_NEW_DEVICE_SUBTITLE",
             comment: "Subheading for 'Link New Device' navigation"
         )
         addDeviceSection.add(.disclosureItem(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "LINK_NEW_DEVICE_TITLE",
                 comment: "Navigation title when scanning QR code to add new device."
             ),
@@ -268,15 +268,15 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     private func showUnlinkDeviceConfirmAlert(displayableDevice: DisplayableDevice) {
         AssertIsOnMainThread()
 
-        let titleFormat = NSLocalizedString("UNLINK_CONFIRMATION_ALERT_TITLE",
+        let titleFormat = OWSLocalizedString("UNLINK_CONFIRMATION_ALERT_TITLE",
                                                         comment: "Alert title for confirming device deletion")
         let title = String(format: titleFormat, displayableDevice.displayName)
-        let message = NSLocalizedString("UNLINK_CONFIRMATION_ALERT_BODY",
+        let message = OWSLocalizedString("UNLINK_CONFIRMATION_ALERT_BODY",
                                                     comment: "Alert message to confirm unlinking a device")
         let alert = ActionSheetController(title: title, message: message)
         alert.addAction(
             ActionSheetAction(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "UNLINK_ACTION",
                     comment: "button title for unlinking a device"
                 ),
@@ -312,7 +312,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     private func showUnlinkFailedAlert(device: OWSDevice, error: Error) {
         AssertIsOnMainThread()
 
-        let title = NSLocalizedString("UNLINKING_FAILED_ALERT_TITLE",
+        let title = OWSLocalizedString("UNLINKING_FAILED_ALERT_TITLE",
                                       comment: "Alert title when unlinking device fails")
         let alert = ActionSheetController(title: title, message: error.userErrorDescription)
         alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
@@ -375,7 +375,7 @@ extension LinkedDevicesTableViewController: OWSLinkDeviceViewControllerDelegate 
                                                        userInfo: nil,
                                                        repeats: true)
 
-        let progressText = NSLocalizedString("WAITING_TO_COMPLETE_DEVICE_LINK_TEXT",
+        let progressText = OWSLocalizedString("WAITING_TO_COMPLETE_DEVICE_LINK_TEXT",
                                              comment: "Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop")
         let progressTitle = progressText.asAttributedString
 
@@ -472,7 +472,7 @@ private class DeviceTableViewCell: UITableViewCell {
             nameLabel.text = displayableDevice.displayName
         }
 
-        let linkedFormatString = NSLocalizedString("DEVICE_LINKED_AT_LABEL", comment: "{{Short Date}} when device was linked.")
+        let linkedFormatString = OWSLocalizedString("DEVICE_LINKED_AT_LABEL", comment: "{{Short Date}} when device was linked.")
         linkedLabel.text = String(
             format: linkedFormatString,
             DateUtil.dateFormatter().string(
@@ -487,7 +487,7 @@ private class DeviceTableViewCell: UITableViewCell {
             displayableDevice.device.createdAt,
             displayableDevice.device.lastSeenAt
         )
-        let lastSeenFormatString = NSLocalizedString(
+        let lastSeenFormatString = OWSLocalizedString(
             "DEVICE_LAST_ACTIVE_AT_LABEL",
             comment: "{{Short Date}} when device last communicated with Signal Server."
         )

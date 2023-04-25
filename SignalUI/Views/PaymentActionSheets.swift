@@ -8,10 +8,10 @@ import SignalMessaging
 
 public class PaymentActionSheets {
     public static func showBiometryAuthFailedActionSheet(_ handler: ActionSheetAction.Handler? = nil) {
-        let title = NSLocalizedString(
+        let title = OWSLocalizedString(
             "PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE",
             comment: "Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level.")
-        let message = NSLocalizedString(
+        let message = OWSLocalizedString(
             "PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE",
             comment: "Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level.")
 

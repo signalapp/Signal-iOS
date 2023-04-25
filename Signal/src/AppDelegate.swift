@@ -282,11 +282,11 @@ extension AppDelegate {
                 from: viewController,
                 launchStartedAt: launchStartedAt,
                 supportTag: "CorruptRegistrationState",
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE",
                     comment: "Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status."
                 ),
-                message: NSLocalizedString(
+                message: OWSLocalizedString(
                     "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE",
                     comment: "Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status."
                 ),
@@ -399,7 +399,7 @@ extension AppDelegate {
 
         let notificationContent = UNMutableNotificationContent()
         notificationContent.body = String(
-            format: NSLocalizedString(
+            format: OWSLocalizedString(
                 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
                 comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')"
             ),
@@ -532,44 +532,44 @@ extension AppDelegate {
             return
 
         case .databaseUnrecoverablyCorrupted:
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
                 comment: "Error indicating that the app could not launch because the database could not be loaded."
             )
-            message = NSLocalizedString(
+            message = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
                 comment: "Default message for the 'app launch failed' alert."
             )
             actions = [.submitDebugLogsWithDatabaseIntegrityCheckAndCrash]
 
         case .unknownDatabaseVersion:
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE",
                 comment: "Error indicating that the app could not launch without reverting unknown database migrations."
             )
-            message = NSLocalizedString(
+            message = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE",
                 comment: "Error indicating that the app could not launch without reverting unknown database migrations."
             )
             actions = [.submitDebugLogsAndCrash]
 
         case .couldNotRestoreTransferredData:
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE",
                 comment: "Error indicating that the app could not restore transferred data."
             )
-            message = NSLocalizedString(
+            message = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE",
                 comment: "Error indicating that the app could not restore transferred data."
             )
             actions = [.submitDebugLogsAndCrash]
 
         case .lastAppLaunchCrashed:
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE",
                 comment: "Error indicating that the app crashed during the previous launch."
             )
-            message = NSLocalizedString(
+            message = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE",
                 comment: "Error indicating that the app crashed during the previous launch."
             )
@@ -577,11 +577,11 @@ extension AppDelegate {
 
         case .lowStorageSpaceAvailable:
             shouldKillAppWhenBackgrounded = true
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE",
                 comment: "Error title indicating that the app crashed because there was low storage space available on the device."
             )
-            message = NSLocalizedString(
+            message = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE",
                 comment: "Error description indicating that the app crashed because there was low storage space available on the device."
             )
@@ -673,7 +673,7 @@ extension AppDelegate {
         }
 
         func addSubmitDebugLogsAction(handler: @escaping () -> Void) {
-            let actionTitle = NSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: "")
+            let actionTitle = OWSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: "")
             actionSheet.addAction(.init(title: actionTitle) { _ in
                 handler()
             })
@@ -710,7 +710,7 @@ extension AppDelegate {
                 }
             case .launchApp(let window):
                 actionSheet.addAction(.init(
-                    title: NSLocalizedString(
+                    title: OWSLocalizedString(
                         "APP_LAUNCH_FAILURE_CONTINUE",
                         comment: "Button to try launching the app even though the last launch failed"
                     ),
@@ -825,7 +825,7 @@ extension AppDelegate {
         guard isRegisteredAndReady else { return [] }
         return [.init(
             type: "\(Bundle.main.bundleIdPrefix).quickCompose",
-            localizedTitle: NSLocalizedString(
+            localizedTitle: OWSLocalizedString(
                 "APPLICATION_SHORTCUT_NEW_MESSAGE",
                 comment: "On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings."
             ),

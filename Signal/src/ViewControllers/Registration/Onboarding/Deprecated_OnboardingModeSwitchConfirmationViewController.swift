@@ -23,25 +23,25 @@ class Deprecated_OnboardingModeSwitchConfirmationViewController: Deprecated_Onbo
 
         switch onboardingController.onboardingMode {
         case .registering:
-            titleText = NSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_REGISTERING",
+            titleText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_REGISTERING",
                                           comment: "header text indicating to the user they're switching from registering to linking flow")
-            explanationText = NSLocalizedString("ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING",
+            explanationText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING",
                                                 comment: "explanation to the user they're switching from registering to linking flow")
 
-            nextButtonText = NSLocalizedString("ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING",
+            nextButtonText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING",
                                                comment: "button indicating that the user will link their phone")
 
-            warningText = NSLocalizedString("ONBOARDING_MODE_SWITCH_WARNING_REGISTERING",
+            warningText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_WARNING_REGISTERING",
                                             comment: "warning to the user that linking a phone is not recommended")
             image = nil
         case .provisioning:
-            titleText = NSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING",
+            titleText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING",
                                           comment: "header text indicating to the user they're switching from linking to registering flow")
-            explanationText = NSLocalizedString("ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING",
+            explanationText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING",
                                                 comment: "explanation to the user they're switching from linking to registering flow")
-            nextButtonText = NSLocalizedString("ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING",
+            nextButtonText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING",
                                                comment: "button indicating that the user will register their ipad")
-            warningText = NSLocalizedString("ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING",
+            warningText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING",
                                             comment: "warning to the user that registering an ipad is not recommended")
             image = #imageLiteral(resourceName: "ipad-primary")
         }

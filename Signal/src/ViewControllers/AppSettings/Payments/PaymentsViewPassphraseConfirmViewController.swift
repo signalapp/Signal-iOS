@@ -90,7 +90,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
                                   comment: "Title for the 'view payments passphrase' view of the app settings.")
 
         createViews()
@@ -143,7 +143,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
             textfield.accessibilityIdentifier = "payments.passphrase.confirm.\(wordIndex)"
             textfield.addTarget(self, action: #selector(textfieldDidChange), for: .editingChanged)
 
-            let placeholderFormat = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT",
+            let placeholderFormat = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT",
                                                       comment: "Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}.")
             textfield.placeholder = String(format: placeholderFormat, OWSFormat.formatInt(wordIndex + 1))
         }
@@ -153,7 +153,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
 
     private func buildBottomView() {
         let confirmButton = OWSFlatButton.insetButton(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM",
                 comment: "Label for 'confirm' button in the 'view payments passphrase' view of the app settings."),
             font: UIFont.dynamicTypeBody.semibold(),
@@ -167,7 +167,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         confirmButton.cornerRadius = 14
 
         let backButton = OWSFlatButton.insetButton(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN",
                 comment: "Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings."),
             font: UIFont.dynamicTypeBody.semibold(),
@@ -268,13 +268,13 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
 
     private func buildConfirmHeader() -> UIView {
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE",
+        titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE",
                                             comment: "Title for the 'confirm words' step of the 'view payments passphrase' views.")
         titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
-        let explanationForm = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT",
+        let explanationForm = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT",
                                                 comment: "Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}.")
         let explanation = String(format: explanationForm,
                                  OWSFormat.formatInt(wordIndex0 + 1),
@@ -312,10 +312,10 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
 
             let errorMessage: String
             if areAnyWordsCorrect {
-                errorMessage = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD",
+                errorMessage = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD",
                                                  comment: "Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views.")
             } else {
-                errorMessage = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS",
+                errorMessage = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS",
                                                  comment: "Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views.")
             }
             OWSActionSheets.showErrorAlert(message: errorMessage)

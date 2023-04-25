@@ -37,7 +37,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         contextButton.showsContextMenuAsPrimaryAction = true
         contextButton.contextMenu = .init([
             .init(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "STORIES_GO_TO_CHAT_ACTION",
                     comment: "Context menu action to open the chat associated with the selected story"
                 ),
@@ -68,11 +68,11 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         defer { self.setContents(contents, shouldReload: shouldReload) }
 
         let viewersSection = OWSTableSection()
-        viewersSection.headerTitle = NSLocalizedString(
+        viewersSection.headerTitle = OWSLocalizedString(
             "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER",
             comment: "Section header for the 'viewers' section on the 'group story settings' view"
         )
-        let format = NSLocalizedString(
+        let format = OWSLocalizedString(
             "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT",
             comment: "Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }}"
         )
@@ -155,7 +155,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         let deleteSection = OWSTableSection()
         contents.addSection(deleteSection)
         deleteSection.add(.actionItem(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "GROUP_STORY_SETTINGS_DELETE_BUTTON",
                 comment: "Button to delete the story on the 'group story settings' view"
             ),
@@ -167,7 +167,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
     }
 
     private func deleteStoryWithConfirmation() {
-        let format = NSLocalizedString(
+        let format = OWSLocalizedString(
             "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT",
             comment: "Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }}"
         )
@@ -176,7 +176,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(.init(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "GROUP_STORY_SETTINGS_DELETE_BUTTON",
                 comment: "Button to delete the story on the 'group story settings' view"
             ),

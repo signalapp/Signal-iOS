@@ -36,17 +36,17 @@ public final class DonationReceipt: NSObject, SDSCodableModel, Decodable {
     public var localizedName: String {
         switch receiptType {
         case .boost:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "DONATION_RECEIPT_ONE_TIME",
                 comment: "Title for one-time donation receipts"
             )
         case .subscription:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "DONATION_RECEIPT_RECURRING",
                 comment: "Title for recurring donation receipts"
             )
         case .gift:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND",
                 comment: "Title for receipts for donations given on a friend's behalf"
             )

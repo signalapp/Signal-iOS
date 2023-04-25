@@ -277,12 +277,12 @@ class StoryGroupReplyCell: UITableViewCell {
     func configureBodyAndFooter(for item: StoryGroupReplyViewItem) {
         guard let messageText: NSAttributedString = {
             if item.wasRemotelyDeleted {
-                return NSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
+                return OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
                     with: .font(UIFont.dynamicTypeBodyClamped.italic()),
                     .color(.ows_gray05)
                 )
             } else if cellType.isReaction {
-                return NSLocalizedString("STORY_REPLY_REACTION", comment: "Text indicating a story has been reacted to").styled(
+                return OWSLocalizedString("STORY_REPLY_REACTION", comment: "Text indicating a story has been reacted to").styled(
                     with: .font(.dynamicTypeBodyClamped),
                     .color(.ows_gray05),
                     .alignment(.natural)
@@ -327,7 +327,7 @@ class StoryGroupReplyCell: UITableViewCell {
                 renderTimestamp = false
                 maxMessageWidth -= 44
                 sendFailureIcon.isHiddenInStackView = false
-                footerText.append(NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed"))
+                footerText.append(OWSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed"))
             }
         }
 

@@ -39,9 +39,9 @@ public extension ConversationViewController {
 
         if thread.isBlockedByAnnouncementOnly {
             OWSActionSheets.showActionSheet(
-                title: NSLocalizedString("GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE",
+                title: OWSLocalizedString("GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE",
                                            comment: "Title for error alert indicating that only group administrators can start calls in announcement-only groups."),
-                message: NSLocalizedString("GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE",
+                message: OWSLocalizedString("GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE",
                                          comment: "Message for error alert indicating that only group administrators can start calls in announcement-only groups.")
             )
             return

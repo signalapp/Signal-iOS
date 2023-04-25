@@ -162,13 +162,13 @@ extension ConversationViewController {
     public func showUnknownThreadWarningAlert() {
         // TODO: Finalize this copy.
         let message = (thread.isGroupThread
-                        ? NSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE",
+                        ? OWSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE",
                                             comment: "Message for UI warning about an unknown group thread.")
-                        : NSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE",
+                        : OWSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE",
                                             comment: "Message for UI  warning about an unknown contact thread."))
         let actionSheet = ActionSheetController(message: message)
         actionSheet.addAction(ActionSheetAction(
-            title: NSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE",
+            title: OWSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE",
                                      comment: "Label for button to learn more about message requests."),
             style: .default,
             handler: { _ in
@@ -186,12 +186,12 @@ extension ConversationViewController {
         let senderName = databaseStorage.read { transaction in
             Self.contactsManager.displayName(for: senderAddress, transaction: transaction)
         }
-        let alertTitle = NSLocalizedString("ALERT_DELIVERY_ISSUE_TITLE", comment: "Title for delivery issue sheet")
+        let alertTitle = OWSLocalizedString("ALERT_DELIVERY_ISSUE_TITLE", comment: "Title for delivery issue sheet")
         let alertMessageFormat: String
         if isKnownThread {
-            alertMessageFormat = NSLocalizedString("ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT", comment: "Format string for delivery issue sheet message. Embeds {{ sender name }}.")
+            alertMessageFormat = OWSLocalizedString("ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT", comment: "Format string for delivery issue sheet message. Embeds {{ sender name }}.")
         } else {
-            alertMessageFormat = NSLocalizedString("ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT", comment: "Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}.")
+            alertMessageFormat = OWSLocalizedString("ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT", comment: "Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}.")
         }
 
         let alertMessage = String(format: alertMessageFormat, senderName)

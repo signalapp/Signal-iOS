@@ -107,7 +107,7 @@ class GroupCallViewController: UIViewController {
     class func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) -> Bool {
         guard tsAccountManager.isOnboarded else {
             Logger.warn("aborting due to user not being onboarded.")
-            OWSActionSheets.showActionSheet(title: NSLocalizedString(
+            OWSActionSheets.showActionSheet(title: OWSLocalizedString(
                 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
                 comment: "alert body shown when trying to use features in the app before completing registration-related setup."
             ))
@@ -228,7 +228,7 @@ class GroupCallViewController: UIViewController {
 
         let label = UILabel()
         label.font = .dynamicTypeCaption1
-        label.text = NSLocalizedString("CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
+        label.text = OWSLocalizedString("CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
                                        comment: "Indicates to the user that their camera is currently off.")
         label.textAlignment = .center
         label.textColor = Theme.darkThemePrimaryColor
@@ -432,11 +432,11 @@ class GroupCallViewController: UIViewController {
 
         swipeToastView.alpha = 1.0 - (scrollView.contentOffset.y / view.height)
         swipeToastView.text = isAnyRemoteDeviceScreenSharing
-            ? NSLocalizedString(
+            ? OWSLocalizedString(
                 "GROUP_CALL_SCREEN_SHARE_TOAST",
                 comment: "Toast view text informing user about swiping to screen share"
             )
-            : NSLocalizedString(
+            : OWSLocalizedString(
                 "GROUP_CALL_SPEAKER_VIEW_TOAST",
                 comment: "Toast view text informing user about swiping to speaker view"
             )
@@ -734,10 +734,10 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             existingSheet.dismiss(animated: false)
         }
 
-        let startCallString = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
-        let joinCallString = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
-        let continueCallString = NSLocalizedString("GROUP_CALL_CONTINUE_BUTTON", comment: "Button to continue an ongoing group call")
-        let leaveCallString = NSLocalizedString("GROUP_CALL_LEAVE_BUTTON", comment: "Button to leave a group call")
+        let startCallString = OWSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
+        let joinCallString = OWSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
+        let continueCallString = OWSLocalizedString("GROUP_CALL_CONTINUE_BUTTON", comment: "Button to continue an ongoing group call")
+        let leaveCallString = OWSLocalizedString("GROUP_CALL_LEAVE_BUTTON", comment: "Button to leave a group call")
         let cancelString = CommonStrings.cancelButton
 
         let approveText: String
@@ -811,19 +811,19 @@ extension GroupCallViewController: CallObserver {
 
         if reason == .hasMaxDevices {
             if let maxDevices = groupCall.maxDevices {
-                let formatString = NSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
+                let formatString = OWSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
                                                      comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
                 )
                 title = String.localizedStringWithFormat(formatString, maxDevices)
             } else {
-                title = NSLocalizedString(
+                title = OWSLocalizedString(
                     "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
                 )
             }
         } else {
             owsFailDebug("Group call ended with reason \(reason)")
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "GROUP_CALL_UNEXPECTEDLY_ENDED",
                 comment: "An error displayed to the user when the group call unexpectedly ends."
             )
@@ -896,7 +896,7 @@ extension GroupCallViewController: CallControlsDelegate {
             if call.ringRestrictions.intersects([.notApplicable, .callInProgress]) {
                 owsFailDebug("should not show the ring button at all")
             } else if call.ringRestrictions.contains(.groupTooLarge) {
-                let toast = ToastController(text: NSLocalizedString("GROUP_CALL_TOO_LARGE_TO_RING", comment: "Text displayed when trying to turn on ringing when calling a large group."))
+                let toast = ToastController(text: OWSLocalizedString("GROUP_CALL_TOO_LARGE_TO_RING", comment: "Text displayed when trying to turn on ringing when calling a large group."))
                 toast.presentToastView(from: .top, of: view, inset: view.safeAreaInsets.top + 8)
             } else {
                 owsAssertDebug(call.ringRestrictions.isEmpty, "unknown ring restriction")
@@ -913,12 +913,12 @@ extension GroupCallViewController: CallControlsDelegate {
         guard !call.groupCall.isFull else {
             let text: String
             if let maxDevices = call.groupCall.maxDevices {
-                let formatString = NSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
+                let formatString = OWSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
                                                      comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
                 )
                 text = String.localizedStringWithFormat(formatString, maxDevices)
             } else {
-                text = NSLocalizedString(
+                text = OWSLocalizedString(
                     "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
                 )
@@ -1011,22 +1011,22 @@ extension GroupCallViewController: GroupCallMemberViewDelegate {
 
         switch error {
         case let .blocked(address):
-            message = NSLocalizedString(
+            message = OWSLocalizedString(
                 "GROUP_CALL_BLOCKED_ALERT_MESSAGE",
                 comment: "Message body for alert explaining that a group call participant is blocked")
 
-            let titleFormat = NSLocalizedString(
+            let titleFormat = OWSLocalizedString(
                 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT",
                 comment: "Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }}")
             let displayName = contactsManager.displayName(for: address)
             title = String(format: titleFormat, displayName)
 
         case let .noMediaKeys(address):
-            message = NSLocalizedString(
+            message = OWSLocalizedString(
                 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE",
                 comment: "Message body for alert explaining that a group call participant cannot be displayed because of missing keys")
 
-            let titleFormat = NSLocalizedString(
+            let titleFormat = OWSLocalizedString(
                 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT",
                 comment: "Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }}")
             let displayName = contactsManager.displayName(for: address)

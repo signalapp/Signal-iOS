@@ -188,7 +188,7 @@ class CropScaleImageViewController: OWSViewController {
         titleLabel.textColor = UIColor.white
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont.semiboldFont(ofSize: ScaleFromIPhone5(16))
-        titleLabel.text = NSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",
+        titleLabel.text = OWSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",
                                             comment: "Title for the 'crop/scale image' dialog.")
         contentView.addSubview(titleLabel)
         titleLabel.autoPinWidthToSuperview()

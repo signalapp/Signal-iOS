@@ -66,7 +66,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
     }
 
     private static let moreTextPrefix = "… "
-    private static let moreText = NSLocalizedString(
+    private static let moreText = OWSLocalizedString(
         "GROUP_DESCRIPTION_MORE",
         comment: "Text indication the user can tap to view the full group description"
     )

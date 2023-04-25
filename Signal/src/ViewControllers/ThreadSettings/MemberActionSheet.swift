@@ -101,7 +101,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         guard !threadViewModel.isBlocked else {
             section.add(.actionItem(
                 icon: .settingsBlock,
-                name: NSLocalizedString(
+                name: OWSLocalizedString(
                     "BLOCK_LIST_UNBLOCK_BUTTON",
                     comment: "Button label for the 'unblock' button"
                 ),
@@ -115,7 +115,7 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         section.add(.actionItem(
             icon: .settingsBlock,
-            name: NSLocalizedString(
+            name: OWSLocalizedString(
                 "BLOCK_LIST_BLOCK_BUTTON",
                 comment: "Button label for the 'block' button"
             ),
@@ -136,7 +136,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             if groupViewHelper.canRemoveFromGroup(address: address) {
                 section.add(.actionItem(
                     icon: .settingsViewRemoveFromGroup,
-                    name: NSLocalizedString(
+                    name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
                         comment: "Label for 'remove from group' button in conversation settings view."
                     ),
@@ -152,7 +152,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             if groupViewHelper.memberActionSheetCanMakeGroupAdmin(address: address) {
                 section.add(.actionItem(
                     icon: .settingsViewMakeGroupAdmin,
-                    name: NSLocalizedString(
+                    name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON",
                         comment: "Label for 'make group admin' button in conversation settings view."
                     ),
@@ -168,7 +168,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             if groupViewHelper.memberActionSheetCanRevokeGroupAdmin(address: address) {
                 section.add(.actionItem(
                     icon: .settingsViewRevokeGroupAdmin,
-                    name: NSLocalizedString(
+                    name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON",
                         comment: "Label for 'revoke group admin' button in conversation settings view."
                     ),
@@ -185,7 +185,7 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         section.add(.actionItem(
             icon: .settingsAddToGroup,
-            name: NSLocalizedString(
+            name: OWSLocalizedString(
                 "ADD_TO_GROUP",
                 comment: "Label for button or row which allows users to add to another group."
             ),
@@ -204,7 +204,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         if isSystemContact {
             section.add(.actionItem(
                 icon: .settingsUserInContacts,
-                name: NSLocalizedString(
+                name: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
                     comment: "Indicates that user is in the system contacts list."
                 ),
@@ -216,7 +216,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         } else {
             section.add(.actionItem(
                 icon: .settingsAddToContacts,
-                name: NSLocalizedString(
+                name: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
                     comment: "button in conversation settings view."
                 ),
@@ -229,7 +229,7 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         section.add(.actionItem(
             icon: .settingsViewSafetyNumber,
-            name: NSLocalizedString(
+            name: OWSLocalizedString(
                 "VERIFY_PRIVACY",
                 comment: "Label for button or row which allows users to verify the safety number of another user."
             ),

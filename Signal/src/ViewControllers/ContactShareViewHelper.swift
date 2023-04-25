@@ -99,12 +99,12 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
                                                                      comment: "Label for 'new contact' button in conversation settings view."),
                                             style: .default) { _ in
                                                 self.didPressCreateNewContact(contactShare: contactShare, fromViewController: fromViewController)
         })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
                                                                      comment: "Label for 'new contact' button in conversation settings view."),
                                             style: .default) { _ in
                                                 self.didPressAddToExistingContact(contactShare: contactShare, fromViewController: fromViewController)

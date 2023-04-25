@@ -210,12 +210,12 @@ public class SendPaymentViewController: OWSViewController {
             hasSentMessagesToRecipient = 0 < interactionFinder.outgoingMessageCount(transaction: transaction)
         }
         guard hasProfileKeyForRecipient else {
-            let title = NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE",
+            let title = OWSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE",
                                           comment: "Title for error alert indicating that a given user cannot receive payments because of a pending message request.")
             let message = (hasSentMessagesToRecipient
-                            ? NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES",
+                            ? OWSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES",
                             comment: "Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to.")
-                            : NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES",
+                            : OWSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES",
                             comment: "Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to."))
 
             let actionSheet = ActionSheetController(title: title, message: message)
@@ -328,9 +328,9 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     private static func showRecipientNotEnabledAlert() {
-        OWSActionSheets.showActionSheet(title: NSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE",
+        OWSActionSheets.showActionSheet(title: OWSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE",
                                                                  comment: "Title for error alert indicating that a given user cannot receive payments because they have not enabled payments."),
-                                        message: NSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE",
+                                        message: OWSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE",
                                                                    comment: "Message for error alert indicating that a given user cannot receive payments because they have not enabled payments."))
     }
 
@@ -470,7 +470,7 @@ public class SendPaymentViewController: OWSViewController {
             memoView = hasMemoView
         } else {
             let addMemoLabel = UILabel()
-            addMemoLabel.text = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
+            addMemoLabel.text = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
                                                   comment: "Label for the 'add memo' ui in the 'send payment' UI.")
             addMemoLabel.font = .dynamicTypeBodyClamped
             addMemoLabel.textColor = Theme.accentBlueColor
@@ -692,11 +692,11 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     private func buildAmountButtons() -> UIView {
-        let requestButton = buildBottomButton(title: NSLocalizedString("PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON",
+        let requestButton = buildBottomButton(title: OWSLocalizedString("PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON",
                                                                        comment: "Label for the 'new payment request' button."),
                                               target: self,
                                               selector: #selector(didTapRequestButton))
-        let payButton = buildBottomButton(title: NSLocalizedString("PAYMENTS_NEW_PAYMENT_PAY_BUTTON",
+        let payButton = buildBottomButton(title: OWSLocalizedString("PAYMENTS_NEW_PAYMENT_PAY_BUTTON",
                                                                    comment: "Label for the 'new payment' button."),
                                           target: self,
                                           selector: #selector(didTapPayButton))
@@ -746,7 +746,7 @@ public class SendPaymentViewController: OWSViewController {
         func hideConversionLabelOrShowWarning() {
             let shouldHaveValidValue = (!isZero && currentCurrencyConversion != nil)
             smallAmountLabel.text = (shouldHaveValidValue
-                                        ? NSLocalizedString("PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
+                                        ? OWSLocalizedString("PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
                                                             comment: "Label for the 'invalid amount' button.")
                                         : " ")
             smallAmountLabel.textColor = UIColor.ows_accentRed
@@ -805,7 +805,7 @@ public class SendPaymentViewController: OWSViewController {
             return formattedAmount
         }
         let formattedFreshness = DateUtil.formatDateAsTime(currencyConversion.conversionDate)
-        let conversionFormat = NSLocalizedString("PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT",
+        let conversionFormat = OWSLocalizedString("PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT",
                                                  comment: "Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}.")
         return String(format: conversionFormat, formattedAmount, formattedFreshness)
     }
@@ -819,7 +819,7 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     private func showInvalidAmountAlert() {
-        let errorMessage = NSLocalizedString("PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
+        let errorMessage = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
                                              comment: "Label for the 'invalid amount' button.")
         OWSActionSheets.showErrorAlert(message: errorMessage)
     }
@@ -981,7 +981,7 @@ public class SendPaymentViewController: OWSViewController {
         }
         let totalAmount = paymentAmount.plus(estimatedFeeAmount)
         guard let paymentBalance = paymentsSwift.currentPaymentBalance else {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE",
                                                                       comment: "Error message indicating that a payment could not be sent because the current balance is unavailable."))
             return
         }
@@ -995,21 +995,21 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     private func showInsufficientBalanceUI(paymentBalance: PaymentBalance) {
-        let messageFormat = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT",
+        let messageFormat = OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT",
                                               comment: "Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}.")
         let message = String(format: messageFormat, PaymentsFormat.format(paymentAmount: paymentBalance.amount,
                                                                           isShortForm: false,
                                                                           withCurrencyCode: true,
                                                                           withSpace: true))
 
-        let actionSheet = ActionSheetController(title: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE",
+        let actionSheet = ActionSheetController(title: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE",
                                                                          comment: "Title for the 'insufficient balance for payment' alert."),
                                                 message: message)
 
         // There's no point doing a "transfer in" transaction in order to
         // enable a "transfer out".
         if mode != .fromTransferOutFlow {
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY",
                                                                              comment: "Label for the 'add money' button in the 'send payment' UI."),
                                                     accessibilityIdentifier: "payments.settings.add_money",
                                                     style: .default) { [weak self] _ in
@@ -1080,14 +1080,14 @@ public class SendPaymentViewController: OWSViewController {
             owsFailDebug("could not identify frontmostViewController")
             return
         }
-        let title = NSLocalizedString("SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE",
+        let title = OWSLocalizedString("SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE",
                                       comment: "Title for the 'payments not enabled' alert.")
-        let message = NSLocalizedString("SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE",
+        let message = OWSLocalizedString("SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE",
                                         comment: "Message for the 'payments not enabled' alert.")
         let actionSheet = ActionSheetController(title: title,
                                                 message: message)
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SETTINGS_PAYMENTS_ENABLE_ACTION",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SETTINGS_PAYMENTS_ENABLE_ACTION",
                                                                          comment: "Label for the 'enable payments' button in the 'payments not enabled' alert."),
                                                 accessibilityIdentifier: "payments.send.enable",
                                                 style: .default) { _ in
@@ -1104,9 +1104,9 @@ public class SendPaymentViewController: OWSViewController {
             owsFailDebug("could not identify frontmostViewController")
             return
         }
-        let title = NSLocalizedString("SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE",
+        let title = OWSLocalizedString("SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE",
                                       comment: "Title for the 'payments not registered' alert.")
-        let message = NSLocalizedString("SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE",
+        let message = OWSLocalizedString("SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE",
                                         comment: "Message for the 'payments not registered' alert.")
         let actionSheet = ActionSheetController(title: title, message: message)
 

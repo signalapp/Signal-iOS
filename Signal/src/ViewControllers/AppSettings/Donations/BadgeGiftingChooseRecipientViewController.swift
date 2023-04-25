@@ -27,7 +27,7 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString(
+        title = OWSLocalizedString(
             "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE",
             comment: "Title on the screen where you choose who you're going to donate on behalf of."
         )

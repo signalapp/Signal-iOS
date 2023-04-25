@@ -38,7 +38,7 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("CURRENCY_PICKER_VIEW_TITLE",
+        title = OWSLocalizedString("CURRENCY_PICKER_VIEW_TITLE",
                                   comment: "Title for the 'currency picker' view in the app settings.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
@@ -82,7 +82,7 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
 
         let supportedSection = OWSTableSection()
         supportedSection.separatorInsetLeading = NSNumber(value: Double(OWSTableViewController2.cellHInnerMargin))
-        supportedSection.headerTitle = NSLocalizedString("SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES",
+        supportedSection.headerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES",
                                                          comment: "Label for 'all currencies' section in the payment currency settings.")
         if supportedCurrencyInfos.isEmpty {
             supportedSection.add(OWSTableItem(customCellBlock: {

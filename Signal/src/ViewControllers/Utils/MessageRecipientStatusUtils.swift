@@ -69,24 +69,24 @@ public class MessageRecipientStatusUtils: NSObject {
 
         switch recipientState.state {
         case .failed:
-            let shortStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment: "status message for failed messages")
-            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages")
+            let shortStatusMessage = OWSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment: "status message for failed messages")
+            let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages")
             return (status: .failed, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
         case .pending:
-            let shortStatusMessage = NSLocalizedString("MESSAGE_STATUS_PENDING_SHORT", comment: "Label indicating that a message send was paused.")
-            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_PENDING", comment: "Label indicating that a message send was paused.")
+            let shortStatusMessage = OWSLocalizedString("MESSAGE_STATUS_PENDING_SHORT", comment: "Label indicating that a message send was paused.")
+            let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_PENDING", comment: "Label indicating that a message send was paused.")
             return (status: .pending, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
         case .sending:
             if outgoingMessage.hasAttachments() {
                 assert(outgoingMessage.messageState == .sending)
 
-                let statusMessage = NSLocalizedString("MESSAGE_STATUS_UPLOADING",
+                let statusMessage = OWSLocalizedString("MESSAGE_STATUS_UPLOADING",
                                                       comment: "status message while attachment is uploading")
                 return (status: .uploading, shortStatusMessage: statusMessage, longStatusMessage: statusMessage)
             } else {
                 assert(outgoingMessage.messageState == .sending)
 
-                let statusMessage = NSLocalizedString("MESSAGE_STATUS_SENDING",
+                let statusMessage = OWSLocalizedString("MESSAGE_STATUS_SENDING",
                                                       comment: "message status while message is sending.")
                 return (status: .sending, shortStatusMessage: statusMessage, longStatusMessage: statusMessage)
             }
@@ -94,30 +94,30 @@ public class MessageRecipientStatusUtils: NSObject {
             if let viewedTimestamp = recipientState.viewedTimestamp {
                 let timestampString = DateUtil.formatPastTimestampRelativeToNow(viewedTimestamp.uint64Value)
                 let shortStatusMessage = timestampString
-                let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_VIEWED", comment: "status message for viewed messages") + " " + timestampString
+                let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_VIEWED", comment: "status message for viewed messages") + " " + timestampString
                 return (status: .viewed, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
             }
             if let readTimestamp = recipientState.readTimestamp {
                 let timestampString = DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value)
                 let shortStatusMessage = timestampString
-                let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages") + " " + timestampString
+                let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages") + " " + timestampString
                 return (status: .read, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
             }
             if let deliveryTimestamp = recipientState.deliveryTimestamp {
                 let timestampString = DateUtil.formatPastTimestampRelativeToNow(deliveryTimestamp.uint64Value)
                 let shortStatusMessage = timestampString
-                let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_DELIVERED",
+                let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                                           comment: "message status for message delivered to their recipient.") + " " + timestampString
                 return (status: .delivered, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
             }
 
             let timestampString = DateUtil.formatPastTimestampRelativeToNow(outgoingMessage.timestamp)
             let shortStatusMessage = timestampString
-            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_SENT",
+            let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_SENT",
                                                       comment: "status message for sent messages") + " " + timestampString
             return (status: .sent, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
         case .skipped:
-            let statusMessage = NSLocalizedString("MESSAGE_STATUS_RECIPIENT_SKIPPED",
+            let statusMessage = OWSLocalizedString("MESSAGE_STATUS_RECIPIENT_SKIPPED",
                                                   comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account.")
             return (status: .skipped, shortStatusMessage: statusMessage, longStatusMessage: statusMessage)
         }
@@ -129,33 +129,33 @@ public class MessageRecipientStatusUtils: NSObject {
         switch outgoingMessage.messageState {
         case .failed:
             // Use the "long" version of this message here.
-            return (.failed, NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages"))
+            return (.failed, OWSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages"))
         case .pending:
-            return (.pending, NSLocalizedString("MESSAGE_STATUS_PENDING", comment: "Label indicating that a message send was paused."))
+            return (.pending, OWSLocalizedString("MESSAGE_STATUS_PENDING", comment: "Label indicating that a message send was paused."))
         case .sending:
             if outgoingMessage.hasAttachments() {
-                return (.uploading, NSLocalizedString("MESSAGE_STATUS_UPLOADING",
+                return (.uploading, OWSLocalizedString("MESSAGE_STATUS_UPLOADING",
                                          comment: "status message while attachment is uploading"))
             } else {
-                return (.sending, NSLocalizedString("MESSAGE_STATUS_SENDING",
+                return (.sending, OWSLocalizedString("MESSAGE_STATUS_SENDING",
                                          comment: "message status while message is sending."))
             }
         case .sent:
             if outgoingMessage.viewedRecipientAddresses().count > 0 {
-                return (.viewed, NSLocalizedString("MESSAGE_STATUS_VIEWED", comment: "status message for viewed messages"))
+                return (.viewed, OWSLocalizedString("MESSAGE_STATUS_VIEWED", comment: "status message for viewed messages"))
             }
             if outgoingMessage.readRecipientAddresses().count > 0 {
-                return (.read, NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages"))
+                return (.read, OWSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages"))
             }
             if outgoingMessage.wasDeliveredToAnyRecipient {
-                return (.delivered, NSLocalizedString("MESSAGE_STATUS_DELIVERED",
+                return (.delivered, OWSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                          comment: "message status for message delivered to their recipient."))
             }
-            return (.sent, NSLocalizedString("MESSAGE_STATUS_SENT",
+            return (.sent, OWSLocalizedString("MESSAGE_STATUS_SENT",
                                      comment: "status message for sent messages"))
         default:
             owsFailDebug("Message has unexpected status: \(outgoingMessage.messageState).")
-            return (.sent, NSLocalizedString("MESSAGE_STATUS_SENT",
+            return (.sent, OWSLocalizedString("MESSAGE_STATUS_SENT",
                                      comment: "status message for sent messages"))
         }
     }

@@ -58,16 +58,16 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
     public static func name(forMediaDownloadType value: MediaDownloadType) -> String {
         switch value {
         case .photo:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO",
+            return OWSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO",
                                      comment: "Label for the 'photo' attachment type in the media download settings.")
         case .video:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO",
+            return OWSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO",
                                      comment: "Label for the 'video' attachment type in the media download settings.")
         case .audio:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO",
+            return OWSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO",
                                      comment: "Label for the 'audio' attachment type in the media download settings.")
         case .document:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT",
+            return OWSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT",
                                      comment: "Label for the 'document' attachment type in the media download settings.")
         }
     }
@@ -75,13 +75,13 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
     public static func name(forMediaBandwidthPreference value: MediaBandwidthPreference) -> String {
         switch value {
         case .never:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER",
+            return OWSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER",
                                      comment: "Label for the 'never' media attachment download behavior in the media download settings.")
         case .wifiOnly:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY",
+            return OWSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY",
                                      comment: "Label for the 'wifi-only' media attachment download behavior in the media download settings.")
         case .wifiAndCellular:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR",
+            return OWSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR",
                                      comment: "Label for the 'wifi and cellular' media attachment download behavior in the media download settings.")
         }
     }

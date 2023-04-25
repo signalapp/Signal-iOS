@@ -35,7 +35,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         label.font = .dynamicTypeBody
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.text = NSLocalizedString("STORIES_NO_RECENT_MESSAGES", comment: "Indicates that there are no recent stories to render")
+        label.text = OWSLocalizedString("STORIES_NO_RECENT_MESSAGES", comment: "Indicates that there are no recent stories to render")
         label.isHidden = true
         label.isUserInteractionEnabled = false
         tableView.backgroundView = label
@@ -105,7 +105,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         searchBarBackdropView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
         searchBarBackdropView.autoPinEdge(.bottom, to: .top, of: searchBarContainer)
 
-        title = NSLocalizedString("STORIES_TITLE", comment: "Title for the stories view.")
+        title = OWSLocalizedString("STORIES_TITLE", comment: "Title for the stories view.")
 
         tableView.register(MyStoryCell.self, forCellReuseIdentifier: MyStoryCell.reuseIdentifier)
         tableView.register(StoryCell.self, forCellReuseIdentifier: StoryCell.reuseIdentifier)
@@ -285,7 +285,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         contextButton.showsContextMenuAsPrimaryAction = true
         contextButton.contextMenu = .init([
             .init(
-                title: NSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view"),
+                title: OWSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view"),
                 image: Theme.iconImage(.settingsPrivacy),
                 handler: { [weak self] _ in
                     self?.showPrivacySettings()
@@ -316,8 +316,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         navigationItem.leftBarButtonItem = .init(customView: contextButton)
 
         let cameraButton = UIBarButtonItem(image: Theme.iconImage(.cameraButton), style: .plain, target: self, action: #selector(showCameraView))
-        cameraButton.accessibilityLabel = NSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
-        cameraButton.accessibilityHint = NSLocalizedString("CAMERA_BUTTON_HINT", comment: "Accessibility hint describing what you can do with the camera button")
+        cameraButton.accessibilityLabel = OWSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
+        cameraButton.accessibilityHint = OWSLocalizedString("CAMERA_BUTTON_HINT", comment: "Accessibility hint describing what you can do with the camera button")
 
         navigationItem.rightBarButtonItems = [cameraButton]
     }

@@ -11,7 +11,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PRIVACY_TITLE", comment: "")
+        title = OWSLocalizedString("SETTINGS_PRIVACY_TITLE", comment: "")
 
         updateTableContents()
 
@@ -58,7 +58,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
         let blockedSection = OWSTableSection()
         blockedSection.add(.disclosureItem(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_BLOCK_LIST_TITLE",
                 comment: "Label for the block list section of the settings view"
             ),
@@ -70,12 +70,12 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         contents.addSection(blockedSection)
 
         let messagingSection = OWSTableSection()
-        messagingSection.footerTitle = NSLocalizedString(
+        messagingSection.footerTitle = OWSLocalizedString(
             "SETTINGS_MESSAGING_FOOTER",
             comment: "Explanation for the 'messaging' privacy settings."
         )
         messagingSection.add(.switch(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_READ_RECEIPT",
                 comment: "Label for the 'read receipts' setting."
             ),
@@ -84,7 +84,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             selector: #selector(didToggleReadReceiptsSwitch)
         ))
         messagingSection.add(.switch(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_TYPING_INDICATORS",
                 comment: "Label for the 'typing indicators' setting."
             ),
@@ -95,7 +95,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         contents.addSection(messagingSection)
 
         let disappearingMessagesSection = OWSTableSection()
-        disappearingMessagesSection.footerTitle = NSLocalizedString(
+        disappearingMessagesSection.footerTitle = OWSLocalizedString(
             "SETTINGS_DISAPPEARING_MESSAGES_FOOTER",
             comment: "Explanation for the 'disappearing messages' privacy settings."
         )
@@ -106,7 +106,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             customCellBlock: { [weak self] in
                 guard let self = self else { return UITableViewCell() }
                 let cell = OWSTableItem.buildIconNameCell(
-                    itemName: NSLocalizedString(
+                    itemName: OWSLocalizedString(
                         "SETTINGS_DISAPPEARING_MESSAGES",
                         comment: "Label for the 'disappearing messages' privacy settings."
                     ),
@@ -132,27 +132,27 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         contents.addSection(disappearingMessagesSection)
 
         let appSecuritySection = OWSTableSection()
-        appSecuritySection.headerTitle = NSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")
+        appSecuritySection.headerTitle = OWSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")
 
         switch OWSScreenLock.shared.biometryType {
         case .unknown:
-            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL", comment: "Section footer")
+            appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL", comment: "Section footer")
         case .passcode:
-            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL_PASSCODE", comment: "Section footer")
+            appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL_PASSCODE", comment: "Section footer")
         case .faceId:
-            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL_FACEID", comment: "Section footer")
+            appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL_FACEID", comment: "Section footer")
         case .touchId:
-            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL_TOUCHID", comment: "Section footer")
+            appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL_TOUCHID", comment: "Section footer")
         }
 
         appSecuritySection.add(.switch(
-            withText: NSLocalizedString("SETTINGS_SCREEN_SECURITY", comment: ""),
+            withText: OWSLocalizedString("SETTINGS_SCREEN_SECURITY", comment: ""),
             isOn: { Self.preferences.screenSecurityIsEnabled() },
             target: self,
             selector: #selector(didToggleScreenSecuritySwitch)
         ))
         appSecuritySection.add(.switch(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL",
                 comment: "Label for the 'enable screen lock' switch of the privacy settings."
             ),
@@ -162,7 +162,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         ))
         if OWSScreenLock.shared.isScreenLockEnabled() {
             appSecuritySection.add(.disclosureItem(
-                withText: NSLocalizedString(
+                withText: OWSLocalizedString(
                     "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",
                     comment: "Label for the 'screen lock activity timeout' setting of the privacy settings."
                 ),
@@ -176,21 +176,21 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
         // Payments
         let paymentsSection = OWSTableSection()
-        paymentsSection.headerTitle = NSLocalizedString("SETTINGS_PAYMENTS_SECURITY_TITLE", comment: "Title for the payments section in the app’s privacy settings tableview")
+        paymentsSection.headerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_TITLE", comment: "Title for the payments section in the app’s privacy settings tableview")
 
         switch BiometryType.biometryType {
         case .unknown:
-            paymentsSection.footerTitle = NSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL", comment: "Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown.")
+            paymentsSection.footerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL", comment: "Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown.")
         case .passcode:
-            paymentsSection.footerTitle = NSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE", comment: "Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode.")
+            paymentsSection.footerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE", comment: "Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode.")
         case .faceId:
-            paymentsSection.footerTitle = NSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID", comment: "Caption for footer label beneath the payments lock privacy toggle for faceid biometry.")
+            paymentsSection.footerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID", comment: "Caption for footer label beneath the payments lock privacy toggle for faceid biometry.")
         case .touchId:
-            paymentsSection.footerTitle = NSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID", comment: "Caption for footer label beneath the payments lock privacy toggle for touchid biometry")
+            paymentsSection.footerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID", comment: "Caption for footer label beneath the payments lock privacy toggle for touchid biometry")
         }
 
         paymentsSection.add(.switch(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL",
                 comment: "Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase."
             ),
@@ -202,16 +202,16 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
         if !CallUIAdapter.isCallkitDisabledForLocale {
             let callsSection = OWSTableSection()
-            callsSection.headerTitle = NSLocalizedString(
+            callsSection.headerTitle = OWSLocalizedString(
                 "SETTINGS_SECTION_TITLE_CALLING",
                 comment: "settings topic header for table section"
             )
-            callsSection.footerTitle = NSLocalizedString(
+            callsSection.footerTitle = OWSLocalizedString(
                 "SETTINGS_SECTION_FOOTER_CALLING",
                 comment: "Footer for table section"
             )
             callsSection.add(.switch(
-                withText: NSLocalizedString(
+                withText: OWSLocalizedString(
                     "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
                     comment: "Short table cell label"
                 ),
@@ -223,12 +223,12 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         }
 
         let advancedSection = OWSTableSection()
-        advancedSection.footerTitle = NSLocalizedString(
+        advancedSection.footerTitle = OWSLocalizedString(
             "SETTINGS_PRIVACY_ADVANCED_FOOTER",
             comment: "Footer for table section"
         )
         advancedSection.add(.disclosureItem(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "SETTINGS_PRIVACY_ADVANCED_TITLE",
                 comment: "Title for the advanced privacy settings"
             ),
@@ -288,7 +288,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     }
 
     private func showScreenLockTimeoutPicker() {
-        let actionSheet = ActionSheetController(title: NSLocalizedString(
+        let actionSheet = ActionSheetController(title: OWSLocalizedString(
             "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",
             comment: "Label for the 'screen lock activity timeout' setting of the privacy settings."
         ))
@@ -310,7 +310,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
     private func formatScreenLockTimeout(_ value: TimeInterval, useShortFormat: Bool = true) -> String {
         guard value > 0 else {
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE",
                 comment: "Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately."
             )

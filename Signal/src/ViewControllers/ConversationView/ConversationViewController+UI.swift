@@ -56,7 +56,7 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         headerView.configure(threadViewModel: threadViewModel)
-        headerView.accessibilityLabel = NSLocalizedString("CONVERSATION_SETTINGS",
+        headerView.accessibilityLabel = OWSLocalizedString("CONVERSATION_SETTINGS",
                                                           comment: "title for conversation settings screen")
         headerView.accessibilityIdentifier = "headerView"
         headerView.delegate = self
@@ -130,9 +130,9 @@ extension ConversationViewController {
                         pill.addTarget(self,
                                        action: #selector(showGroupLobbyOrActiveCall),
                                        for: .touchUpInside)
-                        let returnString = NSLocalizedString("RETURN_CALL_PILL_BUTTON",
+                        let returnString = OWSLocalizedString("RETURN_CALL_PILL_BUTTON",
                                                              comment: "Button to return to current group call")
-                        let joinString = NSLocalizedString("JOIN_CALL_PILL_BUTTON",
+                        let joinString = OWSLocalizedString("JOIN_CALL_PILL_BUTTON",
                                                            comment: "Button to join an active group call")
                         pill.buttonText = self.isCurrentCallForThread ? returnString : joinString
                         videoCallButton.customView = pill
@@ -144,7 +144,7 @@ extension ConversationViewController {
 
                     videoCallButton.isEnabled = (self.callService.currentCall == nil
                                                     || self.isCurrentCallForThread)
-                    videoCallButton.accessibilityLabel = NSLocalizedString("VIDEO_CALL_LABEL",
+                    videoCallButton.accessibilityLabel = OWSLocalizedString("VIDEO_CALL_LABEL",
                                                                            comment: "Accessibility label for placing a video call")
                     self.groupCallBarButtonItem = videoCallButton
                     barButtons.append(videoCallButton)
@@ -156,7 +156,7 @@ extension ConversationViewController {
                         action: #selector(startIndividualAudioCall)
                     )
                     audioCallButton.isEnabled = !CurrentAppContext().hasActiveCall
-                    audioCallButton.accessibilityLabel = NSLocalizedString("AUDIO_CALL_LABEL",
+                    audioCallButton.accessibilityLabel = OWSLocalizedString("AUDIO_CALL_LABEL",
                                                                            comment: "Accessibility label for placing an audio call")
                     barButtons.append(audioCallButton)
 
@@ -167,7 +167,7 @@ extension ConversationViewController {
                         action: #selector(startIndividualVideoCall)
                     )
                     videoCallButton.isEnabled = !CurrentAppContext().hasActiveCall
-                    videoCallButton.accessibilityLabel = NSLocalizedString("VIDEO_CALL_LABEL",
+                    videoCallButton.accessibilityLabel = OWSLocalizedString("VIDEO_CALL_LABEL",
                                                                            comment: "Accessibility label for placing a video call")
                     barButtons.append(videoCallButton)
                 }
@@ -224,7 +224,7 @@ extension ConversationViewController {
             subtitleText.appendTemplatedImage(named: "bell-disabled-outline-24", font: subtitleFont)
             if !isVerified {
                 subtitleText.append(iconSpacer, attributes: attributes)
-                subtitleText.append(NSLocalizedString("MUTED_BADGE",
+                subtitleText.append(OWSLocalizedString("MUTED_BADGE",
                                                       comment: "Badge indicating that the user is muted."),
                                     attributes: attributes)
             }
@@ -251,7 +251,7 @@ extension ConversationViewController {
 
             subtitleText.appendTemplatedImage(named: "check-12", font: subtitleFont)
             subtitleText.append(iconSpacer, attributes: attributes)
-            subtitleText.append(NSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
+            subtitleText.append(OWSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                                   comment: "Badge indicating that the user is verified."),
                                 attributes: attributes)
         }

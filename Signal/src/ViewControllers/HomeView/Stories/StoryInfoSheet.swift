@@ -71,7 +71,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
         stackView.axis = .vertical
 
         let timestampLabel = buildValueLabel(
-            name: NSLocalizedString(
+            name: OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                 comment: "Label for the 'sent date & time' field of the 'message metadata' view."
             ),
@@ -90,7 +90,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
             }
 
             let receivedTimestampLabel = buildValueLabel(
-                name: NSLocalizedString(
+                name: OWSLocalizedString(
                     "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                     comment: "Label for the 'received date & time' field of the 'message metadata' view."
                 ),
@@ -109,7 +109,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
             if let formattedByteCount = byteCountFormatter.string(for: attachment.byteCount) {
                 stackView.addArrangedSubview(buildValueLabel(
-                    name: NSLocalizedString(
+                    name: OWSLocalizedString(
                         "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
                         comment: "Label for file size of attachments in the 'message metadata' view."
                     ),
@@ -125,7 +125,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
     private func buildSenderSection() -> OWSTableSection {
         let section = OWSTableSection()
-        section.headerTitle = NSLocalizedString(
+        section.headerTitle = OWSLocalizedString(
             "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE",
             comment: "Title for the 'sent from' section on the 'message details' view."
         )
@@ -179,27 +179,27 @@ class StoryInfoSheet: OWSTableSheetViewController {
     private func sectionTitle(for state: OWSOutgoingMessageRecipientState) -> String {
         switch state {
         case .sent:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT",
                 comment: "Status label for messages which are sent."
             )
         case .sending:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING",
                 comment: "Status label for messages which are sending."
             )
         case .pending:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED",
                 comment: "Status label for messages which are paused."
             )
         case .failed:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED",
                 comment: "Status label for messages which are failed."
             )
         case .skipped:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
                 comment: "Status label for messages which were skipped."
             )
@@ -211,13 +211,13 @@ class StoryInfoSheet: OWSTableSheetViewController {
         case .sent:
             return DateUtil.formatPastTimestampRelativeToNow(storyMessage.timestamp)
         case .sending:
-            return NSLocalizedString("MESSAGE_STATUS_SENDING", comment: "message status while message is sending.")
+            return OWSLocalizedString("MESSAGE_STATUS_SENDING", comment: "message status while message is sending.")
         case .pending:
-            return NSLocalizedString("MESSAGE_STATUS_PENDING_SHORT", comment: "Label indicating that a message send was paused.")
+            return OWSLocalizedString("MESSAGE_STATUS_PENDING_SHORT", comment: "Label indicating that a message send was paused.")
         case .failed:
-            return NSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment: "status message for failed messages")
+            return OWSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment: "status message for failed messages")
         case .skipped:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "MESSAGE_STATUS_RECIPIENT_SKIPPED",
                 comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account."
             )
@@ -231,7 +231,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
         let messageTimestamp = "\(storyMessage.timestamp)"
         UIPasteboard.general.string = messageTimestamp
 
-        let toast = ToastController(text: NSLocalizedString(
+        let toast = ToastController(text: OWSLocalizedString(
             "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP",
             comment: "Toast indicating that the user has copied the sent timestamp."
         ))

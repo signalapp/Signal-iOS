@@ -109,12 +109,12 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         let linkPart = StringStyle.Part.link(SupportConstants.subscriptionFAQURL)
 
         subheaderTextView.attributedText = .composed(of: [
-            NSLocalizedString(
+            OWSLocalizedString(
                 "CARD_DONATION_SUBHEADER_TEXT",
                 comment: "On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information."
             ),
             " ",
-            NSLocalizedString(
+            OWSLocalizedString(
                 "CARD_DONATION_SUBHEADER_LEARN_MORE",
                 comment: "On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information."
             ).styled(with: linkPart)
@@ -149,14 +149,14 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
         cardNumberView.render(errorMessage: {
             guard invalidFields.contains(.cardNumber) else { return nil }
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR",
                 comment: "Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI."
             )
         }())
         expirationView.render(errorMessage: {
             guard invalidFields.contains(.expirationDate) else { return nil }
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR",
                 comment: "Users can donate to Signal with a credit or debit card. If their expiration date is invalid, this generic error message will be shown. Try to use a short string to make space in the UI."
             )
@@ -164,12 +164,12 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         cvvView.render(errorMessage: {
             guard invalidFields.contains(.cvv) else { return nil }
             if cvvView.text.count > cardType.cvvCount {
-                return NSLocalizedString(
+                return OWSLocalizedString(
                     "CARD_DONATION_CVV_TOO_LONG_ERROR",
                     comment: "Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is too long, this error will be shown. Try to use a short string to make space in the UI."
                 )
             } else {
-                return NSLocalizedString(
+                return OWSLocalizedString(
                     "CARD_DONATION_CVV_GENERIC_ERROR",
                     comment: "Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is invalid for reasons we cannot determine, this generic error message will be shown. Try to use a short string to make space in the UI."
                 )
@@ -199,7 +199,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
                     let headerLabel = UILabel()
                     headerLabel.text = {
                         let amountString = DonationUtilities.format(money: self.donationAmount)
-                        let format = NSLocalizedString(
+                        let format = OWSLocalizedString(
                             "CARD_DONATION_HEADER",
                             comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\"."
                         )
@@ -295,7 +295,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
     private lazy var cardNumberView: FormFieldView = {
         let result = FormFieldView(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "CARD_DONATION_CARD_NUMBER_LABEL",
                 comment: "Users can donate to Signal with a credit or debit card. This is the label for the card number field on that screen."
             ),
@@ -338,11 +338,11 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
     private lazy var expirationView: FormFieldView = {
         let result = FormFieldView(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "CARD_DONATION_EXPIRATION_DATE_LABEL",
                 comment: "Users can donate to Signal with a credit or debit card. This is the label for the expiration date field on that screen. Try to use a short string to make space in the UI. (For example, the English text uses \"Exp. Date\" instead of \"Expiration Date\")."
             ),
-            placeholder: NSLocalizedString(
+            placeholder: OWSLocalizedString(
                 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER",
                 comment: "Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen."
             ),
@@ -357,7 +357,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
     private lazy var cvvView: FormFieldView = {
         let result = FormFieldView(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "CARD_DONATION_CVV_LABEL",
                 comment: "Users can donate to Signal with a credit or debit card. This is the label for the card verification code (CVV) field on that screen."
             ),
@@ -372,7 +372,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
     // MARK: - Submit button, footer
 
     private lazy var submitButton: OWSButton = {
-        let title = NSLocalizedString(
+        let title = OWSLocalizedString(
             "CARD_DONATION_DONATE_BUTTON",
             comment: "Users can donate to Signal with a credit or debit card. This is the text on the \"Donate\" button."
         )

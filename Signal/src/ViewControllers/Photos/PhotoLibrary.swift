@@ -248,7 +248,7 @@ class PhotoCollection {
             let localizedTitle = collection.localizedTitle?.stripped,
             !localizedTitle.isEmpty
         else {
-            return NSLocalizedString("PHOTO_PICKER_UNNAMED_COLLECTION", comment: "label for system photo collections which have no name.")
+            return OWSLocalizedString("PHOTO_PICKER_UNNAMED_COLLECTION", comment: "label for system photo collections which have no name.")
         }
         return localizedTitle
     }

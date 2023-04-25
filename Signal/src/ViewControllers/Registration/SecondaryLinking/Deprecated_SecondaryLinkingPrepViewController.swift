@@ -32,11 +32,11 @@ public class Deprecated_SecondaryLinkingPrepViewController: Deprecated_Onboardin
 
         let titleText: String
         if isTransferring {
-            titleText = NSLocalizedString("SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD",
+            titleText = OWSLocalizedString("SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD",
                                           comment: "header text before the user can transfer to this device")
 
         } else {
-            titleText = NSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY",
+            titleText = OWSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY",
                                           comment: "header text before the user can link this device")
         }
 
@@ -45,7 +45,7 @@ public class Deprecated_SecondaryLinkingPrepViewController: Deprecated_Onboardin
         titleLabel.accessibilityIdentifier = "onboarding.prelink.titleLabel"
 
         let dontHaveSignalButton = UILabel()
-        dontHaveSignalButton.text = NSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY",
+        dontHaveSignalButton.text = OWSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY",
                                                       comment: "Link explaining what to do when trying to link a device before having a primary device.")
         dontHaveSignalButton.textColor = Theme.accentBlueColor
         dontHaveSignalButton.font = UIFont.dynamicTypeSubheadlineClamped
@@ -92,11 +92,11 @@ public class Deprecated_SecondaryLinkingPrepViewController: Deprecated_Onboardin
             return
         }
 
-        let title = NSLocalizedString("SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE", comment: "alert title")
-        let message = NSLocalizedString("SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY", comment: "alert body")
+        let title = OWSLocalizedString("SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE", comment: "alert title")
+        let message = OWSLocalizedString("SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY", comment: "alert body")
         let alert = ActionSheetController(title: title, message: message)
 
-        let dismissTitle = NSLocalizedString("ALERT_ACTION_ACKNOWLEDGE", comment: "generic button text to acknowledge that the corresponding text was read.")
+        let dismissTitle = OWSLocalizedString("ALERT_ACTION_ACKNOWLEDGE", comment: "generic button text to acknowledge that the corresponding text was read.")
 
         alert.addAction(
             ActionSheetAction(title: dismissTitle,

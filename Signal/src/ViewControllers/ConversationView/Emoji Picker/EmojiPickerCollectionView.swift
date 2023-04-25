@@ -152,7 +152,7 @@ class EmojiPickerCollectionView: UICollectionView {
 
     func nameForSection(_ section: Int) -> String? {
         guard section > 0 || !hasRecentEmoji else {
-            return NSLocalizedString("EMOJI_CATEGORY_RECENTS_NAME",
+            return OWSLocalizedString("EMOJI_CATEGORY_RECENTS_NAME",
                                      comment: "The name for the emoji category 'Recents'")
         }
 

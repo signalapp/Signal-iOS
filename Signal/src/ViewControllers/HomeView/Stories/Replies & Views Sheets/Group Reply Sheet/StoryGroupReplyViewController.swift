@@ -41,7 +41,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         label.font = .dynamicTypeBody
         label.textColor = .ows_gray45
         label.textAlignment = .center
-        label.text = NSLocalizedString("STORIES_NO_REPLIES_YET", comment: "Indicates that this story has no replies yet")
+        label.text = OWSLocalizedString("STORIES_NO_REPLIES_YET", comment: "Indicates that this story has no replies yet")
         label.isHidden = true
         label.isUserInteractionEnabled = false
         return label
@@ -186,7 +186,7 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
         })
 
         actionSheet.addAction(ActionSheetAction(
-            title: NSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
+            title: OWSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
             style: .default
         ) { _ in
             Self.databaseStorage.write { transaction in
@@ -344,7 +344,7 @@ extension StoryGroupReplyViewController: InputAccessoryViewPlaceholderDelegate {
 
                 let label = UILabel()
                 label.font = .dynamicTypeSubheadline
-                label.text = NSLocalizedString(
+                label.text = OWSLocalizedString(
                     "STORIES_GROUP_REPLY_NOT_A_MEMBER",
                     comment: "Text indicating you can't reply to a group story because you're not a member of the group"
                 )
@@ -396,7 +396,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
 
             if !item.cellType.isReaction {
                 actions.append(.init(
-                    title: NSLocalizedString(
+                    title: OWSLocalizedString(
                         "STORIES_COPY_REPLY_ACTION",
                         comment: "Context menu action to copy the selected story reply"),
                     image: Theme.iconImage(.messageActionCopy, isDarkThemeEnabled: true),
@@ -407,7 +407,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
             }
 
             actions.append(.init(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "STORIES_DELETE_REPLY_ACTION",
                     comment: "Context menu action to delete the selected story reply"),
                 image: Theme.iconImage(.messageActionDelete, isDarkThemeEnabled: true),

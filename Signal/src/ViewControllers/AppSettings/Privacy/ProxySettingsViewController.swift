@@ -36,7 +36,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString(
+        title = OWSLocalizedString(
             "PROXY_SETTINGS_TITLE",
             comment: "Title for the signal proxy settings"
         )
@@ -105,7 +105,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
 
         let useProxySection = OWSTableSection()
         useProxySection.footerAttributedTitle = .composed(of: [
-            NSLocalizedString("USE_PROXY_EXPLANATION", comment: "Explanation of when you should use a signal proxy"),
+            OWSLocalizedString("USE_PROXY_EXPLANATION", comment: "Explanation of when you should use a signal proxy"),
             " ",
             CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/hc/en-us/articles/360056052052-Proxy-Support")!))
         ]).styled(
@@ -113,7 +113,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
             .color(Theme.secondaryTextAndIconColor)
         )
         useProxySection.add(.switch(
-            withText: NSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy"),
+            withText: OWSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy"),
             isOn: { [weak self] in
                 self?.useProxy ?? false
             },
@@ -123,7 +123,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         contents.addSection(useProxySection)
 
         let proxyAddressSection = OWSTableSection()
-        proxyAddressSection.headerAttributedTitle = NSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy").styled(
+        proxyAddressSection.headerAttributedTitle = OWSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy").styled(
             with: .color((Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90).withAlphaComponent(useProxy ? 1 : 0.25)),
             .font(UIFont.dynamicTypeBodyClamped.semibold())
         )
@@ -187,7 +187,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         // allow saving an empty host when the proxy is off
         if !useProxy && host == nil { return false }
 
-        presentToast(text: NSLocalizedString("INVALID_PROXY_HOST_ERROR", comment: "The provided proxy host address is not valid"))
+        presentToast(text: OWSLocalizedString("INVALID_PROXY_HOST_ERROR", comment: "The provided proxy host address is not valid"))
 
         return true
     }
@@ -218,14 +218,14 @@ class ProxySettingsViewController: OWSTableViewController2 {
                     guard let self else { return }
                     if connected {
                         if self.navigationController?.viewControllers.count == 1 {
-                            self.presentingViewController?.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
+                            self.presentingViewController?.presentToast(text: OWSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
                             self.dismiss(animated: true)
                         } else {
-                            self.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
+                            self.presentToast(text: OWSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
                             self.updateNavigationBar()
                         }
                     } else {
-                        self.presentToast(text: NSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
+                        self.presentToast(text: OWSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
                         Self.databaseStorage.write { transaction in
                             SignalProxy.setProxyHost(host: self.host, useProxy: false, transaction: transaction)
                         }

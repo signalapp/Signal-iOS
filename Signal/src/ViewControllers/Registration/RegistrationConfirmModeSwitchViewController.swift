@@ -27,15 +27,15 @@ class RegistrationConfirmModeSwitchViewController: OWSViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleText = NSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_REGISTERING",
+        let titleText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_REGISTERING",
                                       comment: "header text indicating to the user they're switching from registering to linking flow")
-        let explanationText = NSLocalizedString("ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING",
+        let explanationText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING",
                                             comment: "explanation to the user they're switching from registering to linking flow")
 
-        let nextButtonText = NSLocalizedString("ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING",
+        let nextButtonText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING",
                                            comment: "button indicating that the user will link their phone")
 
-        warningText = NSLocalizedString("ONBOARDING_MODE_SWITCH_WARNING_REGISTERING",
+        warningText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_WARNING_REGISTERING",
                                         comment: "warning to the user that linking a phone is not recommended")
 
         let titleLabel = UILabel.titleLabelForRegistration(text: titleText)

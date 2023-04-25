@@ -37,7 +37,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         if DebugFlags.audibleErrorLogging {
             debugSection.add(.disclosureItem(
-                withText: NSLocalizedString("SETTINGS_ADVANCED_VIEW_ERROR_LOG", comment: ""),
+                withText: OWSLocalizedString("SETTINGS_ADVANCED_VIEW_ERROR_LOG", comment: ""),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "error_logs"),
                 actionBlock: { [weak self] in
                     Logger.flush()

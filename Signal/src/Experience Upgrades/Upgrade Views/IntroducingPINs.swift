@@ -11,11 +11,11 @@ class IntroducingPinsMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
-        titleText = NSLocalizedString("PINS_MEGAPHONE_TITLE", comment: "Title for PIN megaphone when user doesn't have a PIN")
-        bodyText = NSLocalizedString("PINS_MEGAPHONE_BODY", comment: "Body for PIN megaphone when user doesn't have a PIN")
+        titleText = OWSLocalizedString("PINS_MEGAPHONE_TITLE", comment: "Title for PIN megaphone when user doesn't have a PIN")
+        bodyText = OWSLocalizedString("PINS_MEGAPHONE_BODY", comment: "Body for PIN megaphone when user doesn't have a PIN")
         imageName = "PIN_megaphone"
 
-        let primaryButtonTitle = NSLocalizedString("PINS_MEGAPHONE_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
+        let primaryButtonTitle = OWSLocalizedString("PINS_MEGAPHONE_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
 
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
             let viewController = PinSetupViewController(
@@ -33,7 +33,7 @@ class IntroducingPinsMegaphone: MegaphoneView {
                     self.dismiss(animated: false)
                     fromViewController.dismiss(animated: true) {
                         self.presentToast(
-                            text: NSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created."),
+                            text: OWSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created."),
                             fromViewController: fromViewController
                         )
                     }

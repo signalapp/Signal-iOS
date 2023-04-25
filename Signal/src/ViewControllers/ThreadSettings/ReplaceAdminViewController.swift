@@ -34,7 +34,7 @@ class ReplaceAdminViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("REPLACE_ADMIN_VIEW_TITLE",
+        title = OWSLocalizedString("REPLACE_ADMIN_VIEW_TITLE",
                                   comment: "The title for the 'replace group admin' view.")
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)

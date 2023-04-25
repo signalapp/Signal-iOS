@@ -38,13 +38,13 @@ public class NewGroupMembersViewController: BaseGroupMemberViewController {
                                                  accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "next"))
         rightBarButtonItem.imageInsets = UIEdgeInsets(top: 0, left: -1, bottom: 0, right: 10)
         rightBarButtonItem.accessibilityLabel
-            = NSLocalizedString("FINISH_GROUP_CREATION_LABEL", comment: "Accessibility label for finishing new group")
+            = OWSLocalizedString("FINISH_GROUP_CREATION_LABEL", comment: "Accessibility label for finishing new group")
         navigationItem.rightBarButtonItem = rightBarButtonItem
         if hasMembers {
-            let format = NSLocalizedString("NEW_GROUP_MEMBERS_VIEW_TITLE_%d", tableName: "PluralAware", comment: "The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members.")
+            let format = OWSLocalizedString("NEW_GROUP_MEMBERS_VIEW_TITLE_%d", tableName: "PluralAware", comment: "The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members.")
             title = String.localizedStringWithFormat(format, newGroupState.recipientSet.count)
         } else {
-            title = NSLocalizedString("NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE", comment: "The title for the 'select members for new group' view.")
+            title = OWSLocalizedString("NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE", comment: "The title for the 'select members for new group' view.")
         }
     }
 

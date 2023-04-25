@@ -209,7 +209,7 @@ public extension ChatListViewController {
                                                     isShortForm: true,
                                                     withCurrencyCode: true,
                                                     withSpace: true)
-        let format = NSLocalizedString("PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT",
+        let format = OWSLocalizedString("PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT",
                                        comment: "Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}.")
         let title = String(format: format, userName, formattedAmount)
 
@@ -232,10 +232,10 @@ public extension ChatListViewController {
                                                unreadCount: UInt) {
         let title: String
         if unreadCount == 1 {
-            title = NSLocalizedString("PAYMENTS_NOTIFICATION_BANNER_1",
+            title = OWSLocalizedString("PAYMENTS_NOTIFICATION_BANNER_1",
                                       comment: "Label for the payments notification banner for a single payment notification.")
         } else {
-            let format = NSLocalizedString("PAYMENTS_NOTIFICATION_BANNER_N_FORMAT",
+            let format = OWSLocalizedString("PAYMENTS_NOTIFICATION_BANNER_N_FORMAT",
                                            comment: "Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}.")
             title = String(format: format, OWSFormat.formatUInt(unreadCount))
         }
@@ -409,7 +409,7 @@ public extension ChatListViewController {
         if renderState.inboxCount > 0 {
             contextMenuActions.append(
                 ContextMenuAction(
-                    title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_CHATS", comment: "Title for the 'Select Chats' option in the ChatList."),
+                    title: OWSLocalizedString("HOME_VIEW_TITLE_SELECT_CHATS", comment: "Title for the 'Select Chats' option in the ChatList."),
                     image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"),
                     attributes: [],
                     handler: { [weak self] (_) in
@@ -427,7 +427,7 @@ public extension ChatListViewController {
         if renderState.archiveCount > 0 {
             contextMenuActions.append(
                 ContextMenuAction(
-                    title: NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."),
+                    title: OWSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."),
                     image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"),
                     attributes: [],
                     handler: { [weak self] (_) in

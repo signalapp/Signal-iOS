@@ -10,19 +10,19 @@ public class PaymentOnboarding {
     private class func ftPaymentsLockActionSheetMessage() -> String {
         switch BiometryType.biometryType {
         case .unknown:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE",
                 comment: "First time payments suggest payments lock message")
         case .passcode:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE",
                 comment: "First time payments suggest payments lock message")
         case .faceId:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID",
                 comment: "First time payments suggest payments lock message")
         case .touchId:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID",
                 comment: "First time payments suggest payments lock message")
         }
@@ -31,19 +31,19 @@ public class PaymentOnboarding {
     private class func ftPaymentsLockAffirmativeActionTitle() -> String {
         switch BiometryType.biometryType {
         case .unknown:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION",
                 comment: "Affirmative action title to enable payments lock")
         case .passcode:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE",
                 comment: "Affirmative action title to enable payments lock")
         case .faceId:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID",
                 comment: "Affirmative action title to enable payments lock")
         case .touchId:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID",
                 comment: "Affirmative action title to enable payments lock")
         }
@@ -57,7 +57,7 @@ public class PaymentOnboarding {
             return
         }
 
-        let actionSheet = ActionSheetController(title: NSLocalizedString("PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE",
+        let actionSheet = ActionSheetController(title: OWSLocalizedString("PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE",
                                                                          comment: "First time payments suggest payments lock title"),
                                                 message: ftPaymentsLockActionSheetMessage())
 

@@ -106,7 +106,7 @@ class AvatarEditViewController: OWSTableViewController2 {
         let control = UISegmentedControl()
 
         control.insertSegment(
-            withTitle: NSLocalizedString(
+            withTitle: OWSLocalizedString(
                 "AVATAR_EDIT_VIEW_TEXT_SEGMENT",
                 comment: "Segment indicating the user can edit the text of the avatar"
             ),
@@ -114,7 +114,7 @@ class AvatarEditViewController: OWSTableViewController2 {
             animated: false
         )
         control.insertSegment(
-            withTitle: NSLocalizedString(
+            withTitle: OWSLocalizedString(
                 "AVATAR_EDIT_VIEW_COLOR_SEGMENT",
                 comment: "Segment indicating the user can edit the color of the avatar"
             ),
@@ -278,7 +278,7 @@ class AvatarEditViewController: OWSTableViewController2 {
         themeHeaderContainer.removeAllSubviews()
 
         let label = UILabel()
-        label.text = NSLocalizedString(
+        label.text = OWSLocalizedString(
             "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR",
             comment: "Text prompting the user to choose a color when editing their avatar"
         )

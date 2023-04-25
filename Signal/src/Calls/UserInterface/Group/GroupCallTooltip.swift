@@ -17,7 +17,7 @@ public class GroupCallTooltip: TooltipView {
 
     public override func bubbleContentView() -> UIView {
         let label = UILabel()
-        label.text = NSLocalizedString(
+        label.text = OWSLocalizedString(
             "GROUP_CALL_START_TOOLTIP",
             comment: "Tooltip highlighting group calls."
         )

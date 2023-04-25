@@ -129,10 +129,10 @@ extension ConversationViewController {
 
         var title: String? = dataItem.snippet.strippedOrNil
         if StickerPackInfo.isStickerPackShare(dataItem.url) {
-            title = NSLocalizedString("MESSAGE_ACTION_TITLE_STICKER_PACK",
+            title = OWSLocalizedString("MESSAGE_ACTION_TITLE_STICKER_PACK",
                                       comment: "Title for message actions for a sticker pack.")
         } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
-            title = NSLocalizedString("MESSAGE_ACTION_TITLE_GROUP_INVITE",
+            title = OWSLocalizedString("MESSAGE_ACTION_TITLE_GROUP_INVITE",
                                                   comment: "Title for message actions for a group invite link.")
         }
 
@@ -140,7 +140,7 @@ extension ConversationViewController {
 
         if StickerPackInfo.isStickerPackShare(dataItem.url) {
             if let stickerPackInfo = StickerPackInfo.parseStickerPackShare(dataItem.url) {
-                actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_STICKER_PACK",
+                actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_STICKER_PACK",
                                                                                  comment: "Label for button to open a sticker pack."),
                                                         accessibilityIdentifier: "link_open_sticker_pack",
                                                         style: .default) { [weak self] _ in
@@ -150,21 +150,21 @@ extension ConversationViewController {
                 owsFailDebug("Invalid URL: \(dataItem.url)")
             }
         } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE",
                                                                              comment: "Label for button to open a group invite."),
                                                     accessibilityIdentifier: "link_open_group_invite",
                                                     style: .default) { [weak self] _ in
                 self?.didTapGroupInviteLink(url: dataItem.url)
             })
         } else if SignalProxy.isValidProxyLink(dataItem.url) {
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_PROXY",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_PROXY",
                                                                              comment: "Label for button to open a signal proxy."),
                                                     accessibilityIdentifier: "link_open_proxy",
                                                     style: .default) { [weak self] _ in
                 self?.didTapProxyLink(url: dataItem.url)
             })
         } else {
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK",
                                                                              comment: "Label for button to open a link."),
                                                     accessibilityIdentifier: "link_open_link",
                                                     style: .default) { [weak self] _ in
@@ -222,7 +222,7 @@ extension ConversationViewController {
         if isBlocked {
             actionSheet.addAction(
                 ActionSheetAction(
-                    title: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "Button label for the 'unblock' button"),
+                    title: OWSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "Button label for the 'unblock' button"),
                     accessibilityIdentifier: "phone_number_unblock",
                     style: .default
                 ) { [weak self] _ in
@@ -235,7 +235,7 @@ extension ConversationViewController {
 
         } else {
             // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_CALL",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_CALL",
                                                                              comment: "Label for button to call a phone number."),
                                                     accessibilityIdentifier: "phone_number_call",
                                                     style: .default) { _ in
@@ -246,7 +246,7 @@ extension ConversationViewController {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             })
             // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/SMSLinks/SMSLinks.html
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_SMS",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_SMS",
                                                                              comment: "Label for button to send a text message a phone number."),
                                                     accessibilityIdentifier: "phone_number_text_message",
                                                     style: .default) { _ in
@@ -257,7 +257,7 @@ extension ConversationViewController {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             })
             // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/FacetimeLinks/FacetimeLinks.html
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO",
                                                                              comment: "Label for button to make a FaceTime video call to a phone number."),
                                                     accessibilityIdentifier: "phone_number_facetime_video",
                                                     style: .default) { _ in
@@ -267,7 +267,7 @@ extension ConversationViewController {
                 }
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             })
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO",
                                                                              comment: "Label for button to make a FaceTime audio call to a phone number."),
                                                     accessibilityIdentifier: "phone_number_facetime_audio",
                                                     style: .default) { _ in
@@ -297,7 +297,7 @@ extension ConversationViewController {
     private func didLongPressEmail(dataItem: CVTextLabel.DataItem) {
         let actionSheet = ActionSheetController(title: dataItem.snippet.strippedOrNil)
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE",
                                                                          comment: "Label for button to compose a new email."),
                                                 accessibilityIdentifier: "email_new_mail_message",
                                                 style: .default) { [weak self] _ in
@@ -367,7 +367,7 @@ extension ConversationViewController {
 
         guard UIApplication.shared.canOpenURL(dataItem.url) else {
             Logger.info("Device cannot send mail")
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED",
                                                                       comment: "Error show when user tries to send email without email being configured."))
             return
         }

@@ -24,7 +24,7 @@ class DeviceTransferProgressViewController: DeviceTransferBaseViewController {
         super.viewDidLoad()
 
         let titleLabel = self.titleLabel(
-            text: NSLocalizedString("DEVICE_TRANSFER_TRANSFERRING_TITLE",
+            text: OWSLocalizedString("DEVICE_TRANSFER_TRANSFERRING_TITLE",
                                     comment: "The title on the action sheet that shows transfer progress")
         )
         contentView.addArrangedSubview(titleLabel)
@@ -32,7 +32,7 @@ class DeviceTransferProgressViewController: DeviceTransferBaseViewController {
         contentView.addArrangedSubview(.spacer(withHeight: 12))
 
         let explanationLabel = self.explanationLabel(
-            explanationText: NSLocalizedString("DEVICE_TRANSFER_TRANSFERRING_EXPLANATION",
+            explanationText: OWSLocalizedString("DEVICE_TRANSFER_TRANSFERRING_EXPLANATION",
                                                comment: "The explanation on the action sheet that shows transfer progress")
         )
         contentView.addArrangedSubview(explanationLabel)
@@ -87,7 +87,7 @@ extension DeviceTransferProgressViewController: DeviceTransferServiceObserver {
         switch error {
         case .assertion:
             progressView.renderError(
-                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
+                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
                                         comment: "An error indicating that something went wrong with the transfer and it could not complete")
             )
         case .cancel:
@@ -95,14 +95,14 @@ extension DeviceTransferProgressViewController: DeviceTransferServiceObserver {
             break
         case .certificateMismatch:
             progressView.renderError(
-                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH",
+                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH",
                                         comment: "An error indicating that we were unable to verify the identity of the new device to complete the transfer")
             )
         case .notEnoughSpace:
             owsFailDebug("This should never happen on the old device")
         case .unsupportedVersion:
             progressView.renderError(
-                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
+                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
                                         comment: "An error indicating the user must update their device before trying to transfer.")
             )
         case .modeMismatch:

@@ -111,7 +111,7 @@ public class PinReminderViewController: OWSViewController {
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
-        titleLabel.text = NSLocalizedString("PIN_REMINDER_TITLE", comment: "The title for the 'pin reminder' dialog.")
+        titleLabel.text = OWSLocalizedString("PIN_REMINDER_TITLE", comment: "The title for the 'pin reminder' dialog.")
 
         // Explanation
 
@@ -122,7 +122,7 @@ public class PinReminderViewController: OWSViewController {
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.accessibilityIdentifier = "pinReminder.explanationLabel"
-        explanationLabel.text = NSLocalizedString("PIN_REMINDER_EXPLANATION", comment: "The explanation for the 'pin reminder' dialog.")
+        explanationLabel.text = OWSLocalizedString("PIN_REMINDER_EXPLANATION", comment: "The explanation for the 'pin reminder' dialog.")
 
         // Pin text field
 
@@ -164,7 +164,7 @@ public class PinReminderViewController: OWSViewController {
         let font = UIFont.dynamicTypeBodyClamped.semibold()
         let buttonHeight = OWSFlatButton.heightForFont(font)
         let submitButton = OWSFlatButton.button(
-            title: NSLocalizedString("BUTTON_SUBMIT",
+            title: OWSLocalizedString("BUTTON_SUBMIT",
                                      comment: "Label for the 'submit' button."),
             font: font,
             titleColor: .white,
@@ -177,7 +177,7 @@ public class PinReminderViewController: OWSViewController {
 
         // Secondary button
         let forgotButton = UIButton()
-        forgotButton.setTitle(NSLocalizedString("PIN_REMINDER_FORGOT_PIN", comment: "Text asking if the user forgot their pin for the 'pin reminder' dialog."), for: .normal)
+        forgotButton.setTitle(OWSLocalizedString("PIN_REMINDER_FORGOT_PIN", comment: "Text asking if the user forgot their pin for the 'pin reminder' dialog."), for: .normal)
         forgotButton.setTitleColor(Theme.accentBlueColor, for: .normal)
         forgotButton.titleLabel?.font = .dynamicTypeSubheadlineClamped
         forgotButton.addTarget(self, action: #selector(forgotPressed), for: .touchUpInside)
@@ -326,10 +326,10 @@ public class PinReminderViewController: OWSViewController {
 
         switch validationState {
         case .tooShort:
-            validationWarningLabel.text = NSLocalizedString("PIN_REMINDER_TOO_SHORT_ERROR",
+            validationWarningLabel.text = OWSLocalizedString("PIN_REMINDER_TOO_SHORT_ERROR",
                                                             comment: "Label indicating that the attempted PIN is too short")
         case .mismatch:
-            validationWarningLabel.text = NSLocalizedString("PIN_REMINDER_MISMATCH_ERROR",
+            validationWarningLabel.text = OWSLocalizedString("PIN_REMINDER_MISMATCH_ERROR",
                                                             comment: "Label indicating that the attempted PIN does not match the user's PIN")
         default:
             break

@@ -113,7 +113,7 @@ class PreviewWallpaperViewController: UIViewController {
         super.viewDidLoad()
 
         navigationItem.hidesBackButton = true
-        title = NSLocalizedString("WALLPAPER_PREVIEW_TITLE", comment: "Title for the wallpaper preview view.")
+        title = OWSLocalizedString("WALLPAPER_PREVIEW_TITLE", comment: "Title for the wallpaper preview view.")
     }
 
     func setCurrentWallpaperAndDismiss() {
@@ -186,13 +186,13 @@ class PreviewWallpaperViewController: UIViewController {
     func buildMockConversationModel() -> MockConversationView.MockModel {
         let outgoingText: String = {
             guard let thread = thread else {
-                return NSLocalizedString(
+                return OWSLocalizedString(
                     "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS",
                     comment: "The outgoing bubble text when setting a wallpaper for all chats."
                 )
             }
 
-            let formatString = NSLocalizedString(
+            let formatString = OWSLocalizedString(
                 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT",
                 comment: "The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}}"
             )
@@ -203,12 +203,12 @@ class PreviewWallpaperViewController: UIViewController {
         let incomingText: String
         switch mode {
         case .photo:
-            incomingText = NSLocalizedString(
+            incomingText = OWSLocalizedString(
                 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO",
                 comment: "The incoming bubble text when setting a photo"
             )
         case .preset:
-            incomingText = NSLocalizedString(
+            incomingText = OWSLocalizedString(
                 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET",
                 comment: "The incoming bubble text when setting a preset"
             )
@@ -514,7 +514,7 @@ class BlurButton: UIButton {
 
         label.font = .semiboldFont(ofSize: 14)
         label.textColor = .white
-        label.text = NSLocalizedString("WALLPAPER_PREVIEW_BLUR_BUTTON",
+        label.text = OWSLocalizedString("WALLPAPER_PREVIEW_BLUR_BUTTON",
                                        comment: "Blur button on wallpaper preview.")
         addSubview(label)
         label.autoPinHeightToSuperviewMargins()

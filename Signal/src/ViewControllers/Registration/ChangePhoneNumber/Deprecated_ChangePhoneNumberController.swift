@@ -142,7 +142,7 @@ class Deprecated_ChangePhoneNumberController: Dependencies {
             }
 
             navigationController.popToViewController(rootViewController, animated: true) {
-                let format = NSLocalizedString(
+                let format = OWSLocalizedString(
                     "SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT",
                     comment: "Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }}")
                 OWSActionSheets.showActionSheet(
@@ -175,7 +175,7 @@ class Deprecated_ChangePhoneNumberController: Dependencies {
             }
 
             Logger.warn("Error: \(error)")
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
+            OWSActionSheets.showActionSheet(title: OWSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
                                             message: error.userErrorDescription,
                                             fromViewController: fromViewController)
         }

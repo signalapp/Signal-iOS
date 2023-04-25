@@ -191,7 +191,7 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func didTapBrokenVideo() {
-        let toastText = NSLocalizedString("VIDEO_BROKEN",
+        let toastText = OWSLocalizedString("VIDEO_BROKEN",
                                           comment: "Toast alert text shown when tapping on a video that cannot be played.")
         presentToastCVC(toastText)
     }
@@ -417,14 +417,14 @@ extension ConversationViewController: CVComponentDelegate {
         headerImageView.autoSetDimension(.height, toSize: 110)
 
         let displayName = contactsManager.displayName(for: address)
-        let messageFormat = NSLocalizedString("UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT",
+        let messageFormat = OWSLocalizedString("UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT",
                                               comment: "Description for the unverified safety number change. Embeds {name of contact with identity change}")
 
         let actionSheet = ActionSheetController(title: nil,
                                                 message: String(format: messageFormat, displayName))
         actionSheet.customHeader = headerView
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION",
                                                                          comment: "Action to verify a safety number after it has changed"),
                                                 style: .default) { [weak self] _ in
             self?.showFingerprint(address: address)
@@ -440,13 +440,13 @@ extension ConversationViewController: CVComponentDelegate {
         AssertIsOnMainThread()
 
         let keyOwner = contactsManager.displayName(for: message.theirSignalAddress())
-        let titleFormat = NSLocalizedString("SAFETY_NUMBERS_ACTIONSHEET_TITLE", comment: "Action sheet heading")
+        let titleFormat = OWSLocalizedString("SAFETY_NUMBERS_ACTIONSHEET_TITLE", comment: "Action sheet heading")
         let titleText = String(format: titleFormat, keyOwner)
 
         let actionSheet = ActionSheetController(title: titleText, message: nil)
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SHOW_SAFETY_NUMBER_ACTION",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SHOW_SAFETY_NUMBER_ACTION",
                                                                          comment: "Action sheet item"),
                                                 accessibilityIdentifier: "show_safety_number",
                                                 style: .default) { [weak self] _ in
@@ -454,7 +454,7 @@ extension ConversationViewController: CVComponentDelegate {
             self?.showFingerprint(address: message.theirSignalAddress())
         })
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ACCEPT_NEW_IDENTITY_ACTION",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("ACCEPT_NEW_IDENTITY_ACTION",
                                                                          comment: "Action sheet item"),
                                                 accessibilityIdentifier: "accept_safety_number",
                                                 style: .default) { _ in
@@ -484,14 +484,14 @@ extension ConversationViewController: CVComponentDelegate {
         let threadName = databaseStorage.read { transaction in
             Self.contactsManager.displayName(for: self.thread, transaction: transaction)
         }
-        let alertMessage = String(format: NSLocalizedString("CORRUPTED_SESSION_DESCRIPTION",
+        let alertMessage = String(format: OWSLocalizedString("CORRUPTED_SESSION_DESCRIPTION",
                                                             comment: "ActionSheet title"),
                                   threadName)
         let alert = ActionSheetController(title: nil, message: alertMessage)
 
         alert.addAction(OWSActionSheets.cancelAction)
 
-        alert.addAction(ActionSheetAction(title: NSLocalizedString("FINGERPRINT_SHRED_KEYMATERIAL_BUTTON",
+        alert.addAction(ActionSheetAction(title: OWSLocalizedString("FINGERPRINT_SHRED_KEYMATERIAL_BUTTON",
                                                                    comment: ""),
                                           accessibilityIdentifier: "reset_session",
                                           style: .default) { [weak self] _ in
@@ -524,9 +524,9 @@ extension ConversationViewController: CVComponentDelegate {
         headerImageView.autoSetDimension(.width, toSize: 200)
         headerImageView.autoSetDimension(.height, toSize: 110)
 
-        ContactSupportAlert.presentAlert(title: NSLocalizedString("SESSION_REFRESH_ALERT_TITLE",
+        ContactSupportAlert.presentAlert(title: OWSLocalizedString("SESSION_REFRESH_ALERT_TITLE",
                                                                   comment: "Title for the session refresh alert"),
-                                         message: NSLocalizedString("SESSION_REFRESH_ALERT_MESSAGE",
+                                         message: OWSLocalizedString("SESSION_REFRESH_ALERT_MESSAGE",
                                                                     comment: "Description for the session refresh alert"),
                                          emailSupportFilter: "Signal iOS Session Refresh",
                                          fromViewController: self,

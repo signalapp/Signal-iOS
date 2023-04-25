@@ -18,7 +18,7 @@ public class CreditOrDebitCardReadMoreSheetViewController: OWSTableSheetViewCont
             headerLabel.font = .dynamicTypeTitle2.semibold()
             headerLabel.textAlignment = .center
             headerLabel.numberOfLines = 0
-            headerLabel.text = NSLocalizedString(
+            headerLabel.text = OWSLocalizedString(
                 "CARD_DONATION_READ_MORE_SHEET_TITLE",
                 comment: "Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet."
             )
@@ -26,7 +26,7 @@ public class CreditOrDebitCardReadMoreSheetViewController: OWSTableSheetViewCont
             let descriptionLabel = UILabel()
             descriptionLabel.font = .dynamicTypeBody
             descriptionLabel.numberOfLines = 0
-            descriptionLabel.text = NSLocalizedString(
+            descriptionLabel.text = OWSLocalizedString(
                 "CARD_DONATION_READ_MORE_SHEET_BODY",
                 comment: "Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet."
             )

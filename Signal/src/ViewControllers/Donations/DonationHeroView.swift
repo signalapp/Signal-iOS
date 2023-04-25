@@ -29,7 +29,7 @@ class DonationHeroView: UIStackView {
         let titleLabel = UILabel()
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
-        titleLabel.text = NSLocalizedString(
+        titleLabel.text = OWSLocalizedString(
             "DONATION_SCREENS_HEADER_TITLE",
             comment: "On donation screens, a small amount of information text is shown. This is the title for that text."
         )
@@ -53,7 +53,7 @@ class DonationHeroView: UIStackView {
     }
 
     public func rerender() {
-        let descriptionBodyText = NSLocalizedString(
+        let descriptionBodyText = OWSLocalizedString(
             "DONATION_SCREENS_HEADER_DESCRIPTION",
             comment: "On donation screens, a small amount of information text is shown. This is the subtitle for that text."
         )
@@ -61,7 +61,7 @@ class DonationHeroView: UIStackView {
         // handle the tapping ourselves. We use a "fake" URL because BonMot
         // needs one.
         let linkPart = StringStyle.Part.link(SupportConstants.subscriptionFAQURL)
-        let readMoreText = NSLocalizedString(
+        let readMoreText = OWSLocalizedString(
             "DONATION_SCREENS_HEADER_READ_MORE",
             comment: "On donation screens, a small amount of information text is shown. Users can click this link to learn more information."
         ).styled(with: linkPart)

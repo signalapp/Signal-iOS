@@ -38,7 +38,7 @@ public class LongTextViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = NSLocalizedString("LONG_TEXT_VIEW_TITLE",
+        navigationItem.title = OWSLocalizedString("LONG_TEXT_VIEW_TITLE",
                                                  comment: "Title for the 'long text message' view.")
 
         createViews()

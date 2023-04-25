@@ -429,7 +429,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         dismissKeyBoard()
 
         if payments.isKillSwitchActive {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH",
                                                                       comment: "Error message indicating that payments cannot be sent because the feature is not currently available."))
             return
         }
@@ -473,7 +473,7 @@ public extension ConversationViewController {
 
         Logger.error("\(errorMessage)")
 
-        OWSActionSheets.showActionSheet(title: NSLocalizedString("ATTACHMENT_ERROR_ALERT_TITLE",
+        OWSActionSheets.showActionSheet(title: OWSLocalizedString("ATTACHMENT_ERROR_ALERT_TITLE",
                                                                  comment: "The title of the 'attachment error' alert."),
                                         message: errorMessage)
     }
@@ -524,7 +524,7 @@ fileprivate extension ConversationViewController {
             authorizedBehavior: .runAction({
                 let contactsPicker = ContactsPicker(allowsMultipleSelection: false, subtitleCellType: .none)
                 contactsPicker.contactsPickerDelegate = self
-                contactsPicker.title = NSLocalizedString(
+                contactsPicker.title = OWSLocalizedString(
                     "CONTACT_PICKER_TITLE",
                     comment: "navbar title for contact picker when sharing a contact"
                 )
@@ -714,9 +714,9 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             Logger.info("User picked directory.")
 
             DispatchQueue.main.async {
-                OWSActionSheets.showActionSheet(title: NSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
+                OWSActionSheets.showActionSheet(title: OWSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
                                                                          comment: "Alert title when picking a document fails because user picked a directory/bundle"),
-                                                message: NSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
+                                                message: OWSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
                                                                            comment: "Alert body when picking a document fails because user picked a directory/bundle"))
             }
             return
@@ -727,7 +727,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
                 return filename
             }
             owsFailDebug("Unable to determine filename")
-            return NSLocalizedString("ATTACHMENT_DEFAULT_FILENAME",
+            return OWSLocalizedString("ATTACHMENT_DEFAULT_FILENAME",
                                      comment: "Generic filename for an attachment with no known name")
         }()
 
@@ -742,7 +742,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
         }
         guard let dataSource = buildDataSource() else {
             DispatchQueue.main.async {
-                OWSActionSheets.showActionSheet(title: NSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
+                OWSActionSheets.showActionSheet(title: OWSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
                                                                          comment: "Alert title when picking a document fails for an unknown reason"))
             }
             return

@@ -58,13 +58,13 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
 
         let addressSection = OWSTableSection()
         addressSection.hasBackground = false
-        addressSection.headerTitle = NSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy")
+        addressSection.headerTitle = OWSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy")
         contents.addSection(addressSection)
         addressSection.add(.label(withText: proxyHost))
 
         let actionsSection = OWSTableSection()
         actionsSection.hasBackground = false
-        actionsSection.headerTitle = NSLocalizedString("DO_YOU_WANT_TO_USE_PROXY", comment: "Title for the proxy confirmation")
+        actionsSection.headerTitle = OWSLocalizedString("DO_YOU_WANT_TO_USE_PROXY", comment: "Title for the proxy confirmation")
         contents.addSection(actionsSection)
         actionsSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
@@ -80,7 +80,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
                         self?.dismiss(animated: true)
                     }),
                 self.button(
-                    title: NSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy"),
+                    title: OWSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy"),
                     titleColor: .ows_accentBlue,
                     touchHandler: { [weak self] in
                         Self.databaseStorage.write {
@@ -90,9 +90,9 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
                         let presentingVC = self?.presentingViewController
                         ProxyConnectionChecker.checkConnectionAndNotify { connected in
                             if connected {
-                                presentingVC?.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
+                                presentingVC?.presentToast(text: OWSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
                             } else {
-                                presentingVC?.presentToast(text: NSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
+                                presentingVC?.presentToast(text: OWSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
                                 Self.databaseStorage.write { transaction in
                                     SignalProxy.setProxyHost(host: proxyHost, useProxy: false, transaction: transaction)
                                 }

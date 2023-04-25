@@ -68,9 +68,9 @@ extension GroupViewHelper {
     }
 
     func memberActionSheetMakeGroupAdminWasSelected(address: SignalServiceAddress) {
-        let titleFormat = NSLocalizedString("CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT",
+        let titleFormat = OWSLocalizedString("CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT",
                                             comment: "Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}.")
-        let actionTitle =  NSLocalizedString("CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON",
+        let actionTitle =  OWSLocalizedString("CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON",
                                              comment: "Label for 'make group admin' button in conversation settings view.")
         showMemberActionConfirmationActionSheet(address: address,
                                                 titleFormat: titleFormat,
@@ -99,9 +99,9 @@ extension GroupViewHelper {
     }
 
     func memberActionSheetRevokeGroupAdminWasSelected(address: SignalServiceAddress) {
-        let titleFormat = NSLocalizedString("CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT",
+        let titleFormat = OWSLocalizedString("CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT",
                                             comment: "Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}.")
-        let actionTitle =  NSLocalizedString("CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON",
+        let actionTitle =  OWSLocalizedString("CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON",
                                              comment: "Label for 'revoke group admin' button in conversation settings view.")
         showMemberActionConfirmationActionSheet(address: address,
                                                 titleFormat: titleFormat,
@@ -133,9 +133,9 @@ extension GroupViewHelper {
     }
 
     func presentRemoveFromGroupActionSheet(address: SignalServiceAddress) {
-        let titleFormat = NSLocalizedString("CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT",
+        let titleFormat = OWSLocalizedString("CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT",
                                             comment: "Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}.")
-        let actionTitle =  NSLocalizedString("CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
+        let actionTitle =  OWSLocalizedString("CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
                                              comment: "Label for 'remove from group' button in conversation settings view.")
         showMemberActionConfirmationActionSheet(address: address,
                                                 titleFormat: titleFormat,

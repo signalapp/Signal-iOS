@@ -27,7 +27,7 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE",
                                   comment: "Label for the 'send payment to recipient' view in the payment settings.")
 
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)

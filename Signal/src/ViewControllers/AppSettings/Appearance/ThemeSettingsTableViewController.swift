@@ -10,7 +10,7 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
+        title = OWSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
                                   comment: "The title for the theme section in the appearance settings.")
 
         updateTableContents()
@@ -20,7 +20,7 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let themeSection = OWSTableSection()
-        themeSection.headerTitle = NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
+        themeSection.headerTitle = OWSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
                                                      comment: "The title for the theme section in the appearance settings.")
 
         if #available(iOS 13, *) {
@@ -56,13 +56,13 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
     static func nameForTheme(_ mode: ThemeMode) -> String {
         switch mode {
         case .dark:
-            return NSLocalizedString("APPEARANCE_SETTINGS_DARK_THEME_NAME",
+            return OWSLocalizedString("APPEARANCE_SETTINGS_DARK_THEME_NAME",
                                      comment: "Name indicating that the dark theme is enabled.")
         case .light:
-            return NSLocalizedString("APPEARANCE_SETTINGS_LIGHT_THEME_NAME",
+            return OWSLocalizedString("APPEARANCE_SETTINGS_LIGHT_THEME_NAME",
                                      comment: "Name indicating that the light theme is enabled.")
         case .system:
-            return NSLocalizedString("APPEARANCE_SETTINGS_SYSTEM_THEME_NAME",
+            return OWSLocalizedString("APPEARANCE_SETTINGS_SYSTEM_THEME_NAME",
                                      comment: "Name indicating that the system theme is enabled.")
         }
     }

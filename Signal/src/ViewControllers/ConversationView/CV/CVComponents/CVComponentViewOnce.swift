@@ -306,17 +306,17 @@ fileprivate extension CVComponentViewOnce {
             owsFailDebug("Invalid value.")
             return buildDefaultConfig(text: CommonStrings.genericError)
         case .incomingExpired:
-            let text = NSLocalizedString("PER_MESSAGE_EXPIRATION_VIEWED",
+            let text = OWSLocalizedString("PER_MESSAGE_EXPIRATION_VIEWED",
                                          comment: "Label for view-once messages indicating that the local user has viewed the message's contents.")
             return buildDefaultConfig(text: text)
         case .incomingDownloading:
-            let text = NSLocalizedString("MESSAGE_STATUS_DOWNLOADING", comment: "message status while message is downloading.")
+            let text = OWSLocalizedString("MESSAGE_STATUS_DOWNLOADING", comment: "message status while message is downloading.")
             return buildDefaultConfig(text: text)
         case .incomingFailed:
             let text = CommonStrings.retryButton
             return buildDefaultConfig(text: text)
         case .incomingPending:
-            let text = NSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons.")
+            let text = OWSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons.")
             return buildDefaultConfig(text: text)
         case .incomingAvailable:
             let text: String
@@ -335,11 +335,11 @@ fileprivate extension CVComponentViewOnce {
             return buildDefaultConfig(text: text)
         case .outgoingSending,
              .outgoingSentExpired:
-            let text = NSLocalizedString(
+            let text = OWSLocalizedString(
                 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE", comment: "Label for outgoing view-once messages.")
             return buildDefaultConfig(text: text)
         case .incomingInvalidContent:
-            let text = NSLocalizedString(
+            let text = OWSLocalizedString(
                 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT", comment: "Label for view-once messages that have invalid content.")
             // Reconfigure label for this state only.
             return CVLabelConfig(text: text,

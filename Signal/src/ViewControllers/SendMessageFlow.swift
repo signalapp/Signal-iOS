@@ -332,7 +332,7 @@ extension SendMessageFlow {
             return
         }
 
-        let message = NSLocalizedString("ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE",
+        let message = OWSLocalizedString("ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE",
                                         comment: "Generic notice when message failed to send.")
         let actionSheet = ActionSheetController(title: CommonStrings.errorAlertTitle,
                                                 message: message)
@@ -502,9 +502,9 @@ extension SendMessageFlow: TextApprovalViewControllerDelegate {
     func textApprovalCustomTitle(_ textApproval: TextApprovalViewController) -> String? {
         switch flowType {
         case .`default`:
-            return NSLocalizedString("MESSAGE_APPROVAL_DIALOG_TITLE", comment: "Title for the 'message approval' dialog.")
+            return OWSLocalizedString("MESSAGE_APPROVAL_DIALOG_TITLE", comment: "Title for the 'message approval' dialog.")
         case .forward:
-            return NSLocalizedString("FORWARD_MESSAGE", comment: "Label and title for 'message forwarding' views.")
+            return OWSLocalizedString("FORWARD_MESSAGE", comment: "Label and title for 'message forwarding' views.")
         }
     }
 
@@ -540,7 +540,7 @@ extension SendMessageFlow: ContactShareApprovalViewControllerDelegate {
         case .`default`:
             return nil
         case .forward:
-            return NSLocalizedString("FORWARD_CONTACT", comment: "Label and title for 'contact forwarding' views.")
+            return OWSLocalizedString("FORWARD_CONTACT", comment: "Label and title for 'contact forwarding' views.")
         }
     }
 

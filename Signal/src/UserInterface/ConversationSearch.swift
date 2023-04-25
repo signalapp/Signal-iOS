@@ -314,9 +314,9 @@ public class SearchResultsBar: UIView {
         }
 
         if resultSet.messages.count == 0 {
-            labelItem.title = NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS", comment: "keyboard toolbar label when no messages match the search string")
+            labelItem.title = OWSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS", comment: "keyboard toolbar label when no messages match the search string")
         } else {
-            let format = NSLocalizedString("CONVERSATION_SEARCH_RESULTS_%d_%d", tableName: "PluralAware",
+            let format = OWSLocalizedString("CONVERSATION_SEARCH_RESULTS_%d_%d", tableName: "PluralAware",
                                            comment: "keyboard toolbar label when more than one or more messages matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}}")
 
             guard let currentIndex = currentIndex else {

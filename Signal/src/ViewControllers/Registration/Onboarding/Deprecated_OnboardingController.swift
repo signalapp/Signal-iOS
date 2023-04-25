@@ -793,7 +793,7 @@ public class Deprecated_OnboardingController: NSObject {
             }
 
             Logger.verbose("error: \(error.domain) \(error.code)")
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
+            OWSActionSheets.showActionSheet(title: OWSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
                                 message: error.userErrorDescription,
                                 fromViewController: fromViewController)
         }

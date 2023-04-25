@@ -102,13 +102,13 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         if !isEditable, let groupName = helper.groupNameCurrent {
             title = groupName
         } else if isEditable, remainingGlyphCount <= 100 {
-            let titleFormat = NSLocalizedString(
+            let titleFormat = OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_TITLE_FORMAT",
                 comment: "Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}."
             )
             title = String(format: titleFormat, OWSFormat.formatInt(remainingGlyphCount))
         } else {
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_TITLE",
                 comment: "Title for the group description view."
             )
@@ -198,7 +198,7 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         ))
 
         if isEditable {
-            section.footerTitle = NSLocalizedString(
+            section.footerTitle = OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER",
                 comment: "Footer text when editing the group description"
             )

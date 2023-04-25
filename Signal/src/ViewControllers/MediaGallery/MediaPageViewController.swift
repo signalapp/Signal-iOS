@@ -361,7 +361,7 @@ class MediaPageViewController: UIPageViewController {
         // TODO: Video Playback Speed
         // TODO: Edit
         contextMenuActions.append(ContextMenuAction(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
                 comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video."
             ),

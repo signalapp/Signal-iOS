@@ -29,7 +29,7 @@ class PaymentsHistoryViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_ALL_RECORDS",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_ALL_RECORDS",
                                   comment: "Label for the 'all payment records' section of the app settings.")
 
         createSubviews()
@@ -54,17 +54,17 @@ class PaymentsHistoryViewController: OWSTableViewController2 {
 
     private func createSubviews() {
         assert(PaymentsHistoryDataSource.RecordType.all.rawValue == 0)
-        modeControl.insertSegment(withTitle: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL",
+        modeControl.insertSegment(withTitle: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL",
                                                                comment: "Label for the 'all payments' mode of the 'all payment records' section of the app settings."),
                                   at: PaymentsHistoryDataSource.RecordType.all.rawValue,
                                   animated: false)
         assert(PaymentsHistoryDataSource.RecordType.incoming.rawValue == 1)
-        modeControl.insertSegment(withTitle: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_TYPE_INCOMING",
+        modeControl.insertSegment(withTitle: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_TYPE_INCOMING",
                                                                comment: "Label for the 'incoming payments' mode of the 'all payment records' section of the app settings."),
                                   at: PaymentsHistoryDataSource.RecordType.incoming.rawValue,
                                   animated: false)
         assert(PaymentsHistoryDataSource.RecordType.outgoing.rawValue == 2)
-        modeControl.insertSegment(withTitle: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING",
+        modeControl.insertSegment(withTitle: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING",
                                                                comment: "Label for the 'outgoing payments' mode of the 'all payment records' section of the app settings."),
                                   at: PaymentsHistoryDataSource.RecordType.outgoing.rawValue,
                                   animated: false)

@@ -47,7 +47,7 @@ public class LocationPicker: UIViewController {
 
     private lazy var searchBar: UISearchBar = {
         let searchBar = self.searchController.searchBar
-        searchBar.placeholder = NSLocalizedString("LOCATION_PICKER_SEARCH_PLACEHOLDER",
+        searchBar.placeholder = OWSLocalizedString("LOCATION_PICKER_SEARCH_PLACEHOLDER",
                                                   comment: "A string indicating that the user can search for a location")
         return searchBar
     }()
@@ -94,7 +94,7 @@ public class LocationPicker: UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("LOCATION_PICKER_TITLE", comment: "The title for the location picker view")
+        title = OWSLocalizedString("LOCATION_PICKER_TITLE", comment: "The title for the location picker view")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(named: "x-24")?.withRenderingMode(.alwaysTemplate),
@@ -173,9 +173,9 @@ public class LocationPicker: UIViewController {
         case .denied, .restricted:
             // The user previous explicitly denied access. Point them to settings to re-enable.
             let alert = ActionSheetController(
-                title: NSLocalizedString("MISSING_LOCATION_PERMISSION_TITLE",
+                title: OWSLocalizedString("MISSING_LOCATION_PERMISSION_TITLE",
                                          comment: "Alert title indicating the user has denied location permissions"),
-                message: NSLocalizedString("MISSING_LOCATION_PERMISSION_MESSAGE",
+                message: OWSLocalizedString("MISSING_LOCATION_PERMISSION_MESSAGE",
                                            comment: "Alert body indicating the user has denied location permissions")
             )
             let openSettingsAction = ActionSheetAction(

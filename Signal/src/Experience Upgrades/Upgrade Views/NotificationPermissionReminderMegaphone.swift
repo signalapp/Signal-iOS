@@ -12,45 +12,45 @@ class NotificationPermissionReminderMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
-        titleText = NSLocalizedString("NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE",
+        titleText = OWSLocalizedString("NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE",
                                       comment: "Title for notification permission reminder megaphone")
-        bodyText = NSLocalizedString("NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY",
+        bodyText = OWSLocalizedString("NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY",
                                      comment: "Body for notification permission reminder megaphone")
         imageName = "notificationMegaphone"
 
-        let primaryButtonTitle = NSLocalizedString("NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION",
+        let primaryButtonTitle = OWSLocalizedString("NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION",
                                                    comment: "Action text for notification permission reminder megaphone")
 
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
             guard let self = self else { return }
 
             let turnOnView = TurnOnPermissionView(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE",
                     comment: "Title for notification permission action sheet"
                 ),
-                message: NSLocalizedString(
+                message: OWSLocalizedString(
                     "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY",
                     comment: "Body for notification permission action sheet"
                 ),
                 steps: [
                     .init(
                         icon: nil,
-                        text: NSLocalizedString(
+                        text: OWSLocalizedString(
                             "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE",
                             comment: "First step for notification permission action sheet"
                         )
                     ),
                     .init(
                         icon: #imageLiteral(resourceName: "notifications-32"),
-                        text: NSLocalizedString(
+                        text: OWSLocalizedString(
                             "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO",
                             comment: "Second step for notification permission action sheet"
                         )
                     ),
                     .init(
                         icon: #imageLiteral(resourceName: "toggle-32"),
-                        text: NSLocalizedString(
+                        text: OWSLocalizedString(
                             "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE",
                             comment: "Third step for notification permission action sheet"
                         )
@@ -67,7 +67,7 @@ class NotificationPermissionReminderMegaphone: MegaphoneView {
 
         let secondaryButton = snoozeButton(
             fromViewController: fromViewController,
-            snoozeTitle: NSLocalizedString("NOTIFICATION_PERMISSION_NOT_NOW_ACTION",
+            snoozeTitle: OWSLocalizedString("NOTIFICATION_PERMISSION_NOT_NOW_ACTION",
                                            comment: "Snooze action text for contact permission reminder megaphone")
         )
         setButtons(primary: primaryButton, secondary: secondaryButton)

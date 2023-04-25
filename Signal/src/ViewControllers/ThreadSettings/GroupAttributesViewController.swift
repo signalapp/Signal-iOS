@@ -52,7 +52,7 @@ class GroupAttributesViewController: OWSTableViewController2 {
 
         view.backgroundColor = Theme.backgroundColor
 
-        title = NSLocalizedString("EDIT_GROUP_DEFAULT_TITLE", comment: "The navbar title for the 'update group' view.")
+        title = OWSLocalizedString("EDIT_GROUP_DEFAULT_TITLE", comment: "The navbar title for the 'update group' view.")
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
@@ -86,7 +86,7 @@ class GroupAttributesViewController: OWSTableViewController2 {
         let nameAndDescriptionSection = OWSTableSection()
         nameAndDescriptionSection.add(.disclosureItem(
             icon: .settingsAddToGroup,
-            name: helper.groupNameCurrent ?? NSLocalizedString(
+            name: helper.groupNameCurrent ?? OWSLocalizedString(
                 "GROUP_NAME_VIEW_TITLE",
                 comment: "Title for the group name view."
             ),
@@ -103,7 +103,7 @@ class GroupAttributesViewController: OWSTableViewController2 {
         ))
         nameAndDescriptionSection.add(.disclosureItem(
             icon: .compose24,
-            name: helper.groupDescriptionCurrent ?? NSLocalizedString(
+            name: helper.groupDescriptionCurrent ?? OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_TITLE",
                 comment: "Title for the group description view."
             ),
@@ -191,16 +191,16 @@ extension GroupAttributesViewController {
         saveBlock: @escaping () -> Void,
         discardBlock: @escaping () -> Void
     ) {
-        let actionSheet = ActionSheetController(title: NSLocalizedString("EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
+        let actionSheet = ActionSheetController(title: OWSLocalizedString("EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
                                                                          comment: "The alert title if user tries to exit update group view without saving changes."),
-                                                message: NSLocalizedString("EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
+                                                message: OWSLocalizedString("EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
                                                                           comment: "The alert message if user tries to exit update group view without saving changes."))
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.saveButton,
                                                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromViewController, name: "save"),
                                                 style: .default) { _ in
                                                     saveBlock()
         })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ALERT_DONT_SAVE",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("ALERT_DONT_SAVE",
                                                                          comment: "The label for the 'don't save' button in action sheets."),
                                                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromViewController, name: "dont_save"),
                                                 style: .destructive) { _ in

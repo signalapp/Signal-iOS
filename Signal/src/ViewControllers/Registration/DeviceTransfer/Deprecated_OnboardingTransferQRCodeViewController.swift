@@ -19,7 +19,7 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
         view.backgroundColor = Theme.backgroundColor
 
         let titleLabel = self.createTitleLabel(
-            text: NSLocalizedString("DEVICE_TRANSFER_QRCODE_TITLE",
+            text: OWSLocalizedString("DEVICE_TRANSFER_QRCODE_TITLE",
                                     comment: "The title for the device transfer qr code view")
         )
         primaryView.addSubview(titleLabel)
@@ -27,7 +27,7 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
         titleLabel.setContentHuggingHigh()
 
         let explanationLabel = self.createExplanationLabel(
-            explanationText: NSLocalizedString("DEVICE_TRANSFER_QRCODE_EXPLANATION",
+            explanationText: OWSLocalizedString("DEVICE_TRANSFER_QRCODE_EXPLANATION",
                                                comment: "The explanation for the device transfer qr code view")
         )
         explanationLabel.accessibilityIdentifier = "onboarding.transferQRCode.bodyLabel"
@@ -36,13 +36,13 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
         qrCodeView.setContentHuggingVerticalLow()
 
         let explanationLabel2 = self.createExplanationLabel(
-            explanationText: NSLocalizedString("DEVICE_TRANSFER_QRCODE_EXPLANATION2",
+            explanationText: OWSLocalizedString("DEVICE_TRANSFER_QRCODE_EXPLANATION2",
             comment: "The second explanation for the device transfer qr code view")
         )
         explanationLabel2.setContentHuggingHigh()
 
         let helpButton = self.linkButton(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "DEVICE_TRANSFER_QRCODE_NOT_SEEING",
                 comment: "A prompt to provide further explanation if the user is not seeing the transfer on both devices."
             ),
@@ -99,39 +99,39 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
     @objc
     func didTapHelp() {
         let turnOnView = TurnOnPermissionView(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE",
                 comment: "Title for local network permission action sheet"
             ),
-            message: NSLocalizedString(
+            message: OWSLocalizedString(
                 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY",
                 comment: "Body for local network permission action sheet"
             ),
             steps: [
                 .init(
                     icon: #imageLiteral(resourceName: "settings-app-icon-32"),
-                    text: NSLocalizedString(
+                    text: OWSLocalizedString(
                         "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE",
                         comment: "First step for local network permission action sheet"
                     )
                 ),
                 .init(
                     icon: #imageLiteral(resourceName: "AppIcon"),
-                    text: NSLocalizedString(
+                    text: OWSLocalizedString(
                         "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO",
                         comment: "Second step for local network permission action sheet"
                     )
                 ),
                 .init(
                     icon: #imageLiteral(resourceName: "toggle-32"),
-                    text: NSLocalizedString(
+                    text: OWSLocalizedString(
                         "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE",
                         comment: "Third step for local network permission action sheet"
                     )
                 )
             ],
             button: primaryButton(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP",
                     comment: "A button asking the user if they need further help getting their transfer working."
                 ),

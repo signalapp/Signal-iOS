@@ -26,7 +26,7 @@ extension RecipientPickerViewController {
         guard !groupThreads.isEmpty else { return nil }
 
         return OWSTableSection(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE",
                 comment: "Table section header for group listing when composing a new message"
             ),

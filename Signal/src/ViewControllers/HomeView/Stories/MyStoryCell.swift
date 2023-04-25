@@ -27,7 +27,7 @@ class MyStoryCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        titleLabel.text = NSLocalizedString("MY_STORIES_TITLE", comment: "Title for the 'My Stories' view")
+        titleLabel.text = OWSLocalizedString("MY_STORIES_TITLE", comment: "Title for the 'My Stories' view")
 
         let chevronImage = CurrentAppContext().isRTL ? UIImage(named: "chevron-left-20")! : UIImage(named: "chevron-right-20")!
 
@@ -155,15 +155,15 @@ class MyStoryCell: UITableViewCell {
         failedIconView.image = Theme.iconImage(.error16)
 
         if model.sendingCount > 0 {
-            let format = NSLocalizedString("STORY_SENDING_%d", tableName: "PluralAware", comment: "Indicates that N stories are currently sending")
+            let format = OWSLocalizedString("STORY_SENDING_%d", tableName: "PluralAware", comment: "Indicates that N stories are currently sending")
             subtitleLabel.text = .localizedStringWithFormat(format, model.sendingCount)
             failedIconView.isHiddenInStackView = model.failureState == .none
         } else if model.failureState != .none {
             switch model.failureState {
             case .complete:
-                subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+                subtitleLabel.text = OWSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
             case .partial:
-                subtitleLabel.text = NSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
+                subtitleLabel.text = OWSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
             case .none:
                 owsFailDebug("Unexpected")
             }
@@ -172,7 +172,7 @@ class MyStoryCell: UITableViewCell {
             subtitleLabel.text = DateUtil.formatTimestampRelatively(latestMessageTimestamp)
             failedIconView.isHiddenInStackView = true
         } else {
-            subtitleLabel.text = NSLocalizedString("MY_STORY_TAP_TO_ADD", comment: "Prompt to add to your story")
+            subtitleLabel.text = OWSLocalizedString("MY_STORY_TAP_TO_ADD", comment: "Prompt to add to your story")
             failedIconView.isHiddenInStackView = true
         }
 

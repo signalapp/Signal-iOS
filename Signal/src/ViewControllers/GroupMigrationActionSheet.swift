@@ -228,14 +228,14 @@ public class GroupMigrationActionSheet: UIView {
     private func buildUpgradeGroupContents(migrationInfo: GroupsV2MigrationInfo) -> [UIView] {
         var builder = Builder()
 
-        builder.addTitleLabel(text: NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE",
+        builder.addTitleLabel(text: OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE",
                                                       comment: "Title for the 'upgrade legacy group' alert view."))
         builder.addVerticalSpacer(height: 28)
 
-        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION",
+        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION",
                                                comment: "Explanation of new groups in the 'legacy group' alert views."))
         builder.addVerticalSpacer(height: 20)
-        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY",
+        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY",
                                                comment: "Body text for the second section of the 'upgrade legacy group' alert view."))
 
         owsAssertDebug(isFullMemberOfGroup)
@@ -246,10 +246,10 @@ public class GroupMigrationActionSheet: UIView {
                 if !membersToInvite.isEmpty {
                     builder.addVerticalSpacer(height: 20)
                     if membersToInvite.count == 1 {
-                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1",
+                        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1",
                                                                comment: "Body text for the 'invites member' section of the 'upgrade legacy group' alert view."))
                     } else {
-                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N",
+                        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N",
                                                                comment: "Body text for the 'invites members' section of the 'upgrade legacy group' alert view."))
                     }
                     for address in membersToInvite {
@@ -260,10 +260,10 @@ public class GroupMigrationActionSheet: UIView {
                 if !membersToDrop.isEmpty {
                     builder.addVerticalSpacer(height: 20)
                     if membersToDrop.count == 1 {
-                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1",
+                        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1",
                                                                comment: "Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view."))
                     } else {
-                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N",
+                        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N",
                                                                comment: "Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view."))
                     }
                     for address in membersToDrop {
@@ -276,7 +276,7 @@ public class GroupMigrationActionSheet: UIView {
 
         builder.addVerticalSpacer(height: 40)
 
-        builder.addBottomButton(title: NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON",
+        builder.addBottomButton(title: OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON",
                                                          comment: "Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view."),
                                 titleColor: .white,
                                 backgroundColor: .ows_accentBlue,
@@ -303,14 +303,14 @@ public class GroupMigrationActionSheet: UIView {
     private func buildTooManyMembersContents() -> [UIView] {
         var builder = Builder()
 
-        builder.addTitleLabel(text: NSLocalizedString("GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE",
+        builder.addTitleLabel(text: OWSLocalizedString("GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE",
                                                       comment: "Title for the 'can't upgrade legacy group' alert view."))
         builder.addVerticalSpacer(height: 28)
 
-        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION",
+        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION",
                                                comment: "Explanation of new groups in the 'legacy group' alert views."))
         builder.addVerticalSpacer(height: 20)
-        let descriptionFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT",
+        let descriptionFormat = OWSLocalizedString("GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT",
                                                   comment: "Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}.")
         let maxMemberCount = OWSFormat.formatUInt(RemoteConfig.groupsV2MaxGroupSizeHardLimit - 1)
         let description = String(format: descriptionFormat, maxMemberCount)
@@ -326,17 +326,17 @@ public class GroupMigrationActionSheet: UIView {
     private func buildSomeMembersCantMigrateContents() -> [UIView] {
         var builder = Builder()
 
-        builder.addTitleLabel(text: NSLocalizedString("GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE",
+        builder.addTitleLabel(text: OWSLocalizedString("GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE",
                                                       comment: "Title for the 'new groups' alert view."))
         builder.addVerticalSpacer(height: 28)
 
-        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION",
+        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION",
                                                comment: "Explanation of new groups in the 'legacy group' alert views."))
         builder.addVerticalSpacer(height: 20)
-        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1",
+        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1",
                                                comment: "Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views."))
         builder.addVerticalSpacer(height: 20)
-        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2",
+        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2",
                                                comment: "Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views."))
 
         builder.addVerticalSpacer(height: 100)
@@ -350,14 +350,14 @@ public class GroupMigrationActionSheet: UIView {
                                                 newGroupModel: TSGroupModel) -> [UIView] {
         var builder = Builder()
 
-        builder.addTitleLabel(text: NSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE",
+        builder.addTitleLabel(text: OWSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE",
                                                       comment: "Title for the 'migrated group' alert view."))
         builder.addVerticalSpacer(height: 28)
 
-        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION",
+        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION",
                                                comment: "Explanation of new groups in the 'legacy group' alert views."))
         builder.addVerticalSpacer(height: 20)
-        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION",
+        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION",
                                                comment: "Explanation of group migration for a migrated group in the 'legacy group' alert views."))
 
         let invitedMembers = oldGroupModel.groupMembership.fullMembers.intersection(newGroupModel.groupMembership.invitedMembers)
@@ -368,10 +368,10 @@ public class GroupMigrationActionSheet: UIView {
                 if !invitedMembers.isEmpty {
                     builder.addVerticalSpacer(height: 20)
                     if invitedMembers.count == 1 {
-                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1",
+                        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1",
                                                                comment: "Body text for the 'invites member' section of the 'upgrade legacy group' alert view."))
                     } else {
-                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N",
+                        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N",
                                                                comment: "Body text for the 'invites members' section of the 'upgrade legacy group' alert view."))
                     }
                     for address in invitedMembers {
@@ -382,10 +382,10 @@ public class GroupMigrationActionSheet: UIView {
                 if !droppedMembers.isEmpty {
                     builder.addVerticalSpacer(height: 20)
                     if droppedMembers.count == 1 {
-                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1",
+                        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1",
                                                                comment: "Body text for the 'dropped member' section of the 'upgrade legacy group' alert view."))
                     } else {
-                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N",
+                        builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N",
                                                                comment: "Body text for the 'dropped members' section of the 'upgrade legacy group' alert view."))
                     }
                     for address in droppedMembers {
@@ -396,7 +396,7 @@ public class GroupMigrationActionSheet: UIView {
             }
         } else if isInvitedMemberOfGroup {
             builder.addVerticalSpacer(height: 20)
-            builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED",
+            builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED",
                                                    comment: "Indicates that the local user needs to accept an invitation to rejoin the group after a group migration."))
         }
 
@@ -413,16 +413,16 @@ public class GroupMigrationActionSheet: UIView {
         var builder = Builder()
 
         if members.count > 1 {
-            builder.addTitleLabel(text: NSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N",
+            builder.addTitleLabel(text: OWSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N",
                                                           comment: "Title for the 're-add dropped group members' alert view."))
             builder.addVerticalSpacer(height: 28)
-            builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N",
+            builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N",
                                                    comment: "Explanation of 're-adding dropped group member' in the 'legacy group' alert views."))
         } else {
-            builder.addTitleLabel(text: NSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1",
+            builder.addTitleLabel(text: OWSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1",
                                                           comment: "Title for the 're-add dropped group members' alert view."))
             builder.addVerticalSpacer(height: 28)
-            builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1",
+            builder.addBodyLabel(OWSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1",
                                                    comment: "Explanation of 're-adding dropped group member' in the 'legacy group' alert views."))
         }
 
@@ -435,7 +435,7 @@ public class GroupMigrationActionSheet: UIView {
 
         builder.addVerticalSpacer(height: 16)
 
-        builder.addBottomButton(title: NSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON",
+        builder.addBottomButton(title: OWSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON",
                                                          comment: "Label for the 'add members' button in the 're-add dropped group members' alert view."),
                                 titleColor: .white,
                                 backgroundColor: .ows_accentBlue,
@@ -527,7 +527,7 @@ private extension GroupMigrationActionSheet {
     }
 
     private func showUpgradeSuccessToast() {
-        let text = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED",
+        let text = OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED",
                                      comment: "Message indicating the group update succeeded.")
         showToast(text: text)
     }
@@ -609,14 +609,14 @@ private extension GroupMigrationActionSheet {
             return
         }
 
-        let title = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE",
+        let title = OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE",
                                       comment: "Title for error alert indicating the group update failed.")
         let message: String
         if error.isNetworkConnectivityFailure {
-            message = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK",
+            message = OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK",
                                           comment: "Message for error alert indicating the group update failed due to network connectivity.")
         } else {
-            message = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE",
+            message = OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE",
                                         comment: "Message for error alert indicating the group update failed.")
         }
         OWSActionSheets.showActionSheet(title: title, message: message, fromViewController: actionSheetController)

@@ -11,7 +11,7 @@ class NotificationSettingsContentViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_NOTIFICATION_CONTENT_TITLE", comment: "")
+        title = OWSLocalizedString("SETTINGS_NOTIFICATION_CONTENT_TITLE", comment: "")
 
         updateTableContents()
     }
@@ -20,7 +20,7 @@ class NotificationSettingsContentViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let section = OWSTableSection()
-        section.footerTitle = NSLocalizedString("NOTIFICATIONS_FOOTER_WARNING", comment: "")
+        section.footerTitle = OWSLocalizedString("NOTIFICATIONS_FOOTER_WARNING", comment: "")
 
         let selectedType = preferences.notificationPreviewType()
         let allTypes: [NotificationType] = [.namePreview, .nameNoPreview, .noNameNoPreview]

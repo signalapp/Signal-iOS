@@ -197,7 +197,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 extension CVComponentSticker: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         // NOTE: We could include the strings used for sticker suggestion.
-        NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
+        OWSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
                           comment: "Accessibility label for stickers.")
     }
 }

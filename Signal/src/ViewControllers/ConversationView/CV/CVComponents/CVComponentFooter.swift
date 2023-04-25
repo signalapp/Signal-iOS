@@ -190,14 +190,14 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }()
 
         if isPendingOutgoingMessage {
-            return NSLocalizedString("MESSAGE_STATUS_PENDING",
+            return OWSLocalizedString("MESSAGE_STATUS_PENDING",
                                      comment: "Label indicating that a message send was paused.")
         } else if isFailedOutgoingMessage {
             if wasSentToAnyRecipient {
-                return NSLocalizedString("MESSAGE_STATUS_PARTIALLY_SENT",
+                return OWSLocalizedString("MESSAGE_STATUS_PARTIALLY_SENT",
                                          comment: "Label indicating that a message was only sent to some recipients.")
             } else {
-                return NSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
+                return OWSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
                                          comment: "Label indicating that a message failed to send.")
             }
         } else {
@@ -276,7 +276,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             owsFailDebug("Invalid interaction.")
             return nil
         }
-        let text = NSLocalizedString("CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
+        let text = OWSLocalizedString("CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
                                      comment: "Indicator on truncated text messages that they can be tapped to see the entire text message.")
         return CVLabelConfig(text: text,
                              font: UIFont.dynamicTypeSubheadlineClamped.semibold(),

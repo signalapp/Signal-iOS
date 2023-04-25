@@ -20,7 +20,7 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
-        searchBar.placeholder = NSLocalizedString("HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER", comment: "Placeholder text for search bar which filters conversations.")
+        searchBar.placeholder = OWSLocalizedString("HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER", comment: "Placeholder text for search bar which filters conversations.")
         searchBar.delegate = self
         searchBar.searchBarStyle = .minimal
         return searchBar

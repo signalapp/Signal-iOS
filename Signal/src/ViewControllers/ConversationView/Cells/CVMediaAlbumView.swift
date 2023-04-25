@@ -127,7 +127,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 
                 let moreCount = max(1, items.count - CVMediaAlbumView.kMaxItems)
                 let moreCountText = OWSFormat.formatInt(moreCount)
-                let moreText = String(format: NSLocalizedString("MEDIA_GALLERY_MORE_ITEMS_FORMAT",
+                let moreText = String(format: OWSLocalizedString("MEDIA_GALLERY_MORE_ITEMS_FORMAT",
                                                                 comment: "Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}."),
                                       moreCountText)
                 let moreLabel = CVLabel()

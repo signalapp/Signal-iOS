@@ -247,7 +247,7 @@ extension ConversationViewController {
     public func buildSelectionToolbar() -> MessageActionsToolbar {
         let deleteMessagesAction = MessageAction(
             .delete,
-            accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DELETE_SELECTED_MESSAGES",
+            accessibilityLabel: OWSLocalizedString("MESSAGE_ACTION_DELETE_SELECTED_MESSAGES",
                                                   comment: "accessibility label"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action",
                                                                     name: "delete_selected_messages"),
@@ -257,7 +257,7 @@ extension ConversationViewController {
         )
         let forwardMessagesAction = MessageAction(
             .forward,
-            accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES",
+            accessibilityLabel: OWSLocalizedString("MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES",
                                                   comment: "Action sheet button title"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action",
                                                                     name: "forward_selected_messages"),
@@ -280,7 +280,7 @@ extension ConversationViewController {
             return
         }
 
-        let messageFormat = NSLocalizedString("DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d", tableName: "PluralAware",
+        let messageFormat = OWSLocalizedString("DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d", tableName: "PluralAware",
                                               comment: "action sheet body. Embeds {{number of selected messages}} which will be deleted.")
         let message = String.localizedStringWithFormat(messageFormat, selectionItems.count)
         let alert = ActionSheetController(title: nil, message: message)
@@ -404,7 +404,7 @@ extension ConversationViewController {
     }
 
     var deleteAllBarButtonItem: UIBarButtonItem {
-        let title = NSLocalizedString("CONVERSATION_VIEW_DELETE_ALL_MESSAGES", comment: "button text to delete all items in the current conversation")
+        let title = OWSLocalizedString("CONVERSATION_VIEW_DELETE_ALL_MESSAGES", comment: "button text to delete all items in the current conversation")
         return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(didTapDeleteAll))
     }
 
@@ -416,9 +416,9 @@ extension ConversationViewController {
     @objc
     func didTapDeleteAll() {
         let thread = self.thread
-        let alert = ActionSheetController(title: nil, message: NSLocalizedString("DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY", comment: "action sheet body"))
+        let alert = ActionSheetController(title: nil, message: OWSLocalizedString("DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY", comment: "action sheet body"))
         alert.addAction(OWSActionSheets.cancelAction)
-        let deleteTitle = NSLocalizedString("DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON", comment: "button text")
+        let deleteTitle = OWSLocalizedString("DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON", comment: "button text")
         let delete = ActionSheetAction(title: deleteTitle, style: .destructive) { [weak self] _ in
             guard let self = self else { return }
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in

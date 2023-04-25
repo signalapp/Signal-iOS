@@ -17,13 +17,13 @@ final class HelpViewController: OWSTableViewController2 {
 
     private func updateTableContents() {
         let helpTitle = CommonStrings.help
-        let supportCenterLabel = NSLocalizedString("HELP_SUPPORT_CENTER",
+        let supportCenterLabel = OWSLocalizedString("HELP_SUPPORT_CENTER",
                                                    comment: "Help item that takes the user to the Signal support website")
-        let contactLabel = NSLocalizedString("HELP_CONTACT_US",
+        let contactLabel = OWSLocalizedString("HELP_CONTACT_US",
                                              comment: "Help item allowing the user to file a support request")
-        let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
+        let localizedSheetTitle = OWSLocalizedString("EMAIL_SIGNAL_TITLE",
                                                     comment: "Title for the fallback support sheet if user cannot send email")
-        let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
+        let localizedSheetMessage = OWSLocalizedString("EMAIL_SIGNAL_MESSAGE",
                                                       comment: "Description for the fallback support sheet if user cannot send email")
 
         let contents = OWSTableContents()
@@ -43,7 +43,7 @@ final class HelpViewController: OWSTableViewController2 {
                 guard ComposeSupportEmailOperation.canSendEmails else {
                     let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
                                                               message: localizedSheetMessage)
-                    let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+                    let buttonTitle = OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
                     fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
                     self.presentActionSheet(fallbackSheet)
                     return
@@ -56,10 +56,10 @@ final class HelpViewController: OWSTableViewController2 {
         contents.addSection(helpSection)
 
         let loggingSection = OWSTableSection()
-        loggingSection.headerTitle = NSLocalizedString("LOGGING_SECTION", comment: "Title for the 'logging' help section.")
-        loggingSection.footerTitle = NSLocalizedString("LOGGING_SECTION_FOOTER", comment: "Footer for the 'logging' help section.")
+        loggingSection.headerTitle = OWSLocalizedString("LOGGING_SECTION", comment: "Title for the 'logging' help section.")
+        loggingSection.footerTitle = OWSLocalizedString("LOGGING_SECTION_FOOTER", comment: "Footer for the 'logging' help section.")
         loggingSection.add(.switch(
-            withText: NSLocalizedString("SETTINGS_ADVANCED_DEBUGLOG", comment: ""),
+            withText: OWSLocalizedString("SETTINGS_ADVANCED_DEBUGLOG", comment: ""),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "enable_debug_log"),
             isOn: { OWSPreferences.isLoggingEnabled() },
             isEnabledBlock: { true },
@@ -68,7 +68,7 @@ final class HelpViewController: OWSTableViewController2 {
         ))
         if OWSPreferences.isLoggingEnabled() {
             loggingSection.add(.actionItem(
-                name: NSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: ""),
+                name: OWSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: ""),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "submit_debug_log"),
                 actionBlock: {
                     Logger.info("Submitting debug logs")
@@ -80,15 +80,15 @@ final class HelpViewController: OWSTableViewController2 {
         contents.addSection(loggingSection)
 
         let aboutSection = OWSTableSection()
-        aboutSection.headerTitle = NSLocalizedString("ABOUT_SECTION_TITLE", comment: "Title for the 'about' help section")
-        aboutSection.footerTitle = NSLocalizedString(
+        aboutSection.headerTitle = OWSLocalizedString("ABOUT_SECTION_TITLE", comment: "Title for the 'about' help section")
+        aboutSection.footerTitle = OWSLocalizedString(
             "SETTINGS_COPYRIGHT",
             comment: "Footer for the 'about' help section"
         )
-        aboutSection.add(.copyableItem(label: NSLocalizedString("SETTINGS_VERSION", comment: ""),
+        aboutSection.add(.copyableItem(label: OWSLocalizedString("SETTINGS_VERSION", comment: ""),
                                        value: AppVersion.shared.currentAppVersion4))
         aboutSection.add(.disclosureItem(
-            withText: NSLocalizedString("SETTINGS_LEGAL_TERMS_CELL", comment: ""),
+            withText: OWSLocalizedString("SETTINGS_LEGAL_TERMS_CELL", comment: ""),
             actionBlock: { [weak self] in
                 let url = TSConstants.legalTermsUrl
                 let vc = SFSafariViewController(url: url)

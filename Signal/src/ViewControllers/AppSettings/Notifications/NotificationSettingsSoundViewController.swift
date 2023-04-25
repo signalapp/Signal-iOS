@@ -29,7 +29,7 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString(
+        title = OWSLocalizedString(
             "SETTINGS_ITEM_NOTIFICATION_SOUND",
             comment: "Label for settings view that allows user to change the notification sound."
         )
@@ -77,7 +77,7 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
             let soundName: String
             if sound == OWSStandardSound.note.rawValue {
                 soundName = String(
-                    format: NSLocalizedString(
+                    format: OWSLocalizedString(
                         "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT",
                         comment: "Format string for the default 'Note' sound. Embeds the system {{sound name}}."
                     ),
@@ -97,7 +97,7 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
         }
 
         section.add(.disclosureItem(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND",
                 comment: "Label for settings UI that allows user to add a new notification sound."
             ),

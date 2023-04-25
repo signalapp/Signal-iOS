@@ -64,12 +64,12 @@ class GiftBadgeView: ManualStackView {
     private static func titleLabelConfig(for state: State) -> CVLabelConfig {
         let textFormat: String
         if state.isIncoming {
-            textFormat = NSLocalizedString(
+            textFormat = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT",
                 comment: "You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}."
             )
         } else {
-            textFormat = NSLocalizedString(
+            textFormat = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT",
                 comment: "You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}."
             )
@@ -89,7 +89,7 @@ class GiftBadgeView: ManualStackView {
     static func timeRemainingText(for expirationDate: Date) -> String {
         let timeRemaining = expirationDate.timeIntervalSinceNow
         guard timeRemaining > 0 else {
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED",
                 comment: "If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat."
             )
@@ -181,14 +181,14 @@ class GiftBadgeView: ManualStackView {
                 let attrString = NSMutableAttributedString()
                 attrString.appendTemplatedImage(named: "check-circle-outline-24", font: font)
                 attrString.append("\u{2004}\u{2009}")
-                attrString.append(NSLocalizedString(
+                attrString.append(OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED",
                     comment: "Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark."
                 ))
                 return attrString
             }
         } else {
-            nonAttributedString = NSLocalizedString(
+            nonAttributedString = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW",
                 comment: "A button shown on a donation message you send, to view additional details about the badge that was sent."
             )

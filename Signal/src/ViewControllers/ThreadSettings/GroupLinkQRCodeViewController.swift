@@ -22,7 +22,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("GROUP_LINK_QR_CODE_VIEW_TITLE",
+        title = OWSLocalizedString("GROUP_LINK_QR_CODE_VIEW_TITLE",
                                   comment: "The title for the 'group link QR code' view.")
         view.backgroundColor = Theme.backgroundColor
 
@@ -43,7 +43,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
         }
 
         let descriptionLabel = UILabel()
-        descriptionLabel.text = NSLocalizedString("GROUP_LINK_QR_CODE_VIEW_DESCRIPTION",
+        descriptionLabel.text = OWSLocalizedString("GROUP_LINK_QR_CODE_VIEW_DESCRIPTION",
                                                   comment: "Description text in the 'group link QR code' view.")
         descriptionLabel.textColor = Theme.secondaryTextAndIconColor
         descriptionLabel.font = .dynamicTypeFootnote
@@ -51,7 +51,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
         descriptionLabel.numberOfLines = 0
         descriptionLabel.lineBreakMode = .byWordWrapping
 
-        let shareCodeButton = OWSFlatButton.button(title: NSLocalizedString("GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON",
+        let shareCodeButton = OWSFlatButton.button(title: OWSLocalizedString("GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON",
                                                                             comment: "Label for the 'share code' button in the 'group link QR code' view."),
                                                    font: UIFont.dynamicTypeBody.semibold(),
                                                    titleColor: .white,

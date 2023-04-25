@@ -84,9 +84,9 @@ public class Deprecated_ProvisioningController: NSObject {
             guard let provisioningVersion = message.provisioningVersion,
                 provisioningVersion >= OWSDeviceProvisionerConstant.provisioningVersion else {
                     OWSActionSheets.showActionSheet(
-                        title: NSLocalizedString("SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE",
+                        title: OWSLocalizedString("SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE",
                                                  comment: "alert title for outdated linking device"),
-                        message: NSLocalizedString("SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE",
+                        message: OWSLocalizedString("SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE",
                                                    comment: "alert message for outdated linking device")
                     ) { _ in
                         self.resetPromises()
@@ -103,7 +103,7 @@ public class Deprecated_ProvisioningController: NSObject {
                 Logger.info("cancelled")
             default:
                 Logger.warn("error: \(error)")
-                let alert = ActionSheetController(title: NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title"),
+                let alert = ActionSheetController(title: OWSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title"),
                                                   message: error.userErrorDescription)
                 alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
                                                   accessibilityIdentifier: "alert.retry",
@@ -129,12 +129,12 @@ public class Deprecated_ProvisioningController: NSObject {
                 let alert: ActionSheetController
                 switch error {
                 case AccountManagerError.reregistrationDifferentAccount:
-                    let title = NSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE",
+                    let title = OWSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE",
                                                   comment: "Title for error alert indicating that re-linking failed because the account did not match.")
-                    let message = NSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE",
+                    let message = OWSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE",
                                                     comment: "Message for error alert indicating that re-linking failed because the account did not match.")
                     alert = ActionSheetController(title: title, message: message)
-                    alert.addAction(ActionSheetAction(title: NSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE",
+                    alert.addAction(ActionSheetAction(title: OWSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE",
                                                                                comment: "Label for the 'reset device' action in the 're-linking failed because the account did not match' alert."),
                                                       accessibilityIdentifier: "alert.reset_device",
                                                       style: .default,
@@ -142,13 +142,13 @@ public class Deprecated_ProvisioningController: NSObject {
                                                         Self.resetDeviceState()
                                                       }))
                 case SignalServiceError.obsoleteLinkedDevice:
-                    let title = NSLocalizedString("SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE",
+                    let title = OWSLocalizedString("SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE",
                                                   comment: "Title for error alert indicating that a linked device must be upgraded before it can be linked.")
-                    let message = NSLocalizedString("SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE",
+                    let message = OWSLocalizedString("SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE",
                                                     comment: "Message for error alert indicating that a linked device must be upgraded before it can be linked.")
                     alert = ActionSheetController(title: title, message: message)
 
-                    let updateButtonText = NSLocalizedString("APP_UPDATE_NAG_ALERT_UPDATE_BUTTON", comment: "Label for the 'update' button in the 'new app version available' alert.")
+                    let updateButtonText = OWSLocalizedString("APP_UPDATE_NAG_ALERT_UPDATE_BUTTON", comment: "Label for the 'update' button in the 'new app version available' alert.")
                     let updateAction = ActionSheetAction(title: updateButtonText,
                                                          accessibilityIdentifier: "alert.update",
                                                          style: .default) { _ in
@@ -160,7 +160,7 @@ public class Deprecated_ProvisioningController: NSObject {
                     alert = ActionSheetController(title: error.errorDescription, message: error.recoverySuggestion)
                     alert.addAction(ActionSheetAction(title: CommonStrings.okButton))
                 default:
-                    let title = NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title")
+                    let title = OWSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title")
                     let message = error.userErrorDescription
                     alert = ActionSheetController(title: title, message: message)
                     alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,

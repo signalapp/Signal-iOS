@@ -19,7 +19,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_TITLE",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_TITLE",
                                   comment: "Label for the 'de-activate payments' view of the app settings.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
@@ -103,21 +103,21 @@ public class PaymentsDeactivateViewController: OWSViewController {
         titleLabel.textAlignment = .center
 
         let subtitleLabel = UILabel()
-        subtitleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_REMAINING_BALANCE",
+        subtitleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_REMAINING_BALANCE",
                                                comment: "Label for the current balance in the 'deactivate payments' settings.")
         subtitleLabel.font = .dynamicTypeBodyClamped
         subtitleLabel.textColor = Theme.secondaryTextAndIconColor
         subtitleLabel.textAlignment = .center
 
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
-            text: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION",
+            text: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION",
                                     comment: "Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings."),
             font: .dynamicTypeBody2Clamped,
             learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_deactivate")
         explanationLabel.backgroundColor = backgroundColor
         explanationLabel.textAlignment = .center
 
-        let transferBalanceButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE",
+        let transferBalanceButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE",
                                                                                   comment: "Label for 'transfer balance' button in the 'deactivate payments' settings."),
                                                          font: UIFont.dynamicTypeBody.semibold(),
                                                          titleColor: .white,
@@ -126,7 +126,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
                                                          selector: #selector(didTapTransferBalanceButton))
         transferBalanceButton.autoSetHeightUsingFont()
 
-        let deactivateImmediatelyButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE",
+        let deactivateImmediatelyButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE",
                                                                                         comment: "Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings."),
                                                                font: UIFont.dynamicTypeBody.semibold(),
                                                                titleColor: .ows_accentRed,
@@ -194,7 +194,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
                 owsFailDebug("Error: \(error)")
 
                 modalActivityIndicator.dismiss {
-                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATION_FAILED",
+                    OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATION_FAILED",
                                                                               comment: "Error indicating that payments could not be deactivated in the payments settings."))
                 }
             }
@@ -203,12 +203,12 @@ public class PaymentsDeactivateViewController: OWSViewController {
 
     @objc
     private func didTapDeactivateImmediatelyButton() {
-        let actionSheet = ActionSheetController(title: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE",
+        let actionSheet = ActionSheetController(title: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE",
                                                                          comment: "Title for the 'deactivate payments confirmation' UI in the payment settings."),
-                                                message: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION",
+                                                message: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION",
                                                                            comment: "Description for the 'deactivate payments confirmation' UI in the payment settings."))
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_BUTTON",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_BUTTON",
                                                                          comment: "Label for the 'deactivate payments' button in the payment settings."),
                                                 accessibilityIdentifier: "payments.settings.deactivate.continue",
                                                 style: .destructive) { [weak self] _ in

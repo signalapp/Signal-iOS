@@ -19,12 +19,12 @@ class PaymentsDetailViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE",
                                   comment: "Label for the 'payments details' view of the app settings.")
 
         if !paymentItem.isUnidentified,
            FeatureFlags.paymentsScrubDetails {
-            let removeButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_REMOVE_BUTTON",
+            let removeButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_PAYMENTS_REMOVE_BUTTON",
                                                                              comment: "Label for the 'remove payments details' button in the app settings."),
                                                     font: UIFont.dynamicTypeBody.semibold(),
                                                     titleColor: Theme.secondaryTextAndIconColor,
@@ -202,7 +202,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         // Block
         if paymentModel.isUnidentified,
            paymentModel.mcLedgerBlockIndex > 0 {
-            section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX",
+            section.add(buildStatusItem(topText: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX",
                                                                    comment: "Label for the 'MobileCoin block index' in the payment details view in the app settings."),
                                         bottomText: OWSFormat.formatUInt64(paymentModel.mcLedgerBlockIndex)))
         }
@@ -215,19 +215,19 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                 let username = Self.contactsManager.displayName(for: address)
                 let titleFormat: String
                 if paymentItem.isIncoming {
-                    titleFormat = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT",
+                    titleFormat = OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT",
                                                     comment: "Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}.")
                 } else {
-                    titleFormat = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT",
+                    titleFormat = OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT",
                                                     comment: "Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}.")
                 }
                 title = String(format: titleFormat, username)
             } else {
                 if paymentItem.isIncoming {
-                    title = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED",
+                    title = OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED",
                                               comment: "Indicates that you received a payment in the payment details view in the app settings.")
                 } else {
-                    title = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT",
+                    title = OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT",
                                               comment: "Indicates that you sent a payment in the payment details view in the app settings.")
                 }
             }
@@ -248,7 +248,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                                    isShortForm: false,
                                                    withCurrencyCode: true,
                                                    withSpace: true)
-            section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE",
+            section.add(buildStatusItem(topText: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE",
                                                                    comment: "Label for the 'MobileCoin network fee' in the payment details view in the app settings."),
                                         bottomText: value))
         }
@@ -256,7 +256,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         // TODO: We might not want to include dates if an incoming
         //       transaction has not yet been verified.
 
-        section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS",
+        section.add(buildStatusItem(topText: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS",
                                                                comment: "Label for the transaction status in the payment details view in the app settings."),
                                     bottomText: paymentModel.statusDescription(isLongForm: true)))
 
@@ -273,7 +273,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             }()
             let value: String
             if let mcLedgerBlockDate = paymentItem.paymentModel.mcLedgerBlockDate {
-                let senderFormat = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT",
+                let senderFormat = OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT",
                                                      comment: "Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}.")
                 value = String(format: senderFormat,
                                sender,
@@ -281,15 +281,15 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             } else {
                 value = sender
             }
-            section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER",
+            section.add(buildStatusItem(topText: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER",
                                                                    comment: "Label for the sender in the payment details view in the app settings."),
                                         bottomText: value))
         }
 
         let footerText = (paymentModel.isDefragmentation
-                            ? NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION",
+                            ? OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION",
                                                 comment: "Footer string for the status section of the payment details view in the app settings for defragmentation transactions.")
-                            : NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER",
+                            : OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER",
                                                 comment: "Footer string for the status section of the payment details view in the app settings."))
         let footerLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: footerText,
@@ -373,9 +373,9 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
             let username = Self.contactsManager.displayName(for: address, transaction: transaction)
             let usernameFormat = (self.paymentItem.isIncoming
-                                    ? NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT",
+                                    ? OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT",
                                                         comment: "Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}.")
-                                    : NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT",
+                                    : OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT",
                                                         comment: "Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}."))
             usernameLabel.text = String(format: usernameFormat, username)
         }

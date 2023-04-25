@@ -30,7 +30,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("GROUP_LINK_VIEW_TITLE",
+        title = OWSLocalizedString("GROUP_LINK_VIEW_TITLE",
                                   comment: "The title for the 'group link' view.")
         updateTableContents()
     }
@@ -49,7 +49,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
             let switchAction = #selector(didToggleGroupLinkEnabled(_:))
             section.add(.switch(
-                withText: NSLocalizedString("GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH",
+                withText: OWSLocalizedString("GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH",
                                             comment: "Label for the 'enable group link' switch in the 'group link' view."),
                 accessibilityIdentifier: "group_link_view_enable_group_link",
                 isOn: { groupModelV2.isGroupInviteLinkEnabled },
@@ -93,14 +93,14 @@ public class GroupLinkViewController: OWSTableViewController2 {
             let section = OWSTableSection()
             section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing))
             section.add(OWSTableItem.actionItem(icon: .messageActionShare24,
-                                                name: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
+                                                name: OWSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
                                                                         comment: "Label for the 'share link' button in the 'group link' view."),
                                                 accessibilityIdentifier: "group_link_view_share_link",
                                                 actionBlock: { [weak self] in
                                                     self?.shareLinkPressed()
                                                 }))
             section.add(OWSTableItem.actionItem(icon: .retry24,
-                                                name: NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
+                                                name: OWSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
                                                                         comment: "Label for the 'reset link' button in the 'group link' view."),
                                                 accessibilityIdentifier: "group_link_view_reset_link",
                                                 actionBlock: { [weak self] in
@@ -113,11 +113,11 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
         do {
             let section = OWSTableSection()
-            section.footerTitle = NSLocalizedString("GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER",
+            section.footerTitle = OWSLocalizedString("GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER",
                                                     comment: "Footer for the 'member requests' section of the 'group link' view.")
 
             if groupModelV2.isGroupInviteLinkEnabled {
-                section.add(OWSTableItem.switch(withText: NSLocalizedString("GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH",
+                section.add(OWSTableItem.switch(withText: OWSLocalizedString("GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH",
                                                                             comment: "Label for the 'approve new members' switch in the 'group link' view."),
                                                 isOn: { groupModelV2.access.addFromInviteLink == .administrator },
                                                 isEnabledBlock: {
@@ -154,7 +154,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
     }
 
     private func presentAdminOnlyWarningToast() {
-        let message = NSLocalizedString(
+        let message = OWSLocalizedString(
             "GROUP_ADMIN_ONLY_WARNING",
             comment: "Message indicating that a feature can only be used by group admins."
         )
@@ -216,10 +216,10 @@ public class GroupLinkViewController: OWSTableViewController2 {
     }
 
     private func showResetLinkConfirmAlert() {
-        let alertTitle = NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE",
+        let alertTitle = OWSLocalizedString("GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE",
                                            comment: "Title for the 'confirm reset link' alert in the 'group link' view.")
         let actionSheet = ActionSheetController(title: alertTitle)
-        let resetTitle = NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
+        let resetTitle = OWSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
                                            comment: "Label for the 'reset link' button in the 'group link' view.")
         actionSheet.addAction(.init(title: resetTitle, style: .destructive) { [weak self] _ in
             guard let self else { return }
@@ -273,28 +273,28 @@ public class GroupLinkViewUtils {
     public static func showShareLinkAlert(groupModelV2: TSGroupModelV2,
                                           fromViewController: UIViewController,
                                           sendMessageController: SendMessageController) {
-        let message = NSLocalizedString("GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE",
+        let message = OWSLocalizedString("GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE",
                                         comment: "Message for the 'share group link' action sheet in the 'group link' view.")
         let actionSheet = ActionSheetController(message: message)
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL",
                                                                          comment: "Label for the 'share group link via Signal' button in the 'group link' view."),
                                                 style: .default) { _ in
             Self.shareLinkViaSignal(groupModelV2: groupModelV2,
                                     fromViewController: fromViewController,
                                     sendMessageController: sendMessageController)
         })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_COPY_LINK",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("GROUP_LINK_VIEW_COPY_LINK",
                                                                          comment: "Label for the 'copy link' button in the 'group link' view."),
                                                 style: .default) { _ in
             Self.copyLinkToPasteboard(groupModelV2: groupModelV2)
         })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE",
                                                                          comment: "Label for the 'share group link via QR code' button in the 'group link' view."),
                                                 style: .default) { _ in
             Self.shareLinkViaQRCode(groupModelV2: groupModelV2,
                                     fromViewController: fromViewController)
         })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING",
                                                                          comment: "Label for the 'share group link via iOS sharing UI' button in the 'group link' view."),
                                                 style: .default) { _ in
             Self.shareLinkViaSharingUI(groupModelV2: groupModelV2)

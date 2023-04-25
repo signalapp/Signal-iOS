@@ -15,7 +15,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
 
     private lazy var instructionLabel: UILabel = {
         let label = UILabel()
-        label.text = NSLocalizedString("TAP_REPLACE_EMOJI", comment: "Tap to Replace Emoji string for reaction configuration")
+        label.text = OWSLocalizedString("TAP_REPLACE_EMOJI", comment: "Tap to Replace Emoji string for reaction configuration")
         label.font = UIFont.dynamicTypeBody2
         label.textColor = Theme.secondaryTextAndIconColor
         return label
@@ -23,13 +23,13 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("CONFIGURE_REACTIONS", comment: "Configure reactions title text")
+        title = OWSLocalizedString("CONFIGURE_REACTIONS", comment: "Configure reactions title text")
         view.backgroundColor = Theme.isDarkThemeEnabled ? Theme.actionSheetBackgroundColor : UIColor.color(rgbHex: 0xF0F0F0)
 
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped(sender:)))
         navigationItem.setRightBarButton(doneButton, animated: false)
 
-        let resetButton = UIBarButtonItem(title: NSLocalizedString("RESET", comment: "Configure reactions reset button text"), style: .plain, target: self, action: #selector(resetButtonTapped(sender:)))
+        let resetButton = UIBarButtonItem(title: OWSLocalizedString("RESET", comment: "Configure reactions reset button text"), style: .plain, target: self, action: #selector(resetButtonTapped(sender:)))
         navigationItem.setLeftBarButton(resetButton, animated: false)
 
         // Reaction picker

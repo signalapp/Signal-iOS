@@ -27,7 +27,7 @@ class DonationReceiptsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("DONATION_RECEIPTS", comment: "Title of view where you can see all of your donation receipts, or button to take you there")
+        title = OWSLocalizedString("DONATION_RECEIPTS", comment: "Title of view where you can see all of your donation receipts, or button to take you there")
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
         donationReceipts = Self.databaseStorage.read { DonationReceiptFinder.fetchAllInReverseDateOrder(transaction: $0) }
@@ -92,7 +92,7 @@ class DonationReceiptsViewController: OWSTableViewController2 {
         }
 
         let footerSection = OWSTableSection()
-        footerSection.footerTitle = NSLocalizedString(
+        footerSection.footerTitle = OWSLocalizedString(
             "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED",
             comment: "Text at the bottom of the donation receipts list, telling users that receipts might not be available"
         )

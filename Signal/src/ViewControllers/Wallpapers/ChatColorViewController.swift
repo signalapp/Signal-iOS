@@ -113,7 +113,7 @@ class ChatColorViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("CHAT_COLOR_SETTINGS_TITLE", comment: "Title for the chat color settings view.")
+        title = OWSLocalizedString("CHAT_COLOR_SETTINGS_TITLE", comment: "Title for the chat color settings view.")
 
         updateTableContents()
     }
@@ -190,11 +190,11 @@ class ChatColorViewController: OWSTableViewController2 {
     func buildMockConversationModel() -> MockConversationView.MockModel {
         MockConversationView.MockModel(items: [
             .date,
-            .incoming(text: NSLocalizedString(
+            .incoming(text: OWSLocalizedString(
                 "CHAT_COLOR_INCOMING_MESSAGE",
                 comment: "The incoming bubble text when setting a chat color."
             )),
-            .outgoing(text: NSLocalizedString(
+            .outgoing(text: OWSLocalizedString(
                 "CHAT_COLOR_OUTGOING_MESSAGE",
                 comment: "The outgoing bubble text when setting a chat color."
             ))
@@ -273,11 +273,11 @@ class ChatColorViewController: OWSTableViewController2 {
         }
 
         let message: String
-        let messageFormat = NSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d", tableName: "PluralAware",
+        let messageFormat = OWSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d", tableName: "PluralAware",
                                               comment: "Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}.")
         message = String.localizedStringWithFormat(messageFormat, usageCount)
         let actionSheet = ActionSheetController(
-            title: NSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE",
+            title: OWSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE",
                                      comment: "Title for the 'delete chat color confirm alert' in the chat color settings view."),
             message: message
         )
@@ -349,7 +349,7 @@ class ChatColorViewController: OWSTableViewController2 {
             actionSheet.addAction(editAction)
 
             let duplicateAction = ActionSheetAction(
-                title: NSLocalizedString("BUTTON_DUPLICATE",
+                title: OWSLocalizedString("BUTTON_DUPLICATE",
                                          comment: "Label for the 'duplicate' button.")
             ) { [weak self] _ in
                 self?.duplicateValue(value)
@@ -476,7 +476,7 @@ private class ChatColorPicker: UIView {
                     let view = ColorOrGradientSwatchView(setting: value.setting, shapeMode: .circle)
 
                     let label = UILabel()
-                    label.text = NSLocalizedString("CHAT_COLOR_SETTINGS_AUTO",
+                    label.text = OWSLocalizedString("CHAT_COLOR_SETTINGS_AUTO",
                                                    comment: "Label for the 'automatic chat color' option in the chat color settings view.")
                     label.textColor = .ows_white
                     label.font = UIFont.systemFont(ofSize: 13)
@@ -711,7 +711,7 @@ private class ChatColorTooltip: TooltipView {
 
     public override func bubbleContentView() -> UIView {
         let label = UILabel()
-        label.text = NSLocalizedString("CHAT_COLORS_AUTO_TOOLTIP",
+        label.text = OWSLocalizedString("CHAT_COLORS_AUTO_TOOLTIP",
                                        comment: "Tooltip highlighting the auto chat color option.")
         label.font = .dynamicTypeSubheadline
         label.textColor = .ows_white

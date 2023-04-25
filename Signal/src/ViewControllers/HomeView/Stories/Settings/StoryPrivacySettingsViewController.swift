@@ -14,10 +14,10 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
 
         if navigationController?.viewControllers.count == 1 {
-            title = NSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view")
+            title = OWSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view")
             navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
         } else {
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "STORY_SETTINGS_TITLE",
                 comment: "Label for the stories section of the settings view"
             )
@@ -52,13 +52,13 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
 
         guard StoryManager.areStoriesEnabled else {
             let turnOnSection = OWSTableSection()
-            turnOnSection.footerTitle = NSLocalizedString(
+            turnOnSection.footerTitle = OWSLocalizedString(
                 "STORIES_SETTINGS_TURN_ON_FOOTER",
                 comment: "Footer for the 'turn on' section of the stories settings"
             )
             contents.addSection(turnOnSection)
             turnOnSection.add(.actionItem(
-                withText: NSLocalizedString(
+                withText: OWSLocalizedString(
                     "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON",
                     comment: "Button to turn on stories on the story privacy settings view"
                 ),
@@ -74,13 +74,13 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
 
         let myStoriesSection = OWSTableSection()
         myStoriesSection.customHeaderView = NewStoryHeaderView(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "STORIES_SETTINGS_STORIES_HEADER",
                 comment: "Header for the 'Stories' section of the stories settings"
             ),
             delegate: self
         )
-        myStoriesSection.footerTitle = NSLocalizedString(
+        myStoriesSection.footerTitle = OWSLocalizedString(
             "STORIES_SETTINGS_STORIES_FOOTER",
             comment: "Footer for the 'Stories' section of the stories settings"
         )
@@ -120,12 +120,12 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         }
 
         let viewReceiptsSection = OWSTableSection()
-        viewReceiptsSection.footerTitle = NSLocalizedString(
+        viewReceiptsSection.footerTitle = OWSLocalizedString(
             "STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER",
             comment: "Footer for the 'view receipts' section of the stories settings"
         )
         viewReceiptsSection.add(.switch(
-            withText: NSLocalizedString("STORIES_SETTINGS_VIEW_RECEIPTS", comment: "Title for the 'view receipts' setting in stories settings"),
+            withText: OWSLocalizedString("STORIES_SETTINGS_VIEW_RECEIPTS", comment: "Title for the 'view receipts' setting in stories settings"),
             isOn: { StoryManager.areViewReceiptsEnabled },
             target: self,
             selector: #selector(didToggleViewReceipts)
@@ -133,13 +133,13 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         contents.addSection(viewReceiptsSection)
 
         let turnOffStoriesSection = OWSTableSection()
-        turnOffStoriesSection.footerTitle = NSLocalizedString(
+        turnOffStoriesSection.footerTitle = OWSLocalizedString(
             "STORIES_SETTINGS_TURN_OFF_FOOTER",
             comment: "Footer for the 'turn off' section of the stories settings"
         )
         contents.addSection(turnOffStoriesSection)
         turnOffStoriesSection.add(.actionItem(
-            withText: NSLocalizedString(
+            withText: OWSLocalizedString(
                 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON",
                 comment: "Button to turn off stories on the story privacy settings view"
             ),
@@ -191,14 +191,14 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
 
     func turnOffStoriesConfirmation() {
         let actionSheet = ActionSheetController(
-            message: NSLocalizedString(
+            message: OWSLocalizedString(
                 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE",
                 comment: "Title for the action sheet confirming you want to turn off and delete all stories"
             )
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(.init(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON",
                 comment: "Button to turn off and delete stories on the story privacy settings view"
             ),

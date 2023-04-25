@@ -38,22 +38,22 @@ public class Deprecated_RegistrationPinAttemptsExhaustedViewController: Deprecat
         let linkButtonText: String
 
         if hasPendingRestoration {
-            titleText = NSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE",
+            titleText = OWSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE",
                                           comment: "Title of the 'onboarding pin attempts exhausted' view when reglock is disabled.")
-            explanationText = NSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION",
+            explanationText = OWSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION",
                                                 comment: "Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled.")
-            primaryButtonText = NSLocalizedString("ONBOARDING_2FA_CREATE_NEW_PIN",
+            primaryButtonText = OWSLocalizedString("ONBOARDING_2FA_CREATE_NEW_PIN",
                                                   comment: "Label for the 'create new pin' button when reglock is disabled during onboarding.")
-            linkButtonText = NSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE",
+            linkButtonText = OWSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE",
                                                comment: "Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view.")
         } else {
-            titleText = NSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE",
+            titleText = OWSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE",
                                           comment: "Title of the 'onboarding pin attempts exhausted' view when reglock is enabled.")
-            explanationText = NSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION",
+            explanationText = OWSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION",
                                                 comment: "Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled.")
-            primaryButtonText = NSLocalizedString("BUTTON_OKAY",
+            primaryButtonText = OWSLocalizedString("BUTTON_OKAY",
                                                   comment: "Label for the 'okay' button.")
-            linkButtonText = NSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE",
+            linkButtonText = OWSLocalizedString("ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE",
                                                comment: "Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view.")
         }
 

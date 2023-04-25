@@ -51,7 +51,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
                                   comment: "Title for the 'view payments passphrase' view of the app settings.")
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
@@ -163,12 +163,12 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     }
 
     func showDismissConfirmation() {
-        let actionSheet = ActionSheetController(title: NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE",
+        let actionSheet = ActionSheetController(title: OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE",
                                                                          comment: "Title of confirmation alert when discarding recovery phrase."),
-                                                message: NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE",
+                                                message: OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE",
                                                                            comment: "Message of confirmation alert when discarding recovery phrase."))
         actionSheet.addAction(ActionSheetAction(
-            title: NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON",
+            title: OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON",
                                      comment: "Button when discarding recovery phrase."),
             style: .destructive,
             handler: { [weak self] _ in
@@ -236,10 +236,10 @@ extension PaymentsViewPassphraseSplashViewController.Style {
     var title: String {
         switch self {
         case .reviewed:
-            return NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE",
+            return OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE",
                                      comment: "Title for the first step of the 'view payments passphrase' views.")
         case .fromBalance, .fromHelpCard, .fromHelpCardDismiss, .view:
-            return NSLocalizedString("SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE",
+            return OWSLocalizedString("SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE",
                                      comment: "Title for the first step of the 'save payments passphrase' views.")
         }
     }
@@ -247,13 +247,13 @@ extension PaymentsViewPassphraseSplashViewController.Style {
     var explanationText: String {
         switch self {
         case .view, .reviewed:
-            return NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION",
+            return OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION",
                                      comment: "Explanation of the 'payments passphrase' in the 'view payments passphrase' settings.")
         case .fromHelpCard, .fromHelpCardDismiss:
-            return NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD",
+            return OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD",
                                      comment: "Explanation of the 'payments passphrase' when from the help card.")
         case .fromBalance:
-            return NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE",
+            return OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE",
                                      comment: "Explanation of the 'payments passphrase' when there is a balance.")
         }
     }

@@ -567,7 +567,7 @@ open class TextAttachmentView: UIView {
             if let displayDomain = OWSLinkPreviewManager.displayDomain(forUrl: linkPreview.urlString) {
                 footerText = displayDomain.lowercased()
             } else {
-                footerText = NSLocalizedString(
+                footerText = OWSLocalizedString(
                     "LINK_PREVIEW_UNKNOWN_DOMAIN",
                     comment: "Label for link previews with an unknown host."
                 ).uppercased()
@@ -611,7 +611,7 @@ private class LinkPreviewTooltipView: TooltipView {
 
     public override func bubbleContentView() -> UIView {
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString(
+        titleLabel.text = OWSLocalizedString(
             "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP",
             comment: "Tooltip prompting the user to visit a story link."
         )

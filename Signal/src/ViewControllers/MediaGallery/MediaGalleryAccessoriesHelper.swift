@@ -126,7 +126,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelSelect),
                                                                      accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "cancel_select_button"))
         } else {
-            viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode"),
+            viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(title: OWSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode"),
                                                                      style: .plain,
                                                                      target: self,
                                                                      action: #selector(didTapSelect),

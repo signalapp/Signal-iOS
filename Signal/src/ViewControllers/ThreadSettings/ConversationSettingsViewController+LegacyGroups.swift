@@ -41,7 +41,7 @@ class LegacyGroupView: UIView {
     }
 
     func configureDefaultLabelContents() {
-        let format = NSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT",
+        let format = OWSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT",
                                        comment: "Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}.")
         let learnMoreText = CommonStrings.learnMore
         configureLabel(format: format, highlightedSubstring: learnMoreText)
@@ -52,7 +52,7 @@ class LegacyGroupView: UIView {
     }
 
     func configureCantUpgradeDueToMembersContents() {
-        let format = NSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT",
+        let format = OWSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT",
                                        comment: "Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}.")
         let learnMoreText = CommonStrings.learnMore
         configureLabel(format: format, highlightedSubstring: learnMoreText)
@@ -76,9 +76,9 @@ class LegacyGroupView: UIView {
 
         switch migrationInfo.state {
         case .canBeMigrated:
-            let format = NSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT",
+            let format = OWSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT",
                                            comment: "Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}.")
-            let upgradeText = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_LINK",
+            let upgradeText = OWSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_LINK",
                                                 comment: "An \"upgrade\" link for upgrading legacy groups to new groups.")
             configureLabel(format: format, highlightedSubstring: upgradeText)
 
@@ -98,7 +98,7 @@ class LegacyGroupView: UIView {
             Logger.verbose("Local user has not accepted message request.")
             configureDefaultLabelContents()
         case .cantBeMigrated_TooManyMembers:
-            let format = NSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT",
+            let format = OWSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT",
                                            comment: "Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}.")
             let learnMoreText = CommonStrings.learnMore
             configureLabel(format: format, highlightedSubstring: learnMoreText)
@@ -175,32 +175,32 @@ public class LegacyGroupViewLearnMoreView: UIView {
 
         let titleLabel = buildLabel()
         titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
-        titleLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_TITLE",
+        titleLabel.text = OWSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_TITLE",
                                             comment: "Title for the 'legacy group' alert view.")
 
         let section1TitleLabel = buildLabel()
         section1TitleLabel.font = UIFont.dynamicTypeBody.semibold()
-        section1TitleLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE",
+        section1TitleLabel.text = OWSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE",
                                                     comment: "Title for the first section of the 'legacy group' alert view.")
 
         let section1BodyLabel = buildLabel()
         section1BodyLabel.font = .dynamicTypeBody
-        section1BodyLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY",
+        section1BodyLabel.text = OWSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY",
                                                    comment: "Body text for the first section of the 'legacy group' alert view.")
 
         let section2TitleLabel = buildLabel()
         section2TitleLabel.font = UIFont.dynamicTypeBody.semibold()
-        section2TitleLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE",
+        section2TitleLabel.text = OWSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE",
                                                     comment: "Title for the second section of the 'legacy group' alert view.")
 
         let section2BodyLabel = buildLabel()
         section2BodyLabel.font = .dynamicTypeBody
-        section2BodyLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY",
+        section2BodyLabel.text = OWSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY",
                                                    comment: "Body text for the second section of the 'legacy group' alert view.")
 
         let section3BodyLabel = buildLabel()
         section3BodyLabel.font = .dynamicTypeBody
-        section3BodyLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY",
+        section3BodyLabel.text = OWSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY",
                                                    comment: "Body text for the third section of the 'legacy group' alert view.")
 
         let buttonFont = UIFont.dynamicTypeBodyClamped.semibold()

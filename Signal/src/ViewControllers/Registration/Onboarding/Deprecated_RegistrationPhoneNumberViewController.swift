@@ -103,7 +103,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
             field.keyboardType = .numberPad
         }
 
-        field.placeholder = NSLocalizedString(
+        field.placeholder = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_PLACEHOLDER",
             comment: "Placeholder string for phone number field during registration")
         field.accessibilityIdentifier = "onboarding.phoneNumber." + "phoneNumberTextField"
@@ -151,7 +151,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
 
         let proxyButton = ContextMenuButton(contextMenu: .init([
             .init(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "USE_PROXY_BUTTON",
                     comment: "Button to activate the signal proxy"
                 ),
@@ -173,10 +173,10 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
 
         // Setup subviews and stack views
         let titleString = (Self.tsAccountManager.isReregistering
-                           ? NSLocalizedString(
+                           ? OWSLocalizedString(
                             "REGISTRATION_PHONE_NUMBER_TITLE",
                             comment: "During registration, users are asked to enter their phone number. This is the title on that screen.")
-                            : NSLocalizedString(
+                            : OWSLocalizedString(
                                 "ONBOARDING_PHONE_NUMBER_TITLE",
                                 comment: "Title of the 'onboarding phone number' view."))
 
@@ -466,12 +466,12 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
     private func updateValidationLabel() {
         switch phoneNumberError {
         case .invalidNumber:
-            validationWarningLabel.text = NSLocalizedString(
+            validationWarningLabel.text = OWSLocalizedString(
                 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
                 comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view.")
 
         case let .rateLimit(expiration: expirationDate) where expirationDate > Date():
-            let rateLimitFormat = NSLocalizedString(
+            let rateLimitFormat = OWSLocalizedString(
                 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT",
                 comment: "Label indicating that registration has been ratelimited. Embeds {{remaining time string}}.")
 
@@ -492,7 +492,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
             // Both of our text blobs are about the same size. Ideally we don't want to move views when the error appears
             // So we pre-populate with filler text to try and maintain an approximately consistent intrinsic content size
             // If there's no error, the view will be hidden and compression resistance reduced.
-            validationWarningLabel.text = NSLocalizedString(
+            validationWarningLabel.text = OWSLocalizedString(
                 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
                 comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view.")
         }
@@ -555,10 +555,10 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
         guard let phoneNumberText = phoneNumber?.ows_stripped(), !phoneNumberText.isEmpty else {
             phoneNumberError = .invalidNumber
             OWSActionSheets.showActionSheet(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE",
                     comment: "Title of alert indicating that users needs to enter a phone number to register."),
-                message: NSLocalizedString(
+                message: OWSLocalizedString(
                     "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE",
                     comment: "Message of alert indicating that users needs to enter a phone number to register."))
             return
@@ -575,10 +575,10 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
 
             phoneNumberError = .invalidNumber
             OWSActionSheets.showActionSheet(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
                     comment: "Title of alert indicating that users needs to enter a valid phone number to register."),
-                message: NSLocalizedString(
+                message: OWSLocalizedString(
                     "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE",
                     comment: "Message of alert indicating that users needs to enter a valid phone number to register."))
             return
@@ -592,7 +592,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
         }
 
         let formattedNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: localNumber.toE164())
-        let progressViewFormat = NSLocalizedString(
+        let progressViewFormat = OWSLocalizedString(
             "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT",
             comment: "Label for the progress spinner shown during phone number registration. Embeds {{phone number}}.")
         progressSpinner.loadingText = String(format: progressViewFormat, formattedNumber)

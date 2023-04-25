@@ -1323,7 +1323,7 @@ class CameraTopBar: MediaTopBar {
 
         super.init(frame: frame)
 
-        closeButton.accessibilityLabel = NSLocalizedString("CAMERA_VO_CLOSE_BUTTON",
+        closeButton.accessibilityLabel = OWSLocalizedString("CAMERA_VO_CLOSE_BUTTON",
                                                            comment: "VoiceOver label for close (X) button in camera.")
 
         addSubview(closeButton)
@@ -1525,7 +1525,7 @@ class CameraBottomBar: UIView {
 
             proceedButton.isHidden = true
             proceedButton.isEnabled = false
-            proceedButton.accessibilityValue = NSLocalizedString("CAMERA_VO_ARROW_RIGHT_PROCEED",
+            proceedButton.accessibilityValue = OWSLocalizedString("CAMERA_VO_ARROW_RIGHT_PROCEED",
                                                                  comment: "VoiceOver label for -> button in text story composer.")
             proceedButton.translatesAutoresizingMaskIntoConstraints = false
             addSubview(proceedButton)
@@ -1609,11 +1609,11 @@ class CameraBottomBar: UIView {
 
     fileprivate class ContentTypeSelectionControl: UISegmentedControl {
 
-        static private let titleCamera = NSLocalizedString(
+        static private let titleCamera = OWSLocalizedString(
             "STORY_COMPOSER_CAMERA",
             comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera."
         )
-        static private let titleText = NSLocalizedString(
+        static private let titleText = OWSLocalizedString(
             "STORY_COMPOSER_TEXT",
             comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera."
         )
@@ -1719,11 +1719,11 @@ extension CameraCaptureControl {
         get {
             switch state {
             case .initial:
-                return NSLocalizedString("CAMERA_VO_TAKE_PICTURE",
+                return OWSLocalizedString("CAMERA_VO_TAKE_PICTURE",
                                          comment: "VoiceOver label for the round capture button in in-app camera.")
 
             case .recordingUsingVoiceOver:
-                return NSLocalizedString("CAMERA_VO_STOP_VIDEO_REC",
+                return OWSLocalizedString("CAMERA_VO_STOP_VIDEO_REC",
                                          comment: "VoiceOver label for the round capture button in in-app camera during video recording.")
 
             default:
@@ -1737,7 +1737,7 @@ extension CameraCaptureControl {
     override var accessibilityCustomActions: [UIAccessibilityCustomAction]? {
         get {
             guard state == .initial else { return [] }
-            let actionName = NSLocalizedString("CAMERA_VO_TAKE_VIDEO",
+            let actionName = OWSLocalizedString("CAMERA_VO_TAKE_VIDEO",
                                                comment: "VoiceOver label for other possible action for round capture button in in-app camera.")
             return [ UIAccessibilityCustomAction(name: actionName, target: self, selector: #selector(accessibilityStartVideoRecording)) ] }
         set { super.accessibilityCustomActions = newValue }
@@ -1779,7 +1779,7 @@ extension MediaDoneButton {
         get {
             guard badgeNumber > 0 else { return nil }
 
-            let format = NSLocalizedString("CAMERA_VO_N_ITEMS", tableName: "PluralAware",
+            let format = OWSLocalizedString("CAMERA_VO_N_ITEMS", tableName: "PluralAware",
                                            comment: "VoiceOver text for blue Done button in camera, describing how many items have already been captured.")
             return String.localizedStringWithFormat(format, badgeNumber)
         }
@@ -1793,7 +1793,7 @@ extension FlashModeButton {
 
     override var accessibilityLabel: String? {
         get {
-            NSLocalizedString("CAMERA_VO_FLASH_BUTTON",
+            OWSLocalizedString("CAMERA_VO_FLASH_BUTTON",
                               comment: "VoiceOver label for Flash button in camera.")
         }
         set { super.accessibilityLabel = newValue }
@@ -1803,15 +1803,15 @@ extension FlashModeButton {
         get {
             switch flashMode {
             case .auto:
-                return NSLocalizedString("CAMERA_VO_FLASH_AUTO",
+                return OWSLocalizedString("CAMERA_VO_FLASH_AUTO",
                                          comment: "VoiceOver description of current flash setting.")
 
             case .on:
-                return NSLocalizedString("CAMERA_VO_FLASH_ON",
+                return OWSLocalizedString("CAMERA_VO_FLASH_ON",
                                          comment: "VoiceOver description of current flash setting.")
 
             case .off:
-                return NSLocalizedString("CAMERA_VO_FLASH_OFF",
+                return OWSLocalizedString("CAMERA_VO_FLASH_OFF",
                                          comment: "VoiceOver description of current flash setting.")
 
             @unknown default:
@@ -1827,7 +1827,7 @@ extension CameraChooserButton {
 
     override var accessibilityLabel: String? {
         get {
-            NSLocalizedString("CAMERA_VO_CAMERA_CHOOSER_BUTTON",
+            OWSLocalizedString("CAMERA_VO_CAMERA_CHOOSER_BUTTON",
                               comment: "VoiceOver label for Switch Camera button in in-app camera.")
         }
         set { super.accessibilityLabel = newValue }
@@ -1835,7 +1835,7 @@ extension CameraChooserButton {
 
     override var accessibilityHint: String? {
         get {
-            NSLocalizedString("CAMERA_VO_CAMERA_CHOOSER_HINT",
+            OWSLocalizedString("CAMERA_VO_CAMERA_CHOOSER_HINT",
                               comment: "VoiceOver hint for Switch Camera button in in-app camera.")
         }
         set { super.accessibilityHint = newValue }
@@ -1844,10 +1844,10 @@ extension CameraChooserButton {
     override var accessibilityValue: String? {
         get {
             if isFrontCameraActive {
-                return NSLocalizedString("CAMERA_VO_CAMERA_FRONT_FACING",
+                return OWSLocalizedString("CAMERA_VO_CAMERA_FRONT_FACING",
                                          comment: "VoiceOver value for Switch Camera button that tells which camera is currently active.")
             } else {
-                return NSLocalizedString("CAMERA_VO_CAMERA_BACK_FACING",
+                return OWSLocalizedString("CAMERA_VO_CAMERA_BACK_FACING",
                                          comment: "VoiceOver value for Switch Camera button that tells which camera is currently active.")
             }
         }
@@ -1859,7 +1859,7 @@ extension CaptureModeButton {
 
     override var accessibilityLabel: String? {
         get {
-            NSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE",
+            OWSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE",
                               comment: "VoiceOver label for Flash button in camera.")
         }
         set { super.accessibilityLabel = newValue }
@@ -1869,11 +1869,11 @@ extension CaptureModeButton {
         get {
             switch captureMode {
             case .single:
-                return NSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE_OFF",
+                return OWSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE_OFF",
                                          comment: "VoiceOver label for Switch Camera button in in-app camera.")
 
             case .multi:
-                return NSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE_ON",
+                return OWSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE_ON",
                                          comment: "VoiceOver label for Switch Camera button in in-app camera.")
             }
         }
@@ -1885,7 +1885,7 @@ extension MediaPickerThumbnailButton {
 
     override var accessibilityLabel: String? {
         get {
-            NSLocalizedString("CAMERA_VO_PHOTO_LIBRARY_BUTTON",
+            OWSLocalizedString("CAMERA_VO_PHOTO_LIBRARY_BUTTON",
                               comment: "VoiceOver label for button to choose existing photo/video in in-app camera")
         }
         set { super.accessibilityLabel = newValue }
@@ -1906,7 +1906,7 @@ extension CameraZoomSelectionControl {
 
     override var accessibilityLabel: String? {
         get {
-            NSLocalizedString("CAMERA_VO_ZOOM", comment: "VoiceOver label for camera zoom control.")
+            OWSLocalizedString("CAMERA_VO_ZOOM", comment: "VoiceOver label for camera zoom control.")
         }
         set { super.accessibilityLabel = newValue }
     }
@@ -1924,7 +1924,7 @@ extension CameraZoomSelectionControl {
         get {
             guard let zoomValueString = CameraZoomSelectionControl.voiceOverNumberFormatter.string(for: currentZoomFactor) else { return nil }
 
-            let formatString = NSLocalizedString("CAMERA_VO_ZOOM_LEVEL",
+            let formatString = OWSLocalizedString("CAMERA_VO_ZOOM_LEVEL",
                                                  comment: "VoiceOver description of current camera zoom level.")
             return String(format: formatString, zoomValueString)
         }
@@ -1977,7 +1977,7 @@ extension CameraBottomBar.ContentTypeSelectionControl {
 
     override var accessibilityLabel: String? {
         get {
-            NSLocalizedString(
+            OWSLocalizedString(
                 "CAMERA_VO_COMPOSER_MODE",
                 comment: "VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen."
             )

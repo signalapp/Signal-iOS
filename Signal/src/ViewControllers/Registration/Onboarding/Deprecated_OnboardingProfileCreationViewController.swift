@@ -34,7 +34,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
         label.font = UIFont.dynamicTypeTitle1.semibold()
         label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .center
-        label.text = NSLocalizedString(
+        label.text = OWSLocalizedString(
             "ONBOARDING_PROFILE_CREATION_TITLE",
             comment: "Title label for profile creation step of onboarding")
         label.numberOfLines = 0
@@ -91,7 +91,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
         label.textContentType = .givenName
 
         label.accessibilityIdentifier = "given_name_textfield"
-        label.placeholder = NSLocalizedString(
+        label.placeholder = OWSLocalizedString(
             "ONBOARDING_PROFILE_GIVEN_NAME_FIELD",
             comment: "Placeholder text for the given name field of the profile creation view.")
 
@@ -111,7 +111,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
         label.textContentType = .familyName
 
         label.accessibilityIdentifier = "family_name_textfield"
-        label.placeholder = NSLocalizedString(
+        label.placeholder = OWSLocalizedString(
             "ONBOARDING_PROFILE_FAMILY_NAME_FIELD",
             comment: "Placeholder text for the family name field of the profile creation view.")
 
@@ -130,7 +130,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
     private var secondTextField: UITextField { NSLocale.current.isCJKV ? givenNameTextField : familyNameTextField }
 
     private var footerText: NSAttributedString {
-        let descriptionString = NSLocalizedString("PROFILE_VIEW_PROFILE_DESCRIPTION", comment: "Description of the user profile.")
+        let descriptionString = OWSLocalizedString("PROFILE_VIEW_PROFILE_DESCRIPTION", comment: "Description of the user profile.")
         let spacerString = "  "
         let learnMoreString = CommonStrings.learnMore
 
@@ -159,7 +159,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
     private lazy var saveButtonGradient = GradientView(colors: [])
 
     private lazy var saveButton = self.primaryButton(
-        title: NSLocalizedString("PROFILE_VIEW_SAVE_BUTTON",
+        title: OWSLocalizedString("PROFILE_VIEW_SAVE_BUTTON",
                                  comment: "Button to save the profile view in the profile view."),
         selector: #selector(saveProfile)
     )
@@ -288,25 +288,25 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
     @objc
     func saveProfile() {
         if normalizedGivenName.isEmpty {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
                                                                       comment: "Error message shown when user tries to update profile without a given name"))
             return
         }
 
         if profileManagerImpl.isProfileNameTooLong(normalizedGivenName) {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG",
                                                                       comment: "Error message shown when user tries to update profile with a given name that is too long."))
             return
         }
 
         if profileManagerImpl.isProfileNameTooLong(normalizedFamilyName) {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG",
                                                                       comment: "Error message shown when user tries to update profile with a family name that is too long."))
             return
         }
 
         if !self.reachabilityManager.isReachable {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
                                                                       comment: "Error shown when the user tries to update their profile when the app is not connected to the internet."))
             return
         }
@@ -347,7 +347,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
 
                 if error.isNetworkConnectivityFailure {
                     OWSActionSheets.showErrorAlert(
-                        message: NSLocalizedString(
+                        message: OWSLocalizedString(
                             "PROFILE_VIEW_NO_CONNECTION",
                             comment: "Error shown when the user tries to update their profile when the app is not connected to the internet.")
                     )

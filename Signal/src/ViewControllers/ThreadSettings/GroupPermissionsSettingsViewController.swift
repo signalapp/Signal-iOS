@@ -42,7 +42,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString(
+        title = OWSLocalizedString(
             "CONVERSATION_SETTINGS_PERMISSIONS",
             comment: "Label for 'permissions' action in conversation settings view."
         )
@@ -93,17 +93,17 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         defer { self.contents = contents }
 
         let accessMembersSection = OWSTableSection()
-        accessMembersSection.headerTitle = NSLocalizedString(
+        accessMembersSection.headerTitle = OWSLocalizedString(
             "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS",
             comment: "Label for 'edit membership access' action in conversation settings view."
         )
-        accessMembersSection.footerTitle = NSLocalizedString(
+        accessMembersSection.footerTitle = OWSLocalizedString(
             "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER",
             comment: "Description for the 'edit membership access'."
         )
 
         accessMembersSection.add(.init(
-            text: NSLocalizedString(
+            text: OWSLocalizedString(
                 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON",
                 comment: "Label for button that sets 'group attributes access' to 'members-only'."
             ),
@@ -113,7 +113,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             accessoryType: newAccessMembers == .member ? .checkmark : .none
         ))
         accessMembersSection.add(.init(
-            text: NSLocalizedString(
+            text: OWSLocalizedString(
                 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON",
                 comment: "Label for button that sets 'group attributes access' to 'administrators-only'."
             ),
@@ -126,17 +126,17 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         contents.addSection(accessMembersSection)
 
         let accessAttributesSection = OWSTableSection()
-        accessAttributesSection.headerTitle = NSLocalizedString(
+        accessAttributesSection.headerTitle = OWSLocalizedString(
             "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS",
             comment: "Label for 'edit attributes access' action in conversation settings view."
         )
-        accessAttributesSection.footerTitle = NSLocalizedString(
+        accessAttributesSection.footerTitle = OWSLocalizedString(
             "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER",
             comment: "Footer for the 'attributes access' section in conversation settings view."
         )
 
         accessAttributesSection.add(.init(
-            text: NSLocalizedString(
+            text: OWSLocalizedString(
                 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON",
                 comment: "Label for button that sets 'group attributes access' to 'members-only'."
             ),
@@ -146,7 +146,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             accessoryType: newAccessAttributes == .member ? .checkmark : .none
         ))
         accessAttributesSection.add(.init(
-            text: NSLocalizedString(
+            text: OWSLocalizedString(
                 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON",
                 comment: "Label for button that sets 'group attributes access' to 'administrators-only'."
             ),
@@ -161,17 +161,17 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         let isAnnouncementsOnly = self.newIsAnnouncementsOnly
 
         let announcementOnlySection = OWSTableSection()
-        announcementOnlySection.headerTitle = NSLocalizedString(
+        announcementOnlySection.headerTitle = OWSLocalizedString(
             "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER",
             comment: "Label for 'send messages' action in conversation settings permissions view."
         )
-        announcementOnlySection.footerTitle = NSLocalizedString(
+        announcementOnlySection.footerTitle = OWSLocalizedString(
             "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER",
             comment: "Footer for the 'send messages' section in conversation settings permissions view."
         )
 
         announcementOnlySection.add(.init(
-            text: NSLocalizedString(
+            text: OWSLocalizedString(
                 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS",
                 comment: "Label for button that sets 'send messages permission' for a group to 'all members'."
             ),
@@ -181,7 +181,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             accessoryType: !isAnnouncementsOnly ? .checkmark : .none
         ))
         announcementOnlySection.add(.init(
-            text: NSLocalizedString(
+            text: OWSLocalizedString(
                 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS",
                 comment: "Label for button that sets 'send messages permission' for a group to 'administrators only'."
             ),
@@ -225,7 +225,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     }
 
     private func showAdminOnlyWarningAlert() {
-        let message = NSLocalizedString("GROUP_ADMIN_ONLY_WARNING",
+        let message = OWSLocalizedString("GROUP_ADMIN_ONLY_WARNING",
                                         comment: "Message indicating that a feature can only be used by group admins.")
         presentToast(text: message)
         updateTableContents()

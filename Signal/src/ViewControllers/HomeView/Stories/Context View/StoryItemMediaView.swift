@@ -554,7 +554,7 @@ class StoryItemMediaView: UIView {
             return
         }
 
-        let readMoreText = NSLocalizedString(
+        let readMoreText = OWSLocalizedString(
             "STORIES_CAPTION_READ_MORE",
             comment: "Text indication a story caption can be tapped to read more."
         ).styled(with: .font(labelMinimumScaledFont.semibold()))

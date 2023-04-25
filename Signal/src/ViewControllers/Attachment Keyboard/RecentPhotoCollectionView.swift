@@ -134,7 +134,7 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate {
             self?.fetchingAttachmentIndex = nil
         }.catch { error in
             Logger.error("Error: \(error)")
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+            OWSActionSheets.showActionSheet(title: OWSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
         }
     }
 }
@@ -201,7 +201,7 @@ class SelectMorePhotosCell: UICollectionViewCell {
         titleLabel.textAlignment = .center
         titleLabel.font = fixedFont.semibold()
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.text = NSLocalizedString(
+        titleLabel.text = OWSLocalizedString(
             "IMAGE_PICKER_CHANGE_PHOTOS_TITLE",
             comment: "Title show that the user has granted limited access to their photos and can change that in the Settings app."
         )
@@ -212,7 +212,7 @@ class SelectMorePhotosCell: UICollectionViewCell {
         explanationLabel.textAlignment = .center
         explanationLabel.font = fixedFont
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        explanationLabel.text = NSLocalizedString(
+        explanationLabel.text = OWSLocalizedString(
             "IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION",
             comment: "Explanation showing that the user has granted limited access to their photos and can change that in the Settings app."
         )
@@ -220,7 +220,7 @@ class SelectMorePhotosCell: UICollectionViewCell {
         let button = OWSFlatButton()
         button.useDefaultCornerRadius()
         button.setTitle(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "IMAGE_PICKER_CHANGE_PHOTOS",
                 comment: "Button that will present a view for the user to change the photos Signal has access to."
             ),

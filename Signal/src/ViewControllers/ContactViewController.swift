@@ -242,14 +242,14 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
                                                                     guard let strongSelf = self else { return }
                                                                     strongSelf.didPressSendMessage()
             }))
-                stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_AUDIO_CALL",
+                stackView.addArrangedSubview(createCircleActionButton(text: OWSLocalizedString("ACTION_AUDIO_CALL",
                                                                                               comment: "Label for 'audio call' button in contact view."),
                                                                       imageName: "contact_view_audio_call",
                                                                       actionBlock: { [weak self] in
                                                                         guard let strongSelf = self else { return }
                                                                         strongSelf.didPressAudioCall()
                 }))
-                stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_VIDEO_CALL",
+                stackView.addArrangedSubview(createCircleActionButton(text: OWSLocalizedString("ACTION_VIDEO_CALL",
                                                                                               comment: "Label for 'video call' button in contact view."),
                                                                       imageName: "contact_view_video_call",
                                                                       actionBlock: { [weak self] in
@@ -263,7 +263,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
             lastView = stackView
         case .systemContactWithoutSignal:
             // Show invite button for system contacts without a Signal account.
-            let inviteButton = createLargePillButton(text: NSLocalizedString("ACTION_INVITE",
+            let inviteButton = createLargePillButton(text: OWSLocalizedString("ACTION_INVITE",
                                                                              comment: "Label for 'invite' button in contact view."),
                                                      actionBlock: { [weak self] in
                                                         guard let strongSelf = self else { return }
@@ -289,7 +289,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
         }
 
         // Always show "add to contacts" button.
-        let addToContactsButton = createLargePillButton(text: NSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
+        let addToContactsButton = createLargePillButton(text: OWSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
                                                                                 comment: "Message shown in conversation view that offers to add an unknown user to your phone's contacts."),
                                                         actionBlock: { [weak self] in
                                                             guard let strongSelf = self else { return }
@@ -314,7 +314,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
         // TODO: Not designed yet.
 //        if viewMode == .systemContactWithSignal ||
 //           viewMode == .systemContactWithoutSignal {
-//            addRow(createActionRow(labelText:NSLocalizedString("ACTION_SHARE_CONTACT",
+//            addRow(createActionRow(labelText:OWSLocalizedString("ACTION_SHARE_CONTACT",
 //                                                               comment:"Label for 'share contact' button."),
 //                                   action:#selector(didPressShareContact)))
 //        }
@@ -503,12 +503,12 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
                                                         style: .default) { _ in
                                                         SignalApp.shared().presentConversation(for: address, action: .compose, animated: true)
                 })
-                actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ACTION_AUDIO_CALL",
+                actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("ACTION_AUDIO_CALL",
                                                                              comment: "Label for 'audio call' button in contact view."),
                                                     style: .default) { _ in
                                                         SignalApp.shared().presentConversation(for: address, action: .audioCall, animated: true)
                 })
-                actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ACTION_VIDEO_CALL",
+                actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("ACTION_VIDEO_CALL",
                                                                              comment: "Label for 'video call' button in contact view."),
                                                     style: .default) { _ in
                                                         SignalApp.shared().presentConversation(for: address, action: .videoCall, animated: true)
@@ -517,7 +517,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
                 // TODO: We could offer callPhoneNumberWithSystemCall.
             }
         }
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("EDIT_ITEM_COPY_ACTION",
                                                                      comment: "Short name for edit menu item to copy contents of media message."),
                                             style: .default) { _ in
                                                 UIPasteboard.general.string = phoneNumber.phoneNumber
@@ -540,12 +540,12 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
         Logger.info("")
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP",
                                                                      comment: "Label for 'open email in email app' button in contact view."),
                                             style: .default) { [weak self] _ in
                                                 self?.openEmailInEmailApp(email: email)
         })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("EDIT_ITEM_COPY_ACTION",
                                                                      comment: "Short name for edit menu item to copy contents of media message."),
                                             style: .default) { _ in
                                                 UIPasteboard.general.string = email.email
@@ -568,12 +568,12 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
         Logger.info("")
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP",
                                                                      comment: "Label for 'open address in maps app' button in contact view."),
                                             style: .default) { [weak self] _ in
                                                 self?.openAddressInMaps(address: address)
         })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
+        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("EDIT_ITEM_COPY_ACTION",
                                                                      comment: "Short name for edit menu item to copy contents of media message."),
                                             style: .default) { [weak self] _ in
                                                 guard let strongSelf = self else { return }

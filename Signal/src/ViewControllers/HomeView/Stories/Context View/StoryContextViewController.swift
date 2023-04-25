@@ -384,7 +384,7 @@ class StoryContextViewController: OWSViewController {
             sendingLabel.font = .dynamicTypeBody
             sendingLabel.textColor = Theme.darkThemePrimaryColor
             sendingLabel.textAlignment = .center
-            sendingLabel.text = NSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
+            sendingLabel.text = OWSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
             sendingLabel.setContentHuggingHigh()
 
             let leadingSpacer = UIView.hStretchingSpacer()
@@ -414,8 +414,8 @@ class StoryContextViewController: OWSViewController {
             failedLabel.textColor = Theme.darkThemePrimaryColor
             failedLabel.textAlignment = .center
             failedLabel.text = currentItem.message.hasSentToAnyRecipients
-                ? NSLocalizedString("STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS", comment: "Text indicating that the story send has partially failed")
-                : NSLocalizedString("STORY_SEND_FAILED_TAP_FOR_DETAILS", comment: "Text indicating that the story send has failed")
+                ? OWSLocalizedString("STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS", comment: "Text indicating that the story send has partially failed")
+                : OWSLocalizedString("STORY_SEND_FAILED_TAP_FOR_DETAILS", comment: "Text indicating that the story send has failed")
             failedLabel.setContentHuggingHigh()
             sendingIndicatorStackView.addArrangedSubview(failedLabel)
 
@@ -465,12 +465,12 @@ class StoryContextViewController: OWSViewController {
                 if case .groupId = context {
                     if currentItem.numberOfReplies == 0 {
                         leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
-                        repliesAndViewsButtonText = NSLocalizedString(
+                        repliesAndViewsButtonText = OWSLocalizedString(
                             "STORY_REPLY_TO_GROUP_BUTTON",
                             comment: "Button for replying to a group story with no existing replies.")
                     } else {
                         trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
-                        let format = NSLocalizedString(
+                        let format = OWSLocalizedString(
                             "STORY_REPLIES_COUNT_%d",
                             tableName: "PluralAware",
                             comment: "Button for replying to a story with N existing replies.")
@@ -478,14 +478,14 @@ class StoryContextViewController: OWSViewController {
                     }
                 } else {
                     leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
-                    repliesAndViewsButtonText = NSLocalizedString(
+                    repliesAndViewsButtonText = OWSLocalizedString(
                         "STORY_REPLY_BUTTON",
                         comment: "Button for replying to a story with no existing replies.")
                 }
             case .outgoing:
                 var textSegments = [String]()
                 if StoryManager.areViewReceiptsEnabled {
-                    let format = NSLocalizedString(
+                    let format = OWSLocalizedString(
                         "STORY_VIEWS_COUNT_%d",
                         tableName: "PluralAware",
                         comment: "Button for viewing the views for a story sent to a private list"
@@ -495,7 +495,7 @@ class StoryContextViewController: OWSViewController {
                     )
                 }
                 if case .groupId = context, StoryManager.areViewReceiptsEnabled || currentItem.numberOfReplies > 0 {
-                    let format = NSLocalizedString(
+                    let format = OWSLocalizedString(
                         "STORY_REPLIES_COUNT_%d",
                         tableName: "PluralAware",
                         comment: "Button for replying to a story with N existing replies."
@@ -505,7 +505,7 @@ class StoryContextViewController: OWSViewController {
                     )
                 }
                 if textSegments.isEmpty {
-                    repliesAndViewsButtonText = NSLocalizedString(
+                    repliesAndViewsButtonText = OWSLocalizedString(
                         "STORY_VIEWS_OFF",
                         comment: "Text indicating that the user has views turned off"
                     )

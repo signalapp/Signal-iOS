@@ -181,7 +181,7 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         let confirmButton = OWSButton()
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         confirmButton.setTitle(
-            NSLocalizedString(
+            OWSLocalizedString(
                 "STORY_VIEWER_ONBOARDING_CONFIRMATION",
                 comment: "Confirmation text shown the first time the user opens the story viewer to dismiss instructions."
             ),
@@ -266,21 +266,21 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         [
             Asset(
                 lottieName: "story_viewer_onboarding_1",
-                text: NSLocalizedString(
+                text: OWSLocalizedString(
                     "STORY_VIEWER_ONBOARDING_1",
                     comment: "Text shown the first time the user opens the story viewer instructing them how to use it."
                 )
             ),
             Asset(
                 lottieName: "story_viewer_onboarding_2",
-                text: NSLocalizedString(
+                text: OWSLocalizedString(
                     "STORY_VIEWER_ONBOARDING_2",
                     comment: "Text shown the first time the user opens the story viewer instructing them how to use it."
                 )
             ),
             Asset(
                 lottieName: "story_viewer_onboarding_3",
-                text: NSLocalizedString(
+                text: OWSLocalizedString(
                     "STORY_VIEWER_ONBOARDING_3",
                     comment: "Text shown the first time the user opens the story viewer instructing them how to use it."
                 )

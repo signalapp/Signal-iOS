@@ -221,7 +221,7 @@ class CallControls: UIView {
             joinButton.adjustsImageWhenHighlighted = false
 
             joinButton.setTitle(
-                NSLocalizedString(
+                OWSLocalizedString(
                     "GROUP_CALL_IS_FULL",
                     comment: "Text explaining the group call is full"),
                 for: .normal)
@@ -238,8 +238,8 @@ class CallControls: UIView {
             joinButton.isUserInteractionEnabled = true
             joinButtonActivityIndicator.stopAnimating()
 
-            let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
-            let joinCallText = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
+            let startCallText = OWSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
+            let joinCallText = OWSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
 
             joinButton.setTitle(call.ringRestrictions.contains(.callInProgress) ? joinCallText : startCallText,
                                 for: .normal)

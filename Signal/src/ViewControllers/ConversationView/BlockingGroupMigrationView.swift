@@ -43,7 +43,7 @@ class BlockingGroupMigrationView: UIStackView {
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
-        let format = NSLocalizedString("GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT",
+        let format = OWSLocalizedString("GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT",
                                        comment: "Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}.")
         let learnMoreText = CommonStrings.learnMore
         let text = String(format: format, learnMoreText)

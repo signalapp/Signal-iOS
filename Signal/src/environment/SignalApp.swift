@@ -161,12 +161,12 @@ extension SignalApp {
     public static func showDatabaseIntegrityCheckUI(from parentVC: UIViewController,
                                                     completion: @escaping () -> Void = {}) {
         let alert = UIAlertController(
-            title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_TITLE",
+            title: OWSLocalizedString("DATABASE_INTEGRITY_CHECK_TITLE",
                                      comment: "Title for alert before running a database integrity check"),
-            message: NSLocalizedString("DATABASE_INTEGRITY_CHECK_MESSAGE",
+            message: OWSLocalizedString("DATABASE_INTEGRITY_CHECK_MESSAGE",
                                        comment: "Message for alert before running a database integrity check"),
             preferredStyle: .alert)
-        alert.addAction(.init(title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_ACTION_RUN",
+        alert.addAction(.init(title: OWSLocalizedString("DATABASE_INTEGRITY_CHECK_ACTION_RUN",
                                                        comment: "Button to run the database integrity check"),
                               style: .default) { _ in
             let progressView = UIActivityIndicatorView(style: .whiteLarge)
@@ -189,7 +189,7 @@ extension SignalApp {
                 }
             }
         })
-        alert.addAction(.init(title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_SKIP",
+        alert.addAction(.init(title: OWSLocalizedString("DATABASE_INTEGRITY_CHECK_SKIP",
                                                        comment: "Button to skip database integrity check step"),
                               style: .cancel) { _ in
             completion()

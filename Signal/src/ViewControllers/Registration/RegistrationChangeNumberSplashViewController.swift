@@ -103,7 +103,7 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
         heroStack.alignment = .center
 
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE",
+        titleLabel.text = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE",
                                             comment: "Title text in the 'change phone number splash' view.")
         titleLabel.font = .dynamicTypeTitle2.semibold()
         titleLabel.textColor = Theme.primaryTextColor
@@ -112,7 +112,7 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
         titleLabel.lineBreakMode = .byWordWrapping
 
         let descriptionLabel = UILabel()
-        descriptionLabel.text = NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION",
+        descriptionLabel.text = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION",
                                             comment: "Description text in the 'change phone number splash' view.")
         descriptionLabel.font = .dynamicTypeBody
         descriptionLabel.textColor = Theme.secondaryTextAndIconColor

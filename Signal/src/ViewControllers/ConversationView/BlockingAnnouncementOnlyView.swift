@@ -48,9 +48,9 @@ class BlockingAnnouncementOnlyView: UIStackView {
         addSubview(blurView)
         blurView.autoPinEdgesToSuperviewEdges()
 
-        let format = NSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT",
+        let format = OWSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT",
                                        comment: "Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}.")
-        let adminsText = NSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS",
+        let adminsText = OWSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS",
                                            comment: "Label for group administrators in the 'announcement-only' group UI.")
         let text = String(format: format, adminsText)
         let attributedString = NSMutableAttributedString(string: text)
@@ -155,7 +155,7 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let section = OWSTableSection()
-        let header = NSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
+        let header = OWSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
                                        comment: "Label indicating the user can contact a group administrators of an 'announcement-only' group.")
         section.headerAttributedTitle = NSAttributedString(string: header, attributes: [
             .font: UIFont.dynamicTypeBodyClamped.semibold(),

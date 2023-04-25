@@ -43,7 +43,7 @@ public class ArchivedConversationsCell: UITableViewCell {
         disclosureImageView.setContentHuggingHigh()
         disclosureImageView.setCompressionResistanceHigh()
 
-        label.text = NSLocalizedString("HOME_VIEW_ARCHIVED_CONVERSATIONS",
+        label.text = OWSLocalizedString("HOME_VIEW_ARCHIVED_CONVERSATIONS",
                                        comment: "Label for 'archived conversations' button.")
         label.textAlignment = .center
 

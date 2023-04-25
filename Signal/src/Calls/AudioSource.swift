@@ -42,7 +42,7 @@ public struct AudioSource: Hashable, CustomDebugStringConvertible {
 
     // Speakerphone is handled separately from the other audio routes as it doesn't appear as an "input"
     public static var builtInSpeaker: AudioSource {
-        return self.init(localizedName: NSLocalizedString("AUDIO_ROUTE_BUILT_IN_SPEAKER", comment: "action sheet button title to enable built in speaker during a call"),
+        return self.init(localizedName: OWSLocalizedString("AUDIO_ROUTE_BUILT_IN_SPEAKER", comment: "action sheet button title to enable built in speaker during a call"),
                          isBuiltInSpeaker: true,
                          isBuiltInEarPiece: false)
     }

@@ -55,7 +55,7 @@ public class OWSAddToContactViewController: OWSViewController {
         tableView.separatorInset = UIEdgeInsets(top: 0, left: ContactCell.kSeparatorHInset, bottom: 0, right: 16)
         tableView.register(ContactCell.self, forCellReuseIdentifier: ContactCell.reuseIdentifier)
 
-        title = NSLocalizedString(
+        title = OWSLocalizedString(
             "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
             comment: "Label for 'new contact' button in conversation settings view."
         )

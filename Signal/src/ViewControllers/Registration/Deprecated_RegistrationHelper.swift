@@ -125,21 +125,21 @@ public class Deprecated_RegistrationHelper: Dependencies {
         case let error where error.httpStatusCode == 400:
             completion?(false, error)
             OWSActionSheets.showActionSheet(
-                title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
-                message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
+                title: OWSLocalizedString("REGISTRATION_ERROR", comment: ""),
+                message: OWSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
 
         case let error where error.httpStatusCode == 413 || error.httpStatusCode == 429:
             completion?(false, error)
             OWSActionSheets.showActionSheet(
                 title: nil,
-                message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
+                message: OWSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
 
         case let error where error.isNetworkFailureOrTimeout:
             completion?(false, error)
             OWSActionSheets.showActionSheet(
-                title: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE",
+                title: OWSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE",
                                          comment: "Alert title for network failure during registration"),
-                message: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY",
+                message: OWSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY",
                                            comment: "Alert body for network failure during registration"))
 
         case AccountServiceClientError.captchaRequired:
@@ -156,13 +156,13 @@ public class Deprecated_RegistrationHelper: Dependencies {
     public static func presentPhoneNumberConfirmationSheet(from vc: UIViewController,
                                                            number: String,
                                                            completion: @escaping (_ didApprove: Bool) -> Void) {
-        let titleFormat = NSLocalizedString(
+        let titleFormat = OWSLocalizedString(
             "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT",
             comment: "Title for confirmation alert during phone number registration. Embeds {{phone number}}.")
-        let message = NSLocalizedString(
+        let message = OWSLocalizedString(
             "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE",
             comment: "Message for confirmation alert during phone number registration.")
-        let editButtonTitle = NSLocalizedString(
+        let editButtonTitle = OWSLocalizedString(
             "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON",
             comment: "A button allowing user to cancel registration and edit a phone number")
 

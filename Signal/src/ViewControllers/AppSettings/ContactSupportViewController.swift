@@ -29,37 +29,37 @@ enum ContactSupportFilter: String, CaseIterable {
     var localizedString: String {
         switch self {
         case .featureRequest:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST",
                 comment: "The localized representation of the 'feature request' support filter."
             )
         case .question:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_QUESTION",
                 comment: "The localized representation of the 'question' support filter."
             )
         case .feedback:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_FEEDBACK",
                 comment: "The localized representation of the 'feedback' support filter."
             )
         case .somethingNotWorking:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING",
                 comment: "The localized representation of the 'something not working' support filter."
             )
         case .other:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_OTHER",
                 comment: "The localized representation of the 'other' support filter."
             )
         case .payments:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_PAYMENTS",
                 comment: "The localized representation of the 'payments' support filter."
             )
         case .donationsAndBadges:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES",
                 comment: "The localized representation of the 'Donations & Badges' support filter."
             )
@@ -69,37 +69,37 @@ enum ContactSupportFilter: String, CaseIterable {
     var localizedShortString: String {
         switch self {
         case .featureRequest:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT",
                 comment: "A brief localized representation of the 'feature request' support filter."
             )
         case .question:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT",
                 comment: "A brief localized representation of the 'question' support filter."
             )
         case .feedback:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT",
                 comment: "A brief localized representation of the 'feedback' support filter."
             )
         case .somethingNotWorking:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT",
                 comment: "A brief localized representation of the 'something not working' support filter."
             )
         case .other:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_OTHER_SHORT",
                 comment: "A brief localized representation of the 'other' support filter."
             )
         case .payments:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT",
                 comment: "A brief localized representation of the 'payments' support filter."
             )
         case .donationsAndBadges:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT",
                 comment: "A brief localized representation of the 'Donations & Badges' support filter."
             )
@@ -143,7 +143,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
 
     func setupDataProviderViews() {
         descriptionField.delegate = self
-        descriptionField.placeholderText = NSLocalizedString("SUPPORT_DESCRIPTION_PLACEHOLDER",
+        descriptionField.placeholderText = OWSLocalizedString("SUPPORT_DESCRIPTION_PLACEHOLDER",
                                                              comment: "Placeholder string for support description")
         debugSwitch.isOn = true
     }
@@ -225,7 +225,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
             spinner.startAnimating()
 
             let label = UILabel()
-            label.text = NSLocalizedString("SUPPORT_LOG_UPLOAD_IN_PROGRESS",
+            label.text = OWSLocalizedString("SUPPORT_LOG_UPLOAD_IN_PROGRESS",
                                            comment: "A string in the navigation bar indicating that the support request is uploading logs")
             label.textColor = Theme.secondaryTextAndIconColor
 
@@ -270,7 +270,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
 
         }.catch(on: DispatchQueue.main) { error in
             let alertTitle = error.userErrorDescription
-            let alertMessage = NSLocalizedString("SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION",
+            let alertMessage = OWSLocalizedString("SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION",
                                                  comment: "Message for alert dialog presented when a support email failed to send")
             OWSActionSheets.showActionSheet(title: alertTitle, message: alertMessage)
         }
@@ -316,13 +316,13 @@ extension ContactSupportViewController: TextViewWithPlaceholderDelegate {
 extension ContactSupportViewController {
     fileprivate func constructContents() -> OWSTableContents {
 
-        let titleText = NSLocalizedString("HELP_CONTACT_US",
+        let titleText = OWSLocalizedString("HELP_CONTACT_US",
                                           comment: "Help item allowing the user to file a support request")
-        let contactHeaderText = NSLocalizedString("SUPPORT_CONTACT_US_HEADER",
+        let contactHeaderText = OWSLocalizedString("SUPPORT_CONTACT_US_HEADER",
                                                   comment: "Header of support description field")
-        let emojiHeaderText = NSLocalizedString("SUPPORT_EMOJI_PROMPT",
+        let emojiHeaderText = OWSLocalizedString("SUPPORT_EMOJI_PROMPT",
                                                 comment: "Header for emoji mood selection")
-        let faqPromptText = NSLocalizedString("SUPPORT_FAQ_PROMPT",
+        let faqPromptText = OWSLocalizedString("SUPPORT_FAQ_PROMPT",
                                               comment: "Label in support request informing user about Signal FAQ")
 
         return OWSTableContents(title: titleText, sections: [
@@ -333,11 +333,11 @@ extension ContactSupportViewController {
                 OWSTableItem(customCellBlock: { [weak self] in
                     guard let self = self else { return UITableViewCell() }
                     return OWSTableItem.buildIconNameCell(
-                        itemName: NSLocalizedString(
+                        itemName: OWSLocalizedString(
                             "CONTACT_SUPPORT_FILTER_PROMPT",
                             comment: "Prompt telling the user to select a filter for their support request."
                         ),
-                        accessoryText: self.selectedFilter?.localizedShortString ?? NSLocalizedString(
+                        accessoryText: self.selectedFilter?.localizedShortString ?? OWSLocalizedString(
                             "CONTACT_SUPPORT_SELECT_A_FILTER",
                             comment: "Placeholder telling user they must select a filter."
                         ),
@@ -395,7 +395,7 @@ extension ContactSupportViewController {
         let cell = OWSTableItem.newCell()
 
         let label = UILabel()
-        label.text = NSLocalizedString("SUPPORT_INCLUDE_DEBUG_LOG",
+        label.text = OWSLocalizedString("SUPPORT_INCLUDE_DEBUG_LOG",
                                        comment: "Label describing support switch to attach debug logs")
         label.font = UIFont.dynamicTypeBody
         label.adjustsFontForContentSizeCategory = true
@@ -406,7 +406,7 @@ extension ContactSupportViewController {
             let vc = SFSafariViewController(url: SupportConstants.debugLogsInfoURL)
             self?.present(vc, animated: true)
         }
-        infoButton.accessibilityLabel = NSLocalizedString("DEBUG_LOG_INFO_BUTTON",
+        infoButton.accessibilityLabel = OWSLocalizedString("DEBUG_LOG_INFO_BUTTON",
                                                           comment: "Accessibility label for the ? vector asset used to get info about debug logs")
 
         cell.contentView.addSubview(label)
@@ -437,7 +437,7 @@ extension ContactSupportViewController {
     }
 
     func showFilterPicker() {
-        let actionSheet = ActionSheetController(title: NSLocalizedString(
+        let actionSheet = ActionSheetController(title: OWSLocalizedString(
             "CONTACT_SUPPORT_FILTER_PROMPT",
             comment: "Prompt telling the user to select a filter for their support request."
         ))

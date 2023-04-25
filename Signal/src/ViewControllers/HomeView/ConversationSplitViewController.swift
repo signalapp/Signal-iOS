@@ -283,7 +283,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             input: "n",
             modifierFlags: .command,
             action: #selector(showNewConversationView),
-            discoverabilityTitle: NSLocalizedString(
+            discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_NEW_MESSAGE",
                 comment: "A keyboard command to present the new message dialog."
             )
@@ -292,7 +292,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             input: "g",
             modifierFlags: .command,
             action: #selector(showNewGroupView),
-            discoverabilityTitle: NSLocalizedString(
+            discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_NEW_GROUP",
                 comment: "A keyboard command to present the new group dialog."
             )
@@ -301,7 +301,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             input: ",",
             modifierFlags: .command,
             action: #selector(showAppSettings),
-            discoverabilityTitle: NSLocalizedString(
+            discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_SETTINGS",
                 comment: "A keyboard command to present the application settings dialog."
             )
@@ -310,7 +310,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             input: "f",
             modifierFlags: .command,
             action: #selector(focusSearch),
-            discoverabilityTitle: NSLocalizedString(
+            discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_SEARCH",
                 comment: "A keyboard command to begin a search on the conversation list."
             )
@@ -319,7 +319,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             input: UIKeyCommand.inputUpArrow,
             modifierFlags: .alternate,
             action: #selector(selectPreviousConversation),
-            discoverabilityTitle: NSLocalizedString(
+            discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_PREVIOUS_CONVERSATION",
                 comment: "A keyboard command to jump to the previous conversation in the list."
             )
@@ -328,7 +328,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             input: UIKeyCommand.inputDownArrow,
             modifierFlags: .alternate,
             action: #selector(selectNextConversation),
-            discoverabilityTitle: NSLocalizedString(
+            discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_NEXT_CONVERSATION",
                 comment: "A keyboard command to jump to the next conversation in the list."
             )
@@ -341,7 +341,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 input: "i",
                 modifierFlags: [.command, .shift],
                 action: #selector(openConversationSettings),
-                discoverabilityTitle: NSLocalizedString(
+                discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_CONVERSATION_INFO",
                     comment: "A keyboard command to open the current conversation's settings."
                 )
@@ -350,7 +350,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 input: "m",
                 modifierFlags: [.command, .shift],
                 action: #selector(openAllMedia),
-                discoverabilityTitle: NSLocalizedString(
+                discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_ALL_MEDIA",
                     comment: "A keyboard command to open the current conversation's all media view."
                 )
@@ -359,7 +359,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 input: "g",
                 modifierFlags: [.command, .shift],
                 action: #selector(openGifSearch),
-                discoverabilityTitle: NSLocalizedString(
+                discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_GIF_SEARCH",
                     comment: "A keyboard command to open the current conversations GIF picker."
                 )
@@ -368,7 +368,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 input: "u",
                 modifierFlags: .command,
                 action: #selector(openAttachmentKeyboard),
-                discoverabilityTitle: NSLocalizedString(
+                discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_ATTACHMENTS",
                     comment: "A keyboard command to open the current conversation's attachment picker."
                 )
@@ -377,7 +377,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 input: "s",
                 modifierFlags: [.command, .shift],
                 action: #selector(openStickerKeyboard),
-                discoverabilityTitle: NSLocalizedString(
+                discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_STICKERS",
                     comment: "A keyboard command to open the current conversation's sticker picker."
                 )
@@ -386,7 +386,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 input: "a",
                 modifierFlags: [.command, .shift],
                 action: #selector(archiveSelectedConversation),
-                discoverabilityTitle: NSLocalizedString(
+                discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_ARCHIVE",
                     comment: "A keyboard command to archive the current conversation."
                 )
@@ -395,7 +395,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 input: "u",
                 modifierFlags: [.command, .shift],
                 action: #selector(unarchiveSelectedConversation),
-                discoverabilityTitle: NSLocalizedString(
+                discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_UNARCHIVE",
                     comment: "A keyboard command to unarchive the current conversation."
                 )
@@ -404,7 +404,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 input: "t",
                 modifierFlags: [.command, .shift],
                 action: #selector(focusInputToolbar),
-                discoverabilityTitle: NSLocalizedString(
+                discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_FOCUS_COMPOSER",
                     comment: "A keyboard command to focus the current conversation's input field."
                 )

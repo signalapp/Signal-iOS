@@ -80,7 +80,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUpAvatarView()
-        title = NSLocalizedString("DONATION_VIEW_TITLE", comment: "Title on the 'Donate to Signal' screen")
+        title = OWSLocalizedString("DONATION_VIEW_TITLE", comment: "Title on the 'Donate to Signal' screen")
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -101,7 +101,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         UIPasteboard.general.string = subscriberID.asBase64Url
 
-        presentToast(text: NSLocalizedString("SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD",
+        presentToast(text: OWSLocalizedString("SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD",
                                              comment: "Toast indicating that the user has copied their subscriber ID."))
     }
 
@@ -279,7 +279,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
             let heroStack = DonationHeroView(avatarView: self.avatarView)
             heroStack.delegate = self
-            let buttonTitle = NSLocalizedString(
+            let buttonTitle = OWSLocalizedString(
                 "DONATION_SCREEN_DONATE_BUTTON",
                 comment: "On the donation settings screen, tapping this button will take the user to a screen where they can donate."
             )
@@ -333,13 +333,13 @@ class DonationSettingsViewController: OWSTableViewController2 {
         subscriptionStatus: State.SubscriptionStatus,
         hasAnyBadges: Bool
     ) -> OWSTableSection? {
-        let title = NSLocalizedString("DONATION_VIEW_MY_SUPPORT_TITLE",
+        let title = OWSLocalizedString("DONATION_VIEW_MY_SUPPORT_TITLE",
                                       comment: "Title for the 'my support' section in the donation view")
         let section = OWSTableSection(title: title)
 
         switch subscriptionStatus {
         case .loadFailed:
-            section.add(.label(withText: NSLocalizedString(
+            section.add(.label(withText: OWSLocalizedString(
                 "DONATION_VIEW_LOAD_FAILED",
                 comment: "Text that's shown when the donation view fails to load data, probably due to network failure"
             )))
@@ -355,7 +355,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
             section.add(.disclosureItem(
                 icon: .settingsManage,
-                name: NSLocalizedString("DONATION_VIEW_MANAGE_SUBSCRIPTION", comment: "Title for the 'Manage Subscription' button on the donation screen"),
+                name: OWSLocalizedString("DONATION_VIEW_MANAGE_SUBSCRIPTION", comment: "Title for the 'Manage Subscription' button on the donation screen"),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "manageSubscription"),
                 actionBlock: { [weak self] in
                     self?.showDonateViewController(preferredDonateMode: .monthly)
@@ -366,7 +366,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         if hasAnyBadges {
             section.add(.disclosureItem(
                 icon: .settingsBadges,
-                name: NSLocalizedString("DONATION_VIEW_MANAGE_BADGES", comment: "Title for the 'Badges' button on the donation screen"),
+                name: OWSLocalizedString("DONATION_VIEW_MANAGE_BADGES", comment: "Title for the 'Badges' button on the donation screen"),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
                 actionBlock: { [weak self] in
                     guard let self = self else { return }
@@ -393,7 +393,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         section.add(.disclosureItem(
             icon: .settingsGift,
-            name: NSLocalizedString(
+            name: OWSLocalizedString(
                 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND",
                 comment: "Title for the \"donate for a friend\" button on the donation view."
             ),
@@ -426,7 +426,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         profileBadgeLookup: ProfileBadgeLookup,
         hasAnyDonationReceipts: Bool
     ) -> OWSTableSection? {
-        let section = OWSTableSection(title: NSLocalizedString(
+        let section = OWSTableSection(title: OWSLocalizedString(
             "DONATION_VIEW_MORE_SECTION_TITLE",
             comment: "Title for the 'more' section on the donation screen"
         ))
@@ -448,7 +448,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         if shouldShowSubscriptionFaqLink {
             section.add(.disclosureItem(
                 icon: .settingsHelp,
-                name: NSLocalizedString(
+                name: OWSLocalizedString(
                     "DONATION_VIEW_SUBSCRIPTION_FAQ",
                     comment: "Title for the 'Subscription FAQ' button on the donation screen"
                 ),
@@ -470,7 +470,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func donationReceiptsItem(profileBadgeLookup: ProfileBadgeLookup) -> OWSTableItem {
         .disclosureItem(
             icon: .settingsReceipts,
-            name: NSLocalizedString("DONATION_RECEIPTS", comment: "Title of view where you can see all of your donation receipts, or button to take you there"),
+            name: OWSLocalizedString("DONATION_RECEIPTS", comment: "Title of view where you can see all of your donation receipts, or button to take you there"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "subscriptionReceipts"),
             actionBlock: { [weak self] in
                 let vc = DonationReceiptsViewController(profileBadgeLookup: profileBadgeLookup)
@@ -564,7 +564,7 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
     func badgeConfiguration(_ vc: BadgeConfigurationViewController, didCompleteWithBadgeSetting setting: BadgeConfiguration) {
         if !self.reachabilityManager.isReachable {
             OWSActionSheets.showErrorAlert(
-                message: NSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
+                message: OWSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
                                            comment: "Error shown when the user tries to update their profile when the app is not connected to the internet."))
             return
         }

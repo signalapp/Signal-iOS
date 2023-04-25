@@ -614,8 +614,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     private var labelConfigForRemotelyDeleted: CVLabelConfig {
         let text = (isIncoming
-                        ? NSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted")
-                        : NSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you"))
+                        ? OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted")
+                        : OWSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you"))
         return CVLabelConfig(text: text,
                              font: textMessageFont.italic(),
                              textColor: bodyTextColor,
@@ -625,7 +625,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     private var labelConfigForOversizeTextDownloading: CVLabelConfig {
-        let text = NSLocalizedString("MESSAGE_STATUS_DOWNLOADING",
+        let text = OWSLocalizedString("MESSAGE_STATUS_DOWNLOADING",
                                      comment: "message status while message is downloading.")
         return CVLabelConfig(text: text,
                              font: textMessageFont.italic(),

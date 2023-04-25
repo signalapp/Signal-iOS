@@ -21,7 +21,7 @@ class MyStoriesViewController: OWSViewController {
         label.font = .dynamicTypeBody
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.text = NSLocalizedString("MY_STORIES_NO_STORIES", comment: "Indicates that there are no sent stories to render")
+        label.text = OWSLocalizedString("MY_STORIES_NO_STORIES", comment: "Indicates that there are no sent stories to render")
         label.isHidden = true
         label.isUserInteractionEnabled = false
         tableView.backgroundView = label
@@ -45,7 +45,7 @@ class MyStoriesViewController: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("MY_STORIES_TITLE", comment: "Title for the 'My Stories' view")
+        title = OWSLocalizedString("MY_STORIES_TITLE", comment: "Title for the 'My Stories' view")
 
         tableView.register(SentStoryCell.self, forCellReuseIdentifier: SentStoryCell.reuseIdentifier)
         tableView.separatorStyle = .none
@@ -55,7 +55,7 @@ class MyStoriesViewController: OWSViewController {
         reloadStories()
 
         navigationItem.rightBarButtonItem = .init(
-            title: NSLocalizedString("STORY_PRIVACY_SETTINGS", comment: "Button to access the story privacy settings menu"),
+            title: OWSLocalizedString("STORY_PRIVACY_SETTINGS", comment: "Button to access the story privacy settings menu"),
             style: .plain,
             target: self,
             action: #selector(showPrivacySettings)
@@ -436,25 +436,25 @@ class SentStoryCell: UITableViewCell {
 
         switch item.message.sendingState {
         case .pending, .sending:
-            titleLabel.text = NSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
+            titleLabel.text = OWSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
             subtitleLabel.text = ""
             failedIconContainer.isHiddenInStackView = true
         case .failed:
             failedIconView.image = Theme.iconImage(.error16)
             failedIconContainer.isHiddenInStackView = false
             titleLabel.text = item.message.hasSentToAnyRecipients
-                ? NSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
-                : NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
-            subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED_RETRY", comment: "Text indicating that you can tap to retry sending")
+                ? OWSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
+                : OWSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+            subtitleLabel.text = OWSLocalizedString("STORY_SEND_FAILED_RETRY", comment: "Text indicating that you can tap to retry sending")
         case .sent:
             if StoryManager.areViewReceiptsEnabled {
-                let format = NSLocalizedString(
+                let format = OWSLocalizedString(
                     "STORY_VIEWS_%d", tableName: "PluralAware",
                     comment: "Text explaining how many views a story has. Embeds {{ %d number of views }}"
                 )
                 titleLabel.text = String.localizedStringWithFormat(format, item.message.remoteViewCount(in: item.thread.storyContext))
             } else {
-                titleLabel.text = NSLocalizedString(
+                titleLabel.text = OWSLocalizedString(
                     "STORY_VIEWS_OFF",
                     comment: "Text indicating that the user has views turned off"
                 )

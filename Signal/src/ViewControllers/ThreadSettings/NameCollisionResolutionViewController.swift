@@ -103,11 +103,11 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     func updateTableContents() {
         let titleString: String
         if thread.isGroupThread {
-            titleString = NSLocalizedString(
+            titleString = OWSLocalizedString(
                 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE",
                 comment: "A title string for a view that allows a user to review name collisions in group membership")
         } else {
-            titleString = NSLocalizedString(
+            titleString = OWSLocalizedString(
                 "MESSAGE_REQUEST_NAME_COLLISON_TITLE",
                 comment: "A title string for a view that allows a user to review name collisions for an incoming message request")
         }
@@ -132,17 +132,17 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
             label.numberOfLines = 0
 
             if thread.isGroupThread, cellModels.count >= 2 {
-                let format = NSLocalizedString(
+                let format = OWSLocalizedString(
                     "GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d", tableName: "PluralAware",
                     comment: "A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }}")
                 label.text = String.localizedStringWithFormat(format, flattenedCellModels.count)
             } else if thread.isGroupThread {
-                let format = NSLocalizedString(
+                let format = OWSLocalizedString(
                     "GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d", tableName: "PluralAware",
                     comment: "A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }}")
                 label.text = String.localizedStringWithFormat(format, flattenedCellModels.count)
             } else {
-                label.text = NSLocalizedString(
+                label.text = OWSLocalizedString(
                     "MESSAGE_REQUEST_NAME_COLLISON_HEADER",
                     comment: "A header string informing the user about name collisions in a message request")
             }
@@ -154,25 +154,25 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     }
 
     func createSection(for model: NameCollisionCellModel) -> OWSTableSection {
-        let requesterHeader = NSLocalizedString(
+        let requesterHeader = OWSLocalizedString(
             "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER",
             comment: "A header string above the requester's contact info")
-        let contactHeader = NSLocalizedString(
+        let contactHeader = OWSLocalizedString(
             "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER",
             comment: "A header string above a known contact's contact info")
-        let groupMemberHeader = NSLocalizedString(
+        let groupMemberHeader = OWSLocalizedString(
             "GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER",
             comment: "A header string above a group member's contact info")
-        let updateContactActionString = NSLocalizedString(
+        let updateContactActionString = OWSLocalizedString(
             "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION",
             comment: "A button that updates a known contact's information to resolve a name collision")
-        let deleteActionString = NSLocalizedString(
+        let deleteActionString = OWSLocalizedString(
             "MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
             comment: "incoming message request button text which deletes a conversation")
-        let blockActionString = NSLocalizedString(
+        let blockActionString = OWSLocalizedString(
             "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
             comment: "A button used to block a user on an incoming message request.")
-        let removeActionString = NSLocalizedString(
+        let removeActionString = OWSLocalizedString(
             "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
             comment: "Label for 'remove from group' button in conversation settings view.")
 

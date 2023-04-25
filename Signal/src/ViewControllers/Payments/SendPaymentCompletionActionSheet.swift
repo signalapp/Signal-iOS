@@ -207,7 +207,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         let titleLabel = UILabel()
         // TODO: Add support for requests.
-        titleLabel.text = NSLocalizedString("PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE",
+        titleLabel.text = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE",
                                             comment: "Title for the 'confirm payment' ui in the 'send payment' UI.")
         titleLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
@@ -260,7 +260,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         // To void layout jitter, we use a label
         // that occupies exactly the same height.
         let bottomLabel = buildBottomLabel()
-        bottomLabel.text = NSLocalizedString("PAYMENTS_NEW_PAYMENT_PROCESSING",
+        bottomLabel.text = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_PROCESSING",
                                              comment: "Indicator that a new payment is being processed in the 'send payment' UI.")
 
         setContents([
@@ -429,7 +429,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         if let currencyConversion = paymentInfo.currencyConversion {
             if let fiatAmountString = PaymentsFormat.formatAsFiatCurrency(paymentAmount: paymentInfo.paymentAmount,
                                                                         currencyConversionInfo: currencyConversion) {
-                let fiatFormat = NSLocalizedString("PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT",
+                let fiatFormat = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT",
                                                    comment: "Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}.")
 
                 let currencyConversionInfoView = UIImageView.withTemplateImageName("info-outline-24",
@@ -454,7 +454,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         addRow(
             to: &topGroup,
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE",
                 comment: "Label for the 'payment estimated fee' indicator."),
             value: formatMobileCoinAmount(paymentInfo.estimatedFeeAmount),
@@ -464,7 +464,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         let totalAmount = paymentInfo.paymentAmount.plus(paymentInfo.estimatedFeeAmount)
         addRow(
             to: &bottomGroup,
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL",
                 comment: "Label for the 'total payment amount' indicator."),
             value: formatMobileCoinAmount(totalAmount),
@@ -497,7 +497,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         case .publicAddress(let recipientPublicAddress):
             otherUserName = PaymentsImpl.formatAsBase58(publicAddress: recipientPublicAddress)
         }
-        let userFormat = NSLocalizedString("PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT",
+        let userFormat = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT",
                                            comment: "Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}.")
         return String(format: userFormat, otherUserName)
     }
@@ -511,15 +511,15 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                     if let paymentBalance = self.paymentsSwift.currentPaymentBalance {
                         let formattedBalance = PaymentsFormat.format(paymentAmount: paymentBalance.amount,
                                                                      isShortForm: false)
-                        let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT",
+                        let format = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT",
                                                        comment: "Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}.")
                         return String(format: format, formattedBalance)
                     } else {
-                        return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
+                        return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
                                                  comment: "Indicates that a payment failed due to insufficient funds.")
                     }
                 case .outgoingVerificationTakingTooLong:
-                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG",
+                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG",
                                              comment: "Indicates that an outgoing payment could not be verified in a timely way.")
                 case .timeout,
                      .connectionFailure,
@@ -527,10 +527,10 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                      .authorizationFailure,
                      .invalidServerResponse,
                      .attestationVerificationFailed:
-                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE",
+                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE",
                                              comment: "Indicates that a payment failed due to a connectivity failure.")
                 case .outdatedClient:
-                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT",
+                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT",
                                              comment: "Indicates that a payment failed due to an outdated client.")
                 case .userHasNoPublicAddress,
                      .invalidCurrency,
@@ -538,23 +538,23 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                      .invalidFee,
                      .invalidModel,
                      .invalidInput:
-                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION",
+                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION",
                                              comment: "Indicates that a payment failed due to being invalid.")
                 default:
-                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
+                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
                                              comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
                 }
             case let paymentsError as PaymentsUIError:
                 switch paymentsError {
                 case .paymentsLockFailed:
-                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE",
+                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE",
                                              comment: "Indicates that a payment failed because the payments lock failed to authenticate.")
                 case .paymentsLockCancelled:
-                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED",
+                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED",
                                              comment: "Indicates that a payment failed because the payments lock attempt was cancelled.")
                 }
             default:
-                return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
+                return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
                                                      comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
             }
         }()
@@ -568,7 +568,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     private func buildConfirmPaymentButtons() -> UIView {
         buildBottomButtonStack([
-            buildBottomButton(title: NSLocalizedString("PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON",
+            buildBottomButton(title: OWSLocalizedString("PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON",
                                                        comment: "Label for the 'confirm payment' button."),
                               target: self,
                               selector: #selector(didTapConfirmButton))

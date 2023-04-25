@@ -227,7 +227,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
             let text: String
             if quotedReplyModel.isStory {
-                let format = NSLocalizedString("QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
+                let format = OWSLocalizedString("QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
                                                comment: "Message header when you are quoting a story. Embeds {{ story author name }}")
                 text = String(format: format, authorName)
             } else {
@@ -277,7 +277,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                                     ])
             } else if self.quotedReplyModel.isGiftBadge {
                 attributedText = NSAttributedString(
-                    string: NSLocalizedString(
+                    string: OWSLocalizedString(
                         "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY",
                         comment: "Shown when you're replying to a donation message."
                     ),
@@ -285,7 +285,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     attributes: [.font: self.fileTypeFont, .foregroundColor: self.fileTypeTextColor]
                 )
             } else {
-                let string = NSLocalizedString("QUOTED_REPLY_TYPE_ATTACHMENT",
+                let string = OWSLocalizedString("QUOTED_REPLY_TYPE_ATTACHMENT",
                                                comment: "Indicates this message is a quoted reply to an attachment of unknown type.")
                 attributedText = NSAttributedString(string: string,
                                                     attributes: [
@@ -303,7 +303,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var quoteContentSourceLabelConfig: CVLabelConfig {
-            let text = NSLocalizedString("QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
+            let text = OWSLocalizedString("QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
                                          comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender.")
             return CVLabelConfig(text: text,
                                  font: UIFont.dynamicTypeFootnote,
@@ -315,10 +315,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var quoteReactionHeaderLabelConfig: CVLabelConfig {
             let text: String
             if quotedReplyModel.authorAddress.isLocalAddress {
-                text = NSLocalizedString("QUOTED_REPLY_REACTION_TO_OWN_STORY",
+                text = OWSLocalizedString("QUOTED_REPLY_REACTION_TO_OWN_STORY",
                                          comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to your own story.")
             } else {
-                let formatText = NSLocalizedString("QUOTED_REPLY_REACTION_TO_STORY_FORMAT",
+                let formatText = OWSLocalizedString("QUOTED_REPLY_REACTION_TO_STORY_FORMAT",
                                                    comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }}")
                 text = String(format: formatText, quotedAuthorName)
             }
@@ -341,21 +341,21 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             }
 
             if MIMETypeUtil.isAudio(contentType) {
-                return NSLocalizedString("QUOTED_REPLY_TYPE_AUDIO",
+                return OWSLocalizedString("QUOTED_REPLY_TYPE_AUDIO",
                                          comment: "Indicates this message is a quoted reply to an audio file.")
             } else if MIMETypeUtil.isVideo(contentType) {
-                return NSLocalizedString("QUOTED_REPLY_TYPE_VIDEO",
+                return OWSLocalizedString("QUOTED_REPLY_TYPE_VIDEO",
                                          comment: "Indicates this message is a quoted reply to a video file.")
             } else if MIMETypeUtil.isAnimated(contentType) {
                 if contentType.caseInsensitiveCompare(OWSMimeTypeImageGif) == .orderedSame {
-                    return NSLocalizedString("QUOTED_REPLY_TYPE_GIF",
+                    return OWSLocalizedString("QUOTED_REPLY_TYPE_GIF",
                                              comment: "Indicates this message is a quoted reply to animated GIF file.")
                 } else {
-                    return NSLocalizedString("QUOTED_REPLY_TYPE_IMAGE",
+                    return OWSLocalizedString("QUOTED_REPLY_TYPE_IMAGE",
                                              comment: "Indicates this message is a quoted reply to an image file.")
                 }
             } else if MIMETypeUtil.isImage(contentType) {
-                return NSLocalizedString("QUOTED_REPLY_TYPE_PHOTO",
+                return OWSLocalizedString("QUOTED_REPLY_TYPE_PHOTO",
                                          comment: "Indicates this message is a quoted reply to a photo file.")
             }
             return nil

@@ -124,7 +124,7 @@ extension ConversationViewController {
     }
 
     private func showRedeemBadgeLaterText() {
-        let text = NSLocalizedString(
+        let text = OWSLocalizedString(
             "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER",
             comment: "When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge."
         )

@@ -22,13 +22,13 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
     var threadUniqueId: String? { groupReplyViewController.thread?.uniqueId }
 
     private lazy var viewsButton = createToggleButton(
-        title: NSLocalizedString("STORIES_VIEWS_TAB", comment: "Title text for the 'views' tab on the stories views & replies sheet")
+        title: OWSLocalizedString("STORIES_VIEWS_TAB", comment: "Title text for the 'views' tab on the stories views & replies sheet")
     ) { [weak self] in
         self?.switchToViewsTab(animated: true)
     }
 
     private lazy var repliesButton = createToggleButton(
-        title: NSLocalizedString("STORIES_REPLIES_TAB", comment: "Title text for the 'replies' tab on the stories views & replies sheet")
+        title: OWSLocalizedString("STORIES_REPLIES_TAB", comment: "Title text for the 'replies' tab on the stories views & replies sheet")
     ) { [weak self] in
         self?.switchToRepliesTab(animated: true)
     }

@@ -215,7 +215,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         if selectedConversations.allSatisfy({ $0.outgoingMessageClass == OutgoingStoryMessage.self }) {
             pickerVC.approvalTextMode = .none
         } else {
-            let placeholderText = NSLocalizedString(
+            let placeholderText = OWSLocalizedString(
                 "FORWARD_MESSAGE_TEXT_PLACEHOLDER",
                 comment: "Indicates that the user can add a text message to forwarded messages."
             )
@@ -260,13 +260,13 @@ extension ForwardMessageViewController {
 
     private func showFirstForwardAlert() {
         let actionSheet = ActionSheetController(
-            title: NSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_TITLE",
+            title: OWSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_TITLE",
                                      comment: "Title for alert with information about forwarding messages."),
-            message: NSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE",
+            message: OWSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE",
                                      comment: "Message for alert with information about forwarding messages.")
             )
 
-        let format = NSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d", tableName: "PluralAware",
+        let format = OWSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d", tableName: "PluralAware",
                                        comment: "Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }}")
         let actionTitle = String.localizedStringWithFormat(format, content.allItems.count)
         actionSheet.addAction(ActionSheetAction(title: actionTitle) { [weak self] _ in
@@ -594,10 +594,10 @@ extension ForwardMessageViewController {
                                        fromViewController: UIViewController) {
         let toast: String
         if items.count > 1 {
-            toast = NSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_N",
+            toast = OWSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_N",
                                       comment: "Indicates that multiple messages were forwarded.")
         } else {
-            toast = NSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_1",
+            toast = OWSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_1",
                                       comment: "Indicates that a single message was forwarded.")
         }
         fromViewController.presentToast(text: toast)
@@ -619,9 +619,9 @@ extension ForwardMessageViewController {
     public static func showAlertForForwardError(error: Error,
                                                 forwardedInteractionCount: Int) {
         let genericErrorMessage = (forwardedInteractionCount > 1
-                                    ? NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_N",
+                                    ? OWSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_N",
                                                         comment: "Error indicating that messages could not be forwarded.")
-                                    : NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_1",
+                                    : OWSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_1",
                                                         comment: "Error indicating that a message could not be forwarded."))
 
         guard let forwardError = error as? ForwardError else {
@@ -633,9 +633,9 @@ extension ForwardMessageViewController {
         switch forwardError {
         case .missingInteraction:
             let message = (forwardedInteractionCount > 1
-                            ? NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N",
+                            ? OWSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N",
                                                 comment: "Error indicating that messages could not be forwarded.")
-                            : NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1",
+                            : OWSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1",
                                                 comment: "Error indicating that a message could not be forwarded."))
             OWSActionSheets.showErrorAlert(message: message)
         case .missingThread, .invalidInteraction:
@@ -934,7 +934,7 @@ private class ForwardPickerViewController: ConversationPickerViewController {
     }
 
     public func updateNavigationItem() {
-        title = NSLocalizedString("FORWARD_MESSAGE_TITLE",
+        title = OWSLocalizedString("FORWARD_MESSAGE_TITLE",
                                   comment: "Title for the 'forward message(s)' view.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.cancel24),

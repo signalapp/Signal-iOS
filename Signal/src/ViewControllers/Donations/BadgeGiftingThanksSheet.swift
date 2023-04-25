@@ -57,7 +57,7 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
             let cell = Self.tableCell()
 
             let titleLabel = UILabel()
-            titleLabel.text = NSLocalizedString(
+            titleLabel.text = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE",
                 comment: "When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet."
             )
@@ -77,7 +77,7 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
             let cell = Self.tableCell()
 
             let infoLabel = UILabel()
-            let infoLabelFormat = NSLocalizedString(
+            let infoLabelFormat = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT",
                 comment: "When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}."
             )

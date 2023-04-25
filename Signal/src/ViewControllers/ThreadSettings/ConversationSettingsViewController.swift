@@ -208,7 +208,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         if shouldShowEditButton {
             navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_EDIT",
                     comment: "Label for the 'edit' button in conversation settings view."
                 ),
@@ -352,7 +352,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     func showAddToSystemContactsActionSheet(contactThread: TSContactThread) {
         let actionSheet = ActionSheetController()
-        let createNewTitle = NSLocalizedString(
+        let createNewTitle = OWSLocalizedString(
             "CONVERSATION_SETTINGS_NEW_CONTACT",
             comment: "Label for 'new contact' button in conversation settings view."
         )
@@ -364,7 +364,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             }
         ))
 
-        let addToExistingTitle = NSLocalizedString(
+        let addToExistingTitle = OWSLocalizedString(
             "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
             comment: "Label for 'new contact' button in conversation settings view."
         )
@@ -575,12 +575,12 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     func showLeaveGroupConfirmAlert(replacementAdminUuid: UUID? = nil) {
-        let alert = ActionSheetController(title: NSLocalizedString("CONFIRM_LEAVE_GROUP_TITLE",
+        let alert = ActionSheetController(title: OWSLocalizedString("CONFIRM_LEAVE_GROUP_TITLE",
                                                                    comment: "Alert title"),
-                                          message: NSLocalizedString("CONFIRM_LEAVE_GROUP_DESCRIPTION",
+                                          message: OWSLocalizedString("CONFIRM_LEAVE_GROUP_DESCRIPTION",
                                                                      comment: "Alert body"))
 
-        let leaveAction = ActionSheetAction(title: NSLocalizedString("LEAVE_BUTTON_TITLE",
+        let leaveAction = ActionSheetAction(title: OWSLocalizedString("LEAVE_BUTTON_TITLE",
                                                                      comment: "Confirmation button within contextual alert"),
                                             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "leave_group_confirm"),
                                             style: .destructive) { _ in
@@ -596,17 +596,17 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         let candidates = self.replacementAdminCandidates
         guard !candidates.isEmpty else {
             // TODO: We could offer a "delete group locally" option here.
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE",
                                                                       comment: "Message for the 'can't replace group admin' alert."))
             return
         }
 
-        let alert = ActionSheetController(title: NSLocalizedString("GROUPS_REPLACE_ADMIN_ALERT_TITLE",
+        let alert = ActionSheetController(title: OWSLocalizedString("GROUPS_REPLACE_ADMIN_ALERT_TITLE",
                                                                    comment: "Title for the 'replace group admin' alert."),
-                                          message: NSLocalizedString("GROUPS_REPLACE_ADMIN_ALERT_MESSAGE",
+                                          message: OWSLocalizedString("GROUPS_REPLACE_ADMIN_ALERT_MESSAGE",
                                                                      comment: "Message for the 'replace group admin' alert."))
 
-        alert.addAction(ActionSheetAction(title: NSLocalizedString("GROUPS_REPLACE_ADMIN_BUTTON",
+        alert.addAction(ActionSheetAction(title: OWSLocalizedString("GROUPS_REPLACE_ADMIN_BUTTON",
                                                                    comment: "Label for the 'replace group admin' button."),
                                           accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "replace_admin_alert"),
                                           style: .default) { _ in
@@ -716,7 +716,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             let now = Date()
 
             if threadViewModel.mutedUntilTimestamp == ThreadAssociatedData.alwaysMutedTimestamp {
-                unmuteTitle = NSLocalizedString(
+                unmuteTitle = OWSLocalizedString(
                     "CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE",
                     comment: "Indicates that this thread is muted forever."
                 )
@@ -736,7 +736,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                     dateFormatter.timeStyle = .short
                 }
 
-                let formatString = NSLocalizedString(
+                let formatString = OWSLocalizedString(
                     "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT",
                     comment: "Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}."
                 )
@@ -748,7 +748,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         }
 
         let actionSheet = ActionSheetController(
-            title: threadViewModel.isMuted ? unmuteTitle : NSLocalizedString(
+            title: threadViewModel.isMuted ? unmuteTitle : OWSLocalizedString(
                 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE",
                 comment: "Title for the mute action sheet"
             )
@@ -756,7 +756,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         if threadViewModel.isMuted {
             let action =
-                ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_UNMUTE_ACTION",
+                ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_UNMUTE_ACTION",
                                                            comment: "Label for button to unmute a thread."),
                                   accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromVC, name: "unmute")) { _ in
                     setThreadMutedUntilTimestamp(0, threadViewModel: threadViewModel)
@@ -765,7 +765,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             actionSheet.addAction(action)
         } else {
             #if DEBUG
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION",
                                                                              comment: "Label for button to mute a thread for a minute."),
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromVC, name: "mute_1_minute")) { _ in
                 setThreadMuted(threadViewModel: threadViewModel) {
@@ -776,7 +776,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                 actionExecuted()
             })
             #endif
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION",
                                                                              comment: "Label for button to mute a thread for a hour."),
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromVC, name: "mute_1_hour")) { _ in
                 setThreadMuted(threadViewModel: threadViewModel) {
@@ -786,7 +786,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                 }
                 actionExecuted()
             })
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION",
                                                                              comment: "Label for button to mute a thread for eight hours."),
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromVC, name: "mute_8_hour")) { _ in
                 setThreadMuted(threadViewModel: threadViewModel) {
@@ -796,7 +796,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                 }
                 actionExecuted()
             })
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION",
                                                                              comment: "Label for button to mute a thread for a day."),
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromVC, name: "mute_1_day")) { _ in
                 setThreadMuted(threadViewModel: threadViewModel) {
@@ -806,7 +806,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                 }
                 actionExecuted()
             })
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION",
                                                                              comment: "Label for button to mute a thread for a week."),
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromVC, name: "mute_1_week")) { _ in
                 setThreadMuted(threadViewModel: threadViewModel) {
@@ -816,7 +816,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                 }
                 actionExecuted()
             })
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION",
+            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION",
                                                                              comment: "Label for button to mute a thread forever."),
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromVC, name: "mute_always")) { _ in
                 setThreadMutedUntilTimestamp(ThreadAssociatedData.alwaysMutedTimestamp, threadViewModel: threadViewModel)

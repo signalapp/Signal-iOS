@@ -26,7 +26,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE",
                                   comment: "Title for the 'restore payments wallet from pasteboard' view of the app settings.")
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
@@ -85,7 +85,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         textField.accessibilityIdentifier = "payments.passphrase.restore-paste"
         textField.delegate = self
 
-        textField.placeholder = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER",
+        textField.placeholder = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER",
                                                   comment: "Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings.")
 
         let textfieldStack = UIStackView(arrangedSubviews: [ textField ])
@@ -146,7 +146,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
             }
         }
         guard let passphrase = tryToParsePassphrase() else {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE",
                                                                       comment: "Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views."))
             return
         }

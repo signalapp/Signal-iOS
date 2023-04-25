@@ -148,13 +148,13 @@ private extension GetStartedBannerEntry {
     var buttonText: String {
         switch self {
         case .newGroup:
-            return NSLocalizedString("GET_STARTED_CARD_NEW_GROUP", comment: "'Get Started' button directing users to create a group")
+            return OWSLocalizedString("GET_STARTED_CARD_NEW_GROUP", comment: "'Get Started' button directing users to create a group")
         case .inviteFriends:
-            return NSLocalizedString("GET_STARTED_CARD_INVITE_FRIENDS", comment: "'Get Started' button directing users to invite friends")
+            return OWSLocalizedString("GET_STARTED_CARD_INVITE_FRIENDS", comment: "'Get Started' button directing users to invite friends")
         case .appearance:
-            return NSLocalizedString("GET_STARTED_CARD_APPEARANCE", comment: "'Get Started' button directing users to appearance")
+            return OWSLocalizedString("GET_STARTED_CARD_APPEARANCE", comment: "'Get Started' button directing users to appearance")
         case .avatarBuilder:
-            return NSLocalizedString("GET_STARTED_CARD_AVATAR_BUILDER", comment: "'Get Started' button direction users to avatar builder")
+            return OWSLocalizedString("GET_STARTED_CARD_AVATAR_BUILDER", comment: "'Get Started' button direction users to avatar builder")
         }
     }
 }

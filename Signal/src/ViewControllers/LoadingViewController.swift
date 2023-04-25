@@ -30,13 +30,13 @@ public class LoadingViewController: UIViewController {
         self.topLabel = buildLabel()
         topLabel.alpha = 0
         topLabel.font = UIFont.dynamicTypeTitle2
-        topLabel.text = NSLocalizedString("DATABASE_VIEW_OVERLAY_TITLE", comment: "Title shown while the app is updating its database.")
+        topLabel.text = OWSLocalizedString("DATABASE_VIEW_OVERLAY_TITLE", comment: "Title shown while the app is updating its database.")
         labelStack.addArrangedSubview(topLabel)
 
         self.bottomLabel = buildLabel()
         bottomLabel.alpha = 0
         bottomLabel.font = UIFont.dynamicTypeBody
-        bottomLabel.text = NSLocalizedString("DATABASE_VIEW_OVERLAY_SUBTITLE", comment: "Subtitle shown while the app is updating its database.")
+        bottomLabel.text = OWSLocalizedString("DATABASE_VIEW_OVERLAY_SUBTITLE", comment: "Subtitle shown while the app is updating its database.")
         labelStack.addArrangedSubview(bottomLabel)
 
         labelStack.axis = .vertical

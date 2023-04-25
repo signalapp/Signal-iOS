@@ -108,7 +108,7 @@ class CustomColorViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_TITLE",
+        title = OWSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_TITLE",
                                   comment: "Title for the custom chat color settings view.")
 
         navigationItem.rightBarButtonItem = .init(title: CommonStrings.setButton,
@@ -124,11 +124,11 @@ class CustomColorViewController: OWSTableViewController2 {
     }
 
     private func createSubviews() {
-        modeControl.insertSegment(withTitle: NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR",
+        modeControl.insertSegment(withTitle: OWSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR",
                                                                comment: "Label for the 'solid color' mode in the custom chat color settings view."),
                                   at: EditMode.solidColor.rawValue,
                                   animated: false)
-        modeControl.insertSegment(withTitle: NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT",
+        modeControl.insertSegment(withTitle: OWSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT",
                                                                comment: "Label for the 'gradient' mode in the custom chat color settings view."),
                                   at: EditMode.gradientColor1.rawValue,
                                   animated: false)
@@ -234,7 +234,7 @@ class CustomColorViewController: OWSTableViewController2 {
         hueSection.customHeaderHeight = 1
         hueSection.add(self.sliderItem(
             sliderView: hueSlider,
-            headerText: NSLocalizedString(
+            headerText: OWSLocalizedString(
                 "CUSTOM_CHAT_COLOR_SETTINGS_HUE",
                 comment: "Title for the 'hue' section in the chat color settings view."
             )
@@ -247,7 +247,7 @@ class CustomColorViewController: OWSTableViewController2 {
         saturationSection.customHeaderHeight = 1
         saturationSection.add(self.sliderItem(
             sliderView: saturationSlider,
-            headerText: NSLocalizedString(
+            headerText: OWSLocalizedString(
                 "CUSTOM_CHAT_COLOR_SETTINGS_SATURATION",
                 comment: "Title for the 'Saturation' section in the chat color settings view."
             )
@@ -440,11 +440,11 @@ class CustomColorViewController: OWSTableViewController2 {
             return
         }
 
-        let messageFormat = NSLocalizedString("CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d", tableName: "PluralAware",
+        let messageFormat = OWSLocalizedString("CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d", tableName: "PluralAware",
                                               comment: "Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}.")
         let message = String.localizedStringWithFormat(messageFormat, usageCount)
         let actionSheet = ActionSheetController(
-            title: NSLocalizedString("CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE",
+            title: OWSLocalizedString("CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE",
                                      comment: "Title for the 'edit chat color confirm alert' in the chat color settings view."),
             message: message
         )
@@ -1359,19 +1359,19 @@ private class CustomColorPreviewView: UIView {
     private static func buildMockConversationModel() -> MockConversationView.MockModel {
         MockConversationView.MockModel(items: [
             .date,
-            .incoming(text: NSLocalizedString(
+            .incoming(text: OWSLocalizedString(
                 "CHAT_COLOR_INCOMING_MESSAGE_1",
                 comment: "The first incoming bubble text when setting a chat color."
             )),
-            .outgoing(text: NSLocalizedString(
+            .outgoing(text: OWSLocalizedString(
                 "CHAT_COLOR_OUTGOING_MESSAGE_1",
                 comment: "The first outgoing bubble text when setting a chat color."
             )),
-            .incoming(text: NSLocalizedString(
+            .incoming(text: OWSLocalizedString(
                 "CHAT_COLOR_INCOMING_MESSAGE_2",
                 comment: "The second incoming bubble text when setting a chat color."
             )),
-            .outgoing(text: NSLocalizedString(
+            .outgoing(text: OWSLocalizedString(
                 "CHAT_COLOR_OUTGOING_MESSAGE_2",
                 comment: "The second outgoing bubble text when setting a chat color."
             ))
@@ -1528,7 +1528,7 @@ private class CustomColorTooltip: TooltipView {
 
     public override func bubbleContentView() -> UIView {
         let label = UILabel()
-        label.text = NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP",
+        label.text = OWSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP",
                                        comment: "Tooltip highlighting the custom chat color controls.")
         label.font = .dynamicTypeSubheadline
         label.textColor = .ows_white

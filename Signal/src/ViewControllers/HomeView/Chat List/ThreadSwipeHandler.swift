@@ -144,9 +144,9 @@ extension ThreadSwipeHandler where Self: UIViewController {
     fileprivate func deleteThreadWithConfirmation(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
         AssertIsOnMainThread()
 
-        let alert = ActionSheetController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
+        let alert = ActionSheetController(title: OWSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
                                                                    comment: "Title for the 'conversation delete confirmation' alert."),
-                                          message: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
+                                          message: OWSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
                                                                      comment: "Message for the 'conversation delete confirmation' alert."))
         alert.addAction(ActionSheetAction(title: CommonStrings.deleteButton,
                                           style: .destructive) { [weak self] _ in
@@ -186,14 +186,14 @@ extension ThreadSwipeHandler where Self: UIViewController {
     fileprivate func muteThreadWithSelection(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        let alert = ActionSheetController(title: NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE",
+        let alert = ActionSheetController(title: OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE",
                                                                    comment: "Title for the 'conversation mute confirmation' alert."))
         for (title, seconds) in [
-            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1H", comment: "1 hour"), kHourInterval),
-            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_8H", comment: "8 hours"), 8 * kHourInterval),
-            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1D", comment: "1 day"), kDayInterval),
-            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1W", comment: "1 week"), kWeekInterval),
-            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS", comment: "Always"), -1)] {
+            (OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1H", comment: "1 hour"), kHourInterval),
+            (OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_8H", comment: "8 hours"), 8 * kHourInterval),
+            (OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1D", comment: "1 day"), kDayInterval),
+            (OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1W", comment: "1 week"), kWeekInterval),
+            (OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS", comment: "Always"), -1)] {
             alert.addAction(ActionSheetAction(title: title, style: .default) { [weak self] _ in
                 self?.muteThread(threadViewModel: threadViewModel, duration: seconds)
             })
@@ -231,7 +231,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
             }
         } catch {
             if case PinnedThreadError.tooManyPinnedThreads = error {
-                OWSActionSheets.showActionSheet(title: NSLocalizedString("PINNED_CONVERSATION_LIMIT",
+                OWSActionSheets.showActionSheet(title: OWSLocalizedString("PINNED_CONVERSATION_LIMIT",
                                                                          comment: "An explanation that you have already pinned the maximum number of conversations."))
             } else {
                 owsFailDebug("Error: \(error)")

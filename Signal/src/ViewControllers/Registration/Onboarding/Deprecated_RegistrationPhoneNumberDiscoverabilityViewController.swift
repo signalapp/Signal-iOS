@@ -47,7 +47,7 @@ public class Deprecated_RegistrationPhoneNumberDiscoverabilityViewController: De
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.createTitleLabel(text: NSLocalizedString(
+        let titleLabel = self.createTitleLabel(text: OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE",
             comment: "Title of the 'onboarding phone number discoverability' view."
         ))
@@ -64,7 +64,7 @@ public class Deprecated_RegistrationPhoneNumberDiscoverabilityViewController: De
             PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: e164PhoneNumber)
                 .replacingOccurrences(of: " ", with: "\u{00a0}")
 
-        let explanationTextFormat = NSLocalizedString(
+        let explanationTextFormat = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT",
             comment: "Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number}"
         )

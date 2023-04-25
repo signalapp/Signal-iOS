@@ -23,7 +23,7 @@ class HiddenStoryHeaderCell: UITableViewCell {
         contentView.addSubview(label)
         contentView.addSubview(iconView)
 
-        label.text = NSLocalizedString(
+        label.text = OWSLocalizedString(
             "STORIES_HIDDEN_SECTION_HEADER",
             comment: "Header for the hidden stories section of the stories list"
         )

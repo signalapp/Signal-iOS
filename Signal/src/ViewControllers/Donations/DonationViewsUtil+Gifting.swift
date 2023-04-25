@@ -248,29 +248,29 @@ extension DonationViewsUtil {
             case .userCanceledBeforeChargeCompleted:
                 return
             case .recipientIsBlocked:
-                title = NSLocalizedString(
+                title = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE",
                     comment: "Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked."
                 )
-                message = NSLocalizedString(
+                message = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY",
                     comment: "Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked."
                 )
             case .failedAndUserNotCharged, .cannotReceiveGiftBadges:
-                title = NSLocalizedString(
+                title = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE",
                     comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog."
                 )
-                message = NSLocalizedString(
+                message = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY",
                     comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown."
                 )
             case .failedAndUserMaybeCharged:
-                title = NSLocalizedString(
+                title = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE",
                     comment: "Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog."
                 )
-                message = NSLocalizedString(
+                message = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY",
                     comment: "Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown."
                 )

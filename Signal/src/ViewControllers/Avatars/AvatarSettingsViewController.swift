@@ -182,7 +182,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         defer { self.contents = contents }
 
         let section = OWSTableSection()
-        section.headerTitle = NSLocalizedString(
+        section.headerTitle = OWSLocalizedString(
             "AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR",
             comment: "Title for the previously used and preset avatar section."
         )
@@ -328,7 +328,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         return [
             buildHeaderButton(
                 icon: .cameraButton,
-                text: NSLocalizedString(
+                text: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_CAMERA_BUTTON",
                     comment: "Text indicating the user can select an avatar from their camera"
                 ),
@@ -347,7 +347,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             ),
             buildHeaderButton(
                 icon: .settingsAllMedia,
-                text: NSLocalizedString(
+                text: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON",
                     comment: "Text indicating the user can select an avatar from their photos"
                 ),
@@ -365,7 +365,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             ),
             buildHeaderButton(
                 icon: .text24,
-                text: NSLocalizedString(
+                text: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_TEXT_BUTTON",
                     comment: "Text indicating the user can create a new avatar with text"
                 ),

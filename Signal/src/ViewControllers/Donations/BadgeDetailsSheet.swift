@@ -104,7 +104,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
             badgeLabel.numberOfLines = 0
             badgeLabel.text = {
                 if let remoteSupporterName = self.remoteSupporterName {
-                    let format = NSLocalizedString(
+                    let format = OWSLocalizedString(
                         "BADGE_DETAILS_TITLE_FOR_SUPPORTER",
                         comment: "When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name}"
                     )
@@ -137,7 +137,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
 
                 guard let self = self else { return cell }
                 let button = OWSFlatButton.button(
-                    title: NSLocalizedString(
+                    title: OWSLocalizedString(
                         "BADGE_DETAILS_DONATE_TO_SIGNAL",
                         comment: "When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button."
                     ),

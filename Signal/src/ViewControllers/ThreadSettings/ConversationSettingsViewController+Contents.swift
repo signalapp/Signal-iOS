@@ -165,7 +165,7 @@ extension ConversationSettingsViewController {
 
         availableBadges = visibleBadges
         contents.addSection(.init(
-            title: NSLocalizedString("CONVERSATION_SETTINGS_BADGES_HEADER", comment: "Header title for a contact's badges in conversation settings"),
+            title: OWSLocalizedString("CONVERSATION_SETTINGS_BADGES_HEADER", comment: "Header title for a contact's badges in conversation settings"),
             items: [
                 OWSTableItem(customCellBlock: { [weak self] in
                     let cell = OWSTableItem.newCell()
@@ -183,7 +183,7 @@ extension ConversationSettingsViewController {
                     return cell
                 }, actionBlock: nil)
             ],
-            footerTitle: NSLocalizedString("CONVERSATION_SETTINGS_BADGES_FOOTER", comment: "Footer string for a contact's badges in conversation settings"))
+            footerTitle: OWSLocalizedString("CONVERSATION_SETTINGS_BADGES_FOOTER", comment: "Footer string for a contact's badges in conversation settings"))
         )
     }
 
@@ -196,7 +196,7 @@ extension ConversationSettingsViewController {
                 return OWSTableItem.newCell()
             }
 
-            return OWSTableItem.buildDisclosureCell(name: NSLocalizedString("VERIFY_PRIVACY",
+            return OWSTableItem.buildDisclosureCell(name: OWSLocalizedString("VERIFY_PRIVACY",
                                                                             comment: "Label for button or row which allows users to verify the safety number of another user."),
                                                     icon: .settingsViewSafetyNumber,
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "safety_numbers"))
@@ -217,7 +217,7 @@ extension ConversationSettingsViewController {
                 }
 
                 return OWSTableItem.buildDisclosureCell(
-                    name: NSLocalizedString(
+                    name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
                         comment: "Indicates that user is in the system contacts list."
                     ),
@@ -239,7 +239,7 @@ extension ConversationSettingsViewController {
                     return OWSTableItem.newCell()
                 }
                 return OWSTableItem.buildDisclosureCell(
-                    name: NSLocalizedString(
+                    name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
                         comment: "button in conversation settings view."
                     ),
@@ -262,7 +262,7 @@ extension ConversationSettingsViewController {
 
             let cell = OWSTableItem.buildCellWithAccessoryLabel(
                 icon: .color24,
-                itemName: NSLocalizedString("SETTINGS_ITEM_COLOR_AND_WALLPAPER",
+                itemName: OWSLocalizedString("SETTINGS_ITEM_COLOR_AND_WALLPAPER",
                                             comment: "Label for settings view that allows user to change the chat color and wallpaper."),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "color_and_wallpaper")
             )
@@ -282,7 +282,7 @@ extension ConversationSettingsViewController {
 
             let cell = OWSTableItem.buildCellWithAccessoryLabel(
                 icon: .settingsMessageSound,
-                itemName: NSLocalizedString(
+                itemName: OWSLocalizedString(
                     "SOUND_AND_NOTIFICATION_SETTINGS",
                     comment: "table cell label in conversation settings"
                 ),
@@ -308,7 +308,7 @@ extension ConversationSettingsViewController {
                     icon: disappearingMessagesConfiguration.isEnabled
                         ? .settingsTimer
                         : .settingsTimerDisabled,
-                    itemName: NSLocalizedString(
+                    itemName: OWSLocalizedString(
                         "DISAPPEARING_MESSAGES",
                         comment: "table cell label in conversation settings"
                     ),
@@ -340,9 +340,9 @@ extension ConversationSettingsViewController {
         let section = OWSTableSection()
 
         section.footerTitle = isGroupThread
-            ? NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER",
+            ? OWSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER",
                                 comment: "Footer text for the 'block and leave' section of group conversation settings view.")
-            : NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER",
+            : OWSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER",
                                 comment: "Footer text for the 'block and leave' section of contact conversation settings view.")
 
         if isGroupThread, isLocalUserFullOrInvitedMember {
@@ -353,7 +353,7 @@ extension ConversationSettingsViewController {
                 }
 
                 return OWSTableItem.buildIconNameCell(icon: .settingsLeaveGroup,
-                                                      itemName: NSLocalizedString("LEAVE_GROUP_ACTION",
+                                                      itemName: OWSLocalizedString("LEAVE_GROUP_ACTION",
                                                                                   comment: "table cell label in conversation settings"),
                                                       customColor: UIColor.ows_accentRed,
                                                       accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "leave_group"))
@@ -374,16 +374,16 @@ extension ConversationSettingsViewController {
             if self.threadViewModel.isBlocked {
                 cellTitle =
                     (self.thread.isGroupThread
-                        ? NSLocalizedString("CONVERSATION_SETTINGS_UNBLOCK_GROUP",
+                        ? OWSLocalizedString("CONVERSATION_SETTINGS_UNBLOCK_GROUP",
                                             comment: "Label for 'unblock group' action in conversation settings view.")
-                        : NSLocalizedString("CONVERSATION_SETTINGS_UNBLOCK_USER",
+                        : OWSLocalizedString("CONVERSATION_SETTINGS_UNBLOCK_USER",
                                             comment: "Label for 'unblock user' action in conversation settings view."))
             } else {
                 cellTitle =
                     (self.thread.isGroupThread
-                        ? NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_GROUP",
+                        ? OWSLocalizedString("CONVERSATION_SETTINGS_BLOCK_GROUP",
                                             comment: "Label for 'block group' action in conversation settings view.")
-                        : NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_USER",
+                        : OWSLocalizedString("CONVERSATION_SETTINGS_BLOCK_USER",
                                             comment: "Label for 'block user' action in conversation settings view."))
                 customColor = UIColor.ows_accentRed
             }
@@ -431,14 +431,14 @@ extension ConversationSettingsViewController {
             if access != .member {
                 owsFailDebug("Invalid attributes access: \(access.rawValue)")
             }
-            return NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER",
+            return OWSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER",
                                              comment: "Label indicating that all group members can update the group's attributes: name, avatar, etc.")
         case .administrator:
-            return NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR",
+            return OWSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR",
                                      comment: "Label indicating that only administrators can update the group's attributes: name, avatar, etc.")
         case .unknown, .unsatisfiable:
             owsFailDebug("Invalid access")
-            return NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE",
+            return OWSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE",
                                      comment: "Label indicating that no member can update the group's attributes: name, avatar, etc.")
         }
     }
@@ -466,7 +466,7 @@ extension ConversationSettingsViewController {
                                                                   iconTintColor: Theme.primaryTextColor)
 
                 let rowLabel = UILabel()
-                rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
+                rowLabel.text = OWSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
                                                   comment: "Label for 'add members' button in conversation settings view.")
                 rowLabel.textColor = Theme.primaryTextColor
                 rowLabel.font = OWSTableItem.primaryLabelFont
@@ -487,7 +487,7 @@ extension ConversationSettingsViewController {
 
         let totalMemberCount = sortedGroupMembers.count
 
-        let format = NSLocalizedString("CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d", tableName: "PluralAware",
+        let format = OWSLocalizedString("CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d", tableName: "PluralAware",
                                        comment: "Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}.")
         section.headerTitle = String.localizedStringWithFormat(format, totalMemberCount)
 
@@ -524,10 +524,10 @@ extension ConversationSettingsViewController {
                     let isNoLongerVerified = verificationState == .noLongerVerified
                     let isBlocked = self.blockingManager.isAddressBlocked(memberAddress, transaction: transaction)
                     if isGroupAdmin {
-                        configuration.accessoryMessage = NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
+                        configuration.accessoryMessage = OWSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
                                                                            comment: "Label indicating that a group member is an admin.")
                     } else if isNoLongerVerified {
-                        configuration.accessoryMessage = NSLocalizedString("CONTACT_CELL_IS_NO_LONGER_VERIFIED",
+                        configuration.accessoryMessage = OWSLocalizedString("CONTACT_CELL_IS_NO_LONGER_VERIFIED",
                                                                            comment: "An indicator that a contact is no longer verified.")
                     } else if isBlocked {
                         configuration.accessoryMessage = MessageStrings.conversationIsBlocked
@@ -616,7 +616,7 @@ extension ConversationSettingsViewController {
                                ? CommonStrings.switchOn
                                : CommonStrings.switchOff)
         section.add(OWSTableItem.disclosureItem(icon: .settingsLink,
-                                                name: NSLocalizedString("CONVERSATION_SETTINGS_GROUP_LINK",
+                                                name: OWSLocalizedString("CONVERSATION_SETTINGS_GROUP_LINK",
                                                                         comment: "Label for 'group link' action in conversation settings view."),
                                                 accessoryText: groupLinkStatus,
                                                 accessibilityIdentifier: "conversation_settings_group_link",
@@ -624,7 +624,7 @@ extension ConversationSettingsViewController {
             self?.showGroupLinkView()
         }))
 
-        let itemTitle = NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
+        let itemTitle = OWSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
                                           comment: "Label for 'member requests & invites' action in conversation settings view.")
         section.add(OWSTableItem.disclosureItem(icon: .settingsViewRequestAndInvites,
                                                 name: itemTitle,
@@ -635,7 +635,7 @@ extension ConversationSettingsViewController {
         }))
 
         if canEditPermissions {
-            let itemTitle = NSLocalizedString(
+            let itemTitle = OWSLocalizedString(
                 "CONVERSATION_SETTINGS_PERMISSIONS",
                 comment: "Label for 'permissions' action in conversation settings view."
             )
@@ -675,7 +675,7 @@ extension ConversationSettingsViewController {
                 )
 
                 let rowLabel = UILabel()
-                rowLabel.text = NSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
+                rowLabel.text = OWSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
                 rowLabel.textColor = Theme.primaryTextColor
                 rowLabel.font = OWSTableItem.primaryLabelFont
                 rowLabel.lineBreakMode = .byTruncatingTail
@@ -695,12 +695,12 @@ extension ConversationSettingsViewController {
         ))
 
         if mutualGroupThreads.count > 0 {
-            let headerFormat = NSLocalizedString("CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d", tableName: "PluralAware",
+            let headerFormat = OWSLocalizedString("CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d", tableName: "PluralAware",
                                                  comment: "Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}."
             )
             section.headerTitle = String.localizedStringWithFormat(headerFormat, mutualGroupThreads.count)
         } else {
-            section.headerTitle = NSLocalizedString("CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE",
+            section.headerTitle = OWSLocalizedString("CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE",
                                                     comment: "Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups."
             )
         }

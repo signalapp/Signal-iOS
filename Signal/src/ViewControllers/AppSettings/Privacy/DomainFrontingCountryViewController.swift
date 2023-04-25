@@ -11,7 +11,7 @@ class DomainFrontingCountryViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString(
+        title = OWSLocalizedString(
             "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE",
             comment: "Title for the 'censorship circumvention country' view."
         )
@@ -23,7 +23,7 @@ class DomainFrontingCountryViewController: OWSTableViewController2 {
         let currentCountryCode = signalService.manualCensorshipCircumventionCountryCode
 
         let section = OWSTableSection()
-        section.headerTitle = NSLocalizedString(
+        section.headerTitle = OWSLocalizedString(
             "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER",
             comment: "Section title for the 'domain fronting country' view."
         )

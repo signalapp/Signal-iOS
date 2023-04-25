@@ -10,7 +10,7 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings.")
+        title = OWSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings.")
 
         updateTableContents()
     }
@@ -26,7 +26,7 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
 
         let firstSection = OWSTableSection()
         firstSection.add(OWSTableItem.disclosureItem(
-            withText: NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
+            withText: OWSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
                                         comment: "The title for the theme section in the appearance settings."),
             detailText: ThemeSettingsTableViewController.currentThemeName,
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "theme")
@@ -36,7 +36,7 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
             self.navigationController?.pushViewController(vc, animated: true)
         })
         firstSection.add(OWSTableItem.disclosureItem(
-            withText: NSLocalizedString("SETTINGS_ITEM_COLOR_AND_WALLPAPER",
+            withText: OWSLocalizedString("SETTINGS_ITEM_COLOR_AND_WALLPAPER",
                                         comment: "Label for settings view that allows user to change the chat color and wallpaper."),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "color_and_wallpaper")
         ) { [weak self] in
@@ -76,11 +76,11 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
     func nameForTheme(_ mode: ThemeMode) -> String {
         switch mode {
         case .dark:
-            return NSLocalizedString("APPEARANCE_SETTINGS_DARK_THEME_NAME", comment: "Name indicating that the dark theme is enabled.")
+            return OWSLocalizedString("APPEARANCE_SETTINGS_DARK_THEME_NAME", comment: "Name indicating that the dark theme is enabled.")
         case .light:
-            return NSLocalizedString("APPEARANCE_SETTINGS_LIGHT_THEME_NAME", comment: "Name indicating that the light theme is enabled.")
+            return OWSLocalizedString("APPEARANCE_SETTINGS_LIGHT_THEME_NAME", comment: "Name indicating that the light theme is enabled.")
         case .system:
-            return NSLocalizedString("APPEARANCE_SETTINGS_SYSTEM_THEME_NAME", comment: "Name indicating that the system theme is enabled.")
+            return OWSLocalizedString("APPEARANCE_SETTINGS_SYSTEM_THEME_NAME", comment: "Name indicating that the system theme is enabled.")
         }
     }
 }

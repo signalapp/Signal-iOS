@@ -32,7 +32,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
                                   comment: "Title for the 'restore payments wallet' view of the app settings.")
 
         buildBottomView()
@@ -105,14 +105,14 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
     private func buildHeader() -> UIView {
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE",
+        titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE",
                                             comment: "Title for the 'review payments passphrase' step of the 'restore payments wallet' views.")
         titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
         let explanationLabel = UILabel()
-        explanationLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION",
+        explanationLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION",
                                                   comment: "Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views.")
         explanationLabel.font = .dynamicTypeBody2Clamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
@@ -133,9 +133,9 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
     }
 
     private func showInvalidPassphraseAlert() {
-        let actionSheet = ActionSheetController(title: NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE",
+        let actionSheet = ActionSheetController(title: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE",
                                                                          comment: "Title for the 'invalid payments wallet passphrase' error alert in the app payments settings."),
-                                                message: NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE",
+                                                message: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE",
                                                                            comment: "Message for the 'invalid payments wallet passphrase' error alert in the app payments settings."))
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton,
                                                 style: .default) { [weak self] _ in
@@ -146,7 +146,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
     }
 
     private func showRestoreFailureAlert() {
-        OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED",
+        OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED",
                                                                   comment: "Error indicating that 'restore payments wallet failed' in the app payments settings."))
     }
 

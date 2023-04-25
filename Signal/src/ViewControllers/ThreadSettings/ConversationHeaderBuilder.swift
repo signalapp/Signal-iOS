@@ -106,7 +106,7 @@ struct ConversationHeaderBuilder: Dependencies {
                 groupMembersText.append(" ")
                 groupMembersText.append("•")
                 groupMembersText.append(" ")
-                groupMembersText.append(NSLocalizedString("GROUPS_LEGACY_GROUP_INDICATOR",
+                groupMembersText.append(OWSLocalizedString("GROUPS_LEGACY_GROUP_INDICATOR",
                                                           comment: "Label indicating a legacy group."))
             }
             builder.addSubtitleLabel(text: groupMembersText)
@@ -182,7 +182,7 @@ struct ConversationHeaderBuilder: Dependencies {
                     }
                     UIPasteboard.general.string = recipientAddress.phoneNumber
 
-                    let toast = NSLocalizedString("COPIED_TO_CLIPBOARD",
+                    let toast = OWSLocalizedString("COPIED_TO_CLIPBOARD",
                                                   comment: "Indicator that a value has been copied to the clipboard.")
                     delegate.tableViewController.presentToast(text: toast)
                 }
@@ -204,7 +204,7 @@ struct ConversationHeaderBuilder: Dependencies {
             let subtitle = NSMutableAttributedString()
             subtitle.appendTemplatedImage(named: "check-12", font: .dynamicTypeSubheadlineClamped)
             subtitle.append(" ")
-            subtitle.append(NSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
+            subtitle.append(OWSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                               comment: "Badge indicating that the user is verified."))
             builder.addSubtitleLabel(attributedText: subtitle)
         }
@@ -245,7 +245,7 @@ struct ConversationHeaderBuilder: Dependencies {
         if options.contains(.message) {
             buttons.append(buildIconButton(
                 icon: .settingsChats,
-                text: NSLocalizedString(
+                text: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_MESSAGE_BUTTON",
                         comment: "Button to message the chat"
                     ),
@@ -263,7 +263,7 @@ struct ConversationHeaderBuilder: Dependencies {
             if options.contains(.videoCall) {
                 buttons.append(buildIconButton(
                     icon: .videoCall,
-                    text: NSLocalizedString(
+                    text: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON",
                         comment: "Button to start a video call"
                     ),
@@ -277,7 +277,7 @@ struct ConversationHeaderBuilder: Dependencies {
             if !delegate.thread.isGroupThread, options.contains(.audioCall) {
                 buttons.append(buildIconButton(
                     icon: .audioCall,
-                    text: NSLocalizedString(
+                    text: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON",
                         comment: "Button to start a audio call"
                     ),
@@ -293,11 +293,11 @@ struct ConversationHeaderBuilder: Dependencies {
             buttons.append(buildIconButton(
                 icon: .settingsMuted,
                 text: delegate.threadViewModel.isMuted
-                    ? NSLocalizedString(
+                    ? OWSLocalizedString(
                         "CONVERSATION_SETTINGS_MUTED_BUTTON",
                         comment: "Button to unmute the chat"
                     )
-                    : NSLocalizedString(
+                    : OWSLocalizedString(
                         "CONVERSATION_SETTINGS_MUTE_BUTTON",
                         comment: "Button to mute the chat"
                     ),
@@ -316,7 +316,7 @@ struct ConversationHeaderBuilder: Dependencies {
         if options.contains(.search), !delegate.isBlockedByMigration {
             buttons.append(buildIconButton(
                 icon: .settingsSearch,
-                text: NSLocalizedString(
+                text: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_SEARCH_BUTTON",
                     comment: "Button to search the chat"
                 ),
@@ -419,7 +419,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
     mutating func addCreateGroupDescriptionButton() {
         let button = OWSButton { [weak delegate] in delegate?.didTapAddGroupDescription() }
-        button.setTitle(NSLocalizedString(
+        button.setTitle(OWSLocalizedString(
             "GROUP_DESCRIPTION_PLACEHOLDER",
             comment: "Placeholder text for 'group description' field."
         ), for: .normal)

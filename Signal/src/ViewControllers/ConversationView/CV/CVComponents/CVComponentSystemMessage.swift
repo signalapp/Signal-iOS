@@ -665,14 +665,14 @@ extension CVComponentSystemMessage {
             let displayName = contactsManager.displayName(for: verificationMessage.recipientAddress, transaction: transaction)
             let format = (isVerified
                             ? (verificationMessage.isLocalChange
-                                ? NSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
+                                ? OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
                                                     comment: "Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}.")
-                                : NSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE",
+                                : OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE",
                                                     comment: "Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}."))
                             : (verificationMessage.isLocalChange
-                                ? NSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL",
+                                ? OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL",
                                                     comment: "Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}.")
-                                : NSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
+                                : OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
                                                     comment: "Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}.")))
             return String(format: format, displayName)
         } else if let infoMessage = interaction as? TSInfoMessage {
@@ -875,7 +875,7 @@ extension CVComponentSystemMessage {
                                                transaction: SDSAnyReadTransaction) -> CVComponentState.SystemMessage {
 
         if threadViewModel.isGroupThread {
-            let title = NSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP",
+            let title = OWSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP",
                                           comment: "Indicator warning about an unknown group thread.")
 
             let labelText = NSMutableAttributedString()
@@ -890,7 +890,7 @@ extension CVComponentSystemMessage {
                                 action: .didTapUnknownThreadWarningGroup)
             return buildComponentState(title: labelText, action: action)
         } else {
-            let title = NSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
+            let title = OWSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
                                           comment: "Indicator warning about an unknown contact thread.")
             let action = Action(title: CommonStrings.learnMore,
                                 accessibilityIdentifier: "unknown_thread_warning",
@@ -916,7 +916,7 @@ extension CVComponentSystemMessage {
         )
         labelText.append("  ", attributes: [:])
 
-        let titleFormat = NSLocalizedString(
+        let titleFormat = OWSLocalizedString(
             "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT",
             comment: "Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time}"
         )
@@ -959,7 +959,7 @@ extension CVComponentSystemMessage {
             }
 
             if message.wasIdentityVerified {
-                return Action(title: NSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
+                return Action(title: OWSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
                                                        comment: "Label for button to verify a user's safety number."),
                               accessibilityIdentifier: "verify_safety_number",
                               action: .didTapPreviouslyVerifiedIdentityChange(address: address))
@@ -973,7 +973,7 @@ extension CVComponentSystemMessage {
                 owsFailDebug("Invalid interaction.")
                 return nil
             }
-            return Action(title: NSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
+            return Action(title: OWSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
                                                    comment: "Label for button to verify a user's safety number."),
                           accessibilityIdentifier: "verify_safety_number",
                           action: .didTapInvalidIdentityKeyErrorMessage(errorMessage: message))
@@ -981,7 +981,7 @@ extension CVComponentSystemMessage {
              .missingKeyId,
              .noSession,
              .invalidMessage:
-            return Action(title: NSLocalizedString("FINGERPRINT_SHRED_KEYMATERIAL_BUTTON",
+            return Action(title: OWSLocalizedString("FINGERPRINT_SHRED_KEYMATERIAL_BUTTON",
                                                    comment: "Label for button to reset a session."),
                           accessibilityIdentifier: "reset_session",
                           action: .didTapCorruptedMessage(errorMessage: message))
@@ -1033,7 +1033,7 @@ extension CVComponentSystemMessage {
                 return nil
             }
             if newGroupModel.wasJustCreatedByLocalUserV2 {
-                return Action(title: NSLocalizedString("GROUPS_INVITE_FRIENDS_BUTTON",
+                return Action(title: OWSLocalizedString("GROUPS_INVITE_FRIENDS_BUTTON",
                                                        comment: "Label for 'invite friends to group' button."),
                               accessibilityIdentifier: "group_invite_friends",
                               action: .didTapGroupInviteLinkPromotion(groupModel: newGroupModel))
@@ -1129,9 +1129,9 @@ extension CVComponentSystemMessage {
                 }
 
                 let title = (newlyRequestingMembers.count > 1
-                             ? NSLocalizedString("GROUPS_VIEW_REQUESTS_BUTTON",
+                             ? OWSLocalizedString("GROUPS_VIEW_REQUESTS_BUTTON",
                                                  comment: "Label for button that lets the user view the requests to join the group.")
-                             : NSLocalizedString("GROUPS_VIEW_REQUEST_BUTTON",
+                             : OWSLocalizedString("GROUPS_VIEW_REQUEST_BUTTON",
                                                  comment: "Label for button that lets the user view the request to join the group."))
                 return Action(
                     title: title,
@@ -1149,7 +1149,7 @@ extension CVComponentSystemMessage {
             guard message.isProtocolVersionUnknown else {
                 return nil
             }
-            return Action(title: NSLocalizedString("UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON",
+            return Action(title: OWSLocalizedString("UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON",
                                                    comment: "Label for button that lets users upgrade the app."),
                           accessibilityIdentifier: "show_upgrade_app_ui",
                           action: .didTapShowUpgradeAppUI)
@@ -1192,7 +1192,7 @@ extension CVComponentSystemMessage {
                 return nil
             }
 
-            return Action(title: NSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
+            return Action(title: OWSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
                           accessibilityIdentifier: "update_contact",
                           action: .didTapUpdateSystemContact(address: profileChangeAddress,
                                                              newNameComponents: profileChangeNewNameComponents))
@@ -1224,7 +1224,7 @@ extension CVComponentSystemMessage {
                 return nil
             }
 
-            return Action(title: NSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
+            return Action(title: OWSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
                           accessibilityIdentifier: "update_contact",
                           action: .didTapPhoneNumberChange(uuid: uuid,
                                                            phoneNumberOld: phoneNumberOld,
@@ -1255,7 +1255,7 @@ extension CVComponentSystemMessage {
                 return nil
             }
             // TODO: cvc_didTapGroupCall?
-            return Action(title: NSLocalizedString("CALLBACK_BUTTON_TITLE", comment: "notification action"),
+            return Action(title: OWSLocalizedString("CALLBACK_BUTTON_TITLE", comment: "notification action"),
                           accessibilityIdentifier: "call_back",
                           action: .didTapIndividualCall(call: call))
         case .outgoing,
@@ -1264,7 +1264,7 @@ extension CVComponentSystemMessage {
                 return nil
             }
             // TODO: cvc_didTapGroupCall?
-            return Action(title: NSLocalizedString("CALL_AGAIN_BUTTON_TITLE",
+            return Action(title: OWSLocalizedString("CALL_AGAIN_BUTTON_TITLE",
                                                    comment: "Label for button that lets users call a contact again."),
                           accessibilityIdentifier: "call_again",
                           action: .didTapIndividualCall(call: call))
@@ -1294,8 +1294,8 @@ extension CVComponentSystemMessage {
         // TODO: We need to touch thread whenever current call changes.
         let isCurrentCallForThread = currentCallThreadId == thread.uniqueId
 
-        let joinTitle = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
-        let returnTitle = NSLocalizedString("CALL_RETURN_BUTTON", comment: "Button to return to the current call")
+        let joinTitle = OWSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
+        let returnTitle = OWSLocalizedString("CALL_RETURN_BUTTON", comment: "Button to return to the current call")
         let title = isCurrentCallForThread ? returnTitle : joinTitle
 
         return Action(title: title,

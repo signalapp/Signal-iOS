@@ -422,13 +422,13 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         view.accessibilityViewIsModal = true
 
         dismissButton.isAccessibilityElement = true
-        dismissButton.accessibilityLabel = NSLocalizedString("DISMISS_CONTEXT_MENU", comment: "Dismiss context menu accessibility label")
+        dismissButton.accessibilityLabel = OWSLocalizedString("DISMISS_CONTEXT_MENU", comment: "Dismiss context menu accessibility label")
         dismissButton.addTarget(self, action: #selector(dismissButtonTapped(sender:)), for: .touchUpInside)
         contextMenuView.blurView = blurView
         contextMenuView.dismissButton = dismissButton
         contextMenuView.previewView = contextMenuPreview.previewView
         contextMenuView.previewView?.isAccessibilityElement = true
-        contextMenuView.previewView?.accessibilityLabel = NSLocalizedString("MESSAGE_PREVIEW", comment: "Context menu message preview accessibility label")
+        contextMenuView.previewView?.accessibilityLabel = OWSLocalizedString("MESSAGE_PREVIEW", comment: "Context menu message preview accessibility label")
         contextMenuView.auxiliaryPreviewView = contextMenuPreview.auxiliarySnapshot
         contextMenuView.auxiliaryPreviewView?.isAccessibilityElement = false
         contextMenuView.accessoryViews = accessoryViews

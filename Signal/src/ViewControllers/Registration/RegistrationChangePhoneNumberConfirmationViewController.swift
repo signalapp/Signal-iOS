@@ -51,7 +51,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE",
+        title = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE",
                                   comment: "Title for the 'change phone number' views in settings.")
 
         createContents()
@@ -101,7 +101,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
     private func updateContents() {
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
-        let descriptionFormat = NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT",
+        let descriptionFormat = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT",
                                                   comment: "Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}.")
         let oldPhoneNumberFormatted = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: state.oldE164.stringValue)
         let newPhoneNumberFormatted = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: state.newE164.stringValue)
@@ -141,7 +141,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
         let phoneNumberBackground = phoneNumberStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
         phoneNumberBackground.layer.cornerRadius = 10
 
-        let continueButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON",
+        let continueButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON",
                                                                            comment: "Label for the 'confirm change phone number' button in the 'change phone number' views."),
                                                   font: UIFont.dynamicTypeBody.semibold(),
                                                   titleColor: .ows_white,
@@ -152,7 +152,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
         continueButton.cornerRadius = 8
         continueButton.setEnabled(state.rateLimitedError?.canSubmit(e164: self.state.newE164, dateProvider: Date.provider) ?? true)
 
-        let editButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON",
+        let editButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON",
                                                                          comment: "Label for the 'edit phone number' button in the 'change phone number' views."),
                                                 font: UIFont.dynamicTypeBody,
                                                 titleColor: .ows_accentBlue,

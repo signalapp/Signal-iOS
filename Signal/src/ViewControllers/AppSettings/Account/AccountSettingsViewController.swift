@@ -21,7 +21,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_ACCOUNT", comment: "Title for the 'account' link in settings.")
+        title = OWSLocalizedString("SETTINGS_ACCOUNT", comment: "Title for the 'account' link in settings.")
 
         updateTableContents()
     }
@@ -39,12 +39,12 @@ class AccountSettingsViewController: OWSTableViewController2 {
         // Show the change pin and reglock sections
         if tsAccountManager.isRegisteredPrimaryDevice {
             let pinSection = OWSTableSection()
-            pinSection.headerTitle = NSLocalizedString(
+            pinSection.headerTitle = OWSLocalizedString(
                 "SETTINGS_PINS_TITLE",
                 comment: "Title for the 'PINs' section of the privacy settings."
             )
             pinSection.footerAttributedTitle = NSAttributedString.composed(of: [
-                NSLocalizedString(
+                OWSLocalizedString(
                     "SETTINGS_PINS_FOOTER",
                     comment: "Footer for the 'PINs' section of the privacy settings."
                 ),
@@ -57,11 +57,11 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
             pinSection.add(.disclosureItem(
                 withText: OWS2FAManager.shared.is2FAEnabled()
-                    ? NSLocalizedString(
+                    ? OWSLocalizedString(
                         "SETTINGS_PINS_ITEM",
                         comment: "Label for the 'pins' item of the privacy settings when the user does have a pin."
                     )
-                    : NSLocalizedString(
+                    : OWSLocalizedString(
                         "SETTINGS_PINS_ITEM_CREATE",
                         comment: "Label for the 'pins' item of the privacy settings when the user doesn't have a pin."
                     ),
@@ -74,7 +74,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             // Reminders toggle.
             if OWS2FAManager.shared.is2FAEnabled() {
                 pinSection.add(.switch(
-                    withText: NSLocalizedString(
+                    withText: OWSLocalizedString(
                         "SETTINGS_PIN_REMINDER_SWITCH_LABEL",
                         comment: "Label for the 'pin reminder' switch of the privacy settings."
                     ),
@@ -88,13 +88,13 @@ class AccountSettingsViewController: OWSTableViewController2 {
             contents.addSection(pinSection)
 
             let regLockSection = OWSTableSection()
-            regLockSection.footerTitle = NSLocalizedString(
+            regLockSection.footerTitle = OWSLocalizedString(
                 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER",
                 comment: "Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available."
             )
 
             regLockSection.add(.switch(
-                withText: NSLocalizedString(
+                withText: OWSLocalizedString(
                     "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL",
                     comment: "Label for the 'enable registration lock' switch of the privacy settings."
                 ),
@@ -108,7 +108,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
             let advancedSection = OWSTableSection()
             advancedSection.add(.disclosureItem(
-                withText: NSLocalizedString(
+                withText: OWSLocalizedString(
                     "SETTINGS_ADVANCED_PIN_SETTINGS",
                     comment: "Label for the 'advanced pin settings' button."
                 ),
@@ -122,13 +122,13 @@ class AccountSettingsViewController: OWSTableViewController2 {
         }
 
         let accountSection = OWSTableSection()
-        accountSection.headerTitle = NSLocalizedString("SETTINGS_ACCOUNT", comment: "Title for the 'account' link in settings.")
+        accountSection.headerTitle = OWSLocalizedString("SETTINGS_ACCOUNT", comment: "Title for the 'account' link in settings.")
 
         if tsAccountManager.isDeregistered {
             accountSection.add(.actionItem(
                 withText: tsAccountManager.isPrimaryDevice
-                    ? NSLocalizedString("SETTINGS_REREGISTER_BUTTON", comment: "Label for re-registration button.")
-                    : NSLocalizedString("SETTINGS_RELINK_BUTTON", comment: "Label for re-link button."),
+                    ? OWSLocalizedString("SETTINGS_REREGISTER_BUTTON", comment: "Label for re-registration button.")
+                    : OWSLocalizedString("SETTINGS_RELINK_BUTTON", comment: "Label for re-link button."),
                 textColor: .ows_accentBlue,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reregister"),
                 actionBlock: { [weak self] in
@@ -136,7 +136,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 }
             ))
             accountSection.add(.actionItem(
-                withText: NSLocalizedString("SETTINGS_DELETE_DATA_BUTTON",
+                withText: OWSLocalizedString("SETTINGS_DELETE_DATA_BUTTON",
                                             comment: "Label for 'delete data' button."),
                 textColor: .ows_accentRed,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_data"),
@@ -150,7 +150,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 break
             case .allowed:
                 accountSection.add(.actionItem(
-                    withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
+                    withText: OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
                     actionBlock: { [weak self] in
                         guard let self else {
@@ -168,7 +168,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 ))
             }
             accountSection.add(.actionItem(
-                withText: NSLocalizedString(
+                withText: OWSLocalizedString(
                     "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON",
                     comment: "Label for button in settings to get your account data report"
                 ),
@@ -181,7 +181,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 }
             ))
             accountSection.add(.actionItem(
-                withText: NSLocalizedString("SETTINGS_DELETE_ACCOUNT_BUTTON", comment: ""),
+                withText: OWSLocalizedString("SETTINGS_DELETE_ACCOUNT_BUTTON", comment: ""),
                 textColor: .ows_accentRed,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_account"),
                 actionBlock: { [weak self] in
@@ -190,7 +190,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             ))
         } else {
             accountSection.add(.actionItem(
-                withText: NSLocalizedString("SETTINGS_DELETE_DATA_BUTTON",
+                withText: OWSLocalizedString("SETTINGS_DELETE_DATA_BUTTON",
                                             comment: "Label for 'delete data' button."),
                 textColor: .ows_accentRed,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_data"),
@@ -213,9 +213,9 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
     private func deleteLinkedData() {
         OWSActionSheets.showConfirmationAlert(
-            title: NSLocalizedString("CONFIRM_DELETE_LINKED_DATA_TITLE", comment: ""),
-            message: NSLocalizedString("CONFIRM_DELETE_LINKED_DATA_TEXT", comment: ""),
-            proceedTitle: NSLocalizedString("PROCEED_BUTTON", comment: ""),
+            title: OWSLocalizedString("CONFIRM_DELETE_LINKED_DATA_TITLE", comment: ""),
+            message: OWSLocalizedString("CONFIRM_DELETE_LINKED_DATA_TEXT", comment: ""),
+            proceedTitle: OWSLocalizedString("PROCEED_BUTTON", comment: ""),
             proceedStyle: .destructive
         ) { _ in
             SignalApp.resetAppDataWithUI()
@@ -229,9 +229,9 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
     private func deleteUnregisterUserData() {
         OWSActionSheets.showConfirmationAlert(
-            title: NSLocalizedString("CONFIRM_DELETE_DATA_TITLE", comment: ""),
-            message: NSLocalizedString("CONFIRM_DELETE_DATA_TEXT", comment: ""),
-            proceedTitle: NSLocalizedString("PROCEED_BUTTON", comment: ""),
+            title: OWSLocalizedString("CONFIRM_DELETE_DATA_TITLE", comment: ""),
+            message: OWSLocalizedString("CONFIRM_DELETE_DATA_TEXT", comment: ""),
+            proceedTitle: OWSLocalizedString("PROCEED_BUTTON", comment: ""),
             proceedStyle: .destructive
         ) { _ in
             SignalApp.resetAppDataWithUI()
@@ -324,15 +324,15 @@ class AccountSettingsViewController: OWSTableViewController2 {
             }
         } else {
             let pinConfirmationVC = PinConfirmationViewController(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE",
                     comment: "The title for the dialog asking user to confirm their PIN to disable reminders"
                 ),
-                explanation: NSLocalizedString(
+                explanation: OWSLocalizedString(
                     "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION",
                     comment: "The explanation for the dialog asking user to confirm their PIN to disable reminders"
                 ),
-                actionText: NSLocalizedString(
+                actionText: OWSLocalizedString(
                     "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION",
                     comment: "The button text for the dialog asking user to confirm their PIN to disable reminders"
                 )
@@ -361,17 +361,17 @@ class AccountSettingsViewController: OWSTableViewController2 {
         let actionSheet: ActionSheetController
         if shouldBeEnabled {
             actionSheet = ActionSheetController(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE",
                     comment: "Title for the alert confirming that the user wants to turn on registration lock."
                 ),
-                message: NSLocalizedString(
+                message: OWSLocalizedString(
                     "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE",
                     comment: "Body for the alert confirming that the user wants to turn on registration lock."
                 )
             )
 
-            let turnOnAction = ActionSheetAction(title: NSLocalizedString(
+            let turnOnAction = ActionSheetAction(title: OWSLocalizedString(
                 "SETTINGS_REGISTRATION_LOCK_TURN_ON",
                 comment: "Action to turn on registration lock"
             )) { [weak self] _ in
@@ -387,13 +387,13 @@ class AccountSettingsViewController: OWSTableViewController2 {
             }
             actionSheet.addAction(turnOnAction)
         } else {
-            actionSheet = ActionSheetController(title: NSLocalizedString(
+            actionSheet = ActionSheetController(title: OWSLocalizedString(
                 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE",
                 comment: "Title for the alert confirming that the user wants to turn off registration lock."
             ))
 
             let turnOffAction = ActionSheetAction(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "SETTINGS_REGISTRATION_LOCK_TURN_OFF",
                     comment: "Action to turn off registration lock"
                 ),

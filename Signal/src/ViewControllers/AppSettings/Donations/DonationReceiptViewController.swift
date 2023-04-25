@@ -18,7 +18,7 @@ class DonationReceiptViewController: OWSTableViewController2 {
 
     let shareReceiptButton: OWSButton = {
         let button = OWSButton()
-        button.setTitle(NSLocalizedString("DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON", comment: "Text on the button that exports the receipt"),
+        button.setTitle(OWSLocalizedString("DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON", comment: "Text on the button that exports the receipt"),
                         for: .normal)
         button.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
         button.clipsToBounds = true
@@ -54,7 +54,7 @@ class DonationReceiptViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("DONATION_RECEIPT_DETAILS", comment: "Title on the view where you can see a single receipt")
+        title = OWSLocalizedString("DONATION_RECEIPT_DETAILS", comment: "Title on the view where you can see a single receipt")
 
         shareReceiptButton.block = { self.showShareReceiptActivity() }
         shareReceiptButtonContainer.addArrangedSubview(shareReceiptButton)
@@ -114,12 +114,12 @@ class DonationReceiptViewController: OWSTableViewController2 {
     private func detailsSection() -> OWSTableSection {
         OWSTableSection(items: [
             .item(
-                name: NSLocalizedString("DONATION_RECEIPT_TYPE", comment: "Section title for donation type on receipts"),
+                name: OWSLocalizedString("DONATION_RECEIPT_TYPE", comment: "Section title for donation type on receipts"),
                 subtitle: model.localizedName,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donation_receipt_details_type")
             ),
             .item(
-                name: NSLocalizedString("DONATION_RECEIPT_DATE_PAID", comment: "Section title for donation date on receipts"),
+                name: OWSLocalizedString("DONATION_RECEIPT_DATE_PAID", comment: "Section title for donation date on receipts"),
                 subtitle: dateFormatter.string(from: model.timestamp),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donation_receipt_details_date")
             )
@@ -230,13 +230,13 @@ class DonationReceiptViewController: OWSTableViewController2 {
         }
 
         private class func titleView() -> UIView {
-            label(NSLocalizedString("DONATION_RECEIPT_TITLE", comment: "Title on donation receipts"),
+            label(OWSLocalizedString("DONATION_RECEIPT_TITLE", comment: "Title on donation receipts"),
                   fontSize: 20)
         }
 
         private class func amountView(donationReceipt: DonationReceipt) -> UIView {
             let arrangedSubviews = [
-                label(NSLocalizedString("DONATION_RECEIPT_AMOUNT", comment: "Section title for donation amount on receipts")),
+                label(OWSLocalizedString("DONATION_RECEIPT_AMOUNT", comment: "Section title for donation amount on receipts")),
                 label(DonationUtilities.format(money: donationReceipt.amount), isAlignedToEdge: true)
             ]
             let amountView = UIStackView(arrangedSubviews: arrangedSubviews)
@@ -247,17 +247,17 @@ class DonationReceiptViewController: OWSTableViewController2 {
         }
 
         private class func donationTypeView(donationReceipt: DonationReceipt) -> UIView {
-            detailView(title: NSLocalizedString("DONATION_RECEIPT_TYPE", comment: "Section title for donation type on receipts"),
+            detailView(title: OWSLocalizedString("DONATION_RECEIPT_TYPE", comment: "Section title for donation type on receipts"),
                        subtitle: donationReceipt.localizedName)
         }
 
         private class func datePaidView(donationReceipt: DonationReceipt) -> UIView {
-            detailView(title: NSLocalizedString("DONATION_RECEIPT_DATE_PAID", comment: "Section title for donation date on receipts"),
+            detailView(title: OWSLocalizedString("DONATION_RECEIPT_DATE_PAID", comment: "Section title for donation date on receipts"),
                        subtitle: dateFormatter().string(from: donationReceipt.timestamp))
         }
 
         private class func footerView() -> UIView {
-            label(NSLocalizedString("DONATION_RECEIPT_FOOTER", comment: "Footer text at the bottom of donation receipts"),
+            label(OWSLocalizedString("DONATION_RECEIPT_FOOTER", comment: "Footer text at the bottom of donation receipts"),
                   fontSize: 12,
                   textColor: .ows_gray60)
         }

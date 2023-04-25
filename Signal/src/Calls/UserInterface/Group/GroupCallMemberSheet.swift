@@ -78,7 +78,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                     let displayName: String
                     let comparableName: String
                     if member.address.isLocalAddress {
-                        displayName = NSLocalizedString(
+                        displayName = OWSLocalizedString(
                             "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                             comment: "Text describing the local user in the group call members sheet when connected from another device."
                         )
@@ -172,7 +172,7 @@ extension GroupCallMemberSheet: UITableViewDataSource, UITableViewDelegate {
         label.textColor = Theme.darkThemePrimaryColor
 
         if sortedMembers.count > 0 {
-            let formatString = NSLocalizedString(
+            let formatString = OWSLocalizedString(
                 "GROUP_CALL_IN_THIS_CALL_%d", tableName: "PluralAware",
                 comment: "String indicating how many people are current in the call"
             )
@@ -331,7 +331,7 @@ private class GroupCallEmptyCell: UITableViewCell {
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
         label.textColor = Theme.darkThemePrimaryColor
-        label.text = NSLocalizedString("GROUP_CALL_NOBODY_IS_IN_YET",
+        label.text = OWSLocalizedString("GROUP_CALL_NOBODY_IS_IN_YET",
                                        comment: "Text explaining to the user that nobody has joined this call yet.")
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

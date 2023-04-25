@@ -146,7 +146,7 @@ class SendPaymentHelper: Dependencies {
             return
         }
 
-        let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT",
+        let format = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT",
                                        comment: "Format for the 'balance' indicator. Embeds {{ the current payments balance }}.")
         balanceLabel.text = String(format: format,
                                    Self.formatMobileCoinAmount(maximumPaymentAmount))
@@ -203,7 +203,7 @@ class SendPaymentHelper: Dependencies {
 
         let formattedAmount = PaymentsFormat.format(paymentAmount: paymentAmount,
                                                     isShortForm: false)
-        let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT",
+        let format = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT",
                                        comment: "Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}.")
         return String(format: format,
                       formattedAmount,

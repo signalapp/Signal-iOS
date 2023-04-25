@@ -14,7 +14,7 @@ public class LoadMoreMessagesView: UICollectionReusableView {
     // MARK: Init
 
     override public init(frame: CGRect) {
-        label.text = NSLocalizedString("CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
+        label.text = OWSLocalizedString("CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
                                        comment: "Indicates that the app is loading more messages in this conversation.")
         super.init(frame: frame)
         addSubview(label)

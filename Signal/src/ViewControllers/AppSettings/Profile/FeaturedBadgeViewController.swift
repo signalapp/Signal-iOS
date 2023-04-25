@@ -42,7 +42,7 @@ class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataS
 
     func updateTableContents() {
         self.contents = OWSTableContents(
-            title: NSLocalizedString("FEATURED_BADGE_SETTINGS_TITLE", comment: "The title for the featured badge settings page"),
+            title: OWSLocalizedString("FEATURED_BADGE_SETTINGS_TITLE", comment: "The title for the featured badge settings page"),
             sections: [
                 OWSTableSection(header: { [weak self] in
                     guard let avatarView = self?.avatarView else { return UIView() }
@@ -56,7 +56,7 @@ class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataS
                 }),
 
                 OWSTableSection(
-                    title: NSLocalizedString("FEATURED_BADGE_SECTION_HEADER", comment: "Section header directing user to select a badge"),
+                    title: OWSLocalizedString("FEATURED_BADGE_SECTION_HEADER", comment: "Section header directing user to select a badge"),
                     items: [
                         OWSTableItem(customCellBlock: { [weak self] in
                             let cellContent: UIView

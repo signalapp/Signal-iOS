@@ -191,7 +191,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                                 target: self,
                                                                 action: #selector(didPressCancel))
-        self.navigationItem.title = NSLocalizedString("GIF_PICKER_VIEW_TITLE",
+        self.navigationItem.title = OWSLocalizedString("GIF_PICKER_VIEW_TITLE",
                                                       comment: "Title for the 'GIF picker' dialog.")
 
         createViews()
@@ -278,7 +278,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         // Search
         searchBar.delegate = self
-        searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
+        searchBar.placeholder = OWSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
                                                   comment: "Placeholder text for the search field in GIF view")
         view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
@@ -307,14 +307,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         logoImageView.autoPinHeightToSuperview(withMargin: 3)
         logoImageView.autoHCenterInSuperview()
 
-        let noResultsView = createErrorLabel(text: NSLocalizedString("GIF_VIEW_SEARCH_NO_RESULTS",
+        let noResultsView = createErrorLabel(text: OWSLocalizedString("GIF_VIEW_SEARCH_NO_RESULTS",
                                                                     comment: "Indicates that the user's search had no results."))
         self.noResultsView = noResultsView
         self.view.addSubview(noResultsView)
         noResultsView.autoPinWidthToSuperview(withMargin: 20)
         noResultsView.autoAlignAxis(.horizontal, toSameAxisOf: self.collectionView)
 
-        let searchErrorView = createErrorLabel(text: NSLocalizedString("GIF_VIEW_SEARCH_ERROR",
+        let searchErrorView = createErrorLabel(text: OWSLocalizedString("GIF_VIEW_SEARCH_ERROR",
                                                                       comment: "Indicates that an error occurred while searching."))
         self.searchErrorView = searchErrorView
         self.view.addSubview(searchErrorView)
@@ -514,7 +514,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 return
             }
 
-            let alert = ActionSheetController(title: NSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
+            let alert = ActionSheetController(title: OWSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
                                           message: error.userErrorDescription)
             alert.addAction(ActionSheetAction(title: CommonStrings.retryButton, style: .default) { _ in
                 self.getFileForCell(cell)
@@ -583,7 +583,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer = nil
 
         guard let text = searchBar.text else {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("GIF_PICKER_VIEW_MISSING_QUERY",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("GIF_PICKER_VIEW_MISSING_QUERY",
                                                            comment: "Alert message shown when user tries to search for GIFs without entering any search terms."))
             return
         }

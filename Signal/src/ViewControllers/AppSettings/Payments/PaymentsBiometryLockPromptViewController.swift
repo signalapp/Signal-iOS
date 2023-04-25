@@ -33,7 +33,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT",
                                   comment: "Title for the 'enable payments lock' view of the payments activation flow.")
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
@@ -85,7 +85,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         let heroImage = UIImageView(image: UIImage(named: "payments-lock"))
 
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE",
+        titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE",
                                             comment: "Title for the content section of the  'payments lock prompt' view shown after payemts activation.")
         titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
@@ -181,7 +181,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
 
         let actionSheet = ActionSheetController(
             title: doubleReminderActionSheetTitle(),
-            message: NSLocalizedString(
+            message: OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE",
                 comment: "Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings."))
 
@@ -212,15 +212,15 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     private func localizedExplanationLabelText() -> String {
         switch validBiometryType {
         case .faceId:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID",
                 comment: "Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation.")
         case .touchId:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID",
                 comment: "Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation.")
         case .passcode:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE",
                 comment: "Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation.")
         }
@@ -229,15 +229,15 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     private func enableButtonTitle() -> String {
         switch validBiometryType {
         case .faceId:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID",
                 comment: "Enable Button title in Payments Lock Prompt view for Face ID.")
         case .touchId:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID",
                 comment: "Enable Button title in Payments Lock Prompt view for Touch ID.")
         case .passcode:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE",
                 comment: "Enable Button title in Payments Lock Prompt view for Passcode.")
         }
@@ -246,15 +246,15 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     private func doubleReminderActionSheetTitle() -> String {
         switch validBiometryType {
         case .faceId:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID",
                 comment: "Double reminder action sheet title in Payments Lock Prompt view for Face ID.")
         case .touchId:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID",
                 comment: "Double reminder action sheet title in Payments Lock Prompt view for Touch ID.")
         case .passcode:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE",
                 comment: "Double reminder action sheet title in Payments Lock Prompt view for Passcode.")
         }

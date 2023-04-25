@@ -33,7 +33,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         owsAssertDebug(navigationController != nil)
 
-        title = NSLocalizedString("PROFILE_VIEW_TITLE", comment: "Title for the profile view.")
+        title = OWSLocalizedString("PROFILE_VIEW_TITLE", comment: "Title for the profile view.")
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
@@ -94,7 +94,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         let mainSection = OWSTableSection()
         mainSection.footerAttributedTitle = NSAttributedString.composed(of: [
-            NSLocalizedString("PROFILE_VIEW_PROFILE_DESCRIPTION",
+            OWSLocalizedString("PROFILE_VIEW_PROFILE_DESCRIPTION",
                               comment: "Description of the user profile."),
             " ",
             CommonStrings.learnMore.styled(
@@ -106,7 +106,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         )
         mainSection.add(.disclosureItem(
             icon: .settingsProfile,
-            name: fullName ?? NSLocalizedString(
+            name: fullName ?? OWSLocalizedString(
                 "PROFILE_SETTINGS_NAME_PLACEHOLDER",
                 comment: "Placeholder when the user doesn't have a 'name' defined for profile settings screen."
             ),
@@ -135,7 +135,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         mainSection.add(.disclosureItem(
             icon: .settingsAbout,
-            name: OWSUserProfile.bioForDisplay(bio: bio, bioEmoji: bioEmoji) ?? NSLocalizedString(
+            name: OWSUserProfile.bioForDisplay(bio: bio, bioEmoji: bioEmoji) ?? OWSLocalizedString(
                 "PROFILE_SETTINGS_BIO_PLACEHOLDER",
                 comment: "Placeholder when the user doesn't have an 'about' for profile settings screen."
             ),
@@ -149,7 +149,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         if RemoteConfig.donorBadgeDisplay, !allBadges.isEmpty {
             mainSection.add(.disclosureItem(
                 icon: .settingsBadges,
-                name: NSLocalizedString(
+                name: OWSLocalizedString(
                     "BADGE_CONFIGURATION_TITLE",
                     comment: "The title for the badge configuration page"
                 ),
@@ -410,7 +410,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let displayBadgesOnProfile = displayBadgesOnProfile
 
         if !self.reachabilityManager.isReachable {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
                                                                       comment: "Error shown when the user tries to update their profile when the app is not connected to the internet."))
             return
         }
@@ -521,7 +521,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         let changeButton = UIButton(type: .custom)
 
-        changeButton.setTitle(NSLocalizedString("CHANGE_AVATAR_BUTTON_LABEL", comment: "Button label to allow user to change avatar"), for: .normal)
+        changeButton.setTitle(OWSLocalizedString("CHANGE_AVATAR_BUTTON_LABEL", comment: "Button label to allow user to change avatar"), for: .normal)
         changeButton.titleLabel?.font = .dynamicTypeBody2.semibold()
         changeButton.contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
         changeButton.layer.cornerRadius = 16

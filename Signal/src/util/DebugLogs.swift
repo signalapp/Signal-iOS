@@ -117,7 +117,7 @@ private enum DebugLogUploader {
 extension DebugLogs {
     private struct NoLogsError: Error {
         var errorString: String {
-            NSLocalizedString(
+            OWSLocalizedString(
                 "DEBUG_LOG_ALERT_NO_LOGS",
                 comment: "Error indicating that no debug logs could be found."
             )
@@ -203,7 +203,7 @@ extension DebugLogs {
             progressHandler: nil
         )
         guard zipSuccess else {
-            let errorMessage = NSLocalizedString(
+            let errorMessage = OWSLocalizedString(
                 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS",
                 comment: "Error indicating that the debug logs could not be packaged."
             )
@@ -222,7 +222,7 @@ extension DebugLogs {
             OWSFileSystem.deleteFile(zipFilePath)
             wrappedSuccess(url)
         }.catch(on: DispatchQueue.global()) { error in
-            let errorMessage = NSLocalizedString(
+            let errorMessage = OWSLocalizedString(
                 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
                 comment: "Error indicating that a debug log could not be uploaded."
             )
@@ -241,7 +241,7 @@ extension DebugLogs {
 
         if let logArchiveOrDirectoryPath = logArchiveOrDirectoryPath {
             alert.addAction(.init(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE",
                     comment: "Label for the 'Export Logs' fallback option for the alert when debug log uploading fails."
                 ),

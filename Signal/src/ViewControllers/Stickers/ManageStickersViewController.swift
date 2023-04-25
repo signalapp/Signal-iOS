@@ -66,7 +66,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
     override public func loadView() {
         super.loadView()
 
-        navigationItem.title = NSLocalizedString("STICKERS_MANAGE_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
+        navigationItem.title = OWSLocalizedString("STICKERS_MANAGE_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didPressDismiss))
     }
@@ -205,9 +205,9 @@ public class ManageStickersViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let installedSection = OWSTableSection()
-        installedSection.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE", comment: "Title for the 'installed stickers' section of the 'manage stickers' view.")
+        installedSection.headerTitle = OWSLocalizedString("STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE", comment: "Title for the 'installed stickers' section of the 'manage stickers' view.")
         if installedStickerPackSources.count < 1 {
-            let text = NSLocalizedString("STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS", comment: "Label indicating that the user has no installed sticker packs.")
+            let text = OWSLocalizedString("STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS", comment: "Label indicating that the user has no installed sticker packs.")
             installedSection.add(buildEmptySectionItem(labelText: text))
         }
         for dataSource in installedStickerPackSources {
@@ -244,7 +244,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         }
         if availableBuiltInStickerPackSources.count > 0 {
             let section = OWSTableSection()
-            section.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE", comment: "Title for the 'available built-in stickers' section of the 'manage stickers' view.")
+            section.headerTitle = OWSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE", comment: "Title for the 'available built-in stickers' section of the 'manage stickers' view.")
             for dataSource in availableBuiltInStickerPackSources {
                 section.add(itemForAvailablePack(dataSource))
             }
@@ -276,20 +276,20 @@ public class ManageStickersViewController: OWSTableViewController2 {
             }
         }
         let knownSection = OWSTableSection()
-        knownSection.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE", comment: "Title for the 'available known stickers' section of the 'manage stickers' view.")
+        knownSection.headerTitle = OWSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE", comment: "Title for the 'available known stickers' section of the 'manage stickers' view.")
         if knownStickerPackSources.count < 1 {
-            let text = NSLocalizedString("STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS", comment: "Label indicating that the user has no known sticker packs.")
+            let text = OWSLocalizedString("STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS", comment: "Label indicating that the user has no known sticker packs.")
             knownSection.add(buildEmptySectionItem(labelText: text))
         }
         for dataSource in loadedKnownStickerPackSources {
             knownSection.add(itemForAvailablePack(dataSource))
         }
         if loadingKnownStickerPackSources.count > 0 {
-            let text = NSLocalizedString("STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS",
+            let text = OWSLocalizedString("STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS",
                                          comment: "Label indicating that one or more known sticker packs is loading.")
             knownSection.add(buildEmptySectionItem(labelText: text))
         } else if failedKnownStickerPackSources.count > 0 {
-            let text = NSLocalizedString("STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS",
+            let text = OWSLocalizedString("STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS",
                                          comment: "Label indicating that one or more known sticker packs failed to load.")
             knownSection.add(buildEmptySectionItem(labelText: text))
         }
@@ -376,7 +376,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         if let titleValue = titleValue?.ows_stripped(), !titleValue.isEmpty {
             title = titleValue
         } else {
-            title = NSLocalizedString("STICKERS_PACK_DEFAULT_TITLE", comment: "Default title for sticker packs.")
+            title = OWSLocalizedString("STICKERS_PACK_DEFAULT_TITLE", comment: "Default title for sticker packs.")
         }
         let titleLabel = UILabel()
         titleLabel.text = title

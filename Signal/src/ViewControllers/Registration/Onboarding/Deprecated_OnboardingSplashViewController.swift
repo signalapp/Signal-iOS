@@ -50,7 +50,7 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
         heroImageView.setContentHuggingVerticalLow()
         heroImageView.accessibilityIdentifier = "onboarding.splash." + "heroImageView"
 
-        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_SPLASH_TITLE", comment: "Title of the 'onboarding splash' view."))
+        let titleLabel = self.createTitleLabel(text: OWSLocalizedString("ONBOARDING_SPLASH_TITLE", comment: "Title of the 'onboarding splash' view."))
         primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
@@ -59,7 +59,7 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
         }
 
         let explanationLabel = UILabel()
-        explanationLabel.text = NSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
+        explanationLabel.text = OWSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
                                                   comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view.")
         explanationLabel.textColor = Theme.accentBlueColor
         explanationLabel.font = UIFont.dynamicTypeSubheadlineClamped

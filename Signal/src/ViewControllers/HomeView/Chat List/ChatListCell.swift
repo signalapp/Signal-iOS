@@ -694,7 +694,7 @@ public class ChatListCell: UITableViewCell {
 
         switch snippet {
         case .blocked:
-            return NSAttributedString(string: NSLocalizedString("HOME_VIEW_BLOCKED_CONVERSATION",
+            return NSAttributedString(string: OWSLocalizedString("HOME_VIEW_BLOCKED_CONVERSATION",
                                                                 comment: "Table cell subtitle label for a conversation the user has blocked."),
                                       attributes: [
                                         .font: snippetFont,
@@ -705,7 +705,7 @@ public class ChatListCell: UITableViewCell {
 
             // For group threads, show who we think added you (if we know)
             if let addedToGroupByName = addedToGroupByName {
-                let addedToGroupFormat = NSLocalizedString("HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT",
+                let addedToGroupFormat = OWSLocalizedString("HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT",
                                                            comment: "Table cell subtitle label for a group the user has been added to. {Embeds inviter name}")
                 return NSAttributedString(string: String(format: addedToGroupFormat, addedToGroupByName),
                                           attributes: [
@@ -714,7 +714,7 @@ public class ChatListCell: UITableViewCell {
                                           ])
             } else {
                 // Otherwise just show a generic "message request" message
-                let text = NSLocalizedString("HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
+                let text = OWSLocalizedString("HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
                                              comment: "Table cell subtitle label for a conversation the user has not accepted.")
                 return NSAttributedString(string: text,
                                           attributes: [
@@ -724,7 +724,7 @@ public class ChatListCell: UITableViewCell {
             }
         case .draft(let draftText):
             let snippetText = NSMutableAttributedString()
-            snippetText.append(NSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
+            snippetText.append(OWSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
                                                  comment: "A prefix indicating that a message preview is a draft"),
                                attributes: [
                                 .font: snippetFont.italic(),
@@ -738,7 +738,7 @@ public class ChatListCell: UITableViewCell {
             return snippetText
         case .voiceMemoDraft:
             let snippetText = NSMutableAttributedString()
-            snippetText.append(NSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
+            snippetText.append(OWSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
                                                  comment: "A prefix indicating that a message preview is a draft"),
                                attributes: [
                                 .font: snippetFont.italic(),
@@ -754,7 +754,7 @@ public class ChatListCell: UITableViewCell {
                                 .font: snippetFont,
                                 .foregroundColor: snippetColor
                                ])
-            snippetText.append(NSLocalizedString("ATTACHMENT_TYPE_VOICE_MESSAGE",
+            snippetText.append(OWSLocalizedString("ATTACHMENT_TYPE_VOICE_MESSAGE",
                                                  comment: "Short text label for a voice message attachment, used for thread preview and on the lock screen"),
                                attributes: [
                                 .font: snippetFont,

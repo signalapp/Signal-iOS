@@ -82,7 +82,7 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
         super.viewDidLoad()
 
         let titleLabel = self.titleLabel(
-            text: NSLocalizedString("DEVICE_TRANSFER_SCANNING_TITLE",
+            text: OWSLocalizedString("DEVICE_TRANSFER_SCANNING_TITLE",
                                     comment: "The title for the action sheet asking the user to scan the QR code to transfer")
         )
         contentView.addArrangedSubview(titleLabel)
@@ -90,7 +90,7 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
         contentView.addArrangedSubview(.spacer(withHeight: 12))
 
         let explanationLabel = self.explanationLabel(
-            explanationText: NSLocalizedString("DEVICE_TRANSFER_SCANNING_EXPLANATION",
+            explanationText: OWSLocalizedString("DEVICE_TRANSFER_SCANNING_EXPLANATION",
                                                comment: "The explanation for the action sheet asking the user to scan the QR code to transfer")
         )
         contentView.addArrangedSubview(explanationLabel)
@@ -174,7 +174,7 @@ extension DeviceTransferQRScanningViewController: QRCodeScanDelegate {
                     switch error {
                     case .unsupportedVersion:
                         self.showError(
-                            text: NSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
+                            text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
                                                     comment: "An error indicating the user must update their device before trying to transfer.")
                         )
                         return
@@ -184,12 +184,12 @@ extension DeviceTransferQRScanningViewController: QRCodeScanDelegate {
                         switch desiredMode {
                         case .linked:
                             self.showError(
-                                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED",
+                                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED",
                                                         comment: "An error indicating the user must scan this code with a linked device to transfer.")
                             )
                         case .primary:
                             self.showError(
-                                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY",
+                                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY",
                                                         comment: "An error indicating the user must scan this code with a primary device to transfer.")
                             )
                         }
@@ -200,7 +200,7 @@ extension DeviceTransferQRScanningViewController: QRCodeScanDelegate {
                 }
 
                 self.showError(
-                    text: NSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
+                    text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
                                             comment: "An error indicating that something went wrong with the transfer and it could not complete")
                 )
             }
@@ -212,7 +212,7 @@ extension DeviceTransferQRScanningViewController: QRCodeScanDelegate {
     func showConnecting() {
         captureContainerView.isHidden = true
         hStack.isHidden = false
-        label.text = NSLocalizedString("DEVICE_TRANSFER_SCANNING_CONNECTING",
+        label.text = OWSLocalizedString("DEVICE_TRANSFER_SCANNING_CONNECTING",
                                        comment: "Text indicating that we are connecting to the scanned device")
         label.textColor = Theme.primaryTextColor
         activityIndicator.isHidden = false
@@ -245,7 +245,7 @@ extension DeviceTransferQRScanningViewController: DeviceTransferServiceObserver 
     func deviceTransferServiceDidEndTransfer(error: DeviceTransferService.Error?) {
         if error != nil {
             showError(
-                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
+                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
                                         comment: "An error indicating that something went wrong with the transfer and it could not complete")
             )
         }

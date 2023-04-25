@@ -37,7 +37,7 @@ public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewCont
             action: #selector(updatePressed))
         navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
 
-        title = NSLocalizedString(
+        title = OWSLocalizedString(
             "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON",
             comment: "Button to add a new viewer on the 'private story settings' view"
         )

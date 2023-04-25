@@ -13,7 +13,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY",
                                   comment: "Label for 'add money' view in the payment settings.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
@@ -67,7 +67,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             let cell = OWSTableItem.newCell()
 
             let label = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
-                text: NSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
+                text: OWSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
                                         comment: "Explanation of the process for adding money in the 'add money' settings view."),
                 font: .dynamicTypeBody2Clamped,
                 learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_transfer_from_exchange")
@@ -111,7 +111,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
         func configureForError() {
             let label = UILabel()
-            label.text = NSLocalizedString("SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS",
+            label.text = OWSLocalizedString("SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS",
                                            comment: "Indicator that the payments wallet address is invalid.")
             label.textColor = Theme.primaryTextColor
             label.font = UIFont.dynamicTypeBody2Clamped.semibold()
@@ -145,7 +145,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         qrCodeView.layer.masksToBounds = true
 
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL",
+        titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL",
                                             comment: "Label for the payments wallet address.")
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.font = UIFont.dynamicTypeBody2Clamped.semibold()
@@ -191,7 +191,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         }
         UIPasteboard.general.string = walletAddressBase58
 
-        presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED",
+        presentToast(text: OWSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED",
                                              comment: "Indicator that the payments wallet address has been copied to the pasteboard."))
     }
 

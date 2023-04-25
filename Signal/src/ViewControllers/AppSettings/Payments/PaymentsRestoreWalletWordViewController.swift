@@ -53,7 +53,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
+        title = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
                                   comment: "Title for the 'restore payments wallet' view of the app settings.")
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
@@ -97,13 +97,13 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE",
+        titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE",
                                             comment: "Title for the 'enter word' step of the 'restore payments wallet' views.")
         titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
-        let instructionsFormat = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT",
+        let instructionsFormat = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT",
                                                    comment: "Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}.")
         let instructions = String(format: instructionsFormat, OWSFormat.formatInt(wordIndex + 1))
 
@@ -136,7 +136,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         textfield.addTarget(self, action: #selector(textfieldDidChange), for: .editingChanged)
         textfield.delegate = self
 
-        let placeholderFormat = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT",
+        let placeholderFormat = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT",
                                                   comment: "Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}.")
         let placeholder = NSAttributedString(string: String(format: placeholderFormat,
                                                             OWSFormat.formatInt(wordIndex + 1)),
@@ -199,14 +199,14 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         }
         guard let wordText = self.wordText,
               isValidWord(wordText) else {
-            warningLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD",
+            warningLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD",
                                                   comment: "Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views.")
             return
         }
         partialPassphrase.set(word: wordText, index: wordIndex)
         if partialPassphrase.isComplete {
             guard let paymentsPassphrase = partialPassphrase.asPaymentsPassphrase() else {
-                OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE",
+                OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE",
                                                                           comment: "Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views."))
                 return
             }

@@ -152,10 +152,10 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
 
     func updateTableContents() {
         self.contents = OWSTableContents(
-            title: NSLocalizedString("BADGE_CONFIGURATION_TITLE", comment: "The title for the badge configuration page"),
+            title: OWSLocalizedString("BADGE_CONFIGURATION_TITLE", comment: "The title for the badge configuration page"),
             sections: [
                 OWSTableSection(
-                    title: NSLocalizedString(
+                    title: OWSLocalizedString(
                         "BADGE_CONFIGURATION_BADGE_SECTION_TITLE",
                         comment: "Section header for badge view section in the badge configuration page"),
                     items: [
@@ -184,7 +184,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
 
                 OWSTableSection(title: nil, items: [
                     .switch(
-                        withText: NSLocalizedString(
+                        withText: OWSLocalizedString(
                             "DISPLAY_BADGES_ON_PROFILE_SETTING",
                             comment: "Title for switch to enable sharing of badges publicly"),
                         isOn: { [weak self] in self?.displayBadgeOnProfile ?? false },
@@ -192,7 +192,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
                         selector: #selector(didTogglePublicDisplaySetting(_:))),
 
                     .item(
-                        name: NSLocalizedString(
+                        name: OWSLocalizedString(
                             "FEATURED_BADGE_SETTINGS_TITLE",
                             comment: "The title for the featured badge settings page"),
                         textColor: displayBadgeOnProfile ? nil : .ows_gray45,

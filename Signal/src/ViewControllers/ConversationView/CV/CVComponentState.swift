@@ -957,13 +957,13 @@ fileprivate extension CVComponentState.Builder {
                                          action: .didTapSendMessage(contactShare: contactShare))
             bottomButtonsActions.append(action)
         } else if hasInviteButton {
-            let action = CVMessageAction(title: NSLocalizedString("ACTION_INVITE",
+            let action = CVMessageAction(title: OWSLocalizedString("ACTION_INVITE",
                                                                   comment: "Label for 'invite' button in contact view."),
                                          accessibilityIdentifier: "invite_contact_share",
                                          action: .didTapSendInvite(contactShare: contactShare))
             bottomButtonsActions.append(action)
         } else if hasAddToContactsButton {
-            let action = CVMessageAction(title: NSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
+            let action = CVMessageAction(title: OWSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
                                                                   comment: "Message shown in conversation view that offers to add an unknown user to your phone's contacts."),
                                          accessibilityIdentifier: "add_to_contacts",
                                          action: .didTapAddToContacts(contactShare: contactShare))

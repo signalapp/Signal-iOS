@@ -84,11 +84,11 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
 extension CVComponentContactShare: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         if let contactName = contactShare.displayName.filterForDisplay.nilIfEmpty {
-            let format = NSLocalizedString("ACCESSIBILITY_LABEL_CONTACT_FORMAT",
+            let format = OWSLocalizedString("ACCESSIBILITY_LABEL_CONTACT_FORMAT",
                                            comment: "Accessibility label for contact. Embeds: {{ the contact name }}.")
             return String(format: format, contactName)
         } else {
-            return NSLocalizedString("ACCESSIBILITY_LABEL_CONTACT",
+            return OWSLocalizedString("ACCESSIBILITY_LABEL_CONTACT",
                                      comment: "Accessibility label for contact.")
         }
     }

@@ -48,7 +48,7 @@ class GroupCallErrorView: UIView {
     }()
 
     private lazy var button: UIButton = {
-        let buttonLabel = NSLocalizedString(
+        let buttonLabel = OWSLocalizedString(
             "GROUP_CALL_ERROR_DETAILS",
             comment: "A button to receive more info about not seeing a participant in group call grid")
 
