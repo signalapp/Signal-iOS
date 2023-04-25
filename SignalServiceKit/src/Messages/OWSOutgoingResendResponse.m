@@ -18,61 +18,26 @@
 
 @implementation OWSOutgoingResendResponse
 
-- (nullable instancetype)initWithAddress:(SignalServiceAddress *)address
-                                deviceId:(int64_t)deviceId
-                         failedTimestamp:(uint64_t)failedTimestamp
-                         didResetSession:(BOOL)didPerformSessionReset
-                             transaction:(SDSAnyWriteTransaction *)transaction
+- (instancetype)initWithOutgoingMessageBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                      originalMessagePlaintext:(nullable NSData *)originalMessagePlaintext
+                              originalThreadId:(nullable NSString *)originalThreadId
+                               originalGroupId:(nullable NSData *)originalGroupId
+                            derivedContentHint:(NSInteger)derivedContentHint
+                                   transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(address);
-    OWSAssertDebug(transaction);
-    TSThread *targetThread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
-    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:targetThread];
-
-    Payload *_Nullable payloadRecord = [MessageSendLog fetchPayloadWithAddress:address
-                                                                      deviceId:deviceId
-                                                                     timestamp:failedTimestamp
-                                                                   transaction:transaction];
-
-    TSThread *_Nullable originalThread = nil;
-    if (payloadRecord) {
-        OWSLogInfo(@"Found an MSL record for resend request: %lli", failedTimestamp);
-        originalThread = [TSThread anyFetchWithUniqueId:payloadRecord.uniqueThreadId transaction:transaction];
-
-        // We should inherit the timestamp of the failed message. This allows the recipient of this message
-        // to correlate the resend response with the original failed message.
-        builder.timestamp = payloadRecord.sentTimestamp;
-        // We also want to reset the delivery record for the failing address if this was a sender key group
-        // This will be re-marked as delivered on success if we included an SKDM in the resend response
-        [self resetSenderKeyDeliveryRecordIfNecessaryForThreadId:payloadRecord.uniqueThreadId
-                                                         address:address
-                                                     transaction:transaction];
-    } else if (didPerformSessionReset) {
-        OWSLogInfo(
-            @"Failed to find MSL record for resend request: %lli. Will reply with Null message", failedTimestamp);
-    } else {
-        OWSLogInfo(@"Failed to find MSL record for resend request: %lli. Declining to respond.", failedTimestamp);
-        return nil;
-    }
-
-    self = [super initOutgoingMessageWithBuilder:builder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:outgoingMessageBuilder transaction:transaction];
     if (self) {
-        _originalMessagePlaintext = payloadRecord.plaintextContent;
-        _originalThreadId = payloadRecord.uniqueThreadId;
-
-        // Use the original payload's content hint, if we have one.
-        // Otherwise fallback to showing errors immediately.
-        if (payloadRecord) {
-            _derivedContentHint = payloadRecord.contentHint;
-        } else {
-            _derivedContentHint = SealedSenderContentHintImplicit;
-        }
-
-        if ([originalThread isKindOfClass:[TSGroupThread class]]) {
-            _originalGroupId = ((TSGroupThread *)originalThread).groupId;
-        }
+        _originalMessagePlaintext = [originalMessagePlaintext copy];
+        _originalThreadId = [originalThreadId copy];
+        _derivedContentHint = (SealedSenderContentHint)derivedContentHint;
+        _originalGroupId = [originalGroupId copy];
     }
     return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
 }
 
 - (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
@@ -169,23 +134,6 @@
 - (nullable NSData *)envelopeGroupIdWithTransaction:(__unused SDSAnyReadTransaction *)transaction
 {
     return self.originalGroupId;
-}
-
-- (void)resetSenderKeyDeliveryRecordIfNecessaryForThreadId:(NSString *)threadId
-                                                   address:(SignalServiceAddress *)address
-                                               transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(threadId);
-    OWSAssertDebug(address);
-    OWSAssertDebug(transaction);
-
-    TSThread *originalThread = [TSThread anyFetchWithUniqueId:threadId transaction:transaction];
-    if (originalThread.isGroupThread) {
-        // Only group threads support sender key
-        TSGroupThread *groupThread = (TSGroupThread *)originalThread;
-        OWSLogDebug(@"Resetting delivery record in response to failed send to %@ in %@", address, threadId);
-        [self.senderKeyStore resetSenderKeyDeliveryRecordFor:groupThread address:address writeTx:transaction];
-    }
 }
 
 - (nullable SSKProtoContentBuilder *)resentProtoBuilderFromPlaintext:(NSData *)plaintext

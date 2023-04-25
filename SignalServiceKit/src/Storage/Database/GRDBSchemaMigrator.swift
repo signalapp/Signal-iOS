@@ -222,6 +222,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addStoryMessageReplyCount
         case populateStoryMessageReplyCount
         case addIndexToFindFailedAttachments
+        case dropMessageSendLogTriggers
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -279,7 +280,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 55
+    public static let grdbSchemaVersionLatest: UInt = 56
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2221,6 +2222,14 @@ public class GRDBSchemaMigrator: NSObject {
                 ) WHERE "recordType" = 3 AND "state" IN (0, 1)
             """
             try tx.database.execute(sql: sql)
+            return .success(())
+        }
+
+        migrator.registerMigration(.dropMessageSendLogTriggers) { tx in
+            try tx.database.execute(sql: """
+                DROP TRIGGER IF EXISTS MSLRecipient_deliveryReceiptCleanup;
+                DROP TRIGGER IF EXISTS MSLMessage_payloadCleanup;
+            """)
             return .success(())
         }
 

@@ -580,7 +580,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTx) {
         // Record plaintext
         plaintext = [message buildPlainTextData:thread transaction:writeTx];
-        plaintextPayloadId = [MessageSendLog recordPayload:plaintext forMessageBeingSent:message transaction:writeTx];
+        plaintextPayloadId = [MessageSendLogObjC recordPayload:plaintext forMessageBeingSent:message tx:writeTx];
     });
     OWSLogDebug(@"built message: %@ plainTextData.length: %lu", [message class], (unsigned long)plaintext.length);
 

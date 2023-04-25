@@ -9,14 +9,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSOutgoingResendResponse : TSOutgoingMessage
 
-- (nullable instancetype)initWithAddress:(SignalServiceAddress *)address
-                                deviceId:(int64_t)deviceId
-                         failedTimestamp:(uint64_t)failedTimestamp
-                         didResetSession:(BOOL)didPerformSessionReset
-                             transaction:(SDSAnyWriteTransaction *)transaction;
+- (instancetype)initWithOutgoingMessageBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                      originalMessagePlaintext:(nullable NSData *)originalMessagePlaintext
+                              originalThreadId:(nullable NSString *)originalThreadId
+                               originalGroupId:(nullable NSData *)originalGroupId
+                            derivedContentHint:(/* SealedSenderContentHint */ NSInteger)derivedContentHint
+                                   transaction:(SDSAnyWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
                                    transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                         uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
@@ -30,12 +34,17 @@ NS_ASSUME_NONNULL_BEGIN
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+                       giftBadge:(nullable OWSGiftBadge *)giftBadge
+               isGroupStoryReply:(BOOL)isGroupStoryReply
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+           storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
+                  storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                    customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage

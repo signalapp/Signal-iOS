@@ -7,7 +7,7 @@ import LibSignalClient
 
 /// An ObjC wrapper around UnidentifiedSenderMessageContent.ContentHint
 @objc
-public enum SealedSenderContentHint: Int, CustomStringConvertible {
+public enum SealedSenderContentHint: Int, Codable, CustomStringConvertible {
     /// Indicates that the content of a message requires rendering user-visible errors immediately
     /// upon decryption failure. It is not expected that it will be resent, and we make no attempt
     /// to preserve ordering if it is.
@@ -307,10 +307,10 @@ extension OWSMessageManager {
             Logger.warn("Performing message resend of timestamp \(errorMessage.timestamp)")
             let resendResponse = OWSOutgoingResendResponse(
                 address: sourceAddress,
-                deviceId: Int64(sourceDeviceId),
+                deviceId: sourceDeviceId,
                 failedTimestamp: errorMessage.timestamp,
                 didResetSession: didPerformSessionReset,
-                transaction: writeTx
+                tx: writeTx
             )
 
             let sendBlock = { (transaction: SDSAnyWriteTransaction) in

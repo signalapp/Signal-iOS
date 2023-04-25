@@ -313,12 +313,13 @@ extension MessageSender {
 
                         guard let payloadId = payloadId else { return }
                         recipient.devices.forEach { deviceId in
-                            MessageSendLog.recordPendingDelivery(
+                            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+                            messageSendLog.recordPendingDelivery(
                                 payloadId: payloadId,
-                                recipientUuid: recipient.serviceId.uuidValue,
-                                recipientDeviceId: Int64(deviceId),
+                                recipientServiceId: recipient.serviceId,
+                                recipientDeviceId: deviceId,
                                 message: message,
-                                transaction: tx
+                                tx: tx
                             )
                         }
                     }
@@ -411,11 +412,11 @@ extension MessageSender {
                 skdmMessage.configureAsSentOnBehalfOf(originalMessage, in: thread)
 
                 let plaintext = skdmMessage.buildPlainTextData(contactThread, transaction: writeTx)
-                let payloadId: NSNumber?
+                let payloadId: Int64?
 
                 if let plaintext = plaintext {
-                    payloadId = MessageSendLog.recordPayload(
-                        plaintext, forMessageBeingSent: skdmMessage, transaction: writeTx)
+                    let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+                    payloadId = messageSendLog.recordPayload(plaintext, for: skdmMessage, tx: writeTx)
                 } else {
                     payloadId = nil
                 }
@@ -423,7 +424,7 @@ extension MessageSender {
                 return OWSMessageSend(
                     message: skdmMessage,
                     plaintextContent: plaintext,
-                    plaintextPayloadId: payloadId,
+                    plaintextPayloadId: payloadId.map { NSNumber(value: $0) },
                     thread: contactThread,
                     serviceId: serviceId,
                     udSendingAccess: udAccessMap[serviceId],

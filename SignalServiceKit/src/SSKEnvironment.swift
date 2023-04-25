@@ -85,6 +85,7 @@ public class SSKEnvironment: NSObject {
     public let contactDiscoveryManagerRef: ContactDiscoveryManager
     public let callMessageHandlerRef: OWSCallMessageHandler
     public let notificationsManagerRef: NotificationsProtocol
+    public let messageSendLogRef: MessageSendLog
 
     private let appExpiryRef: AppExpiry
     private let aciSignalProtocolStoreRef: SignalProtocolStore
@@ -149,7 +150,8 @@ public class SSKEnvironment: NSObject {
         sskJobQueues: SSKJobQueues,
         contactDiscoveryManager: ContactDiscoveryManager,
         callMessageHandler: OWSCallMessageHandler,
-        notificationsManager: NotificationsProtocol
+        notificationsManager: NotificationsProtocol,
+        messageSendLog: MessageSendLog
     ) {
         self.contactsManagerRef = contactsManager
         self.linkPreviewManagerRef = linkPreviewManager
@@ -210,6 +212,7 @@ public class SSKEnvironment: NSObject {
         self.contactDiscoveryManagerRef = contactDiscoveryManager
         self.callMessageHandlerRef = callMessageHandler
         self.notificationsManagerRef = notificationsManager
+        self.messageSendLogRef = messageSendLog
     }
 
     public func signalProtocolStoreRef(for identity: OWSIdentity) -> SignalProtocolStore {

@@ -141,6 +141,10 @@ public class AppSetup {
             recipientMerger: dependenciesBridge.recipientMerger,
             tsAccountManager: tsAccountManager
         )
+        let messageSendLog = MessageSendLog(
+            databaseStorage: databaseStorage,
+            dateProvider: { Date() }
+        )
 
         Environment.shared = Environment(
             preferences: preferences,
@@ -210,7 +214,8 @@ public class AppSetup {
             sskJobQueues: sskJobQueues,
             contactDiscoveryManager: contactDiscoveryManager,
             callMessageHandler: callMessageHandler,
-            notificationsManager: notificationPresenter
+            notificationsManager: notificationPresenter,
+            messageSendLog: messageSendLog
         )
         SSKEnvironment.setShared(sskEnvironment, isRunningTests: appContext.isRunningTests)
 

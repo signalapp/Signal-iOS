@@ -1073,12 +1073,14 @@ extension MessageSender {
 
             deviceMessages.forEach { deviceMessage in
                 if let payloadId = messageSend.plaintextPayloadId {
-                    MessageSendLog.recordPendingDelivery(
+                    let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+                    messageSendLog.recordPendingDelivery(
                         payloadId: payloadId,
-                        recipientUuid: messageSend.serviceId.uuidValue,
-                        recipientDeviceId: Int64(deviceMessage.destinationDeviceId),
+                        recipientServiceId: messageSend.serviceId.wrappedValue,
+                        recipientDeviceId: deviceMessage.destinationDeviceId,
                         message: message,
-                        transaction: transaction)
+                        tx: transaction
+                    )
                 }
             }
 

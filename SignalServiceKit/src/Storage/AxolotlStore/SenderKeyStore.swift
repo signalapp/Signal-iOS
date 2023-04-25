@@ -107,11 +107,11 @@ public class SenderKeyStore: NSObject {
         }
     }
 
-    @objc
     public func resetSenderKeyDeliveryRecord(
         for thread: TSThread,
-        address: SignalServiceAddress,
-        writeTx: SDSAnyWriteTransaction) {
+        serviceId: ServiceId,
+        writeTx: SDSAnyWriteTransaction
+    ) {
         storageLock.withLock {
             guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
                   let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx) else {
@@ -119,7 +119,7 @@ public class SenderKeyStore: NSObject {
                 return
             }
             var updatedMetadata = existingMetadata
-            updatedMetadata.resetDeliveryRecord(for: address)
+            updatedMetadata.resetDeliveryRecord(for: serviceId)
             setMetadata(updatedMetadata, writeTx: writeTx)
         }
     }
@@ -550,8 +550,8 @@ private struct KeyMetadata {
         return (expirationDate.isAfterNow && isForEncrypting)
     }
 
-    mutating func resetDeliveryRecord(for address: SignalServiceAddress) {
-        sentKeyInfo[address] = nil
+    mutating func resetDeliveryRecord(for serviceId: ServiceId) {
+        sentKeyInfo[SignalServiceAddress(serviceId)] = nil
     }
 
     mutating func recordSKDMSent(at timestamp: UInt64, serviceId: ServiceId, transaction: SDSAnyReadTransaction) throws {

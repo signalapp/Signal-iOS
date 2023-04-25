@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public extension TSMessage {
 

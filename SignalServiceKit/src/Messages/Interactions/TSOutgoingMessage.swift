@@ -216,32 +216,45 @@ public extension TSOutgoingMessage {
     }
 
     @objc(maybeClearShouldSharePhoneNumberForRecipient:recipientDeviceId:transaction:)
-    func maybeClearShouldSharePhoneNumber(for recipientAddress: SignalServiceAddress,
-                                          recipientDeviceId deviceId: UInt32,
-                                          transaction: SDSAnyWriteTransaction) {
+    func maybeClearShouldSharePhoneNumber(
+        for recipientAddress: SignalServiceAddress,
+        recipientDeviceId deviceId: UInt32,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard let serviceId = recipientAddress.serviceId else {
+            // We can't be sharing our phone number b/c there's no ServiceId.
+            return
+        }
+
         guard recipientAddressStates?[recipientAddress]?.wasSentByUD == true else {
             // Can't be sure the message was actually decrypted by the recipient,
             // because the server sends delivery receipts for non-sealed-sender messages.
             return
         }
+
         guard identityManager.shouldSharePhoneNumber(with: recipientAddress, transaction: transaction) else {
             // Not currently sharing anyway!
             return
         }
 
-        guard let messagePayload = MessageSendLog.fetchPayload(address: recipientAddress,
-                                                               deviceId: Int64(deviceId),
-                                                               timestamp: timestamp,
-                                                               transaction: transaction),
-              let payloadId = messagePayload.payloadId else {
+        let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+        let messagePayload = messageSendLog.fetchPayload(
+            recipientServiceId: serviceId,
+            recipientDeviceId: deviceId,
+            timestamp: timestamp,
+            tx: transaction
+        )
+        guard let messagePayload, let payloadId = messagePayload.payloadId else {
             // Can't check whether this message included a PNI signature.
             return
         }
 
-        guard let devicesPendingDelivery = MessageSendLog.devicesPendingDelivery(forPayloadId: payloadId,
-                                                                                 address: recipientAddress,
-                                                                                 transaction: transaction),
-              devicesPendingDelivery == [Int64(deviceId)] else {
+        let deviceIdsPendingDelivery = messageSendLog.deviceIdsPendingDelivery(
+            for: payloadId,
+            recipientServiceId: serviceId,
+            tx: transaction
+        )
+        guard let deviceIdsPendingDelivery, deviceIdsPendingDelivery == [deviceId] else {
             // Other devices still need the PniSignature.
             return
         }
@@ -314,6 +327,30 @@ extension TSOutgoingMessage {
     /// Currently only overridden by OWSOutgoingResendRequest (this is asserted in the MessageSender implementation)
     @objc
     var encryptionStyle: EncryptionStyle { .whisper }
+
+    @objc
+    func clearMessageSendLogEntry(forRecipient address: SignalServiceAddress, deviceId: UInt32, tx: SDSAnyWriteTransaction) {
+        // MSL entries will only exist for addresses with UUIDs
+        guard let serviceId = address.serviceId else {
+            return
+        }
+        let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+        messageSendLog.recordSuccessfulDelivery(
+            message: self,
+            recipientServiceId: serviceId,
+            recipientDeviceId: deviceId,
+            tx: tx
+        )
+    }
+
+    @objc
+    func markMessageSendLogEntryCompleteIfNeeded(tx: SDSAnyWriteTransaction) {
+        guard sendingRecipientAddresses().isEmpty else {
+            return
+        }
+        let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+        messageSendLog.sendComplete(message: self, tx: tx)
+    }
 }
 
 // MARK: - Transcripts
@@ -350,12 +387,13 @@ public extension TSOutgoingMessage {
                 throw OWSAssertionError("Missing proto")
             }
 
-            let payloadId = MessageSendLog.recordPayload(plaintext, forMessageBeingSent: transcript, transaction: transaction)
+            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+            let payloadId = messageSendLog.recordPayload(plaintext, for: transcript, tx: transaction)
 
             return OWSMessageSend(
                 message: transcript,
                 plaintextContent: plaintext,
-                plaintextPayloadId: payloadId,
+                plaintextPayloadId: payloadId.map { NSNumber(value: $0) },
                 thread: localThread,
                 serviceId: ServiceIdObjC(ServiceId(localUuid)),
                 udSendingAccess: nil,

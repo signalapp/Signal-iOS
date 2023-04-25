@@ -126,12 +126,15 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: true, transaction: transaction)
 
-            let payloadId = MessageSendLog.recordPayload(messageData, forMessageBeingSent: message, transaction: transaction) as! Int64
-            MessageSendLog.recordPendingDelivery(payloadId: payloadId,
-                                                 recipientUuid: otherAddress.uuid!,
-                                                 recipientDeviceId: 1,
-                                                 message: message,
-                                                 transaction: transaction)
+            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+            let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
+            messageSendLog.recordPendingDelivery(
+                payloadId: payloadId,
+                recipientServiceId: otherServiceId,
+                recipientDeviceId: 1,
+                message: message,
+                tx: transaction
+            )
 
             // Nothing changed yet...
             XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
@@ -160,17 +163,22 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: true, transaction: transaction)
 
-            let payloadId = MessageSendLog.recordPayload(messageData, forMessageBeingSent: message, transaction: transaction) as! Int64
-            MessageSendLog.recordPendingDelivery(payloadId: payloadId,
-                                                 recipientUuid: otherAddress.uuid!,
-                                                 recipientDeviceId: 1,
-                                                 message: message,
-                                                 transaction: transaction)
-            MessageSendLog.recordPendingDelivery(payloadId: payloadId,
-                                                 recipientUuid: otherAddress.uuid!,
-                                                 recipientDeviceId: 2,
-                                                 message: message,
-                                                 transaction: transaction)
+            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+            let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
+            messageSendLog.recordPendingDelivery(
+                payloadId: payloadId,
+                recipientServiceId: otherServiceId,
+                recipientDeviceId: 1,
+                message: message,
+                tx: transaction
+            )
+            messageSendLog.recordPendingDelivery(
+                payloadId: payloadId,
+                recipientServiceId: otherServiceId,
+                recipientDeviceId: 2,
+                message: message,
+                tx: transaction
+            )
 
             // Nothing changed yet...
             XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
@@ -209,12 +217,15 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: false, transaction: transaction)
 
-            let payloadId = MessageSendLog.recordPayload(messageData, forMessageBeingSent: message, transaction: transaction) as! Int64
-            MessageSendLog.recordPendingDelivery(payloadId: payloadId,
-                                                 recipientUuid: otherAddress.uuid!,
-                                                 recipientDeviceId: 1,
-                                                 message: message,
-                                                 transaction: transaction)
+            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+            let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
+            messageSendLog.recordPendingDelivery(
+                payloadId: payloadId,
+                recipientServiceId: otherServiceId,
+                recipientDeviceId: 1,
+                message: message,
+                tx: transaction
+            )
 
             // Nothing changed yet...
             XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
@@ -243,12 +254,15 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: true, transaction: transaction)
 
-            let payloadId = MessageSendLog.recordPayload(messageData, forMessageBeingSent: message, transaction: transaction) as! Int64
-            MessageSendLog.recordPendingDelivery(payloadId: payloadId,
-                                                 recipientUuid: otherAddress.uuid!,
-                                                 recipientDeviceId: 1,
-                                                 message: message,
-                                                 transaction: transaction)
+            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+            let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
+            messageSendLog.recordPendingDelivery(
+                payloadId: payloadId,
+                recipientServiceId: otherServiceId,
+                recipientDeviceId: 1,
+                message: message,
+                tx: transaction
+            )
 
             // If we set it now...
             XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
@@ -281,12 +295,15 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: true, transaction: transaction)
 
-            let payloadId = MessageSendLog.recordPayload(messageData, forMessageBeingSent: message, transaction: transaction) as! Int64
-            MessageSendLog.recordPendingDelivery(payloadId: payloadId,
-                                                 recipientUuid: otherAddress.uuid!,
-                                                 recipientDeviceId: 1,
-                                                 message: message,
-                                                 transaction: transaction)
+            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+            let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
+            messageSendLog.recordPendingDelivery(
+                payloadId: payloadId,
+                recipientServiceId: otherServiceId,
+                recipientDeviceId: 1,
+                message: message,
+                tx: transaction
+            )
         }
 
         // Change our PNI, using registerForTests(...) instead of updateLocalPhoneNumber(...) because the latter kicks

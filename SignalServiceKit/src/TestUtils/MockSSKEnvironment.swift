@@ -134,6 +134,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             recipientMerger: dependenciesBridge.recipientMerger,
             tsAccountManager: tsAccountManager
         )
+        let messageSendLog = MessageSendLog(databaseStorage: databaseStorage, dateProvider: { Date() })
 
         super.init(
             contactsManager: contactsManager,
@@ -194,7 +195,8 @@ public class MockSSKEnvironment: SSKEnvironment {
             sskJobQueues: sskJobQueues,
             contactDiscoveryManager: contactDiscoveryManager,
             callMessageHandler: FakeCallMessageHandler(),
-            notificationsManager: NoopNotificationsManager()
+            notificationsManager: NoopNotificationsManager(),
+            messageSendLog: messageSendLog
         )
     }
 

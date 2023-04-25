@@ -1184,38 +1184,6 @@ CREATE
 ;
 
 CREATE
-    TRIGGER MSLRecipient_deliveryReceiptCleanup AFTER DELETE
-                ON MessageSendLog_Recipient WHEN 0 = (
-                SELECT
-                        COUNT( * )
-                    FROM
-                        MessageSendLog_Recipient
-                    WHERE
-                        payloadId = old.payloadId
-            ) BEGIN DELETE
-                FROM
-                    MessageSendLog_Payload
-                WHERE
-                    payloadId = old.payloadId
-                    AND sendComplete = TRUE
-;
-
-END
-;
-
-CREATE
-    TRIGGER MSLMessage_payloadCleanup AFTER DELETE
-                ON MessageSendLog_Message BEGIN DELETE
-                FROM
-                    MessageSendLog_Payload
-                WHERE
-                    payloadId = old.payloadId
-;
-
-END
-;
-
-CREATE
     INDEX "MSLPayload_sentTimestampIndex"
         ON "MessageSendLog_Payload"("sentTimestamp"
 )

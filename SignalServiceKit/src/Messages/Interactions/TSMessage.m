@@ -889,7 +889,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self anyReloadWithTransaction:transaction ignoreMissing:YES];
     [self removeAllAttachmentsWithTransaction:transaction];
     [self removeAllMentionsWithTransaction:transaction];
-    [MessageSendLog deleteAllPayloadsForInteraction:self transaction:transaction];
+    [MessageSendLogObjC deleteAllPayloadsForInteraction:self tx:transaction];
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {

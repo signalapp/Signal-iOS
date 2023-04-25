@@ -455,9 +455,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
-    if (self.sendingRecipientAddresses.count == 0) {
-        [MessageSendLog sendCompleteWithMessage:self transaction:transaction];
-    }
+    [self markMessageSendLogEntryCompleteIfNeededWithTx:transaction];
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -470,9 +468,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
-    if (self.sendingRecipientAddresses.count == 0) {
-        [MessageSendLog sendCompleteWithMessage:self transaction:transaction];
-    }
+    [self markMessageSendLogEntryCompleteIfNeededWithTx:transaction];
 }
 
 // This method will be called after every insert and update, so it needs
@@ -761,9 +757,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                      recipientDeviceId:deviceId
                                            transaction:transaction];
 
-    [self clearMessageSendLogEntryForRecipient:recipientAddress
-                                      deviceId:deviceId
-                                   transaction:transaction];
+    [self clearMessageSendLogEntryForRecipient:recipientAddress deviceId:deviceId tx:transaction];
 
     [context
         addUpdateForMessage:self
@@ -800,9 +794,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // This is only really necessary for delivery receipts, but while we're here with
     // an open write transaction, might as well double check we've cleared it.
-    [self clearMessageSendLogEntryForRecipient:recipientAddress
-                                      deviceId:deviceId
-                                   transaction:transaction];
+    [self clearMessageSendLogEntryForRecipient:recipientAddress deviceId:deviceId tx:transaction];
 
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
@@ -838,9 +830,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // This is only really necessary for delivery receipts, but while we're here with
     // an open write transaction, might as well double check we've cleared it.
-    [self clearMessageSendLogEntryForRecipient:recipientAddress
-                                      deviceId:deviceId
-                                   transaction:transaction];
+    [self clearMessageSendLogEntryForRecipient:recipientAddress deviceId:deviceId tx:transaction];
 
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
@@ -994,19 +984,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                             block:^(TSOutgoingMessage *message) {
                                                 message.recipientAddressStates = [recipientAddressStates copy];
                                             }];
-}
-
-- (void)clearMessageSendLogEntryForRecipient:(SignalServiceAddress *)address
-                                    deviceId:(uint32_t)deviceId
-                                 transaction:(SDSAnyWriteTransaction *)transaction
-{
-    // MSL entries will only exist for addresses with UUIDs
-    if (address.uuid) {
-        [MessageSendLog recordSuccessfulDeliveryWithTimestamp:self.timestamp
-                                                recipientUuid:address.uuid
-                                            recipientDeviceId:deviceId
-                                                  transaction:transaction];
-    }
 }
 
 #ifdef TESTABLE_BUILD
