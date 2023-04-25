@@ -221,6 +221,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addIsPniCapableColumnToOWSUserProfile
         case addStoryMessageReplyCount
         case populateStoryMessageReplyCount
+        case addIndexToFindFailedAttachments
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2204,6 +2205,22 @@ public class GRDBSchemaMigrator: NSObject {
                     arguments: [replyCount, id]
                 )
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addIndexToFindFailedAttachments) { tx in
+            // These constants should not change. If they do change, this migration
+            // should not be updated with the new values. Instead, we'd need a new
+            // migration to drop this index and re-build it with the new constants.
+            assert(SDSRecordType.attachmentPointer.rawValue == 3)
+            assert(TSAttachmentPointerState.enqueued.rawValue == 0)
+            assert(TSAttachmentPointerState.downloading.rawValue == 1)
+            let sql = """
+                CREATE INDEX "index_attachments_toMarkAsFailed" ON "model_TSAttachment"(
+                    "recordType", "state"
+                ) WHERE "recordType" = 3 AND "state" IN (0, 1)
+            """
+            try tx.database.execute(sql: sql)
             return .success(())
         }
 

@@ -1450,3 +1450,17 @@ CREATE
             ,"username" TEXT NOT NULL
         )
 ;
+
+CREATE
+    INDEX "index_attachments_toMarkAsFailed"
+        ON "model_TSAttachment" (
+        "recordType"
+        ,"state"
+    )
+WHERE
+    "recordType" = 3
+    AND "state" IN (
+        0
+        ,1
+    )
+;

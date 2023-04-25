@@ -5,11 +5,12 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 protocol AttachmentFinderAdapter {
     associatedtype ReadTransaction
 
-    static func unfailedAttachmentPointerIds(transaction: ReadTransaction) -> [String]
+    static func attachmentPointerIdsToMarkAsFailed(tx: ReadTransaction) -> [String]
 
     static func enumerateAttachmentPointersWithLazyRestoreFragments(transaction: ReadTransaction, block: @escaping (TSAttachmentPointer, UnsafeMutablePointer<ObjCBool>) -> Void)
 }
@@ -28,11 +29,10 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
 
     // MARK: - static methods
 
-    @objc
-    public class func unfailedAttachmentPointerIds(transaction: SDSAnyReadTransaction) -> [String] {
-        switch transaction.readTransaction {
+    public static func attachmentPointerIdsToMarkAsFailed(tx: SDSAnyReadTransaction) -> [String] {
+        switch tx.readTransaction {
         case .grdbRead(let grdbRead):
-            return GRDBAttachmentFinderAdapter.unfailedAttachmentPointerIds(transaction: grdbRead)
+            return GRDBAttachmentFinderAdapter.attachmentPointerIdsToMarkAsFailed(tx: grdbRead)
         }
     }
 
@@ -121,25 +121,31 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
 
     // MARK: - static methods
 
-    static func unfailedAttachmentPointerIds(transaction: ReadTransaction) -> [String] {
+    static func attachmentPointerIdsToMarkAsFailed(tx: ReadTransaction) -> [String] {
+        // In DEBUG builds, confirm that we use the expected index.
+        let indexedBy: String
+        #if DEBUG
+        indexedBy = "INDEXED BY index_attachments_toMarkAsFailed"
+        #else
+        indexedBy = ""
+        #endif
+
         let sql: String = """
         SELECT \(attachmentColumn: .uniqueId)
         FROM \(AttachmentRecord.databaseTableName)
+        \(indexedBy)
         WHERE \(attachmentColumn: .recordType) = \(SDSRecordType.attachmentPointer.rawValue)
-        AND \(attachmentColumn: .state) != ?
+        AND \(attachmentColumn: .state) IN (
+            \(TSAttachmentPointerState.enqueued.rawValue),
+            \(TSAttachmentPointerState.downloading.rawValue)
+        )
         """
-        var result = [String]()
         do {
-            let cursor = try String.fetchCursor(transaction.database,
-                                                sql: sql,
-                                                arguments: [TSAttachmentPointerState.failed.rawValue])
-            while let uniqueId = try cursor.next() {
-                result.append(uniqueId)
-            }
+            return try String.fetchAll(tx.database, sql: sql)
         } catch {
             owsFailDebug("error: \(error)")
+            return []
         }
-        return result
     }
 
     static func enumerateAttachmentPointersWithLazyRestoreFragments(transaction: GRDBReadTransaction, block: @escaping (TSAttachmentPointer, UnsafeMutablePointer<ObjCBool>) -> Void) {

@@ -4,51 +4,42 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public class FailedAttachmentDownloadsJob {
-    /// Used for logging the total number of attachments modified
-    private var count: UInt = 0
     public init() {}
 
     public func runSync(databaseStorage: SDSDatabaseStorage) {
-        databaseStorage.write { writeTx in
-            AttachmentFinder.unfailedAttachmentPointerIds(transaction: writeTx).forEach { attachmentId in
-                // Since we can't directly mutate the enumerated attachments, we store only their ids in hopes
-                // of saving a little memory and then enumerate the (larger) TSAttachment objects one at a time.
+        databaseStorage.write { tx in
+            let attachmentIds = AttachmentFinder.attachmentPointerIdsToMarkAsFailed(tx: tx)
+            attachmentIds.forEach { attachmentId in
+                // Since we can't directly mutate the enumerated attachments, we store only
+                // their ids in hopes of saving a little memory and then enumerate the
+                // (larger) TSAttachment objects one at a time.
                 autoreleasepool {
-                    updateAttachmentPointerIfNecessary(attachmentId, transaction: writeTx)
+                    updateAttachmentPointerIfNecessary(attachmentId, tx: tx)
                 }
             }
+            Logger.info("Finished job. Marked \(attachmentIds.count) in-progress attachments as failed.")
         }
-        Logger.info("Finished job. Marked \(count) in-progress attachments as failed")
     }
 
-    private func updateAttachmentPointerIfNecessary(
-        _ uniqueId: String,
-        transaction writeTx: SDSAnyWriteTransaction
-    ) {
+    private func updateAttachmentPointerIfNecessary(_ uniqueId: String, tx: SDSAnyWriteTransaction) {
         // Preconditions: Must be a valid attachment pointer that hasn't failed
-        guard let attachment = TSAttachmentPointer.anyFetchAttachmentPointer(
-            uniqueId: uniqueId,
-            transaction: writeTx
-        ) else {
+        guard let attachment = TSAttachmentPointer.anyFetchAttachmentPointer(uniqueId: uniqueId, transaction: tx) else {
             owsFailDebug("Missing attachment with id: \(uniqueId)")
             return
         }
 
+        // The query we perform should *exactly* match the cases handled in the
+        // first branch. If you add a new `TSAttachmentPointerState` that needs to
+        // be marked as failed, make sure you also update
+        // `attachmentPointerIdsToMarkAsFailed`.
         switch attachment.state {
         case .enqueued, .downloading:
-            attachment.updateAttachmentPointerState(.failed, transaction: writeTx)
-            count += 1
+            attachment.updateAttachmentPointerState(.failed, transaction: tx)
+            return
 
-            switch count {
-            case ...3:
-                Logger.info("marked attachment pointer as failed: \(attachment.uniqueId)")
-            case 4:
-                Logger.info("eliding logs for further attachment pointers. final count will be reported once complete.")
-            default:
-                break
-            }
         case .pendingMessageRequest:
             // Do nothing. We don't want to mark this attachment as failed.
             // It will be updated when the message request is resolved.
@@ -57,8 +48,9 @@ public class FailedAttachmentDownloadsJob {
             // Do nothing. We don't want to mark this attachment as failed.
             break
         case .failed:
-            // This should not have been returned from `unfailedAttachmentPointerIds`
-            owsFailDebug("Attachment has unexpected state \(attachment.uniqueId).")
+            break
         }
+        // If we reach this point, the query returned something unexpected.
+        owsFailDebug("Attachment has unexpected state \(attachment.uniqueId).")
     }
 }
