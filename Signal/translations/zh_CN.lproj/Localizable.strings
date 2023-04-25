@@ -179,10 +179,10 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "仍然打开 Signal";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "请将调试日志发送至 support@signal.org，以助我们解决此问题。";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "无法打开 Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "无法加载数据库";
@@ -1658,10 +1658,10 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "重新注册此手机号码";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "This device is no longer registered. This is likely because you registered your phone number with Signal on a different device.";
+"DEREGISTRATION_WARNING" = "此设备已注销。这可能是因为您使用您的电话号码在其他设备上注册了 Signal。";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
-"DEREGISTRATION_WARNING_ACTION_TITLE" = "Re-Register Device";
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "重新注册设备";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "上次活动 %1$@";
@@ -1673,10 +1673,10 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "设备列表更新失败。";
 
 /* A label for this device in the device list. */
-"DEVICE_NAME_THIS_DEVICE" = "This Device";
+"DEVICE_NAME_THIS_DEVICE" = "此设备";
 
 /* A label for an unnamed device in the device list. */
-"DEVICE_NAME_UNNAMED_DEVICE" = "Unnamed Device";
+"DEVICE_NAME_UNNAMED_DEVICE" = "未命名设备";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "停止转移";
@@ -2288,16 +2288,16 @@
 "EXIT_REREGISTRATION" = "退出注册";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "This version of Signal has expired. Update to send and receive messages.";
+"EXPIRATION_ERROR" = "此 Signal 版本已过期，请升级到更新版本以继续收发消息。";
 
 /* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
-"EXPIRATION_WARNING_ACTION_TITLE" = "Update Now";
+"EXPIRATION_WARNING_ACTION_TITLE" = "立即升级";
 
 /* Label warning the user that the app will expire soon. Embeds {{date}}. */
-"EXPIRATION_WARNING_SOON" = "This version of Signal will expire on %1$@. Update to keep messaging.";
+"EXPIRATION_WARNING_SOON" = "此 Signal 版本将于 %1$@过期，请更新到更新版本以继续收发消息。";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "This version of Signal will expire today. Update to keep messaging.";
+"EXPIRATION_WARNING_TODAY" = "此 Signal 版本将在今天过期，请更新到更新版本以继续收发消息。";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "与此联系人通信时发生大量错误，请稍后再试。";
@@ -5357,7 +5357,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "您的电话号码";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "You’ll receive a call to verify this number. Is your phone number above correct?";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "您将收到来电以核验该号码。上方的电话号码是否正确？";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "电话号码";
@@ -7241,10 +7241,10 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "确定解绑 \"%1$@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "This device is no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "此设备已取消关联。请将您的手机重新关联 Signal 以继续收发消息。";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
-"UNLINKED_WARNING_ACTION_TITLE" = "Re-Link Device";
+"UNLINKED_WARNING_ACTION_TITLE" = "重新关联设备";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "解绑设备失败。";

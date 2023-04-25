@@ -1,4 +1,4 @@
-• For those of you who like to listen closely, we improved earpiece proximity detection on newer iPhones. Now you can call someone without accidentally hanging up on them with your cheek as often, and you can also quietly play new voice notes without the screen shining in your ear too.
-• The media player looks a lot better in landscape mode, and we repositioned common playback controls so that things don’t feel so sideways even when your device is sideways.
-• If someone @mentions you in a reply to a group story, you’ll get notified as expected.
-• We added support for line wraps for long profile names, and now the entire name will appear instead of being partially truncated with an ellipsis. You can still deliberately include an ellipsis in your profile name if you want to be “Mysterious…”
+• 對於需要留心聆聽的情況，我們改進了在新款 iPhone 上的耳機近距離感測。現在，你不用怕與某人通話時會不小心貼到臉而掛斷電話，你也可以安靜地播放新語音訊息，就算屏幕如何閃爍也不會在你耳旁造成干擾。
+• 媒體播放器在橫向模式下大大改進，我們也重新安排了常用的播放控制按鈕位置，即使你的裝置為側向，也不會覺得不順手。
+• 如果有人在回覆群組限時動態時 @mentions 了你，你將如預期收到通知。
+• 我們新增了支援個人資料長名稱的換行，現在可以顯示整個名稱，而不是用省略號截斷一部分。如果你想保持「神秘...」，你便要自行在個人資料名稱中加入省略號。

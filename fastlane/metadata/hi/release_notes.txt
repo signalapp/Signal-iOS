@@ -1,4 +1,5 @@
-• For those of you who like to listen closely, we improved earpiece proximity detection on newer iPhones. Now you can call someone without accidentally hanging up on them with your cheek as often, and you can also quietly play new voice notes without the screen shining in your ear too.
-• The media player looks a lot better in landscape mode, and we repositioned common playback controls so that things don’t feel so sideways even when your device is sideways.
-• If someone @mentions you in a reply to a group story, you’ll get notified as expected.
-• We added support for line wraps for long profile names, and now the entire name will appear instead of being partially truncated with an ellipsis. You can still deliberately include an ellipsis in your profile name if you want to be “Mysterious…”
+• आप में से जो लोग करीब से सुनना पसंद करते हैं, उनके लिए हमने नए आईफोन पर ईयरपीस प्रॉक्सिमिटी डिटेक्शन में सुधार किया है। अब आप किसी को भी अपने गालों से गलती से फोन काटे बिना कॉल कर सकते हैं और आप अपने कान में फोन लगाए बिना चुपचाप नए वॉयस नोट सुन सकते हैं।
+• मीडिया प्लेयर लैंडस्केप मोड में बहुत बेहतर दिखता है, और हमने कॉमन प्लेबैक कंट्रोल्स को बदल दिया है, ताकि आपकी डिवाइस के साइडवे होने पर भी चीजें ज्यादा साइडवे न महसूस हों।
+• यदि कोई ग्रुप स्टोरी के जवाब में आपका @उल्लेख करता
+है, तो आपको उम्मीद के मुताबिक सूचित किया जाएगा।
+• हमने लंबे प्रोफाइल नामों के लिए लाइन रैप के लिए समर्थन जोड़ा है, और अब बिना इलिप्सिस से छिपाए हुए पूरा नाम दिखाई देगा। यदि आप "रहस्यमय..." बने रहना चाहते हैं, तो आप अभी भी जानबूझकर अपने प्रोफाइल नाम में एक इलिप्सिस शामिल कर सकते हैं।

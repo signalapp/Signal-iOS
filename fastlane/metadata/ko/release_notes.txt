@@ -1,4 +1,4 @@
-• For those of you who like to listen closely, we improved earpiece proximity detection on newer iPhones. Now you can call someone without accidentally hanging up on them with your cheek as often, and you can also quietly play new voice notes without the screen shining in your ear too.
-• The media player looks a lot better in landscape mode, and we repositioned common playback controls so that things don’t feel so sideways even when your device is sideways.
-• If someone @mentions you in a reply to a group story, you’ll get notified as expected.
-• We added support for line wraps for long profile names, and now the entire name will appear instead of being partially truncated with an ellipsis. You can still deliberately include an ellipsis in your profile name if you want to be “Mysterious…”
+• 휴대폰을 얼굴 가까이 대고 사용하기를 좋아하시는 분들을 위해 최신 아이폰의 근접 센서 기능을 개선했습니다. 이제 실수로 볼로 화면을 눌러 전화를 끊을까 걱정하지 않아도 되며, 귀에 화면 불빛을 비추지 않고 조용히 새 음성 메모를 재생할 수 있습니다.
+• 휴대폰을 가로로 뉘여 사용할 때도 조작이 용이하도록 미디어 플레이어의 가로형 디자인을 개선하고 자주 쓰는 재생 컨트롤 위치를 조정했습니다.
+• 그룹 스토리 답장에서 @멘션될 경우 알림이 발송됩니다.
+• 긴 프로필 이름을 위한 줄 바꿈 지원을 추가했습니다. 이제 줄임표와 함께 일부 이름만 표시되는 대신 전체 이름이 표시됩니다. '신비로운…' 느낌을 주고 싶다면 프로필 이름에 일부러 줄임표를 사용해 보세요.

@@ -179,10 +179,10 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "त्याऐवजी Signal उघडा";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "आम्ही या समस्येला ट्रबलशूट करण्यासाठी कृपया support@signal.org ला डीबग लॉग पाठवा.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Signal उघडता आले नाही";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "डेटाबेस लोड करू शकले नाही";
@@ -1658,10 +1658,10 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "हा फोन नंबर पुन्हा-नोंदवा";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "This device is no longer registered. This is likely because you registered your phone number with Signal on a different device.";
+"DEREGISTRATION_WARNING" = "हे डिव्हाइस यापुढे नोंदणीकृत राहणार नाही. असे होण्याचे कारण आपण आपला फोन नंबर Signal सह वेगळ्या डिव्हाइसवर नोंदणीकृत केला आहे.";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
-"DEREGISTRATION_WARNING_ACTION_TITLE" = "Re-Register Device";
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "डिव्हाईस चे पुन्हा नोंदणीकरण करा";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "%1$@ ला शेवटचा सक्रिय";
@@ -1673,10 +1673,10 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "डिव्हाईस यादी अद्यतनित करण्यात अयशस्वी.";
 
 /* A label for this device in the device list. */
-"DEVICE_NAME_THIS_DEVICE" = "This Device";
+"DEVICE_NAME_THIS_DEVICE" = "हे डिव्हाइस";
 
 /* A label for an unnamed device in the device list. */
-"DEVICE_NAME_UNNAMED_DEVICE" = "Unnamed Device";
+"DEVICE_NAME_UNNAMED_DEVICE" = "अनामित डिव्हाईस";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "स्थानांतरण थांबवा";
@@ -2288,16 +2288,16 @@
 "EXIT_REREGISTRATION" = "नोंदणीकरणामधून बाहेर पडा";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "This version of Signal has expired. Update to send and receive messages.";
+"EXPIRATION_ERROR" = "Signal ची ही आवृत्ती कालबाह्य झाली आहे. संदेश पाठवण्यास आणि प्राप्त करण्यास अद्यतन करा.";
 
 /* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
-"EXPIRATION_WARNING_ACTION_TITLE" = "Update Now";
+"EXPIRATION_WARNING_ACTION_TITLE" = "आता अद्यतनित करा";
 
 /* Label warning the user that the app will expire soon. Embeds {{date}}. */
-"EXPIRATION_WARNING_SOON" = "This version of Signal will expire on %1$@. Update to keep messaging.";
+"EXPIRATION_WARNING_SOON" = "Signal ची ही आवृत्ती %1$@ रोजी कालबाह्य होत आहे. संदेशन करणे सुरू करण्यासाठी अद्यतन करा.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "This version of Signal will expire today. Update to keep messaging.";
+"EXPIRATION_WARNING_TODAY" = "Signal ची ही आवृत्ती आज कालबाह्य होईल. संदेशन करणे सुरू करण्यासाठी अद्यतन करा.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "या संपर्कासोबत खूप सारे अपयश. कृपया नंतर पुन्हा प्रयत्न करा";
@@ -5357,7 +5357,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "आपला फोन नंबर";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "You’ll receive a call to verify this number. Is your phone number above correct?";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "हा नंबर सत्यापित करण्यासाठी आपल्याला कॉल येईल. आपला वरील फोन नंबर बरोबर आहे?";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "फोन नंबर";
@@ -7241,10 +7241,10 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%1$@\" अनलिंक करायचे?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "This device is no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "हे डिव्हाईस यापुढे लिंक केलेले राहणार नाही. संदेशन पुढे सुरू ठेवण्यासाठी आपल्या फोन सह Signal पुन्हा लिंक करा.";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
-"UNLINKED_WARNING_ACTION_TITLE" = "Re-Link Device";
+"UNLINKED_WARNING_ACTION_TITLE" = "डिव्हाईस पुन्हा लिंक करा";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal आपल्या डिव्हाईसला अनलिंक करण्यात अक्षम झाले.";

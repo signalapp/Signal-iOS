@@ -1,4 +1,4 @@
-• For those of you who like to listen closely, we improved earpiece proximity detection on newer iPhones. Now you can call someone without accidentally hanging up on them with your cheek as often, and you can also quietly play new voice notes without the screen shining in your ear too.
-• The media player looks a lot better in landscape mode, and we repositioned common playback controls so that things don’t feel so sideways even when your device is sideways.
-• If someone @mentions you in a reply to a group story, you’ll get notified as expected.
-• We added support for line wraps for long profile names, and now the entire name will appear instead of being partially truncated with an ellipsis. You can still deliberately include an ellipsis in your profile name if you want to be “Mysterious…”
+• Για όσους από εσάς θέλετε να ακούτε με προσοχή, βελτιώσαμε την ανίχνευση εγγύτητας ακουστικών στα νεότερα iPhone. Τώρα μπορείς να καλείς κάποιον χωρίς να κλείνεις κατά λάθος το τηλέφωνο με το μάγουλό σου τόσο συχνά, και μπορείς επίσης να αναπαράγεις αθόρυβα νέες ηχητικές σημειώσεις χωρίς η οθόνη να ανάβει.
+• Το πρόγραμμα αναπαραγωγής πολυμέσων φαίνεται πολύ καλύτερα σε οριζόντια λειτουργία και γι' αυτό επανατοποθετήσαμε τα κοινά στοιχεία ελέγχου αναπαραγωγής, ώστε τίποτα να μη φαίνεται λοξό, ακόμα και όταν η συσκευή σου είναι γυρισμένη στο πλάι.
+• Εάν κάποιο άτομο σου κάνει ονομαστική αναφορά (@αναφορά) σε μια απάντηση σε μια ομαδική ιστορία, θα ειδοποιηθείς κανονικά.
+• Προσθέσαμε υποστήριξη για την αναδίπλωση της γραμμής στα μεγάλα ονόματα προφίλ και τώρα θα εμφανίζεται ολόκληρο το όνομα αντί να αποκόπτεται μερικώς με μια έλλειψη. Μπορείς ακόμα να προσθέσεις σκόπιμα μια έλλειψη στο όνομα του προφίλ σου εάν θέλεις να κρατήσεις ένα "μυστήριο..."

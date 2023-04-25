@@ -1,4 +1,4 @@
-• For those of you who like to listen closely, we improved earpiece proximity detection on newer iPhones. Now you can call someone without accidentally hanging up on them with your cheek as often, and you can also quietly play new voice notes without the screen shining in your ear too.
-• The media player looks a lot better in landscape mode, and we repositioned common playback controls so that things don’t feel so sideways even when your device is sideways.
-• If someone @mentions you in a reply to a group story, you’ll get notified as expected.
-• We added support for line wraps for long profile names, and now the entire name will appear instead of being partially truncated with an ellipsis. You can still deliberately include an ellipsis in your profile name if you want to be “Mysterious…”
+• Chúng tôi đã cải thiện khả năng phát hiện khi tai nghe ở khoảng cách gần trên các bản iPhone mới, dành cho những ai thường xuyên dùng tai nghe. Nhờ đó, trải nghiệm dùng tai nghe để nghe gọi của bạn sẽ dễ dàng hơn nhiều.
+• Trình phát tệp đa phương tiện nay có giao diện được cải thiện ở chế độ màn hình ngang, và chúng tôi đã bố trí lại các nút điều khiển để bạn thao tác dễ dàng hơn.
+• Nếu có người @nhắc đến bạn trong câu trả lời trong story nhóm, bạn sẽ được thông báo.
+• Giờ đây Signal hỗ trợ hiển thị đầy đủ bằng cách xuống hàng các tên hồ sơ dài, tên sẽ hiển thị toàn bộ thay vì chỉ một phần và được thay thế bởi dấu ba chấm. Nhưng bạn vẫn có thể dùng dấu ba chấm trong tên hồ sơ của mình nhé.

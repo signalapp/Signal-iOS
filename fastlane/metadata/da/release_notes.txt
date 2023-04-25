@@ -1,4 +1,4 @@
-• For those of you who like to listen closely, we improved earpiece proximity detection on newer iPhones. Now you can call someone without accidentally hanging up on them with your cheek as often, and you can also quietly play new voice notes without the screen shining in your ear too.
-• The media player looks a lot better in landscape mode, and we repositioned common playback controls so that things don’t feel so sideways even when your device is sideways.
-• If someone @mentions you in a reply to a group story, you’ll get notified as expected.
-• We added support for line wraps for long profile names, and now the entire name will appear instead of being partially truncated with an ellipsis. You can still deliberately include an ellipsis in your profile name if you want to be “Mysterious…”
+• Vi har forbedret nærhedsdetektion i øretelefoner på nyere iPhones, så det er endnu nemmere at lytte efter. Nu kan du ringe til nogen uden at din kind kommer til at lægge på ved et uheld, og du kan også stille og roligt afspille nye stemmebeskeder, uden at skærmen lyser i dit øre.
+• Medieafspilleren ser meget bedre ud i landskabstilstand, og vi har ændret placeringen på de almindelige styringselementer til afspilning, så det ikke føles så mærkeligt når enheden er sidelæns.
+• Hvis en person @nævner dig i et svar på en gruppehistorie, får du besked som forventet.
+• Vi har tilføjet understøttelse af linjeskift for lange profilnavne, og nu vises hele navnet i stedet for delvis afkortet visning med fortsættelsesprikker. Du kan stadig med bevidst indsætte fortsættelsesprikker i dit profilnavn, hvis du vil være "Gådefuld..."

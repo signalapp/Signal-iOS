@@ -179,10 +179,10 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "Signal nogmaals openen";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Stuur een foutopsporingslogboek naar support@signal.org zodat we dit probleem kunnen oplossen.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Kon Signal niet openen";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Kon databank niet laden";
@@ -1658,10 +1658,10 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registreer dit telefoonnummer opnieuw";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "This device is no longer registered. This is likely because you registered your phone number with Signal on a different device.";
+"DEREGISTRATION_WARNING" = "Dit apparaat is niet meer geregistreerd. Dit komt waarschijnlijk omdat je je telefoonnummer bij Signal op een ander apparaat hebt geregistreerd.";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
-"DEREGISTRATION_WARNING_ACTION_TITLE" = "Re-Register Device";
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "Registreer het apparaat opnieuw";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Laatst actief: %1$@";
@@ -1673,10 +1673,10 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Het bijwerken van de lijst met apparaten is mislukt.";
 
 /* A label for this device in the device list. */
-"DEVICE_NAME_THIS_DEVICE" = "This Device";
+"DEVICE_NAME_THIS_DEVICE" = "Dit apparaat";
 
 /* A label for an unnamed device in the device list. */
-"DEVICE_NAME_UNNAMED_DEVICE" = "Unnamed Device";
+"DEVICE_NAME_UNNAMED_DEVICE" = "Naamloos apparaat";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Overzetten annuleren";
@@ -2288,16 +2288,16 @@
 "EXIT_REREGISTRATION" = "Registratie verlaten";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "This version of Signal has expired. Update to send and receive messages.";
+"EXPIRATION_ERROR" = "Deze versie van Signal is verlopen. Update om berichten te versturen en te ontvangen.";
 
 /* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
-"EXPIRATION_WARNING_ACTION_TITLE" = "Update Now";
+"EXPIRATION_WARNING_ACTION_TITLE" = "Nu bijwerken";
 
 /* Label warning the user that the app will expire soon. Embeds {{date}}. */
-"EXPIRATION_WARNING_SOON" = "This version of Signal will expire on %1$@. Update to keep messaging.";
+"EXPIRATION_WARNING_SOON" = "Deze versie van Signal verloopt op %1$@. Update om berichten te blijven sturen.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "This version of Signal will expire today. Update to keep messaging.";
+"EXPIRATION_WARNING_TODAY" = "Deze versie van Signal verloopt vandaag. Update om berichten te blijven sturen.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Te veel fouten bij dit contact. Probeer het later opnieuw.";
@@ -5357,7 +5357,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Je telefoonnummer";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "You’ll receive a call to verify this number. Is your phone number above correct?";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "We bellen je om dit telefoonnummer te verifiëren. Klopt dit telefoonnummer?";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefoonnummer";
@@ -7241,10 +7241,10 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "“%1$@” ontkoppelen?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "This device is no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "Dit apparaat is niet meer gekoppeld. Koppel Signal opnieuw met je telefoon om door te gaan met berichten sturen.";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
-"UNLINKED_WARNING_ACTION_TITLE" = "Re-Link Device";
+"UNLINKED_WARNING_ACTION_TITLE" = "Apparaat opnieuw koppelen";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal kon je apparaat niet ontkoppelen.";

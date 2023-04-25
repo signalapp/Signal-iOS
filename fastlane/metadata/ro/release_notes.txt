@@ -1,4 +1,4 @@
-• For those of you who like to listen closely, we improved earpiece proximity detection on newer iPhones. Now you can call someone without accidentally hanging up on them with your cheek as often, and you can also quietly play new voice notes without the screen shining in your ear too.
-• The media player looks a lot better in landscape mode, and we repositioned common playback controls so that things don’t feel so sideways even when your device is sideways.
-• If someone @mentions you in a reply to a group story, you’ll get notified as expected.
-• We added support for line wraps for long profile names, and now the entire name will appear instead of being partially truncated with an ellipsis. You can still deliberately include an ellipsis in your profile name if you want to be “Mysterious…”
+• Pentru cei dintre voi cărora le place să asculte cu atenție, am îmbunătățit detectarea proximității căștilor pe iPhone-urile mai noi. Acum poți suna pe cineva fără să închizi accidental cu obrazul la fel de des și poți reda în liniște notele vocale noi, fără ca ecranul să strălucească și în ureche.
+• Playerul media arată mult mai bine în modul peisaj și am repoziționat comenzile de redare obișnuite, astfel încât lucrurile să nu se simtă ciudat chiar și atunci când dispozitivul este în lateral.
+• Dacă cineva te @menționează într-un răspuns la o poveste de grup, vei primi notificare conform așteptărilor.
+• Am adăugat suport pentru pentru numele lungi de profil, iar acum întregul nume va apărea în loc să fie trunchiat parțial cu puncte suspensive. Poți include în mod deliberat o elipsă în numele profilului tău dacă dorești să fii „misterios/misterioasă...”
