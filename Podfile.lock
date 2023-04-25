@@ -55,10 +55,10 @@ PODS:
     - CocoaLumberjack
   - SignalCoreKit/Tests (1.0.0):
     - CocoaLumberjack
-  - SignalRingRTC (2.26.0):
+  - SignalRingRTC (2.26.3):
     - SignalCoreKit
-    - SignalRingRTC/WebRTC (= 2.26.0)
-  - SignalRingRTC/WebRTC (2.26.0):
+    - SignalRingRTC/WebRTC (= 2.26.3)
+  - SignalRingRTC/WebRTC (2.26.3):
     - SignalCoreKit
   - SQLCipher (4.5.3):
     - SQLCipher/standard (= 4.5.3)
@@ -99,7 +99,7 @@ DEPENDENCIES:
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
-  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.26.0`)
+  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.26.3`)
   - SQLCipher (>= 4.0.1)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
@@ -153,7 +153,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.26.0
+    :tag: v2.26.3
   SSZipArchive:
     :podspec: ThirdParty/SSZipArchive.podspec
   Starscream:
@@ -196,7 +196,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.26.0
+    :tag: v2.26.3
   Starscream:
     :commit: 71ebc08f248256497a237ece262e42e7ad05c4a5
     :git: https://github.com/signalapp/Starscream.git
@@ -224,13 +224,13 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
   SignalCoreKit: 3191731b893914ad63ae156899405621adaf9dfa
-  SignalRingRTC: 426c950638f4becf2810395cef5021d24201ab66
+  SignalRingRTC: ec6125d55446a9385053ae858d29a968b24cc228
   SQLCipher: 57fa9f863fa4a3ed9dd3c90ace52315db8c0fdca
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 342fbe7238d9f4d56115186f888b89cb13daad8b
+PODFILE CHECKSUM: 9f0960016321e162e76bae34e428e4cf6a0d27a0
 
 COCOAPODS: 1.11.3
