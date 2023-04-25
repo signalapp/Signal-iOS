@@ -671,7 +671,7 @@ extension CLVTableDataSource: UITableViewDataSource {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
-        if let cell = cell as? ArchivedConversationsCell, let viewController = viewController {
+        if let cell = cell as? ArchivedConversationsCell, viewController != nil {
             cell.configure(enabled: !viewState.multiSelectState.isActive)
         }
         return cell

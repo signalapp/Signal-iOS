@@ -23,7 +23,7 @@ struct SelfSignedIdentity {
                 kSecValueRef: certificate,
                 kSecAttrLabel: temporaryIdentityKeychainIdentifier
             ]
-            guard SecItemAdd(addquery as CFDictionary, nil) == errSecSuccess else {
+            guard SecItemAdd(addquery as  CFDictionary, nil) == errSecSuccess else {
                 throw OWSAssertionError("failed to add certificate to keychain")
             }
         }
@@ -86,13 +86,16 @@ struct SelfSignedIdentity {
             throw OWSAssertionError("Failed to initialize SecCertificate")
         }
 
+        let keyData = Data(deviceTransferKey.privateKey)
+        let attributes: [CFString: Any] = [
+            kSecAttrKeyType: kSecAttrKeyTypeRSA,
+            kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+            kSecAttrKeySizeInBits: 4096
+        ]
+
         guard let privateKey = SecKeyCreateWithData(
-            Data(deviceTransferKey.privateKey) as CFData,
-            [
-                kSecAttrKeyType: kSecAttrKeyTypeRSA,
-                kSecAttrKeyClass: kSecAttrKeyClassPrivate,
-                kSecAttrKeySizeInBits: 4096
-            ] as CFDictionary,
+            keyData as CFData,
+            attributes as CFDictionary,
             nil
         ) else {
             throw OWSAssertionError("Failed to initialize SecKey")

@@ -180,7 +180,7 @@ public class OWSActionSheetsForObjC: NSObject {
     public class func showActionSheet(
         title: String? = nil,
         message: String? = nil,
-        buttonTitle: String = CommonStrings.okButton,
+        buttonTitle: String? = CommonStrings.okButton,
         buttonAction: ActionSheetAction.Handler? = nil,
         fromViewController: UIViewController? = nil
     ) {

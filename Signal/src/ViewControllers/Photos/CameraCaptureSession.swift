@@ -1200,15 +1200,16 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         let outputSize = aspectSize.scaledToFit(max: 1280) // 720p
 
         // video specs from Signal-Android: 2Mbps video 192K audio, 720P 30 FPS
+        let compressionPropertiesKey: [String: Any] = [
+            AVVideoAverageBitRateKey: 2000000,
+            AVVideoProfileLevelKey: AVVideoProfileLevelH264Baseline41,
+            AVVideoMaxKeyFrameIntervalKey: 90
+        ]
         let customSettings: [String: Any] = [
             AVVideoWidthKey: outputSize.width,
             AVVideoHeightKey: outputSize.height,
             AVVideoScalingModeKey: AVVideoScalingModeResizeAspectFill,
-            AVVideoCompressionPropertiesKey: [
-                AVVideoAverageBitRateKey: 2000000,
-                AVVideoProfileLevelKey: AVVideoProfileLevelH264Baseline41,
-                AVVideoMaxKeyFrameIntervalKey: 90
-            ]
+            AVVideoCompressionPropertiesKey: compressionPropertiesKey
         ]
         videoSettings.merge(customSettings) { $1 }
 
