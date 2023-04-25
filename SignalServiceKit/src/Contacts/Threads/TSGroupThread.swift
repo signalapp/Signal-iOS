@@ -72,3 +72,56 @@ public extension TSThreadStoryViewMode {
         }
     }
 }
+
+#if TESTABLE_BUILD
+
+extension TSGroupThread {
+
+    static func forUnitTest(
+        groupId: UInt8 = 0,
+        groupMembers: [SignalServiceAddress] = []
+    ) -> TSGroupThread {
+        let groupId = Data(repeating: groupId, count: 32)
+        let groupThreadId = TSGroupThread.defaultThreadId(forGroupId: groupId)
+        return TSGroupThread(
+            grdbId: 1,
+            uniqueId: groupThreadId,
+            conversationColorNameObsolete: "",
+            creationDate: nil,
+            isArchivedObsolete: false,
+            isMarkedUnreadObsolete: false,
+            lastInteractionRowId: 1,
+            lastSentStoryTimestamp: nil,
+            lastVisibleSortIdObsolete: 0,
+            lastVisibleSortIdOnScreenPercentageObsolete: 0,
+            mentionNotificationMode: .default,
+            messageDraft: nil,
+            messageDraftBodyRanges: nil,
+            mutedUntilDateObsolete: nil,
+            mutedUntilTimestampObsolete: 0,
+            shouldThreadBeVisible: true,
+            storyViewMode: .default,
+            groupModel: TSGroupModelV2(
+                groupId: groupId,
+                name: "Example Group",
+                descriptionText: nil,
+                avatarData: nil,
+                groupMembership: GroupMembership(v1Members: Set(groupMembers)),
+                groupAccess: .defaultForV2,
+                revision: 1,
+                secretParamsData: Data(count: 1),
+                avatarUrlPath: nil,
+                inviteLinkPassword: nil,
+                isAnnouncementsOnly: false,
+                isPlaceholderModel: false,
+                wasJustMigrated: false,
+                wasJustCreatedByLocalUser: false,
+                didJustAddSelfViaGroupLink: false,
+                addedByAddress: nil,
+                droppedMembers: []
+            )
+        )
+    }
+}
+
+#endif

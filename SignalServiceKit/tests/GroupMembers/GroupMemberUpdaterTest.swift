@@ -33,12 +33,12 @@ private class MockGroupMemberUpdaterTemporaryShims: GroupMemberUpdaterTemporaryS
 
 class GroupMemberUpdaterTest: XCTestCase {
     private lazy var mockGroupMemberUpdaterTemporaryShims = MockGroupMemberUpdaterTemporaryShims()
-    private lazy var mockGroupMemberDataStore = MockGroupMemberDataStore()
+    private lazy var mockGroupMemberStore = MockGroupMemberStore()
     private lazy var mockSignalServiceAddressCache = SignalServiceAddressCache()
 
     private lazy var groupMemberUpdater = GroupMemberUpdaterImpl(
         temporaryShims: mockGroupMemberUpdaterTemporaryShims,
-        groupMemberDataStore: mockGroupMemberDataStore,
+        groupMemberStore: mockGroupMemberStore,
         signalServiceAddressCache: mockSignalServiceAddressCache
     )
 
@@ -111,7 +111,7 @@ class GroupMemberUpdaterTest: XCTestCase {
         let groupThreadMemberAddresses = groupThreadMembers.map {
             makeAddress(serviceId: $0.serviceId, phoneNumber: $0.phoneNumber)
         }
-        let groupThread = makeGroupThread(members: groupThreadMemberAddresses)
+        let groupThread = TSGroupThread.forUnitTest(groupMembers: groupThreadMemberAddresses)
 
         for fetchableInteractionTimestamp in fetchableInteractionTimestamps {
             mockGroupMemberUpdaterTemporaryShims.fetchableLatestInteractionTimestamps.append((
@@ -123,12 +123,15 @@ class GroupMemberUpdaterTest: XCTestCase {
 
         mockDB.write {
             for oldGroupMember in oldGroupMembers {
-                mockGroupMemberDataStore.insertGroupMember(TSGroupMember(
-                    serviceId: oldGroupMember.serviceId.map { ServiceId(uuidString: $0)! },
-                    phoneNumber: oldGroupMember.phoneNumber,
-                    groupThreadId: groupThread.uniqueId,
-                    lastInteractionTimestamp: oldGroupMember.interactionTimestamp
-                ), transaction: $0)
+                mockGroupMemberStore.insert(
+                    fullGroupMember: TSGroupMember(
+                        serviceId: oldGroupMember.serviceId.map { ServiceId(uuidString: $0)! },
+                        phoneNumber: oldGroupMember.phoneNumber,
+                        groupThreadId: groupThread.uniqueId,
+                        lastInteractionTimestamp: oldGroupMember.interactionTimestamp
+                    ),
+                    tx: $0
+                )
             }
         }
 
@@ -141,7 +144,7 @@ class GroupMemberUpdaterTest: XCTestCase {
         // -- Validate the output. --
 
         let groupMembers = mockDB.read {
-            mockGroupMemberDataStore.sortedGroupMembers(in: groupThread.uniqueId, transaction: $0)
+            mockGroupMemberStore.sortedFullGroupMembers(in: groupThread.uniqueId, tx: $0)
         }
 
         XCTAssertEqual(groupMembers.count, newGroupMembers.count)
@@ -172,49 +175,6 @@ class GroupMemberUpdaterTest: XCTestCase {
             phoneNumber: phoneNumber,
             cache: mockSignalServiceAddressCache,
             cachePolicy: .ignoreCache
-        )
-    }
-
-    private func makeGroupThread(members: [SignalServiceAddress]) -> TSGroupThread {
-        let groupId = Data(count: 32)
-        let groupThreadId = TSGroupThread.defaultThreadId(forGroupId: groupId)
-        return TSGroupThread(
-            grdbId: 1,
-            uniqueId: groupThreadId,
-            conversationColorNameObsolete: "",
-            creationDate: nil,
-            isArchivedObsolete: false,
-            isMarkedUnreadObsolete: false,
-            lastInteractionRowId: 1,
-            lastSentStoryTimestamp: nil,
-            lastVisibleSortIdObsolete: 0,
-            lastVisibleSortIdOnScreenPercentageObsolete: 0,
-            mentionNotificationMode: .default,
-            messageDraft: nil,
-            messageDraftBodyRanges: nil,
-            mutedUntilDateObsolete: nil,
-            mutedUntilTimestampObsolete: 0,
-            shouldThreadBeVisible: true,
-            storyViewMode: .default,
-            groupModel: TSGroupModelV2(
-                groupId: groupId,
-                name: "Example Group",
-                descriptionText: nil,
-                avatarData: nil,
-                groupMembership: GroupMembership(v1Members: Set(members)),
-                groupAccess: .defaultForV2,
-                revision: 1,
-                secretParamsData: Data(count: 1),
-                avatarUrlPath: nil,
-                inviteLinkPassword: nil,
-                isAnnouncementsOnly: false,
-                isPlaceholderModel: false,
-                wasJustMigrated: false,
-                wasJustCreatedByLocalUser: false,
-                didJustAddSelfViaGroupLink: false,
-                addedByAddress: nil,
-                droppedMembers: []
-            )
         )
     }
 }

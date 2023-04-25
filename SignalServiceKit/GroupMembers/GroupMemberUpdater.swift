@@ -21,16 +21,16 @@ protocol GroupMemberUpdaterTemporaryShims {
 
 class GroupMemberUpdaterImpl: GroupMemberUpdater {
     private let temporaryShims: GroupMemberUpdaterTemporaryShims
-    private let groupMemberDataStore: GroupMemberDataStore
+    private let groupMemberStore: GroupMemberStore
     private let signalServiceAddressCache: SignalServiceAddressCache
 
     init(
         temporaryShims: GroupMemberUpdaterTemporaryShims,
-        groupMemberDataStore: GroupMemberDataStore,
+        groupMemberStore: GroupMemberStore,
         signalServiceAddressCache: SignalServiceAddressCache
     ) {
         self.temporaryShims = temporaryShims
-        self.groupMemberDataStore = groupMemberDataStore
+        self.groupMemberStore = groupMemberStore
         self.signalServiceAddressCache = signalServiceAddressCache
     }
 
@@ -76,7 +76,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
             }
         }
 
-        for groupMember in groupMemberDataStore.sortedGroupMembers(in: groupThreadId, transaction: transaction) {
+        for groupMember in groupMemberStore.sortedFullGroupMembers(in: groupThreadId, tx: transaction) {
             let serviceId = groupMember.serviceId
             let phoneNumber = groupMember.phoneNumber
 
@@ -128,8 +128,8 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
 
         Logger.info("Updating group members with \(groupMembersToRemove.count) deletion(s) and \(groupMembersToInsert.count) insertion(s)")
 
-        groupMembersToRemove.forEach { groupMemberDataStore.removeGroupMember($0, transaction: transaction) }
-        groupMembersToInsert.forEach { groupMemberDataStore.insertGroupMember($0, transaction: transaction) }
+        groupMembersToRemove.forEach { groupMemberStore.remove(fullGroupMember: $0, tx: transaction) }
+        groupMembersToInsert.forEach { groupMemberStore.insert(fullGroupMember: $0, tx: transaction) }
 
         temporaryShims.didUpdateRecords(groupThreadId: groupThreadId, transaction: transaction)
     }

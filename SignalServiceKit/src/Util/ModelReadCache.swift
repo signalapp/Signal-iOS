@@ -154,32 +154,45 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel>: Depen
 
         switch mode {
         case .read:
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(didReceiveCrossProcessNotification),
-                                                   name: SDSDatabaseStorage.didReceiveCrossProcessNotificationAlwaysSync,
-                                                   object: nil)
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(didReceiveCrossProcessNotification),
+                name: SDSDatabaseStorage.didReceiveCrossProcessNotificationAlwaysSync,
+                object: nil
+            )
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(didReceiveEvacuateCacheNotification),
+                name: ModelReadCaches.evacuateAllModelCaches,
+                object: nil
+            )
         }
     }
 
-    fileprivate func evacuateCache() {
-        // This may execute on background threads. For now, this is OK
-        // because LRUCache is thread safe, but if we ever do more work
-        // here we should re-evaluate.
+    private func evacuateCache() {
+        // Right now, we call `cache.removeAllObjects()` on background threads. For
+        // now, this is OK because LRUCache is thread safe, but if we ever do more
+        // work here we should re-evaluate.
+
         cache.removeAllObjects()
-    }
-
-    @objc
-    func didReceiveCrossProcessNotification(_ notification: Notification) {
-        AssertIsOnMainThread()
-        assert(mode == .read)
-
-        evacuateCache()
 
         DispatchQueue.global().async {
             self.performSync {
-                self.evacuateCache()
+                self.cache.removeAllObjects()
             }
         }
+    }
+
+    @objc
+    private func didReceiveEvacuateCacheNotification(_ notification: Notification) {
+        evacuateCache()
+    }
+
+    @objc
+    private func didReceiveCrossProcessNotification(_ notification: Notification) {
+        AssertIsOnMainThread()
+        assert(mode == .read)
+        evacuateCache()
     }
 
     // This method should only be called within performSync().

@@ -38,6 +38,7 @@ public class DependenciesBridge {
 
     public let db: DB
     public let keyValueStoreFactory: KeyValueStoreFactory
+    let threadAssociatedDataStore: ThreadAssociatedDataStore
 
     public let appExpiry: AppExpiry
 
@@ -169,11 +170,14 @@ public class DependenciesBridge {
             signalService: signalService
         )
 
-        let groupMemberDataStore = GroupMemberDataStoreImpl()
+        let groupMemberStore = GroupMemberStoreImpl()
+        let interactionStore = InteractionStoreImpl()
+        self.threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
+        let threadStore = ThreadStoreImpl()
 
         self.groupMemberUpdater = GroupMemberUpdaterImpl(
             temporaryShims: GroupMemberUpdaterTemporaryShimsImpl(),
-            groupMemberDataStore: groupMemberDataStore,
+            groupMemberStore: groupMemberStore,
             signalServiceAddressCache: signalServiceAddressCache
         )
 
@@ -186,7 +190,12 @@ public class DependenciesBridge {
                 sessionStore: aciProtocolStore.sessionStore
             ),
             observers: RecipientMergerImpl.buildObservers(
-                signalServiceAddressCache: signalServiceAddressCache
+                groupMemberUpdater: self.groupMemberUpdater,
+                groupMemberStore: groupMemberStore,
+                interactionStore: interactionStore,
+                signalServiceAddressCache: signalServiceAddressCache,
+                threadAssociatedDataStore: self.threadAssociatedDataStore,
+                threadStore: threadStore
             ),
             recipientFetcher: self.recipientFetcher,
             dataStore: recipientStore,

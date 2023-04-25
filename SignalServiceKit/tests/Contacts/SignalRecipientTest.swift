@@ -273,14 +273,56 @@ class SignalRecipientTest: SSKBaseTestSwift {
         }
     }
 
+    private func createGroupAndThreads(for addresses: [(aci: ServiceId?, phoneNumber: E164?)]) -> TSGroupThread {
+        return self.write { (tx) -> TSGroupThread in
+            // Create a group with all the addresses.
+            let groupThread = {
+                let factory = GroupThreadFactory()
+                factory.memberAddressesBuilder = {
+                    return addresses.map { SignalServiceAddress(uuid: $0.aci?.uuidValue, e164: $0.phoneNumber) }
+                }
+                return factory.create(transaction: tx)
+            }()
+            // Delete the group members that were created automatically.
+            TSGroupMember.anyRemoveAllWithInstantiation(transaction: tx)
+            // And construct the TSGroupMember members using the specific identifiers
+            // that were provided.
+            for address in addresses {
+                let groupMember = TSGroupMember(
+                    serviceId: address.aci,
+                    phoneNumber: address.phoneNumber?.stringValue,
+                    groupThreadId: groupThread.uniqueId,
+                    lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+                )
+                groupMember.anyInsert(transaction: tx)
+
+                TSContactThread.getOrCreateThread(
+                    withContactAddress: SignalServiceAddress(uuid: address.aci?.uuidValue, e164: address.phoneNumber),
+                    transaction: tx
+                )
+            }
+            return groupThread
+        }
+    }
+
+    private func assertEqual(groupMembers: [TSGroupMember], expectedAddresses: [(aci: ServiceId?, phoneNumber: E164?)]) {
+        let actualValues = Set(groupMembers.lazy.map {
+            "\($0.serviceId?.uuidValue.uuidString ?? "nil")-\($0.phoneNumber ?? "nil")"
+        })
+        let expectedValues = Set(expectedAddresses.lazy.map {
+            "\($0.aci?.uuidValue.uuidString ?? "nil")-\($0.phoneNumber?.stringValue ?? "nil")"
+        })
+        XCTAssertEqual(actualValues, expectedValues)
+    }
+
     // This tests an edge case around uuid<->phone number mapping changes.
     //
     // * There _is_ a SignalRecipient with (u1, p1).
-    // * There _is no_ SignalRecipient with u1 or p2.
+    // * There _is no_ SignalRecipient with u2 or p2.
     // * There is a group g1.
     // * There is a TSGroupMember with (u1, p1, g1).
     // * There is a TSGroupMember with (u2, p2, g1).
-    // * u1 becomes associated with p2.
+    // * p2 becomes associated with u1.
     //
     // Therefore:
     //
@@ -290,70 +332,45 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // * Otherwise we'll end up with two TSGroupMembers with (p2, g1) which violates
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase1() {
-        let uuid1 = UUID()
+        let uuid1 = ServiceId(UUID())
         let phoneNumber1 = E164(CommonGenerator.e164())!
-        let uuid2 = UUID()
+        let uuid2 = ServiceId(UUID())
         let phoneNumber2 = E164(CommonGenerator.e164())!
 
-        write { transaction in
-            // There are TSGroupMember instances indicating that both users 1 & 2 are members of the same group.
-            let groupThreadFactory = GroupThreadFactory()
-            groupThreadFactory.memberAddressesBuilder = { return [] }
-            let groupThread = groupThreadFactory.create(transaction: transaction)
-            // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(
-                serviceId: ServiceId(uuid1),
-                phoneNumber: phoneNumber1.stringValue,
-                groupThreadId: groupThread.uniqueId,
-                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
-            )
-            groupMember1.anyInsert(transaction: transaction)
-            // NOTE: This member has a uuid.
-            let groupMember2 = TSGroupMember(
-                serviceId: ServiceId(uuid2),
-                phoneNumber: phoneNumber2.stringValue,
-                groupThreadId: groupThread.uniqueId,
-                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
-            )
-            groupMember2.anyInsert(transaction: transaction)
+        let groupThread = createGroupAndThreads(for: [
+            (aci: uuid1, phoneNumber: phoneNumber1),
+            (aci: uuid2, phoneNumber: phoneNumber2)
+        ])
 
-            // We should have two group members: (u1, p1) and (u2, p2).
-            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
-
-            TSContactThread.getOrCreateThread(
-                withContactAddress: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1.stringValue),
-                transaction: transaction
-            )
-            TSContactThread.getOrCreateThread(
-                withContactAddress: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2.stringValue),
-                transaction: transaction
-            )
-
-            // We should have three threads.
-            XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
-
-            // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
-
-            // uuid1 becomes associated with phoneNumber2.
-            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber2, transaction: transaction)
-
-            // We should still have two group members: (u1, p2) and (u2, nil).
-            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
-
-            // We should have three threads.
-            XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
+        write { tx in
+            mergeHighTrust(serviceId: uuid1, phoneNumber: phoneNumber1, transaction: tx)
+            // phoneNumber2 becomes associated with uuid1.
+            mergeHighTrust(serviceId: uuid1, phoneNumber: phoneNumber2, transaction: tx)
         }
+
+        databaseStorage.read { tx in
+            XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
+        }
+
+        let finalGroupMembers = databaseStorage.read { tx in
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+        }
+
+        // We should still have two group members: (u1, p2) and (u2, nil).
+        assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
+            (aci: uuid1, phoneNumber: phoneNumber2),
+            (aci: uuid2, phoneNumber: nil)
+        ])
     }
 
     // This tests an edge case around uuid<->phone number mapping changes.
     //
     // * There _is_ a SignalRecipient with (u1, p1).
-    // * There _is no_ SignalRecipient with u1 or p2.
+    // * There _is no_ SignalRecipient with u2 or p2.
     // * There is a group g1.
     // * There is a TSGroupMember with (u1, p1, g1).
     // * There is a TSGroupMember with (nil, p2, g1).
-    // * u1 becomes associated with p2.
+    // * p2 becomes associated with u1.
     //
     // Therefore:
     //
@@ -363,69 +380,43 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // * Otherwise we'll end up with two TSGroupMembers with (p2, g1) which violates
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase2() {
-        let uuid1 = UUID()
+        let uuid1 = ServiceId(UUID())
         let phoneNumber1 = E164(CommonGenerator.e164())!
         let phoneNumber2 = E164(CommonGenerator.e164())!
 
-        write { transaction in
-            // There are TSGroupMember instances indicating that both users 1 & 2 are members of the same group.
-            let groupThreadFactory = GroupThreadFactory()
-            groupThreadFactory.memberAddressesBuilder = { return [] }
-            let groupThread = groupThreadFactory.create(transaction: transaction)
-            // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(
-                serviceId: ServiceId(uuid1),
-                phoneNumber: phoneNumber1.stringValue,
-                groupThreadId: groupThread.uniqueId,
-                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
-            )
-            groupMember1.anyInsert(transaction: transaction)
-            // NOTE: This member has no uuid.
-            let groupMember2 = TSGroupMember(
-                serviceId: nil,
-                phoneNumber: phoneNumber2.stringValue,
-                groupThreadId: groupThread.uniqueId,
-                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
-            )
-            groupMember2.anyInsert(transaction: transaction)
+        let groupThread = createGroupAndThreads(for: [
+            (aci: uuid1, phoneNumber: phoneNumber1),
+            (aci: nil, phoneNumber: phoneNumber2)
+        ])
 
-            // We should have two group members: (u1, p1) and (nil, p2).
-            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
-
-            TSContactThread.getOrCreateThread(
-                withContactAddress: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1.stringValue),
-                transaction: transaction
-            )
-            TSContactThread.getOrCreateThread(
-                withContactAddress: SignalServiceAddress(phoneNumber: phoneNumber2.stringValue),
-                transaction: transaction
-            )
-
-            // We should have three threads.
-            XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
-
-            // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
-
-            // uuid1 becomes associated with phoneNumber2.
-            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber2, transaction: transaction)
-
-            // We should now have two group members: (u1, p2), (fake uuid, nil).
-            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
-
-            // We should have three threads.
-            XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
+        write { tx in
+            mergeHighTrust(serviceId: uuid1, phoneNumber: phoneNumber1, transaction: tx)
+            // phoneNumber2 becomes associated with uuid1.
+            mergeHighTrust(serviceId: uuid1, phoneNumber: phoneNumber2, transaction: tx)
         }
+
+        databaseStorage.read { tx in
+            XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
+        }
+
+        let finalGroupMembers = databaseStorage.read { tx in
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+        }
+
+        // We should now have one group member: (u1, p2).
+        assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
+            (aci: uuid1, phoneNumber: phoneNumber2)
+        ])
     }
 
     // This tests an edge case around uuid<->phone number mapping changes.
     //
     // * There _is_ a SignalRecipient with (u1, p1).
-    // * There _is no_ SignalRecipient with u1 or p2.
+    // * There _is no_ SignalRecipient with u2 or p2.
     // * There is a group g1.
     // * There is a TSGroupMember with (u1, p1, g1).
     // * There is a TSGroupMember with (u2, p2, g1).
-    // * u2 becomes associated with p1.
+    // * p1 becomes associated with u2.
     //
     // Therefore:
     //
@@ -435,70 +426,45 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // * Otherwise we'll end up with two TSGroupMembers with (p1, g1) which violates
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase3() {
-        let uuid1 = UUID()
+        let uuid1 = ServiceId(UUID())
         let phoneNumber1 = E164(CommonGenerator.e164())!
-        let uuid2 = UUID()
+        let uuid2 = ServiceId(UUID())
         let phoneNumber2 = E164(CommonGenerator.e164())!
 
-        write { transaction in
-            // There are TSGroupMember instances indicating that both users 1 & 2 are members of the same group.
-            let groupThreadFactory = GroupThreadFactory()
-            groupThreadFactory.memberAddressesBuilder = { return [] }
-            let groupThread = groupThreadFactory.create(transaction: transaction)
-            // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(
-                serviceId: ServiceId(uuid1),
-                phoneNumber: phoneNumber1.stringValue,
-                groupThreadId: groupThread.uniqueId,
-                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
-            )
-            groupMember1.anyInsert(transaction: transaction)
-            // NOTE: This member has a phone number.
-            let groupMember2 = TSGroupMember(
-                serviceId: ServiceId(uuid2),
-                phoneNumber: phoneNumber2.stringValue,
-                groupThreadId: groupThread.uniqueId,
-                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
-            )
-            groupMember2.anyInsert(transaction: transaction)
+        let groupThread = createGroupAndThreads(for: [
+            (aci: uuid1, phoneNumber: phoneNumber1),
+            (aci: uuid2, phoneNumber: phoneNumber2)
+        ])
 
-            // We should have two group members: (u1, p1) and (u2, p2).
-            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
-
-            TSContactThread.getOrCreateThread(
-                withContactAddress: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1.stringValue),
-                transaction: transaction
-            )
-            TSContactThread.getOrCreateThread(
-                withContactAddress: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2.stringValue),
-                transaction: transaction
-            )
-
-            // We should have three threads.
-            XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
-
-            // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
-
-            // uuid2 becomes associated with phoneNumber1.
-            mergeHighTrust(serviceId: ServiceId(uuid2), phoneNumber: phoneNumber1, transaction: transaction)
-
-            // We should still have two group members: (u2, p1) and (u1, nil).
-            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
-
-            // We should have three threads.
-            XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
+        write { tx in
+            mergeHighTrust(serviceId: uuid1, phoneNumber: phoneNumber1, transaction: tx)
+            // phoneNumber1 becomes associated with uuid2.
+            mergeHighTrust(serviceId: uuid2, phoneNumber: phoneNumber1, transaction: tx)
         }
+
+        databaseStorage.read { tx in
+            XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
+        }
+
+        let finalGroupMembers = databaseStorage.read { tx in
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+        }
+
+        // We should still have two group members: (u2, p1) and (u1, nil).
+        assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
+            (aci: uuid2, phoneNumber: phoneNumber1),
+            (aci: uuid1, phoneNumber: nil)
+        ])
     }
 
     // This tests an edge case around uuid<->phone number mapping changes.
     //
     // * There _is_ a SignalRecipient with (u1, p1).
-    // * There _is no_ SignalRecipient with u1 or p2.
+    // * There _is no_ SignalRecipient with u2 or p2.
     // * There is a group g1.
     // * There is a TSGroupMember with (u1, p1, g1).
-    // * There is a TSGroupMember with (u2, p2, g1).
-    // * u2 becomes associated with p1.
+    // * There is a TSGroupMember with (u2, nil, g1).
+    // * p1 becomes associated with u2.
     //
     // Therefore:
     //
@@ -508,59 +474,108 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // * Otherwise we'll end up with two TSGroupMembers with (p1, g1) which violates
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase4() {
-        let uuid1 = UUID()
+        let uuid1 = ServiceId(UUID())
         let phoneNumber1 = E164(CommonGenerator.e164())!
-        let uuid2 = UUID()
+        let uuid2 = ServiceId(UUID())
 
-        write { transaction in
-            // There are TSGroupMember instances indicating that both users 1 & 2 are members of the same group.
-            let groupThreadFactory = GroupThreadFactory()
-            groupThreadFactory.memberAddressesBuilder = { return [] }
-            let groupThread = groupThreadFactory.create(transaction: transaction)
-            // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(
-                serviceId: ServiceId(uuid1),
-                phoneNumber: phoneNumber1.stringValue,
-                groupThreadId: groupThread.uniqueId,
-                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
-            )
-            groupMember1.anyInsert(transaction: transaction)
-            // NOTE: This member has no phone number.
-            let groupMember2 = TSGroupMember(
-                serviceId: ServiceId(uuid2),
-                phoneNumber: nil,
-                groupThreadId: groupThread.uniqueId,
-                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
-            )
-            groupMember2.anyInsert(transaction: transaction)
+        let groupThread = createGroupAndThreads(for: [
+            (aci: uuid1, phoneNumber: phoneNumber1),
+            (aci: uuid2, phoneNumber: nil)
+        ])
 
-            // We should have two group members: (u1, p1) and (u2, nil).
-            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
-
-            TSContactThread.getOrCreateThread(
-                withContactAddress: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1.stringValue),
-                transaction: transaction
-            )
-            TSContactThread.getOrCreateThread(
-                withContactAddress: SignalServiceAddress(uuid: uuid2),
-                transaction: transaction
-            )
-
-            // We should have three threads.
-            XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
-
-            // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
-
-            // uuid2 becomes associated with phoneNumber1.
-            mergeHighTrust(serviceId: ServiceId(uuid2), phoneNumber: phoneNumber1, transaction: transaction)
-
-            // We should now have two group members: (u2, p1), (fake uuid, nil).
-            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
-
-            // We should have three threads.
-            XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
+        write { tx in
+            mergeHighTrust(serviceId: uuid1, phoneNumber: phoneNumber1, transaction: tx)
+            // phoneNumber1 becomes associated with uuid2.
+            mergeHighTrust(serviceId: uuid2, phoneNumber: phoneNumber1, transaction: tx)
         }
+
+        databaseStorage.read { tx in
+            XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
+        }
+
+        let finalGroupMembers = databaseStorage.read { tx in
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+        }
+
+        // We should now have two group members: (u2, p1), (u1, nil).
+        assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
+            (aci: uuid1, phoneNumber: nil),
+            (aci: uuid2, phoneNumber: phoneNumber1)
+        ])
+    }
+
+    /// This tests an edge case around groups & merging contacts.
+    ///
+    /// If a phone number and UUID are both part of a group, and if we later
+    /// learn that they refer to the same account, we'll end up with a
+    /// "duplicate" group member.
+    ///
+    /// This should only be possible in GV1 groups -- in GV2, every member
+    /// should have a UUID, and that requirement would put us back in
+    /// testDBMappingsEdgeCase4 territory.
+    func testDBMappingsEdgeCase5() {
+        let uuid1 = ServiceId(UUID())
+        let phoneNumber1 = E164(CommonGenerator.e164())!
+
+        let groupThread = createGroupAndThreads(for: [
+            (aci: uuid1, phoneNumber: nil),
+            (aci: nil, phoneNumber: phoneNumber1)
+        ])
+
+        write { tx in
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+            _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber1, tx: tx.asV2Write)
+            mergeHighTrust(serviceId: uuid1, phoneNumber: nil, transaction: tx)
+            mergeHighTrust(serviceId: uuid1, phoneNumber: phoneNumber1, transaction: tx)
+        }
+
+        databaseStorage.read { tx in
+            XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
+        }
+
+        let finalGroupMembers = databaseStorage.read { tx in
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+        }
+
+        assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
+            (aci: uuid1, phoneNumber: phoneNumber1)
+        ])
+    }
+
+    /// This tests an edge case around groups & merging contacts.
+    ///
+    /// If we merge an ACI & E164 into a single recipient, and then if another
+    /// account claims that phone number, we should ensure that the original ACI
+    /// is still in the group but the new ACI is not.
+    func testDBMappingsEdgeCase6() {
+        let uuid1 = ServiceId(UUID())
+        let phoneNumber1 = E164(CommonGenerator.e164())!
+        let uuid2 = ServiceId(UUID())
+
+        let groupThread = createGroupAndThreads(for: [
+            (aci: uuid1, phoneNumber: nil),
+            (aci: nil, phoneNumber: phoneNumber1)
+        ])
+
+        write { tx in
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+            _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber1, tx: tx.asV2Write)
+            mergeHighTrust(serviceId: uuid1, phoneNumber: nil, transaction: tx)
+            mergeHighTrust(serviceId: uuid1, phoneNumber: phoneNumber1, transaction: tx)
+            mergeHighTrust(serviceId: uuid2, phoneNumber: phoneNumber1, transaction: tx)
+        }
+
+        databaseStorage.read { tx in
+            XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
+        }
+
+        let finalGroupMembers = databaseStorage.read { tx in
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+        }
+
+        assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
+            (aci: uuid1, phoneNumber: nil)
+        ])
     }
 
     func testUnregisteredTimestamps() {

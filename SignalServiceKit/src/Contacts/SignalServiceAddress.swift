@@ -610,3 +610,20 @@ public extension UUID {
         return SignalServiceAddress(uuid: self)
     }
 }
+
+// MARK: - Unit Tests
+
+#if TESTABLE_BUILD
+
+extension SignalServiceAddressCache {
+    func makeAddress(serviceId: ServiceId?, phoneNumber: E164?) -> SignalServiceAddress {
+        SignalServiceAddress(
+            uuid: serviceId?.uuidValue,
+            phoneNumber: phoneNumber?.stringValue,
+            cache: self,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
+    }
+}
+
+#endif

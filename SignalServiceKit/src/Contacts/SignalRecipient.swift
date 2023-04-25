@@ -97,10 +97,12 @@ extension SignalRecipient {
             }
         }
 
-        Self.updateDBTableMappings(newPhoneNumber: newPhoneNumber,
-                                   oldPhoneNumber: oldPhoneNumber,
-                                   newUuid: newServiceIdString,
-                                   transaction: transaction.unwrapGrdbWrite)
+        Self.updateDBTableMappings(
+            newPhoneNumber: newPhoneNumber,
+            oldPhoneNumber: oldPhoneNumber,
+            newUuid: newServiceIdString,
+            transaction: transaction.unwrapGrdbWrite
+        )
 
         if let oldPhoneNumber {
             // If we have an `oldPhoneNumber`, it means that value is now detached from
@@ -115,49 +117,6 @@ extension SignalRecipient {
             transaction.unwrapGrdbWrite.execute(sql: sql, arguments: [oldPhoneNumber])
         }
 
-        if let newServiceId,
-           let localAci = tsAccountManager.localUuid(with: transaction).map({ ServiceId($0) }),
-           localAci != newServiceId,
-           let oldPhoneNumber,
-           let newPhoneNumber {
-            let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = [
-                .changePhoneNumberUuid: newServiceId.uuidValue.uuidString,
-                .changePhoneNumberOld: oldPhoneNumber,
-                .changePhoneNumberNew: newPhoneNumber
-            ]
-
-            func insertPhoneNumberChangeInteraction(_ thread: TSThread) {
-                guard thread.shouldThreadBeVisible else {
-                    // Skip if thread is soft deleted or otherwise not user visible.
-                    return
-                }
-                let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
-                guard !threadAssociatedData.isArchived else {
-                    // Skip if thread is archived.
-                    return
-                }
-                let infoMessage = TSInfoMessage(thread: thread,
-                                                messageType: .phoneNumberChange,
-                                                infoMessageUserInfo: infoMessageUserInfo)
-                infoMessage.wasRead = true
-                infoMessage.anyInsert(transaction: transaction)
-            }
-
-            TSGroupThread.enumerateGroupThreads(with: newAddress, transaction: transaction ) { thread, _ in
-                guard thread.groupMembership.isFullMember(newServiceId.uuidValue) else {
-                    // Only insert "change phone number" interactions for
-                    // full members.
-                    return
-                }
-                insertPhoneNumberChangeInteraction(thread)
-            }
-
-            // Only insert "change phone number" interaction in 1:1 thread if it already exists.
-            if let thread = TSContactThread.getWithContactAddress(newAddress, transaction: transaction) {
-                insertPhoneNumberChangeInteraction(thread)
-            }
-        }
-
         // TODO: we may need to do more here, this is just bear bones to make sure we
         // don't hold onto stale data with the old mapping.
 
@@ -165,9 +124,6 @@ extension SignalRecipient {
 
         if let contactThread = AnyContactThreadFinder().contactThread(for: newAddress, transaction: transaction) {
             SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction)
-        }
-        TSGroupMember.enumerateGroupMembers(for: newAddress, transaction: transaction) { member, _ in
-            GRDBFullTextSearchFinder.modelWasUpdated(model: member, transaction: transaction.unwrapGrdbWrite)
         }
 
         if let newServiceId {
@@ -347,9 +303,6 @@ extension SignalRecipient {
                 DBTableMapping(databaseTableName: "\(ThreadRecord.databaseTableName)",
                                uuidColumn: "\(threadColumn: .contactUUID)",
                                phoneNumberColumn: "\(threadColumn: .contactPhoneNumber)"),
-                DBTableMapping(databaseTableName: "\(TSGroupMember.databaseTableName)",
-                               uuidColumn: "\(TSGroupMember.columnName(.serviceId))",
-                               phoneNumberColumn: "\(TSGroupMember.columnName(.phoneNumber))"),
                 DBTableMapping(databaseTableName: "\(OWSReaction.databaseTableName)",
                                uuidColumn: "\(OWSReaction.columnName(.reactorUUID))",
                                phoneNumberColumn: "\(OWSReaction.columnName(.reactorE164))"),

@@ -83,6 +83,12 @@ class RecipientMergerImpl: RecipientMerger {
     private let dataStore: RecipientDataStore
     private let storageServiceManager: StorageServiceManager
 
+    /// Initializes a RecipientMerger.
+    ///
+    /// - Parameter observers: Observers that are notified after a new
+    /// association is learned. They are notified in the same transaction in
+    /// which we learned about the new association, and they are notified in the
+    /// order in which they are provided.
     init(
         temporaryShims: RecipientMergerTemporaryShims,
         observers: [RecipientMergeObserver],
@@ -98,10 +104,27 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     static func buildObservers(
-        signalServiceAddressCache: SignalServiceAddressCache
+        groupMemberUpdater: GroupMemberUpdater,
+        groupMemberStore: GroupMemberStore,
+        interactionStore: InteractionStore,
+        signalServiceAddressCache: SignalServiceAddressCache,
+        threadAssociatedDataStore: ThreadAssociatedDataStore,
+        threadStore: ThreadStore
     ) -> [RecipientMergeObserver] {
         [
-            signalServiceAddressCache
+            signalServiceAddressCache,
+            // The group member MergeObserver depends on `SignalServiceAddressCache`, so ensure that one's listed first.
+            GroupMemberMergeObserverImpl(
+                threadStore: threadStore,
+                groupMemberUpdater: groupMemberUpdater,
+                groupMemberStore: groupMemberStore
+            ),
+            PhoneNumberChangedMessageInserter(
+                groupMemberStore: groupMemberStore,
+                interactionStore: interactionStore,
+                threadAssociatedDataStore: threadAssociatedDataStore,
+                threadStore: threadStore
+            )
         ]
     }
 
@@ -420,5 +443,10 @@ class RecipientMergerImpl: RecipientMerger {
 extension SignalServiceAddressCache: RecipientMergeObserver {
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
         updateRecipient(mergedRecipient.signalRecipient)
+
+        // If there are any threads with addresses that have been merged, we should
+        // reload them from disk. This allows us to rebuild the addresses with the
+        // proper hash values.
+        modelReadCaches.evacuateAllCaches()
     }
 }

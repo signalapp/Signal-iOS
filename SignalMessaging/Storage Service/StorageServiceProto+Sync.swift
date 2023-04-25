@@ -744,7 +744,7 @@ class StorageServiceGroupV1RecordUpdater: StorageServiceRecordUpdater {
         }
 
         let localThreadId = TSGroupThread.threadId(forGroupId: id, transaction: transaction)
-        ThreadAssociatedData.createIfMissing(for: localThreadId, transaction: transaction)
+        ThreadAssociatedData.create(for: localThreadId, warnIfPresent: false, transaction: transaction)
         let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId, transaction: transaction)
 
         if record.archived != localThreadAssociatedData.isArchived {
@@ -912,9 +912,8 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         }
 
         let localThreadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
-        ThreadAssociatedData.createIfMissing(for: localThreadId, transaction: transaction)
-        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId,
-                                                                            transaction: transaction)
+        ThreadAssociatedData.create(for: localThreadId, warnIfPresent: false, transaction: transaction)
+        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId, transaction: transaction)
 
         if record.archived != localThreadAssociatedData.isArchived {
             localThreadAssociatedData.updateWith(isArchived: record.archived, updateStorageService: false, transaction: transaction)
