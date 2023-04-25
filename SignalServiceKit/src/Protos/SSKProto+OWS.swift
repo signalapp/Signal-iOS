@@ -25,3 +25,14 @@ public extension SSKProtoSyncMessageSent {
         storyMessage != nil || !storyMessageRecipients.isEmpty
     }
 }
+
+public extension SSKProtoEnvelope {
+    var sourceServiceId: ServiceId? {
+        ServiceId(uuidString: sourceUuid)
+    }
+
+    @objc
+    var sourceServiceIdObjC: ServiceIdObjC? {
+        sourceServiceId.map { ServiceIdObjC($0) }
+    }
+}

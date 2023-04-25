@@ -44,33 +44,12 @@ public enum SMKMessageType: Int {
     case plaintext
 }
 
-@objc
-public class SMKDecryptResult: NSObject {
-
-    @objc
-    public let senderServiceId: ServiceIdObjC
-    @objc
-    public let senderE164: String?
-    @objc
-    public let senderDeviceId: Int
-    @objc
-    public let paddedPayload: Data
-    @objc
-    public let messageType: SMKMessageType
-
-    init(
-        senderServiceId: ServiceIdObjC,
-        senderE164: String?,
-        senderDeviceId: Int,
-        paddedPayload: Data,
-        messageType: SMKMessageType
-    ) {
-        self.senderServiceId = senderServiceId
-        self.senderE164 = senderE164
-        self.senderDeviceId = senderDeviceId
-        self.paddedPayload = paddedPayload
-        self.messageType = messageType
-    }
+public struct SMKDecryptResult {
+    let senderServiceId: ServiceId
+    let senderE164: String?
+    let senderDeviceId: UInt32
+    let paddedPayload: Data
+    let messageType: SMKMessageType
 }
 
 // MARK: -
@@ -200,6 +179,7 @@ public class SMKSecretSessionCipher: NSObject {
         cipherTextData: Data,
         timestamp: UInt64,
         localIdentifiers: LocalIdentifiers,
+        localDeviceId: UInt32,
         protocolContext: StoreContext?
     ) throws -> SMKDecryptResult {
         guard timestamp > 0 else {
@@ -222,7 +202,7 @@ public class SMKSecretSessionCipher: NSObject {
             throw SMKError.assertionError(description: "\(logTag) Invalid senderServiceId.")
         }
 
-        if localIdentifiers.contains(serviceId: senderServiceId) && sender.deviceId == tsAccountManager.storedDeviceId {
+        if localIdentifiers.contains(serviceId: senderServiceId) && sender.deviceId == localDeviceId {
             Logger.info("Discarding self-sent message")
             throw SMKSecretSessionCipherError.selfSentMessage
         }
@@ -239,9 +219,9 @@ public class SMKSecretSessionCipher: NSObject {
             //     content.getSenderCertificate().getSenderDeviceId()),
             //     decrypt(content));
             return SMKDecryptResult(
-                senderServiceId: ServiceIdObjC(senderServiceId),
+                senderServiceId: senderServiceId,
                 senderE164: sender.e164,
-                senderDeviceId: Int(sender.deviceId),
+                senderDeviceId: sender.deviceId,
                 paddedPayload: Data(paddedMessagePlaintext),
                 messageType: SMKMessageType(messageContent.messageType)
             )

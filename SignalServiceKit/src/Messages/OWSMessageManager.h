@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DeliveryReceiptContext;
 
+@class IdentifiedIncomingEnvelope;
 @class MessageManagerRequest;
 @class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
@@ -33,18 +34,9 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
 
 @interface OWSMessageManager : OWSMessageHandler
 
-- (void)processEnvelope:(SSKProtoEnvelope *)envelope
-                   plaintextData:(NSData *_Nullable)plaintextData
-                 wasReceivedByUD:(BOOL)wasReceivedByUD
-         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-    shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
-                     transaction:(SDSAnyWriteTransaction *)transaction;
-
 - (void)handleRequest:(MessageManagerRequest *)request
               context:(id<DeliveryReceiptContext>)context
           transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (BOOL)canProcessEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (TSThread *_Nullable)preprocessDataMessage:(SSKProtoDataMessage *)dataMessage
                                     envelope:(SSKProtoEnvelope *)envelope
@@ -52,20 +44,12 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
 
 - (void)finishProcessingEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (MessageManagerRequest *_Nullable)requestForEnvelope:(SSKProtoEnvelope *)envelope
-                                         plaintextData:(NSData *)plaintextData
-                                       wasReceivedByUD:(BOOL)wasReceivedByUD
-                               serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-                          shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
-                                           transaction:(SDSAnyWriteTransaction *)transaction;
-
 - (void)logUnactionablePayload:(SSKProtoEnvelope *)envelope;
 
 - (void)handleDeliveryReceipt:(SSKProtoEnvelope *)envelope
                       context:(id<DeliveryReceiptContext>)context
                   transaction:(SDSAnyWriteTransaction *)transaction;
 
-#if TESTABLE_BUILD
 // exposed for testing
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withSyncMessage:(SSKProtoSyncMessage *)syncMessage
@@ -75,14 +59,13 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 // exposed for testing
-- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+- (void)handleIncomingEnvelope:(IdentifiedIncomingEnvelope *)identifiedEnvelope
                  withDataMessage:(SSKProtoDataMessage *)dataMessage
                    plaintextData:(NSData *)plaintextData
                  wasReceivedByUD:(BOOL)wasReceivedByUD
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
     shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
                      transaction:(SDSAnyWriteTransaction *)transaction;
-#endif
 
 @end
 

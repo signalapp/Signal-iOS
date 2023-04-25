@@ -171,12 +171,16 @@ public class MessageProcessor: NSObject {
                     }
                     do {
                         let envelope = try SSKProtoEnvelope(serializedData: jobRecord.envelopeData)
-                        self.processDecryptedEnvelope(envelope,
-                                                      plaintextData: jobRecord.plaintextData,
-                                                      serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp,
-                                                      wasReceivedByUD: jobRecord.wasReceivedByUD,
-                                                      identity: .aci,
-                                                      completion: completion)
+                        let validatedEnvelope = try ValidatedIncomingEnvelope(envelope)
+                        let identifiedEnvelope = try IdentifiedIncomingEnvelope(validatedEnvelope: validatedEnvelope)
+                        self.processDecryptedEnvelope(
+                            identifiedEnvelope,
+                            plaintextData: jobRecord.plaintextData,
+                            serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp,
+                            wasReceivedByUD: jobRecord.wasReceivedByUD,
+                            identity: .aci,
+                            completion: completion
+                        )
                     } catch {
                         completion(error)
                     }
@@ -275,8 +279,30 @@ public class MessageProcessor: NSObject {
         }
     }
 
-    public func processDecryptedEnvelope(
-        _ envelope: SSKProtoEnvelope,
+#if DEBUG
+    public func processFakeDecryptedEnvelope(_ envelope: SSKProtoEnvelope, plaintextData: Data) {
+        processDecryptedEnvelope(
+            try! IdentifiedIncomingEnvelope(validatedEnvelope: ValidatedIncomingEnvelope(envelope)),
+            plaintextData: plaintextData,
+            serverDeliveryTimestamp: 0,
+            wasReceivedByUD: false,
+            identity: .aci,
+            completion: { error in
+                switch error {
+                case MessageProcessingError.duplicatePendingEnvelope?:
+                    Logger.warn("duplicatePendingEnvelope.")
+                case let otherError?:
+                    owsFailDebug("Error: \(otherError)")
+                case nil:
+                    break
+                }
+            }
+        )
+    }
+#endif
+
+    func processDecryptedEnvelope(
+        _ identifiedEnvelope: IdentifiedIncomingEnvelope,
         plaintextData: Data?,
         serverDeliveryTimestamp: UInt64,
         wasReceivedByUD: Bool,
@@ -284,7 +310,7 @@ public class MessageProcessor: NSObject {
         completion: @escaping (Error?) -> Void
     ) {
         let decryptedEnvelope = DecryptedEnvelope(
-            envelope: envelope,
+            identifiedEnvelope: identifiedEnvelope,
             envelopeData: nil,
             plaintextData: plaintextData,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
@@ -581,9 +607,11 @@ struct ProcessingRequestBuilder {
         case processNow(shouldDiscardVisibleMessages: Bool)
     }
 
-    private func processingStep(_ result: DecryptedEnvelope,
-                                sourceAddress: SignalServiceAddress,
-                                transaction: SDSAnyWriteTransaction) -> ProcessingStep {
+    private func processingStep(
+        _ result: DecryptedEnvelope,
+        sourceServiceId: ServiceId,
+        transaction: SDSAnyWriteTransaction
+    ) -> ProcessingStep {
         guard let plaintextData = result.plaintextData,
               let groupContextV2 =
                 GroupsV2MessageProcessor.groupContextV2(fromPlaintextData: plaintextData) else {
@@ -599,9 +627,11 @@ struct ProcessingRequestBuilder {
             // updated before they can be processed.
             return .enqueueForGroupProcessing
         }
-        let discardMode = GroupsMessageProcessor.discardMode(forMessageFrom: sourceAddress,
-                                                             groupContext: groupContextV2,
-                                                             transaction: transaction)
+        let discardMode = GroupsMessageProcessor.discardMode(
+            forMessageFrom: SignalServiceAddress(sourceServiceId),
+            groupContext: groupContextV2,
+            transaction: transaction
+        )
         if discardMode == .discard {
             // Some v2 group messages should be discarded and not processed.
             Logger.verbose("Discarding job.")
@@ -613,39 +643,40 @@ struct ProcessingRequestBuilder {
         return .processNow(shouldDiscardVisibleMessages: discardMode == .discardVisibleMessages)
     }
 
-    private func decryptionSucceeded(_ result: DecryptedEnvelope,
-                                     transaction: SDSAnyWriteTransaction) -> ProcessingRequest {
+    private func decryptionSucceeded(
+        _ result: DecryptedEnvelope,
+        transaction: SDSAnyWriteTransaction
+    ) -> ProcessingRequest {
         // NOTE: We use the envelope from the decrypt result, not the pending envelope,
         // since the envelope may be altered by the decryption process in the UD case.
-        guard let sourceAddress = result.envelope.sourceAddress, sourceAddress.isValid else {
-            owsFailDebug("Successful decryption with no source address; discarding message")
-            let error = OWSAssertionError("successful decryption with no source address")
-            return ProcessingRequest(pendingEnvelope,
-                                     state: .completed(error: error))
-        }
+        owsAssert(CurrentAppContext().shouldProcessIncomingMessages)
+
+        let identifiedEnvelope = result.identifiedEnvelope
+        Logger.info("Decrypted envelope \(OWSMessageHandler.description(for: identifiedEnvelope.envelope))")
 
         // Pre-processing has to happen during the same transaction that performed decryption
-        messageManager.preprocessEnvelope(envelope: result.envelope,
-                                          plaintext: result.plaintextData,
-                                          transaction: transaction)
+        messageManager.preprocessEnvelope(
+            identifiedEnvelope,
+            plaintext: result.plaintextData,
+            transaction: transaction
+        )
 
         // If the sender is in the block list, we can skip scheduling any additional processing.
+        let sourceAddress = SignalServiceAddress(identifiedEnvelope.sourceServiceId)
         if blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) {
-            Logger.info("Skipping processing for blocked envelope: \(sourceAddress)")
-            return ProcessingRequest(pendingEnvelope,
-                                     state: .completed(error: MessageProcessingError.blockedSender))
+            Logger.info("Skipping processing for blocked envelope from \(identifiedEnvelope.sourceServiceId)")
+            return ProcessingRequest(pendingEnvelope, state: .completed(error: MessageProcessingError.blockedSender))
         }
 
         if result.identity == .pni {
             NSObject.identityManager.setShouldSharePhoneNumber(with: sourceAddress, transaction: transaction)
         }
 
-        switch processingStep(result, sourceAddress: sourceAddress, transaction: transaction) {
+        switch processingStep(result, sourceServiceId: identifiedEnvelope.sourceServiceId, transaction: transaction) {
         case .discard:
             // Do nothing.
             Logger.verbose("Discarding job.")
-            return ProcessingRequest(pendingEnvelope,
-                                     state: .completed(error: nil))
+            return ProcessingRequest(pendingEnvelope, state: .completed(error: nil))
         case .enqueueForGroupProcessing:
             // If we can't process the message immediately, we enqueue it for
             // for processing in the same transaction within which it was decrypted
@@ -655,71 +686,64 @@ struct ProcessingRequestBuilder {
                 envelopeData = existingEnvelopeData
             } else {
                 do {
-                    envelopeData = try result.envelope.serializedData()
+                    envelopeData = try identifiedEnvelope.envelope.serializedData()
                 } catch {
                     owsFailDebug("failed to reserialize envelope: \(error)")
-                    return ProcessingRequest(pendingEnvelope,
-                                             state: .completed(error: error))
+                    return ProcessingRequest(pendingEnvelope, state: .completed(error: error))
                 }
             }
-            return ProcessingRequest(pendingEnvelope,
-                                     state: .enqueueForGroup(decryptedEnvelope: result, envelopeData: envelopeData))
+            return ProcessingRequest(
+                pendingEnvelope,
+                state: .enqueueForGroup(decryptedEnvelope: result, envelopeData: envelopeData)
+            )
         case .processNow(let shouldDiscardVisibleMessages):
             // Envelopes can be processed immediately if they're:
             // 1. Not a GV2 message.
             // 2. A GV2 message that doesn't require updating the group.
             //
-            // The advantage to processing the message immediately is that
-            // we can full process the message in the same transaction that
-            // we used to decrypt it. This results in a significant perf
-            // benefit verse queueing the message and waiting for that queue
-            // to open new transactions and process messages. The downside is
-            // that if we *fail* to process this message (e.g. the app crashed
-            // or was killed), we'll have to re-decrypt again before we process.
-            // This is safe, since the decrypt operation would also be rolled
-            // back (since the transaction didn't finalize) and should be rare.
-            if !messageManager.canProcessEnvelope(result.envelope, transaction: transaction) {
-                return ProcessingRequest(pendingEnvelope,
-                                         state: .completed(error: nil))
-            }
-            messageManager.checkForUnknownLinkedDevice(in: result.envelope, transaction: transaction)
-            switch result.envelope.unwrappedType {
+            // The advantage to processing the message immediately is that we can full
+            // process the message in the same transaction that we used to decrypt it.
+            // This results in a significant perf benefit verse queueing the message
+            // and waiting for that queue to open new transactions and process
+            // messages. The downside is that if we *fail* to process this message
+            // (e.g. the app crashed or was killed), we'll have to re-decrypt again
+            // before we process. This is safe since the decrypt operation would also
+            // be rolled back (since the transaction didn't commit) and should be rare.
+            messageManager.checkForUnknownLinkedDevice(in: identifiedEnvelope.envelope, transaction: transaction)
+            switch identifiedEnvelope.envelopeType {
             case .ciphertext, .prekeyBundle, .unidentifiedSender, .senderkeyMessage, .plaintextContent:
                 if result.plaintextData == nil {
                     owsFailDebug("Missing plaintextData")
                 }
-                guard let plaintextData = result.plaintextData,
-                      let messageManagerRequest = messageManager.request(for: result.envelope,
-                                                                         plaintextData: plaintextData,
-                                                                         wasReceivedByUD: result.wasReceivedByUD,
-                                                                         serverDeliveryTimestamp: result.serverDeliveryTimestamp,
-                                                                         shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
-                                                                         transaction: transaction) else {
-                    return ProcessingRequest(pendingEnvelope,
-                                             state: .completed(error: nil))
+                guard
+                    let plaintextData = result.plaintextData,
+                    let messageManagerRequest = MessageManagerRequest(
+                        identifiedEnvelope: identifiedEnvelope,
+                        plaintextData: plaintextData,
+                        wasReceivedByUD: result.wasReceivedByUD,
+                        serverDeliveryTimestamp: result.serverDeliveryTimestamp,
+                        shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
+                        transaction: transaction
+                    )
+                else {
+                    return ProcessingRequest(pendingEnvelope, state: .completed(error: nil))
                 }
                 if messageManagerRequest.protoContent == nil {
-                    messageManager.logUnactionablePayload(result.envelope)
-                    return ProcessingRequest(pendingEnvelope,
-                                             state: .clearPlaceholdersOnly(result.envelope))
+                    messageManager.logUnactionablePayload(identifiedEnvelope.envelope)
+                    return ProcessingRequest(pendingEnvelope, state: .clearPlaceholdersOnly(identifiedEnvelope.envelope))
                 }
-                return ProcessingRequest(pendingEnvelope,
-                                         state: .messageManagerRequest(messageManagerRequest))
+                return ProcessingRequest(pendingEnvelope, state: .messageManagerRequest(messageManagerRequest))
             case .receipt:
-                return ProcessingRequest(pendingEnvelope,
-                                         state: .plaintextReceipt(result.envelope))
+                return ProcessingRequest(pendingEnvelope, state: .plaintextReceipt(identifiedEnvelope.envelope))
             case .keyExchange:
                 Logger.warn("Received Key Exchange Message, not supported")
-                return ProcessingRequest(pendingEnvelope,
-                                         state: .completed(error: nil))
+                return ProcessingRequest(pendingEnvelope, state: .completed(error: nil))
             case .unknown:
                 Logger.warn("Received an unknown message type")
-                return ProcessingRequest(pendingEnvelope,
-                                         state: .completed(error: nil))
+                return ProcessingRequest(pendingEnvelope, state: .completed(error: nil))
             default:
-                Logger.warn("Received unhandled envelope type: \(result.envelope.unwrappedType)")
-                return ProcessingRequest(pendingEnvelope,
-                                         state: .completed(error: nil))
+                Logger.warn("Received unhandled envelope type: \(identifiedEnvelope.envelopeType)")
+                return ProcessingRequest(pendingEnvelope, state: .completed(error: nil))
             }
         }
     }
@@ -789,24 +813,21 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     }
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {
-        let result = Self.messageDecrypter.decryptEnvelope(
-            encryptedEnvelope,
-            envelopeData: encryptedEnvelopeData,
-            transaction: transaction
-        )
-        switch result {
-        case .success(let result):
-            return .success(DecryptedEnvelope(
-                envelope: result.envelope,
+        return Result {
+            let result = try Self.messageDecrypter.decryptEnvelope(
+                encryptedEnvelope,
+                envelopeData: encryptedEnvelopeData,
+                transaction: transaction
+            )
+            return DecryptedEnvelope(
+                identifiedEnvelope: result.identifiedEnvelope,
                 envelopeData: result.envelopeData,
                 plaintextData: result.plaintextData,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 wasReceivedByUD: wasReceivedByUD,
-                identity: result.identity,
+                identity: result.localIdentity,
                 completion: completion
-            ))
-        case .failure(let error):
-            return .failure(error)
+            )
         }
     }
 
@@ -829,7 +850,7 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
 // MARK: -
 
 struct DecryptedEnvelope: PendingEnvelope {
-    let envelope: SSKProtoEnvelope
+    let identifiedEnvelope: IdentifiedIncomingEnvelope
     let envelopeData: Data?
     let plaintextData: Data?
     let serverDeliveryTimestamp: UInt64

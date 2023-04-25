@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 private struct IncomingGroupsV2MessageJobInfo {
     let job: IncomingGroupsV2MessageJob
@@ -578,7 +579,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                     wasReceivedByUD: job.wasReceivedByUD,
                     serverDeliveryTimestamp: job.serverDeliveryTimestamp,
                     shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
-                    transaction: transaction
+                    tx: transaction
                 )
             }
             processedJobs.append(job)

@@ -43,17 +43,20 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
     private let message = "abc"
 
-    private func generateAndDecrypt(type: SSKProtoEnvelopeType,
-                                    destinationIdentity: OWSIdentity?,
-                                    destinationUuid: UUID? = nil,
-                                    prepareForDecryption: (SDSAnyWriteTransaction) -> Void = { _ in },
-                                    handleResult: (Result<OWSMessageDecryptResult, Error>, SSKProtoEnvelope) -> Void) {
+    private func generateAndDecrypt(
+        type: SSKProtoEnvelopeType,
+        destinationIdentity: OWSIdentity,
+        destinationUuid: UUID? = nil,
+        prepareForDecryption: (SDSAnyWriteTransaction) -> Void = { _ in },
+        handleResult: (Result<OWSMessageDecryptResult, Error>, SSKProtoEnvelope) -> Void
+    ) {
         write { transaction in
             let localClient: TestSignalClient
-            if destinationIdentity == .pni {
-                localClient = self.localPniClient
-            } else {
+            switch destinationIdentity {
+            case .aci:
                 localClient = self.localClient
+            case .pni:
+                localClient = self.localPniClient
             }
 
             switch type {
@@ -77,14 +80,8 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
             let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: Date.ows_millisecondTimestamp())
             envelopeBuilder.setType(type)
-            if let destinationUuid = destinationUuid {
-                envelopeBuilder.setDestinationUuid(destinationUuid.uuidString)
-            } else if destinationIdentity != nil {
-                envelopeBuilder.setDestinationUuid(localClient.uuidIdentifier)
-            } else {
-                XCTFail("Envelope that lacks a destination UUID")
-                return
-            }
+            envelopeBuilder.setDestinationUuid(destinationUuid?.uuidString ?? localClient.uuidIdentifier)
+            envelopeBuilder.setServerTimestamp(Date.ows_millisecondTimestamp())
 
             if type == .unidentifiedSender {
                 let senderCert = SMKSecretSessionCipherTest.createCertificateFor(
@@ -112,8 +109,10 @@ class MessageDecryptionTest: SSKBaseTestSwift {
             let envelope = try! envelopeBuilder.build()
 
             prepareForDecryption(transaction)
-            handleResult(messageDecrypter.decryptEnvelope(envelope, envelopeData: nil, transaction: transaction),
-                         envelope)
+            handleResult(
+                Result { try messageDecrypter.decryptEnvelope(envelope, envelopeData: nil, transaction: transaction) },
+                envelope
+            )
         }
     }
 
@@ -121,14 +120,14 @@ class MessageDecryptionTest: SSKBaseTestSwift {
         generateAndDecrypt(type: type, destinationIdentity: destinationIdentity) { result, originalEnvelope in
             let decrypted = try! result.get()
             XCTAssertNil(decrypted.envelopeData)
-            XCTAssertEqual(decrypted.identity, destinationIdentity)
+            XCTAssertEqual(decrypted.localIdentity, destinationIdentity)
             XCTAssertNotNil(decrypted.plaintextData)
             XCTAssertEqual(String(data: decrypted.plaintextData!, encoding: .utf8), message)
 
             if type == .unidentifiedSender {
-                XCTAssertNotIdentical(decrypted.envelope, originalEnvelope)
+                XCTAssertNotIdentical(decrypted.identifiedEnvelope.envelope, originalEnvelope)
             } else {
-                XCTAssertIdentical(decrypted.envelope, originalEnvelope)
+                XCTAssertIdentical(decrypted.identifiedEnvelope.envelope, originalEnvelope)
             }
         }
     }

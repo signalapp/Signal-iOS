@@ -30,22 +30,8 @@ public extension DebugUIMessages {
         }
     }
 
-    static func processDecryptedEnvelope(_ envelope: SSKProtoEnvelope,
-                                         plaintextData: Data) {
-        messageProcessor.processDecryptedEnvelope(envelope,
-                                                  plaintextData: plaintextData,
-                                                  serverDeliveryTimestamp: 0,
-                                                  wasReceivedByUD: false,
-                                                  identity: .aci) { error in
-            switch error {
-            case MessageProcessingError.duplicatePendingEnvelope?:
-                Logger.warn("duplicatePendingEnvelope.")
-            case let otherError?:
-                owsFailDebug("Error: \(otherError)")
-            case nil:
-                break
-            }
-        }
+    static func processDecryptedEnvelope(_ envelope: SSKProtoEnvelope, plaintextData: Data) {
+        messageProcessor.processFakeDecryptedEnvelope(envelope, plaintextData: plaintextData)
     }
 }
 

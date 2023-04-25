@@ -73,6 +73,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
             cipherTextData: ciphertext,
             timestamp: 31335,
             localIdentifiers: bobMockClient.localIdentifiers,
+            localDeviceId: bobMockClient.deviceId,
             protocolContext: nil
         )
 
@@ -80,8 +81,8 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // assertEquals(plaintext.first().getName(), "+14151111111");
         // assertEquals(plaintext.first().getDeviceId(), 1);
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "smert za smert")
-        XCTAssertEqual(bobPlaintext.senderDeviceId, Int(aliceMockClient.deviceId))
-        XCTAssertEqual(bobPlaintext.senderServiceId.wrappedValue, aliceMockClient.serviceId)
+        XCTAssertEqual(bobPlaintext.senderDeviceId, aliceMockClient.deviceId)
+        XCTAssertEqual(bobPlaintext.senderServiceId, aliceMockClient.serviceId)
         XCTAssertEqual(bobPlaintext.senderE164, aliceMockClient.phoneNumber.stringValue)
     }
 
@@ -139,6 +140,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                 cipherTextData: ciphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
+                localDeviceId: bobMockClient.deviceId,
                 protocolContext: nil
             )
             XCTFail("Decryption should have failed.")
@@ -218,6 +220,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                 cipherTextData: ciphertext,
                 timestamp: 31338,
                 localIdentifiers: bobMockClient.localIdentifiers,
+                localDeviceId: bobMockClient.deviceId,
                 protocolContext: nil
             )
             XCTFail("Decryption should have failed.")
@@ -294,6 +297,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                 cipherTextData: ciphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
+                localDeviceId: bobMockClient.deviceId,
                 protocolContext: nil
             )
             XCTFail("Decryption should have failed.")
@@ -355,13 +359,14 @@ class SMKSecretSessionCipherTest: XCTestCase {
             cipherTextData: Data(singleRecipientCiphertext),
             timestamp: 31335,
             localIdentifiers: bobMockClient.localIdentifiers,
+            localDeviceId: bobMockClient.deviceId,
             protocolContext: nil
         )
 
         // Verify
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "beltalowda")
-        XCTAssertEqual(bobPlaintext.senderServiceId.wrappedValue, aliceMockClient.serviceId)
-        XCTAssertEqual(bobPlaintext.senderDeviceId, Int(aliceMockClient.deviceId))
+        XCTAssertEqual(bobPlaintext.senderServiceId, aliceMockClient.serviceId)
+        XCTAssertEqual(bobPlaintext.senderDeviceId, aliceMockClient.deviceId)
         XCTAssertEqual(bobPlaintext.messageType, .senderKey)
     }
 
@@ -409,6 +414,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                 cipherTextData: Data(singleRecipientCiphertext),
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
+                localDeviceId: bobMockClient.deviceId,
                 protocolContext: nil
             )
             XCTFail("Decryption should have failed.")

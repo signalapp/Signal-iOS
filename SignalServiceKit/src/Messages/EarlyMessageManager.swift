@@ -493,7 +493,7 @@ public class EarlyMessageManager: NSObject {
                 wasReceivedByUD: earlyEnvelope.wasReceivedByUD,
                 serverDeliveryTimestamp: earlyEnvelope.serverDeliveryTimestamp,
                 shouldDiscardVisibleMessages: false,
-                transaction: transaction
+                tx: transaction
             )
         }
     }
