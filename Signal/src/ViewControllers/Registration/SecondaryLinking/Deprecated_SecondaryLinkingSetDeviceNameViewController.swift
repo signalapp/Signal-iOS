@@ -35,7 +35,7 @@ class Deprecated_SecondaryLinkingSetDeviceNameViewController: Deprecated_Onboard
         textField.autoSetDimension(.width, toSize: 200)
         textField.placeholder = NSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER", comment: "text field placeholder")
         textField.textColor = Theme.primaryTextColor
-        textField.font = UIFont.ows_dynamicTypeBodyClamped
+        textField.font = UIFont.dynamicTypeBodyClamped
         textField.accessibilityIdentifier = "linking.deviceName.textField"
         textField.text = UIDevice.current.name
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -47,7 +47,7 @@ class Deprecated_SecondaryLinkingSetDeviceNameViewController: Deprecated_Onboard
 
         validationErrorLabel = UILabel()
         validationErrorLabel.textColor = .ows_accentRed
-        validationErrorLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        validationErrorLabel.font = UIFont.dynamicTypeSubheadlineClamped
         validationErrorLabel.autoSetDimension(.height, toSize: validationErrorLabel.font.lineHeight)
         validationErrorLabel.accessibilityIdentifier = "linking.deviceName.validationErrorLabel"
         validationErrorLabel.setCompressionResistanceHigh()

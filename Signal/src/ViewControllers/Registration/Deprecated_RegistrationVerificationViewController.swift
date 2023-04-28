@@ -92,7 +92,7 @@ class Deprecated_RegistrationVerificationViewModel: NSObject {
         errorLabel.text = NSLocalizedString("ONBOARDING_VERIFICATION_INVALID_CODE",
                                             comment: "Label indicating that the verification code is incorrect in the 'onboarding verification' view.")
         errorLabel.textColor = .ows_accentRed
-        errorLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        errorLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
         errorLabel.textAlignment = .center
         errorLabel.autoSetDimension(.height, toSize: errorLabel.font.lineHeight)
         errorLabel.accessibilityIdentifier = "onboarding.verification." + "errorLabel"
@@ -327,11 +327,11 @@ class Deprecated_RegistrationVerificationViewModel: NSObject {
 
             resendCodeButton?.setTitle(
                 title: resendCodeTitle,
-                font: .ows_dynamicTypeSubheadlineClamped,
+                font: .dynamicTypeSubheadlineClamped,
                 titleColor: Theme.accentBlueColor)
             callMeButton?.setTitle(
                 title: callMeTitle,
-                font: .ows_dynamicTypeSubheadlineClamped,
+                font: .dynamicTypeSubheadlineClamped,
                 titleColor: Theme.accentBlueColor)
 
         } else {
@@ -350,11 +350,11 @@ class Deprecated_RegistrationVerificationViewModel: NSObject {
             let callMeTitle = String(format: callMeCountdownFormat, formattedCountdown)
             resendCodeButton?.setTitle(
                 title: resendCodeTitle,
-                font: .ows_dynamicTypeSubheadlineClamped,
+                font: .dynamicTypeSubheadlineClamped,
                 titleColor: Theme.secondaryTextAndIconColor)
             callMeButton?.setTitle(
                 title: callMeTitle,
-                font: .ows_dynamicTypeSubheadlineClamped,
+                font: .dynamicTypeSubheadlineClamped,
                 titleColor: Theme.secondaryTextAndIconColor)
         }
     }

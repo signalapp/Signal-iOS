@@ -33,8 +33,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid;
 
-+ (TSRequest *)deleteDeviceRequestWithDevice:(OWSDevice *)device;
-
 + (TSRequest *)getDevicesRequest;
 
 + (TSRequest *)getMessagesRequest;

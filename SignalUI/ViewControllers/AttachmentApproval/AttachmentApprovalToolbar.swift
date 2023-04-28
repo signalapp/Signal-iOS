@@ -422,7 +422,7 @@ private class MediaToolbar: UIView {
             UIImage(imageLiteralResourceName: AttachmentApprovalToolbar.Configuration.DoneButtonIcon.send.rawValue),
             for: .normal
         )
-        button.contentEdgeInsets = UIEdgeInsets(margin: 8)
+        button.contentEdgeInsets = UIEdgeInsets(margin: UIDevice.current.isNarrowerThanIPhone6 ? 4 : 8)
         button.accessibilityLabel = MessageStrings.sendButton
         button.sizeToFit()
         return button

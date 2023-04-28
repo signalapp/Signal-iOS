@@ -5,39 +5,14 @@
 
 #import <Foundation/Foundation.h>
 
-#ifndef signalservicekitprefix
-#define signalservicekitprefix
-#import <Availability.h>
-
-#ifdef __OBJC__
-#import <CocoaLumberjack/CocoaLumberjack.h>
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-
-#ifdef DEBUG
-static const NSUInteger ddLogLevel = DDLogLevelAll;
-#else
-static const NSUInteger ddLogLevel = DDLogLevelInfo;
-#endif
-#import <SignalCoreKit/NSObject+OWS.h>
-#import <SignalCoreKit/OWSAsserts.h>
-#import <SignalServiceKit/OWSAnalytics.h>
-#import <SignalServiceKit/SSKAsserts.h>
-
-#endif
-#endif
-
 //! Project version number for SignalServiceKit.
 FOUNDATION_EXPORT double SignalServiceKitVersionNumber;
 
 //! Project version string for SignalServiceKit.
 FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import
-// <SignalServiceKit/PublicHeader.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/BaseModel.h>
 #import <SignalServiceKit/ByteParser.h>
@@ -60,8 +35,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/LegacySessionState.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/MessageSender.h>
-#import <SignalServiceKit/MockSSKEnvironment.h>
-#import <SignalServiceKit/NSArray+OWS.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSData+keyVersionByte.h>
 #import <SignalServiceKit/NSString+SSK.h>
@@ -76,7 +49,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSBackupFragment.h>
 #import <SignalServiceKit/OWSBlockedPhoneNumbersMessage.h>
-#import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>
 #import <SignalServiceKit/OWSCallMessageHandler.h>
 #import <SignalServiceKit/OWSCensorshipConfiguration.h>
 #import <SignalServiceKit/OWSChunkedOutputStream.h>
@@ -84,7 +56,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSContactsOutputStream.h>
 #import <SignalServiceKit/OWSCountryMetadata.h>
-#import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfigurationMessage.h>
@@ -101,11 +72,8 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSGroupsOutputStream.h>
 #import <SignalServiceKit/OWSHTTPSecurityPolicy.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
-#import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
 #import <SignalServiceKit/OWSIncomingSentMessageTranscript.h>
 #import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>
-#import <SignalServiceKit/OWSLocalUserLeaveGroupJobRecord.h>
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageContentJob.h>
 #import <SignalServiceKit/OWSMessageHandler.h>
@@ -127,15 +95,12 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSQueues.h>
 #import <SignalServiceKit/OWSReadReceiptsForLinkedDevicesMessage.h>
 #import <SignalServiceKit/OWSReadTracking.h>
-#import <SignalServiceKit/OWSReceiptCredentialRedemptionJobRecord.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/OWSReceiptsForSenderMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSRecordTranscriptJob.h>
 #import <SignalServiceKit/OWSRecoverableDecryptionPlaceholder.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
-#import <SignalServiceKit/OWSSendGiftBadgeJobRecord.h>
-#import <SignalServiceKit/OWSSessionResetJobRecord.h>
 #import <SignalServiceKit/OWSStaticOutgoingMessage.h>
 #import <SignalServiceKit/OWSStickerPackSyncMessage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
@@ -170,10 +135,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/SDSKeyValueStore+ObjC.h>
 #import <SignalServiceKit/SSKAccessors+SDS.h>
 #import <SignalServiceKit/SSKAsserts.h>
-#import <SignalServiceKit/SSKEnvironment.h>
-#import <SignalServiceKit/SSKJobRecord.h>
-#import <SignalServiceKit/SSKMessageDecryptJobRecord.h>
-#import <SignalServiceKit/SSKMessageSenderJobRecord.h>
 #import <SignalServiceKit/SSKPreKeyStore.h>
 #import <SignalServiceKit/SSKSignedPreKeyStore.h>
 #import <SignalServiceKit/SignalAccount.h>

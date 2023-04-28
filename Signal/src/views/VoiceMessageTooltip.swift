@@ -20,7 +20,7 @@ class VoiceMessageTooltip: TooltipView {
             "VOICE_MESSAGE_TOO_SHORT_TOOLTIP",
             comment: "Message for the tooltip indicating the 'voice message' needs to be held to be held down to record."
         )
-        label.font = UIFont.ows_dynamicTypeBodyClamped
+        label.font = UIFont.dynamicTypeBodyClamped
         label.textColor = Theme.primaryTextColor
 
         return horizontalStack(forSubviews: [label])

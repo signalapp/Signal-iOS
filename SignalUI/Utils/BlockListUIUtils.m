@@ -90,7 +90,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
     ActionSheetAction *blockAction = [[ActionSheetAction alloc]
                   initWithTitle:OWSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
-        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
+        accessibilityIdentifier:@"BlockListUIUtils.block"
                           style:ActionSheetActionStyleDestructive
                         handler:^(ActionSheetAction *_Nonnull action) {
                             [self blockAddresses:addresses
@@ -104,15 +104,14 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                         }];
     [actionSheet addAction:blockAction];
 
-    ActionSheetAction *dismissAction =
-        [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
-                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                           style:ActionSheetActionStyleCancel
-                                         handler:^(ActionSheetAction *_Nonnull action) {
-                                             if (completionBlock) {
-                                                 completionBlock(NO);
-                                             }
-                                         }];
+    ActionSheetAction *dismissAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                                        accessibilityIdentifier:@"BlockListUIUtils.dismiss"
+                                                                          style:ActionSheetActionStyleCancel
+                                                                        handler:^(ActionSheetAction *_Nonnull action) {
+                                                                            if (completionBlock) {
+                                                                                completionBlock(NO);
+                                                                            }
+                                                                        }];
     [actionSheet addAction:dismissAction];
     [fromViewController presentActionSheet:actionSheet];
 }
@@ -136,7 +135,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
     ActionSheetAction *blockAction = [[ActionSheetAction alloc]
                   initWithTitle:OWSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
-        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
+        accessibilityIdentifier:@"BlockListUIUtils.block"
                           style:ActionSheetActionStyleDestructive
                         handler:^(ActionSheetAction *_Nonnull action) {
                             [self blockGroup:groupThread
@@ -149,15 +148,14 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                         }];
     [actionSheet addAction:blockAction];
 
-    ActionSheetAction *dismissAction =
-        [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
-                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                           style:ActionSheetActionStyleCancel
-                                         handler:^(ActionSheetAction *_Nonnull action) {
-                                             if (completionBlock) {
-                                                 completionBlock(NO);
-                                             }
-                                         }];
+    ActionSheetAction *dismissAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                                        accessibilityIdentifier:@"BlockListUIUtils.dismiss"
+                                                                          style:ActionSheetActionStyleCancel
+                                                                        handler:^(ActionSheetAction *_Nonnull action) {
+                                                                            if (completionBlock) {
+                                                                                completionBlock(NO);
+                                                                            }
+                                                                        }];
     [actionSheet addAction:dismissAction];
     [fromViewController presentActionSheet:actionSheet];
 }
@@ -295,7 +293,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     ActionSheetAction *unblockAction =
         [[ActionSheetAction alloc] initWithTitle:OWSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
                                                      @"Button label for the 'unblock' button")
-                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
+                         accessibilityIdentifier:@"BlockListUIUtils.unblock"
                                            style:ActionSheetActionStyleDestructive
                                          handler:^(ActionSheetAction *_Nonnull action) {
                                              [BlockListUIUtils unblockAddresses:addresses
@@ -309,15 +307,14 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                                          }];
     [actionSheet addAction:unblockAction];
 
-    ActionSheetAction *dismissAction =
-        [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
-                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                           style:ActionSheetActionStyleCancel
-                                         handler:^(ActionSheetAction *_Nonnull action) {
-                                             if (completionBlock) {
-                                                 completionBlock(YES);
-                                             }
-                                         }];
+    ActionSheetAction *dismissAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                                        accessibilityIdentifier:@"BlockListUIUtils.dismiss"
+                                                                          style:ActionSheetActionStyleCancel
+                                                                        handler:^(ActionSheetAction *_Nonnull action) {
+                                                                            if (completionBlock) {
+                                                                                completionBlock(YES);
+                                                                            }
+                                                                        }];
     [actionSheet addAction:dismissAction];
     [fromViewController presentActionSheet:actionSheet];
 }
@@ -363,7 +360,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     ActionSheetAction *unblockAction =
         [[ActionSheetAction alloc] initWithTitle:OWSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
                                                      @"Button label for the 'unblock' button")
-                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
+                         accessibilityIdentifier:@"BlockListUIUtils.unblock"
                                            style:ActionSheetActionStyleDestructive
                                          handler:^(ActionSheetAction *_Nonnull action) {
                                              [BlockListUIUtils unblockGroup:groupModel
@@ -376,15 +373,14 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                                          }];
     [actionSheet addAction:unblockAction];
 
-    ActionSheetAction *dismissAction =
-        [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
-                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                           style:ActionSheetActionStyleCancel
-                                         handler:^(ActionSheetAction *_Nonnull action) {
-                                             if (completionBlock) {
-                                                 completionBlock(YES);
-                                             }
-                                         }];
+    ActionSheetAction *dismissAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                                        accessibilityIdentifier:@"BlockListUIUtils.dismiss"
+                                                                          style:ActionSheetActionStyleCancel
+                                                                        handler:^(ActionSheetAction *_Nonnull action) {
+                                                                            if (completionBlock) {
+                                                                                completionBlock(YES);
+                                                                            }
+                                                                        }];
     [actionSheet addAction:dismissAction];
     [fromViewController presentActionSheet:actionSheet];
 }
@@ -426,11 +422,10 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
     ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:title message:message];
 
-    ActionSheetAction *okAction =
-        [[ActionSheetAction alloc] initWithTitle:CommonStrings.okButton
-                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
-                                           style:ActionSheetActionStyleDefault
-                                         handler:completionBlock];
+    ActionSheetAction *okAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.okButton
+                                                   accessibilityIdentifier:@"BlockListUIUtils.ok"
+                                                                     style:ActionSheetActionStyleDefault
+                                                                   handler:completionBlock];
     [alert addAction:okAction];
     [fromViewController presentActionSheet:alert];
 }

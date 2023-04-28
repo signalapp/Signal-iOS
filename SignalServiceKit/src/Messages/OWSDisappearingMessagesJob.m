@@ -10,7 +10,6 @@
 #import "NSTimer+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "SSKEnvironment.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSThread.h"
@@ -36,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 void AssertIsOnDisappearingMessagesQueue(void);
 
-void AssertIsOnDisappearingMessagesQueue()
+void AssertIsOnDisappearingMessagesQueue(void)
 {
 #ifdef DEBUG
     dispatch_assert_queue(OWSDisappearingMessagesJob.serialQueue);

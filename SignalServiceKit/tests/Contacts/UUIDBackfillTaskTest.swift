@@ -47,15 +47,18 @@ final class UUIDBackfillTaskTest: SSKBaseTestSwift {
 
     func testRetryOnError() throws {
         // Add a few phone number-only recipients.
-        let addressesMissingUUIDs = [
-            CommonGenerator.address(hasUUID: false),
-            CommonGenerator.address(hasUUID: false)
+        let phoneNumbers = [
+            E164("+16505550100")!,
+            E164("+16505550101")!
         ]
         databaseStorage.write { transaction in
-            for address in addressesMissingUUIDs + [CommonGenerator.address()] {
-                SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
+            for phoneNumber in phoneNumbers {
+                SignalRecipient.fetchOrCreate(phoneNumber: phoneNumber, transaction: transaction)
                     .markAsRegistered(transaction: transaction)
             }
+            SignalRecipient
+                .mergeHighTrust(serviceId: ServiceId(UUID()), phoneNumber: E164("+16505550102")!, transaction: transaction)
+                .markAsRegistered(transaction: transaction)
         }
 
         let manager = MockContactDiscoveryManager()
@@ -70,7 +73,7 @@ final class UUIDBackfillTaskTest: SSKBaseTestSwift {
         // We expect four requests.
         XCTAssertEqual(manager.requests.count, 4)
         // Which should match the addresses missing UUIDs.
-        let phoneNumbersMissingUUIDs = addressesMissingUUIDs.map { $0.phoneNumber! }
+        let phoneNumbersMissingUUIDs = phoneNumbers.map { $0.stringValue }
         XCTAssertEqual(Set(manager.requests), [Set(phoneNumbersMissingUUIDs)])
     }
 }

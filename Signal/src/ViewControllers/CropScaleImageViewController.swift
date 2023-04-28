@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import MediaPlayer
 import SignalMessaging
+import SignalUI
 
 // This kind of view is tricky.  I've tried to organize things in the 
 // simplest possible way.
@@ -187,7 +187,7 @@ class CropScaleImageViewController: OWSViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = UIColor.white
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_semiboldFont(withSize: ScaleFromIPhone5(16))
+        titleLabel.font = UIFont.semiboldFont(ofSize: ScaleFromIPhone5(16))
         titleLabel.text = NSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",
                                             comment: "Title for the 'crop/scale image' dialog.")
         contentView.addSubview(titleLabel)
@@ -451,7 +451,7 @@ class CropScaleImageViewController: OWSViewController {
     }
 
     private func createButton(title: String, action: Selector) -> UIButton {
-        let buttonFont = UIFont.ows_semiboldFont(withSize: ScaleFromIPhone5To7Plus(18, 22))
+        let buttonFont = UIFont.semiboldFont(ofSize: ScaleFromIPhone5To7Plus(18, 22))
         let buttonWidth = ScaleFromIPhone5To7Plus(110, 140)
         let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
 

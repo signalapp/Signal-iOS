@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter
         addObserver:self
            selector:@selector(isCensorshipCircumventionActiveDidChange)
-               name:OWSSignalService.isCensorshipCircumventionActiveDidChangeNotificationName
+               name:OWSSignalServiceObjC.isCensorshipCircumventionActiveDidChangeNotificationName
              object:nil];
 
     [NSNotificationCenter.defaultCenter addObserver:self

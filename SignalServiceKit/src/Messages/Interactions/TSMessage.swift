@@ -267,4 +267,44 @@ public extension TSMessage {
         }
     }
 
+    // MARK: - Stories
+
+    @objc
+    enum ReplyCountIncrement: Int {
+        case noIncrement
+        case newReplyAdded
+        case replyDeleted
+    }
+
+    @objc
+    func touchStoryMessageIfNecessary(
+        replyCountIncrement: ReplyCountIncrement,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard
+            self.isStoryReply,
+            let storyAuthorAddress,
+            let storyTimestamp
+        else {
+            return
+        }
+        let storyMessage = StoryFinder.story(
+            timestamp: storyTimestamp.uint64Value,
+            author: storyAuthorAddress,
+            transaction: transaction
+        )
+        if let storyMessage {
+            // Note that changes are aggregated; the touch below won't double
+            // up observer notifications.
+            self.databaseStorage.touch(storyMessage: storyMessage, transaction: transaction)
+            switch replyCountIncrement {
+            case .noIncrement:
+                break
+            case .newReplyAdded:
+                storyMessage.incrementReplyCount(transaction)
+            case .replyDeleted:
+                storyMessage.decrementReplyCount(transaction)
+            }
+        }
+    }
 }

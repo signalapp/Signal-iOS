@@ -5,7 +5,6 @@
 
 #import "OWSTableViewController.h"
 #import "Theme.h"
-#import "UIFont+OWS.h"
 #import "UIView+SignalUI.h"
 #import <SignalUI/SignalUI-Swift.h>
 
@@ -744,7 +743,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     } else if (section.headerTitle.length > 0 || section.headerAttributedTitle.length > 0) {
         UITextView *textView = [LinkingTextView new];
         textView.textColor = Theme.secondaryTextAndIconColor;
-        textView.font = UIFont.ows_dynamicTypeCaption1Font;
+        textView.font = [OWSTableViewController dynamicTypeCaption1Font];
         if (section.headerAttributedTitle.length > 0) {
             textView.attributedText = section.headerAttributedTitle;
         } else {
@@ -780,11 +779,11 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     } else if (section.footerTitle.length > 0 || section.footerAttributedTitle.length > 0) {
         UITextView *textView = [LinkingTextView new];
         textView.textColor = UIColor.ows_gray45Color;
-        textView.font = UIFont.ows_dynamicTypeCaption1Font;
+        textView.font = [OWSTableViewController dynamicTypeCaption1Font];
         textView.linkTextAttributes = @{
             NSForegroundColorAttributeName : Theme.accentBlueColor,
             NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
-            NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font,
+            NSFontAttributeName : [OWSTableViewController dynamicTypeCaption1Font],
         };
 
         if (section.footerAttributedTitle.length > 0) {
@@ -927,6 +926,11 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 }
 
 #pragma mark - Theme
+
++ (UIFont *)dynamicTypeCaption1Font
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+}
 
 - (void)themeDidChange
 {

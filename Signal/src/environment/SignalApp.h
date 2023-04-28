@@ -22,10 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setup;
 
 @property (nonatomic, readonly) BOOL hasSelectedThread;
-@property (nonatomic, readonly) BOOL didLastLaunchNotTerminate;
 
 // These properties are only public for Swift bridging.
-@property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic, nullable, weak) ConversationSplitViewController *conversationSplitViewController;
 
 #pragma mark - Conversation Presentation
@@ -58,7 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showDeprecatedOnboardingView:(Deprecated_OnboardingController *)onboardingController;
 - (void)showConversationSplitView;
-- (void)applicationWillTerminate;
 
 - (nullable UIView *)snapshotSplitViewControllerAfterScreenUpdates:(BOOL)afterScreenUpdates;
 

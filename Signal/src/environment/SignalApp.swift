@@ -6,6 +6,12 @@
 import SignalUI
 import UIKit
 
+enum LaunchInterface {
+    case registration(RegistrationCoordinatorLoader, RegistrationMode)
+    case deprecatedOnboarding(Deprecated_OnboardingController)
+    case chatList(Deprecated_OnboardingController)
+}
+
 extension SignalApp {
     @objc
     func warmCachesAsync() {
@@ -39,57 +45,30 @@ extension SignalApp {
         }
     }
 
-    func ensureRootViewController(
-        appDelegate: UIApplicationDelegate,
-        launchStartedAt: TimeInterval,
-        registrationLoader: RegistrationCoordinatorLoader
-    ) {
+    func showLaunchInterface(_ launchInterface: LaunchInterface, launchStartedAt: TimeInterval) {
         AssertIsOnMainThread()
-
-        Logger.info("ensureRootViewController")
-
-        guard AppReadiness.isAppReady, !hasInitialRootViewController else {
-            return
-        }
-        hasInitialRootViewController = true
+        owsAssert(AppReadiness.isAppReady)
 
         let startupDuration = CACurrentMediaTime() - launchStartedAt
         Logger.info("Presenting app \(startupDuration) seconds after launch started.")
 
-        let onboardingController = Deprecated_OnboardingController()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(spamChallenge),
+            name: SpamChallengeResolver.NeedsCaptchaNotification,
+            object: nil
+        )
 
-        if FeatureFlags.useNewRegistrationFlow {
-            var desiredMode: RegistrationMode? = DependenciesBridge.shared.db.read {
-                return registrationLoader.restoreLastMode(transaction: $0)
-            }
-            if desiredMode == nil {
-                // Check for legacy state.
-                // TODO[Registration]: use a db migration to move this state to reg coordinator.
-                if !onboardingController.isComplete {
-                    desiredMode = .registering
-                }
-            }
-            if let desiredMode {
-                let coordinator = databaseStorage.write { tx in
-                    return registrationLoader.coordinator(forDesiredMode: desiredMode, transaction: tx.asV2Write)
-                }
-                let navController = RegistrationNavigationController.withCoordinator(coordinator)
-
-                appDelegate.window??.rootViewController = navController
-
-                conversationSplitViewController = nil
-            } else {
-                onboardingController.markAsOnboarded()
-                showConversationSplitView()
-            }
-        } else {
-            if onboardingController.isComplete {
-                onboardingController.markAsOnboarded()
-                showConversationSplitView()
-            } else {
-                showDeprecatedOnboardingView(onboardingController)
-                AppReadiness.setUIIsReady()
-            }
+        switch launchInterface {
+        case .registration(let registrationLoader, let desiredMode):
+            showRegistration(loader: registrationLoader, desiredMode: desiredMode)
+            AppReadiness.setUIIsReady()
+        case .deprecatedOnboarding(let onboardingController):
+            showDeprecatedOnboardingView(onboardingController)
+            AppReadiness.setUIIsReady()
+        case .chatList(let onboardingController):
+            onboardingController.markAsOnboarded()
+            showConversationSplitView()
         }
 
         AppUpdateNag.shared.showAppUpgradeNagIfNecessary()
@@ -103,6 +82,30 @@ extension SignalApp {
             return
         }
         conversationSplitViewController.showAppSettingsWithMode(mode)
+    }
+
+    func showRegistration(loader: RegistrationCoordinatorLoader, desiredMode: RegistrationMode) {
+        switch desiredMode {
+        case .registering:
+            Logger.info("Attempting initial registration on app launch")
+        case .reRegistering:
+            Logger.info("Attempting reregistration on app launch")
+        case .changingNumber:
+            Logger.info("Attempting change number registration on app launch")
+        }
+        let coordinator = databaseStorage.write { tx in
+            return loader.coordinator(forDesiredMode: desiredMode, transaction: tx.asV2Write)
+        }
+        let navController = RegistrationNavigationController.withCoordinator(coordinator)
+
+        UIApplication.shared.delegate?.window??.rootViewController = navController
+
+        conversationSplitViewController = nil
+    }
+
+    @objc
+    private func spamChallenge() {
+        SpamCaptchaViewController.presentActionSheet(from: UIApplication.shared.frontmostViewController!)
     }
 }
 
@@ -125,7 +128,7 @@ extension SignalApp {
                 + "NO ONE AT SIGNAL CAN MAKE YOU DO THIS! Don't do it if you're not comfortable.",
             preferredStyle: .alert)
         alert.addAction(.init(title: "Export", style: .destructive) { _ in
-            if SSKEnvironment.hasShared() {
+            if SSKEnvironment.hasShared {
                 // Try to sync the database first, since we don't export the WAL.
                 _ = try? SSKEnvironment.shared.grdbStorageAdapter.syncTruncatingCheckpoint()
             }
@@ -172,14 +175,19 @@ extension SignalApp {
             progressView.autoCenterInSuperview()
             progressView.startAnimating()
 
-            var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "showDatabaseIntegrityCheckUI")
+            DispatchQueue.sharedUserInitiated.async {
+                var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "showDatabaseIntegrityCheckUI")
 
-            GRDBDatabaseStorageAdapter.logIntegrityChecks().ensure {
+                GRDBDatabaseStorageAdapter.checkIntegrity()
+
                 owsAssertDebug(backgroundTask != nil)
                 backgroundTask = nil
-                progressView.removeFromSuperview()
-                completion()
-            }.cauterize()
+
+                DispatchQueue.main.async {
+                    progressView.removeFromSuperview()
+                    completion()
+                }
+            }
         })
         alert.addAction(.init(title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_SKIP",
                                                        comment: "Button to skip database integrity check step"),

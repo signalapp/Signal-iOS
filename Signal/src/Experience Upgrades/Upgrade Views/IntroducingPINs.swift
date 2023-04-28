@@ -5,6 +5,7 @@
 
 import Foundation
 import SafariServices
+import SignalUI
 
 class IntroducingPinsMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
@@ -17,24 +18,28 @@ class IntroducingPinsMegaphone: MegaphoneView {
         let primaryButtonTitle = NSLocalizedString("PINS_MEGAPHONE_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
 
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
-            let vc = PinSetupViewController.creating { _, error in
-                if let error = error {
-                    Logger.error("failed to create pin: \(error)")
-                } else {
-                    // success
-                    self?.markAsCompleteWithSneakyTransaction()
+            let viewController = PinSetupViewController(
+                mode: .creating,
+                hideNavigationBar: false,
+                showCancelButton: true,
+                completionHandler: { [weak self, weak fromViewController] _, error in
+                    guard let self, let fromViewController else { return }
+                    if let error {
+                        Logger.error("failed to create pin: \(error)")
+                    } else {
+                        // success
+                        self.markAsCompleteWithSneakyTransaction()
+                    }
+                    self.dismiss(animated: false)
+                    fromViewController.dismiss(animated: true) {
+                        self.presentToast(
+                            text: NSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created."),
+                            fromViewController: fromViewController
+                        )
+                    }
                 }
-                fromViewController.navigationController?.popToViewController(fromViewController, animated: true) {
-                    fromViewController.navigationController?.setNavigationBarHidden(false, animated: false)
-                    self?.dismiss(animated: false)
-                    self?.presentToast(
-                        text: NSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created."),
-                        fromViewController: fromViewController
-                    )
-                }
-            }
-
-            fromViewController.navigationController?.pushViewController(vc, animated: true)
+            )
+            fromViewController.present(OWSNavigationController(rootViewController: viewController), animated: true)
         }
 
         let secondaryButton = snoozeButton(fromViewController: fromViewController)

@@ -10,26 +10,33 @@ import XCTest
 
 class SignalRecipientTest: SSKBaseTestSwift {
 
-    lazy var localAddress = CommonGenerator.address()
+    private lazy var localAci = ServiceId(UUID())
+    private lazy var localPhoneNumber = E164("+16505550100")!
+    private var localAddress: SignalServiceAddress {
+        SignalServiceAddress(uuid: localAci.uuidValue, phoneNumber: localPhoneNumber.stringValue)
+    }
 
     override func setUp() {
         super.setUp()
 
-        tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!, uuid: localAddress.uuid!)
+        tsAccountManager.registerForTests(withLocalNumber: localPhoneNumber.stringValue, uuid: localAci.uuidValue)
     }
 
     func testSelfRecipientWithExistingRecord() {
         write { transaction in
-            createHighTrustRecipient(for: self.localAddress, transaction: transaction)
-            XCTAssertTrue(SignalRecipient.isRegisteredRecipient(self.localAddress, transaction: transaction))
+            SignalRecipient.mergeHighTrust(serviceId: localAci, phoneNumber: localPhoneNumber, transaction: transaction)
+            XCTAssertNotNil(fetchRecipient(serviceId: localAci, transaction: transaction))
+            XCTAssertNotNil(fetchRecipient(phoneNumber: localPhoneNumber, transaction: transaction))
         }
     }
 
     func testRecipientWithExistingRecord() {
-        let recipient = CommonGenerator.address()
+        let serviceId = ServiceId(UUID())
+        let phoneNumber = E164("+16505550101")!
         write { transaction in
-            createHighTrustRecipient(for: recipient, transaction: transaction)
-            XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
+            SignalRecipient.mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
+            XCTAssertNotNil(fetchRecipient(serviceId: serviceId, transaction: transaction))
+            XCTAssertNotNil(fetchRecipient(phoneNumber: phoneNumber, transaction: transaction))
         }
     }
 
@@ -37,122 +44,77 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
     func testLowTrustPhoneNumberOnly() {
         // Phone number only recipients are recorded
-        let recipient = CommonGenerator.address(hasUUID: false)
         write { transaction in
-            createLowTrustRecipient(for: recipient, transaction: transaction)
-            XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
+            let phoneNumber = E164(CommonGenerator.e164())!
+            _ = SignalRecipient.fetchOrCreate(phoneNumber: phoneNumber, transaction: transaction)
+            XCTAssertNotNil(fetchRecipient(phoneNumber: phoneNumber, transaction: transaction))
         }
     }
 
     func testLowTrustUUIDOnly() {
         // UUID only recipients are recorded
-        let recipient = CommonGenerator.address(hasPhoneNumber: false)
         write { transaction in
-            createLowTrustRecipient(for: recipient, transaction: transaction)
-            XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
-        }
-    }
-
-    func testLowTrustFullyQualified() {
-        // Fully qualified addresses only record their UUID
-
-        let recipientAddress = CommonGenerator.address()
-        let recipientAddressWithoutUUID = SignalServiceAddress(phoneNumber: recipientAddress.phoneNumber!)
-
-        XCTAssertNil(recipientAddressWithoutUUID.uuid)
-
-        write { transaction in
-            let recipient = createLowTrustRecipient(for: recipientAddress, transaction: transaction)
-
-            // The impartial address is *not* automatically filled
-            // after marking the complete address as registered.
-            XCTAssertNil(recipientAddressWithoutUUID.uuid)
-
-            XCTAssertTrue(SignalRecipient.isRegisteredRecipient(
-                recipientAddress,
-                transaction: transaction
-            ))
-            XCTAssertFalse(SignalRecipient.isRegisteredRecipient(
-                recipientAddressWithoutUUID,
-                transaction: transaction
-            ))
-
-            XCTAssertEqual(recipient.recipientUUID, recipientAddress.uuidString)
-            XCTAssertNil(recipient.recipientPhoneNumber)
+            let serviceId = ServiceId(UUID())
+            _ = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: transaction)
+            XCTAssertNotNil(fetchRecipient(serviceId: serviceId, transaction: transaction))
         }
     }
 
     // MARK: - High Trust
 
-    func testHighTrustPhoneNumberOnly() {
-        // Phone number only recipients are recorded
-        let recipient = CommonGenerator.address(hasUUID: false)
-        write { transaction in
-            createHighTrustRecipient(for: recipient, transaction: transaction)
-            XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
-        }
-    }
-
     func testHighTrustUUIDOnly() {
         // UUID only recipients are recorded
-        let recipient = CommonGenerator.address(hasPhoneNumber: false)
         write { transaction in
-            createHighTrustRecipient(for: recipient, transaction: transaction)
-            XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
+            let serviceId = ServiceId(UUID())
+            _ = SignalRecipient.mergeHighTrust(serviceId: serviceId, phoneNumber: nil, transaction: transaction)
+            XCTAssertNotNil(fetchRecipient(serviceId: serviceId, transaction: transaction))
         }
     }
 
     func testHighTrustFullyQualified() {
         // Fully qualified addresses are recorded in their entirety
 
-        let recipientAddress = CommonGenerator.address()
-        let recipientAddressWithoutUUID = SignalServiceAddress(phoneNumber: recipientAddress.phoneNumber!)
+        let serviceId = ServiceId(UUID())
+        let phoneNumber = E164("+16505550101")!
 
-        XCTAssertNil(recipientAddressWithoutUUID.uuid)
+        let addressToBeUpdated = SignalServiceAddress(phoneNumber: phoneNumber.stringValue)
+        XCTAssertNil(addressToBeUpdated.serviceId)
 
         write { transaction in
-            let recipient = createHighTrustRecipient(for: recipientAddress, transaction: transaction)
+            let recipient = SignalRecipient.mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
+            XCTAssertEqual(recipient.recipientUUID, serviceId.uuidValue.uuidString)
+            XCTAssertEqual(recipient.recipientPhoneNumber, phoneNumber.stringValue)
 
-            // The impartial address is automatically filled
-            // after marking the complete address as registered.
-            XCTAssertEqual(recipientAddressWithoutUUID.uuid, recipientAddress.uuid)
+            // The incomplete address is automatically filled after marking the
+            // complete address as registered.
+            XCTAssertEqual(addressToBeUpdated.serviceId, serviceId)
 
-            XCTAssertTrue(SignalRecipient.isRegisteredRecipient(
-                recipientAddress,
-                transaction: transaction
-            ))
-            XCTAssertTrue(SignalRecipient.isRegisteredRecipient(
-                recipientAddressWithoutUUID,
-                transaction: transaction
-            ))
-
-            XCTAssertEqual(recipient.recipientUUID, recipientAddress.uuidString)
-            XCTAssertEqual(recipient.recipientPhoneNumber, recipientAddress.phoneNumber)
+            XCTAssertNotNil(fetchRecipient(serviceId: serviceId, transaction: transaction))
+            XCTAssertNotNil(fetchRecipient(phoneNumber: phoneNumber, transaction: transaction))
         }
     }
 
     func testHighTrustMergeWithInvestedPhoneNumber() {
-        // If there is a UUID only contact and a phone number only contact,
-        // and then we later find out they are the same user we must merge
-        // the two recipients together.
-        let uuidOnlyAddress = CommonGenerator.address(hasPhoneNumber: false)
-        let phoneNumberOnlyAddress = CommonGenerator.address(hasUUID: false)
-        let address = SignalServiceAddress(uuid: uuidOnlyAddress.uuid!, phoneNumber: phoneNumberOnlyAddress.phoneNumber!)
+        // If there is a UUID-only contact and a phone number-only contact, and if
+        // we later find out they are the same user, we must merge them.
+        let serviceId = ServiceId(UUID())
+        let phoneNumber = E164("+16505550101")!
 
         write { transaction in
-            let uuidRecipient = createHighTrustRecipient(for: uuidOnlyAddress, transaction: transaction)
-            let phoneNumberRecipient = createHighTrustRecipient(for: phoneNumberOnlyAddress, transaction: transaction)
-            let mergedRecipient = createHighTrustRecipient(for: address, transaction: transaction)
-
-            // TODO: test this more thoroughly. right now just confirming we prefer
-            // the UUID recipient when no other info is available
+            let uuidRecipient = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: transaction)
+            let phoneNumberRecipient = SignalRecipient.fetchOrCreate(phoneNumber: phoneNumber, transaction: transaction)
+            let mergedRecipient = SignalRecipient.mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
 
             XCTAssertEqual(mergedRecipient.uniqueId, uuidRecipient.uniqueId)
+            XCTAssertNil(SignalRecipient.anyFetch(uniqueId: phoneNumberRecipient.uniqueId, transaction: transaction))
         }
     }
 
     func testHighTrustPhoneNumberChange() {
-        let oldAddress = CommonGenerator.address()
+        let aci = ServiceId(UUID())
+        let oldPhoneNumber = E164("+16505550101")!
+        let newPhoneNumber = E164("+16505550102")!
+        let oldAddress = SignalServiceAddress(uuid: aci.uuidValue, e164: oldPhoneNumber)
 
         write { transaction in
             let oldThread = TSContactThread.getOrCreateThread(
@@ -173,17 +135,15 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 authedAccount: .implicit(),
                 transaction: transaction
             )
-            // TODO: It's weird to me that getOrBuild doesn't
-            // save the profile if it builds it. Maybe this is
-            // a bug?
             oldProfile.anyInsert(transaction: transaction)
 
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
-            createHighTrustRecipient(for: oldAddress, transaction: transaction)
 
-            let newAddress = SignalServiceAddress(uuid: oldAddress.uuid!, phoneNumber: CommonGenerator.e164())
-            createHighTrustRecipient(for: newAddress, transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: aci, phoneNumber: oldPhoneNumber, transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: aci, phoneNumber: newPhoneNumber, transaction: transaction)
+
+            let newAddress = SignalServiceAddress(uuid: aci.uuidValue, e164: newPhoneNumber)
 
             let newThread = TSContactThread.getOrCreateThread(
                 withContactAddress: newAddress,
@@ -228,7 +188,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
     }
 
     func testHighTrustUUIDChange() {
-        let oldAddress = CommonGenerator.address()
+        let oldAci = ServiceId(UUID())
+        let newAci = ServiceId(UUID())
+        let phoneNumber = E164("+16505550101")!
+        let oldAddress = SignalServiceAddress(uuid: oldAci.uuidValue, e164: phoneNumber)
 
         write { transaction in
             let oldThread = TSContactThread.getOrCreateThread(
@@ -249,17 +212,15 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 authedAccount: .implicit(),
                 transaction: transaction
             )
-            // TODO: It's weird to me that getOrBuild doesn't
-            // save the profile if it builds it. Maybe this is
-            // a bug?
             oldProfile.anyInsert(transaction: transaction)
 
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
-            createHighTrustRecipient(for: oldAddress, transaction: transaction)
 
-            let newAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: oldAddress.phoneNumber!)
-            createHighTrustRecipient(for: newAddress, transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: oldAci, phoneNumber: phoneNumber, transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: newAci, phoneNumber: phoneNumber, transaction: transaction)
+
+            let newAddress = SignalServiceAddress(uuid: newAci.uuidValue, e164: phoneNumber)
 
             let newThread = TSContactThread.getOrCreateThread(
                 withContactAddress: newAddress,
@@ -326,9 +287,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase1() {
         let uuid1 = UUID()
-        let phoneNumber1 = CommonGenerator.e164()
+        let phoneNumber1 = E164(CommonGenerator.e164())!
         let uuid2 = UUID()
-        let phoneNumber2 = CommonGenerator.e164()
+        let phoneNumber2 = E164(CommonGenerator.e164())!
 
         write { transaction in
             // There are TSGroupMember instances indicating that both users 1 & 2 are members of the same group.
@@ -336,39 +297,45 @@ class SignalRecipientTest: SSKBaseTestSwift {
             groupThreadFactory.memberAddressesBuilder = { return [] }
             let groupThread = groupThreadFactory.create(transaction: transaction)
             // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(address: SignalServiceAddress(uuid: uuid1,
-                                                                           phoneNumber: phoneNumber1),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember1 = TSGroupMember(
+                serviceId: ServiceId(uuid1),
+                phoneNumber: phoneNumber1.stringValue,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember1.anyInsert(transaction: transaction)
             // NOTE: This member has a uuid.
-            let groupMember2 = TSGroupMember(address: SignalServiceAddress(uuid: uuid2,
-                                                                           phoneNumber: phoneNumber2),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember2 = TSGroupMember(
+                serviceId: ServiceId(uuid2),
+                phoneNumber: phoneNumber2.stringValue,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember2.anyInsert(transaction: transaction)
 
             // We should have two group members: (u1, p1) and (u2, p2).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
-            TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid1,
-                                                                                       phoneNumber: phoneNumber1),
-                                              transaction: transaction)
-            TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid2,
-                                                                                       phoneNumber: phoneNumber2),
-                                              transaction: transaction)
+            TSContactThread.getOrCreateThread(
+                withContactAddress: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1.stringValue),
+                transaction: transaction
+            )
+            TSContactThread.getOrCreateThread(
+                withContactAddress: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2.stringValue),
+                transaction: transaction
+            )
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1), transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
 
             // uuid1 becomes associated with phoneNumber2.
-            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2), transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber2, transaction: transaction)
 
             // We should still have two group members: (u1, p2) and (u2, nil).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
@@ -393,8 +360,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase2() {
         let uuid1 = UUID()
-        let phoneNumber1 = CommonGenerator.e164()
-        let phoneNumber2 = CommonGenerator.e164()
+        let phoneNumber1 = E164(CommonGenerator.e164())!
+        let phoneNumber2 = E164(CommonGenerator.e164())!
 
         write { transaction in
             // There are TSGroupMember instances indicating that both users 1 & 2 are members of the same group.
@@ -402,37 +369,45 @@ class SignalRecipientTest: SSKBaseTestSwift {
             groupThreadFactory.memberAddressesBuilder = { return [] }
             let groupThread = groupThreadFactory.create(transaction: transaction)
             // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(address: SignalServiceAddress(uuid: uuid1,
-                                                                           phoneNumber: phoneNumber1),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember1 = TSGroupMember(
+                serviceId: ServiceId(uuid1),
+                phoneNumber: phoneNumber1.stringValue,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember1.anyInsert(transaction: transaction)
             // NOTE: This member has no uuid.
-            let groupMember2 = TSGroupMember(address: SignalServiceAddress(phoneNumber: phoneNumber2),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember2 = TSGroupMember(
+                serviceId: nil,
+                phoneNumber: phoneNumber2.stringValue,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember2.anyInsert(transaction: transaction)
 
             // We should have two group members: (u1, p1) and (nil, p2).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
-            TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid1,
-                                                                                       phoneNumber: phoneNumber1),
-                                              transaction: transaction)
-            TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(phoneNumber: phoneNumber2),
-                                              transaction: transaction)
+            TSContactThread.getOrCreateThread(
+                withContactAddress: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1.stringValue),
+                transaction: transaction
+            )
+            TSContactThread.getOrCreateThread(
+                withContactAddress: SignalServiceAddress(phoneNumber: phoneNumber2.stringValue),
+                transaction: transaction
+            )
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1), transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
 
             // uuid1 becomes associated with phoneNumber2.
-            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2), transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber2, transaction: transaction)
 
             // We should now have two group members: (u1, p2), (fake uuid, nil).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
@@ -457,9 +432,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase3() {
         let uuid1 = UUID()
-        let phoneNumber1 = CommonGenerator.e164()
+        let phoneNumber1 = E164(CommonGenerator.e164())!
         let uuid2 = UUID()
-        let phoneNumber2 = CommonGenerator.e164()
+        let phoneNumber2 = E164(CommonGenerator.e164())!
 
         write { transaction in
             // There are TSGroupMember instances indicating that both users 1 & 2 are members of the same group.
@@ -467,39 +442,45 @@ class SignalRecipientTest: SSKBaseTestSwift {
             groupThreadFactory.memberAddressesBuilder = { return [] }
             let groupThread = groupThreadFactory.create(transaction: transaction)
             // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(address: SignalServiceAddress(uuid: uuid1,
-                                                                           phoneNumber: phoneNumber1),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember1 = TSGroupMember(
+                serviceId: ServiceId(uuid1),
+                phoneNumber: phoneNumber1.stringValue,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember1.anyInsert(transaction: transaction)
             // NOTE: This member has a phone number.
-            let groupMember2 = TSGroupMember(address: SignalServiceAddress(uuid: uuid2,
-                                                                           phoneNumber: phoneNumber2),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember2 = TSGroupMember(
+                serviceId: ServiceId(uuid2),
+                phoneNumber: phoneNumber2.stringValue,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember2.anyInsert(transaction: transaction)
 
             // We should have two group members: (u1, p1) and (u2, p2).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
-            TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid1,
-                                                                                       phoneNumber: phoneNumber1),
-                                              transaction: transaction)
-            TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid2,
-                                                                                       phoneNumber: phoneNumber2),
-                                              transaction: transaction)
+            TSContactThread.getOrCreateThread(
+                withContactAddress: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1.stringValue),
+                transaction: transaction
+            )
+            TSContactThread.getOrCreateThread(
+                withContactAddress: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2.stringValue),
+                transaction: transaction
+            )
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1), transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
 
             // uuid2 becomes associated with phoneNumber1.
-            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1), transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid2), phoneNumber: phoneNumber1, transaction: transaction)
 
             // We should still have two group members: (u2, p1) and (u1, nil).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
@@ -524,7 +505,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase4() {
         let uuid1 = UUID()
-        let phoneNumber1 = CommonGenerator.e164()
+        let phoneNumber1 = E164(CommonGenerator.e164())!
         let uuid2 = UUID()
 
         write { transaction in
@@ -533,37 +514,45 @@ class SignalRecipientTest: SSKBaseTestSwift {
             groupThreadFactory.memberAddressesBuilder = { return [] }
             let groupThread = groupThreadFactory.create(transaction: transaction)
             // We construct the TSGroupMember members using specific addresses/mappings.
-            let groupMember1 = TSGroupMember(address: SignalServiceAddress(uuid: uuid1,
-                                                                           phoneNumber: phoneNumber1),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember1 = TSGroupMember(
+                serviceId: ServiceId(uuid1),
+                phoneNumber: phoneNumber1.stringValue,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember1.anyInsert(transaction: transaction)
             // NOTE: This member has no phone number.
-            let groupMember2 = TSGroupMember(address: SignalServiceAddress(uuid: uuid2),
-                                             groupThreadId: groupThread.uniqueId,
-                                             lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp())
+            let groupMember2 = TSGroupMember(
+                serviceId: ServiceId(uuid2),
+                phoneNumber: nil,
+                groupThreadId: groupThread.uniqueId,
+                lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+            )
             groupMember2.anyInsert(transaction: transaction)
 
             // We should have two group members: (u1, p1) and (u2, nil).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
-            TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid1,
-                                                                                       phoneNumber: phoneNumber1),
-                                              transaction: transaction)
-            TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid2),
-                                              transaction: transaction)
+            TSContactThread.getOrCreateThread(
+                withContactAddress: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1.stringValue),
+                transaction: transaction
+            )
+            TSContactThread.getOrCreateThread(
+                withContactAddress: SignalServiceAddress(uuid: uuid2),
+                transaction: transaction
+            )
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1), transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid1), phoneNumber: phoneNumber1, transaction: transaction)
 
             // uuid2 becomes associated with phoneNumber1.
-            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1), transaction: transaction)
+            SignalRecipient.mergeHighTrust(serviceId: ServiceId(uuid2), phoneNumber: phoneNumber1, transaction: transaction)
 
             // We should now have two group members: (u2, p1), (fake uuid, nil).
-            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            XCTAssertEqual(2, GroupMemberDataStoreImpl().sortedGroupMembers(in: groupThread.uniqueId, transaction: transaction.asV2Read).count)
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
@@ -571,20 +560,19 @@ class SignalRecipientTest: SSKBaseTestSwift {
     }
 
     func testUnregisteredTimestamps() {
-        let address = CommonGenerator.address()
-
+        let serviceId = ServiceId(UUID())
         write {
-            let registeredRecipient = createHighTrustRecipient(for: address, transaction: $0)
-            XCTAssertNil(registeredRecipient.unregisteredAtTimestamp)
+            let recipient = SignalRecipient.fetchOrCreate(serviceId: serviceId, transaction: $0)
+            XCTAssertNotNil(recipient.unregisteredAtTimestamp)
 
-            SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: $0)
-                .markAsUnregistered(transaction: $0)
+            recipient.markAsRegistered(transaction: $0)
+            XCTAssertNil(fetchRecipient(serviceId: serviceId, transaction: $0)!.unregisteredAtTimestamp)
 
-            let unregisteredRecipient = AnySignalRecipientFinder().signalRecipient(for: address, transaction: $0)
-            XCTAssert(unregisteredRecipient!.unregisteredAtTimestamp!.uint64Value > 0)
+            recipient.markAsUnregistered(transaction: $0)
+            XCTAssertGreaterThan(fetchRecipient(serviceId: serviceId, transaction: $0)!.unregisteredAtTimestamp!.doubleValue, 0)
 
-            let reregisteredRecipient = createHighTrustRecipient(for: address, transaction: $0)
-            XCTAssertNil(reregisteredRecipient.unregisteredAtTimestamp)
+            recipient.markAsRegistered(transaction: $0)
+            XCTAssertNil(fetchRecipient(serviceId: serviceId, transaction: $0)!.unregisteredAtTimestamp)
         }
     }
 
@@ -610,11 +598,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         ]
         write { transaction in
             for testCase in testCases {
-                let recipient = SignalRecipient.fetchOrCreate(
-                    for: CommonGenerator.address(),
-                    trustLevel: .low,
-                    transaction: transaction
-                )
+                let recipient = SignalRecipient.fetchOrCreate(serviceId: ServiceId(UUID()), transaction: transaction)
                 if !testCase.initialDeviceIds.isEmpty {
                     recipient.anyUpdate(transaction: transaction) {
                         $0.addDevices(Set(testCase.initialDeviceIds.map { NSNumber(value: $0) }), source: .local)
@@ -628,17 +612,11 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
     // MARK: - Helpers
 
-    @discardableResult
-    private func createLowTrustRecipient(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) -> SignalRecipient {
-        let result = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
-        result.markAsRegistered(transaction: transaction)
-        return result
+    private func fetchRecipient(serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
+        SignalRecipient.get(address: SignalServiceAddress(serviceId), mustHaveDevices: false, transaction: transaction)
     }
 
-    @discardableResult
-    private func createHighTrustRecipient(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) -> SignalRecipient {
-        let result = SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
-        result.markAsRegistered(transaction: transaction)
-        return result
+    private func fetchRecipient(phoneNumber: E164, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
+        SignalRecipient.get(address: SignalServiceAddress(phoneNumber), mustHaveDevices: false, transaction: transaction)
     }
 }

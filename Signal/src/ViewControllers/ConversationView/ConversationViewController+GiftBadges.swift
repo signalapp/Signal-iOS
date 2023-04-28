@@ -112,11 +112,15 @@ extension ConversationViewController {
         let shortName = self.databaseStorage.read { transaction in
             self.contactsManager.shortDisplayName(for: authorAddress, transaction: transaction)
         }
-        return BadgeThanksSheet(badge: profileBadge, type: .gift(
-            shortName: shortName,
-            notNowAction: { [weak self] in self?.showRedeemBadgeLaterText() },
-            incomingMessage: incomingMessage
-        ))
+        return BadgeThanksSheet(
+            newBadge: profileBadge,
+            newBadgeType: .gift(
+                shortName: shortName,
+                notNowAction: { [weak self] in self?.showRedeemBadgeLaterText() },
+                incomingMessage: incomingMessage
+            ),
+            oldBadgesSnapshot: BadgeThanksSheet.currentProfileBadgesSnapshot()
+        )
     }
 
     private func showRedeemBadgeLaterText() {

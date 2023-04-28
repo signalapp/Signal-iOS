@@ -9,7 +9,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalUI/SignalUI-Swift.h>
-#import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN

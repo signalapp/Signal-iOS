@@ -40,7 +40,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
             imageView.autoSetDimension(.height, toSize: 96)
 
             let titleLabel = UILabel()
-            titleLabel.font = .ows_dynamicTypeHeadline
+            titleLabel.font = .dynamicTypeHeadline
             titleLabel.text = "Proxy Server"
             titleLabel.textColor = Theme.primaryTextColor
             titleLabel.textAlignment = .center
@@ -114,7 +114,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
 
     private func button(title: String, titleColor: UIColor, touchHandler: @escaping () -> Void) -> OWSFlatButton {
         let flatButton = OWSFlatButton()
-        flatButton.setTitle(title: title, font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold, titleColor: titleColor)
+        flatButton.setTitle(title: title, font: UIFont.dynamicTypeBodyClamped.semibold(), titleColor: titleColor)
         flatButton.setBackgroundColors(upColor: tableViewController.cellBackgroundColor)
         flatButton.setPressedBlock(touchHandler)
         flatButton.useDefaultCornerRadius()

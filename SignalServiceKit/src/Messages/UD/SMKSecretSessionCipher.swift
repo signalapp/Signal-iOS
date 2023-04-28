@@ -18,7 +18,7 @@ public struct SecretSessionKnownSenderError: Error {
     public let underlyingError: Error
 
     init(messageContent: UnidentifiedSenderMessageContent, underlyingError: Error) {
-        self.senderAddress = SignalServiceAddress(messageContent.senderCertificate.sender, trustLevel: .low)
+        self.senderAddress = SignalServiceAddress(messageContent.senderCertificate.sender)
         self.senderDeviceId = messageContent.senderCertificate.sender.deviceId
         self.cipherType = messageContent.messageType
         self.groupId = messageContent.groupId.map { Data($0) }
@@ -63,7 +63,9 @@ public enum SMKMessageType: Int {
 public class SMKDecryptResult: NSObject {
 
     @objc
-    public let senderAddress: SignalServiceAddress
+    public let senderServiceId: ServiceIdObjC
+    @objc
+    public let senderE164: String?
     @objc
     public let senderDeviceId: Int
     @objc
@@ -71,11 +73,15 @@ public class SMKDecryptResult: NSObject {
     @objc
     public let messageType: SMKMessageType
 
-    init(senderAddress: SignalServiceAddress,
-         senderDeviceId: Int,
-         paddedPayload: Data,
-         messageType: SMKMessageType) {
-        self.senderAddress = senderAddress
+    init(
+        senderServiceId: ServiceIdObjC,
+        senderE164: String?,
+        senderDeviceId: Int,
+        paddedPayload: Data,
+        messageType: SMKMessageType
+    ) {
+        self.senderServiceId = senderServiceId
+        self.senderE164 = senderE164
         self.senderDeviceId = senderDeviceId
         self.paddedPayload = paddedPayload
         self.messageType = messageType
@@ -91,8 +97,8 @@ fileprivate extension ProtocolAddress {
 }
 
 fileprivate extension SignalServiceAddress {
-    convenience init(_ address: SealedSenderAddress, trustLevel: SignalRecipientTrustLevel) {
-        self.init(uuid: UUID(uuidString: address.uuidString), phoneNumber: address.e164, trustLevel: trustLevel)
+    convenience init(_ address: SealedSenderAddress) {
+        self.init(uuid: UUID(uuidString: address.uuidString), phoneNumber: address.e164)
     }
 }
 
@@ -143,7 +149,7 @@ public class SMKSecretSessionCipher: NSObject {
     // MARK: - Public
 
     public func encryptMessage(
-        recipient: SignalServiceAddress,
+        for serviceId: ServiceId,
         deviceId: Int32,
         paddedPlaintext: Data,
         contentHint: UnidentifiedSenderMessageContent.ContentHint,
@@ -155,7 +161,7 @@ public class SMKSecretSessionCipher: NSObject {
         guard deviceId > 0 else {
             throw SMKError.assertionError(description: "\(logTag) invalid deviceId")
         }
-        let recipientAddress = try ProtocolAddress(from: recipient, deviceId: UInt32(bitPattern: deviceId))
+        let recipientAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: UInt32(bitPattern: deviceId))
 
         let ciphertextMessage = try signalEncrypt(
             message: paddedPlaintext,
@@ -228,10 +234,8 @@ public class SMKSecretSessionCipher: NSObject {
                                                                   context: context)
 
         let sender = messageContent.senderCertificate.sender
-        // Low trust because we haven't verified the certificate yet.
-        let senderAddress = SignalServiceAddress(sender, trustLevel: .low)
 
-        guard !senderAddress.isLocalAddress || sender.deviceId != TSAccountManager.shared.storedDeviceId() else {
+        guard !SignalServiceAddress(sender).isLocalAddress || sender.deviceId != tsAccountManager.storedDeviceId else {
             Logger.info("Discarding self-sent message")
             throw SMKSecretSessionCipherError.selfSentMessage
         }
@@ -252,10 +256,16 @@ public class SMKSecretSessionCipher: NSObject {
             guard sender.deviceId <= Int32.max else {
                 throw SMKError.assertionError(description: "\(logTag) Invalid senderDeviceId.")
             }
-            return SMKDecryptResult(senderAddress: SignalServiceAddress(sender, trustLevel: .high),
-                                    senderDeviceId: Int(sender.deviceId),
-                                    paddedPayload: Data(paddedMessagePlaintext),
-                                    messageType: SMKMessageType(messageContent.messageType))
+            guard let senderServiceId = ServiceId(uuidString: sender.uuidString) else {
+                throw SMKError.assertionError(description: "\(logTag) Invalid senderServiceId.")
+            }
+            return SMKDecryptResult(
+                senderServiceId: ServiceIdObjC(senderServiceId),
+                senderE164: sender.e164,
+                senderDeviceId: Int(sender.deviceId),
+                paddedPayload: Data(paddedMessagePlaintext),
+                messageType: SMKMessageType(messageContent.messageType)
+            )
         } catch {
             throw SecretSessionKnownSenderError(messageContent: messageContent,
                                                 underlyingError: error)
@@ -318,30 +328,5 @@ public class SMKSecretSessionCipher: NSObject {
                 description: "\(logTag) Not prepared to handle this message type: \(unknownType.rawValue)")
         }
         return Data(plaintextData)
-    }
-}
-
-// MARK: - Internal for testing
-
-extension SMKSecretSessionCipher {
-
-    // Only allow nil contexts for testing
-    func encryptMessage(
-        recipient: SignalServiceAddress,
-        deviceId: Int32,
-        paddedPlaintext: Data,
-        contentHint: UnidentifiedSenderMessageContent.ContentHint = .default,
-        groupId: Data? = nil,
-        senderCertificate: SenderCertificate,
-        protocolContext: StoreContext? = nil
-    ) throws -> Data {
-        try encryptMessage(
-            recipient: recipient,
-            deviceId: deviceId,
-            paddedPlaintext: paddedPlaintext,
-            contentHint: contentHint,
-            groupId: groupId,
-            senderCertificate: senderCertificate,
-            protocolContext: protocolContext ?? NullContext())
     }
 }

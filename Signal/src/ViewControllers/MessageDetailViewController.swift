@@ -396,7 +396,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
                 let label = UILabel()
                 label.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-                label.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+                label.font = UIFont.dynamicTypeBodyClamped.semibold()
                 label.text = sectionTitle
 
                 headerView.addSubview(label)
@@ -470,7 +470,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         let label = CVLabel()
         label.textAlignment = .right
         let labelConfig = CVLabelConfig(text: text,
-                                        font: .ows_dynamicTypeFootnoteClamped,
+                                        font: .dynamicTypeFootnoteClamped,
                                         textColor: Theme.ternaryTextColor)
         labelConfig.applyForRendering(label: label)
         let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: .greatestFiniteMagnitude)
@@ -502,7 +502,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private static func valueLabelAttributedText(name: String, value: String) -> NSAttributedString {
         .composed(of: [
-            name.styled(with: .font(UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold)),
+            name.styled(with: .font(UIFont.dynamicTypeFootnoteClamped.semibold())),
             " ",
             value
         ])
@@ -511,7 +511,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private static func buildValueLabel(name: String, value: String) -> UILabel {
         let label = UILabel()
         label.textColor = Theme.primaryTextColor
-        label.font = .ows_dynamicTypeFootnoteClamped
+        label.font = .dynamicTypeFootnoteClamped
         label.attributedText = valueLabelAttributedText(name: name, value: value)
         return label
     }

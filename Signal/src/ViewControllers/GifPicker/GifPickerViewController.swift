@@ -337,7 +337,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         let label = UILabel()
         label.text = text
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_semiboldFont(withSize: 20)
+        label.font = UIFont.semiboldFont(ofSize: 20)
         label.textAlignment = .center
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

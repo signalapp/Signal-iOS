@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
+import SignalServiceKit
+
 @objc
 public protocol OWSProximityMonitoringManager: AnyObject {
     func add(lifetime: AnyObject)
@@ -11,90 +14,83 @@ public protocol OWSProximityMonitoringManager: AnyObject {
 
 @objc
 public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoringManager {
-    var lifetimes: [Weak<AnyObject>] = []
-
-    public override init() {
-        super.init()
-
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
-            self.setup()
-        }
+    private struct State {
+        var didAddObserver = false
+        var lifetimes = [Weak<AnyObject>]()
     }
-
-    // MARK: 
-
-    var device: UIDevice {
-        return UIDevice.current
-    }
-
-    // MARK: 
+    private var state = AtomicValue(State(), lock: AtomicLock())
 
     @objc
     public func add(lifetime: AnyObject) {
-        objc_sync_enter(self)
-
-        if !lifetimes.contains(where: { $0.value === lifetime }) {
-            lifetimes.append(Weak(value: lifetime))
+        guard !CurrentAppContext().isNSE else {
+            return
         }
-        reconcile()
-
-        objc_sync_exit(self)
+        updateState { state in
+            if state.lifetimes.contains(where: { $0.value === lifetime }) {
+                return
+            }
+            state.lifetimes.append(Weak(value: lifetime))
+        }
     }
 
     @objc
     public func remove(lifetime: AnyObject) {
-        objc_sync_enter(self)
-
-        lifetimes = lifetimes.filter { $0.value !== lifetime }
-        reconcile()
-
-        objc_sync_exit(self)
-    }
-
-    @objc
-    public func setup() {
         guard !CurrentAppContext().isNSE else {
             return
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: UIDevice.proximityStateDidChangeNotification, object: nil)
+        updateState { state in
+            state.lifetimes = state.lifetimes.filter { $0.value !== lifetime }
+        }
+    }
+
+    private func updateState(block: (inout State) -> Void) {
+        state.update { mutableState in
+            let oldEnabled = !mutableState.lifetimes.isEmpty
+            block(&mutableState)
+            mutableState.lifetimes = mutableState.lifetimes.filter { $0.value !== nil }
+            let newEnabled = !mutableState.lifetimes.isEmpty
+
+            if oldEnabled == newEnabled {
+                return
+            }
+            didChangeEnabled(newValue: newEnabled, state: &mutableState)
+        }
     }
 
     @objc
-    func proximitySensorStateDidChange(notification: Notification) {
+    private func proximitySensorStateDidChange(notification: Notification) {
         Logger.debug("")
-        // This is crazy, but if we disable `device.isProximityMonitoringEnabled` while
-        // `device.proximityState` is true (while the device is held to the ear)
-        // then `device.proximityState` remains true, even after we bring the phone
-        // away from the ear and re-enable monitoring.
+        // This is crazy, but if we disable `device.isProximityMonitoringEnabled`
+        // while `device.proximityState` is true (while the device is held to the
+        // ear) then `device.proximityState` remains true, even after we bring the
+        // phone away from the ear and re-enable monitoring.
         //
-        // To resolve this, we wait to disable proximity monitoring until `proximityState`
-        // is false.
-        if self.device.proximityState {
+        // To resolve this, we wait to disable proximity monitoring until
+        // `proximityState` is false.
+        if UIDevice.current.proximityState {
             self.add(lifetime: self)
         } else {
             self.remove(lifetime: self)
         }
     }
 
-    func reconcile() {
-        guard !CurrentAppContext().isNSE else {
-            return
+    private func didChangeEnabled(newValue: Bool, state: inout State) {
+        Logger.debug("Proximity monitoring changed to \(newValue)")
+
+        if newValue, !state.didAddObserver {
+            state.didAddObserver = true
+            DispatchQueue.main.async {
+                NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(self.proximitySensorStateDidChange(notification:)),
+                    name: UIDevice.proximityStateDidChangeNotification,
+                    object: nil
+                )
+            }
         }
-        lifetimes = lifetimes.filter { $0.value != nil }
-        if lifetimes.isEmpty {
-            DispatchQueue.main.async {
-                if self.device.isProximityMonitoringEnabled {
-                    Logger.debug("disabling proximity monitoring")
-                    self.device.isProximityMonitoringEnabled = false
-                }
-            }
-        } else {
-            let lifetimes = self.lifetimes
-            DispatchQueue.main.async {
-                Logger.debug("willEnable proximity monitoring for lifetimes: \(lifetimes), proximityState: \(self.device.proximityState)")
-                self.device.isProximityMonitoringEnabled = true
-                Logger.debug("didEnable proximity monitoring for lifetimes: \(lifetimes), proximityState: \(self.device.proximityState)")
-            }
+
+        DispatchQueue.main.async {
+            UIDevice.current.isProximityMonitoringEnabled = newValue
         }
     }
 }

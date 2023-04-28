@@ -55,7 +55,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
     private func buildBottomView() {
         let nextButton = OWSFlatButton.insetButton(
             title: CommonStrings.nextButton,
-            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            font: UIFont.dynamicTypeBody.semibold(),
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
@@ -105,7 +105,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         copyToClipboardLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD",
                                                       comment: "Label for the 'copy to clipboard' button in the 'view payments passphrase' views.")
         copyToClipboardLabel.textColor = .ows_accentBlue
-        copyToClipboardLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        copyToClipboardLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
 
         let copyToClipboardButton = OWSLayerView.pillView()
         copyToClipboardButton.backgroundColor = Theme.secondaryBackgroundColor
@@ -124,7 +124,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION",
                                                   comment: "Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings.")
-        explanationLabel.font = .ows_dynamicTypeBody2Clamped
+        explanationLabel.font = .dynamicTypeBody2Clamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0
@@ -144,7 +144,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2",
                                                   comment: "Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings.")
-        explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0

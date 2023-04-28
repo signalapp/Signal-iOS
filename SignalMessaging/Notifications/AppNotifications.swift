@@ -175,7 +175,9 @@ let kAudioNotificationsThrottleInterval: TimeInterval = 5
 
 extension UserNotificationPresenter {
     var hasReceivedSyncMessageRecently: Bool {
-        return OWSDeviceManager.shared().hasReceivedSyncMessage(inLastSeconds: 60)
+        return DependenciesBridge.shared.deviceManager.hasReceivedSyncMessage(
+            inLastSeconds: 60
+        )
     }
 }
 
@@ -505,6 +507,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             // Always notify for replies to group stories you sent
             if storyAuthorAddress.isLocalAddress { return true }
 
+            // Always notify if you have been @mentioned
+            if
+                let mentionedUuids = incomingMessage.bodyRanges?.mentions.values,
+                let localUuid = tsAccountManager.localUuid,
+                mentionedUuids.contains(where: { $0 == localUuid }) {
+                return true
+            }
+
             // Notify people who did not author the story if they've previously replied to it
             return InteractionFinder.hasLocalUserReplied(
                 storyTimestamp: storyTimestamp,
@@ -584,14 +594,18 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
 
-        let notificationBody: String?
-        switch previewType {
-        case .noNameNoPreview, .nameNoPreview:
-            notificationBody = NotificationStrings.genericIncomingMessageNotification
-        case .namePreview:
-            notificationBody = messageText
-        }
-        assert((notificationBody ?? notificationTitle) != nil)
+        let notificationBody: String = {
+            if thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
+                return NotificationStrings.incomingMessageRequestNotification
+            }
+
+            switch previewType {
+            case .noNameNoPreview, .nameNoPreview:
+                return NotificationStrings.genericIncomingMessageNotification
+            case .namePreview:
+                return messageText
+            }
+        }()
 
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
@@ -637,7 +651,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             let sound = self.requestSound(thread: thread)
             self.presenter.notify(category: category,
                                 title: notificationTitle,
-                                body: notificationBody ?? "",
+                                body: notificationBody,
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
                                 interaction: interaction,
@@ -677,6 +691,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let notificationBody: String
         if let bodyDescription: String = {
+            // TODO[TextFormatting]: apply styles for notification
             if let messageBody = message.plaintextBody(with: transaction.unwrapGrdbRead), !messageBody.isEmpty {
                 return messageBody
             } else {
@@ -896,6 +911,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .noNameNoPreview, .nameNoPreview:
             notificationBody = NotificationStrings.genericIncomingMessageNotification
         case .namePreview:
+            // TODO[TextFormatting]: apply styles (except spoiler which gets a special treatment in notifications)
             notificationBody = previewableInteraction.previewText(transaction: transaction)
         }
 

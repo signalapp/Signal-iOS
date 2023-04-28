@@ -316,7 +316,8 @@ open class MentionTextView: OWSTextView {
 
         if range.length > 0 {
             // Locate any mentions in the edited range.
-            textStorage.enumerateMentions(in: range) { mention, subrange, _ in
+            // TODO[TextFormatting]: update styles as needed
+            textStorage.enumerateMentionsAndStyles(in: range) { mention, _, subrange, _ in
                 guard let mention = mention else { return }
 
                 // Get the full range of the mention, we may only be editing a part of it.
@@ -455,7 +456,7 @@ open class MentionTextView: OWSTextView {
     public func updateTextContainerInset() {
         var newTextContainerInset = defaultTextContainerInset
 
-        let currentFont = font ?? UIFont.ows_dynamicTypeBody
+        let currentFont = font ?? UIFont.dynamicTypeBody
         let systemDefaultFont = UIFont.preferredFont(
             forTextStyle: .body,
             compatibleWith: .init(preferredContentSizeCategory: .large)
@@ -530,7 +531,8 @@ extension MentionTextView {
 
         let messageBody = MessageBody(attributedString: attributedString)
 
-        if messageBody.hasRanges, let encodedMessageBody = try? NSKeyedArchiver.archivedData(withRootObject: messageBody, requiringSecureCoding: true) {
+        // TODO[TextFormatting]: apply text styles to copy pasted things?
+        if messageBody.hasMentions, let encodedMessageBody = try? NSKeyedArchiver.archivedData(withRootObject: messageBody, requiringSecureCoding: true) {
             UIPasteboard.general.setItems([[Self.pasteboardType: encodedMessageBody]], options: [.localOnly: true])
         } else {
             UIPasteboard.general.setItems([], options: [:])

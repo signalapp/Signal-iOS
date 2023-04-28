@@ -246,13 +246,16 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             )
         }
 
+        let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
+
         let vc = CreditOrDebitCardDonationViewController(
             donationAmount: amount,
             donationMode: cardDonationMode
         ) { [weak self] in
             self?.didCompleteDonation(
                 badge: badge,
-                thanksSheetType: donateMode.forBadgeThanksSheet
+                thanksSheetType: donateMode.forBadgeThanksSheet,
+                oldBadgesSnapshot: badgesSnapshot
             )
         }
         navigationController.pushViewController(vc, animated: true)
@@ -377,6 +380,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         switch monthly.lastReceiptRedemptionFailure {
         case .none:
+            let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
                 promise: firstly(on: DispatchQueue.sharedUserInitiated) {
@@ -397,7 +401,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             ).done(on: DispatchQueue.main) {
                 self.didCompleteDonation(
                     badge: selectedSubscriptionLevel.badge,
-                    thanksSheetType: .subscription
+                    thanksSheetType: .subscription,
+                    oldBadgesSnapshot: badgesSnapshot
                 )
             }.catch(on: DispatchQueue.main) { [weak self] error in
                 self?.didFailDonation(
@@ -517,11 +522,16 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
     internal func didCompleteDonation(
         badge: ProfileBadge,
-        thanksSheetType: BadgeThanksSheet.BadgeType
+        thanksSheetType: BadgeThanksSheet.BadgeType,
+        oldBadgesSnapshot: ProfileBadgesSnapshot
     ) {
         onFinished(.completedDonation(
             donateSheet: self,
-            badgeThanksSheet: BadgeThanksSheet(badge: badge, type: thanksSheetType)
+            badgeThanksSheet: BadgeThanksSheet(
+                newBadge: badge,
+                newBadgeType: thanksSheetType,
+                oldBadgesSnapshot: oldBadgesSnapshot
+            )
         ))
     }
 
@@ -679,7 +689,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         databaseStorage.read { [weak self] transaction in
             self?.avatarView.update(transaction) { config in
-                guard let address = tsAccountManager.localAddress(with: transaction) else {
+                guard let address = self?.tsAccountManager.localAddress(with: transaction) else {
                     return
                 }
                 config.dataSource = .address(address)
@@ -905,7 +915,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         field.layer.cornerRadius = Self.cornerRadius
         field.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
-        field.font = .ows_dynamicTypeBodyClamped
+        field.font = .dynamicTypeBodyClamped
 
         let tap = UITapGestureRecognizer(
             target: self,
@@ -924,7 +934,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         button.dimsWhenDisabled = true
         button.layer.cornerRadius = 8
         button.backgroundColor = .ows_accentBlue
-        button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        button.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
         button.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
         return button
     }()
@@ -984,7 +994,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 )
                 button.setTitle(
                     title: DonationUtilities.format(money: amount),
-                    font: .ows_regularFont(withSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20),
+                    font: .regularFont(ofSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20),
                     titleColor: Theme.primaryTextColor
                 )
                 button.autoSetDimension(.height, toSize: 52, relation: .greaterThanOrEqual)
@@ -1143,7 +1153,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     self?.didTapToUpdateMonthlyDonation()
                 }
                 updateButton.backgroundColor = .ows_accentBlue
-                updateButton.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+                updateButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
                 updateButton.isEnabled = {
                     if currentSubscription.amount.currencyCode != monthly.selectedCurrencyCode {
                         return true
@@ -1174,7 +1184,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             }
             continueButton.layer.cornerRadius = 8
             continueButton.backgroundColor = .ows_accentBlue
-            continueButton.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+            continueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
 
             buttons.append(continueButton)
         }

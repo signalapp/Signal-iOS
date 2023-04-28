@@ -92,7 +92,7 @@ public class RESTSessionManager: NSObject {
             switch response {
             case .deregistered:
                 Logger.warn("AmIDeregistered response says we are deregistered, marking as such.")
-                tsAccountManager.setIsDeregistered(true)
+                tsAccountManager.isDeregistered = true
             case .notDeregistered:
                 Logger.info("AmIDeregistered response says not deregistered; account probably disabled. Doing nothing.")
             case .none, .unexpectedError:

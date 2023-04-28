@@ -9,6 +9,13 @@ import sys
 ENV_NAME = "SIGNAL_IOS_DSYMS"
 
 
+def error_and_die(to_log):
+    print(file=sys.stderr)
+    print(to_log, file=sys.stderr)
+    print(file=sys.stderr)
+    sys.exit(1)
+
+
 def run(args):
     return subprocess.run(
         args, capture_output=True, check=True, encoding="utf8"
@@ -38,14 +45,16 @@ def parse_args():
     return parser.parse_args()
 
 
-def get_version(path):
-    with open(path, "r") as file:
-        content = file.read()
+def parse_json_v2(path):
+    # The new format has a second JSON payload.
+    with open(path, "rb") as file:
+        next(file)
+        return json.load(file)
 
-    _, _, remainder = content.partition("\n")
+
+def get_version(path):
     try:
-        # The new format has a second JSON payload.
-        json.loads(remainder)
+        parse_json_v2(path)
         return 2
     except json.decoder.JSONDecodeError:
         return 1
@@ -71,11 +80,9 @@ def symbolicate_v2(xcode_path, path, output_path):
     # This directory is searched recursively for .dSYM files.
     symbols_path = os.getenv(ENV_NAME)
     if symbols_path is None or not os.path.exists(symbols_path):
-        print(
-            f"\nThe {ENV_NAME} environment variable should be set to a directory containing .dSYM files.\n",
-            file=sys.stderr,
+        error_and_die(
+            f"The {ENV_NAME} environment variable should be set to a directory containing .dSYM files."
         )
-        exit(1)
     args = [
         "python3",
         script_path,
@@ -87,6 +94,47 @@ def symbolicate_v2(xcode_path, path, output_path):
         path,
     ]
     subprocess.run(args, check=True)
+
+
+def omit(d, key_to_remove):
+    return {key: value for key, value in d.items() if key != key_to_remove}
+
+
+def ensure_symbolication_happened_v2(path, output_path):
+    def equal(a, b):
+        """
+        Like `==` but ignores changes to `symbolLocation` because those can
+        change even if symbolication didn't happen.
+        """
+        if not isinstance(a, type(b)):
+            return False
+        if isinstance(a, dict):
+            cleaned_a = omit(a, "symbolLocation")
+            cleaned_b = omit(b, "symbolLocation")
+            if len(cleaned_a) != len(cleaned_b):
+                return False
+            for key, a_value in cleaned_a.items():
+                if key not in cleaned_b:
+                    return False
+                b_value = cleaned_b[key]
+                if not equal(a_value, b_value):
+                    return False
+            return True
+        if isinstance(a, list):
+            if len(a) != len(b):
+                return False
+            for a_item, b_item in zip(a, b):
+                if not equal(a_item, b_item):
+                    return False
+            return True
+        return a == b
+
+    original = parse_json_v2(path)
+    allegedly_symbolicated = parse_json_v2(output_path)
+    if equal(original, allegedly_symbolicated):
+        error_and_die(
+            "Nothing happened when you symbolicated. Do you have the version downloaded in the right place? Did you extract the relevant dSYMs.zip?"
+        )
 
 
 def main():
@@ -101,6 +149,7 @@ def main():
         output_path = base + ".symbolicated" + ext
         if version == 2:
             symbolicate_v2(xcode_path, path, output_path)
+            ensure_symbolication_happened_v2(path, output_path)
         else:
             symbolicate_v1(xcode_path, path, output_path)
         if ns.open:

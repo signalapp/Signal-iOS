@@ -38,7 +38,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
     private lazy var emptyStateView: UIView = {
         let label = UILabel()
-        label.font = .ows_dynamicTypeBody
+        label.font = .dynamicTypeBody
         label.textColor = .ows_gray45
         label.textAlignment = .center
         label.text = NSLocalizedString("STORIES_NO_REPLIES_YET", comment: "Indicates that this story has no replies yet")
@@ -343,7 +343,7 @@ extension StoryGroupReplyViewController: InputAccessoryViewPlaceholderDelegate {
                 bottomBar.removeAllSubviews()
 
                 let label = UILabel()
-                label.font = .ows_dynamicTypeSubheadline
+                label.font = .dynamicTypeSubheadline
                 label.text = NSLocalizedString(
                     "STORIES_GROUP_REPLY_NOT_A_MEMBER",
                     comment: "Text indicating you can't reply to a group story because you're not a member of the group"

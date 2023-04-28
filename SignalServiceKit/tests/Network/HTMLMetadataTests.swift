@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class HTMLMetadataTests: SSKBaseTestSwift {
+class HTMLMetadataTests: XCTestCase {
 
     func testEmptyBody() {
         let empty = HTMLMetadata.construct(parsing: "")

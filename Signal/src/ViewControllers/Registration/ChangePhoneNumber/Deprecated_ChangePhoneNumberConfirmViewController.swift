@@ -76,7 +76,7 @@ class Deprecated_ChangePhoneNumberConfirmViewController: OWSViewController {
                                                 forSubstring: newPhoneNumberFormatted)
 
         let descriptionLabel = UILabel()
-        descriptionLabel.font = .ows_dynamicTypeBody
+        descriptionLabel.font = .dynamicTypeBody
         descriptionLabel.textColor = Theme.secondaryTextAndIconColor
         descriptionLabel.attributedText = descriptionAttributedText
         descriptionLabel.textAlignment = .center
@@ -84,7 +84,7 @@ class Deprecated_ChangePhoneNumberConfirmViewController: OWSViewController {
         descriptionLabel.lineBreakMode = .byWordWrapping
 
         let phoneNumberLabel = UILabel()
-        phoneNumberLabel.font = .ows_dynamicTypeTitle2.ows_semibold
+        phoneNumberLabel.font = .dynamicTypeTitle2.semibold()
         phoneNumberLabel.textColor = Theme.primaryTextColor
         phoneNumberLabel.text = newPhoneNumberFormatted
         phoneNumberLabel.textAlignment = .center
@@ -98,7 +98,7 @@ class Deprecated_ChangePhoneNumberConfirmViewController: OWSViewController {
 
         let continueButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON",
                                                                            comment: "Label for the 'confirm change phone number' button in the 'change phone number' views."),
-                                                  font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                  font: UIFont.dynamicTypeBody.semibold(),
                                                   titleColor: .ows_white,
                                                   backgroundColor: .ows_accentBlue,
                                                   target: self,
@@ -108,7 +108,7 @@ class Deprecated_ChangePhoneNumberConfirmViewController: OWSViewController {
 
         let editButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON",
                                                                          comment: "Label for the 'edit phone number' button in the 'change phone number' views."),
-                                                font: UIFont.ows_dynamicTypeBody,
+                                                font: UIFont.dynamicTypeBody,
                                                 titleColor: .ows_accentBlue,
                                                 backgroundColor: .clear,
                                                 target: self,

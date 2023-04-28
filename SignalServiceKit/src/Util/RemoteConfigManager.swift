@@ -196,14 +196,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var changePhoneNumberUI: Bool {
-        if DebugFlags.forceChangePhoneNumberUI.get() {
-            return true
-        }
-        return isEnabled(.changePhoneNumberUI)
-    }
-
-    @objc
     public static var stories: Bool {
         if DebugFlags.forceStories {
             return true
@@ -212,21 +204,6 @@ public class RemoteConfig: BaseFlags {
             return false
         }
         return true
-    }
-
-    @objc
-    public static var canReceiveGiftBadges: Bool {
-        FeatureFlags.shouldUseRemoteConfigForReceivingGiftBadges && isEnabled(.canReceiveGiftBadges, defaultValue: true)
-    }
-
-    public static var canSendGiftBadges: Bool {
-        if DebugFlags.internalSettings {
-            return true
-        } else if FeatureFlags.isPrerelease {
-            return isEnabled(.canSendGiftBadgesInPrerelease, defaultValue: false)
-        } else {
-            return isEnabled(.canSendGiftBadgesInProduction, defaultValue: false)
-        }
     }
 
     public static var inboundGroupRings: Bool {
@@ -499,10 +476,6 @@ private struct Flags {
         case senderKeyKillSwitch
         case messageResendKillSwitch
         case donorBadgeDisplayKillSwitch
-        case changePhoneNumberUI
-        case canSendGiftBadgesInPrerelease
-        case canSendGiftBadgesInProduction
-        case canReceiveGiftBadges
         case groupRings2
         case inboundGroupRingsKillSwitch
         case storiesKillSwitch
@@ -881,12 +854,13 @@ private extension ServiceRemoteConfigManager {
             if let minimumVersions = minimumVersions {
                 Logger.info("Minimum client versions: \(minimumVersions)")
 
+                let db = DependenciesBridge.shared.db
                 if let remoteExpirationDate = remoteExpirationDate(minimumVersions: minimumVersions) {
                     Logger.info("Setting client expiration date: \(remoteExpirationDate)")
-                    AppExpiry.shared.setExpirationDateForCurrentVersion(remoteExpirationDate)
+                    AppExpiry.shared.setExpirationDateForCurrentVersion(remoteExpirationDate, db: db)
                 } else {
                     Logger.info("Clearing client expiration date")
-                    AppExpiry.shared.setExpirationDateForCurrentVersion(nil)
+                    AppExpiry.shared.setExpirationDateForCurrentVersion(nil, db: db)
                 }
             }
         }
@@ -935,7 +909,7 @@ private extension ServiceRemoteConfigManager {
 
     private func remoteExpirationDate(minimumVersions: [MinimumVersion]) -> Date? {
         var oldestEnforcementDate: Date?
-        let currentVersion4 = appVersion.currentAppVersion4
+        let currentVersion4 = AppVersion.shared.currentAppVersion4
         for minimumVersion in minimumVersions {
             // We only are interested in minimum versions greater than our current version.
             // Note: This method of comparison will only work as long as we always use

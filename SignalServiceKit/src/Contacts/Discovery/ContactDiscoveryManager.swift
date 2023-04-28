@@ -112,8 +112,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         SwiftSingletons.register(self)
     }
 
-    @objc
-    convenience override init() {
+    public convenience override init() {
         self.init(contactDiscoveryTaskQueue: ContactDiscoveryTaskQueueImpl())
     }
 

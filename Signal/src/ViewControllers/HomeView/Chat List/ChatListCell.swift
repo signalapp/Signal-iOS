@@ -124,24 +124,24 @@ public class ChatListCell: UITableViewCell {
     // MARK: - View Constants
 
     private static var unreadFont: UIFont {
-        UIFont.ows_dynamicTypeCaption1Clamped
+        UIFont.dynamicTypeCaption1Clamped
     }
 
     private static var dateTimeFont: UIFont {
-        .ows_dynamicTypeCaption1Clamped
+        .dynamicTypeCaption1Clamped
     }
 
     private static var snippetFont: UIFont {
-        .ows_dynamicTypeSubheadlineClamped
+        .dynamicTypeSubheadlineClamped
     }
 
     private static var nameFont: UIFont {
-        UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        UIFont.dynamicTypeBodyClamped.semibold()
     }
 
     // Used for profile names.
     private static var nameSecondaryFont: UIFont {
-        UIFont.ows_dynamicTypeBodyClamped.ows_italic
+        UIFont.dynamicTypeBodyClamped.italic()
     }
 
     private static var snippetColor: UIColor {
@@ -253,7 +253,7 @@ public class ChatListCell: UITableViewCell {
 
         // Reserve space for two lines of snippet text, taking into account
         // the worst-case snippet content.
-        let snippetLineHeight = CGFloat(ceil(snippetLabelConfig.font.ows_semibold.lineHeight * 1.2))
+        let snippetLineHeight = CGFloat(ceil(snippetLabelConfig.font.semibold().lineHeight * 1.2))
 
         // Use a fixed size for the snippet label and its wrapper.
         let bottomRowWrapperSize = CGSize(width: 0, height: snippetLineHeight * 2)
@@ -727,7 +727,7 @@ public class ChatListCell: UITableViewCell {
             snippetText.append(NSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
                                                  comment: "A prefix indicating that a message preview is a draft"),
                                attributes: [
-                                .font: snippetFont.ows_italic,
+                                .font: snippetFont.italic(),
                                 .foregroundColor: snippetColor
                                ])
             snippetText.append(draftText,
@@ -741,7 +741,7 @@ public class ChatListCell: UITableViewCell {
             snippetText.append(NSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
                                                  comment: "A prefix indicating that a message preview is a draft"),
                                attributes: [
-                                .font: snippetFont.ows_italic,
+                                .font: snippetFont.italic(),
                                 .foregroundColor: snippetColor
                                ])
             snippetText.append("🎤",
@@ -771,12 +771,12 @@ public class ChatListCell: UITableViewCell {
             let snippetText = NSMutableAttributedString()
             snippetText.append(senderName,
                                attributes: [
-                                .font: snippetFont.ows_medium,
+                                .font: snippetFont.medium(),
                                 .foregroundColor: snippetColor
                                ])
             snippetText.append(":",
                                attributes: [
-                                .font: snippetFont.ows_medium,
+                                .font: snippetFont.medium(),
                                 .foregroundColor: snippetColor
                                ])
             snippetText.append(" ",

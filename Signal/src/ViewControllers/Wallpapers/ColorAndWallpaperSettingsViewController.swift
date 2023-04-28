@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
     let thread: TSThread?
@@ -498,7 +498,7 @@ private class MiniPreviewView: UIView {
         hStackView.addArrangedSubview(.spacer(withWidth: 4))
 
         let contactNameLabel = UILabel()
-        contactNameLabel.font = .ows_semiboldFont(withSize: 8)
+        contactNameLabel.font = .semiboldFont(ofSize: 8)
         contactNameLabel.textColor = Theme.primaryTextColor
         contactNameLabel.text = NSLocalizedString(
             "WALLPAPER_MINI_PREVIEW_CONTACT_NAME",

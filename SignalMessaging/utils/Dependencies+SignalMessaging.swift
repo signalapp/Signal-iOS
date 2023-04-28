@@ -9,14 +9,6 @@ import Foundation
 
 @objc
 public extension NSObject {
-    final var launchJobs: LaunchJobs {
-        Environment.shared.launchJobsRef
-    }
-
-    static var launchJobs: LaunchJobs {
-        Environment.shared.launchJobsRef
-    }
-
     final var preferences: OWSPreferences {
         Environment.shared.preferencesRef
     }
@@ -109,14 +101,6 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-    var launchJobs: LaunchJobs {
-        Environment.shared.launchJobsRef
-    }
-
-    static var launchJobs: LaunchJobs {
-        Environment.shared.launchJobsRef
-    }
-
     var preferences: OWSPreferences {
         Environment.shared.preferencesRef
     }

@@ -74,7 +74,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
     }
 
     private static var canSendGiftBadges: Bool {
-        RemoteConfig.canSendGiftBadges &&
         DonationUtilities.canDonate(inMode: .gift, localNumber: tsAccountManager.localNumber)
     }
 
@@ -243,7 +242,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
     /// Once gift badges are added (or anything else that's always shown), we can remove this.
     static func hasAnythingToShowWithSneakyTransaction() -> Bool {
         (
-            canSendGiftBadges ||
             hasAnyBadges() ||
             databaseStorage.read { DonationReceiptFinder.hasAny(transaction: $0) }
         )
@@ -295,7 +293,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             button.dimsWhenHighlighted = true
             button.layer.cornerRadius = 8
             button.backgroundColor = .ows_accentBlue
-            button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+            button.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
             heroStack.addArrangedSubview(button)
             button.autoSetDimension(.height, toSize: 48)
             button.autoPinWidthToSuperviewMargins()

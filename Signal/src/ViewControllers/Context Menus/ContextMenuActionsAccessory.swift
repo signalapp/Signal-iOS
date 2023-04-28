@@ -197,7 +197,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         ) {
             titleLabel = UILabel(frame: CGRect.zero)
             titleLabel.text = title
-            titleLabel.font = .ows_dynamicTypeBodyClamped
+            titleLabel.font = .dynamicTypeBodyClamped
             titleLabel.numberOfLines = titleMaxLines
 
             self.attributes = attributes

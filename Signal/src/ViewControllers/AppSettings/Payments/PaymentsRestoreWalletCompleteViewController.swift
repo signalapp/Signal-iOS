@@ -53,7 +53,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
     private func buildBottomView() {
         let doneButton = OWSFlatButton.button(title: CommonStrings.doneButton,
-                                              font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                              font: UIFont.dynamicTypeBody.semibold(),
                                               titleColor: .white,
                                               backgroundColor: .ows_accentBlue,
                                               target: self,
@@ -61,7 +61,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         doneButton.autoSetHeightUsingFont()
 
         let editButton = OWSFlatButton.button(title: CommonStrings.editButton,
-                                              font: .ows_dynamicTypeBody,
+                                              font: .dynamicTypeBody,
                                               titleColor: .ows_accentBlue,
                                               backgroundColor: self.tableBackgroundColor,
                                               target: self,
@@ -107,14 +107,14 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE",
                                             comment: "Title for the 'review payments passphrase' step of the 'restore payments wallet' views.")
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION",
                                                   comment: "Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views.")
-        explanationLabel.font = .ows_dynamicTypeBody2Clamped
+        explanationLabel.font = .dynamicTypeBody2Clamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0

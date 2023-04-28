@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalMessaging
 import AuthenticationServices
+import SignalMessaging
+import SignalUI
 
 class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
     let donationAmount: FiatMoney
@@ -118,7 +118,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
                 "CARD_DONATION_SUBHEADER_LEARN_MORE",
                 comment: "On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information."
             ).styled(with: linkPart)
-        ]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
+        ]).styled(with: .color(Theme.primaryTextColor), .font(.dynamicTypeBody))
         subheaderTextView.linkTextAttributes = [
             .foregroundColor: Theme.accentBlueColor,
             .underlineColor: UIColor.clear,
@@ -205,7 +205,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
                         )
                         return String(format: format, amountString)
                     }()
-                    headerLabel.font = .ows_dynamicTypeTitle3.ows_semibold
+                    headerLabel.font = .dynamicTypeTitle3.semibold()
                     headerLabel.textAlignment = .center
                     headerLabel.numberOfLines = 0
                     headerLabel.lineBreakMode = .byWordWrapping
@@ -383,7 +383,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         result.dimsWhenDisabled = true
         result.layer.cornerRadius = 8
         result.backgroundColor = .ows_accentBlue
-        result.titleLabel?.font = .ows_dynamicTypeBody.ows_semibold
+        result.titleLabel?.font = .dynamicTypeBody.semibold()
         result.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
         return result
     }()

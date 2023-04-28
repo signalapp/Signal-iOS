@@ -23,8 +23,6 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
-        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigShim
-        public typealias SignalRecipient = _RegistrationCoordinator_SignalRecipientShim
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerShim
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
     }
@@ -41,8 +39,6 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
-        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigWrapper
-        public typealias SignalRecipient = _RegistrationCoordinator_SignalRecipientWrapper
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
     }
@@ -82,7 +78,7 @@ public struct _RegistrationCoordinator_AppExpiryWrapper: _RegistrationCoordinato
 
 public protocol _RegistrationCoordinator_ContactsManagerShim {
 
-    func fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: AuthedAccount)
+    func fetchSystemContactsOnceIfAlreadyAuthorized()
 
     func setIsPrimaryDevice()
 }
@@ -92,8 +88,8 @@ public class _RegistrationCoordinator_ContactsManagerWrapper: _RegistrationCoord
     private let manager: OWSContactsManager
     public init(_ manager: OWSContactsManager) { self.manager = manager }
 
-    public func fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: AuthedAccount) {
-        manager.fetchSystemContactsOnceIfAlreadyAuthorized(with: authedAccount)
+    public func fetchSystemContactsOnceIfAlreadyAuthorized() {
+        manager.fetchSystemContactsOnceIfAlreadyAuthorized()
     }
 
     public func setIsPrimaryDevice() {
@@ -212,6 +208,8 @@ public protocol _RegistrationCoordinator_OWS2FAManagerShim {
 
     func pinCode(_ tx: DBReadTransaction) -> String?
 
+    func clearLocalPinCode(_ tx: DBWriteTransaction)
+
     func isReglockEnabled(_ tx: DBReadTransaction) -> Bool
 
     func markPinEnabled(_ pin: String, _ tx: DBWriteTransaction)
@@ -226,6 +224,10 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
 
     public func pinCode(_ tx: DBReadTransaction) -> String? {
         return manager.pinCode(with: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func clearLocalPinCode(_ tx: DBWriteTransaction) {
+        return manager.clearLocalPinCode(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func isReglockEnabled(_ tx: DBReadTransaction) -> Bool {
@@ -320,7 +322,7 @@ extension Registration {
         case success
         case pushUnsupported(description: String)
         case networkError
-        case genericError
+        case genericError(Error)
     }
 }
 
@@ -355,7 +357,7 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
     }
 
     public func requestPushToken() -> Guarantee<String?> {
-        return manager.requestPushTokens(forceRotation: false)
+        return manager.requestPushTokens(forceRotation: false, timeOutEventually: true)
             .map { $0.0 }
             .recover { _ in return .value(nil) }
     }
@@ -382,7 +384,7 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
                 case PushRegistrationError.pushNotSupported(let description):
                     return .value(.pushUnsupported(description: description))
                 default:
-                    return .value(.genericError)
+                    return .value(.genericError(error))
                 }
             }
     }
@@ -410,54 +412,6 @@ public class _RegistrationCoordinator_ReceiptManagerWrapper: _RegistrationCoordi
     }
 }
 
-// MARK: - RemoteConfig
-
-public protocol _RegistrationCoordinator_RemoteConfigShim {
-
-    var canReceiveGiftBadges: Bool { get }
-}
-
-public class _RegistrationCoordinator_RemoteConfigWrapper: _RegistrationCoordinator_RemoteConfigShim {
-
-    public init() {}
-
-    public var canReceiveGiftBadges: Bool { RemoteConfig.canSendGiftBadges }
-}
-
-// MARK: - SignalRecipient
-
-public protocol _RegistrationCoordinator_SignalRecipientShim {
-
-    func createHighTrustRecipient(
-        aci: UUID,
-        e164: E164,
-        transaction: DBWriteTransaction
-    )
-}
-
-public class _RegistrationCoordinator_SignalRecipientWrapper: _RegistrationCoordinator_SignalRecipientShim {
-
-    public init() {}
-
-    public func createHighTrustRecipient(
-        aci: UUID,
-        e164: E164,
-        transaction: DBWriteTransaction
-    ) {
-        let address = SignalServiceAddress(
-            uuid: aci,
-            e164: e164
-        )
-        let transaction = SDSDB.shimOnlyBridge(transaction)
-        SignalRecipient.fetchOrCreate(
-            for: address,
-            trustLevel: .high,
-            transaction: transaction
-        )
-        .markAsRegistered(transaction: transaction)
-    }
-}
-
 // MARK: - TSAccountManager
 
 public protocol _RegistrationCoordinator_TSAccountManagerShim {
@@ -475,6 +429,12 @@ public protocol _RegistrationCoordinator_TSAccountManagerShim {
         updateStorageService: Bool,
         authedAccount: AuthedAccount,
         _ transaction: DBWriteTransaction
+    )
+
+    func resetForReregistration(
+        e164: E164,
+        aci: UUID,
+        _ tx: DBWriteTransaction
     )
 
     func didRegister(
@@ -538,6 +498,19 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
         )
     }
 
+    public func resetForReregistration(
+        e164: E164,
+        aci: UUID,
+        _ tx: DBWriteTransaction
+    ) {
+        manager.resetForReregistration(
+            withLocalPhoneNumber: .init(e164),
+            localAci: aci,
+            wasPrimaryDevice: true,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
+
     public func didRegister(
         e164: E164,
         aci: UUID,
@@ -546,7 +519,7 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
         _ tx: DBWriteTransaction
     ) {
         manager.didRegisterPrimary(
-            withE164: e164.stringValue,
+            withE164: E164ObjC(e164),
             aci: aci,
             pni: pni,
             authToken: authToken,

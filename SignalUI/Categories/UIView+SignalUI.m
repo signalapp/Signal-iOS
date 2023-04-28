@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static inline CGFloat ApplicationShortDimension()
+static inline CGFloat ApplicationShortDimension(void)
 {
     return MIN(CurrentAppContext().frame.size.width, CurrentAppContext().frame.size.height);
 }
@@ -610,7 +610,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 #pragma mark -
 
-CGFloat CGHairlineWidth()
+CGFloat CGHairlineWidth(void)
 {
     return 1.f / UIScreen.mainScreen.scale;
 }

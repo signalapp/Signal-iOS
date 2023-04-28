@@ -5,7 +5,6 @@
 
 #import "AppDelegate.h"
 #import "ChatListViewController.h"
-#import "MainAppContext.h"
 #import "OWSScreenLockUI.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -13,7 +12,6 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
-#import <SignalMessaging/AppSetup.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -31,7 +29,6 @@
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
-#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StickerInfo.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -43,10 +40,7 @@
 NSString *const AppDelegateStoryboardMain = @"Main";
 NSString *const kAppLaunchesAttemptedKey = @"AppLaunchesAttempted";
 
-static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
 NSString *const kURLSchemeSGNLKey = @"sgnl";
-static NSString *const kURLHostVerifyPrefix             = @"verify";
-static NSString *const kURLHostAddStickersPrefix = @"addstickers";
 NSString *const kURLHostTransferPrefix = @"transfer";
 NSString *const kURLHostLinkDevicePrefix = @"linkdevice";
 
@@ -84,9 +78,6 @@ static void uncaughtExceptionHandler(NSException *exception)
 }
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
-
-@property (nonatomic, readwrite) NSTimeInterval launchStartedAt;
-
 @end
 
 #pragma mark -
@@ -150,212 +141,15 @@ static void uncaughtExceptionHandler(NSException *exception)
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     OWSLogInfo(@"applicationWillTerminate.");
-
-    [SignalApp.shared applicationWillTerminate];
-
     OWSLogFlush();
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions
 {
     NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
-
-    // This should be the first thing we do.
-    SetCurrentAppContext([MainAppContext new], NO);
-
-    self.launchStartedAt = CACurrentMediaTime();
-    [BenchManager startEventWithTitle:@"Presenting HomeView" eventId:@"AppStart" logInProduction:TRUE];
-
-    BOOL isLoggingEnabled;
-    [InstrumentsMonitor enable];
-    unsigned long long monitorId = [InstrumentsMonitor startSpanWithCategory:@"appstart"
-                                                                      parent:@"application"
-                                                                        name:@"didFinishLaunchingWithOptions"];
-
-#ifdef DEBUG
-    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
-    // the phone directory being looked up during tests.
-    isLoggingEnabled = TRUE;
-    [DebugLogger.shared enableTTYLogging];
-#else
-    isLoggingEnabled = OWSPreferences.isLoggingEnabled;
-#endif
-    if (isLoggingEnabled) {
-        [DebugLogger.shared enableFileLogging];
-    }
-    if (SSKDebugFlags.audibleErrorLogging) {
-        [DebugLogger.shared enableErrorReporting];
-    }
-    [DebugLogger configureSwiftLogging];
-
-#ifdef DEBUG
-    [SSKFeatureFlags logFlags];
-    [SSKDebugFlags logFlags];
-#endif
-
-    OWSLogWarn(@"application: didFinishLaunchingWithOptions.");
-    [Cryptography seedRandom];
-
-    // This *must* happen before we try and access or verify the database, since we
-    // may be in a state where the database has been partially restored from transfer
-    // (e.g. the key was replaced, but the database files haven't been moved into place)
-    __block BOOL didDeviceTransferRestoreSucceed = YES;
-    [BenchManager benchWithTitle:@"Slow device transfer service launch"
-                 logIfLongerThan:0.01
-                 logInProduction:YES
-                           block:^{ didDeviceTransferRestoreSucceed = [DeviceTransferService.shared launchCleanup]; }];
-
-    // XXX - careful when moving this. It must happen before we load GRDB.
-    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
-
-    [InstrumentsMonitor trackEventWithName:@"AppStart"];
-
-    [AppVersion shared];
-
-    // We need to do this _after_ we set up logging, when the keychain is unlocked,
-    // but before we access the database, files on disk, or NSUserDefaults.
-    LaunchFailure launchFailure =
-        [self launchFailureWithDidDeviceTransferRestoreSucceed:didDeviceTransferRestoreSucceed];
-
-    if (launchFailure != LaunchFailureNone) {
-        [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
-        OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");
-        [self showUIForLaunchFailure:launchFailure];
-
-        return YES;
-    }
-
-    [self launchToHomeScreenWithLaunchOptions:launchOptions
-                         instrumentsMonitorId:monitorId
-                    isEnvironmentAlreadySetUp:NO];
+    [self handleDidFinishLaunchingWithLaunchOptions:launchOptions];
     return YES;
-}
-
-- (BOOL)launchToHomeScreenWithLaunchOptions:(NSDictionary *_Nullable)launchOptions
-                       instrumentsMonitorId:(unsigned long long)monitorId
-                  isEnvironmentAlreadySetUp:(BOOL)isEnvironmentAlreadySetUp
-{
-    [self setupNSEInteroperation];
-
-    if (CurrentAppContext().isRunningTests) {
-        [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
-        return YES;
-    }
-
-    NSInteger appLaunchesAttempted = [[CurrentAppContext() appUserDefaults] integerForKey:kAppLaunchesAttemptedKey];
-    [[CurrentAppContext() appUserDefaults] setInteger:appLaunchesAttempted + 1 forKey:kAppLaunchesAttemptedKey];
-    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(
-        ^{ [[CurrentAppContext() appUserDefaults] removeObjectForKey:kAppLaunchesAttemptedKey]; });
-
-    if (!isEnvironmentAlreadySetUp) {
-        [AppDelegate setUpMainAppEnvironmentWithCompletion:^(NSError *_Nullable error) {
-            OWSAssertIsOnMainThread();
-
-            if (error != nil) {
-                OWSFailDebug(@"Error: %@", error);
-                [self showUIForLaunchFailure:LaunchFailureCouldNotLoadDatabase];
-            } else {
-                [self versionMigrationsDidComplete];
-            }
-        }];
-    }
-
-    [UIUtil setupSignalAppearance];
-
-    UIWindow *mainWindow = self.window;
-    if (mainWindow == nil) {
-        mainWindow = [OWSWindow new];
-        self.window = mainWindow;
-        CurrentAppContext().mainWindow = mainWindow;
-    }
-    // Show LoadingViewController until the async database view registrations are complete.
-    mainWindow.rootViewController = [LoadingViewController new];
-    [mainWindow makeKeyAndVisible];
-
-    // This must happen in appDidFinishLaunching or earlier to ensure we don't
-    // miss notifications.
-    // Setting the delegate also seems to prevent us from getting the legacy notification
-    // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
-    UNUserNotificationCenter.currentNotificationCenter.delegate = self;
-
-    // Accept push notification when app is not open
-    NSDictionary *remoteNotification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (remoteNotification) {
-        OWSLogInfo(@"Application was launched by tapping a push notification.");
-        [self processRemoteNotification:remoteNotification];
-    }
-
-    [OWSScreenLockUI.shared setupWithRootWindow:self.window];
-    [[OWSWindowManager shared] setupWithRootWindow:self.window
-                              screenBlockingWindow:OWSScreenLockUI.shared.screenBlockingWindow];
-    [OWSScreenLockUI.shared startObserving];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(storageIsReady)
-                                                 name:StorageIsReadyNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(registrationStateDidChange)
-                                                 name:NSNotificationNameRegistrationStateDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(registrationLockDidChange:)
-                                                 name:NSNotificationName_2FAStateDidChange
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(spamChallenge:)
-                                                 name:SpamChallengeResolver.NeedsCaptchaNotification
-                                               object:nil];
-
-    OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
-
-    OWSLogInfo(@"launchOptions: %@.", launchOptions);
-
-    [OWSAnalytics appLaunchDidBegin];
-
-    [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
-
-    return YES;
-}
-
-- (void)spamChallenge:(NSNotification *)notification
-{
-    UIViewController *fromVC = UIApplication.sharedApplication.frontmostViewController;
-    [SpamCaptchaViewController presentActionSheetFrom:fromVC];
-}
-
-/**
- *  The user must unlock the device once after reboot before the database encryption key can be accessed.
- */
-- (void)verifyDBKeysAvailableBeforeBackgroundLaunch
-{
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-        return;
-    }
-
-    if (StorageCoordinator.hasGrdbFile && GRDBDatabaseStorageAdapter.isKeyAccessible) {
-        return;
-    }
-
-    OWSLogInfo(@"exiting because we are in the background and the database password is not accessible.");
-
-    UILocalNotification *notification = [UILocalNotification new];
-    NSString *messageFormat = NSLocalizedString(@"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
-        @"Lock screen notification text presented after user powers on their device without unlocking. Embeds "
-        @"{{device model}} (either 'iPad' or 'iPhone')");
-    notification.alertBody = [NSString stringWithFormat:messageFormat, UIDevice.currentDevice.localizedModel];
-
-    // Make sure we clear any existing notifications so that they don't start stacking up
-    // if the user receives multiple pushes.
-    [UIApplication.sharedApplication cancelAllLocalNotifications];
-    [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
-
-    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-    [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
-
-    OWSLogFlush();
-    exit(0);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -396,216 +190,7 @@ static void uncaughtExceptionHandler(NSException *exception)
 {
     OWSAssertIsOnMainThread();
 
-    return [self tryToOpenUrl:url];
-}
-
-- (BOOL)tryToOpenUrl:(NSURL *)url
-{
-    OWSAssertDebug(!self.didAppLaunchFail);
-
-    if (self.didAppLaunchFail) {
-        OWSLogError(@"App launch failed");
-        return NO;
-    }
-
-    if ([SignalMe isPossibleUrl:url]) {
-        return [self tryToShowSignalMeChatForUrl:url];
-    } else if ([StickerPackInfo isStickerPackShareUrl:url]) {
-        StickerPackInfo *_Nullable stickerPackInfo = [StickerPackInfo parseStickerPackShareUrl:url];
-        if (stickerPackInfo == nil) {
-            OWSFailDebug(@"Could not parse sticker pack share URL: %@", url);
-            return NO;
-        }
-        return [self tryToShowStickerPackView:stickerPackInfo];
-    } else if ([GroupManager isPossibleGroupInviteLink:url]) {
-        return [self tryToShowGroupInviteLinkUI:url];
-    } else if ([SignalProxy isValidProxyLink:url]) {
-        return [self tryToShowProxyLinkUI:url];
-    } else if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
-        if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
-            StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
-            if (stickerPackInfo == nil) {
-                OWSFailDebug(@"Invalid URL: %@", url);
-                return NO;
-            }
-            return [self tryToShowStickerPackView:stickerPackInfo];
-        } else if ([url.host hasPrefix:kURLHostLinkDevicePrefix] && [self.tsAccountManager isRegistered]
-            && self.tsAccountManager.isPrimaryDevice) {
-            DeviceProvisioningURL *deviceProvisioningUrl =
-                [[DeviceProvisioningURL alloc] initWithUrlString:url.absoluteString];
-            if (deviceProvisioningUrl == nil) {
-                OWSFailDebug(@"Invalid URL: %@", url);
-                return NO;
-            }
-            return [self tryToShowLinkDeviceViewWithUrl:deviceProvisioningUrl];
-        } else {
-            OWSLogVerbose(@"Invalid URL: %@", url);
-            OWSFailDebug(@"Unknown URL host: %@", url.host);
-        }
-    } else {
-        OWSFailDebug(@"Unknown URL scheme: %@", url.scheme);
-    }
-
-    return NO;
-}
-
-- (nullable StickerPackInfo *)parseAddStickersUrl:(NSURL *)url
-{
-    NSString *_Nullable packIdHex;
-    NSString *_Nullable packKeyHex;
-    NSURLComponents *components = [NSURLComponents componentsWithString:url.absoluteString];
-    for (NSURLQueryItem *queryItem in [components queryItems]) {
-        if ([queryItem.name isEqualToString:@"pack_id"]) {
-            OWSAssertDebug(packIdHex == nil);
-            packIdHex = queryItem.value;
-        } else if ([queryItem.name isEqualToString:@"pack_key"]) {
-            OWSAssertDebug(packKeyHex == nil);
-            packKeyHex = queryItem.value;
-        } else {
-            OWSLogWarn(@"Unknown query item: %@", queryItem.name);
-        }
-    }
-
-    return [StickerPackInfo parsePackIdHex:packIdHex packKeyHex:packKeyHex];
-}
-
-- (BOOL)tryToShowStickerPackView:(StickerPackInfo *)stickerPackInfo
-{
-    OWSAssertDebug(!self.didAppLaunchFail);
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        if (!self.tsAccountManager.isRegistered) {
-            OWSFailDebug(@"Ignoring sticker pack URL; not registered.");
-            return;
-        }
-
-        StickerPackViewController *packView =
-            [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-        UIViewController *rootViewController = self.window.rootViewController;
-        if (rootViewController.presentedViewController) {
-            [rootViewController
-                dismissViewControllerAnimated:NO
-                                   completion:^{ [packView presentFrom:rootViewController animated:NO]; }];
-        } else {
-            [packView presentFrom:rootViewController animated:NO];
-        }
-    });
-    return YES;
-}
-
-- (BOOL)tryToShowSignalMeChatForUrl:(NSURL *)url
-{
-    OWSAssertDebug(!self.didAppLaunchFail);
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        if (!self.tsAccountManager.isRegistered) {
-            OWSFailDebug(@"Ignoring signal me URL; not registered.");
-            return;
-        }
-
-        UIViewController *rootViewController = self.window.rootViewController;
-        if (rootViewController.presentedViewController) {
-            [rootViewController dismissViewControllerAnimated:NO
-                                                   completion:^{
-                                                       [SignalMe openChatWithUrl:url
-                                                              fromViewController:rootViewController];
-                                                   }];
-        } else {
-            [SignalMe openChatWithUrl:url fromViewController:rootViewController];
-        }
-    });
-    return YES;
-}
-
-- (BOOL)tryToShowLinkDeviceViewWithUrl:(DeviceProvisioningURL *)deviceProvisioningUrl
-{
-    OWSAssertDebug(!self.didAppLaunchFail);
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        if (!self.tsAccountManager.isRegistered) {
-            OWSFailDebug(@"Ignoring linked device URL; not registered.");
-            return;
-        }
-        if (!self.tsAccountManager.isPrimaryDevice) {
-            OWSFailDebug(@"Ignoring linked device URL; not primary.");
-            return;
-        }
-
-        UINavigationController *navController = [AppSettingsViewController inModalNavigationController];
-        NSMutableArray<UIViewController *> *viewControllers = [navController.viewControllers mutableCopy];
-
-        LinkedDevicesTableViewController *linkedDevicesVC = [LinkedDevicesTableViewController new];
-        [viewControllers addObject:linkedDevicesVC];
-
-        OWSLinkDeviceViewController *linkDeviceVC = [OWSLinkDeviceViewController new];
-        [viewControllers addObject:linkDeviceVC];
-
-        linkDeviceVC.delegate = linkedDevicesVC;
-
-        [navController setViewControllers:viewControllers animated:NO];
-
-        UIViewController *rootViewController = self.window.rootViewController;
-        if (rootViewController.presentedViewController) {
-            [rootViewController dismissViewControllerAnimated:NO
-                                                   completion:^{
-                                                       [rootViewController presentFormSheetViewController:navController
-                                                                                                 animated:NO
-                                                                                               completion:^ {}];
-                                                   }];
-        } else {
-            [rootViewController presentFormSheetViewController:navController animated:NO completion:^ {}];
-        }
-
-        [linkDeviceVC confirmProvisioningWithUrl:deviceProvisioningUrl];
-    });
-    return YES;
-}
-
-- (BOOL)tryToShowGroupInviteLinkUI:(NSURL *)url
-{
-    OWSAssertDebug(!self.didAppLaunchFail);
-
-    if (AppReadiness.isAppReady && !self.tsAccountManager.isRegistered) {
-        OWSFailDebug(@"Ignoring URL; not registered.");
-        return NO;
-    }
-
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        if (!self.tsAccountManager.isRegistered) {
-            OWSFailDebug(@"Ignoring sticker pack URL; not registered.");
-            return;
-        }
-
-        UIViewController *rootViewController = self.window.rootViewController;
-        if (rootViewController.presentedViewController) {
-            [rootViewController dismissViewControllerAnimated:NO
-                                                   completion:^{
-                                                       [GroupInviteLinksUI openGroupInviteLink:url
-                                                                            fromViewController:rootViewController];
-                                                   }];
-        } else {
-            [GroupInviteLinksUI openGroupInviteLink:url fromViewController:rootViewController];
-        }
-    });
-    return YES;
-}
-
-- (BOOL)tryToShowProxyLinkUI:(NSURL *)url
-{
-    OWSAssertDebug(!self.didAppLaunchFail);
-
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        ProxyLinkSheetViewController *proxySheet = [[ProxyLinkSheetViewController alloc] initWithUrl:url];
-        UIViewController *rootViewController = self.window.rootViewController;
-        if (rootViewController.presentedViewController) {
-            [rootViewController dismissViewControllerAnimated:NO
-                                                   completion:^{
-                                                       [rootViewController presentViewController:proxySheet
-                                                                                        animated:YES
-                                                                                      completion:nil];
-                                                   }];
-        } else {
-            [rootViewController presentViewController:proxySheet animated:YES completion:nil];
-        }
-    });
-    return YES;
+    return [self handleOpenUrl:url];
 }
 
 - (void)application:(UIApplication *)application
@@ -834,7 +419,7 @@ static void uncaughtExceptionHandler(NSException *exception)
             OWSFailDebug(@"Missing webpageURL.");
             return NO;
         }
-        return [self tryToOpenUrl:userActivity.webpageURL];
+        return [self handleOpenUrl:userActivity.webpageURL];
     } else {
         OWSLogWarn(@"userActivity: %@, but not yet supported.", userActivity.activityType);
     }
@@ -915,19 +500,6 @@ static void uncaughtExceptionHandler(NSException *exception)
             });
         });
     });
-}
-
-- (void)storageIsReady
-{
-    OWSAssertIsOnMainThread();
-    OWSLogInfo(@"storageIsReady");
-
-    [self checkIfAppIsReady];
-}
-
-- (void)registrationLockDidChange:(NSNotification *)notification
-{
-    [self enableBackgroundRefreshIfNecessary];
 }
 
 @end

@@ -302,7 +302,7 @@ class StoryItemMediaView: UIView {
 
             let contextNameLabel = UILabel()
             contextNameLabel.textColor = Theme.darkThemePrimaryColor
-            contextNameLabel.font = .ows_dynamicTypeFootnote
+            contextNameLabel.font = .dynamicTypeFootnote
             contextNameLabel.text = privateStoryThread.name
 
             let contextHStack = UIStackView(arrangedSubviews: [
@@ -341,7 +341,7 @@ class StoryItemMediaView: UIView {
 
         timestampLabel.setCompressionResistanceHorizontalHigh()
         timestampLabel.setContentHuggingHorizontalHigh()
-        timestampLabel.font = .ows_dynamicTypeFootnote
+        timestampLabel.font = .dynamicTypeFootnote
         timestampLabel.textColor = Theme.darkThemePrimaryColor
         timestampLabel.alpha = 0.8
         updateTimestampText()
@@ -405,7 +405,7 @@ class StoryItemMediaView: UIView {
     private func buildNameLabel(transaction: SDSAnyReadTransaction) -> UIView {
         let label = UILabel()
         label.textColor = Theme.darkThemePrimaryColor
-        label.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
+        label.font = UIFont.dynamicTypeSubheadline.semibold()
         label.text = StoryUtil.authorDisplayName(
             for: item.message,
             contactsManager: contactsManager,
@@ -557,7 +557,7 @@ class StoryItemMediaView: UIView {
         let readMoreText = NSLocalizedString(
             "STORIES_CAPTION_READ_MORE",
             comment: "Text indication a story caption can be tapped to read more."
-        ).styled(with: .font(labelMinimumScaledFont.ows_semibold))
+        ).styled(with: .font(labelMinimumScaledFont.semibold()))
 
         var potentialTruncatedCaptionText = fullCaptionText
         func truncatePotentialCaptionText(to index: Int) {
@@ -810,7 +810,7 @@ class StoryItemMediaView: UIView {
 
 class StoryItem: NSObject {
     let message: StoryMessage
-    let numberOfReplies: UInt
+    let numberOfReplies: UInt64
     enum Attachment: Equatable {
         case pointer(TSAttachmentPointer)
         case stream(TSAttachmentStream)
@@ -818,7 +818,7 @@ class StoryItem: NSObject {
     }
     var attachment: Attachment
 
-    init(message: StoryMessage, numberOfReplies: UInt, attachment: Attachment) {
+    init(message: StoryMessage, numberOfReplies: UInt64, attachment: Attachment) {
         self.message = message
         self.numberOfReplies = numberOfReplies
         self.attachment = attachment

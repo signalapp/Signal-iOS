@@ -36,9 +36,6 @@ extension TSAttachmentPointerType: DatabaseValueConvertible { }
 extension TSAttachmentPointerState: Codable { }
 extension TSAttachmentPointerState: DatabaseValueConvertible { }
 
-extension SSKJobRecordStatus: Codable { }
-extension SSKJobRecordStatus: DatabaseValueConvertible { }
-
 extension SDSRecordType: Codable { }
 extension SDSRecordType: DatabaseValueConvertible { }
 

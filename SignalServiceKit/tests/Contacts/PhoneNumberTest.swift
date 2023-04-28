@@ -80,6 +80,19 @@ class PhoneNumberTestSwift: SSKBaseTestSwift {
         Assert(parsingRawText: "528341639157", localE164: "+5218341634444", includesCandidates: expectedCandidates)
         Assert(parsingRawText: "5218341639157", localE164: "+5218341634444", includesCandidates: expectedCandidates)
     }
+
+    func testNationalNumber() throws {
+        let testCases: [String: String] = [
+            "+19025550123": "9025550123",
+            "+447700900123": "7700900123",
+            "+33639981234": "639981234"
+        ]
+
+        for (e164String, expected) in testCases {
+            let actual = PhoneNumber(fromE164: e164String)?.nationalNumber
+            XCTAssertEqual(actual, expected, e164String)
+        }
+    }
 }
 
 func Assert(parsingRawText rawText: String,

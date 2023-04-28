@@ -54,12 +54,12 @@ class _ChangePhoneNumberPniManager_MessageSenderMock: _ChangePhoneNumberPniManag
     func buildDeviceMessage(
         forMessagePlaintextContent messagePlaintextContent: Data?,
         messageEncryptionStyle: EncryptionStyle,
-        recipientServiceId: ServiceId,
-        recipientAccountId: String,
-        recipientDeviceId: NSNumber,
+        recipientId: String,
+        serviceId: ServiceId,
+        deviceId: NSNumber,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
-        isStorySendMessage: Bool,
+        isStoryMessage: Bool,
         isResendRequestMessage: Bool,
         udSendingParamsProvider: UDSendingParamsProvider?
     ) throws -> DeviceMessage? {
@@ -74,7 +74,7 @@ class _ChangePhoneNumberPniManager_MessageSenderMock: _ChangePhoneNumberPniManag
         case let .valid(registrationId):
             return DeviceMessage(
                 type: .ciphertext,
-                destinationDeviceId: recipientDeviceId.uint32Value,
+                destinationDeviceId: deviceId.uint32Value,
                 destinationRegistrationId: registrationId,
                 serializedMessage: Cryptography.generateRandomBytes(32)
             )

@@ -103,15 +103,13 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         avatarView.autoSetDimension(.width, toSize: CGFloat(Self.avatarSize))
 
-        groupTitleLabel.font = UIFont.ows_semiboldFont(
-            withSize: UIFont.ows_dynamicTypeTitle1Clamped.pointSize * (13/14)
-        )
+        groupTitleLabel.font = UIFont.semiboldFont(ofSize: UIFont.dynamicTypeTitle1Clamped.pointSize * (13/14))
         groupTitleLabel.textColor = Theme.primaryTextColor
 
-        groupSubtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
+        groupSubtitleLabel.font = UIFont.dynamicTypeSubheadline
         groupSubtitleLabel.textColor = Theme.secondaryTextAndIconColor
 
-        groupDescriptionPreview.font = .ows_dynamicTypeSubheadline
+        groupDescriptionPreview.font = .dynamicTypeSubheadline
         groupDescriptionPreview.textColor = Theme.secondaryTextAndIconColor
         groupDescriptionPreview.numberOfLines = 2
         groupDescriptionPreview.textAlignment = .center
@@ -130,7 +128,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         messageLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE",
                                               comment: "Message text for the 'group invite link' action sheet.")
-        messageLabel.font = .ows_dynamicTypeFootnote
+        messageLabel.font = .dynamicTypeFootnote
         messageLabel.textColor = Theme.secondaryTextAndIconColor
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
@@ -139,7 +137,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         let buttonColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
         let cancelButton = OWSFlatButton.button(title: CommonStrings.cancelButton,
-                                                font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                font: UIFont.dynamicTypeBody.semibold(),
                                                 titleColor: Theme.secondaryTextAndIconColor,
                                                 backgroundColor: buttonColor,
                                                 target: self,
@@ -150,7 +148,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         let joinButton = OWSFlatButton.button(title: NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON",
                                                                        comment: "Label for the 'join' button in the 'group invite link' action sheet."),
-                                              font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                              font: UIFont.dynamicTypeBody.semibold(),
                                               titleColor: .ows_accentBlue,
                                               backgroundColor: buttonColor,
                                               target: self,
@@ -160,7 +158,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         self.joinButton = joinButton
 
         let invalidOkayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
-                                              font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                              font: UIFont.dynamicTypeBody.semibold(),
                                               titleColor: Theme.primaryTextColor,
                                               backgroundColor: buttonColor,
                                               target: self,

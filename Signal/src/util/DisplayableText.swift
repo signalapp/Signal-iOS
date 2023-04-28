@@ -136,6 +136,9 @@ public class DisplayableText: NSObject {
         }
 
         // When the theme changes, we must refresh any mention attributes.
+        // Note that text formatting styles are also theme dependent but
+        // get set along with the rest of the properties applied to the
+        // whole text body (e.g. CVComponentBodyText.textViewConfig).
         fullContent = updateContent(fullContent)
 
         if let truncatedContent = truncatedContent {

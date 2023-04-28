@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+#import <UIKit/UIKit.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
-static inline BOOL OWSIsDebugBuild()
+static inline BOOL OWSIsDebugBuild(void)
 {
 #ifdef DEBUG
     return YES;
@@ -14,7 +16,7 @@ static inline BOOL OWSIsDebugBuild()
 #endif
 }
 
-static inline BOOL OWSIsTestableBuild()
+static inline BOOL OWSIsTestableBuild(void)
 {
 #ifdef TESTABLE_BUILD
     return YES;
@@ -137,8 +139,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 @property (nonatomic, readonly) BOOL shouldProcessIncomingMessages;
 
 @property (nonatomic, readonly) BOOL hasUI;
-
-@property (nonatomic, readonly) BOOL didLastLaunchNotTerminate;
 
 @property (nonatomic, readonly) NSString *debugLogsDirPath;
 

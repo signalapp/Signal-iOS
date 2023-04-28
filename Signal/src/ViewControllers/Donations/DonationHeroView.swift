@@ -28,7 +28,7 @@ class DonationHeroView: UIStackView {
 
         let titleLabel = UILabel()
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
         titleLabel.text = NSLocalizedString(
             "DONATION_SCREENS_HEADER_TITLE",
             comment: "On donation screens, a small amount of information text is shown. This is the title for that text."
@@ -69,7 +69,7 @@ class DonationHeroView: UIStackView {
             descriptionBodyText,
             " ",
             readMoreText
-        ]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
+        ]).styled(with: .color(Theme.primaryTextColor), .font(.dynamicTypeBody))
         descriptionTextView.linkTextAttributes = [
             .foregroundColor: Theme.accentBlueColor,
             .underlineColor: UIColor.clear,

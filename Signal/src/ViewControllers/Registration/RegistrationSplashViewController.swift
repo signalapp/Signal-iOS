@@ -12,6 +12,8 @@ import SignalMessaging
 
 public protocol RegistrationSplashPresenter: AnyObject {
     func continueFromSplash()
+
+    func switchToDeviceLinkingMode()
 }
 
 // MARK: - RegistrationSplashViewController
@@ -81,7 +83,7 @@ public class RegistrationSplashViewController: OWSViewController {
                     comment: "Title of the 'onboarding splash' view."
                 )
             } else {
-                return "Internal Staging Build\n\(appVersion.currentAppVersion4)"
+                return "Internal Staging Build\n\(AppVersion.shared.currentAppVersion4)"
             }
         }()
         let titleLabel = UILabel.titleLabelForRegistration(text: titleText)
@@ -96,7 +98,7 @@ public class RegistrationSplashViewController: OWSViewController {
             comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view."
         )
         explanationLabel.textColor = Theme.accentBlueColor
-        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = UIFont.dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -126,7 +128,8 @@ public class RegistrationSplashViewController: OWSViewController {
     @objc
     private func didTapModeSwitch() {
         Logger.info("")
-        owsFail("TODO[Registration] Not implemented")
+
+        presenter?.switchToDeviceLinkingMode()
     }
 
     @objc

@@ -263,7 +263,7 @@ class CustomColorViewController: OWSTableViewController2 {
             cell.selectionStyle = .none
 
             let headerLabel = UILabel()
-            headerLabel.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
+            headerLabel.font = UIFont.dynamicTypeSubheadline.semibold()
             headerLabel.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray15 : UIColor.ows_gray60
             headerLabel.text = headerText
             cell.contentView.addSubview(headerLabel)
@@ -1090,7 +1090,7 @@ private class CustomColorPreviewView: UIView {
             if Self.showKnobLabels, let name = name {
                 let label = UILabel()
                 label.text = name
-                label.font = .ows_dynamicTypeCaption1
+                label.font = .dynamicTypeCaption1
                 label.textColor = .ows_white
                 self.addSubview(label)
                 label.autoCenterInSuperview()
@@ -1530,7 +1530,7 @@ private class CustomColorTooltip: TooltipView {
         let label = UILabel()
         label.text = NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP",
                                        comment: "Tooltip highlighting the custom chat color controls.")
-        label.font = .ows_dynamicTypeSubheadline
+        label.font = .dynamicTypeSubheadline
         label.textColor = .ows_white
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

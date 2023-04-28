@@ -5,16 +5,10 @@
 
 import Foundation
 
-@objc
-public class OWSSignalServiceMock: NSObject, OWSSignalServiceProtocol {
+#if TESTABLE_BUILD
 
-    public override init() {
-        super.init()
-    }
-
+public class OWSSignalServiceMock: OWSSignalServiceProtocol, Dependencies {
     public func warmCaches() {}
-
-    public var keyValueStore = SDSKeyValueStore(collection: "")
 
     public var isCensorshipCircumventionActive: Bool = false
 
@@ -28,8 +22,7 @@ public class OWSSignalServiceMock: NSObject, OWSSignalServiceProtocol {
 
     public var urlEndpointBuilder: ((SignalServiceInfo) -> OWSURLSessionEndpoint)?
 
-    public func typeUnsafe_buildUrlEndpoint(for signalServiceInfo: Any) -> Any {
-        let signalServiceInfo = signalServiceInfo as! SignalServiceInfo
+    public func buildUrlEndpoint(for signalServiceInfo: SignalServiceInfo) -> OWSURLSessionEndpoint {
         return urlEndpointBuilder?(signalServiceInfo) ?? OWSURLSessionEndpoint(
             baseUrl: signalServiceInfo.baseUrl,
             frontingInfo: nil,
@@ -40,8 +33,11 @@ public class OWSSignalServiceMock: NSObject, OWSSignalServiceProtocol {
 
     public var mockUrlSessionBuilder: ((SignalServiceInfo, OWSURLSessionEndpoint, URLSessionConfiguration?) -> BaseOWSURLSessionMock)?
 
-    public func typeUnsafe_buildUrlSession(for signalServiceInfo: Any, endpoint: OWSURLSessionEndpoint, configuration: URLSessionConfiguration?) -> Any {
-        let signalServiceInfo = signalServiceInfo as! SignalServiceInfo
+    public func buildUrlSession(
+        for signalServiceInfo: SignalServiceInfo,
+        endpoint: OWSURLSessionEndpoint,
+        configuration: URLSessionConfiguration?
+    ) -> OWSURLSessionProtocol {
         return mockUrlSessionBuilder?(signalServiceInfo, endpoint, configuration) ?? BaseOWSURLSessionMock(
             endpoint: endpoint,
             configuration: .default,
@@ -49,3 +45,5 @@ public class OWSSignalServiceMock: NSObject, OWSSignalServiceProtocol {
         )
     }
 }
+
+#endif

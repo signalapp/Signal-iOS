@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class UnfairLockTest: SSKBaseTestSwift {
+class UnfairLockTest: XCTestCase {
 
     private var dut: UnfairLock! = nil
 

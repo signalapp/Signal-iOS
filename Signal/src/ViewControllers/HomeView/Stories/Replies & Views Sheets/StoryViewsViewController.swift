@@ -106,7 +106,7 @@ class StoryViewsViewController: OWSViewController {
         label.textAlignment = .center
 
         if StoryManager.areViewReceiptsEnabled {
-            label.font = .ows_dynamicTypeBody
+            label.font = .dynamicTypeBody
             label.textColor = .ows_gray45
             label.text = NSLocalizedString(
                 "STORIES_NO_VIEWS_YET",
@@ -117,7 +117,7 @@ class StoryViewsViewController: OWSViewController {
             emptyStateView.addSubview(label)
             label.autoPinEdgesToSuperviewEdges()
         } else {
-            label.font = .ows_dynamicTypeCallout
+            label.font = .dynamicTypeCallout
             label.textColor = .ows_gray25
             label.text = NSLocalizedString(
                 "STORIES_VIEWS_OFF_DESCRIPTION",
@@ -136,7 +136,7 @@ class StoryViewsViewController: OWSViewController {
                 })
             }
             settingsButton.setTitle(CommonStrings.goToSettingsButton, for: .normal)
-            settingsButton.titleLabel?.font = UIFont.ows_dynamicTypeCaption1.ows_semibold
+            settingsButton.titleLabel?.font = UIFont.dynamicTypeCaption1.semibold()
             settingsButton.setTitleColor(.ows_gray25, for: .normal)
             settingsButton.contentEdgeInsets = UIEdgeInsets(hMargin: 14, vMargin: 6)
             settingsButton.layer.borderWidth = 1.5
@@ -218,14 +218,14 @@ private class StoryViewCell: UITableViewCell {
 
     lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .ows_dynamicTypeBodyClamped
+        label.font = .dynamicTypeBodyClamped
         label.textColor = Theme.darkThemePrimaryColor
         return label
     }()
 
     lazy var timestampLabel: UILabel = {
         let label = UILabel()
-        label.font = .ows_dynamicTypeFootnoteClamped
+        label.font = .dynamicTypeFootnoteClamped
         label.textColor = Theme.darkThemeSecondaryTextAndIconColor
         return label
     }()

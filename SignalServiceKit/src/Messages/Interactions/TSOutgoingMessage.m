@@ -9,7 +9,6 @@
 #import "OWSContact.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "ProtoUtils.h"
-#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
@@ -213,7 +212,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     self = [super initWithCoder:coder];
 
     if (self) {
+#ifndef TESTABLE_BUILD
         OWSAssertDebug(self.outgoingMessageSchemaVersion >= 1);
+#endif
 
         _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
     }
@@ -667,13 +668,14 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                             }];
 }
 
-- (void)updateWithSentRecipient:(SignalServiceAddress *)recipientAddress
+- (void)updateWithSentRecipient:(ServiceIdObjC *)serviceId
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(recipientAddress.isValid);
+    OWSAssertDebug(serviceId);
     OWSAssertDebug(transaction);
 
+    SignalServiceAddress *recipientAddress = [[SignalServiceAddress alloc] initWithServiceIdObjC:serviceId];
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
                                                 TSOutgoingMessageRecipientState *_Nullable recipientState
@@ -1071,8 +1073,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [builder setBody:truncatedBody];
     }
 
-    NSArray<SSKProtoDataMessageBodyRange *> *bodyRanges = [self bodyRangeProtosWithBodyText:self.body
-                                                                              andBodyRanges:self.bodyRanges];
+    NSArray<SSKProtoBodyRange *> *bodyRanges = [self bodyRangeProtosWithBodyText:self.body
+                                                                   andBodyRanges:self.bodyRanges];
     if (bodyRanges.count > 0) {
         [builder setBodyRanges:bodyRanges];
 
@@ -1375,14 +1377,14 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return OutgoingGroupProtoResult_AddedWithoutGroupAvatar;
 }
 
-- (NSArray<SSKProtoDataMessageBodyRange *> *)bodyRangeProtosWithBodyText:(NSString *)bodyText
-                                                           andBodyRanges:(nullable MessageBodyRanges *)bodyRanges
+- (NSArray<SSKProtoBodyRange *> *)bodyRangeProtosWithBodyText:(NSString *)bodyText
+                                                andBodyRanges:(nullable MessageBodyRanges *)bodyRanges
 {
     if (bodyText.length == 0 || bodyRanges == nil) {
         return @[];
     }
 
-    NSMutableArray<SSKProtoDataMessageBodyRange *> *bodyRangeProtos = [NSMutableArray new];
+    NSMutableArray<SSKProtoBodyRange *> *bodyRangeProtos = [NSMutableArray new];
     for (NSValue *rangeValue in bodyRanges.mentions) {
         NSRange range = [rangeValue rangeValue];
         NSUUID *uuid = bodyRanges.mentions[rangeValue];
@@ -1392,13 +1394,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             continue;
         }
 
-        SSKProtoDataMessageBodyRangeBuilder *bodyRangeBuilder = [SSKProtoDataMessageBodyRange builder];
+        SSKProtoBodyRangeBuilder *bodyRangeBuilder = [SSKProtoBodyRange builder];
         [bodyRangeBuilder setStart:(uint32_t)range.location];
         [bodyRangeBuilder setLength:(uint32_t)range.length];
         [bodyRangeBuilder setMentionUuid:uuid.UUIDString];
 
         NSError *error;
-        SSKProtoDataMessageBodyRange *_Nullable bodyRange = [bodyRangeBuilder buildAndReturnError:&error];
+        SSKProtoBodyRange *_Nullable bodyRange = [bodyRangeBuilder buildAndReturnError:&error];
         if (!bodyRange || error) {
             OWSFailDebug(@"could not build protobuf: %@", error);
             return nil;
@@ -1433,8 +1435,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         hasQuotedText = YES;
         [quoteBuilder setText:quotedMessage.body];
 
-        NSArray<SSKProtoDataMessageBodyRange *> *bodyRanges =
-            [self bodyRangeProtosWithBodyText:self.quotedMessage.body andBodyRanges:self.quotedMessage.bodyRanges];
+        NSArray<SSKProtoBodyRange *> *bodyRanges = [self bodyRangeProtosWithBodyText:self.quotedMessage.body
+                                                                       andBodyRanges:self.quotedMessage.bodyRanges];
         if (bodyRanges.count > 0) {
             [quoteBuilder setBodyRanges:bodyRanges];
         }

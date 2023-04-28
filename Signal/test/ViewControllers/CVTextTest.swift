@@ -8,10 +8,10 @@ import Foundation
 @testable import SignalUI
 import BonMot
 
-class CVTextTest: SignalBaseTest {
+class CVTextTest: XCTestCase {
     func testTextViewMeasurement() {
         let configs = [
-            CVTextViewConfig(text: "short", font: .ows_dynamicTypeBody, textColor: .black),
+            CVTextViewConfig(text: "short", font: .dynamicTypeBody, textColor: .black),
             CVTextViewConfig(
                 text: """
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lectus nulla, eleifend eget libero sit amet, tempor lobortis lacus. Nulla luctus id mi a auctor. Etiam bibendum sed ante et blandit. Phasellus bibendum commodo dapibus. Vivamus lorem diam, finibus vitae mi vel, dignissim ornare felis. Praesent nibh sem, bibendum vitae fringilla ac, sodales ut ipsum. Vestibulum metus magna, elementum eu dapibus in, faucibus at lacus. In ac ornare nisi, ac fringilla sem. Sed ultricies sollicitudin semper. In hac habitasse platea dictumst.
@@ -20,7 +20,7 @@ class CVTextTest: SignalBaseTest {
 
                 Etiam sed felis nunc. Suspendisse vestibulum elit eu dignissim accumsan. Morbi tortor arcu, vulputate eu varius vel, varius ac sapien. Aenean ut efficitur augue. Sed semper diam at ipsum aliquet scelerisque. Pellentesque blandit quis sem non euismod. Sed accumsan tellus quis sapien fermentum, quis dapibus urna tincidunt. Nam mattis fermentum nisl, non eleifend tortor facilisis sed. Vestibulum vitae efficitur dolor. Nam ligula odio, molestie eu porttitor eu, dignissim ut nulla. Ut tempor diam id sapien mattis dignissim. Pellentesque accumsan nibh a velit convallis laoreet.
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black
             ),
             CVTextViewConfig(
@@ -29,7 +29,7 @@ class CVTextTest: SignalBaseTest {
 
                 Ετ δθο σολεατ αθδιαμ, σιτ πθταντ σανcτθσ ιδ. Αν αccθμσαν ιντερπρεταρισ εθμ, μελ νολθισσε διγνισσιμ νε. Φορενσιβθσ ρεφορμιδανσ θλλαμcορπερ θτ ηασ, ναμ απεριαμ αλιqθιδ αν. Cθ σολθμ δελενιτ πατριοqθε εθμ, δετραcτο cονσετετθρ εστ τε. Νοvθμ σανcτθσ σεδ νο.
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black
             ),
             CVTextViewConfig(
@@ -40,7 +40,7 @@ class CVTextTest: SignalBaseTest {
                 علي الجانب الآخر نشجب ونستنكر هؤلاء الرجال المفتونون بنشوة اللحظة الهائمون في رغباتهم فلا يدركون ما يعقبها من الألم والأسي المحتم، واللوم كذلك يشمل هؤلاء الذين أخفقوا في واجباتهم نتيجة لضعف إرادتهم فيتساوي مع هؤلاء الذين يتجنبون وينأون عن تحمل الكدح والألم .
 
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black
             ),
             CVTextViewConfig(
@@ -49,21 +49,21 @@ class CVTextTest: SignalBaseTest {
 
                 足己謙告保士清修根選暮区細理貨聞年半。読治問形球漂注出裏下公療演続。芸意記栄山写日撃掲国主治当性発。生意逃免渡資一取引裕督転。応点続果安罰村必禁家政拳。写禁法考証言心彫埼権川関員奏届新営覚掲。南応要参愛類娘都誰定尚同勝積鎌記写塁。政回過市主覧貨張加主子義空教対券。載捕構方聞度名出結字夜何動問暮理詳半話。
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black
             ),
             CVTextViewConfig(
                 text: """
                 Lorem ipsum dolor sit amet 😟, consectetur adipiscing elit. Nullam lectus nulla, eleifend eget libero sit amet, tempor lobortis lacus. Nulla luctus id mi a auctor. Etiam bibendum sed ante et blandit. Phasellus bibendum commodo dapibus. Vivamus lorem diam, finibus vitae mi vel, dignissim ornare felis. Praesent nibh sem 🧐, bibendum vitae fringilla ac, sodales ut ipsum. Vestibulum metus magna, elementum eu dapibus in, faucibus at lacus. In ac 🤞 ornare nisi, ac fringilla sem. Sed ultricies sollicitudin semper. In hac habitasse platea dictumst.
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black
             ),
             CVTextViewConfig(
                 text: """
                 He’s awesome. This album isn’t listed on his discography, but it’s a cool album of duets with Courtney Barnett: https://open.spotify.com/album/3gvo4nvimDdqA9c3y7Bptc?si=aA8z06HoQAG8Xl2MbhFiRQ
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black
             ),
             CVTextViewConfig(
@@ -74,24 +74,24 @@ class CVTextTest: SignalBaseTest {
 
                 Etiam sed felis nunc. Suspendisse vestibulum elit eu dignissim accumsan. Morbi tortor arcu, vulputate eu varius vel, varius ac sapien. Aenean ut efficitur augue. Sed semper diam at ipsum aliquet scelerisque. Pellentesque blandit quis sem non euismod. Sed accumsan tellus quis sapien fermentum, quis dapibus urna tincidunt. Nam mattis fermentum nisl, non eleifend tortor facilisis sed. Vestibulum vitae efficitur dolor. Nam ligula odio, molestie eu porttitor eu, dignissim ut nulla. Ut tempor diam id sapien mattis dignissim. Pellentesque accumsan nibh a velit convallis laoreet.
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black
             ),
             CVTextViewConfig(
                 attributedText: NSAttributedString(string: "short"),
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black
             ),
             CVTextViewConfig(
                 attributedText: NSAttributedString(string: "one\ntwo\nthree"),
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black
             ),
             CVTextViewConfig(
                 attributedText: NSAttributedString.composed(of: [
                     #imageLiteral(resourceName: "video-solid-16"), "Some text", "\n", #imageLiteral(resourceName: "video-solid-16"), "Some text2"
                 ]),
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black
             ),
             CVTextViewConfig(
@@ -99,12 +99,12 @@ class CVTextTest: SignalBaseTest {
                     let labelText = NSMutableAttributedString()
 
                     labelText.appendTemplatedImage(named: "compose-outline-16",
-                                                   font: .ows_dynamicTypeFootnote,
+                                                   font: .dynamicTypeFootnote,
                                                    heightReference: .lineHeight)
                     labelText.append("  You changed the group name to “Test Group Call 2“.\n", attributes: [:])
 
                     labelText.appendTemplatedImage(named: "photo-outline-16",
-                                                   font: .ows_dynamicTypeFootnote,
+                                                   font: .dynamicTypeFootnote,
                                                    heightReference: .lineHeight)
                     labelText.append("  You updated the photo.", attributes: [:])
 
@@ -115,7 +115,7 @@ class CVTextTest: SignalBaseTest {
 
                     return labelText
                 }(),
-                font: .ows_dynamicTypeFootnote,
+                font: .dynamicTypeFootnote,
                 textColor: .black,
                 textAlignment: .center
             )
@@ -147,7 +147,7 @@ class CVTextTest: SignalBaseTest {
 
     func testLabelMeasurement() {
         let configs = [
-            CVLabelConfig(text: "short", font: .ows_dynamicTypeBody, textColor: .black, numberOfLines: 1),
+            CVLabelConfig(text: "short", font: .dynamicTypeBody, textColor: .black, numberOfLines: 1),
             CVLabelConfig(
                 text: """
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lectus nulla, eleifend eget libero sit amet, tempor lobortis lacus. Nulla luctus id mi a auctor. Etiam bibendum sed ante et blandit. Phasellus bibendum commodo dapibus. Vivamus lorem diam, finibus vitae mi vel, dignissim ornare felis. Praesent nibh sem, bibendum vitae fringilla ac, sodales ut ipsum. Vestibulum metus magna, elementum eu dapibus in, faucibus at lacus. In ac ornare nisi, ac fringilla sem. Sed ultricies sollicitudin semper. In hac habitasse platea dictumst.
@@ -156,7 +156,7 @@ class CVTextTest: SignalBaseTest {
 
                 Etiam sed felis nunc. Suspendisse vestibulum elit eu dignissim accumsan. Morbi tortor arcu, vulputate eu varius vel, varius ac sapien. Aenean ut efficitur augue. Sed semper diam at ipsum aliquet scelerisque. Pellentesque blandit quis sem non euismod. Sed accumsan tellus quis sapien fermentum, quis dapibus urna tincidunt. Nam mattis fermentum nisl, non eleifend tortor facilisis sed. Vestibulum vitae efficitur dolor. Nam ligula odio, molestie eu porttitor eu, dignissim ut nulla. Ut tempor diam id sapien mattis dignissim. Pellentesque accumsan nibh a velit convallis laoreet.
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black,
                 numberOfLines: 3
             ),
@@ -166,7 +166,7 @@ class CVTextTest: SignalBaseTest {
 
                 Ετ δθο σολεατ αθδιαμ, σιτ πθταντ σανcτθσ ιδ. Αν αccθμσαν ιντερπρεταρισ εθμ, μελ νολθισσε διγνισσιμ νε. Φορενσιβθσ ρεφορμιδανσ θλλαμcορπερ θτ ηασ, ναμ απεριαμ αλιqθιδ αν. Cθ σολθμ δελενιτ πατριοqθε εθμ, δετραcτο cονσετετθρ εστ τε. Νοvθμ σανcτθσ σεδ νο.
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black,
                 numberOfLines: 0
 
@@ -179,7 +179,7 @@ class CVTextTest: SignalBaseTest {
                 علي الجانب الآخر نشجب ونستنكر هؤلاء الرجال المفتونون بنشوة اللحظة الهائمون في رغباتهم فلا يدركون ما يعقبها من الألم والأسي المحتم، واللوم كذلك يشمل هؤلاء الذين أخفقوا في واجباتهم نتيجة لضعف إرادتهم فيتساوي مع هؤلاء الذين يتجنبون وينأون عن تحمل الكدح والألم .
 
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black,
                 numberOfLines: 0
             ),
@@ -189,7 +189,7 @@ class CVTextTest: SignalBaseTest {
 
                 足己謙告保士清修根選暮区細理貨聞年半。読治問形球漂注出裏下公療演続。芸意記栄山写日撃掲国主治当性発。生意逃免渡資一取引裕督転。応点続果安罰村必禁家政拳。写禁法考証言心彫埼権川関員奏届新営覚掲。南応要参愛類娘都誰定尚同勝積鎌記写塁。政回過市主覧貨張加主子義空教対券。載捕構方聞度名出結字夜何動問暮理詳半話。
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black,
                 numberOfLines: 0
             ),
@@ -197,7 +197,7 @@ class CVTextTest: SignalBaseTest {
                 text: """
                 Lorem ipsum dolor sit amet 😟, consectetur adipiscing elit. Nullam lectus nulla, eleifend eget libero sit amet, tempor lobortis lacus. Nulla luctus id mi a auctor. Etiam bibendum sed ante et blandit. Phasellus bibendum commodo dapibus. Vivamus lorem diam, finibus vitae mi vel, dignissim ornare felis. Praesent nibh sem 🧐, bibendum vitae fringilla ac, sodales ut ipsum. Vestibulum metus magna, elementum eu dapibus in, faucibus at lacus. In ac 🤞 ornare nisi, ac fringilla sem. Sed ultricies sollicitudin semper. In hac habitasse platea dictumst.
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black,
                 numberOfLines: 0
             ),
@@ -205,7 +205,7 @@ class CVTextTest: SignalBaseTest {
                 text: """
                 Lorem ipsum dolor sit amet 😟, consectetur adipiscing elit. Nullam lectus nulla, eleifend eget libero sit amet, tempor lobortis lacus. Nulla luctus id mi a auctor. Etiam bibendum sed ante et blandit. Phasellus bibendum commodo dapibus. Vivamus lorem diam, finibus vitae mi vel, dignissim ornare felis. Praesent nibh sem 🧐, bibendum vitae fringilla ac, sodales ut ipsum. Vestibulum metus magna, elementum eu dapibus in, faucibus at lacus. In ac 🤞 ornare nisi, ac fringilla sem. Sed ultricies sollicitudin semper. In hac habitasse platea dictumst.
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black,
                 numberOfLines: 2
             ),
@@ -213,20 +213,20 @@ class CVTextTest: SignalBaseTest {
                 text: """
                 Lorem ipsum dolor sit amet 😟, consectetur adipiscing elit. Nullam lectus nulla, eleifend eget libero sit amet, tempor lobortis lacus. Nulla luctus id mi a auctor. Etiam bibendum sed ante et blandit. Phasellus bibendum commodo dapibus. Vivamus lorem diam, finibus vitae mi vel, dignissim ornare felis. Praesent nibh sem 🧐, bibendum vitae fringilla ac, sodales ut ipsum. Vestibulum metus magna, elementum eu dapibus in, faucibus at lacus. In ac 🤞 ornare nisi, ac fringilla sem. Sed ultricies sollicitudin semper. In hac habitasse platea dictumst.
                 """,
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black,
                 numberOfLines: 5,
                 lineBreakMode: .byTruncatingMiddle
             ),
             CVLabelConfig(
                 attributedText: NSAttributedString(string: "short"),
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black,
                 numberOfLines: 1
             ),
             CVLabelConfig(
                 attributedText: NSAttributedString(string: "one\ntwo\nthree"),
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black,
                 numberOfLines: 0
             ),
@@ -234,7 +234,7 @@ class CVTextTest: SignalBaseTest {
                 attributedText: NSAttributedString.composed(of: [
                     #imageLiteral(resourceName: "video-solid-16"), "Some text", "\n", #imageLiteral(resourceName: "video-solid-16"), "Some text2"
                 ]),
-                font: .ows_dynamicTypeBody,
+                font: .dynamicTypeBody,
                 textColor: .black,
                 numberOfLines: 0
             ),
@@ -243,12 +243,12 @@ class CVTextTest: SignalBaseTest {
                     let labelText = NSMutableAttributedString()
 
                     labelText.appendTemplatedImage(named: "compose-outline-16",
-                                                   font: .ows_dynamicTypeFootnote,
+                                                   font: .dynamicTypeFootnote,
                                                    heightReference: .lineHeight)
                     labelText.append("  You changed the group name to “Test Group Call 2“.\n", attributes: [:])
 
                     labelText.appendTemplatedImage(named: "photo-outline-16",
-                                                   font: .ows_dynamicTypeFootnote,
+                                                   font: .dynamicTypeFootnote,
                                                    heightReference: .lineHeight)
                     labelText.append("  You updated the photo.", attributes: [:])
 
@@ -259,7 +259,7 @@ class CVTextTest: SignalBaseTest {
 
                     return labelText
                 }(),
-                font: .ows_dynamicTypeFootnote,
+                font: .dynamicTypeFootnote,
                 textColor: .black,
                 numberOfLines: 0,
                 lineBreakMode: .byWordWrapping,

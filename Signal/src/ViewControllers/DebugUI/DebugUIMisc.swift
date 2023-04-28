@@ -113,6 +113,11 @@ public extension DebugUIMisc {
             ExperienceUpgrade.anyRemoveAllWithInstantiation(transaction: transaction)
         }
     }
+
+    func showPinReminder() {
+        let viewController = PinReminderViewController()
+        UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
+    }
 }
 
 #endif

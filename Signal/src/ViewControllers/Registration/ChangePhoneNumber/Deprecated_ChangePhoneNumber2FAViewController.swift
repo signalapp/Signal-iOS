@@ -91,7 +91,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
 
         let titleLabel = self.createTitleLabel(text: titleText)
         let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
-        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = UIFont.dynamicTypeSubheadlineClamped
         explanationLabel.accessibilityIdentifier = "onboarding.2fa." + "explanationLabel"
 
         pinTextField.delegate = self
@@ -99,7 +99,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
         pinTextField.isSecureTextEntry = true
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.textAlignment = .center
-        pinTextField.font = .ows_dynamicTypeBodyClamped
+        pinTextField.font = .dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
         pinTextField.keyboardAppearance = Theme.keyboardAppearance
@@ -110,7 +110,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
 
         validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.textAlignment = .center
-        validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+        validationWarningLabel.font = UIFont.dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "onboarding.2fa.validationWarningLabel"
         validationWarningLabel.numberOfLines = 0
         validationWarningLabel.setCompressionResistanceHigh()

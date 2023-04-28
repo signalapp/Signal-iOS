@@ -8,10 +8,6 @@ import SignalServiceKit
 
 @objc(OWSSyncPushTokensJob)
 class SyncPushTokensJob: NSObject {
-
-    @objc
-    public static let PushTokensDidChange = Notification.Name("PushTokensDidChange")
-
     enum Mode {
         case normal
         case forceUpload
@@ -81,7 +77,7 @@ class SyncPushTokensJob: NSObject {
             } else if self.mode == .forceUpload {
                 Logger.info("Forced uploading, even though tokens didn't change.")
                 shouldUploadTokens = true
-            } else if Self.appVersion.lastAppVersion != Self.appVersion.currentAppReleaseVersion {
+            } else if AppVersion.shared.lastAppVersion != AppVersion.shared.currentAppReleaseVersion {
                 Logger.info("Uploading due to fresh install or app upgrade.")
                 shouldUploadTokens = true
             } else if !Self.hasUploadedTokensOnce.get() {
@@ -138,12 +134,9 @@ class SyncPushTokensJob: NSObject {
         assert(!Thread.isMainThread)
         Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
 
-        var didTokensChange = false
-
         if pushToken != self.preferences.getPushToken() {
             Logger.info("Recording new plain push token")
             self.preferences.setPushToken(pushToken)
-            didTokensChange = true
 
             // Tokens should now be aligned with stored tokens.
             owsAssertDebug(pushToken == self.preferences.getPushToken())
@@ -152,14 +145,9 @@ class SyncPushTokensJob: NSObject {
         if voipToken != self.preferences.getVoipToken() {
             Logger.info("Recording new voip token")
             self.preferences.setVoipToken(voipToken)
-            didTokensChange = true
 
             // Tokens should now be aligned with stored tokens.
             owsAssertDebug(voipToken == self.preferences.getVoipToken())
-        }
-
-        if didTokensChange {
-            NotificationCenter.default.postNotificationNameAsync(SyncPushTokensJob.PushTokensDidChange, object: nil)
         }
     }
 }

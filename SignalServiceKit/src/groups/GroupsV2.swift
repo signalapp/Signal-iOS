@@ -33,6 +33,14 @@ public enum GroupsV2Error: Error {
     case newMemberMissingAnnouncementOnlyCapability
     case localUserBlockedFromJoining
 
+    /// We tried to apply an incremental group change proto but failed due to
+    /// an incompatible revision in the proto.
+    ///
+    /// Note that group change protos can only be applied if they are a
+    /// continuous incremental update, i.e. our local revision is N and the
+    /// proto represents revision N+1.
+    case groupChangeProtoForIncompatibleRevision
+
     /// We hit a 400 while making a service request, but believe it may be
     /// recoverable.
     case serviceRequestHitRecoverable400
@@ -136,8 +144,6 @@ public protocol GroupsV2Swift: GroupsV2 {
     func uploadGroupAvatar(avatarData: Data, groupSecretParamsData: Data) -> Promise<String>
 
     func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL
-
-    func isPossibleGroupInviteLink(_ url: URL) -> Bool
 
     func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo?
 
@@ -662,10 +668,6 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
     }
 
     public func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
-        owsFail("Not implemented.")
-    }
-
-    public func isPossibleGroupInviteLink(_ url: URL) -> Bool {
         owsFail("Not implemented.")
     }
 

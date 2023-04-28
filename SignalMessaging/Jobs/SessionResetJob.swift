@@ -11,7 +11,7 @@ public class SessionResetJobQueue: NSObject, JobQueue {
 
     @objc(addContactThread:transaction:)
     public func add(contactThread: TSContactThread, transaction: SDSAnyWriteTransaction) {
-        let jobRecord = OWSSessionResetJobRecord(contactThread: contactThread, label: self.jobRecordLabel)
+        let jobRecord = SessionResetJobRecord(contactThread: contactThread, label: self.jobRecordLabel)
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
@@ -55,11 +55,11 @@ public class SessionResetJobQueue: NSObject, JobQueue {
         return operationQueue
     }()
 
-    public func operationQueue(jobRecord: OWSSessionResetJobRecord) -> OperationQueue {
+    public func operationQueue(jobRecord: SessionResetJobRecord) -> OperationQueue {
         return self.operationQueue
     }
 
-    public func buildOperation(jobRecord: OWSSessionResetJobRecord, transaction: SDSAnyReadTransaction) throws -> SessionResetOperation {
+    public func buildOperation(jobRecord: SessionResetJobRecord, transaction: SDSAnyReadTransaction) throws -> SessionResetOperation {
         guard let contactThread = TSThread.anyFetch(uniqueId: jobRecord.contactThreadId, transaction: transaction) as? TSContactThread else {
             throw JobError.obsolete(description: "thread for session reset no longer exists")
         }
@@ -72,7 +72,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     // MARK: DurableOperation
 
-    public let jobRecord: OWSSessionResetJobRecord
+    public let jobRecord: SessionResetJobRecord
 
     weak public var durableOperationDelegate: SessionResetJobQueue?
 
@@ -87,8 +87,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         return contactThread.contactAddress
     }
 
-    @objc
-    public required init(contactThread: TSContactThread, jobRecord: OWSSessionResetJobRecord) {
+    public required init(contactThread: TSContactThread, jobRecord: SessionResetJobRecord) {
         self.contactThread = contactThread
         self.jobRecord = jobRecord
     }

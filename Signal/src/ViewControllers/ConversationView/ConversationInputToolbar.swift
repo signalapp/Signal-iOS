@@ -163,7 +163,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private lazy var inputTextView: ConversationInputTextView = {
         let inputTextView = ConversationInputTextView()
         inputTextView.textViewToolbarDelegate = self
-        inputTextView.font = .ows_dynamicTypeBody
+        inputTextView.font = .dynamicTypeBody
         inputTextView.setContentHuggingLow()
         inputTextView.setCompressionResistanceLow()
         inputTextView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "inputTextView")
@@ -587,7 +587,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }
 
     func updateFontSizes() {
-        inputTextView.font = .ows_dynamicTypeBody
+        inputTextView.font = .dynamicTypeBody
     }
 
     // MARK: Right Edge Buttons
@@ -1315,7 +1315,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         let recordingLabel = UILabel()
         recordingLabel.textAlignment = .left
         recordingLabel.textColor = Theme.primaryTextColor
-        recordingLabel.font = .ows_dynamicTypeBodyClamped.ows_medium.ows_monospaced
+        recordingLabel.font = .dynamicTypeBodyClamped.monospaced().medium()
         recordingLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "recordingLabel")
         voiceMemoContentView.addSubview(recordingLabel)
         self.voiceMemoRecordingLabel = recordingLabel
@@ -1326,7 +1326,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         let cancelString = NSMutableAttributedString(
             string: "\u{F104}",
             attributes: [
-                .font: UIFont.ows_fontAwesomeFont(cancelArrowFontSize),
+                .font: UIFont.awesomeFont(ofSize: cancelArrowFontSize),
                 .foregroundColor: Theme.secondaryTextAndIconColor,
                 .baselineOffset: -1
             ]
@@ -1335,7 +1335,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             NSAttributedString(
                 string: "  ",
                 attributes: [
-                    .font: UIFont.ows_fontAwesomeFont(cancelArrowFontSize),
+                    .font: UIFont.awesomeFont(ofSize: cancelArrowFontSize),
                     .foregroundColor: Theme.secondaryTextAndIconColor,
                     .baselineOffset: -1
                 ]
@@ -1345,7 +1345,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             NSAttributedString(
                 string: NSLocalizedString("VOICE_MESSAGE_CANCEL_INSTRUCTIONS", comment: "Indicates how to cancel a voice message."),
                 attributes: [
-                    .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+                    .font: UIFont.dynamicTypeSubheadlineClamped,
                     .foregroundColor: Theme.secondaryTextAndIconColor
                 ]
             )
@@ -1508,7 +1508,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         cancelButton.setTitleColor(.ows_accentRed, for: .normal)
         cancelButton.setTitleColor(.ows_accentRed.withAlphaComponent(0.4), for: .highlighted)
         cancelButton.titleLabel?.textAlignment = .right
-        cancelButton.titleLabel?.font = .ows_dynamicTypeBodyClamped.ows_medium
+        cancelButton.titleLabel?.font = .dynamicTypeBodyClamped.medium()
         cancelButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "cancelButton")
         voiceMemoContentView.addSubview(cancelButton)
 

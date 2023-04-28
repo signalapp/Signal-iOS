@@ -33,6 +33,8 @@ public class Deprecated_OnboardingNavigationController: OWSNavigationController 
 
 // MARK: -
 
+// TODO[Registration]: pull out the parts of this related to secondary device
+// linking into simpler classes and delete the rest once once new registration rolls out.
 @objc
 public class Deprecated_OnboardingController: NSObject {
 
@@ -114,7 +116,7 @@ public class Deprecated_OnboardingController: NSObject {
     }
 
     var isComplete: Bool {
-        guard !tsAccountManager.isOnboarded() else {
+        guard !tsAccountManager.isOnboarded else {
             Logger.debug("previously completed onboarding")
             return true
         }
@@ -158,7 +160,7 @@ public class Deprecated_OnboardingController: NSObject {
 
     @objc
     public func markAsOnboarded() {
-        guard !tsAccountManager.isOnboarded() else { return }
+        guard !tsAccountManager.isOnboarded else { return }
         self.databaseStorage.asyncWrite {
             Logger.info("completed onboarding")
             self.tsAccountManager.setIsOnboarded(true, transaction: $0)
@@ -217,6 +219,12 @@ public class Deprecated_OnboardingController: NSObject {
         AssertIsOnMainThread()
 
         Logger.info("")
+
+        if onboardingMode == .provisioning {
+            let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
+            signalApp.showRegistration(loader: loader, desiredMode: .registering)
+            return
+        }
 
         switch Self.defaultOnboardingMode {
         case .registering:
@@ -335,7 +343,7 @@ public class Deprecated_OnboardingController: NSObject {
         // We start the contact fetch/intersection now so that by the time
         // they get to conversation list we can show meaningful contact in
         // the suggested contact bubble.
-        contactsManagerImpl.fetchSystemContactsOnceIfAlreadyAuthorized(with: .implicit())
+        contactsManagerImpl.fetchSystemContactsOnceIfAlreadyAuthorized()
 
         showNextMilestone(navigationController: navigationController)
     }
@@ -681,7 +689,7 @@ public class Deprecated_OnboardingController: NSObject {
             if
                 Self.tsAccountManager.isReregistering,
                 self.phoneNumber != nil,
-                self.phoneNumber?.e164 == Self.tsAccountManager.reregistrationPhoneNumber()
+                self.phoneNumber?.e164 == Self.tsAccountManager.reregistrationPhoneNumber
             {
                 return Self.ows2FAManager.pinCode
             } else {
@@ -764,7 +772,7 @@ public class Deprecated_OnboardingController: NSObject {
             SDSDatabaseStorage.shared.write { transaction in
                 context.keyBackupService.clearKeys(transaction: transaction.asV2Write)
                 self.ows2FAManager.markRegistrationLockV2Disabled(transaction: transaction)
-                self.ows2FAManager.setPinCode(nil, transaction: transaction)
+                self.ows2FAManager.clearLocalPinCode(transaction: transaction)
             }
 
             completion(.invalid2FAPin)

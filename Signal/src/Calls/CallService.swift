@@ -621,7 +621,7 @@ public final class CallService: LightweightCallManager {
     @discardableResult
     @objc
     public func initiateCall(thread: TSThread, isVideo: Bool) -> Bool {
-        guard tsAccountManager.isOnboarded() else {
+        guard tsAccountManager.isOnboarded else {
             Logger.warn("aborting due to user not being onboarded.")
             OWSActionSheets.showActionSheet(title: NSLocalizedString("YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
                                                                      comment: "alert body shown when trying to use features in the app before completing registration-related setup."))

@@ -80,7 +80,7 @@ class GiftBadgeView: ManualStackView {
 
         return CVLabelConfig(
             text: text,
-            font: .ows_dynamicTypeBody,
+            font: .dynamicTypeBody,
             textColor: textColor,
             numberOfLines: 0
         )
@@ -120,7 +120,7 @@ class GiftBadgeView: ManualStackView {
         let textColor = state.conversationStyle.bubbleSecondaryTextColor(isIncoming: state.isIncoming)
         return CVLabelConfig(
             text: state.timeRemainingText,
-            font: .ows_dynamicTypeSubheadline,
+            font: .dynamicTypeSubheadline,
             textColor: textColor,
             numberOfLines: 0
         )
@@ -149,7 +149,7 @@ class GiftBadgeView: ManualStackView {
     // This is a label, not a button, to remain compatible with the hit testing code.
     private let redeemButtonLabel = CVLabel()
     private static func redeemButtonLabelConfig(for state: State) -> CVLabelConfig {
-        let font: UIFont = .ows_dynamicTypeBody.ows_semibold
+        let font: UIFont = .dynamicTypeBody.semibold()
         return CVLabelConfig(
             attributedText: Self.redeemButtonText(for: state, font: font),
             font: font,

@@ -165,7 +165,7 @@ public class ApprovalFooterView: UIView {
 
     lazy var namesLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeBody
+        label.font = UIFont.dynamicTypeBody
 
         label.setContentHuggingLow()
 
@@ -175,7 +175,7 @@ public class ApprovalFooterView: UIView {
     lazy var textfield: TextFieldWithPlaceholder = {
         let textfield = TextFieldWithPlaceholder()
         textfield.delegate = self
-        textfield.font = UIFont.ows_dynamicTypeBody
+        textfield.font = UIFont.dynamicTypeBody
         return textfield
     }()
 

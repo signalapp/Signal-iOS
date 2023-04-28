@@ -5,7 +5,7 @@
 
 import Foundation
 
-extension OWSSyncManager: SyncManagerProtocolSwift {
+extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
     // MARK: - Sync Requests
 
@@ -26,7 +26,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
         }
 
         return databaseStorage.write(.promise) { (transaction) -> Promise<Void> in
-            let currentAppVersion = self.appVersion.currentAppVersion4
+            let currentAppVersion = AppVersion.shared.currentAppVersion4
             let syncRequestedAppVersion = {
                 Self.keyValueStore().getString(
                     OWSSyncManagerSyncRequestedAppVersionKey,
@@ -173,7 +173,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
         switch type {
         case .accept:
             blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
-            profileManager.addThread(toProfileWhitelist: thread, authedAccount: .implicit(), transaction: transaction)
+            profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
         case .delete:
             thread.softDelete(with: transaction)
         case .block:

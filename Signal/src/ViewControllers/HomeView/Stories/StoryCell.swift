@@ -86,7 +86,7 @@ class StoryCell: UITableViewCell {
         replyImageView.tintColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
 
         nameLabel.numberOfLines = 2
-        nameLabel.font = .ows_dynamicTypeHeadline
+        nameLabel.font = .dynamicTypeHeadline
         nameLabel.textColor = Theme.primaryTextColor
         nameLabel.text = model.latestMessageName
 
@@ -120,7 +120,7 @@ class StoryCell: UITableViewCell {
 
     func configureSubtitle(with model: StoryViewModel) {
         subtitleStack.isHidden = model.isSystemStory
-        subtitleLabel.font = .ows_dynamicTypeSubheadline
+        subtitleLabel.font = .dynamicTypeSubheadline
         subtitleLabel.textColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
 
         switch model.latestMessageSendingState {

@@ -335,6 +335,10 @@ public extension TSOutgoingMessage {
                 throw OWSAssertionError("Missing local thread")
             }
 
+            guard let localUuid = Self.tsAccountManager.localUuid else {
+                throw OWSAssertionError("Missing local uuid")
+            }
+
             guard let transcript = self.buildTranscriptSyncMessage(
                 localThread: localThread,
                 transaction: transaction
@@ -353,7 +357,7 @@ public extension TSOutgoingMessage {
                 plaintextContent: plaintext,
                 plaintextPayloadId: payloadId,
                 thread: localThread,
-                address: Self.tsAccountManager.localAddress!,
+                serviceId: ServiceIdObjC(ServiceId(localUuid)),
                 udSendingAccess: nil,
                 localAddress: Self.tsAccountManager.localAddress!,
                 sendErrorBlock: nil

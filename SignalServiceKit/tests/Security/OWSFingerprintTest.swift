@@ -6,10 +6,21 @@
 import XCTest
 import SignalServiceKit
 
-final class OWSFingerprintTest: SSKBaseTestSwift {
+final class OWSFingerprintTest: XCTestCase {
+    private lazy var _signalServiceAddressCache = SignalServiceAddressCache()
+
+    private func makeAddress(phoneNumber: String) -> SignalServiceAddress {
+        SignalServiceAddress(
+            uuid: UUID(),
+            phoneNumber: phoneNumber,
+            cache: _signalServiceAddressCache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
+    }
+
     func testDisplayableTextInsertsSpaces() {
-        let aliceStableAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+19995550101")
-        let bobStableAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+18885550102")
+        let aliceStableAddress = makeAddress(phoneNumber: "+19995550101")
+        let bobStableAddress = makeAddress(phoneNumber: "+18885550102")
 
         let aliceIdentityKey = Curve25519.generateKeyPair().publicKey
         let bobIdentityKey = Curve25519.generateKeyPair().publicKey
@@ -40,9 +51,9 @@ final class OWSFingerprintTest: SSKBaseTestSwift {
     }
 
     func testTextMatchesReciprocally() {
-        let aliceStableAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+19995550101")
-        let bobStableAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+18885550102")
-        let charlieStableAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+17775550103")
+        let aliceStableAddress = makeAddress(phoneNumber: "+19995550101")
+        let bobStableAddress = makeAddress(phoneNumber: "+18885550102")
+        let charlieStableAddress = makeAddress(phoneNumber: "+17775550103")
 
         let aliceIdentityKey = Curve25519.generateKeyPair().publicKey
         let bobIdentityKey = Curve25519.generateKeyPair().publicKey

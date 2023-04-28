@@ -87,7 +87,7 @@ class MyStoryCell: UITableViewCell {
 
         self.backgroundColor = .clear
 
-        titleLabel.font = .ows_dynamicTypeHeadline
+        titleLabel.font = .dynamicTypeHeadline
         titleLabel.textColor = Theme.primaryTextColor
 
         titleChevron.tintColor = Theme.primaryTextColor
@@ -150,7 +150,7 @@ class MyStoryCell: UITableViewCell {
     }
 
     func configureSubtitle(with model: MyStoryViewModel) {
-        subtitleLabel.font = .ows_dynamicTypeSubheadline
+        subtitleLabel.font = .dynamicTypeSubheadline
         subtitleLabel.textColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
         failedIconView.image = Theme.iconImage(.error16)
 

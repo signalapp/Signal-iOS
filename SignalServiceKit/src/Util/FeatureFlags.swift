@@ -55,7 +55,6 @@ extension StorageMode: CustomStringConvertible {
 /// which feature flags are in play.
 @objc(SSKFeatureFlags)
 public class FeatureFlags: BaseFlags {
-    public static let useChangePhoneNumberPniParameters = build.includes(.dev)
 
     @objc
     public static let phoneNumberSharing = build.includes(.internal)
@@ -88,8 +87,6 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let deprecateREST = false
 
-    public static let shouldUseRemoteConfigForReceivingGiftBadges = true
-
     public static let isPrerelease = build.includes(.beta)
 
     @objc
@@ -101,16 +98,9 @@ public class FeatureFlags: BaseFlags {
         return false
     }
 
-    public static let useNewRegistrationFlow: Bool = {
-        #if DEBUG
-        if ProcessInfo.processInfo.environment["REG_BRAVO_TESTING"] == "1" {
-            return true
-        }
-        #endif
-        return false
-    }()
+    public static let textFormattingReceiveSupport: Bool = build.includes(.internal)
 
-    public static let canRequestAccountData: Bool = build.includes(.dev)
+    public static let periodicallyCheckDatabaseIntegrity: Bool = build.includes(.internal)
 
     @objc
     public static func logFlags() {
@@ -128,6 +118,9 @@ public class FeatureFlags: BaseFlags {
             logFlag("FeatureFlag", key, value)
         }
     }
+
+    @objc
+    public static let editMessageReceive: Bool = false
 }
 
 // MARK: -
@@ -303,9 +296,6 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let groupsV2memberStatusIndicators = build.includes(.internal)
 
-    @objc
-    public static let isMessageProcessingVerbose = false
-
     // Currently this flag is only honored by NetworkManager,
     // but we could eventually honor in other places as well:
     //
@@ -325,9 +315,6 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let verboseNotificationLogging = build.includes(.internal)
-
-    @objc
-    public static let verboseSignalRecipientLogging = build.includes(.internal)
 
     @objc
     public static let deviceTransferVerboseProgressLogging = build.includes(.internal)
@@ -480,11 +467,6 @@ public class DebugFlags: BaseFlags {
                                                                toggleHandler: { _ in
         databaseStorage.read { messageDecrypter.schedulePlaceholderCleanup(transaction: $0)}
     })
-
-    @objc
-    public static let forceChangePhoneNumberUI = TestableFlag(build.includes(.beta),
-                                                              title: LocalizationNotNeeded("Force 'change phone number' UI."),
-                                                              details: LocalizationNotNeeded("The UI will appear in settings."))
 
     @objc
     public static let deviceTransferPreserveOldDevice = false

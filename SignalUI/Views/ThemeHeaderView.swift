@@ -10,7 +10,7 @@ public class ThemeHeaderView: UIView {
     private let blurEffectView: UIVisualEffectView?
 
     static var labelFont: UIFont {
-        return UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        return UIFont.dynamicTypeBodyClamped.semibold()
     }
 
     static var desiredHeight: CGFloat {

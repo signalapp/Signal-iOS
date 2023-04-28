@@ -138,10 +138,10 @@ class GRDBFinderTest: SignalBaseTest {
         let address7 = SignalServiceAddress(uuid: UUID())
 
         self.write { transaction in
-            SignalRecipient(address: address1).anyInsert(transaction: transaction)
-            SignalRecipient(address: address2).anyInsert(transaction: transaction)
-            SignalRecipient(address: address3).anyInsert(transaction: transaction)
-            SignalRecipient(address: address4).anyInsert(transaction: transaction)
+            [address1, address2, address3, address4].forEach {
+                SignalRecipient(serviceId: $0.serviceIdObjC, phoneNumber: $0.e164ObjC)
+                    .anyInsert(transaction: transaction)
+            }
         }
 
         self.read { transaction in

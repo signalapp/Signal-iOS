@@ -28,6 +28,42 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Hlasová správa";
 
+/* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Exportovať prehľad";
+
+/* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Údaje svojho Signal účtu zdieľajte iba s ľuďmi a aplikáciami, ktorým dôverujete.";
+
+/* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
+"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Skontrolujte svoje pripojenie a skúste to znovu.";
+
+/* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Prehľad sa nepodarilo vygenerovať";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Strojom čitateľný súbor";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Exportovať ako JSON";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Ľahko čitateľný textový súbor";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Exportovať ako TXT";
+
+/* Users can request a report of their account data. Users tap this button to export their data. */
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Exportovať prehľad";
+
+/* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
+"ACCOUNT_DATA_REPORT_FOOTER" = "Váš prehľad sa vygeneruje iba v čase exportu a Signal ho neukladá vo vašom zariadení.";
+
+/* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "Stiahnite a exportujte si prehľad údajov svojho Signal účtu. Tento prehľad neobsahuje žiadne správy ani médiá.";
+
+/* Users can request a report of their account data. This is the title on the screen where they do this. */
+"ACCOUNT_DATA_REPORT_TITLE" = "Údaje o vašom účte";
+
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal hovor";
 
@@ -139,11 +175,14 @@
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal sa nedá spustiť. Pošlite, prosím, denník ladenia na support@signal.org, aby sme mohli tento problém vyriešiť.";
 
-/* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Chyba";
-
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "Namiesto toho otvorte Signal";
+
+/* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+
+/* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Couldn’t Open Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Nepodarilo sa načítať databázu";
@@ -1619,7 +1658,10 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Znovu zaregistrovať toto telefónne číslo";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Zariadenie už nie je registrované. Vaše telefónne číslo môže byť registrované v Signale na inom zariadení. Ťukniťe pre opätovnú registráciu.";
+"DEREGISTRATION_WARNING" = "This device is no longer registered. This is likely because you registered your phone number with Signal on a different device.";
+
+/* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "Re-Register Device";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Posledná aktivita %1$@";
@@ -1629,6 +1671,12 @@
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Nepodarilo sa aktualizovať zoznam zariadení.";
+
+/* A label for this device in the device list. */
+"DEVICE_NAME_THIS_DEVICE" = "This Device";
+
+/* A label for an unnamed device in the device list. */
+"DEVICE_NAME_UNNAMED_DEVICE" = "Unnamed Device";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Ukončiť prenos";
@@ -2233,11 +2281,23 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Neregistrovaný používateľ: %1$@";
 
+/* Button to exit change number, shown in context menu. */
+"EXIT_CHANGE_NUMBER" = "Zrušiť zmenu čísla";
+
+/* Button to exit re-registration, shown in context menu. */
+"EXIT_REREGISTRATION" = "Zrušiť registráciu";
+
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Vaša verzia Signalu vypršala! Ťuknutím aktualizujte na najnovšiu verziu.";
+"EXPIRATION_ERROR" = "This version of Signal has expired. Update to send and receive messages.";
+
+/* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
+"EXPIRATION_WARNING_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that the app will expire soon. Embeds {{date}}. */
+"EXPIRATION_WARNING_SOON" = "This version of Signal will expire on %1$@. Update to keep messaging.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Vaša verzia Signalu dnes vyprší. Ťuknutím aktualizujte na najnovšiu verziu.";
+"EXPIRATION_WARNING_TODAY" = "This version of Signal will expire today. Update to keep messaging.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Priveľa zlyhaní s týmto kontaktom. Prosím, skúste to znovu neskôr.";
@@ -3568,6 +3628,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Tento mesiac";
 
+/* Text explaining that the user will forward all media from a message. */
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "Všetky médiá v tejto správe budú preposlané.";
+
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Vymazať";
 
@@ -4081,6 +4144,9 @@
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Poznámka pre seba";
 
+/* Body for a notification representing a message request. */
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Žiadosť o správu";
+
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Mohli ste dostať nové správy, kým sa Váš %1$@ reštartoval.";
 
@@ -4152,6 +4218,9 @@
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Nesprávny PIN";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Nesprávny PIN. Zostáva 1 pokus.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Preskočiť a vytvoriť nový PIN";
@@ -4234,6 +4303,9 @@
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Nesprávny PIN";
 
+/* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Minuli sa vám pokusy na zadanie PIN kódu, no stále môžete skúsiť získať prístup k svojmu Signal účtu overením cez vaše telefónne číslo. Kvôli vášmu bezpečiu a súkromiu bude váš účet obnovený bez akýchkoľvek uložených profilových údajov alebo nastavení.";
+
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "Zadajte PIN, ktorý ste si pre váš účet vytvorili. Nie je to to isté ako SMS overovací kód.";
 
@@ -4266,6 +4338,18 @@
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Overuje sa kód…";
+
+/* First bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Uistite sa, že váš telefón má mobilný signál pre prijatie SMS alebo hovoru";
+
+/* Second bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Preverte si, či na tomto čísle môžete prijať hovor";
+
+/* Third bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Skontrolujte, či ste zadali svoje telefónne číslo správne";
+
+/* Label for a button to get help entering a verification code when registering. */
+"ONBOARDING_VERIFICATION_HELP_LINK" = "Máte problém s registráciou?";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Tento kód je nesprávny";
@@ -4672,12 +4756,6 @@
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Príklad: %1$@";
 
-/* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Moje kontakty";
-
-/* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Len vaše kontakty budú vidieť vaše telefónne číslo v službe Signal.";
-
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Všetci";
 
@@ -4784,13 +4862,13 @@
 "PIN_CREATION_EXPLANATION" = "PIN kódy udržiavajú informácie uložené v Signale zašifrované, aby ste k nim mali prístup iba vy. Váš profil, vaše nastavenia a kontakty sa po opätovnej inštalácii obnovia. Na otvorenie aplikácie PIN potrebovať nebudete.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Viac o PIN kódoch";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "PINs keep your information stored with Signal encrypted so only you can access it. Your profile, settings and contacts will restore when you reinstall.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "PIN kódy udržiavajú údaje uložené v aplikácii Signal zašifrované, aby ste k nim mali prístup iba vy. Váš profil, nastavenia a kontakty sa po preinštalovaní aplikácie obnovia.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "About Signal PINs";
+"PIN_CREATION_LEARN_MORE_TITLE" = "Signal PIN kódy";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINy sa nezhodujú. Skúste to znovu.";
@@ -4847,7 +4925,7 @@
 "PIN_DISABLE_ERROR_TITLE" = "Vypnutie PINu zlyhalo";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
-"PIN_ENTER_EXISTING_SKIP" = "Skip PIN";
+"PIN_ENTER_EXISTING_SKIP" = "Preskočiť PIN";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "Vytvorenie PINu zlyhalo";
@@ -5185,8 +5263,11 @@
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Váš PIN je 4 alebo viacmiestny kód, ktorý ste si vytvorili a môže pozostávať z číselných alebo alfanumerických znakov. Ak si naň nespomeniete, budete musieť počkať 7 dní na opätovnú registráciu vášho účtu.";
 
-/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Váš PIN je 4 alebo viacmiestny kód, ktorý ste si vytvorili a môže pozostávať z číselných alebo alfanumerických znakov. Ak si na svoj PIN nedokážete spomenúť, môžete si vytvoriť nový. Môžete sa zaregistrovať a používať svoj účet, ale prídete o niektoré uložené nastavenia, ako sú informácie o vašom profile.";
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Váš PIN kód je 4 alebo viacmiestny kód, ktorý ste si vytvorili a môže pozostávať z číselných alebo alfanumerických znakov. Ak si na svoj PIN nedokážete spomenúť, môžete sa zaregistrovať a používať svoj účet, ale prídete o niektoré uložené nastavenia, ako sú informácie o vašom profile.";
+
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Váš PIN je 4 alebo viacmiestny kód, ktorý ste si vytvorili a môže pozostávať z číselných alebo alfanumerických znakov. Ak si na svoj PIN nedokážete spomenúť, môžete si vytvoriť nový. Môžete sa zaregistrovať a používať svoj účet, ale prídete o niektoré uložené nastavenia, ako sú informácie o vašom profile.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Váš PIN je 4 alebo viacmiestny číselný kód, ktorý ste si vytvorili. Ak si naň nespomeniete, budete musieť počkať 7 dní na opätovnú registráciu vášho účtu.";
@@ -5199,6 +5280,9 @@
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Vitajte!";
+
+/* Body of action sheet shown when rate-limited during registration. */
+"REGISTER_RATE_LIMITING_ALERT" = "Urobili ste príliš veľa pokusov. Počkajte prosím pár minút, než to skúsite znovu.";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Pokúšali ste sa pričasto. Pred ďalším pokusom, prosím, chvíľu počkajte.";
@@ -5272,6 +5356,9 @@
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Vaše telefónne číslo";
 
+/* Message for confirmation alert when requesting a voice code during phone number registration. */
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "You’ll receive a call to verify this number. Is your phone number above correct?";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefónne číslo";
 
@@ -5317,11 +5404,17 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Pred odoslaním správy sa musíte zaregistrovať.";
 
+/* Alert shown when running out of attempts at submitting a verification code. */
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Urobili ste príliš veľa pokusov na zadanie kódu. Požiadajte prosím o opätovné zaslanie kódu a skúste to znova.";
+
+/* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Urobili ste príliš veľa pokusov na zadanie kódu. Skúste to znovu za %1$@";
+
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "S týmto číslom bol predtým zaregistrovaný účet, ktorý je k dispozícii na prenos.";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "The code you entered is not valid. Please resend the code and try again.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Zadaný kód je neplatný. Požiadajte o opätovné zaslanie kódu a skúste to znova.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikácia zlyhala";
@@ -5372,10 +5465,10 @@
 "REREGISTER_FOR_PUSH" = "Znovu zaregistrovať push notifikácie";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "%1$@. Ak sa vám minú pokusy, môžete si vytvoriť nový PIN. Budete sa môcť registrovať a ďalej používať svoj účet, avšak stratíte niektoré uložené nastavenia ako informácie o vašom profile.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, your account will be locked for 7 days. After 7 days of inactivity, you can re-register without your PIN. All content will be deleted.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "%1$@. Ak sa vám minú pokusy, váš účet bude zablokovaný na 7 dní. Po 7 dňoch bez aktivity sa budete môcť znova registrovať bez vášho PIN kódu. Všetok obsah sa odstráni.";
 
 /* Configure reactions reset button text */
 "RESET" = "Resetovať";
@@ -5403,6 +5496,9 @@
 
 /* Title for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Zmeny bezpečnostného čísla";
+
+/* Text explaining that the given contact has had their safety number verified. */
+"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Overené";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Zobraziť";
@@ -5590,6 +5686,9 @@
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "Účet";
 
+/* Label for button in settings to get your account data report */
+"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Údaje o vašom účte";
+
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blokovať";
 
@@ -5698,7 +5797,7 @@
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Vaše staré číslo";
 
-/* Label for the 'country code' row in the 'change phone number' settings. */
+/* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Telefónne číslo";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
@@ -7142,13 +7241,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Odpojiť \"%1$@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Zariadenie už nie je prepojené. Pre pokračovanie znovu prepojte Signal s vašim telefónom.";
+"UNLINKED_WARNING" = "This device is no longer linked. Re-link Signal with your phone to continue messaging.";
+
+/* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
+"UNLINKED_WARNING_ACTION_TITLE" = "Re-Link Device";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal nedokázal odpojiť vaše zariadenie.";
-
-/* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Nepomenované zariadenie";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "Odopnúť";

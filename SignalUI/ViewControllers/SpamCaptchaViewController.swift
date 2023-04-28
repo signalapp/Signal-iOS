@@ -71,7 +71,7 @@ extension SpamCaptchaViewController {
     public static func presentActionSheet(from fromVC: UIViewController) {
 
         let titleLabel = UILabel()
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -79,7 +79,7 @@ extension SpamCaptchaViewController {
         titleLabel.text = OWSLocalizedString("SPAM_CAPTCHA_SHEET_TITLE", comment: "Title for action sheet explaining captcha requirement.")
 
         let bodyLabel = UILabel()
-        bodyLabel.font = .ows_dynamicTypeBody2Clamped
+        bodyLabel.font = .dynamicTypeBody2Clamped
         bodyLabel.textColor = Theme.primaryTextColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
@@ -88,7 +88,7 @@ extension SpamCaptchaViewController {
         let continueButton = OWSFlatButton()
         continueButton.setTitle(
             title: CommonStrings.continueButton,
-            font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            font: UIFont.dynamicTypeBodyClamped.semibold(),
             titleColor: .white)
         continueButton.setBackgroundColors(upColor: Theme.accentBlueColor)
         continueButton.layer.cornerRadius = 8

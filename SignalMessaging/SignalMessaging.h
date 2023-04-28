@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for SignalMessaging.
 FOUNDATION_EXPORT double SignalMessagingVersionNumber;
@@ -13,7 +13,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 
 // The public headers of the framework
 #import <SignalMessaging/AFQueryString.h>
-#import <SignalMessaging/AppSetup.h>
 #import <SignalMessaging/DateUtil.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
@@ -25,4 +24,3 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSSyncManager.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/VersionMigrations.h>
-#import <SignalServiceKit/OWSUserProfile.h>

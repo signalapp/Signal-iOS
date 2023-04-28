@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 class ChatColorViewController: OWSTableViewController2 {
 
@@ -713,7 +713,7 @@ private class ChatColorTooltip: TooltipView {
         let label = UILabel()
         label.text = NSLocalizedString("CHAT_COLORS_AUTO_TOOLTIP",
                                        comment: "Tooltip highlighting the auto chat color option.")
-        label.font = .ows_dynamicTypeSubheadline
+        label.font = .dynamicTypeSubheadline
         label.textColor = .ows_white
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

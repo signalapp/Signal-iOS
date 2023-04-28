@@ -4,9 +4,7 @@
 //
 
 #import "SignalRecipient.h"
-#import "OWSDevice.h"
 #import "ProfileManagerProtocol.h"
-#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -27,7 +25,7 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
 
 @implementation SignalRecipient
 
-- (instancetype)initWithUUIDString:(NSString *)uuidString
+- (instancetype)initWithServiceId:(nullable ServiceIdObjC *)serviceId phoneNumber:(nullable E164ObjC *)phoneNumber
 {
     self = [super init];
 
@@ -35,26 +33,8 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
         return self;
     }
 
-    _recipientUUID = uuidString;
-    _recipientPhoneNumber = nil;
-    _recipientSchemaVersion = SignalRecipientSchemaVersion;
-    // New recipients start out as "unregistered in the distant past"
-    _unregisteredAtTimestamp = @(SignalRecipientDistantPastUnregisteredTimestamp);
-    _devices = [NSOrderedSet orderedSet];
-
-    return self;
-}
-
-- (instancetype)initWithAddress:(SignalServiceAddress *)address
-{
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    _recipientUUID = address.uuidString;
-    _recipientPhoneNumber = address.phoneNumber;
+    _recipientUUID = serviceId.uuidValue.UUIDString;
+    _recipientPhoneNumber = phoneNumber.stringValue;
     _recipientSchemaVersion = SignalRecipientSchemaVersion;
     // New recipients start out as "unregistered in the distant past"
     _unregisteredAtTimestamp = @(SignalRecipientDistantPastUnregisteredTimestamp);
@@ -110,10 +90,10 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
 
     // Since we use device count to determine whether a user is registered or not,
     // ensure the local user always has at least *this* device.
-    if (![_devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
+    if (![_devices containsObject:@(OWSDeviceObjc.primaryDeviceId)]) {
         if (self.address.isLocalAddress) {
             OWSLogInfo(@"Adding primary device to self recipient.");
-            [self addDevices:[NSSet setWithObject:@(OWSDevicePrimaryDeviceId)] source:SignalRecipientSourceLocal];
+            [self addDevices:[NSSet setWithObject:@(OWSDeviceObjc.primaryDeviceId)] source:SignalRecipientSourceLocal];
         }
     }
 
@@ -215,27 +195,12 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
     self.unregisteredAtTimestamp = unregisteredAtTimestamp;
 
     if (source != SignalRecipientSourceStorageService) {
-        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]
-                                                                authedAccount:AuthedAccount.implicit];
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
     }
 }
 
-+ (void)updateWithAddress:(SignalServiceAddress *)address
-             devicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
-          devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
-              transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-    OWSAssertDebug(devicesToAdd.count > 0 || devicesToRemove.count > 0);
-
-    SignalRecipient *recipient = [self fetchOrCreateFor:address
-                                             trustLevel:SignalRecipientTrustLevelLow
-                                            transaction:transaction];
-    [recipient updateWithDevicesToAdd:devicesToAdd devicesToRemove:devicesToRemove transaction:transaction];
-}
-
-- (void)updateWithDevicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
-               devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
+- (void)updateWithDevicesToAdd:(NSArray<NSNumber *> *)devicesToAdd
+               devicesToRemove:(NSArray<NSNumber *> *)devicesToRemove
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -350,8 +315,7 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.modelReadCaches.signalRecipientReadCache didRemoveSignalRecipient:self transaction:transaction];
-    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]
-                                                            authedAccount:AuthedAccount.implicit];
+    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
 }
 
 + (TSFTSIndexMode)FTSIndexMode

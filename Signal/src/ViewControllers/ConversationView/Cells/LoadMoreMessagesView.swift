@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 public class LoadMoreMessagesView: UICollectionReusableView {
 
@@ -35,6 +35,6 @@ public class LoadMoreMessagesView: UICollectionReusableView {
 
     public func configureForDisplay() {
         label.textColor = Theme.secondaryTextAndIconColor
-        label.font = UIFont.ows_semiboldFont(withSize: 16)
+        label.font = UIFont.semiboldFont(ofSize: 16)
     }
 }

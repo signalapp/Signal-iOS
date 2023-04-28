@@ -7,7 +7,6 @@
 #import "Signal-Swift.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalMessaging/OWSProfileManager.h>
-#import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -38,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.scanningInstructionsLabel = [UILabel new];
     self.scanningInstructionsLabel.text = NSLocalizedString(@"LINK_DEVICE_SCANNING_INSTRUCTIONS",
         @"QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes");
-    self.scanningInstructionsLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+    self.scanningInstructionsLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     self.scanningInstructionsLabel.numberOfLines = 0;
     self.scanningInstructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.scanningInstructionsLabel.textAlignment = NSTextAlignmentCenter;

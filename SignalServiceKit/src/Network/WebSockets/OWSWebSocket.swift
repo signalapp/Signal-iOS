@@ -469,7 +469,7 @@ public class OWSWebSocket: NSObject {
         // The websocket is only used to connect to the main signal
         // service, so we need to check for remote deprecation.
         if responseStatus == AppExpiry.appExpiredStatusCode {
-            appExpiry.setHasAppExpiredAtCurrentVersion()
+            appExpiry.setHasAppExpiredAtCurrentVersion(db: DependenciesBridge.shared.db)
         }
 
         let headers = OWSHttpHeaders()
@@ -685,7 +685,7 @@ public class OWSWebSocket: NSObject {
             return nil
         case .identified:
             let login = tsAccountManager.storedServerUsername ?? ""
-            let password = tsAccountManager.storedServerAuthToken() ?? ""
+            let password = tsAccountManager.storedServerAuthToken ?? ""
             owsAssertDebug(login.nilIfEmpty != nil)
             owsAssertDebug(password.nilIfEmpty != nil)
             return [
@@ -1061,7 +1061,7 @@ public class OWSWebSocket: NSObject {
         AssertIsOnMainThread()
 
         if verboseLogging {
-            Logger.info("\(logPrefix) \(NSStringForOWSRegistrationState(tsAccountManager.registrationState()))")
+            Logger.info("\(logPrefix) \(NSStringForOWSRegistrationState(tsAccountManager.registrationState))")
         }
 
         applyDesiredSocketState()
@@ -1072,7 +1072,7 @@ public class OWSWebSocket: NSObject {
         AssertIsOnMainThread()
 
         if verboseLogging {
-            Logger.info("\(logPrefix) \(NSStringForOWSRegistrationState(tsAccountManager.registrationState()))")
+            Logger.info("\(logPrefix) \(NSStringForOWSRegistrationState(tsAccountManager.registrationState))")
         }
 
         cycleSocket()
@@ -1186,7 +1186,7 @@ extension OWSWebSocket {
             },
             failure: { (failure: OWSHTTPErrorWrapper) in
                 if failure.error.responseStatusCode == AppExpiry.appExpiredStatusCode {
-                    Self.appExpiry.setHasAppExpiredAtCurrentVersion()
+                    Self.appExpiry.setHasAppExpiredAtCurrentVersion(db: DependenciesBridge.shared.db)
                 }
 
                 failureParam(failure)
@@ -1339,7 +1339,7 @@ extension OWSWebSocket: SSKWebSocketDelegate {
 
         if webSocketType == .identified {
             // If socket opens, we know we're not de-registered.
-            tsAccountManager.setIsDeregistered(false)
+            tsAccountManager.isDeregistered = false
         }
 
         outageDetection.reportConnectionSuccess()
@@ -1361,7 +1361,7 @@ extension OWSWebSocket: SSKWebSocketDelegate {
         self.currentWebSocket = nil
 
         if webSocketType == .identified, case WebSocketError.httpError(statusCode: 403, _) = error {
-            tsAccountManager.setIsDeregistered(true)
+            tsAccountManager.isDeregistered = true
         }
 
         if shouldSocketBeOpen {

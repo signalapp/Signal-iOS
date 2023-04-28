@@ -131,13 +131,10 @@ class NSEEnvironment: Dependencies {
         return DispatchQueue.main.sync { setup(logger: logger) }
     }
 
-    private var areVersionMigrationsComplete = false
     private func setup(logger: NSELogger) -> UNNotificationContent? {
         AssertIsOnMainThread()
 
         logger.info("NSEEnvironment setup()", flushImmediately: true)
-
-        _ = AppVersion.shared()
 
         Cryptography.seedRandom()
 
@@ -145,31 +142,26 @@ class NSEEnvironment: Dependencies {
             return errorContent
         }
 
-        AppSetup.setupEnvironment(
+        let databaseContinuation = AppSetup().start(
+            appContext: CurrentAppContext(),
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             webSocketFactory: WebSocketFactoryNative(),
-            appSpecificSingletonBlock: {
-                SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
-                SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
-                Environment.shared.lightweightCallManagerRef = LightweightCallManager()
-            },
-            migrationCompletion: { [weak self] error in
-                if let error = error {
-                    // TODO: Maybe notify that you should open the main app.
-                    owsFailDebug("Error \(error)")
-                    return
-                }
-                self?.versionMigrationsDidComplete(logger: logger)
-            }
+            callMessageHandler: NSECallMessageHandler(),
+            notificationPresenter: NotificationPresenter()
         )
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(storageIsReady),
-            name: .StorageIsReady,
-            object: nil
-        )
+        Environment.shared.lightweightCallManagerRef = LightweightCallManager()
+
+        databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalSetupContinuation in
+            switch finalSetupContinuation.finish(willResumeInProgressRegistration: false) {
+            case .corruptRegistrationState:
+                // TODO: Maybe notify that you should open the main app.
+                return owsFailDebug("Couldn't launch because of corrupted registration state.")
+            case nil:
+                self.setAppIsReady()
+            }
+        }
 
         logger.info("completed.")
 
@@ -194,38 +186,13 @@ class NSEEnvironment: Dependencies {
         return content
     }
 
-    private func versionMigrationsDidComplete(logger: NSELogger) {
+    private func setAppIsReady() {
         AssertIsOnMainThread()
-
-        logger.debug("")
-
-        areVersionMigrationsComplete = true
-
-        checkIsAppReady()
-    }
-
-    @objc
-    private func storageIsReady() {
-        AssertIsOnMainThread()
-
-        NSELogger.uncorrelated.debug("")
-
-        checkIsAppReady()
-    }
-
-    @objc
-    private func checkIsAppReady() {
-        AssertIsOnMainThread()
-
-        // Only mark the app as ready once.
-        guard !AppReadiness.isAppReady else { return }
-
-        // App isn't ready until storage is ready AND all version migrations are complete.
-        guard storageCoordinator.isStorageReady && areVersionMigrationsComplete else { return }
+        owsAssert(!AppReadiness.isAppReady)
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
-        AppVersion.shared().nseLaunchDidComplete()
+        AppVersion.shared.nseLaunchDidComplete()
     }
 }

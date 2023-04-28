@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalCoreKit
 import SignalMessaging
+import SignalUI
 
 protocol CurrencyPickerDataSource {
     var currentCurrencyCode: Currency.Code { get }
@@ -158,12 +158,12 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
 
             let nameLabel = UILabel()
             nameLabel.text = currencyInfo.name
-            nameLabel.font = UIFont.ows_dynamicTypeBodyClamped
+            nameLabel.font = UIFont.dynamicTypeBodyClamped
             nameLabel.textColor = Theme.primaryTextColor
 
             let currencyCodeLabel = UILabel()
             currencyCodeLabel.text = currencyCode.uppercased()
-            currencyCodeLabel.font = UIFont.ows_dynamicTypeFootnoteClamped
+            currencyCodeLabel.font = UIFont.dynamicTypeFootnoteClamped
             currencyCodeLabel.textColor = Theme.secondaryTextAndIconColor
 
             let stackView = UIStackView(arrangedSubviews: [ nameLabel, currencyCodeLabel ])

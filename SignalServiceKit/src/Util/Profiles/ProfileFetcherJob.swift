@@ -537,12 +537,13 @@ public class ProfileFetcherJob: NSObject {
                 familyName: familyName,
                 bio: bio,
                 bioEmoji: bioEmoji,
-                isStoriesCapable: profile.isStoriesCapable,
                 avatarUrlPath: profile.avatarUrlPath,
                 optionalAvatarFileUrl: localAvatarUrlIfDownloaded,
                 profileBadges: profileBadgeMetadata,
-                canReceiveGiftBadges: profile.canReceiveGiftBadges,
                 lastFetch: Date(),
+                isStoriesCapable: profile.isStoriesCapable,
+                canReceiveGiftBadges: profile.canReceiveGiftBadges,
+                isPniCapable: profile.isPniCapable,
                 userProfileWriter: .profileFetch,
                 authedAccount: authedAccount,
                 transaction: transaction
@@ -551,7 +552,6 @@ public class ProfileFetcherJob: NSObject {
             self.verifyIdentityUpToDate(
                 address: address,
                 latestIdentityKey: profile.identityKey,
-                authedAccount: authedAccount,
                 transaction: transaction
             )
 
@@ -568,32 +568,6 @@ public class ProfileFetcherJob: NSObject {
                 )
             }
         }
-    }
-
-    public static func clearProfileState(address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-
-        // TODO: We could immediately discard profile state for this address as well.
-
-        self.profileManager.updateProfile(
-            for: address,
-            givenName: nil,
-            familyName: nil,
-            bio: nil,
-            bioEmoji: nil,
-            isStoriesCapable: false,
-            avatarUrlPath: nil,
-            optionalAvatarFileUrl: nil,
-            profileBadges: nil,
-            canReceiveGiftBadges: false,
-            lastFetch: Date.distantPast,
-            userProfileWriter: .profileFetch,
-            authedAccount: .implicit(),
-            transaction: transaction
-        )
-
-        self.paymentsHelper.setArePaymentsEnabled(for: address,
-                                                     hasPaymentsEnabled: false,
-                                                     transaction: transaction)
     }
 
     private static func updateUnidentifiedAccess(address: SignalServiceAddress,
@@ -635,13 +609,11 @@ public class ProfileFetcherJob: NSObject {
     private func verifyIdentityUpToDate(
         address: SignalServiceAddress,
         latestIdentityKey: Data,
-        authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     ) {
         if self.identityManager.saveRemoteIdentity(
             latestIdentityKey,
             address: address,
-            authedAccount: authedAccount,
             transaction: transaction
         ) {
             Logger.info("updated identity key with fetched profile for recipient: \(address)")

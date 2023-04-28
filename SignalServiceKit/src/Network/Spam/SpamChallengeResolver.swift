@@ -35,7 +35,7 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
     }
 
     @objc
-    override init() {
+    public override init() {
         super.init()
         SwiftSingletons.register(self)
 

@@ -248,7 +248,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             if let groupThread = thread as? TSGroupThread {
                 storageServiceManager.recordPendingUpdates(groupModel: groupThread.groupModel)
             } else if let contactThread = thread as? TSContactThread {
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [contactThread.contactAddress], authedAccount: .implicit())
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [contactThread.contactAddress])
             } else {
                 owsFailDebug("Unexpected thread type")
             }

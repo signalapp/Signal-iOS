@@ -13,7 +13,7 @@ class PaymentsTest: SignalBaseTest {
     override func setUp() {
         super.setUp()
 
-        SSKEnvironment.shared.paymentsHelperRef = PaymentsHelperImpl()
+        SSKEnvironment.shared.setPaymentsHelperForUnitTests(PaymentsHelperImpl())
         SUIEnvironment.shared.paymentsRef = PaymentsImpl()
     }
 

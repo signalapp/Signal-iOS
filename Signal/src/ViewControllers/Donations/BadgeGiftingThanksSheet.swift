@@ -62,7 +62,7 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
                 comment: "When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet."
             )
             titleLabel.textAlignment = .center
-            titleLabel.font = .ows_dynamicTypeTitle2.ows_semibold
+            titleLabel.font = .dynamicTypeTitle2.semibold()
             titleLabel.numberOfLines = 0
 
             cell.contentView.addSubview(titleLabel)
@@ -83,7 +83,7 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
             )
             infoLabel.text = String(format: infoLabelFormat, recipientName)
             infoLabel.textAlignment = .center
-            infoLabel.font = .ows_dynamicTypeBody
+            infoLabel.font = .dynamicTypeBody
             infoLabel.numberOfLines = 0
 
             cell.contentView.addSubview(infoLabel)
@@ -115,7 +115,7 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
             let dismissButton = OWSFlatButton()
             dismissButton.setTitle(
                 title: CommonStrings.okayButton,
-                font: .ows_dynamicTypeBody.ows_semibold,
+                font: .dynamicTypeBody.semibold(),
                 titleColor: .white
             )
             dismissButton.setBackgroundColors(upColor: .ows_accentBlue)

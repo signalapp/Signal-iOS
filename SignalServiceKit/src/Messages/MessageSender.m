@@ -11,7 +11,6 @@
 #import "NSData+keyVersionByte.h"
 #import "OWSBackgroundTask.h"
 #import "OWSContact.h"
-#import "OWSDevice.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
@@ -25,7 +24,6 @@
 #import "OWSUploadOperation.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "ProfileManagerProtocol.h"
-#import "SSKEnvironment.h"
 #import "SSKPreKeyStore.h"
 #import "SSKSignedPreKeyStore.h"
 #import "SignalRecipient.h"
@@ -570,14 +568,14 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         });
 }
 
-- (AnyPromise *)sendPromiseForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                                message:(TSOutgoingMessage *)message
-                                 thread:(TSThread *)thread
-                     senderCertificates:(nullable SenderCertificates *)senderCertificates
-                         sendErrorBlock:(void (^_Nonnull)(SignalServiceAddress *address, NSError *))sendErrorBlock
+- (AnyPromise *)sendPromiseForServiceIds:(NSArray<ServiceIdObjC *> *)serviceIds
+                                 message:(TSOutgoingMessage *)message
+                                  thread:(TSThread *)thread
+                      senderCertificates:(nullable SenderCertificates *)senderCertificates
+                          sendErrorBlock:(void (^_Nonnull)(ServiceIdObjC *address, NSError *))sendErrorBlock
 {
     OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(addresses.count > 0);
+    OWSAssertDebug(serviceIds.count > 0);
     OWSAssertDebug(message);
     OWSAssertDebug(thread);
 
@@ -592,31 +590,32 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     OWSLogDebug(@"built message: %@ plainTextData.length: %lu", [message class], (unsigned long)plaintext.length);
 
     // 2. Gather "ud sending access".
-    NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
+    NSMutableDictionary<ServiceIdObjC *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
     if (senderCertificates != nil) {
-        for (SignalServiceAddress *address in addresses) {
-            if (!address.isLocalAddress) {
-                if (message.isStorySend) {
-                    sendingAccessMap[address] = [self.udManager storySendingAccessForAddress:address
-                                                                          senderCertificates:senderCertificates];
-                } else {
-                    sendingAccessMap[address] = [self.udManager udSendingAccessForAddress:address
-                                                                        requireSyncAccess:YES
-                                                                       senderCertificates:senderCertificates];
-                }
+        for (ServiceIdObjC *serviceId in serviceIds) {
+            if ([self.tsAccountManager.localUuid isEqual:serviceId.uuidValue]) {
+                continue;
+            }
+            if (message.isStorySend) {
+                sendingAccessMap[serviceId] = [self.udManager storySendingAccessFor:serviceId
+                                                                 senderCertificates:senderCertificates];
+            } else {
+                sendingAccessMap[serviceId] = [self.udManager udSendingAccessFor:serviceId
+                                                               requireSyncAccess:YES
+                                                              senderCertificates:senderCertificates];
             }
         }
     }
 
     // 3. If we have any participants that support sender key, build a promise for their send.
     SenderKeyStatus *senderKeyStatus = [self senderKeyStatusFor:thread
-                                             intendedRecipients:addresses
+                                             intendedRecipients:serviceIds
                                                     udAccessMap:sendingAccessMap];
 
     AnyPromise *_Nullable senderKeyMessagePromise = nil;
-    NSArray<SignalServiceAddress *> *senderKeyAddresses = senderKeyStatus.allSenderKeyParticipants;
-    NSArray<SignalServiceAddress *> *fanoutSendAddresses = senderKeyStatus.fanoutParticipants;
-    if (thread.usesSenderKey && senderKeyAddresses.count >= 2 && message.canSendWithSenderKey) {
+    NSArray<ServiceIdObjC *> *senderKeyServiceIds = senderKeyStatus.allSenderKeyParticipants;
+    NSArray<ServiceIdObjC *> *fanoutServiceIds = senderKeyStatus.fanoutParticipants;
+    if (thread.usesSenderKey && senderKeyServiceIds.count >= 2 && message.canSendWithSenderKey) {
         senderKeyMessagePromise = [self senderKeyMessageSendPromiseWithMessage:message
                                                               plaintextContent:plaintext
                                                                      payloadId:plaintextPayloadId
@@ -627,12 +626,12 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                                                                 sendErrorBlock:sendErrorBlock];
 
         OWSLogDebug(@"%lu / %lu recipients for message: %llu support sender key.",
-            senderKeyAddresses.count,
-            addresses.count,
+            senderKeyServiceIds.count,
+            serviceIds.count,
             message.timestamp);
     } else {
-        senderKeyAddresses = @[];
-        fanoutSendAddresses = addresses;
+        senderKeyServiceIds = @[];
+        fanoutServiceIds = serviceIds;
         if (!message.canSendWithSenderKey) {
             OWSLogInfo(
                 @"Last sender key send attempt failed for message %llu. Falling back to fanout.", message.timestamp);
@@ -640,21 +639,21 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             OWSLogDebug(@"Sender key not supported for message %llu", message.timestamp);
         }
     }
-    OWSAssertDebug((fanoutSendAddresses.count + senderKeyAddresses.count) == addresses.count);
+    OWSAssertDebug((fanoutServiceIds.count + senderKeyServiceIds.count) == serviceIds.count);
 
     // 4. Build a "OWSMessageSend" for each non-senderKey recipient.
     NSMutableArray<OWSMessageSend *> *messageSends = [NSMutableArray new];
-    for (SignalServiceAddress *address in fanoutSendAddresses) {
-        OWSUDSendingAccess *_Nullable udSendingAccess = sendingAccessMap[address];
+    for (ServiceIdObjC *serviceId in fanoutServiceIds) {
+        OWSUDSendingAccess *_Nullable udSendingAccess = sendingAccessMap[serviceId];
         OWSMessageSend *messageSend =
             [[OWSMessageSend alloc] initWithMessage:message
                                    plaintextContent:plaintext
                                  plaintextPayloadId:plaintextPayloadId
                                              thread:thread
-                                            address:address
+                                          serviceId:serviceId
                                     udSendingAccess:udSendingAccess
                                        localAddress:self.tsAccountManager.localAddress
-                                     sendErrorBlock:^(NSError *error) { sendErrorBlock(address, error); }];
+                                     sendErrorBlock:^(NSError *error) { sendErrorBlock(serviceId, error); }];
         [messageSends addObject:messageSend];
     }
 
@@ -718,7 +717,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     };
 
     TSThread *thread = sendInfo.thread;
-    NSArray<SignalServiceAddress *> *recipientAddresses = sendInfo.recipients;
+    NSArray<ServiceIdObjC *> *recipientServiceIds = sendInfo.serviceIds;
     SenderCertificates *senderCertificates = sendInfo.senderCertificates;
 
     BOOL canSendToThread = NO;
@@ -748,7 +747,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         // (In particular, regular data messages are sent via their implicit sync message only.)
         if (contactThread.contactAddress.isLocalAddress && !message.canSendToLocalAddress) {
             // Send to self.
-            OWSAssertDebug(sendInfo.recipients.count == 1);
+            OWSAssertDebug(recipientServiceIds.count == 1);
             OWSLogInfo(@"dropping %@ sent to local address (expected to be sent by sync message)", [message class]);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
             successHandler();
@@ -756,7 +755,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         }
     }
 
-    if (recipientAddresses.count < 1) {
+    if (recipientServiceIds.count < 1) {
         // All recipients are already sent or can be skipped.
         // NOTE: We might still need to send a sync transcript.
         successHandler();
@@ -765,20 +764,20 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
     BOOL isNonContactThread = thread.isNonContactThread;
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
-    NSMutableDictionary<SignalServiceAddress *, NSError *> *sendErrorPerRecipient = [NSMutableDictionary dictionary];
+    NSMutableDictionary<ServiceIdObjC *, NSError *> *sendErrorPerRecipient = [NSMutableDictionary dictionary];
 
     [self unlockPreKeyUpdateFailuresPromise]
         .thenInBackground(^(id value) {
-            return [self sendPromiseForAddresses:recipientAddresses
-                                         message:message
-                                          thread:thread
-                              senderCertificates:senderCertificates
-                                  sendErrorBlock:^(SignalServiceAddress *address, NSError *error) {
-                                      @synchronized(sendErrors) {
-                                          [sendErrors addObject:error];
-                                          sendErrorPerRecipient[address] = error;
-                                      }
-                                  }];
+            return [self sendPromiseForServiceIds:recipientServiceIds
+                                          message:message
+                                           thread:thread
+                               senderCertificates:senderCertificates
+                                   sendErrorBlock:^(ServiceIdObjC *serviceId, NSError *error) {
+                                       @synchronized(sendErrors) {
+                                           [sendErrors addObject:error];
+                                           sendErrorPerRecipient[serviceId] = error;
+                                       }
+                                   }];
         })
         .doneInBackground(^(id value) { successHandler(); })
         .catchInBackground(^(id failure) {
@@ -787,7 +786,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             NSError *firstNonRetryableError = nil;
 
             NSArray<NSError *> *sendErrorsCopy;
-            NSDictionary<SignalServiceAddress *, NSError *> *sendErrorPerRecipientCopy;
+            NSDictionary<ServiceIdObjC *, NSError *> *sendErrorPerRecipientCopy;
             @synchronized(sendErrors) {
                 sendErrorsCopy = [sendErrors copy];
                 sendErrorPerRecipientCopy = [sendErrorPerRecipient copy];
@@ -795,8 +794,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
             // Record the individual error for each "failed" recipient.
             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                for (SignalServiceAddress *address in sendErrorPerRecipientCopy) {
-                    NSError *error = sendErrorPerRecipientCopy[address];
+                for (ServiceIdObjC *serviceId in sendErrorPerRecipientCopy) {
+                    NSError *error = sendErrorPerRecipientCopy[serviceId];
 
                     // Some errors should be ignored when sending messages
                     // to threads other than TSContactThread.  See discussion on
@@ -805,6 +804,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                         continue;
                     }
 
+                    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithServiceIdObjC:serviceId];
                     [message updateWithFailedRecipient:address error:error transaction:transaction];
                 }
             });
@@ -920,12 +920,12 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         DeviceMessage *deviceMessage =
             [self buildDeviceMessageForMessagePlaintextContent:messageSend.plaintextContent
                                         messageEncryptionStyle:messageSend.message.encryptionStyle
-                                              recipientAddress:recipient.address
-                                            recipientAccountId:recipient.accountId
-                                             recipientDeviceId:deviceId
+                                                   recipientId:recipient.accountId
+                                                     serviceId:messageSend.serviceId
+                                                      deviceId:deviceId
                                                isOnlineMessage:messageSend.message.isOnline
                        isTransientSenderKeyDistributionMessage:messageSend.message.isTransientSKDM
-                                            isStorySendMessage:messageSend.message.isStorySend
+                                                isStoryMessage:messageSend.message.isStorySend
                                         isResendRequestMessage:messageSend.message.isResendRequest
                                        udSendingParamsProvider:messageSend
                                                          error:errorHandle];
@@ -944,12 +944,12 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
 - (nullable DeviceMessage *)buildDeviceMessageForMessagePlaintextContent:(nullable NSData *)messagePlaintextContent
                                                   messageEncryptionStyle:(EncryptionStyle)messageEncryptionStyle
-                                                        recipientAddress:(SignalServiceAddress *)recipientAddress
-                                                      recipientAccountId:(NSString *)recipientAccountId
-                                                       recipientDeviceId:(NSNumber *)recipientDeviceId
+                                                             recipientId:(NSString *)recipientId
+                                                               serviceId:(ServiceIdObjC *)serviceId
+                                                                deviceId:(NSNumber *)deviceId
                                                          isOnlineMessage:(BOOL)isOnlineMessage
                                  isTransientSenderKeyDistributionMessage:(BOOL)isTransientSenderKeyDistributionMessage
-                                                      isStorySendMessage:(BOOL)isStorySendMessage
+                                                          isStoryMessage:(BOOL)isStoryMessage
                                                   isResendRequestMessage:(BOOL)isResendRequestMessage
                                                  udSendingParamsProvider:
                                                      (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
@@ -962,12 +962,12 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     @try {
         deviceMessage = [self throws_deviceMessageForMessagePlaintextContent:messagePlaintextContent
                                                       messageEncryptionStyle:messageEncryptionStyle
-                                                            recipientAddress:recipientAddress
-                                                          recipientAccountId:recipientAccountId
-                                                           recipientDeviceId:recipientDeviceId
+                                                                 recipientId:recipientId
+                                                                   serviceId:serviceId
+                                                                    deviceId:deviceId
                                                              isOnlineMessage:isOnlineMessage
                                      isTransientSenderKeyDistributionMessage:isTransientSenderKeyDistributionMessage
-                                                          isStorySendMessage:isStorySendMessage
+                                                              isStoryMessage:isStoryMessage
                                                       isResendRequestMessage:isResendRequestMessage
                                                      udSendingParamsProvider:udSendingParamsProvider];
     } @catch (NSException *exception) {
@@ -977,10 +977,10 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             // If we have an invalid device exception, remove this device from
             // the recipient and suppress the error.
             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                [MessageSender updateDevicesWithAddress:recipientAddress
-                                           devicesToAdd:@[]
-                                        devicesToRemove:@[ recipientDeviceId ]
-                                            transaction:transaction];
+                [MessageSender updateDevicesWithServiceId:serviceId
+                                             devicesToAdd:@[]
+                                          devicesToRemove:@[ deviceId ]
+                                              transaction:transaction];
             });
         } else if ([exception.name isEqualToString:NoSessionForTransientMessageException]) {
             // When users re-register, we don't want transient messages (like typing
@@ -994,6 +994,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             // she can pull down his latest identity.
             // If it's happening a lot, we should rethink our profile fetching strategy.
             OWSProdInfo([OWSAnalyticsEvents messageSendErrorFailedDueToUntrustedKey]);
+            SignalServiceAddress *recipientAddress = [[SignalServiceAddress alloc] initWithServiceIdObjC:serviceId];
             error = [UntrustedIdentityError asNSErrorWithAddress:recipientAddress];
         } else if ([exception.name isEqualToString:MessageSenderRateLimitedException]) {
             error = [SignalServiceRateLimitedError asNSError];
@@ -1042,11 +1043,10 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     OWSAssertDebug(messageSend.thread);
 
     TSOutgoingMessage *message = messageSend.message;
-    SignalServiceAddress *address = messageSend.address;
-    OWSAssertDebug(address.isValid);
+    ServiceIdObjC *serviceId = messageSend.serviceId;
 
     OWSLogInfo(
-        @"attempting to send message: %@, timestamp: %llu, recipient: %@", message.class, message.timestamp, address);
+        @"attempting to send message: %@, timestamp: %llu, recipient: %@", message.class, message.timestamp, serviceId);
 
     if (messageSend.remainingAttempts <= 0) {
         // We should always fail with a specific error.
@@ -1054,14 +1054,6 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
         NSError *error = [OWSRetryableMessageSenderError asNSError];
         return messageSend.failure(error);
-    }
-
-    // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
-    // If we have no UUID, consider the recipient unregistered.
-    ServiceIdObjC *serviceId = address.serviceIdObjC;
-    if (serviceId == nil) {
-        [self failSendForUnregisteredRecipient:messageSend];
-        return;
     }
 
     // Consume an attempt.
@@ -1104,7 +1096,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
         __block BOOL mayHaveLinkedDevices;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            mayHaveLinkedDevices = [OWSDeviceManager.shared mayHaveLinkedDevicesWithTransaction:transaction];
+            mayHaveLinkedDevices = [OWSDeviceManagerObjcBridge mayHaveLinkedDevicesWithTransaction:transaction];
         }];
 
         BOOL hasDeviceMessages = NO;
@@ -1163,7 +1155,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         }
     }
 
-    [self performMessageSendRequest:messageSend serviceId:serviceId deviceMessages:deviceMessages];
+    [self performMessageSendRequest:messageSend deviceMessages:deviceMessages];
 }
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
@@ -1243,52 +1235,51 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
 - (DeviceMessage *)throws_deviceMessageForMessagePlaintextContent:(nullable NSData *)messagePlaintextContent
                                            messageEncryptionStyle:(EncryptionStyle)messageEncryptionStyle
-                                                 recipientAddress:(SignalServiceAddress *)recipientAddress
-                                               recipientAccountId:(NSString *)recipientAccountId
-                                                recipientDeviceId:(NSNumber *)recipientDeviceId
+                                                      recipientId:(NSString *)recipientId
+                                                        serviceId:(ServiceIdObjC *)serviceId
+                                                         deviceId:(NSNumber *)deviceId
                                                   isOnlineMessage:(BOOL)isOnlineMessage
                           isTransientSenderKeyDistributionMessage:(BOOL)isTransientSenderKeyDistributionMessage
-                                               isStorySendMessage:(BOOL)isStorySendMessage
+                                                   isStoryMessage:(BOOL)isStoryMessage
                                            isResendRequestMessage:(BOOL)isResendRequestMessage
                                           udSendingParamsProvider:
                                               (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
 {
     OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(recipientAddress.isValid);
 
     if (!messagePlaintextContent) {
         OWSRaiseException(InvalidMessageException, @"No message proto");
     }
 
     // This may involve blocking network requests.
-    [self throws_ensureRecipientHasSessionForRecipientAddress:recipientAddress
-                                            recipientDeviceId:recipientDeviceId
-                                           recipientAccountId:recipientAccountId
-                                             forOnlineMessage:isOnlineMessage
-                     forTransientSenderKeyDistributionMessage:isTransientSenderKeyDistributionMessage
-                                          forStorySendMessage:isStorySendMessage
-                                      udSendingParamsProvider:udSendingParamsProvider];
+    [self throws_ensureRecipientHasSessionForId:recipientId
+                                      serviceId:serviceId
+                                       deviceId:deviceId
+                                isOnlineMessage:isOnlineMessage
+        isTransientSenderKeyDistributionMessage:isTransientSenderKeyDistributionMessage
+                                 isStoryMessage:isStoryMessage
+                        udSendingParamsProvider:udSendingParamsProvider];
 
     __block NSError *encryptionError;
     __block DeviceMessage *__nullable deviceMessage = nil;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         switch (messageEncryptionStyle) {
             case EncryptionStyleWhisper:
-                deviceMessage = [self encryptedMessageForMessagePlaintextContent:messagePlaintextContent
-                                                                recipientAddress:recipientAddress
-                                                                        deviceId:recipientDeviceId.intValue
-                                                         udSendingParamsProvider:udSendingParamsProvider
-                                                                     transaction:transaction
-                                                                           error:&encryptionError];
+                deviceMessage = [self encryptMessageWithPlaintextContent:messagePlaintextContent
+                                                               serviceId:serviceId
+                                                                deviceId:deviceId.intValue
+                                                 udSendingParamsProvider:udSendingParamsProvider
+                                                             transaction:transaction
+                                                                   error:&encryptionError];
                 break;
             case EncryptionStylePlaintext:
-                deviceMessage = [self wrappedPlaintextMessageForMessagePlaintextContent:messagePlaintextContent
-                                                                 isResendRequestMessage:isResendRequestMessage
-                                                                       recipientAddress:recipientAddress
-                                                                               deviceId:recipientDeviceId.intValue
-                                                                udSendingParamsProvider:udSendingParamsProvider
-                                                                            transaction:transaction
-                                                                                  error:&encryptionError];
+                deviceMessage = [self wrapPlaintextMessageWithPlaintextContent:messagePlaintextContent
+                                                                     serviceId:serviceId
+                                                                      deviceId:deviceId.intValue
+                                                        isResendRequestMessage:isResendRequestMessage
+                                                       udSendingParamsProvider:udSendingParamsProvider
+                                                                   transaction:transaction
+                                                                         error:&encryptionError];
                 break;
             default:
                 encryptionError = OWSErrorMakeAssertionError(@"Unrecognized encryption style");
@@ -1306,26 +1297,24 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     return deviceMessage;
 }
 
-- (void)throws_ensureRecipientHasSessionForRecipientAddress:(SignalServiceAddress *)recipientAddress
-                                          recipientDeviceId:(NSNumber *)recipientDeviceId
-                                         recipientAccountId:(NSString *)recipientAccountId
-                                           forOnlineMessage:(BOOL)forOnlineMessage
-                   forTransientSenderKeyDistributionMessage:(BOOL)forTransientSenderKeyDistributionMessage
-                                        forStorySendMessage:(BOOL)forStorySendMessage
-                                    udSendingParamsProvider:
-                                        (nullable id<UDSendingParamsProvider>)udSendingParamsProvider
+- (void)throws_ensureRecipientHasSessionForId:(NSString *)recipientId
+                                    serviceId:(ServiceIdObjC *)serviceId
+                                     deviceId:(NSNumber *)deviceId
+                              isOnlineMessage:(BOOL)isOnlineMessage
+      isTransientSenderKeyDistributionMessage:(BOOL)isTransientSenderKeyDistributionMessage
+                               isStoryMessage:(BOOL)isStoryMessage
+                      udSendingParamsProvider:(nullable id<UDSendingParamsProvider>)udSendingParamsProvider
 {
     OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(recipientDeviceId);
-    OWSAssertDebug(recipientAccountId);
-
-    OWSAssertDebug(recipientAddress.isValid);
+    OWSAssertDebug(recipientId);
+    OWSAssertDebug(serviceId);
+    OWSAssertDebug(deviceId);
 
     __block BOOL hasSession;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
-        hasSession = [sessionStore containsActiveSessionForAccountId:recipientAccountId
-                                                            deviceId:[recipientDeviceId intValue]
+        hasSession = [sessionStore containsActiveSessionForAccountId:recipientId
+                                                            deviceId:[deviceId intValue]
                                                          transaction:transaction];
     }];
     if (hasSession) {
@@ -1335,12 +1324,12 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     __block PreKeyBundle *_Nullable bundle;
     __block NSException *_Nullable exception;
-    [MessageSender makePrekeyRequestForRecipientAddress:recipientAddress
-        recipientDeviceId:recipientDeviceId
-        recipientAccountId:recipientAccountId
-        forOnlineMessage:forOnlineMessage
-        forTransientSenderKeyDistributionMessage:forTransientSenderKeyDistributionMessage
-        forStorySendMessage:forStorySendMessage
+    [MessageSender makePrekeyRequestWithRecipientId:recipientId
+        serviceId:serviceId
+        deviceId:deviceId
+        isOnlineMessage:isOnlineMessage
+        isTransientSenderKeyDistributionMessage:isTransientSenderKeyDistributionMessage
+        isStoryMessage:isStoryMessage
         udSendingParamsProvider:udSendingParamsProvider
         success:^(PreKeyBundle *_Nullable responseBundle) {
             bundle = responseBundle;
@@ -1401,12 +1390,12 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     __block BOOL success;
     __block NSError *error;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        success = [[self class] createSessionForPreKeyBundle:bundle
-                                                   accountId:recipientAccountId
-                                            recipientAddress:recipientAddress
-                                                    deviceId:recipientDeviceId
-                                                 transaction:transaction
-                                                       error:&error];
+        success = [[self class] createSessionFor:bundle
+                                     recipientId:recipientId
+                                       serviceId:serviceId
+                                        deviceId:deviceId
+                                     transaction:transaction
+                                           error:&error];
     });
     if (!success) {
         // NSUnderlyingErrorKey isn't a normal NSException user info key, but it's appropriate here.

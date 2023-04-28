@@ -320,7 +320,7 @@ extension CLVTableDataSource: UITableViewDelegate {
             let label = UILabel()
             container.addSubview(label)
             label.autoPinEdgesToSuperviewMargins()
-            label.font = UIFont.ows_dynamicTypeBody.ows_semibold
+            label.font = UIFont.dynamicTypeBody.semibold()
             label.textColor = Theme.primaryTextColor
             label.text = (section == .pinned
                             ? NSLocalizedString("PINNED_SECTION_TITLE",

@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 // NOTE: CFNotificationCenterGetDarwinNotifyCenter() might offer a better / equivalent solution,
 //       but it wasn't working for me and so I moved on.
 
-pid_t localPid(void)
+static pid_t localPid(void)
 {
     static dispatch_once_t onceToken;
     static pid_t pid;
@@ -101,7 +101,7 @@ pid_t localPid(void)
         [self start];
     }
 
-    [DarwinNotificationCenter setState:localPid() forObserver:self.notifyToken];
+    [DarwinNotificationCenter setState:(uint64_t)localPid() forObserver:self.notifyToken];
     [DarwinNotificationCenter postNotificationName:DarwinNotificationName.sdsCrossProcess];
 }
 

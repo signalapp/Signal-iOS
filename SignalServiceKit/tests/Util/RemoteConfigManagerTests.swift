@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class RemoteConfigManagerTests: SSKBaseTestSwift {
+class RemoteConfigManagerTests: XCTestCase {
     func test_bucketCalculation() {
         let testCases: [(String, String, UInt64, UInt64)] = [
             ("research.megaphone.1", "15b9729c-51ea-4ddb-b516-652befe78062", 1_000_000, 243_315),

@@ -82,12 +82,12 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
 
         let titleLabel = UILabel()
         titleLabel.text = collection.localizedTitle()
-        titleLabel.font = UIFont.ows_dynamicTypeBody
+        titleLabel.font = UIFont.dynamicTypeBody
         titleLabel.textColor = Theme.darkThemePrimaryColor
 
         let countLabel = UILabel()
         countLabel.text = numberFormatter.string(for: contents.assetCount)
-        countLabel.font = UIFont.ows_dynamicTypeCaption1
+        countLabel.font = UIFont.dynamicTypeCaption1
         countLabel.textColor = Theme.darkThemePrimaryColor
 
         let textStack = UIStackView(arrangedSubviews: [titleLabel, countLabel])

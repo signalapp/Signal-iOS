@@ -3649,21 +3649,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     return randomText;
 }
 
-+ (NSString *)randomShortText
-{
-    NSArray<NSString *> *randomTexts = @[
-        @"a",
-        @"b",
-        @"c",
-        @"d",
-        @"e",
-        @"f",
-        @"g",
-    ];
-    NSString *randomText = randomTexts[(NSUInteger)arc4random_uniform((uint32_t)randomTexts.count)];
-    return randomText;
-}
-
 + (void)createFakeThreads:(NSUInteger)threadCount withFakeMessages:(NSUInteger)messageCount
 {
     [DebugContactsUtils
@@ -3680,9 +3665,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                           [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber.toE164];
                       TSContactThread *contactThread =
                           [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
-                      [self.profileManager addThreadToProfileWhitelist:contactThread
-                                                         authedAccount:AuthedAccount.implicit
-                                                           transaction:transaction];
+                      [self.profileManager addThreadToProfileWhitelist:contactThread transaction:transaction];
                       [self createFakeMessagesInBatches:messageCount
                                                  thread:contactThread
                                      messageContentType:MessageContentTypeLongText
@@ -3866,13 +3849,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                       persistenceCompletionHandler:nil
                                        transaction:transaction];
             });
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 [self createNewGroups:counter - 1 recipientAddress:recipientAddress];
             });
         });
     };
 
-    NSString *groupName = [NSUUID UUID].UUIDString;
+    NSString *groupName = [self randomShortText];
     [self createRandomGroupWithName:groupName member:recipientAddress success:completion];
 }
 
@@ -4235,6 +4218,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
     SignalServiceAddress *address = incomingSenderAddress;
 
+    ServiceIdObjC *_Nullable incomingSenderServiceId = incomingSenderAddress.serviceIdObjC;
+    if (incomingSenderServiceId == nil) {
+        OWSFailDebug(@"Missing incomingSenderServiceId.");
+        return;
+    }
+    ServiceIdObjC *serviceId = incomingSenderServiceId;
+
     DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         for (NSNumber *timestamp in timestamps) {
             NSString *randomText = [self randomText];
@@ -4256,7 +4246,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 TSOutgoingMessage *message = [messageBuilder buildWithTransaction:transaction];
                 [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
-                [message updateWithSentRecipient:address wasSentByUD:NO transaction:transaction];
+                [message updateWithSentRecipient:serviceId wasSentByUD:NO transaction:transaction];
                 [message updateWithDeliveredRecipient:address
                                     recipientDeviceId:0
                                     deliveryTimestamp:timestamp.unsignedLongLongValue

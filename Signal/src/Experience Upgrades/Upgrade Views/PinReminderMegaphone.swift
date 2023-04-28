@@ -17,9 +17,20 @@ class PinReminderMegaphone: MegaphoneView {
         let primaryButtonTitle = NSLocalizedString("PIN_REMINDER_MEGAPHONE_ACTION", comment: "Action text for PIN reminder megaphone")
 
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
-            let vc = PinReminderViewController {
-                self?.dismiss(animated: false)
-                self?.presentToastForNewRepetitionInterval(fromViewController: fromViewController)
+            let vc = PinReminderViewController { result in
+                // Always dismiss the PIN reminder view (we dismiss the *megaphone* later).
+                fromViewController.dismiss(animated: true)
+
+                guard let self else { return }
+                switch result {
+                case .succeeded, .canceled(didGuessWrong: true):
+                    self.dismiss(animated: false)
+                    self.presentToastForNewRepetitionInterval(fromViewController: fromViewController)
+                case .changedOrRemovedPin:
+                    self.dismiss(animated: false)
+                case .canceled(didGuessWrong: false):
+                    break
+                }
             }
 
             fromViewController.present(vc, animated: true)

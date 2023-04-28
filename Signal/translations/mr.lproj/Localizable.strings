@@ -28,6 +28,42 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "व्हॉईस संदेश";
 
+/* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "रिपोर्ट एक्सपोर्ट करा";
+
+/* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "आपण विश्वास करत असलेल्या लोकांसह फक्त आपला Signal डेटा अकाऊंट शेअर करा.";
+
+/* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
+"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
+
+/* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "रिपोर्ट तयार करू शकत नाही";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "मशिन-वाचण्यायोग्य फाईल";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "JSON म्हणून एक्सपोर्ट करा";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "वाचण्यास सोपी मजकूर फाईल";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "TXT म्हणून एक्सपोर्ट करा";
+
+/* Users can request a report of their account data. Users tap this button to export their data. */
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "रिपोर्ट एक्सपोर्ट करा";
+
+/* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
+"ACCOUNT_DATA_REPORT_FOOTER" = "आपला रिपोर्ट फक्त एक्स्पोर्ट करण्याच्या वेळी तयार केला जाईल आणि तो Signal द्वारे आपल्या डिव्हाईसवर स्टोअर केला जाणार नाही.";
+
+/* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "आपला Signal अकाऊंट डेटा डाऊनलोड करा आणि रिपोर्ट एक्सपोर्ट करा. या रिपोर्ट मध्ये कोणतेही संदेश किंवा मिडीयाचा समावेश असणार नाही.";
+
+/* Users can request a report of their account data. This is the title on the screen where they do this. */
+"ACCOUNT_DATA_REPORT_TITLE" = "आपला अकाऊंट डेटा";
+
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal कॉल";
 
@@ -139,11 +175,14 @@
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal लाँच करू शकत नाही. कृपया support@signal.org वर डीबग लॉग पाठवा जेणेकरून आम्ही समस्येचे निराकरण करू शकू.";
 
-/* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "त्रुटी";
-
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "त्याऐवजी Signal उघडा";
+
+/* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+
+/* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Couldn’t Open Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "डेटाबेस लोड करू शकले नाही";
@@ -1619,7 +1658,10 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "हा फोन नंबर पुन्हा-नोंदवा";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "डिव्हाईस नोंदणीकृत नाही. आपला फोन नंबर एका वेगळ्या डिव्हाईस सोबत Signal वर नोंदणीकृत असू शकतो. पुन्हा-नोंदणी करण्यासाठी टॅप करा.";
+"DEREGISTRATION_WARNING" = "This device is no longer registered. This is likely because you registered your phone number with Signal on a different device.";
+
+/* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "Re-Register Device";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "%1$@ ला शेवटचा सक्रिय";
@@ -1629,6 +1671,12 @@
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "डिव्हाईस यादी अद्यतनित करण्यात अयशस्वी.";
+
+/* A label for this device in the device list. */
+"DEVICE_NAME_THIS_DEVICE" = "This Device";
+
+/* A label for an unnamed device in the device list. */
+"DEVICE_NAME_UNNAMED_DEVICE" = "Unnamed Device";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "स्थानांतरण थांबवा";
@@ -2233,11 +2281,23 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "नोंदणी नसलेला वापरकर्ता: %1$@";
 
+/* Button to exit change number, shown in context menu. */
+"EXIT_CHANGE_NUMBER" = "नंबर बदला मधून बाहेर पडा";
+
+/* Button to exit re-registration, shown in context menu. */
+"EXIT_REREGISTRATION" = "नोंदणीकरणामधून बाहेर पडा";
+
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Signal ची आपली आवृत्ती कालबाह्य झाली आहे! सर्वात अलीकडील आवृत्तीवर अद्यतन करण्यासाठी टॅप करा.";
+"EXPIRATION_ERROR" = "This version of Signal has expired. Update to send and receive messages.";
+
+/* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
+"EXPIRATION_WARNING_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that the app will expire soon. Embeds {{date}}. */
+"EXPIRATION_WARNING_SOON" = "This version of Signal will expire on %1$@. Update to keep messaging.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Signal ची आपली आवृत्ती आज कालबाह्य होणार आहे. सर्वात अलीकडील आवृत्तीवर अद्यतन करण्यासाठी टॅप करा.";
+"EXPIRATION_WARNING_TODAY" = "This version of Signal will expire today. Update to keep messaging.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "या संपर्कासोबत खूप सारे अपयश. कृपया नंतर पुन्हा प्रयत्न करा";
@@ -3568,6 +3628,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "हा महिना";
 
+/* Text explaining that the user will forward all media from a message. */
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "या संदेशामधील सर्व मिडीया अग्रेषित केले जातील.";
+
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "हटवा";
 
@@ -4081,6 +4144,9 @@
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "स्वतःला नोंद";
 
+/* Body for a notification representing a message request. */
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "संदेश विनंती";
+
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "आपला %1$@ पुन्हा चालू होत असताना आपल्याला संदेश प्राप्त झाले असू शकतात.";
 
@@ -4152,6 +4218,9 @@
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "चुकीचा PIN";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "चुकीचा पिन. 1 प्रयत्न उर्वरित.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "वगळा आणि नवीन PIN तयार करा";
@@ -4234,6 +4303,9 @@
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "चुकीचा PIN";
 
+/* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "आपले पिन अंदाज संपत आलेले आहेत, परंतु आपण अद्याप आपल्या फोन क्रमांकाची पडताळणी करून आपल्या Signal अकाऊंट अ‍ॅक्सेस करण्याचा प्रयत्न करू शकता. आपली गोपनीयता आणि सुरक्षिततेसाठी आपले अकाऊंट कोणत्याही जतन केलेल्या प्रोफाईल माहिती किंवा सेटिंग्ज शिवाय पुर्नस्थापित केले जाऊ शकेल.";
+
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "आपल्या खात्यासाठी आपण तयार केलेला PIN प्रविष्ट करा. हे आपल्या SMS सत्यापन कोडपेक्षा वेगळे आहे.";
 
@@ -4266,6 +4338,18 @@
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "कोड वैध केला जात आहे(…)";
+
+/* First bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "आपला SMS किंवा कॉल प्राप्त करण्यासाठी आपल्या फोनला सेल्यूलर सिग्नल असल्याची खात्री करा";
+
+/* Second bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "नंबर वर आपण फोन कॉल प्राप्त करू शकता याची पुष्टी करा";
+
+/* Third bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "आपण आपला फोन नंबर योग्यरीत्या प्रविष्ट केला आहे का ते तपासा";
+
+/* Label for a button to get help entering a verification code when registering. */
+"ONBOARDING_VERIFICATION_HELP_LINK" = "नोंदणी करण्यामध्ये समस्या येत आहे?";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "हा कोड चुकीचा आहे";
@@ -4672,12 +4756,6 @@
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "उदाहरण: %1$@";
 
-/* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "माझे संपर्क";
-
-/* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "फक्त आपले संपर्क Signal वर आपला फोन नंबर पाहू शकतील.";
-
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "सर्वजण";
 
@@ -4784,13 +4862,13 @@
 "PIN_CREATION_EXPLANATION" = "Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल. आपल्याला अॅप उघडण्यासाठी PIN ची गरज लागणार नाही.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "More About PINs";
+"PIN_CREATION_LEARN_MORE" = "पिन बद्दल अधिक";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "PINs keep your information stored with Signal encrypted so only you can access it. Your profile, settings and contacts will restore when you reinstall.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "पिन हे Signal सह आपली संग्रहित केलेली माहिती कूटबद्ध करून ठेवतात ज्यामुळे ती फक्त आपणच अ‍ॅक्सेस करू शकता. आपण पुर्नस्थापना कराल तेव्हा आपले प्रोफाईल, सेटिंग्ज आणि संपर्क पुनर्संचयित केले जातील.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "About Signal PINs";
+"PIN_CREATION_LEARN_MORE_TITLE" = "Signal पिन बद्दल";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN जुळत नाहीत. पुन्हा प्रयत्न करा.";
@@ -4847,7 +4925,7 @@
 "PIN_DISABLE_ERROR_TITLE" = "PIN अक्षम करणे अयशस्वी";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
-"PIN_ENTER_EXISTING_SKIP" = "Skip PIN";
+"PIN_ENTER_EXISTING_SKIP" = "पिन वगळा";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "PIN निर्मिती अयशस्वी";
@@ -5185,8 +5263,11 @@
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "आपला PIN आपण तयार केलेला एक 4+ अंकी कोड आहे जो न्युमेरिक किंवा अल्फान्युमेरिक असू शकतो. जर आपल्याला आपला PIN आठवत नसेल, तर आपल्या खात्यावर पुन्हा-नोंदणी करण्यासाठी आपल्याला 7 दिवस थांबावे लागेल.";
 
-/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "आपला PIN आपण तयार केलेला एक 4+ अंकी कोड आहे जो न्युमेरिक किंवा अल्फान्युमेरिक असू शकतो. जर आपल्याला आपला PIN आठवत नसेल, तर आपण नवीन तयार करू शकता. आपण नोंदणी करू शकता आणि आपले खाते वापरू शकता पण आपण काही जतन केलेल्या सेटिंग गमवाल जसे की आपली प्रोफाईल माहिती.";
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "आपला पिन हा 4+ अंकांचा आपण तयार केलेला कोड असतो जो न्यूमेरिक किंवा अल्फान्यूमेरिक असू शकतो. आपणाला आपला पिन आठवत नसेल्यास, आपण आपल्या अकाऊंटची नोंदणी करू शकता आणि ते वापरू शकता मात्र आपण आपली प्रोफाईल माहिती यासारखी काही जतन केलेली सेटिंग्ज गमावू शकाल.";
+
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "आपला PIN आपण तयार केलेला एक 4+ अंकी कोड आहे जो न्युमेरिक किंवा अल्फान्युमेरिक असू शकतो. जर आपल्याला आपला PIN आठवत नसेल, तर आपण नवीन तयार करू शकता. आपण नोंदणी करू शकता आणि आपले खाते वापरू शकता पण आपण आपल्या प्रोफाईल माहिती सारख्या काही जतन केलेल्या सेटिंग गमवाल.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "आपला PIN आपण तयार केलेला एक 4+ अंकी कोड आहे. जर आपल्याला आपला PIN आठवत नसेल, तर आपल्या खात्यावर पुन्हा-नोंदणी करण्यासाठी आपल्याला 7 दिवस थांबावे लागेल.";
@@ -5199,6 +5280,9 @@
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "स्वागत!";
+
+/* Body of action sheet shown when rate-limited during registration. */
+"REGISTER_RATE_LIMITING_ALERT" = "आपण खूप वारंवार प्रयत्न केले आहेत. कृपया पुन्हा प्रयत्न करण्यापूर्वी काही मिनिटे थांबा.";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "आपण खूप वारंवार प्रयत्न केले आहेत. कृपया पुन्हा प्रयत्न करण्यापूर्वी एक मिनिट थांबा.";
@@ -5272,6 +5356,9 @@
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "आपला फोन नंबर";
 
+/* Message for confirmation alert when requesting a voice code during phone number registration. */
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "You’ll receive a call to verify this number. Is your phone number above correct?";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "फोन नंबर";
 
@@ -5317,11 +5404,17 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "संदेश पाठविण्यापूर्वी आपल्याला नोंदणी करणे आवश्यक आहे.";
 
+/* Alert shown when running out of attempts at submitting a verification code. */
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "आपण कोड प्रविष्ट करण्याचे अनेक प्रयत्न केले आहेत. कृपया कोड पुन्हा पाठवा आणि पुन्हा प्रयत्न करा.";
+
+/* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "आपण कोड प्रविष्ट करण्याचे अनेक प्रयत्न केले आहेत. %1$@ मध्ये पुन्हा प्रयत्न करा";
+
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "यापूर्वी या नंबरवर नोंदणी झालेले खाते होते जे आता हस्तांतरणासाठी उपलब्ध आहे.";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "The code you entered is not valid. Please resend the code and try again.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "आपण प्रविष्ट केलेला कोड वैध नाही. कृपया कोड पुन्हा पाठवा आणि पुन्हा प्रयत्न करा.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "सत्यापन अयशस्वी";
@@ -5372,10 +5465,10 @@
 "REREGISTER_FOR_PUSH" = "पुश सूचना पुन्हा नोंदणी करा";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "आपल्याकडे %1$@ शिल्लक आहेत. आपल्या प्रयत्नांची संख्या समाप्त झाल्यास, आपण एक नवीन पिन तयार करु शकता. आपण नोंदणी करु आणि आपले अकाऊंट वापरु शकता, मात्र आपण आपली प्रोफाईल माहिती सारख्या जतन केलेल्या सेटिंग्ज गमावाल.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, your account will be locked for 7 days. After 7 days of inactivity, you can re-register without your PIN. All content will be deleted.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "आपल्याकडे %1$@ शिल्लक आहेत. आपल्या प्रयत्नांची संख्या समाप्त झाल्यास, आपले अकाऊंट 7 दिवसांसाठी लॉक करण्यात येईल. 7 दिवसांच्या निष्क्रियतेनंतर, आपण आपल्या पिन शिवाय पुन्हा-नोंदणी करु शकता. सर्व मजकूर हटवला जाईल.";
 
 /* Configure reactions reset button text */
 "RESET" = "रीसेट करा";
@@ -5403,6 +5496,9 @@
 
 /* Title for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "सुरक्षितता नंबर बदल";
+
+/* Text explaining that the given contact has had their safety number verified. */
+"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "सत्यापित";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "बघा";
@@ -5590,6 +5686,9 @@
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "खाते";
 
+/* Label for button in settings to get your account data report */
+"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "आपला अकाऊंट डेटा";
+
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "अवरोधित करा";
 
@@ -5698,7 +5797,7 @@
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "आपला जुना क्रमांक";
 
-/* Label for the 'country code' row in the 'change phone number' settings. */
+/* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "फोन नंबर";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
@@ -7142,13 +7241,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%1$@\" अनलिंक करायचे?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "डिव्हाईस आता लिंक केलेला नाही. आपल्या फोन सोबत संदेशन सुरू ठेवण्यासाठी Signal पुन्हा-लिंक करा.";
+"UNLINKED_WARNING" = "This device is no longer linked. Re-link Signal with your phone to continue messaging.";
+
+/* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
+"UNLINKED_WARNING_ACTION_TITLE" = "Re-Link Device";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal आपल्या डिव्हाईसला अनलिंक करण्यात अक्षम झाले.";
-
-/* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "अनामित डिव्हाईस";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "अनपिन करा";

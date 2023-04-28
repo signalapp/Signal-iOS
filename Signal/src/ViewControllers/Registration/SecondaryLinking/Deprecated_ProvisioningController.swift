@@ -152,7 +152,7 @@ public class Deprecated_ProvisioningController: NSObject {
                     let updateAction = ActionSheetAction(title: updateButtonText,
                                                          accessibilityIdentifier: "alert.update",
                                                          style: .default) { _ in
-                                                            let url = TSConstants.appStoreUpdateURL
+                                                            let url = TSConstants.appStoreUrl
                                                             UIApplication.shared.open(url, options: [:])
                     }
                     alert.addAction(updateAction)

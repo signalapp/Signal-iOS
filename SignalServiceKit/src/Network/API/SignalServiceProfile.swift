@@ -28,8 +28,10 @@ public class SignalServiceProfile: NSObject {
     public let supportsChangeNumber: Bool
     public let credential: Data?
     public let badges: [(OWSUserProfileBadgeInfo, ProfileBadge)]
+
     public let isStoriesCapable: Bool
     public let canReceiveGiftBadges: Bool
+    public let isPniCapable: Bool
 
     public init(address: SignalServiceAddress?, responseObject: Any?) throws {
         guard let params = ParamParser(responseObject: responseObject) else {
@@ -88,6 +90,8 @@ public class SignalServiceProfile: NSObject {
         self.isStoriesCapable = Self.parseCapabilityFlag(capabilityKey: "stories", params: params, requireCapability: true)
 
         self.canReceiveGiftBadges = Self.parseCapabilityFlag(capabilityKey: "giftBadges", params: params, requireCapability: true)
+
+        self.isPniCapable = Self.parseCapabilityFlag(capabilityKey: "pni", params: params, requireCapability: true)
 
         if RemoteConfig.donorBadgeDisplay,
            let badgeArray: [[String: Any]] = try params.optional(key: "badges") {

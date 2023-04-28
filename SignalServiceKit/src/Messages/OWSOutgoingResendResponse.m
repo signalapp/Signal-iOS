@@ -118,11 +118,11 @@
     }
 }
 
-- (void)updateWithSentRecipient:(SignalServiceAddress *)recipientAddress
+- (void)updateWithSentRecipient:(ServiceIdObjC *)serviceId
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [super updateWithSentRecipient:recipientAddress wasSentByUD:wasSentByUD transaction:transaction];
+    [super updateWithSentRecipient:serviceId wasSentByUD:wasSentByUD transaction:transaction];
 
     // Message was sent! Re-mark the recipient as having been sent an SKDM
     if (self.didAppendSKDM) {
@@ -133,7 +133,7 @@
         if (originalThread.usesSenderKey) {
             NSError *error = nil;
             [self.senderKeyStore recordSenderKeySentFor:originalThread
-                                                     to:recipientAddress
+                                                     to:serviceId
                                               timestamp:self.timestamp
                                                 writeTx:transaction
                                                   error:&error];

@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Lottie
 import SignalMessaging
+import SignalUI
 
 class MegaphoneView: UIView, ExperienceUpgradeView {
     let experienceUpgrade: ExperienceUpgrade
@@ -192,7 +192,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         let titleLabel = UILabel()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.font = UIFont.systemFont(ofSize: 17).ows_semibold
+        titleLabel.font = UIFont.semiboldFont(ofSize: 17)
         titleLabel.textColor = Theme.darkThemePrimaryColor
         titleLabel.text = titleText
 
@@ -262,7 +262,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         return container
     }
 
-    func createButtonView(_ button: Button, font: UIFont = .systemFont(ofSize: 15)) -> OWSFlatButton {
+    func createButtonView(_ button: Button, font: UIFont = .regularFont(ofSize: 15)) -> OWSFlatButton {
         let buttonView = OWSFlatButton()
 
         buttonView.setTitle(title: button.title, font: font, titleColor: Theme.darkThemePrimaryColor)
@@ -285,7 +285,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             for button in buttons {
                 let buttonView = createButtonView(
                     button,
-                    font: previousButton == nil ? UIFont.systemFont(ofSize: 15).ows_semibold : .systemFont(ofSize: 15)
+                    font: previousButton == nil ? UIFont.semiboldFont(ofSize: 15) : .regularFont(ofSize: 15)
                 )
 
                 switch buttonOrientation {

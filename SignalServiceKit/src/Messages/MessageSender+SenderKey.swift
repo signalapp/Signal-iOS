@@ -10,12 +10,12 @@ extension MessageSender {
     private static var maxSenderKeyEnvelopeSize: UInt64 { 256 * 1024 }
 
     struct Recipient {
-        let address: SignalServiceAddress
+        let serviceId: ServiceId
         let devices: [UInt32]
         var protocolAddresses: [ProtocolAddress] {
             devices.compactMap {
                 do {
-                    return try ProtocolAddress(from: address, deviceId: $0)
+                    return try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: $0)
                 } catch {
                     owsFailDebug("\(error)")
                     return nil
@@ -23,10 +23,13 @@ extension MessageSender {
             }
         }
 
-        init(address: SignalServiceAddress, transaction readTx: SDSAnyReadTransaction) {
-            let recipient = SignalRecipient.get(address: address, mustHaveDevices: false, transaction: readTx)
-
-            self.address = address
+        init(serviceId: ServiceId, transaction readTx: SDSAnyReadTransaction) {
+            let recipient = SignalRecipient.get(
+                address: SignalServiceAddress(serviceId),
+                mustHaveDevices: false,
+                transaction: readTx
+            )
+            self.serviceId = serviceId
             self.devices = recipient?.deviceIds ?? []
         }
     }
@@ -80,12 +83,12 @@ extension MessageSender {
             case NeedsSKDM
             case FanoutOnly
         }
-        var participants: [SignalServiceAddress: ParticipantState]
+        var participants: [ServiceIdObjC: ParticipantState]
         init(numberOfParticipants: Int) {
             self.participants = Dictionary(minimumCapacity: numberOfParticipants)
         }
 
-        init(fanoutOnlyParticipants: [SignalServiceAddress]) {
+        init(fanoutOnlyParticipants: [ServiceIdObjC]) {
             self.participants = Dictionary(minimumCapacity: fanoutOnlyParticipants.count)
             super.init()
 
@@ -93,20 +96,20 @@ extension MessageSender {
         }
 
         @objc
-        var fanoutParticipants: [SignalServiceAddress] {
+        var fanoutParticipants: [ServiceIdObjC] {
             Array(participants.lazy.filter { $0.value == .FanoutOnly }.map { $0.key })
         }
 
         @objc
-        var allSenderKeyParticipants: [SignalServiceAddress] {
+        var allSenderKeyParticipants: [ServiceIdObjC] {
             Array(participants.lazy.filter { $0.value != .FanoutOnly }.map { $0.key })
         }
 
-        var participantsNeedingSKDM: [SignalServiceAddress] {
+        var participantsNeedingSKDM: [ServiceIdObjC] {
             Array(participants.lazy.filter { $0.value == .NeedsSKDM }.map { $0.key })
         }
 
-        var readyParticipants: [SignalServiceAddress] {
+        var readyParticipants: [ServiceIdObjC] {
             Array(participants.lazy.filter { $0.value == .SenderKeyReady }.map { $0.key })
         }
     }
@@ -115,8 +118,8 @@ extension MessageSender {
     @objc
     func senderKeyStatus(
         for thread: TSThread,
-        intendedRecipients: [SignalServiceAddress],
-        udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
+        intendedRecipients: [ServiceIdObjC],
+        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess]
     ) -> SenderKeyStatus {
         guard !RemoteConfig.senderKeyKillSwitch else {
             Logger.info("Sender key kill switch activated. No recipients support sender key.")
@@ -131,18 +134,13 @@ extension MessageSender {
             let isCurrentKeyValid = senderKeyStore.isKeyValid(for: thread, readTx: readTx)
             let recipientsWithoutSenderKey = senderKeyStore.recipientsInNeedOfSenderKey(
                 for: thread,
-                addresses: intendedRecipients,
-                readTx: readTx)
+                serviceIds: intendedRecipients,
+                readTx: readTx
+            )
 
             let senderKeyStatus = SenderKeyStatus(numberOfParticipants: intendedRecipients.count)
-            let threadRecipients = thread.recipientAddresses(with: readTx)
+            let threadRecipients = thread.recipientAddresses(with: readTx).compactMap { $0.serviceIdObjC }
             intendedRecipients.forEach { candidate in
-                // Sender key is UUID-only
-                guard candidate.isValid, candidate.uuid != nil, !candidate.isLocalAddress else {
-                    senderKeyStatus.participants[candidate] = .FanoutOnly
-                    return
-                }
-
                 // Sender key requires that you're a full member of the group and you support UD
                 guard
                     threadRecipients.contains(candidate),
@@ -152,10 +150,16 @@ extension MessageSender {
                     return
                 }
 
+                guard !SignalServiceAddress(candidate.wrappedValue).isLocalAddress else {
+                    senderKeyStatus.participants[candidate] = .FanoutOnly
+                    owsFailBeta("Callers must not provide UD access for the local ACI.")
+                    return
+                }
+
                 // If all registrationIds aren't valid, we should fallback to fanout
                 // This should be removed once we've sorted out why there are invalid
                 // registrationIds
-                let registrationIdStatus = candidate.registrationIdStatus(transaction: readTx)
+                let registrationIdStatus = Self.registrationIdStatus(for: candidate.wrappedValue, transaction: readTx)
                 switch registrationIdStatus {
                 case .valid:
                     // All good, keep going.
@@ -190,9 +194,9 @@ extension MessageSender {
         payloadId: NSNumber?,
         thread: TSThread,
         status: SenderKeyStatus,
-        udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
+        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
         senderCertificates: SenderCertificates,
-        sendErrorBlock: @escaping (SignalServiceAddress, NSError) -> Void
+        sendErrorBlock: @escaping (ServiceIdObjC, NSError) -> Void
     ) -> AnyPromise {
 
         AnyPromise(
@@ -214,23 +218,23 @@ extension MessageSender {
         payloadId: Int64?,
         thread: TSThread,
         status: SenderKeyStatus,
-        udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
+        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
         senderCertificates: SenderCertificates,
-        sendErrorBlock: @escaping (SignalServiceAddress, NSError) -> Void
+        sendErrorBlock: @escaping (ServiceIdObjC, NSError) -> Void
     ) -> Promise<Void> {
 
         // Because of the way promises are combined further up the chain, we need to ensure that if
         // *any* send fails, the entire Promise rejcts. The error it rejects with doesn't really matter
         // and isn't consulted.
         let didHitAnyFailure = AtomicBool(false)
-        let wrappedSendErrorBlock = { (address: SignalServiceAddress, error: Error) -> Void in
-            Logger.info("Sender key send failed for \(address): \(error)")
+        let wrappedSendErrorBlock = { (serviceId: ServiceIdObjC, error: Error) -> Void in
+            Logger.info("Sender key send failed for \(serviceId): \(error)")
             _ = didHitAnyFailure.tryToSetFlag()
 
             if let senderKeyError = error as? SenderKeyError {
-                sendErrorBlock(address, senderKeyError.asSSKError)
+                sendErrorBlock(serviceId, senderKeyError.asSSKError)
             } else {
-                sendErrorBlock(address, (error as NSError))
+                sendErrorBlock(serviceId, (error as NSError))
             }
         }
 
@@ -240,7 +244,7 @@ extension MessageSender {
         // pend indefinitely.
         let senderKeyGuarantee: Guarantee<Void>
 
-        senderKeyGuarantee = { () -> Guarantee<[SignalServiceAddress]> in
+        senderKeyGuarantee = { () -> Guarantee<[ServiceIdObjC]> in
             // If none of our recipients need an SKDM let's just skip the database write.
             if status.participantsNeedingSKDM.count > 0 {
                 return senderKeyDistributionPromise(
@@ -252,7 +256,7 @@ extension MessageSender {
             } else {
                 return .value(status.readyParticipants)
             }
-        }().then(on: senderKeyQueue) { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
+        }().then(on: senderKeyQueue) { (senderKeyRecipients: [ServiceIdObjC]) -> Guarantee<Void> in
             guard senderKeyRecipients.count > 0 else {
                 // Something went wrong with the SKDM promise. Exit early.
                 owsAssertDebug(didHitAnyFailure.get())
@@ -262,43 +266,46 @@ extension MessageSender {
             return firstly { () -> Promise<SenderKeySendResult> in
                 Logger.info("Sending sender key message with timestamp \(message.timestamp) to \(senderKeyRecipients)")
 
-                let senderCertificate = Self.senderCertificate(forSenderKeyRecipients: senderKeyRecipients,
-                                                               senderCertificates: senderCertificates)
+                let senderCertificate = Self.senderCertificate(
+                    forSenderKeyRecipients: senderKeyRecipients,
+                    senderCertificates: senderCertificates
+                )
 
                 return self.sendSenderKeyRequest(
                     message: message,
                     plaintext: plaintextContent,
                     thread: thread,
-                    addresses: senderKeyRecipients,
+                    serviceIds: senderKeyRecipients,
                     udAccessMap: udAccessMap,
-                    senderCertificate: senderCertificate)
+                    senderCertificate: senderCertificate
+                )
             }.done(on: self.senderKeyQueue) { (sendResult: SenderKeySendResult) in
-                Logger.info("Sender key message with timestamp \(message.timestamp) sent! Recipients: \(sendResult.successAddresses). Unregistered: \(sendResult.unregisteredAddresses)")
+                Logger.info("Sender key message with timestamp \(message.timestamp) sent! Recipients: \(sendResult.successServiceIds). Unregistered: \(sendResult.unregisteredServiceIds)")
 
-                return try self.databaseStorage.write { writeTx in
-                    sendResult.unregisteredAddresses.forEach { address in
-                        self.markAddressAsUnregistered(address, message: message, thread: thread, transaction: writeTx)
+                return self.databaseStorage.write { writeTx in
+                    sendResult.unregisteredServiceIds.forEach { serviceId in
+                        self.markAsUnregistered(serviceId: serviceId, message: message, thread: thread, transaction: writeTx)
 
                         let error = MessageSenderNoSuchSignalRecipientError()
-                        wrappedSendErrorBlock(address, error)
+                        wrappedSendErrorBlock(ServiceIdObjC(serviceId), error)
                     }
 
-                    try sendResult.success.forEach { recipient in
-                        guard let uuid = recipient.address.uuid else {
-                            throw OWSAssertionError("Invalid address")
-                        }
-
-                        message.update(withSentRecipient: recipient.address, wasSentByUD: true, transaction: writeTx)
+                    sendResult.success.forEach { recipient in
+                        message.update(
+                            withSentRecipient: ServiceIdObjC(recipient.serviceId),
+                            wasSentByUD: true,
+                            transaction: writeTx
+                        )
 
                         // If we're sending a story, we generally get a 200, even if the account
                         // doesn't exist. Therefore, don't use this to mark accounts as registered.
                         if !message.isStorySend {
-                            SignalRecipient.fetchOrCreate(for: recipient.address, trustLevel: .low, transaction: writeTx)
+                            SignalRecipient.fetchOrCreate(serviceId: recipient.serviceId, transaction: writeTx)
                                 .markAsRegistered(transaction: writeTx)
                         }
 
                         self.profileManager.didSendOrReceiveMessage(
-                            from: recipient.address,
+                            from: SignalServiceAddress(recipient.serviceId),
                             authedAccount: .implicit(),
                             transaction: writeTx
                         )
@@ -307,10 +314,11 @@ extension MessageSender {
                         recipient.devices.forEach { deviceId in
                             MessageSendLog.recordPendingDelivery(
                                 payloadId: payloadId,
-                                recipientUuid: uuid,
+                                recipientUuid: recipient.serviceId.uuidValue,
                                 recipientDeviceId: Int64(deviceId),
                                 message: message,
-                                transaction: writeTx)
+                                transaction: writeTx
+                            )
                         }
                     }
                 }
@@ -332,26 +340,13 @@ extension MessageSender {
         }
     }
 
-    private static func senderCertificate(forSenderKeyRecipients senderKeyRecipients: [SignalServiceAddress],
-                                          senderCertificates: SenderCertificates) -> SenderCertificate {
-        let phoneNumberSharingMode = udManager.phoneNumberSharingMode
-        switch phoneNumberSharingMode {
+    private static func senderCertificate(
+        forSenderKeyRecipients senderKeyRecipients: [ServiceIdObjC],
+        senderCertificates: SenderCertificates
+    ) -> SenderCertificate {
+        switch udManager.phoneNumberSharingMode {
         case .everybody:
             return senderCertificates.defaultCert
-        case .contactsOnly:
-            let areAllSystemContacts: Bool = databaseStorage.read { transaction in
-                for address in senderKeyRecipients {
-                    if !Self.contactsManager.isSystemContact(address: address, transaction: transaction) {
-                        return false
-                    }
-                }
-                return true
-            }
-            if areAllSystemContacts {
-                return senderCertificates.defaultCert
-            } else {
-                return senderCertificates.uuidOnlyCert
-            }
         case .nobody:
             return senderCertificates.uuidOnlyCert
         }
@@ -363,14 +358,14 @@ extension MessageSender {
     //
     // Returns the list of all recipients ready for the SenderKeyMessage.
     private func senderKeyDistributionPromise(
-        recipients: [SignalServiceAddress],
+        recipients: [ServiceIdObjC],
         thread: TSThread,
         originalMessage: TSOutgoingMessage,
-        udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
-        sendErrorBlock: @escaping (SignalServiceAddress, Error) -> Void
-    ) -> Guarantee<[SignalServiceAddress]> {
+        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
+        sendErrorBlock: @escaping (ServiceIdObjC, Error) -> Void
+    ) -> Guarantee<[ServiceIdObjC]> {
 
-        var recipientsNotNeedingSKDM: Set<SignalServiceAddress> = Set()
+        var recipientsNotNeedingSKDM: Set<ServiceIdObjC> = Set()
         return databaseStorage.write(.promise) { writeTx -> [OWSMessageSend] in
             // Here we fetch all of the recipients that need an SKDM
             // We then construct an OWSMessageSend for each recipient that needs an SKDM.
@@ -386,8 +381,9 @@ extension MessageSender {
 
             let recipientsNeedingSKDM = self.senderKeyStore.recipientsInNeedOfSenderKey(
                 for: thread,
-                addresses: recipients,
-                readTx: writeTx)
+                serviceIds: recipients,
+                readTx: writeTx
+            )
             recipientsNotNeedingSKDM = Set(recipients).subtracting(recipientsNeedingSKDM)
 
             guard !recipientsNeedingSKDM.isEmpty else { return [] }
@@ -395,17 +391,22 @@ extension MessageSender {
                 throw OWSAssertionError("Couldn't build SKDM")
             }
 
-            return recipientsNeedingSKDM.map { address in
+            return recipientsNeedingSKDM.map { serviceId in
                 if let groupThread = thread as? TSGroupThread {
-                    Logger.info("Sending SKDM to \(address) for group thread \(groupThread.groupId)")
+                    Logger.info("Sending SKDM to \(serviceId) for group thread \(groupThread.groupId)")
                 } else {
-                    Logger.info("Sending SKDM to \(address) for thread \(thread.uniqueId)")
+                    Logger.info("Sending SKDM to \(serviceId) for thread \(thread.uniqueId)")
                 }
 
-                let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: writeTx)
+                let contactThread = TSContactThread.getOrCreateThread(
+                    withContactAddress: SignalServiceAddress(serviceId.wrappedValue),
+                    transaction: writeTx
+                )
                 let skdmMessage = OWSOutgoingSenderKeyDistributionMessage(
                     thread: contactThread,
-                    senderKeyDistributionMessageBytes: skdmBytes, transaction: writeTx)
+                    senderKeyDistributionMessageBytes: skdmBytes,
+                    transaction: writeTx
+                )
                 skdmMessage.configureAsSentOnBehalfOf(originalMessage, in: thread)
 
                 let plaintext = skdmMessage.buildPlainTextData(contactThread, transaction: writeTx)
@@ -423,8 +424,8 @@ extension MessageSender {
                     plaintextContent: plaintext,
                     plaintextPayloadId: payloadId,
                     thread: contactThread,
-                    address: address,
-                    udSendingAccess: udAccessMap[address],
+                    serviceId: serviceId,
+                    udSendingAccess: udAccessMap[serviceId],
                     localAddress: localAddress,
                     sendErrorBlock: nil)
             }
@@ -449,28 +450,33 @@ extension MessageSender {
                     }.recover(on: self.senderKeyQueue) { error -> Promise<OWSMessageSend> in
                         if error is MessageSenderNoSuchSignalRecipientError {
                             self.databaseStorage.write { transaction in
-                                self.markAddressAsUnregistered(messageSend.address, message: originalMessage, thread: thread, transaction: transaction)
+                                self.markAsUnregistered(
+                                    serviceId: messageSend.serviceId.wrappedValue,
+                                    message: originalMessage,
+                                    thread: thread,
+                                    transaction: transaction
+                                )
                             }
                         }
 
                         // Note that we still rethrow. It's just easier to access the address
                         // while we still have the messageSend in scope.
                         let wrappedError = SenderKeyError.recipientSKDMFailed(error)
-                        sendErrorBlock(messageSend.address, wrappedError)
+                        sendErrorBlock(messageSend.serviceId, wrappedError)
                         throw wrappedError
                     }
                 })
             }
-        }.map(on: self.senderKeyQueue) { resultArray -> [SignalServiceAddress] in
+        }.map(on: self.senderKeyQueue) { resultArray -> [ServiceIdObjC] in
             // This is a hot path, so we do a bit of a dance here to prepare all of the successful send
             // info before opening the write transaction. We need the recipient address and the SKDM
             // timestamp.
-            let successfulSendInfo: [(recipient: SignalServiceAddress, timestamp: UInt64)]
+            let successfulSendInfo: [(recipient: ServiceIdObjC, timestamp: UInt64)]
 
             successfulSendInfo = resultArray.compactMap { result in
                 switch result {
                 case let .success(messageSend):
-                    return (recipient: messageSend.address, timestamp: messageSend.message.timestamp)
+                    return (recipient: messageSend.serviceId, timestamp: messageSend.message.timestamp)
                 case .failure:
                     return nil
                 }
@@ -479,13 +485,16 @@ extension MessageSender {
             if successfulSendInfo.count > 0 {
                 try self.databaseStorage.write { writeTx in
                     try successfulSendInfo.forEach {
-                        try self.senderKeyStore.recordSenderKeySent(for: thread,
-                                                                    to: $0.recipient,
-                                                                    timestamp: $0.timestamp,
-                                                                    writeTx: writeTx)
+                        try self.senderKeyStore.recordSenderKeySent(
+                            for: thread,
+                            to: $0.recipient,
+                            timestamp: $0.timestamp,
+                            writeTx: writeTx
+                        )
                     }
                 }
             }
+
             // We want to return all recipients that are now ready for sender key
             return Array(recipientsNotNeedingSKDM) + successfulSendInfo.map { $0.recipient }
 
@@ -502,8 +511,8 @@ extension MessageSender {
         let success: [Recipient]
         let unregistered: [Recipient]
 
-        var successAddresses: [SignalServiceAddress] { success.map { $0.address } }
-        var unregisteredAddresses: [SignalServiceAddress] { unregistered.map { $0.address } }
+        var successServiceIds: [ServiceId] { success.map { $0.serviceId } }
+        var unregisteredServiceIds: [ServiceId] { unregistered.map { $0.serviceId } }
     }
 
     // Encrypts and sends the message using SenderKey
@@ -513,8 +522,8 @@ extension MessageSender {
         message: TSOutgoingMessage,
         plaintext: Data?,
         thread: TSThread,
-        addresses: [SignalServiceAddress],
-        udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
+        serviceIds: [ServiceIdObjC],
+        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
         senderCertificate: SenderCertificate
     ) -> Promise<SenderKeySendResult> {
         guard let plaintext = plaintext else {
@@ -522,14 +531,15 @@ extension MessageSender {
         }
 
         return self.databaseStorage.write(.promise) { writeTx -> ([Recipient], Data) in
-            let recipients = addresses.map { Recipient(address: $0, transaction: writeTx) }
+            let recipients = serviceIds.map { Recipient(serviceId: $0.wrappedValue, transaction: writeTx) }
             let ciphertext = try self.senderKeyMessageBody(
                 plaintext: plaintext,
                 message: message,
                 thread: thread,
                 recipients: recipients,
                 senderCertificate: senderCertificate,
-                transaction: writeTx)
+                transaction: writeTx
+            )
             return (recipients, ciphertext)
 
         }.then(on: senderKeyQueue) { (recipients: [Recipient], ciphertext: Data) -> Promise<SenderKeySendResult> in
@@ -557,7 +567,7 @@ extension MessageSender {
         isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
-        udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
+        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
         senderCertificate: SenderCertificate,
         remainingAttempts: UInt
     ) -> Promise<SenderKeySendResult> {
@@ -578,15 +588,8 @@ extension MessageSender {
             }
             let response = try Self.decodeSuccessResponse(data: response.responseBodyData)
             let uuids404 = Set(response.uuids404)
-
-            let successful = try recipients.filter {
-                guard let uuid = $0.address.uuid else { throw OWSAssertionError("Invalid address") }
-                return !uuids404.contains(uuid)
-            }
-            let unregistered = try recipients.filter {
-                guard let uuid = $0.address.uuid else { throw OWSAssertionError("Invalid address") }
-                return uuids404.contains(uuid)
-            }
+            let successful = recipients.filter { !uuids404.contains($0.serviceId.uuidValue) }
+            let unregistered = recipients.filter { uuids404.contains($0.serviceId.uuidValue) }
             return SenderKeySendResult(success: successful, unregistered: unregistered)
         }.recover(on: senderKeyQueue) { error -> Promise<SenderKeySendResult> in
             let retryIfPossible = { () throws -> Promise<SenderKeySendResult> in
@@ -626,10 +629,11 @@ extension MessageSender {
                     self.databaseStorage.write { writeTx in
                         for account in responseBody {
                             MessageSender.updateDevices(
-                                address: SignalServiceAddress(uuid: account.uuid),
+                                serviceId: ServiceIdObjC(uuidValue: account.uuid),
                                 devicesToAdd: account.devices.missingDevices.map { NSNumber(value: $0) },
                                 devicesToRemove: account.devices.extraDevices.map { NSNumber(value: $0) },
-                                transaction: writeTx)
+                                transaction: writeTx
+                            )
                         }
                     }
                     throw SenderKeyError.deviceUpdate
@@ -729,11 +733,13 @@ extension MessageSender {
         isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
-        udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
+        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess]
     ) throws -> Promise<HTTPResponse> {
 
         // Sender key messages use an access key composed of every recipient's individual access key.
-        let allAccessKeys = recipients.compactMap { udAccessMap[$0.address]?.udAccess.senderKeyUDAccessKey }
+        let allAccessKeys = recipients.compactMap {
+            udAccessMap[ServiceIdObjC($0.serviceId)]?.udAccess.senderKeyUDAccessKey
+        }
         guard recipients.count == allAccessKeys.count else {
             throw OWSAssertionError("Incomplete access key set")
         }
@@ -803,7 +809,7 @@ extension MessageSender {
     }
 }
 
-fileprivate extension SignalServiceAddress {
+fileprivate extension MessageSender {
 
     enum RegistrationIdStatus {
         /// The address has a session with a valid registration id
@@ -826,16 +832,16 @@ fileprivate extension SignalServiceAddress {
     /// Also check for missing sessions (shouldn't happen if we've gotten this far, since
     /// SenderKeyStore already said this address has previous Sender Key sends). We should
     /// investigate how this ever happened, but for now fall back to sending another SKDM.
-    func registrationIdStatus(transaction readTx: SDSAnyReadTransaction) -> RegistrationIdStatus {
-        let candidateDevices = MessageSender.Recipient(address: self, transaction: readTx).devices
+    static func registrationIdStatus(for serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> RegistrationIdStatus {
+        let candidateDevices = MessageSender.Recipient(serviceId: serviceId, transaction: transaction).devices
         let sessionStore = signalProtocolStore(for: .aci).sessionStore
         for deviceId in candidateDevices {
             do {
                 guard
                     let sessionRecord = try sessionStore.loadSession(
-                        for: self,
+                        for: SignalServiceAddress(serviceId),
                         deviceId: Int32(deviceId),
-                        transaction: readTx
+                        transaction: transaction
                     ),
                     sessionRecord.hasCurrentState
                 else { return .noSession }
@@ -848,7 +854,7 @@ fileprivate extension SignalServiceAddress {
             } catch {
                 // An error is never thrown on nil result; only if there's something
                 // on disk but parsing fails.
-                owsFailDebug("Failed to fetch registrationId for \(self): \(error)")
+                owsFailDebug("Failed to fetch registrationId for \(serviceId): \(error)")
                 return .invalid
             }
         }

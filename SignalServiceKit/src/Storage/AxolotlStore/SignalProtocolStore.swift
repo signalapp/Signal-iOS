@@ -13,8 +13,7 @@ public class SignalProtocolStore: NSObject {
     @objc
     public let signedPreKeyStore: SSKSignedPreKeyStore
 
-    @objc(initForIdentity:)
-    init(for identity: OWSIdentity) {
+    public init(for identity: OWSIdentity) {
         sessionStore = SSKSessionStore(for: identity)
         preKeyStore = SSKPreKeyStore(for: identity)
         signedPreKeyStore = SSKSignedPreKeyStore(for: identity)

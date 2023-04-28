@@ -45,7 +45,7 @@ struct StoryViewModel: Dependencies {
 
         self.latestMessage = latestMessage
         self.context = latestMessage.context
-        self.hasReplies = InteractionFinder.hasReplies(for: sortedFilteredMessages, transaction: transaction)
+        self.hasReplies = sortedFilteredMessages.contains(where: \.hasReplies)
 
         latestMessageName = StoryUtil.authorDisplayName(
             for: latestMessage,

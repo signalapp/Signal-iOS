@@ -5,6 +5,7 @@
 
 #import "OWSAnalytics.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
+#import <SignalCoreKit/OWSLogs.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -18,6 +18,7 @@ extension OutgoingStoryMessage {
             case .media(let attachments):
                 for identifiedAttachment in attachments {
                     let attachment = identifiedAttachment.value
+                    // TODO[TextFormatting]: preserve styles on the story message proto but hydrate mentions
                     attachment.captionText = state.approvalMessageBody?.plaintextBody(transaction: transaction.unwrapGrdbRead)
                     let attachmentStream = try attachment
                         .buildOutgoingAttachmentInfo()

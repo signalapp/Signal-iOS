@@ -56,7 +56,6 @@ public class IdentityStore: IdentityKeyStore {
         identityManager.saveRemoteIdentity(
             identity.serializeAsData(),
             address: SignalServiceAddress(from: address),
-            authedAccount: .implicit(),
             transaction: context.asTransaction
         )
     }
@@ -102,6 +101,140 @@ extension OWSIdentityManager {
     }
 }
 
+// MARK: - Verified
+
+extension OWSIdentityManager {
+    @objc
+    public func processIncomingVerifiedProto(_ verified: SSKProtoVerified, transaction: SDSAnyWriteTransaction) throws {
+        guard let address = verified.destinationAddress, address.isValid else {
+            return owsFailDebug("Verification state sync message missing address.")
+        }
+        guard let rawIdentityKey = verified.identityKey, rawIdentityKey.count == kIdentityKeyLength else {
+            return owsFailDebug("Verification state sync message for \(address) with malformed identityKey")
+        }
+        let identityKey = try rawIdentityKey.removeKeyType()
+
+        switch verified.state {
+        case .default:
+            applyVerificationState(
+                .default,
+                address: address,
+                identityKey: identityKey,
+                overwriteOnConflict: false,
+                transaction: transaction
+            )
+        case .verified:
+            applyVerificationState(
+                .verified,
+                address: address,
+                identityKey: identityKey,
+                overwriteOnConflict: true,
+                transaction: transaction
+            )
+        case .unverified:
+            return owsFailDebug("Verification state sync message for \(address) has unverified state")
+        case .none:
+            return owsFailDebug("Verification state sync message for \(address) has no state")
+        }
+    }
+
+    private func applyVerificationState(
+        _ verificationState: OWSVerificationState,
+        address: SignalServiceAddress,
+        identityKey: Data,
+        overwriteOnConflict: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        let recipientId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        var recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: transaction)
+
+        let shouldSaveIdentityKey: Bool
+        let shouldInsertChangeMessages: Bool
+
+        if let recipientIdentity {
+            if recipientIdentity.accountId != recipientId {
+                return owsFailDebug("Unexpected accountId for \(address)")
+            }
+            let didChangeIdentityKey = recipientIdentity.identityKey != identityKey
+            if didChangeIdentityKey, !overwriteOnConflict {
+                // The conflict case where we receive a verification sync message whose
+                // identity key disagrees with the local identity key for this recipient.
+                Logger.warn("Non-matching identityKey for \(address)")
+                return
+            }
+            shouldSaveIdentityKey = didChangeIdentityKey
+            shouldInsertChangeMessages = true
+        } else {
+            if verificationState == .default {
+                // There's no point in creating a new recipient identity just to set its
+                // verification state to default.
+                return
+            }
+            shouldSaveIdentityKey = true
+            shouldInsertChangeMessages = false
+        }
+
+        if shouldSaveIdentityKey {
+            // Ensure a remote identity exists for this key. We may be learning about
+            // it for the first time.
+            saveRemoteIdentity(identityKey, address: address, transaction: transaction)
+            recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: transaction)
+        }
+
+        guard let recipientIdentity else {
+            return owsFailDebug("Missing expected identity for \(address)")
+        }
+        guard recipientIdentity.accountId == recipientId else {
+            return owsFailDebug("Unexpected accountId for \(address)")
+        }
+        guard recipientIdentity.identityKey == identityKey else {
+            return owsFailDebug("Unexpected identityKey for \(address)")
+        }
+
+        if recipientIdentity.verificationState == verificationState {
+            return
+        }
+
+        let oldVerificationState = OWSVerificationStateToString(recipientIdentity.verificationState)
+        let newVerificationState = OWSVerificationStateToString(verificationState)
+        Logger.info("for \(address): \(oldVerificationState) -> \(newVerificationState)")
+
+        recipientIdentity.update(with: verificationState, transaction: transaction)
+
+        if shouldInsertChangeMessages {
+            saveChangeMessages(
+                address: address,
+                verificationState: verificationState,
+                isLocalChange: false,
+                transaction: transaction
+            )
+        }
+    }
+
+    @objc
+    func saveChangeMessages(
+        address: SignalServiceAddress,
+        verificationState: OWSVerificationState,
+        isLocalChange: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        owsAssertDebug(address.isValid)
+
+        var relevantThreads = [TSThread]()
+        relevantThreads.append(TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction))
+        relevantThreads.append(contentsOf: TSGroupThread.groupThreads(with: address, transaction: transaction))
+
+        for thread in relevantThreads {
+            OWSVerificationStateChangeMessage(
+                thread: thread,
+                recipientAddress: address,
+                verificationState: verificationState,
+                isLocalChange: isLocalChange
+            ).anyInsert(transaction: transaction)
+        }
+    }
+}
+
 // MARK: - PNIs
 
 extension OWSIdentityManager {
@@ -138,12 +271,27 @@ extension OWSIdentityManager {
     @objc
     public func processIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber,
+        updatedPni updatedPniString: String?,
         transaction: SDSAnyWriteTransaction
     ) {
+        guard
+            let updatedPniString,
+            let updatedPni = UUID(uuidString: updatedPniString)
+        else {
+            owsFailDebug("Missing or invalid updated PNI string while processing incoming PNI change-number sync message!")
+            return
+        }
+
+        guard let localAci = tsAccountManager.localUuid(with: transaction) else {
+            owsFailDebug("Missing ACI while processing incoming PNI change-number sync message!")
+            return
+        }
+
         guard let (
             pniIdentityKeyPair,
             pniSignedPreKey,
-            pniRegistrationId
+            pniRegistrationId,
+            newE164
         ) = deserializeIncomingPniChangePhoneNumber(proto: proto) else {
             return
         }
@@ -170,6 +318,13 @@ extension OWSIdentityManager {
             transaction: transaction
         )
 
+        tsAccountManager.updateLocalPhoneNumber(
+            E164ObjC(newE164),
+            aci: localAci,
+            pni: updatedPni,
+            transaction: transaction
+        )
+
         // Clean up thereafter
 
         // We need to refresh our one-time pre-keys, and should also refresh
@@ -183,11 +338,12 @@ extension OWSIdentityManager {
 
     private func deserializeIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber
-    ) -> (ECKeyPair, SignalServiceKit.SignedPreKeyRecord, UInt32)? {
+    ) -> (ECKeyPair, SignalServiceKit.SignedPreKeyRecord, UInt32, E164)? {
         guard
             let pniIdentityKeyPairData = proto.identityKeyPair,
             let pniSignedPreKeyData = proto.signedPreKey,
-            proto.hasRegistrationID, proto.registrationID > 0
+            proto.hasRegistrationID, proto.registrationID > 0,
+            let newE164 = E164(proto.newE164)
         else {
             owsFailDebug("Invalid PNI change number proto, missing fields!")
             return nil
@@ -201,7 +357,8 @@ extension OWSIdentityManager {
             return (
                 pniIdentityKeyPair,
                 pniSignedPreKey,
-                pniRegistrationId
+                pniRegistrationId,
+                newE164
             )
         } catch let error {
             owsFailDebug("Error while deserializing PNI change-number proto: \(error)")
@@ -280,10 +437,15 @@ extension OWSIdentityManager {
 
     @objc(shouldSharePhoneNumberWithAddress:transaction:)
     func shouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        guard let recipientUuid = recipient.uuidString else {
+        guard let serviceId = recipient.serviceId else {
             return false
         }
-        return shareMyPhoneNumberStore.getBool(recipientUuid, defaultValue: false, transaction: transaction)
+        return shouldSharePhoneNumber(with: serviceId, transaction: transaction)
+    }
+
+    func shouldSharePhoneNumber(with serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> Bool {
+        let uuidString = serviceId.uuidValue.uuidString
+        return shareMyPhoneNumberStore.getBool(uuidString, defaultValue: false, transaction: transaction)
     }
 
     func setShouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
@@ -313,7 +475,7 @@ extension OWSIdentityManager {
 extension OWSIdentityManager {
 
     @discardableResult
-    public func batchUpdateIdentityKeys(addresses: [SignalServiceAddress], authedAccount: AuthedAccount) -> Promise<Void> {
+    public func batchUpdateIdentityKeys(addresses: [SignalServiceAddress]) -> Promise<Void> {
         guard !addresses.isEmpty else { return .value(()) }
 
         let addresses = Set(addresses)
@@ -384,14 +546,13 @@ extension OWSIdentityManager {
                     self.saveRemoteIdentity(
                         identityKey,
                         address: address,
-                        authedAccount: authedAccount,
                         transaction: transaction
                     )
                 }
             }
         }.then { () -> Promise<Void> in
             guard !remainingAddresses.isEmpty else { return .value(()) }
-            return self.batchUpdateIdentityKeys(addresses: remainingAddresses, authedAccount: authedAccount)
+            return self.batchUpdateIdentityKeys(addresses: remainingAddresses)
         }.catch { error in
             owsFailDebug("Batch identity key update failed with error \(error)")
         }

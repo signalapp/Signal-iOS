@@ -77,8 +77,11 @@ class LinkValidatorTest: XCTestCase {
 
             ("alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim", "https://www.youtube.com/watch?v=tP-Ipsat90c"),
 
-            // If there are more than one, take the first.
-            ("alice bob https://signal.org/url_1 jim https://signal.org/url_2 carol", "https://signal.org/url_1")
+            // If there is more than one, take the first.
+            ("alice bob https://signal.org/url_1 jim https://signal.org/url_2 carol", "https://signal.org/url_1"),
+
+            // If there's too much text, we can't parse any URLs.
+            ("https://signal.org " + String(repeating: "A", count: 4096), nil)
         ]
         for (entireMessage, expectedValue) in testCases {
             let actualValue = LinkValidator.firstLinkPreviewURL(in: entireMessage)
@@ -86,12 +89,11 @@ class LinkValidatorTest: XCTestCase {
         }
     }
 
-    func testFindFirstValidUrlPerformance() throws {
+    func testFirstLinkPreviewURLPerformance() throws {
         let entireMessage = String(repeating: "https://example.com ", count: 1_000_000)
-        let expectedValue = try XCTUnwrap(URL(string: "https://example.com"))
         measure {
             let actualValue = LinkValidator.firstLinkPreviewURL(in: entireMessage)
-            XCTAssertEqual(actualValue, expectedValue)
+            XCTAssertNil(actualValue)
         }
     }
 }

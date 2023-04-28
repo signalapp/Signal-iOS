@@ -531,7 +531,7 @@ open class TextAttachmentView: UIView {
             if let title = title {
                 let titleLabel = UILabel()
                 titleLabel.text = title
-                titleLabel.font = .ows_dynamicTypeSubheadlineClamped.ows_semibold
+                titleLabel.font = .dynamicTypeSubheadlineClamped.semibold()
                 titleLabel.textColor = isDraft ? Theme.darkThemePrimaryColor : Theme.lightThemePrimaryColor
                 titleLabel.numberOfLines = 2
                 titleLabel.setCompressionResistanceVerticalHigh()
@@ -542,7 +542,7 @@ open class TextAttachmentView: UIView {
             if let description = description {
                 let descriptionLabel = UILabel()
                 descriptionLabel.text = description
-                descriptionLabel.font = .ows_dynamicTypeFootnoteClamped
+                descriptionLabel.font = .dynamicTypeFootnoteClamped
                 descriptionLabel.textColor = isDraft ? Theme.darkThemePrimaryColor : Theme.lightThemePrimaryColor
                 descriptionLabel.numberOfLines = 2
                 descriptionLabel.setCompressionResistanceVerticalHigh()
@@ -553,10 +553,10 @@ open class TextAttachmentView: UIView {
             let footerLabel = UILabel()
             footerLabel.numberOfLines = 1
             if hasTitleOrDescription {
-                footerLabel.font = .ows_dynamicTypeCaption1Clamped
+                footerLabel.font = .dynamicTypeCaption1Clamped
                 footerLabel.textColor = isDraft ? Theme.darkThemeSecondaryTextAndIconColor : .ows_gray60
             } else {
-                footerLabel.font = .ows_dynamicTypeSubheadlineClamped.ows_semibold
+                footerLabel.font = .dynamicTypeSubheadlineClamped.semibold()
                 footerLabel.textColor = isDraft ? Theme.darkThemePrimaryColor : Theme.lightThemePrimaryColor
             }
             footerLabel.setCompressionResistanceVerticalHigh()
@@ -615,12 +615,12 @@ private class LinkPreviewTooltipView: TooltipView {
             "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP",
             comment: "Tooltip prompting the user to visit a story link."
         )
-        titleLabel.font = UIFont.ows_dynamicTypeBody2Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeBody2Clamped.semibold()
         titleLabel.textColor = .ows_white
 
         let urlLabel = UILabel()
         urlLabel.text = url.absoluteString
-        urlLabel.font = .ows_dynamicTypeCaption1Clamped
+        urlLabel.font = .dynamicTypeCaption1Clamped
         urlLabel.textColor = .ows_white
 
         let stackView = UIStackView(arrangedSubviews: [titleLabel, urlLabel])

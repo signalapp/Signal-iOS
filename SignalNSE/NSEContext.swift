@@ -18,7 +18,6 @@ class NSEContext: NSObject, AppContext {
     var shouldProcessIncomingMessages: Bool { true }
     var hasUI: Bool { false }
     func canPresentNotifications() -> Bool { true }
-    var didLastLaunchNotTerminate: Bool { false }
     var hasActiveCall: Bool { false }
 
     let appLaunchTime = Date()

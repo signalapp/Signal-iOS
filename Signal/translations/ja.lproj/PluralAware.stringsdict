@@ -249,20 +249,6 @@
 			<string>グループの人数が上限の%1$d人に達しました。</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>このバージョンのSignalは、%1$d日後に期限が切れます。最新バージョンにアップデートしてください。</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -683,6 +669,20 @@
 			<string>%1$d個</string>
 		</dict>
 	</dict>
+	<key>MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%1$d枚を転送します</string>
+		</dict>
+	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -960,7 +960,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d attempts</string>
+			<string>%1$d 回の試行</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

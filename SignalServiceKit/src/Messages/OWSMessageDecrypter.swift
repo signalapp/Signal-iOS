@@ -30,7 +30,7 @@ public struct OWSMessageDecryptResult: Dependencies {
         owsAssertDebug(envelope.sourceDevice > 0)
 
         // Self-sent messages should be discarded during the decryption process.
-        let localDeviceId = Self.tsAccountManager.storedDeviceId()
+        let localDeviceId = Self.tsAccountManager.storedDeviceId(transaction: transaction)
         owsAssertDebug(!(sourceAddress.isLocalAddress && envelope.sourceDevice == localDeviceId))
     }
 }
@@ -719,23 +719,15 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             TSPreKeyManager.checkPreKeysIfNecessary()
         }
 
-        let sourceAddress = decryptResult.senderAddress
-        guard
-            sourceAddress.isValid,
-            let sourceUuid = sourceAddress.uuidString
-        else {
-            return .failure(OWSAssertionError("Invalid UD sender: \(sourceAddress)"))
-        }
-
         let rawSourceDeviceId = decryptResult.senderDeviceId
         guard rawSourceDeviceId > 0, rawSourceDeviceId < UInt32.max else {
             return .failure(OWSAssertionError("Invalid UD sender device id."))
         }
         let sourceDeviceId = UInt32(rawSourceDeviceId)
 
-        let recipient = SignalRecipient.fetchOrCreate(
-            for: sourceAddress,
-            trustLevel: .high,
+        let recipient = SignalRecipient.mergeHighTrust(
+            serviceId: decryptResult.senderServiceId.wrappedValue,
+            phoneNumber: E164(decryptResult.senderE164),
             transaction: transaction
         )
         recipient.markAsRegistered(deviceId: sourceDeviceId, transaction: transaction)
@@ -743,7 +735,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         let plaintextData = decryptResult.paddedPayload.withoutPadding()
 
         let identifiedEnvelopeBuilder = envelope.asBuilder()
-        identifiedEnvelopeBuilder.setSourceUuid(sourceUuid)
+        identifiedEnvelopeBuilder.setSourceUuid(decryptResult.senderServiceId.uuidValue.uuidString)
         identifiedEnvelopeBuilder.setSourceDevice(sourceDeviceId)
 
         let identifiedEnvelope: SSKProtoEnvelope

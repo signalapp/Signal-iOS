@@ -167,7 +167,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         let fakeContactsManager = GRDBFullTextSearcherContactsManager()
         fakeContactsManager.setMockDisplayName("Alice", for: aliceRecipient)
         fakeContactsManager.setMockDisplayName("Bob Barker", for: bobRecipient)
-        SSKEnvironment.shared.contactsManagerRef = fakeContactsManager
+        SSKEnvironment.shared.setContactsManagerForUnitTests(fakeContactsManager)
 
         // ensure local client has necessary "registered" state
         let localE164Identifier = "+13235551234"
@@ -682,10 +682,12 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     }
 
     private func getResultSet(searchText: String) -> HomeScreenSearchResultSet {
-        var results: HomeScreenSearchResultSet!
         self.read { transaction in
-            results = self.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction)
+            self.searcher.searchForHomeScreen(
+                searchText: searchText,
+                isCanceled: { false },
+                transaction: transaction
+            )!
         }
-        return results
     }
 }

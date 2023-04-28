@@ -9,6 +9,12 @@ import Foundation
 /// including re-registration and change number.
 public protocol RegistrationCoordinator {
 
+    /// Prepare to switch to secondary device linking, if allowed.
+    /// If this returns true, state will have been appropriately cleared
+    /// in order to proceed to seconday device linking; if not the
+    /// user/device is not allowed and should stay in primary registration.
+    func switchToSecondaryDeviceLinking() -> Bool
+
     /// Attempt to exit registration, returning true if allowed.
     ///
     /// When allowed differs by `RegistrationMode`:
@@ -36,6 +42,11 @@ public protocol RegistrationCoordinator {
     /// If something goes wrong, the next step will be the same as the current step
     /// but which attached metadata giving more info on the rejection.
     func requestPermissions() -> Guarantee<RegistrationStep>
+
+    /// Submit an e164 to confirm for change number, returning the next step to take.
+    /// If the e164 is rejected for any reason, the next step will be the same current step
+    /// but with attached metadata giving more info on the rejection.
+    func submitProspectiveChangeNumberE164(_ e164: E164) -> Guarantee<RegistrationStep>
 
     /// Submit an e164 to use, returning the next step to take.
     /// If the e164 is rejected for any reason, the next step will be the same current step
@@ -113,10 +124,22 @@ public protocol RegistrationCoordinator {
 
     /// The user has hit a reglock timeout and is acknowledging it.
     ///
-    /// If they're doing initial registration, the user should get bonked back to the phone number
-    /// entry screen.
+    /// If they're doing initial registration, the user should get bonked back to
+    /// a previous step. (Typically, the phone number entry screen)
     ///
     /// If they're already using the app (re-registration and change number), we should abort the
-    /// registration process.
-    func acknowledgeReglockTimeout() -> Guarantee<RegistrationStep>
+    /// registration process, exiting back to the main app.
+    func acknowledgeReglockTimeout() -> AcknowledgeReglockResult
+}
+
+public enum AcknowledgeReglockResult {
+    // Only possible during initial registration; lets the user
+    // retry with a different number. Next step should be shown.
+    case restartRegistration(Guarantee<RegistrationStep>)
+    // Allowed to exit; the UI may go back to the main app.
+    // Only sometimes possible during re-reg and change number.
+    case exitRegistration
+    // Unable to get anywhere; typically we are in re-registration
+    // and state has already been wiped unrecoverably.
+    case cannotExit
 }

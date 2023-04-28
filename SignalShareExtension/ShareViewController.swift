@@ -26,7 +26,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
-    private var areVersionMigrationsComplete = false
 
     private var progressPoller: ProgressPoller?
     lazy var loadViewController = SAELoadViewController(delegate: self)
@@ -47,46 +46,39 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("")
 
-        _ = AppVersion.shared()
-
         Cryptography.seedRandom()
 
         // We don't need to use DeviceSleepManager in the SAE.
 
         // We don't need to use applySignalAppearence in the SAE.
 
-        if CurrentAppContext().isRunningTests {
+        if appContext.isRunningTests {
             // TODO: Do we need to implement isRunningTests in the SAE context?
             return
         }
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
-        AppSetup.setupEnvironment(
+        let databaseContinuation = AppSetup().start(
+            appContext: appContext,
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             webSocketFactory: WebSocketFactoryNative(),
-            appSpecificSingletonBlock: {
-            // Create SUIEnvironment.
-            SUIEnvironment.shared.setup()
-            SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()
-            SSKEnvironment.shared.notificationsManagerRef = NoopNotificationsManager()
-            Environment.shared.lightweightCallManagerRef = LightweightCallManager()
-        },
-        migrationCompletion: { [weak self] error in
-            AssertIsOnMainThread()
+            callMessageHandler: NoopCallMessageHandler(),
+            notificationPresenter: NoopNotificationsManager()
+        )
 
-            guard let strongSelf = self else { return }
+        // Configure the rest of the globals before preparing the database.
+        SUIEnvironment.shared.setup()
+        Environment.shared.lightweightCallManagerRef = LightweightCallManager()
 
-            if let error = error {
-                owsFailDebug("Error \(error)")
-                strongSelf.showNotReadyView()
-                return
+        databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalContinuation in
+            switch finalContinuation.finish(willResumeInProgressRegistration: false) {
+            case .corruptRegistrationState:
+                self.showNotRegisteredView()
+            case nil:
+                self.setAppIsReady()
             }
-
-            // performUpdateCheck must be invoked after Environment has been initialized because
-            // upgrade process may depend on Environment.
-            strongSelf.versionMigrationsDidComplete()
-        })
+        }
 
         let shareViewNavigationController = OWSNavigationController()
         shareViewNavigationController.presentationController?.delegate = self
@@ -109,10 +101,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use "screen protection" in the SAE.
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(storageIsReady),
-                                               name: .StorageIsReady,
-                                               object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
                                                name: .registrationStateDidChange,
@@ -188,48 +176,14 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
     }
 
-    @objc
-    func versionMigrationsDidComplete() {
-        AssertIsOnMainThread()
-
+    private func setAppIsReady() {
         Logger.debug("")
-
-        areVersionMigrationsComplete = true
-
-        checkIsAppReady()
-    }
-
-    @objc
-    func storageIsReady() {
         AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        checkIsAppReady()
-    }
-
-    @objc
-    func checkIsAppReady() {
-        AssertIsOnMainThread()
-
-        // App isn't ready until storage is ready AND all version migrations are complete.
-        guard areVersionMigrationsComplete else {
-            return
-        }
-        guard storageCoordinator.isStorageReady else {
-            return
-        }
-        guard !AppReadiness.isAppReady else {
-            // Only mark the app as ready once.
-            return
-        }
+        owsAssert(!AppReadiness.isAppReady)
 
         // We don't need to use LaunchJobs in the SAE.
 
-        Logger.debug("")
-
-        // Note that this does much more than set a flag;
-        // it will also run all deferred blocks.
+        // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
         if tsAccountManager.isRegistered {
@@ -242,7 +196,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        AppVersion.shared().saeLaunchDidComplete()
+        AppVersion.shared.saeLaunchDidComplete()
 
         ensureRootViewController()
 
@@ -310,7 +264,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
-        guard tsAccountManager.isOnboarded() else {
+        guard tsAccountManager.isOnboarded else {
             showNotReadyView()
             return
         }

@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)toE164;
 - (nullable NSNumber *)getCountryCode;
 @property (nonatomic, readonly, nullable) NSString *nationalNumber;
+@property (nonatomic, readonly, nullable) NSString *nationalNumberFormatted;
 - (BOOL)isValid;
 
 - (NSComparisonResult)compare:(PhoneNumber *)other;

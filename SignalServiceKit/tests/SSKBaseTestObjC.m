@@ -5,7 +5,6 @@
 
 #import "SSKBaseTestObjC.h"
 #import "SDSDatabaseStorage+Objc.h"
-#import "SSKEnvironment.h"
 #import "TestAppContext.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
@@ -21,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
-    OWSLogInfo(@"setUp");
-
     [super setUp];
 
     [DDLog addLogger:DDTTYLogger.sharedInstance];
@@ -36,16 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tearDown
 {
-    OWSLogInfo(@"tearDown");
-    OWSAssertIsOnMainThread();
-
-    // Spin the main run loop to flush any remaining async work.
-    __block BOOL done = NO;
-    dispatch_async(dispatch_get_main_queue(), ^{ done = YES; });
-    while (!done) {
-        (void)CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, true);
-    }
-
+    [MockSSKEnvironment flushAndWait];
     [super tearDown];
 }
 

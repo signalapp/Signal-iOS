@@ -92,7 +92,7 @@ class CallButton: UIButton {
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
 
-        label.font = .ows_dynamicTypeFootnote
+        label.font = .dynamicTypeFootnote
         label.textColor = Theme.darkThemePrimaryColor
         label.textAlignment = .center
         label.layer.shadowOffset = .zero

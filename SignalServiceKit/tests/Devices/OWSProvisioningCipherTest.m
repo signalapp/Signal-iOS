@@ -17,7 +17,7 @@
 
 @end
 
-@interface OWSProvisioningCipherTest : SSKBaseTestObjC
+@interface OWSProvisioningCipherTest : XCTestCase
 
 @end
 
@@ -75,12 +75,12 @@
 
     // Righteous hack to build a deterministic ECKeyPair
     // The publicKey/privateKey ivars are private but it's possible to `initWithCoder:` given the proper keys.
-    NSKeyedArchiver *archiver = [NSKeyedArchiver new];
+    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
     [archiver encodeBytes:publicKeyBytes length:ECCKeyLength forKey:@"TSECKeyPairPublicKey"];
     [archiver encodeBytes:privateKeyBytes length:ECCKeyLength forKey:@"TSECKeyPairPrivateKey"];
 
     NSData *serialized = [archiver encodedData];
-    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:serialized];
+    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:serialized error:NULL];
     return [[ECKeyPair alloc] initWithCoder:unarchiver];
 }
 
@@ -135,7 +135,7 @@
 - (void)testPadding
 {
     NSUInteger kBlockSize = 16;
-    for (int i = 0; i <= kBlockSize; i++) {
+    for (NSUInteger i = 0; i <= kBlockSize; i++) {
         NSData *message = [Cryptography generateRandomBytes:i];
 
 
@@ -149,7 +149,7 @@
 
 
         NSData *actualOutput = [cipher encrypt:message];
-        XCTAssertNotNil(actualOutput, @"failed for message length: %d", i);
+        XCTAssertNotNil(actualOutput, @"failed for message length: %lu", (unsigned long)i);
     }
 }
 

@@ -56,7 +56,7 @@ class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 }
 
 class VerifyingPushRegistrationManager: PushRegistrationManager {
-    public override func requestPushTokens(forceRotation: Bool) -> Promise<(pushToken: String, voipToken: String?)> {
+    public override func requestPushTokens(forceRotation: Bool, timeOutEventually: Bool = false) -> Promise<(pushToken: String, voipToken: String?)> {
         return Promise.value(("a", "b"))
     }
 }
@@ -67,8 +67,7 @@ class AccountManagerTest: SignalBaseTest {
         super.setUp()
 
         let tsAccountManager = FailingTSAccountManager()
-        let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.tsAccountManagerRef = tsAccountManager
+        SSKEnvironment.shared.setTsAccountManagerForUnitTests(tsAccountManager)
     }
 
     override func tearDown() {
@@ -118,8 +117,7 @@ class AccountManagerTest: SignalBaseTest {
 
     func testSuccessfulRegistration() {
         let tsAccountManager = TokenObtainingTSAccountManager()
-        let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.tsAccountManagerRef = tsAccountManager
+        SSKEnvironment.shared.setTsAccountManagerForUnitTests(tsAccountManager)
 
         AppEnvironment.shared.pushRegistrationManagerRef = VerifyingPushRegistrationManager()
 

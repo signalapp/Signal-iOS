@@ -67,7 +67,7 @@ public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationCh
         stackView.addArrangedSubview(countryRow)
 
         countryRowTitleLabel.text = OWSLocalizedString("REGISTRATION_DEFAULT_COUNTRY_NAME", comment: "Label for the country code field")
-        countryRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        countryRowTitleLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
         countryRowTitleLabel.accessibilityIdentifier =
             UIView.accessibilityIdentifier(in: self, name: "countryRowTitleLabel")
 
@@ -76,7 +76,7 @@ public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationCh
         countryRowTitleLabel.autoPinHeightToSuperviewMargins()
 
         countryCodeLabel.textColor = Theme.accentBlueColor
-        countryCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        countryCodeLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
         countryCodeLabel.textAlignment = .right
         countryCodeLabel.accessibilityIdentifier =
             UIView.accessibilityIdentifier(in: self, name: "countryCodeLabel")
@@ -93,7 +93,7 @@ public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationCh
 
         phoneNumberRowTitleLabel.text = OWSLocalizedString("REGISTRATION_PHONENUMBER_BUTTON",
                                                           comment: "Label for the phone number textfield")
-        phoneNumberRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        phoneNumberRowTitleLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
         phoneNumberRowTitleLabel.accessibilityIdentifier =
             UIView.accessibilityIdentifier(in: self, name: "phoneNumberRowTitleLabel")
 
@@ -101,7 +101,7 @@ public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationCh
         phoneNumberRowTitleLabel.autoPinLeadingToSuperviewMargin()
         phoneNumberRowTitleLabel.autoPinHeightToSuperviewMargins()
 
-        phoneNumberTextField.font = .ows_dynamicTypeBodyClamped
+        phoneNumberTextField.font = .dynamicTypeBodyClamped
         phoneNumberTextField.textColor = Theme.accentBlueColor
         phoneNumberTextField.autocorrectionType = .no
         phoneNumberTextField.autocapitalizationType = .none
@@ -125,7 +125,7 @@ public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationCh
 
         stackView.addArrangedSubview(exampleLabel)
 
-        exampleLabel.font = .ows_dynamicTypeFootnoteClamped
+        exampleLabel.font = .dynamicTypeFootnoteClamped
         exampleLabel.textAlignment = .right
 
         populateDefaultCountryCode()

@@ -40,21 +40,6 @@ class ModelReadCacheTest: SSKBaseTestSwift {
                                           uuid: localAddress.uuid!)
     }
 
-    private func createRecipientsAndAccounts(_ addresses: [SignalServiceAddress]) -> [SignalAccount] {
-        let accounts = addresses.map { SignalAccount(address: $0) }
-        // Create recipients and accounts.
-        write { transaction in
-            for address in addresses {
-                SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
-                    .markAsRegistered(transaction: transaction)
-            }
-            for account in accounts {
-                account.anyInsert(transaction: transaction)
-            }
-        }
-        return accounts
-    }
-
     // MARK: - Test ModelReadCache.readValues(for:, transaction:)
 
     func testReadNonNilCacheableValues() {

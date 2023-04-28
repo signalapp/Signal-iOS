@@ -10,7 +10,6 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TestAppContext.h>

@@ -62,7 +62,7 @@ public class Mention: NSObject {
     public var attributes: [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = [
             .mention: self,
-            .font: UIFont.ows_dynamicTypeBody
+            .font: UIFont.dynamicTypeBody
         ]
 
         switch style {
@@ -102,7 +102,7 @@ public class Mention: NSObject {
 
     @objc(refreshAttributedInMutableAttributedString:)
     public class func refreshAttributes(in mutableAttributedString: NSMutableAttributedString) {
-        mutableAttributedString.enumerateMentions { mention, subrange, _ in
+        mutableAttributedString.enumerateMentionsAndStyles { mention, _, subrange, _ in
             guard let mention = mention else { return }
             mutableAttributedString.addAttributes(mention.attributes, range: subrange)
         }
@@ -110,7 +110,7 @@ public class Mention: NSObject {
 
     @objc(updateWithStyle:inMutableAttributedString:)
     public class func updateWithStyle(_ style: Style, in mutableAttributedString: NSMutableAttributedString) {
-        mutableAttributedString.enumerateMentions { mention, subrange, _ in
+        mutableAttributedString.enumerateMentionsAndStyles { mention, _, subrange, _ in
             guard let mention = mention else { return }
             let restyledMention = Mention(address: mention.address, style: style, text: mention.text)
             mutableAttributedString.addAttributes(restyledMention.attributes, range: subrange)
@@ -125,29 +125,33 @@ extension NSAttributedString.Key {
 extension MessageBody {
     public convenience init(attributedString: NSAttributedString) {
         var mentions = [NSRange: UUID]()
+        var styles = [(NSRange, MessageBodyRanges.Style)]()
 
         let filteredAttributedString = attributedString.filterForDisplay
         let mutableAttributedString = NSMutableAttributedString(attributedString: filteredAttributedString)
 
-        mutableAttributedString.enumerateMentions { mention, subrange, _ in
-            guard let mention = mention else { return }
+        mutableAttributedString.enumerateMentionsAndStyles { mention, style, subrange, _ in
+            if let mention {
+                // This string may not be a full mention, for example we may
+                // have copied a string that only selects part of a mention.
+                // We only want to treat it as a mention if we have the full
+                // thing.
+                guard subrange.length == mention.length else { return }
 
-            // This string may not be a full mention, for example we may
-            // have copied a string that only selects part of a mention.
-            // We only want to treat it as a mention if we have the full
-            // thing.
-            guard subrange.length == mention.length else { return }
+                mutableAttributedString.replaceCharacters(in: subrange, with: Self.mentionPlaceholder)
 
-            mutableAttributedString.replaceCharacters(in: subrange, with: Self.mentionPlaceholder)
-
-            let placeholderRange = NSRange(
-                location: subrange.location,
-                length: (Self.mentionPlaceholder as NSString).length
-            )
-            mentions[placeholderRange] = mention.address.uuid
+                let placeholderRange = NSRange(
+                    location: subrange.location,
+                    length: (Self.mentionPlaceholder as NSString).length
+                )
+                mentions[placeholderRange] = mention.address.uuid
+            }
+            if let style {
+                styles.append((subrange, style))
+            }
         }
 
-        self.init(text: mutableAttributedString.string, ranges: .init(mentions: mentions))
+        self.init(text: mutableAttributedString.string, ranges: .init(mentions: mentions, styles: styles))
     }
 
     public func textValue(style: Mention.Style,
@@ -186,7 +190,7 @@ extension MessageBodyRanges {
                           shouldResolveAddress: (SignalServiceAddress) -> Bool,
                           transaction: GRDBReadTransaction) -> CVTextValue {
 
-        guard hasMentions || !attributes.isEmpty else {
+        guard hasRanges || !attributes.isEmpty else {
             return .text(text: text)
         }
         let attributedText = attributedBody(text: text,
@@ -197,6 +201,9 @@ extension MessageBodyRanges {
         return .attributedText(attributedText: attributedText)
     }
 
+    /// Note: this method does _not_ apply styles; instead it just sets the `.owsStyle`
+    /// attribute for any styles, and it is up to callers to apply those styles using
+    /// `MessageBodyRanges.applyStyleAttributes` with the appropriate font and themed color.
     @objc
     public func attributedBody(
         text: String,
@@ -205,46 +212,52 @@ extension MessageBodyRanges {
         shouldResolveAddress: (SignalServiceAddress) -> Bool,
         transaction: GRDBReadTransaction
     ) -> NSAttributedString {
-        guard hasMentions else { return NSAttributedString(string: text, attributes: attributes) }
+        guard hasRanges else { return NSAttributedString(string: text, attributes: attributes) }
 
-        let mutableText = NSMutableAttributedString(string: text, attributes: attributes)
-
-        for (range, uuid) in orderedMentions.reversed() {
-            guard range.location >= 0 && range.location + range.length <= (text as NSString).length else {
-                owsFailDebug("Ignoring invalid range in body ranges \(range)")
-                continue
-            }
-
-            let mention = Mention(
+        var mentions = [UUID: Mention]()
+        for (_, uuid) in orderedMentions {
+            mentions[uuid] = mentions[uuid] ?? Mention(
                 address: SignalServiceAddress(uuid: uuid),
                 style: style,
                 transaction: transaction
             )
-
-            if shouldResolveAddress(mention.address) {
-                mutableText.replaceCharacters(in: range, with: mention.attributedString)
-            } else {
-                mutableText.replaceCharacters(in: range, with: mention.text)
-            }
         }
 
-        return NSAttributedString(attributedString: mutableText).filterForDisplay
+        let mutableText = NSMutableAttributedString(string: text, attributes: attributes)
+        self.hydrateMentionsAndSetStyleAttributes(
+            on: mutableText,
+            hydrator: { mentionUuid in
+                guard let mention = mentions[mentionUuid] else {
+                    return .preserveMention
+                }
+                if shouldResolveAddress(mention.address) {
+                    return .hydrateAttributed(mention.attributedString, alreadyIncludesPrefix: true)
+                } else {
+                    return .hydrate(mention.text, alreadyIncludesPrefix: true)
+                }
+            }
+        )
+
+        return NSAttributedString(attributedString: mutableText)
     }
 }
 
 extension NSAttributedString {
-    public func enumerateMentions(
+    public func enumerateMentionsAndStyles(
         in range: NSRange? = nil,
-        handler: (Mention?, NSRange, UnsafeMutablePointer<ObjCBool>) -> Void
+        handler: (Mention?, MessageBodyRanges.Style?, NSRange, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        enumerateAttribute(
-            .mention,
+        enumerateAttributes(
             in: range ?? NSRange(location: 0, length: length),
             options: []
-        ) { handler($0 as? Mention, $1, $2) }
+        ) { attributes, range, stop in
+            let mention = attributes[.mention] as? Mention
+            let style = attributes[.owsStyle] as? MessageBodyRanges.Style
+            handler(mention, style, range, stop)
+        }
     }
 
-    // This is private because it's *only* safe to use on mention attributed strings.
+    // This is private because it's *only* safe to use on mention/style attributed strings.
     fileprivate var filterForDisplay: NSAttributedString {
         guard length > 0 else { return self }
 
@@ -252,14 +265,10 @@ extension NSAttributedString {
 
         let mutableString = NSMutableAttributedString(attributedString: self)
 
-        // Filter each non-mention substring
+        // Filter each non-mention, non-style substring
 
-        // TODO: If we ever start supporting other styling than mentions,
-        // this method of filtering will fall down. For now, we can safely
-        // filter all the text before/after/between mentions and treat it
-        // as having the same set of attributes.
-        mutableString.enumerateMentions { mention, subrange, _ in
-            guard mention == nil else { return }
+        mutableString.enumerateMentionsAndStyles { mention, style, subrange, _ in
+            guard mention == nil && style == nil else { return }
 
             let string = mutableString.attributedSubstring(from: subrange).string
             let attributes = mutableString.attributes(at: subrange.location, effectiveRange: nil)

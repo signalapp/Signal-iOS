@@ -492,7 +492,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
             }
 
             guard let kbsError = error as? KBS.KBSError else {
-                owsFailDebug("Unexpectedly surfacing a non KBS error: \(error)")
+                Logger.error("Surfacing a non KBS error: \(error)")
                 throw error
             }
 
@@ -927,9 +927,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
 
         // Trigger a re-fetch of the storage manifest, our keys have changed
         if type == .storageService, data != nil {
-            storageServiceManager.restoreOrCreateManifestIfNecessary(
-                authedAccount: authedAccount
-            )
+            storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
         }
     }
 

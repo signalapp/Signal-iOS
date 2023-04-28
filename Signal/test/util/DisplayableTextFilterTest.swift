@@ -7,7 +7,7 @@ import XCTest
 @testable import Signal
 @testable import SignalMessaging
 
-class DisplayableTextTest: SignalBaseTest {
+class DisplayableTextTest: XCTestCase {
     func testDisplayableText() {
         // show plain text
         let boringText = "boring text"

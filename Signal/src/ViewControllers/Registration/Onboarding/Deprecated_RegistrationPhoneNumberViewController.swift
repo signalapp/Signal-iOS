@@ -59,7 +59,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
     private let countryNameLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_dynamicTypeBodyClamped
+        label.font = UIFont.dynamicTypeBodyClamped
         label.accessibilityIdentifier = "onboarding.phoneNumber." + "countryNameLabel"
         return label
     }()
@@ -76,7 +76,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
     private lazy var callingCodeLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_dynamicTypeBodyClamped
+        label.font = UIFont.dynamicTypeBodyClamped
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryCodeTapped)))
         label.accessibilityIdentifier = "onboarding.phoneNumber." + "callingCodeLabel"
@@ -85,7 +85,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
 
     private let phoneNumberTextField: UITextField = {
         let field = UITextField()
-        field.font = UIFont.ows_dynamicTypeBodyClamped
+        field.font = UIFont.dynamicTypeBodyClamped
         field.textColor = Theme.primaryTextColor
         field.textAlignment = .left
         field.textContentType = .telephoneNumber
@@ -118,7 +118,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
         let label = UILabel()
         label.textColor = .ows_accentRed
         label.numberOfLines = 0
-        label.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        label.font = UIFont.dynamicTypeSubheadlineClamped
         label.accessibilityIdentifier = "onboarding.phoneNumber." + "validationWarningLabel"
         return label
     }()
@@ -358,7 +358,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
         guard tsAccountManager.isReregistering else {
             return nil
         }
-        guard let phoneNumberE164 = tsAccountManager.reregistrationPhoneNumber() else {
+        guard let phoneNumberE164 = tsAccountManager.reregistrationPhoneNumber else {
             owsFailDebug("Could not resume re-registration; missing phone number.")
             return nil
         }

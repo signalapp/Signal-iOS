@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class DateOWSTests: SSKBaseTestSwift {
+class DateOWSTests: XCTestCase {
 
     func testValidHTTPDateParsing() {
         let validTestCases = [

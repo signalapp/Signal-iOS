@@ -10,10 +10,17 @@ import YYImage
 
 protocol MediaItemViewControllerDelegate: AnyObject {
     func mediaItemViewControllerDidTapMedia(_ viewController: MediaItemViewController)
-    func mediaItemViewController(_ viewController: MediaItemViewController, videoPlaybackStatusDidChange isPlaying: Bool)
 }
 
-class MediaItemViewController: OWSViewController {
+protocol VideoPlaybackStatusProvider: AnyObject {
+    var videoPlaybackStatusObserver: VideoPlaybackStatusObserver? { get set }
+}
+
+protocol VideoPlaybackStatusObserver: AnyObject {
+    func videoPlayerStatusChanged(_ videoPlayer: VideoPlayer)
+}
+
+class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     weak var delegate: MediaItemViewControllerDelegate?
 
@@ -50,9 +57,9 @@ class MediaItemViewController: OWSViewController {
     private var mediaViewTopConstraint: NSLayoutConstraint?
     private var mediaViewTrailingConstraint: NSLayoutConstraint?
 
-    private var videoPlayer: VideoPlayer?
+    var videoPlayerView: VideoPlayerView? { mediaView as? VideoPlayerView }
+    var videoPlayer: VideoPlayer? { videoPlayerView?.videoPlayer }
     private var buttonPlayVideo: UIButton?
-    private var videoProgressBar: PlayerProgressBar?
 
     private func updateZoomScaleAndConstraints() {
         // We want a default layout that...
@@ -130,29 +137,11 @@ class MediaItemViewController: OWSViewController {
         scrollView.setZoomScale(scrollView.minimumZoomScale, animated: animated)
     }
 
-    func setShouldHideToolbars(_ hide: Bool) {
-        videoProgressBar?.isHidden = hide
-    }
-
     private func configureVideoPlaybackControls() {
-        guard let videoPlayer else {
+        guard videoPlayerView != nil else {
             owsFailBeta("No videoPlayer")
             return
         }
-
-        let videoProgressBar = PlayerProgressBar()
-        videoProgressBar.delegate = self
-        videoProgressBar.player = videoPlayer.avPlayer
-        // Progress bar stays hidden until either:
-        // 1. Video completes playing
-        // 2. User taps the screen
-        videoProgressBar.isHidden = true
-        view.addSubview(videoProgressBar)
-        videoProgressBar.autoPinWidthToSuperview()
-        let videoProgressBarHeight: CGFloat = 44
-        videoProgressBar.autoPin(toTopLayoutGuideOf: self, withInset: videoProgressBarHeight)
-        videoProgressBar.autoSetDimension(.height, toSize: videoProgressBarHeight)
-        self.videoProgressBar = videoProgressBar
 
         let buttonPlayVideo = OWSButton { [weak self] in
             self?.playVideo()
@@ -202,6 +191,8 @@ class MediaItemViewController: OWSViewController {
     }
 
     private func buildMediaView() {
+        guard mediaView == nil else { return }
+
         let view: UIView
         if attachmentStream.isLoopingVideo {
             if attachmentStream.isValidVideo, let loopingVideoPlayerView = buildLoopingVideoPlayerView() {
@@ -221,11 +212,9 @@ class MediaItemViewController: OWSViewController {
             // Still loading thumbnail.
             view = buildPlaceholderView()
         } else if isVideo {
-            if attachmentStream.isValidVideo, let (videoPlayer, videoPlayerView) = buildVideoPlayerView() {
-                videoPlayer.delegate = self
+            if attachmentStream.isValidVideo, let videoPlayerView = buildVideoPlayerView() {
                 videoPlayerView.delegate = self
-
-                self.videoPlayer = videoPlayer
+                videoPlayerView.videoPlayer?.delegate = self
 
                 view = videoPlayerView
             } else {
@@ -259,7 +248,7 @@ class MediaItemViewController: OWSViewController {
         return videoView
     }
 
-    private func buildVideoPlayerView() -> (VideoPlayer, VideoPlayerView)? {
+    private func buildVideoPlayerView() -> VideoPlayerView? {
         guard let attachmentUrl = attachmentStream.originalMediaURL else {
             owsFailBeta("Invalid URL")
             return nil
@@ -272,9 +261,9 @@ class MediaItemViewController: OWSViewController {
         videoPlayer.seek(to: .zero)
 
         let videoPlayerView = VideoPlayerView()
-        videoPlayerView.player = videoPlayer.avPlayer
+        videoPlayerView.videoPlayer = videoPlayer
 
-        return (videoPlayer, videoPlayerView)
+        return videoPlayerView
     }
 
     // MARK: - UIViewController
@@ -349,63 +338,19 @@ class MediaItemViewController: OWSViewController {
 
     private var isVideo: Bool { attachmentStream.isVideo && !attachmentStream.isLoopingVideo }
 
-    func playVideo() {
-        guard let videoPlayer else {
+    private func playVideo() {
+        guard let videoPlayerView else {
             owsFailBeta("videoPlayer is nil")
             return
         }
 
-        videoPlayer.play()
-        buttonPlayVideo?.isHidden = true
-
-        delegate?.mediaItemViewController(self, videoPlaybackStatusDidChange: true)
-    }
-
-    func pauseVideo() {
-        owsAssertDebug(isVideo)
-        guard let videoPlayer else {
-            owsFailBeta("videoPlayer is nil")
-            return
-        }
-
-        videoPlayer.pause()
-
-        delegate?.mediaItemViewController(self, videoPlaybackStatusDidChange: false)
-    }
-
-    private func stopVideo() {
-        owsAssertDebug(isVideo)
-        guard let videoPlayer else {
-            owsFailBeta("videoPlayer is nil")
-            return
-        }
-
-        videoPlayer.stop()
-        buttonPlayVideo?.isHidden = false
-
-        delegate?.mediaItemViewController(self, videoPlaybackStatusDidChange: false)
+        videoPlayerView.play()
     }
 
     func stopVideoIfPlaying() {
-        if isVideo { stopVideo() }
-    }
-
-    func rewind(_ seconds: TimeInterval) {
-        owsAssertDebug(isVideo)
-        guard let videoPlayer else {
-            owsFailBeta("videoPlayer is nil")
-            return
+        if let videoPlayerView {
+            videoPlayerView.stop()
         }
-        videoPlayer.rewind(seconds)
-    }
-
-    func fastForward(_ seconds: TimeInterval) {
-        owsAssertDebug(isVideo)
-        guard let videoPlayer else {
-            owsFailBeta("videoPlayer is nil")
-            return
-        }
-        videoPlayer.fastForward(seconds)
     }
 
     // MARK: - Tap Gestures
@@ -448,6 +393,10 @@ class MediaItemViewController: OWSViewController {
         let translatedRect = mediaView.convert(zoomRect, from: scrollView)
         scrollView.zoom(to: translatedRect, animated: true)
     }
+
+    // MARK: - VideoPlaybackStatusProvider
+
+    var videoPlaybackStatusObserver: VideoPlaybackStatusObserver?
 }
 
 extension MediaItemViewController: UIScrollViewDelegate {
@@ -470,47 +419,24 @@ extension MediaItemViewController: LoopingVideoViewDelegate {
 
 extension MediaItemViewController: VideoPlayerDelegate {
     func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer) {
-        owsAssertDebug(isVideo)
-        owsAssertDebug(self.videoPlayer != nil)
-        Logger.verbose("")
-        stopVideo()
+        guard isVideo, let videoPlayerView else { return }
+
+        videoPlayerView.stop()
+        buttonPlayVideo?.isHidden = false
     }
 }
 
 extension MediaItemViewController: VideoPlayerViewDelegate {
     func videoPlayerViewStatusDidChange(_ view: VideoPlayerView) {
+        if let buttonPlayVideo, view.isPlaying {
+            buttonPlayVideo.isHidden = true
+        }
+        if let videoPlaybackStatusObserver, let videoPlayer = view.videoPlayer {
+            videoPlaybackStatusObserver.videoPlayerStatusChanged(videoPlayer)
+        }
         updateZoomScaleAndConstraints()
     }
 
     func videoPlayerViewPlaybackTimeDidChange(_ view: VideoPlayerView) {
-    }
-}
-
-extension MediaItemViewController: PlayerProgressBarDelegate {
-    func playerProgressBarDidStartScrubbing(_ playerProgressBar: PlayerProgressBar) {
-        guard let videoPlayer else {
-            owsFailBeta("No video player.")
-            return
-        }
-        videoPlayer.pause()
-    }
-
-    func playerProgressBar(_ playerProgressBar: PlayerProgressBar, scrubbedToTime time: CMTime) {
-        guard let videoPlayer else {
-            owsFailBeta("No video player.")
-            return
-        }
-        videoPlayer.seek(to: time)
-    }
-
-    func playerProgressBar(_ playerProgressBar: PlayerProgressBar, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool) {
-        guard let videoPlayer else {
-            owsFailBeta("No video player.")
-            return
-        }
-        videoPlayer.seek(to: time)
-        if shouldResumePlayback {
-            videoPlayer.play()
-        }
     }
 }

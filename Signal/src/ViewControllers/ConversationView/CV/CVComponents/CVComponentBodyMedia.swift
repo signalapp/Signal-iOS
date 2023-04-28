@@ -173,7 +173,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                                         comment: "Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}."))
                 downloadStack.addArrangedSubview(downloadLabel)
                 let downloadLabelConfig = CVLabelConfig(text: String.localizedStringWithFormat(downloadFormat, items.count),
-                                                        font: .ows_dynamicTypeSubheadline,
+                                                        font: .dynamicTypeSubheadline,
                                                         textColor: UIColor.ows_white)
                 downloadLabelConfig.applyForRendering(label: downloadLabel)
                 let downloadLabelSize = CVText.measureLabel(config: downloadLabelConfig,
@@ -216,7 +216,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 1)
 
                     let downloadSizeLabelConfig = CVLabelConfig(text: downloadSizeText.joined(separator: " • "),
-                                                                font: .ows_dynamicTypeCaption1,
+                                                                font: .dynamicTypeCaption1,
                                                                 textColor: .ows_white)
                     let downloadSizeLabel = CVLabel()
                     downloadSizeLabelConfig.applyForRendering(label: downloadSizeLabel)
@@ -249,9 +249,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         return componentView.innerShadowView
     }
 
-    private static var senderNameFont: UIFont {
-        UIFont.ows_dynamicTypeCaption1.ows_semibold
-    }
+    private static var senderNameFont: UIFont { UIFont.dynamicTypeCaption1.semibold() }
 
     private var stackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,

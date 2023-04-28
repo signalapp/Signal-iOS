@@ -572,14 +572,14 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                     continue
                 }
                 let shouldDiscardVisibleMessages = discardMode == .discardVisibleMessages
-                if !self.messageManager.processEnvelope(envelope,
-                                                        plaintextData: job.plaintextData,
-                                                        wasReceivedByUD: job.wasReceivedByUD,
-                                                        serverDeliveryTimestamp: job.serverDeliveryTimestamp,
-                                                        shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
-                                                        transaction: transaction) {
-                    reportFailure(transaction)
-                }
+                self.messageManager.processEnvelope(
+                    envelope,
+                    plaintextData: job.plaintextData,
+                    wasReceivedByUD: job.wasReceivedByUD,
+                    serverDeliveryTimestamp: job.serverDeliveryTimestamp,
+                    shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
+                    transaction: transaction
+                )
             }
             processedJobs.append(job)
 

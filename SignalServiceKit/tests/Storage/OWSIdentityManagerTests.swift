@@ -35,7 +35,6 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
             identityManager.saveRemoteIdentity(
                 newKey,
                 address: address,
-                authedAccount: .implicit(),
                 transaction: transaction
             )
             XCTAssert(identityManager.isTrustedIdentityKey(newKey,
@@ -56,7 +55,6 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
             identityManager.saveRemoteIdentity(
                 originalKey,
                 address: address,
-                authedAccount: .implicit(),
                 transaction: transaction
             )
 

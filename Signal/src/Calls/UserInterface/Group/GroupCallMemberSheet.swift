@@ -168,7 +168,7 @@ extension GroupCallMemberSheet: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         label.textColor = Theme.darkThemePrimaryColor
 
         if sortedMembers.count > 0 {
@@ -248,7 +248,7 @@ private class GroupCallMemberCell: UITableViewCell {
         selectionStyle = .none
         layoutMargins = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
 
-        nameLabel.font = .ows_dynamicTypeBody
+        nameLabel.font = .dynamicTypeBody
 
         audioMutedIndicator.contentMode = .scaleAspectFit
         audioMutedIndicator.setTemplateImage(#imageLiteral(resourceName: "mic-off-solid-28"), tintColor: .ows_white)
@@ -329,7 +329,7 @@ private class GroupCallEmptyCell: UITableViewCell {
         imageView.autoPinTopToSuperviewMargin(withInset: 32)
 
         let label = UILabel()
-        label.font = .ows_dynamicTypeSubheadlineClamped
+        label.font = .dynamicTypeSubheadlineClamped
         label.textColor = Theme.darkThemePrimaryColor
         label.text = NSLocalizedString("GROUP_CALL_NOBODY_IS_IN_YET",
                                        comment: "Text explaining to the user that nobody has joined this call yet.")

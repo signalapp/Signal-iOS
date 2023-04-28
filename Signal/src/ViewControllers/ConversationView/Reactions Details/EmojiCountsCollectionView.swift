@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 // MARK: -
 
@@ -125,7 +125,7 @@ class EmojiCountCell: UICollectionViewCell {
 
         emoji.font = .systemFont(ofSize: 22)
 
-        count.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_monospaced.ows_semibold
+        count.font = UIFont.dynamicTypeSubheadlineClamped.monospaced().semibold()
         count.textColor = Theme.primaryTextColor
     }
 

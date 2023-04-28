@@ -3,26 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#ifndef signalservicekitprefix
-#define signalservicekitprefix
-
 #import <Availability.h>
 
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
 
-    #import <CocoaLumberjack/CocoaLumberjack.h>
-    #ifdef DEBUG
-    static const NSUInteger ddLogLevel = DDLogLevelAll;
-    #else
-    static const NSUInteger ddLogLevel = DDLogLevelInfo;
-    #endif
-
     #import <SignalCoreKit/NSObject+OWS.h>
     #import <SignalCoreKit/OWSAsserts.h>
     #import <SignalServiceKit/OWSAnalytics.h>
     #import <SignalServiceKit/SSKAsserts.h>
-#endif
-
 #endif

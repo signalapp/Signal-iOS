@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
 import XCTest
 
-class StringAdditionsTest: SignalBaseTest {
+class StringAdditionsTest: XCTestCase {
     func test_truncated_ASCII() {
         let originalString = "Hello World"
 

@@ -7,7 +7,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
-#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSThread.h>

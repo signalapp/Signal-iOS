@@ -4,11 +4,17 @@
 //
 
 import UIKit
+import SignalUI
 
-@objc(OWSPinReminderViewController)
 public class PinReminderViewController: OWSViewController {
 
-    private let completionHandler: (() -> Void)?
+    enum PinReminderResult {
+        case canceled(didGuessWrong: Bool)
+        case changedOrRemovedPin
+        case succeeded
+    }
+
+    private let completionHandler: ((PinReminderResult) -> Void)?
 
     private let containerView = UIView()
     private let pinTextField = UITextField()
@@ -39,8 +45,7 @@ public class PinReminderViewController: OWSViewController {
 
     private let context: ViewControllerContext
 
-    @objc
-    init(completionHandler: (() -> Void)? = nil) {
+    init(completionHandler: ((PinReminderResult) -> Void)? = nil) {
         // TODO[ViewContextPiping]
         self.context = ViewControllerContext.shared
         self.completionHandler = completionHandler
@@ -102,7 +107,7 @@ public class PinReminderViewController: OWSViewController {
 
         let titleLabel = UILabel()
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle3Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle3Clamped.semibold()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -115,7 +120,7 @@ public class PinReminderViewController: OWSViewController {
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.accessibilityIdentifier = "pinReminder.explanationLabel"
         explanationLabel.text = NSLocalizedString("PIN_REMINDER_EXPLANATION", comment: "The explanation for the 'pin reminder' dialog.")
 
@@ -124,7 +129,7 @@ public class PinReminderViewController: OWSViewController {
         pinTextField.delegate = self
         pinTextField.keyboardType = context.keyBackupService.currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
         pinTextField.textColor = Theme.primaryTextColor
-        pinTextField.font = .ows_dynamicTypeBodyClamped
+        pinTextField.font = .dynamicTypeBodyClamped
         pinTextField.textAlignment = .center
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
@@ -138,7 +143,7 @@ public class PinReminderViewController: OWSViewController {
         pinTextField.addTarget(self, action: #selector(verifySilently), for: .editingChanged)
 
         validationWarningLabel.textColor = .ows_accentRed
-        validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+        validationWarningLabel.font = UIFont.dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "pinReminder.validationWarningLabel"
 
         let pinStack = UIStackView(arrangedSubviews: [
@@ -156,7 +161,7 @@ public class PinReminderViewController: OWSViewController {
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
 
-        let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        let font = UIFont.dynamicTypeBodyClamped.semibold()
         let buttonHeight = OWSFlatButton.heightForFont(font)
         let submitButton = OWSFlatButton.button(
             title: NSLocalizedString("BUTTON_SUBMIT",
@@ -174,7 +179,7 @@ public class PinReminderViewController: OWSViewController {
         let forgotButton = UIButton()
         forgotButton.setTitle(NSLocalizedString("PIN_REMINDER_FORGOT_PIN", comment: "Text asking if the user forgot their pin for the 'pin reminder' dialog."), for: .normal)
         forgotButton.setTitleColor(Theme.accentBlueColor, for: .normal)
-        forgotButton.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
+        forgotButton.titleLabel?.font = .dynamicTypeSubheadlineClamped
         forgotButton.addTarget(self, action: #selector(forgotPressed), for: .touchUpInside)
         forgotButton.accessibilityIdentifier = "pinReminder.forgotButton"
 
@@ -254,10 +259,14 @@ public class PinReminderViewController: OWSViewController {
     func forgotPressed() {
         Logger.info("")
 
-        let vc = PinSetupViewController.creating { [weak self] _, _ in
-            self?.presentingViewController?.dismiss(animated: true, completion: nil)
-        }
-        present(OWSNavigationController(rootViewController: vc), animated: true, completion: nil)
+        let viewController = PinSetupViewController(
+            mode: .creating,
+            hideNavigationBar: false,
+            showCancelButton: true,
+            showDisablePinButton: true,
+            completionHandler: { [weak self] _, _ in self?.completionHandler?(.changedOrRemovedPin) }
+        )
+        present(OWSNavigationController(rootViewController: viewController), animated: true)
     }
 
     @objc
@@ -269,7 +278,7 @@ public class PinReminderViewController: OWSViewController {
         // If they didn't try and enter a PIN, we do nothing and leave the megaphone.
         if hasGuessedWrong { OWS2FAManager.shared.reminderCompleted(withIncorrectAttempts: true) }
 
-        dismiss(animated: true, completion: nil)
+        self.completionHandler?(.canceled(didGuessWrong: hasGuessedWrong))
     }
 
     @objc
@@ -303,14 +312,9 @@ public class PinReminderViewController: OWSViewController {
                 return
             }
 
-            self.dismissAndUpdateRepetitionInterval()
-            self.completionHandler?()
+            OWS2FAManager.shared.reminderCompleted(withIncorrectAttempts: self.hasGuessedWrong)
+            self.completionHandler?(.succeeded)
         }
-    }
-
-    private func dismissAndUpdateRepetitionInterval() {
-        OWS2FAManager.shared.reminderCompleted(withIncorrectAttempts: hasGuessedWrong)
-        dismiss(animated: true)
     }
 
     private func updateValidationWarnings() {

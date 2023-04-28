@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Lottie
 import SignalMessaging
+import SignalUI
 
 @objc
 public enum PaymentsSettingsMode: UInt, CustomStringConvertible {
@@ -243,18 +243,17 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             return
         }
 
-        let reminderView = ReminderView.nag(
+        let reminderView = ReminderView(
+            style: .warning,
             text: NSLocalizedString(
                 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT",
                 comment: "Label warning the user that they should update Signal to continue using payments."
             ),
-            tapAction: { [weak self] in
-                self?.didTapOutdatedPaymentClientReminder()
-            },
             actionTitle: NSLocalizedString(
                 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE",
                 comment: "Label for action link when the user has an outdated payment client"
-            )
+            ),
+            tapAction: { [weak self] in self?.didTapOutdatedPaymentClientReminder() }
         )
         reminderView.accessibilityIdentifier = "outdatedClientView"
         topHeaderStackView.addArrangedSubview(reminderView)
@@ -263,7 +262,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapOutdatedPaymentClientReminder() {
-        let url = TSConstants.appStoreUpdateURL
+        let url = TSConstants.appStoreUrl
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 
@@ -433,7 +432,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private func configureEnabledHeader(cell: UITableViewCell) {
         let balanceLabel = UILabel()
-        balanceLabel.font = UIFont.ows_dynamicTypeLargeTitle1Clamped.withSize(54)
+        balanceLabel.font = UIFont.regularFont(ofSize: 54)
         balanceLabel.textAlignment = .center
         balanceLabel.adjustsFontSizeToFitWidth = true
 
@@ -451,7 +450,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         conversionRefreshIcon.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapConversionRefresh)))
 
         let conversionLabel = UILabel()
-        conversionLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        conversionLabel.font = UIFont.dynamicTypeSubheadlineClamped
         conversionLabel.textColor = Theme.secondaryTextAndIconColor
 
         let conversionInfoView = UIImageView()
@@ -552,7 +551,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let label = UILabel()
         label.text = title
         label.textColor = Theme.primaryTextColor
-        label.font = .ows_dynamicTypeCaption2Clamped
+        label.font = .dynamicTypeCaption2Clamped
 
         let stack = UIStackView(arrangedSubviews: [
             iconView,
@@ -611,7 +610,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                 label.text = NSLocalizedString("SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR",
                                                comment: "Message indicating that there is no payment activity to display in the payment settings.")
                 label.textColor = Theme.secondaryTextAndIconColor
-                label.font = UIFont.ows_dynamicTypeBodyClamped
+                label.font = UIFont.dynamicTypeBodyClamped
                 label.numberOfLines = 0
                 label.lineBreakMode = .byWordWrapping
                 label.textAlignment = .center
@@ -660,7 +659,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
                 let label = UILabel()
                 label.text = CommonStrings.seeAllButton
-                label.font = .ows_dynamicTypeBodyClamped
+                label.font = .dynamicTypeBodyClamped
                 label.textColor = Theme.primaryTextColor
 
                 let stack = UIStackView(arrangedSubviews: [label])
@@ -707,7 +706,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_TITLE",
                                             comment: "Title for the 'payments opt-in' view in the app settings.")
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -721,7 +720,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let bodyLabel = UILabel()
         bodyLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
                                            comment: "Message for the 'payments opt-in' view in the app settings.")
-        bodyLabel.font = .ows_dynamicTypeSubheadlineClamped
+        bodyLabel.font = .dynamicTypeSubheadlineClamped
         bodyLabel.textColor = Theme.secondaryTextAndIconColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
@@ -733,7 +732,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                             : NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
                                                 comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings."))
         let activateButton = OWSFlatButton.button(title: buttonTitle,
-                                                  font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                  font: UIFont.dynamicTypeBody.semibold(),
                                                   titleColor: .white,
                                                   backgroundColor: .ows_accentBlue,
                                                   target: self,
@@ -754,7 +753,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             let buttonTitle = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON",
                                                 comment: "Label for 'restore payments' button in the payments settings.")
             let restorePaymentsButton = OWSFlatButton.button(title: buttonTitle,
-                                                             font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                             font: UIFont.dynamicTypeBody.semibold(),
                                                              titleColor: .ows_accentBlue,
                                                              backgroundColor: self.tableBackgroundColor,
                                                              target: self,
@@ -850,19 +849,19 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             let titleLabel = UILabel()
             titleLabel.text = title
             titleLabel.textColor = Theme.primaryTextColor
-            titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+            titleLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
 
             let bodyLabel = UILabel()
             bodyLabel.text = body
             bodyLabel.textColor = Theme.secondaryTextAndIconColor
-            bodyLabel.font = UIFont.ows_dynamicTypeBody2Clamped
+            bodyLabel.font = UIFont.dynamicTypeBody2Clamped
             bodyLabel.numberOfLines = 0
             bodyLabel.lineBreakMode = .byWordWrapping
 
             let buttonLabel = UILabel()
             buttonLabel.text = buttonText
             buttonLabel.textColor = Theme.accentBlueColor
-            buttonLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+            buttonLabel.font = UIFont.dynamicTypeSubheadlineClamped
 
             let animationView = AnimationView(name: iconName)
             animationView.contentMode = .scaleAspectFit

@@ -121,7 +121,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             text = NSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
         }
         return CVLabelConfig(text: text,
-                             font: UIFont.ows_dynamicTypeBody2.ows_semibold,
+                             font: UIFont.dynamicTypeBody2.semibold(),
                              textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming),
                              lineBreakMode: .byTruncatingMiddle)
     }
@@ -163,7 +163,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
 
         return CVLabelConfig(text: text,
-                             font: UIFont.ows_dynamicTypeCaption1,
+                             font: UIFont.dynamicTypeCaption1,
                              textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming),
                              lineBreakMode: .byTruncatingMiddle)
     }
@@ -182,7 +182,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         let text = (fileExtension as NSString).localizedUppercase
 
         return CVLabelConfig(text: text,
-                             font: UIFont.ows_dynamicTypeCaption1.ows_semibold,
+                             font: UIFont.dynamicTypeCaption1.semibold(),
                              textColor: .ows_gray90,
                              lineBreakMode: .byTruncatingTail)
     }

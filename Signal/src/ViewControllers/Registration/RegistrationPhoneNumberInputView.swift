@@ -84,7 +84,7 @@ class RegistrationPhoneNumberInputView: UIStackView {
 
     private lazy var countryCodeLabel: UILabel = {
         let result = UILabel()
-        result.font = .ows_dynamicTypeBody
+        result.font = .dynamicTypeBody
         result.textAlignment = .center
         result.setCompressionResistanceHigh()
         result.setContentHuggingHorizontalHigh()
@@ -125,7 +125,7 @@ class RegistrationPhoneNumberInputView: UIStackView {
 
     private lazy var nationalNumberView: UITextField = {
         let result = UITextField()
-        result.font = UIFont.ows_dynamicTypeBodyClamped
+        result.font = UIFont.dynamicTypeBodyClamped
         result.textAlignment = .left
         result.textContentType = .telephoneNumber
 
@@ -148,6 +148,8 @@ class RegistrationPhoneNumberInputView: UIStackView {
         result.accessibilityIdentifier = "registration.phonenumber.phoneNumberTextField"
 
         result.delegate = self
+
+        result.addTarget(delegate, action: #selector(didChange), for: .valueChanged)
 
         return result
     }()
@@ -205,8 +207,6 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
             maxDigits: maxNationalNumberDigits,
             format: formatNationalNumber
         )
-
-        delegate?.didChange()
 
         return result
     }

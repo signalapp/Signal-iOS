@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init
 {
     // TODO: We should probably mock this out.
-    LaunchJobs *launchJobs = [LaunchJobs new];
     OWSPreferences *preferences = [OWSPreferences new];
     OWSSounds *sounds = [OWSSounds new];
     id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
@@ -34,13 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
     AvatarBuilder *avatarBuilder = [AvatarBuilder new];
     SignalMessagingJobQueues *smJobQueues = [SignalMessagingJobQueues new];
 
-    self = [super initWithLaunchJobs:launchJobs
-                         preferences:preferences
-          proximityMonitoringManager:proximityMonitoringManager
-                              sounds:sounds
-                   orphanDataCleaner:orphanDataCleaner
-                       avatarBuilder:avatarBuilder
-                         smJobQueues:smJobQueues];
+    self = [super initWithPreferences:preferences
+           proximityMonitoringManager:proximityMonitoringManager
+                               sounds:sounds
+                    orphanDataCleaner:orphanDataCleaner
+                        avatarBuilder:avatarBuilder
+                          smJobQueues:smJobQueues];
 
     OWSAssertDebug(self);
     return self;

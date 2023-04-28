@@ -16,7 +16,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     lazy private var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semibold
+        label.font = UIFont.dynamicTypeTitle1Clamped.semibold()
         label.textAlignment = .center
         label.text = titleText
         return label
@@ -25,16 +25,26 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     lazy private var explanationLabel: LinkingTextView = {
         let explanationLabel = LinkingTextView()
         let explanationText: String
+        let addLearnMoreLink: Bool
         switch mode {
         case .deprecated_onboardingCreating, .creating:
-            explanationText = NSLocalizedString("PIN_CREATION_EXPLANATION",
-                                                comment: "The explanation in the 'pin creation' view.")
+            explanationText = NSLocalizedString(
+                "PIN_CREATION_EXPLANATION",
+                comment: "The explanation in the 'pin creation' view."
+            )
+            addLearnMoreLink = true
         case .changing:
-            explanationText = NSLocalizedString("PIN_CREATION_RECREATION_EXPLANATION",
-                                                comment: "The re-creation explanation in the 'pin creation' view.")
+            explanationText = NSLocalizedString(
+                "PIN_CREATION_RECREATION_EXPLANATION",
+                comment: "The re-creation explanation in the 'pin creation' view."
+            )
+            addLearnMoreLink = true
         case .confirming:
-            explanationText = NSLocalizedString("PIN_CREATION_CONFIRMATION_EXPLANATION",
-                                                comment: "The explanation of confirmation in the 'pin creation' view.")
+            explanationText = NSLocalizedString(
+                "PIN_CREATION_CONFIRMATION_EXPLANATION",
+                comment: "The explanation of confirmation in the 'pin creation' view."
+            )
+            addLearnMoreLink = false
         }
 
         // The font is too long to fit with dynamic type. Design is looking into
@@ -50,7 +60,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             ]
         )
 
-        if !mode.isConfirming {
+        if addLearnMoreLink {
             explanationLabel.isUserInteractionEnabled = true
             attributedString.append("  ")
             attributedString.append(
@@ -89,7 +99,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
     private lazy var pinTypeToggle: OWSFlatButton = {
         let pinTypeToggle = OWSFlatButton()
-        pinTypeToggle.setTitle(font: .ows_dynamicTypeSubheadlineClamped, titleColor: Theme.accentBlueColor)
+        pinTypeToggle.setTitle(font: .dynamicTypeSubheadlineClamped, titleColor: Theme.accentBlueColor)
         pinTypeToggle.setBackgroundColors(upColor: .clear)
 
         pinTypeToggle.enableMultilineLabel()
@@ -106,7 +116,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         let nextButton = OWSFlatButton()
         nextButton.setTitle(
             title: CommonStrings.nextButton,
-            font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            font: UIFont.dynamicTypeBodyClamped.semibold(),
             titleColor: .white)
         nextButton.setBackgroundColors(upColor: .ows_accentBlue)
 
@@ -123,7 +133,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         let validationWarningLabel = UILabel()
         validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.textAlignment = .center
-        validationWarningLabel.font = UIFont.ows_dynamicTypeFootnoteClamped
+        validationWarningLabel.font = UIFont.dynamicTypeFootnoteClamped
         validationWarningLabel.numberOfLines = 0
         validationWarningLabel.accessibilityIdentifier = "pinCreation.validationWarningLabel"
         return validationWarningLabel
@@ -133,7 +143,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         let recommendationLabel = UILabel()
         recommendationLabel.textColor = Theme.secondaryTextAndIconColor
         recommendationLabel.textAlignment = .center
-        recommendationLabel.font = UIFont.ows_dynamicTypeFootnoteClamped
+        recommendationLabel.font = UIFont.dynamicTypeFootnoteClamped
         recommendationLabel.numberOfLines = 0
         recommendationLabel.accessibilityIdentifier = "pinCreation.recommendationLabel"
         return recommendationLabel
@@ -164,14 +174,13 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         case changing
         case confirming(pinToMatch: String)
 
-        var isChanging: Bool {
-            guard case .changing = self else { return false }
-            return true
-        }
-
         var isConfirming: Bool {
-            guard case .confirming = self else { return false }
-            return true
+            switch self {
+            case .confirming:
+                return true
+            case .creating, .changing, .deprecated_onboardingCreating:
+                return false
+            }
         }
     }
     private let mode: Mode
@@ -200,6 +209,12 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         }
     }
 
+    private let hideNavigationBar: Bool
+
+    private let showCancelButton: Bool
+
+    private let showDisablePinButton: Bool
+
     // Called once pin setup has finished. Error will be nil upon success
     private let completionHandler: (PinSetupViewController, Error?) -> Void
 
@@ -207,17 +222,43 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
     private let context: ViewControllerContext
 
-    init(
+    convenience init(
         mode: Mode,
-        initialMode: Mode? = nil,
-        pinType: KBS.PinType = .numeric,
+        hideNavigationBar: Bool,
+        showCancelButton: Bool = false,
+        showDisablePinButton: Bool = false,
         enableRegistrationLock: Bool = OWS2FAManager.shared.isRegistrationLockEnabled,
+        completionHandler: @escaping (PinSetupViewController, Error?) -> Void
+    ) {
+        self.init(
+            mode: mode,
+            initialMode: mode,
+            pinType: .numeric,
+            hideNavigationBar: hideNavigationBar,
+            showCancelButton: showCancelButton,
+            showDisablePinButton: showDisablePinButton,
+            enableRegistrationLock: enableRegistrationLock,
+            completionHandler: completionHandler
+        )
+    }
+
+    private init(
+        mode: Mode,
+        initialMode: Mode,
+        pinType: KBS.PinType,
+        hideNavigationBar: Bool,
+        showCancelButton: Bool,
+        showDisablePinButton: Bool,
+        enableRegistrationLock: Bool,
         completionHandler: @escaping (PinSetupViewController, Error?) -> Void
     ) {
         assert(TSAccountManager.shared.isRegisteredPrimaryDevice)
         self.mode = mode
-        self.initialMode = initialMode ?? mode
+        self.initialMode = initialMode
         self.pinType = pinType
+        self.hideNavigationBar = hideNavigationBar
+        self.showCancelButton = showCancelButton
+        self.showDisablePinButton = showDisablePinButton
         self.enableRegistrationLock = enableRegistrationLock
         self.completionHandler = completionHandler
         // TODO[ViewContextPiping]
@@ -232,23 +273,13 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     }
 
     @objc
-    class func creatingRegistrationLock(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
-        return .init(mode: .creating, enableRegistrationLock: true, completionHandler: completionHandler)
-    }
-
-    @objc
     class func onboardingCreating(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
-        return .init(mode: .deprecated_onboardingCreating, completionHandler: completionHandler)
-    }
-
-    @objc
-    class func creating(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
-        return .init(mode: .creating, completionHandler: completionHandler)
-    }
-
-    @objc
-    class func changing(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
-        return .init(mode: .changing, completionHandler: completionHandler)
+        return .init(
+            mode: .deprecated_onboardingCreating,
+            hideNavigationBar: true,
+            showDisablePinButton: true,
+            completionHandler: completionHandler
+        )
     }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle {
@@ -259,31 +290,15 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         return backgroundColor
     }
 
-    public var prefersNavigationBarHidden: Bool {
-        !initialMode.isChanging
-    }
+    public var prefersNavigationBarHidden: Bool { hideNavigationBar }
 
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        title = titleText
-
-        let topMargin: CGFloat = navigationController?.isNavigationBarHidden == false ? 0 : 32
+        let topMargin: CGFloat = self.prefersNavigationBarHidden ? 32 : 0
         let hMargin: CGFloat = UIDevice.current.isIPhone5OrShorter ? 13 : 26
         view.layoutMargins = UIEdgeInsets(top: topMargin, leading: hMargin, bottom: 0, trailing: hMargin)
-
-        if navigationController?.isNavigationBarHidden == false {
-            [backButton, moreButton, titleLabel].forEach { $0.isHidden = true }
-        } else {
-            // If we're in onboarding mode, don't allow going back
-            if case .deprecated_onboardingCreating = mode {
-                backButton.isHidden = true
-            } else {
-                backButton.isHidden = false
-            }
-            moreButton.isHidden = mode.isConfirming
-            titleLabel.isHidden = false
-        }
+        view.layoutIfNeeded()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -369,6 +384,33 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        title = titleText
+
+        let isNavigationBarVisible = !self.prefersNavigationBarHidden
+        titleLabel.isHidden = isNavigationBarVisible
+        backButton.isHidden = isNavigationBarVisible || mode == .deprecated_onboardingCreating
+        moreButton.isHidden = isNavigationBarVisible || !showDisablePinButton
+
+        if isNavigationBarVisible, showDisablePinButton {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+                image: UIImage(named: "more-horiz-24")?.withRenderingMode(.alwaysTemplate),
+                landscapeImagePhone: nil,
+                style: .plain,
+                target: self,
+                action: #selector(didTapMoreButton(_:))
+            )
+        }
+
+        if showCancelButton {
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .cancel,
+                target: self,
+                action: #selector(didTapCancel)
+            )
+        }
+
+        OWSTableViewController2.removeBackButtonText(viewController: self)
+
         // Don't allow interactive dismissal.
         if #available(iOS 13, *) {
             isModalInPresentation = true
@@ -376,11 +418,12 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     }
 
     var titleText: String {
-        if mode.isConfirming {
+        switch mode {
+        case .confirming:
             return NSLocalizedString("PIN_CREATION_CONFIRM_TITLE", comment: "Title of the 'pin creation' confirmation view.")
-        } else if initialMode.isChanging {
+        case .changing:
             return NSLocalizedString("PIN_CREATION_CHANGING_TITLE", comment: "Title of the 'pin creation' recreation view.")
-        } else {
+        case .creating, .deprecated_onboardingCreating:
             return NSLocalizedString("PIN_CREATION_TITLE", comment: "Title of the 'pin creation' view.")
         }
     }
@@ -391,12 +434,12 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     func navigateBack() {
         Logger.info("")
 
-        // If we're in creation mode AND we're the rootViewController, dismiss rather than pop
-        if case .creating = mode, self.navigationController?.viewControllers.first == self {
-            dismiss(animated: true, completion: nil)
-        } else {
-            navigationController?.popViewController(animated: true)
-        }
+        navigationController?.popViewController(animated: true)
+    }
+
+    @objc
+    private func didTapCancel() {
+        dismiss(animated: true)
     }
 
     @objc
@@ -484,6 +527,9 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                 mode: .confirming(pinToMatch: pin),
                 initialMode: initialMode,
                 pinType: pinType,
+                hideNavigationBar: hideNavigationBar,
+                showCancelButton: false, // we're pushing, so we never need a cancel button
+                showDisablePinButton: false, // we never show this button on the second screen
                 enableRegistrationLock: enableRegistrationLock,
                 completionHandler: completionHandler
             )

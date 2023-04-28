@@ -89,7 +89,7 @@ class Deprecated_ChangePhoneNumberInputViewController: OWSTableViewController2 {
             self?.showCountryCodePicker(valueViews: valueViews)
         })
         section.add(.item(name: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD",
-                                                  comment: "Label for the 'country code' row in the 'change phone number' settings."),
+                                                  comment: "Label for the 'phone number' row in the 'change phone number' settings."),
                           textColor: Theme.primaryTextColor,
                           accessoryView: valueViews.phoneNumberTextField,
                           accessibilityIdentifier: valueViews.accessibilityIdentifier_CountryCode))
@@ -347,7 +347,7 @@ private class ChangePhoneNumberValueViews: NSObject {
 
     let phoneNumberTextField: UITextField = {
         let field = UITextField()
-        field.font = UIFont.ows_dynamicTypeBodyClamped
+        field.font = UIFont.dynamicTypeBodyClamped
         field.textColor = Theme.primaryTextColor
         field.textAlignment = (CurrentAppContext().isRTL
                                ? .left

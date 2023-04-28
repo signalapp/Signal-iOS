@@ -9,7 +9,7 @@ import UIKit
 @objc
 public class CVTextLabel: NSObject {
 
-    public struct DataItem: Equatable {
+    public struct DataItem: Equatable, NSRangeProviding {
         public enum DataType: UInt, Equatable, CustomStringConvertible {
             case link
             case address
@@ -49,11 +49,15 @@ public class CVTextLabel: NSObject {
             self.snippet = snippet
             self.url = url
         }
+
+        public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.DataItem {
+            return DataItem(dataType: dataType, range: range, snippet: snippet, url: url)
+        }
     }
 
     // MARK: -
 
-    public struct MentionItem: Equatable {
+    public struct MentionItem: Equatable, NSRangeProviding {
         public let mention: Mention
         public let range: NSRange
 
@@ -61,11 +65,15 @@ public class CVTextLabel: NSObject {
             self.mention = mention
             self.range = range
         }
+
+        public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.MentionItem {
+            return MentionItem(mention: mention, range: range)
+        }
     }
 
     // MARK: -
 
-    public struct ReferencedUserItem: Equatable {
+    public struct ReferencedUserItem: Equatable, NSRangeProviding {
         public let address: SignalServiceAddress
         public let range: NSRange
 
@@ -73,14 +81,41 @@ public class CVTextLabel: NSObject {
             self.address = address
             self.range = range
         }
+
+        public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.ReferencedUserItem {
+            return ReferencedUserItem(address: address, range: range)
+        }
     }
 
     // MARK: -
 
-    public enum Item: Equatable, CustomStringConvertible {
+    public struct UnrevealedSpoilerItem: Equatable, NSRangeProviding {
+        public let spoilerId: Int
+        public let interactionUniqueId: String
+        public let range: NSRange
+
+        public init(spoilerId: Int, interactionUniqueId: String, range: NSRange) {
+            self.spoilerId = spoilerId
+            self.interactionUniqueId = interactionUniqueId
+            self.range = range
+        }
+
+        public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.UnrevealedSpoilerItem {
+            return UnrevealedSpoilerItem(
+                spoilerId: spoilerId,
+                interactionUniqueId: interactionUniqueId,
+                range: range
+            )
+        }
+    }
+
+    // MARK: -
+
+    public enum Item: Equatable, CustomStringConvertible, NSRangeProviding {
         case dataItem(dataItem: DataItem)
         case mention(mentionItem: MentionItem)
         case referencedUser(referencedUserItem: ReferencedUserItem)
+        case unrevealedSpoiler(UnrevealedSpoilerItem)
 
         public var range: NSRange {
             switch self {
@@ -90,6 +125,8 @@ public class CVTextLabel: NSObject {
                 return mentionItem.range
             case .referencedUser(let referencedUserItem):
                 return referencedUserItem.range
+            case .unrevealedSpoiler(let item):
+                return item.range
             }
         }
 
@@ -101,6 +138,21 @@ public class CVTextLabel: NSObject {
                 return ".mention"
             case .referencedUser:
                 return ".referencedUser"
+            case .unrevealedSpoiler:
+                return ".unrevealedSpoiler"
+            }
+        }
+
+        public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.Item {
+            switch self {
+            case .dataItem(let item):
+                return .dataItem(dataItem: item.copyWithNewRange(range))
+            case .mention(let item):
+                return .mention(mentionItem: item.copyWithNewRange(range))
+            case .referencedUser(let item):
+                return .referencedUser(referencedUserItem: item.copyWithNewRange(range))
+            case .unrevealedSpoiler(let item):
+                return .unrevealedSpoiler(item.copyWithNewRange(range))
             }
         }
     }
@@ -232,8 +284,12 @@ public class CVTextLabel: NSObject {
 
     // MARK: - Gestures
 
-    public func itemForGesture(sender: UIGestureRecognizer, animated: Bool = true) -> Item? {
-        label.itemForGesture(sender: sender, animated: animated)
+    public func itemForGesture(sender: UIGestureRecognizer) -> Item? {
+        label.itemForGesture(sender: sender)
+    }
+
+    public func animate(selectedItem: Item) {
+        label.animate(selectedItem: selectedItem)
     }
 
     // MARK: -
@@ -377,6 +433,20 @@ public class CVTextLabel: NSObject {
             }
 
             let glyphIndex = layoutManager.glyphIndex(for: location, in: textContainer)
+
+            // We have the _closest_ index, but that doesn't mean we tapped in a glyph.
+            // Check that directly.
+            // This will catch the below case, where "*" is the tap location:
+            //
+            // This is the first line that is long.
+            // Tap on the second line.    *
+            //
+            // The bounding rect includes the empty space below the first line,
+            // but the tap doesn't actually lie on any glyph.
+            let glyphRect = layoutManager.boundingRect(forGlyphRange: NSRange(location: glyphIndex, length: 1), in: textContainer)
+            guard glyphRect.contains(location) else {
+                return nil
+            }
             let characterIndex = layoutManager.characterIndexForGlyph(at: glyphIndex)
 
             for item in config.items {
@@ -402,16 +472,12 @@ public class CVTextLabel: NSObject {
 
         // MARK: - Gestures
 
-        public func itemForGesture(sender: UIGestureRecognizer, animated: Bool) -> Item? {
+        public func itemForGesture(sender: UIGestureRecognizer) -> Item? {
             AssertIsOnMainThread()
 
             let location = sender.location(in: self)
             guard let selectedItem = item(at: location) else {
                 return nil
-            }
-
-            if animated {
-                animate(selectedItem: selectedItem)
             }
 
             return selectedItem
@@ -447,6 +513,9 @@ extension CVTextLabel.Label: UIDragInteractionDelegate {
             return []
         case .referencedUser:
             // Dragging is not applicable to referenced users
+            return []
+        case .unrevealedSpoiler:
+            // Dragging is not applicable for spoilers.
             return []
         case .dataItem(let dataItem):
             animate(selectedItem: selectedItem)

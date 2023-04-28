@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc
 class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
 
     private let context: ViewControllerContext
@@ -59,13 +58,16 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
     }
 
     private func enablePin() {
-        let vc = PinSetupViewController.creating { [weak self] _, _ in
-            guard let self = self else { return }
-            self.navigationController?.setNavigationBarHidden(false, animated: false)
-            self.navigationController?.popToViewController(self, animated: true)
-            self.updateTableContents()
-        }
-        navigationController?.pushViewController(vc, animated: true)
+        let viewController = PinSetupViewController(
+            mode: .creating,
+            hideNavigationBar: false,
+            completionHandler: { [weak self] _, _ in
+                guard let self = self else { return }
+                self.navigationController?.popToViewController(self, animated: true)
+                self.updateTableContents()
+            }
+        )
+        navigationController?.pushViewController(viewController, animated: true)
     }
 
     private func disablePin() {

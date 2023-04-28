@@ -42,7 +42,7 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
 
         let titleLabel = UILabel()
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
         titleLabel.text = NSLocalizedString(
             "DONATION_READ_MORE_SCREEN_TITLE",
             comment: "There is a screen where users can read more about their donation to Signal. This is the title of that screen."
@@ -69,7 +69,7 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
             let paragraphLabel = UILabel()
             paragraphLabel.text = paragraph
             paragraphLabel.textAlignment = .natural
-            paragraphLabel.font = .ows_dynamicTypeBody
+            paragraphLabel.font = .dynamicTypeBody
             paragraphLabel.numberOfLines = 0
             paragraphLabel.lineBreakMode = .byWordWrapping
             stackView.addArrangedSubview(paragraphLabel)

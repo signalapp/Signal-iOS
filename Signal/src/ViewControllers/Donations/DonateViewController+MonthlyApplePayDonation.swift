@@ -27,6 +27,8 @@ extension DonateViewController {
 
         Logger.info("[Donations] Starting monthly Apple Pay donation")
 
+        let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
+
         // See also: code for other payment methods, such as credit/debit card.
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Void> in
             if let existingSubscriberId = monthly.subscriberID, monthly.currentSubscription != nil {
@@ -93,7 +95,8 @@ extension DonateViewController {
 
                 self.didCompleteDonation(
                     badge: selectedSubscriptionLevel.badge,
-                    thanksSheetType: .subscription
+                    thanksSheetType: .subscription,
+                    oldBadgesSnapshot: badgesSnapshot
                 )
             }.catch(on: DispatchQueue.main) { [weak self] error in
                 Logger.info("[Donations] Monthly card donation failed")

@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 
 @objc
-public final class TSMention: NSObject, SDSCodableModel {
+public final class TSMention: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_TSMention"
     public static var recordType: UInt { SDSRecordType.mention.rawValue }
 
@@ -67,7 +67,7 @@ public final class TSMention: NSObject, SDSCodableModel {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try id.map { try container.encode($0, forKey: .id) }
-        try container.encode(recordType, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
 
         try container.encode(uniqueMessageId, forKey: .uniqueMessageId)
@@ -76,20 +76,17 @@ public final class TSMention: NSObject, SDSCodableModel {
         try container.encode(creationDate, forKey: .creationTimestamp)
     }
 
-    // TODO: Figure out how to avoid having to duplicate this implementation
-
     @objc
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .insert, transaction: transaction)
+    public func anyInsertObjc(transaction: SDSAnyWriteTransaction) {
+        anyInsert(transaction: transaction)
     }
 
     @objc
-    public class func anyEnumerate(
+    public static func anyEnumerateObjc(
         transaction: SDSAnyReadTransaction,
-        batched: Bool = false,
+        batched: Bool,
         block: @escaping (TSMention, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        let batchSize = batched ? Batching.kDefaultBatchSize : 0
-        anyEnumerate(transaction: transaction, batchSize: batchSize, block: block)
+        anyEnumerate(transaction: transaction, batched: batched, block: block)
     }
 }

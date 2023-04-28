@@ -139,7 +139,7 @@ class GroupAttributesEditorHelper: NSObject {
         cameraCornerButton.autoPinEdge(toSuperviewEdge: .bottom)
 
         nameTextField.text = groupNameOriginal
-        nameTextField.font = .ows_dynamicTypeBody
+        nameTextField.font = .dynamicTypeBody
         nameTextField.backgroundColor = .clear
         nameTextField.textColor = Theme.primaryTextColor
         nameTextField.delegate = self

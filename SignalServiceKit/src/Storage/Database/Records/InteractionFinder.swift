@@ -40,8 +40,6 @@ protocol InteractionFinderAdapter {
 
     static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     static func hasLocalUserReplied(storyTimestamp: UInt64, storyAuthorUuidString: String, transaction: ReadTransaction) -> Bool
-    static func countReplies(for storyMessage: StoryMessage, transaction: ReadTransaction) -> UInt
-    static func hasReplies(for stories: [StoryMessage], transaction: ReadTransaction) -> Bool
     static func groupReplyUniqueIds(for storyMessage: StoryMessage, transaction: ReadTransaction) -> [String]
 
     // MARK: - instance methods
@@ -232,20 +230,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             return GRDBInteractionFinder.hasLocalUserReplied(storyTimestamp: storyTimestamp, storyAuthorUuidString: storyAuthorUuidString, transaction: grdbRead)
-        }
-    }
-
-    public static func countReplies(for storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> UInt {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            return GRDBInteractionFinder.countReplies(for: storyMessage, transaction: grdbRead)
-        }
-    }
-
-    public static func hasReplies(for stories: [StoryMessage], transaction: SDSAnyReadTransaction) -> Bool {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            return GRDBInteractionFinder.hasReplies(for: stories, transaction: grdbRead)
         }
     }
 
@@ -459,32 +443,53 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    @objc
-    public func countUnreadMessages(beforeSortId: UInt64, transaction: GRDBReadTransaction) -> UInt {
-        do {
-            let sql = """
-                SELECT COUNT(*)
+    /// Do we have any messages to mark read in this thread before a given sort ID?
+    ///
+    /// See also: ``fetchUnreadMessages`` and ``fetchMessagesWithUnreadReactions``.
+    public func hasMessagesToMarkRead(
+        beforeSortId: UInt64,
+        transaction: GRDBReadTransaction
+    ) -> Bool {
+        let hasUnreadMessages = (try? Bool.fetchOne(
+            transaction.database,
+            sql: """
+            SELECT EXISTS (
+                SELECT 1
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .id) <= ?
                 AND \(sqlClauseForAllUnreadInteractions())
-            """
+                LIMIT 1
+            )
+            """,
+            arguments: [threadUniqueId, beforeSortId]
+        )) ?? false
 
-            guard let count = try UInt.fetchOne(transaction.database,
-                                                sql: sql,
-                                                arguments: [threadUniqueId, beforeSortId]) else {
-                    owsFailDebug("count was unexpectedly nil")
-                    return 0
-            }
-            return count
-        } catch {
-            owsFailDebug("error: \(error)")
-            return 0
-        }
+        lazy var hasOutgoingMessagesWithUnreadReactions = (try? Bool.fetchOne(
+            transaction.database,
+            sql: """
+            SELECT EXISTS (
+                SELECT 1
+                FROM \(InteractionRecord.databaseTableName) AS interaction
+                INNER JOIN \(OWSReaction.databaseTableName) AS reaction
+                    ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
+                    AND reaction.\(OWSReaction.columnName(.read)) IS 0
+                WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
+                AND interaction.\(interactionColumn: .threadUniqueId) = ?
+                AND interaction.\(interactionColumn: .id) <= ?
+                LIMIT 1
+            )
+            """,
+            arguments: [threadUniqueId, beforeSortId]
+        )) ?? false
+
+        return hasUnreadMessages || hasOutgoingMessagesWithUnreadReactions
     }
 
     /// Enumerates all the unread interactions in this thread before a given sort id,
     /// sorted by sort id.
+    ///
+    /// See also: ``hasMessagesToMarkRead``.
     public func fetchUnreadMessages(
         beforeSortId: UInt64,
         transaction: GRDBReadTransaction
@@ -512,35 +517,10 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    @objc
-    public func countMessagesWithUnreadReactions(beforeSortId: UInt64, transaction: GRDBReadTransaction) -> UInt {
-        do {
-            let sql = """
-                SELECT COUNT(DISTINCT interaction.\(interactionColumn: .id))
-                FROM \(InteractionRecord.databaseTableName) AS interaction
-                INNER JOIN \(OWSReaction.databaseTableName) AS reaction
-                    ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
-                    AND reaction.\(OWSReaction.columnName(.read)) IS 0
-                WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
-                AND interaction.\(interactionColumn: .threadUniqueId) = ?
-                AND interaction.\(interactionColumn: .id) <= ?
-            """
-
-            guard let count = try UInt.fetchOne(transaction.database,
-                                                sql: sql,
-                                                arguments: [threadUniqueId, beforeSortId]) else {
-                    owsFailDebug("count was unexpectedly nil")
-                    return 0
-            }
-            return count
-        } catch {
-            owsFailDebug("error: \(error)")
-            return 0
-        }
-    }
-
     /// Returns all the messages with unread reactions in this thread before a given sort id,
     /// sorted by sort id.
+    ///
+    /// See also: ``hasMessagesToMarkRead``.
     public func fetchMessagesWithUnreadReactions(
         beforeSortId: UInt64,
         transaction: GRDBReadTransaction
@@ -994,81 +974,6 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                     storyAuthorUuidString
                 ]
             ) ?? false
-        } catch {
-            owsFail("error: \(error)")
-        }
-    }
-
-    static func countReplies(for storyMessage: StoryMessage, transaction: GRDBReadTransaction) -> UInt {
-        guard !storyMessage.authorAddress.isSystemStoryAddress else {
-            // No replies on system stories.
-            return 0
-        }
-        do {
-            guard let threadUniqueId = storyMessage.context.threadUniqueId(transaction: transaction.asAnyRead) else {
-                owsFailDebug("Unexpected context for StoryMessage")
-                return 0
-            }
-
-            let sql: String = """
-                SELECT COUNT(*)
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .storyTimestamp) = ?
-                AND \(interactionColumn: .storyAuthorUuidString) = ?
-                AND \(interactionColumn: .threadUniqueId) = ?
-            """
-            guard let count = try UInt.fetchOne(
-                transaction.database,
-                sql: sql,
-                arguments: [storyMessage.timestamp, storyMessage.authorUuid.uuidString, threadUniqueId]
-            ) else {
-                throw OWSAssertionError("count was unexpectedly nil")
-            }
-            return count
-        } catch {
-            owsFail("error: \(error)")
-        }
-    }
-
-    static func hasReplies(for stories: [StoryMessage], transaction: GRDBReadTransaction) -> Bool {
-        // Return early so we don't end up with an empty query string when they're all system stories.
-        guard stories.contains(where: \.authorAddress.isSystemStoryAddress.negated) else {
-            return false
-        }
-        var storyFilters = ""
-        for story in stories {
-            guard !story.authorAddress.isSystemStoryAddress else {
-                // No replies on system stories.
-                continue
-            }
-            guard let threadUniqueId = story.context.threadUniqueId(transaction: transaction.asAnyRead) else {
-                owsFailDebug("Unexpected context for StoryMessage")
-                continue
-            }
-
-            if !storyFilters.isEmpty { storyFilters += " OR "}
-            storyFilters += """
-                (
-                    \(interactionColumn: .storyTimestamp) = \(story.timestamp)
-                    AND \(interactionColumn: .storyAuthorUuidString) = '\(story.authorUuid.uuidString)'
-                    AND \(interactionColumn: .threadUniqueId) = '\(threadUniqueId)'
-                )
-            """
-        }
-        guard !storyFilters.isEmpty else {
-            return false
-        }
-
-        let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(storyFilters)
-                LIMIT 1
-            )
-        """
-        do {
-            return try Bool.fetchOne(transaction.database, sql: sql) ?? false
         } catch {
             owsFail("error: \(error)")
         }

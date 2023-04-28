@@ -27,12 +27,17 @@ public enum LinkValidator {
     }
 
     public static func firstLinkPreviewURL(in entireMessage: String) -> URL? {
-        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
-            owsFailDebug("Could not create NSDataDetector")
+        // Don't include link previews for oversize text messages.
+        guard entireMessage.utf8.dropFirst(Int(kOversizeTextMessageSizeThreshold) - 1).isEmpty else {
             return nil
         }
 
         guard canParseURLs(in: entireMessage) else {
+            return nil
+        }
+
+        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
+            owsFailDebug("Could not create NSDataDetector")
             return nil
         }
 

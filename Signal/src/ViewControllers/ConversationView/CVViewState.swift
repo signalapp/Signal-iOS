@@ -80,6 +80,7 @@ public class CVViewState: NSObject {
 
     public let selectionState = CVSelectionState()
     public let textExpansion = CVTextExpansion()
+    public let spoilerReveal = CVSpoilerReveal()
     public let messageSwipeActionState = CVMessageSwipeActionState()
 
     public var isDarkThemeEnabled: Bool = Theme.isDarkThemeEnabled
@@ -404,6 +405,35 @@ public class CVTextExpansion {
 
     //    // TODO: collapseCutoffDate
     //    let collapseCutoffDate = Date()
+}
+
+// MARK: -
+
+public class CVSpoilerReveal {
+    private var revealedSpoilerIdsByInteractionUniqueId = [String: Set<Int>]()
+
+    /// Returns the set of IDs in the ordered list of spoiler ranges for a given message that
+    /// should be revealed.
+    public func revealedSpoilerIds(
+        interactionUniqueId: String
+    ) -> Set<Int> {
+        return revealedSpoilerIdsByInteractionUniqueId[interactionUniqueId] ?? []
+    }
+
+    public func setSpoilerRevealed(
+        withID id: Int,
+        onInteractionUniqueId interactionUniqueId: String
+    ) {
+        var revealedIds = revealedSpoilerIdsByInteractionUniqueId[interactionUniqueId] ?? Set()
+        revealedIds.insert(id)
+        revealedSpoilerIdsByInteractionUniqueId[interactionUniqueId] = revealedIds
+    }
+
+    func copy() -> CVSpoilerReveal {
+        let returnValue = CVSpoilerReveal()
+        returnValue.revealedSpoilerIdsByInteractionUniqueId = revealedSpoilerIdsByInteractionUniqueId
+        return returnValue
+    }
 }
 
 // MARK: -

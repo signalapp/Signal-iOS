@@ -12,6 +12,8 @@ import SignalMessaging
 public enum RegistrationReglockTimeoutAcknowledgeAction {
     case resetPhoneNumber
     case close
+    // Unable to do anything, just stuck here.
+    case none
 }
 
 // MARK: - RegistrationReglockTimeoutState
@@ -114,7 +116,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
         return result
     }()
 
-    private lazy var okayButton: UIView = {
+    private lazy var okayButton: UIView? = {
         let title: String
         switch state.acknowledgeAction {
         case .resetPhoneNumber:
@@ -124,6 +126,8 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
             )
         case .close:
             title = CommonStrings.okayButton
+        case .none:
+            return nil
         }
 
         let result = OWSButton(title: title) { [weak self] in
@@ -132,7 +136,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
         result.dimsWhenHighlighted = true
         result.layer.cornerRadius = 8
         result.backgroundColor = .ows_accentBlue
-        result.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        result.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
         result.titleLabel?.numberOfLines = 0
         result.contentEdgeInsets = .init(margin: 14)
         result.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
@@ -145,7 +149,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
                 "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON",
                 comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information."
             ),
-            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            font: UIFont.dynamicTypeBody.semibold(),
             titleColor: Theme.accentBlueColor,
             backgroundColor: .clear,
             target: self,
@@ -175,8 +179,10 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
 
         stackView.addArrangedSubview(UIView.vStretchingSpacer())
 
-        stackView.addArrangedSubview(okayButton)
-        stackView.setCustomSpacing(24, after: okayButton)
+        if let okayButton {
+            stackView.addArrangedSubview(okayButton)
+            stackView.setCustomSpacing(24, after: okayButton)
+        }
 
         stackView.addArrangedSubview(learnMoreButton)
 

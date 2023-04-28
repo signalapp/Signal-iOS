@@ -7,17 +7,19 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-let kMessageSenderJobRecordLabel = "MessageSender"
 class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
 
     func test_savedVisibleMessage() {
         let message = OutgoingMessageFactory().create()
         self.read { transaction in
-            let jobRecord = try! SSKMessageSenderJobRecord(message: message,
-                                                           removeMessageAfterSending: false,
-                                                           isHighPriority: false,
-                                                           label: MessageSenderJobQueue.jobRecordLabel,
-                                                           transaction: transaction)
+            let jobRecord = try! MessageSenderJobRecord(
+                message: message,
+                removeMessageAfterSending: false,
+                isHighPriority: false,
+                label: MessageSenderJobQueue.jobRecordLabel,
+                transaction: transaction
+            )
+
             XCTAssertNotNil(jobRecord.messageId)
             XCTAssertNotNil(jobRecord.threadId)
             XCTAssertNil(jobRecord.invisibleMessage)
@@ -29,7 +31,14 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
             let message = OutgoingMessageFactory().build(transaction: transaction)
 
             do {
-                _ = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, isHighPriority: false, label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction)
+                _ = try MessageSenderJobRecord(
+                    message: message,
+                    removeMessageAfterSending: false,
+                    isHighPriority: false,
+                    label: MessageSenderJobQueue.jobRecordLabel,
+                    transaction: transaction
+                )
+
                 XCTFail("Should error")
             } catch JobRecordError.assertionError {
                 // expected
@@ -42,11 +51,14 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
     func test_invisibleMessage() {
         let message = OutgoingMessageFactory().buildDeliveryReceipt()
         self.read { transaction in
-            let jobRecord = try! SSKMessageSenderJobRecord(message: message,
-                                                           removeMessageAfterSending: false,
-                                                           isHighPriority: false,
-                                                           label: MessageSenderJobQueue.jobRecordLabel,
-                                                           transaction: transaction)
+            let jobRecord = try! MessageSenderJobRecord(
+                message: message,
+                removeMessageAfterSending: false,
+                isHighPriority: false,
+                label: MessageSenderJobQueue.jobRecordLabel,
+                transaction: transaction
+            )
+
             XCTAssertNil(jobRecord.messageId)
             XCTAssertNotNil(jobRecord.threadId)
             XCTAssertNotNil(jobRecord.invisibleMessage)

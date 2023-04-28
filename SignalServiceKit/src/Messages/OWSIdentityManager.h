@@ -66,7 +66,6 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
                  identityKey:(NSData *)identityKey
                      address:(SignalServiceAddress *)address
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
-               authedAccount:(AuthedAccount *)authedAccount
                  transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (OWSVerificationState)verificationStateForAddress:(SignalServiceAddress *)address;
@@ -81,8 +80,7 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
                      address:(SignalServiceAddress *)address
-       isUserInitiatedChange:(BOOL)isUserInitiatedChange
-               authedAccount:(AuthedAccount *)authedAccount;
+       isUserInitiatedChange:(BOOL)isUserInitiatedChange;
 
 - (nullable OWSRecipientIdentity *)recipientIdentityForAddress:(SignalServiceAddress *)address;
 - (nullable OWSRecipientIdentity *)recipientIdentityForAddress:(SignalServiceAddress *)address
@@ -100,24 +98,12 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
                                                      untrustedThreshold:(NSTimeInterval)untrustedThreshold
                                                             transaction:(SDSAnyReadTransaction *)transaction;
 
-// This method can be called from any thread.
-- (void)throws_processIncomingVerifiedProto:(SSKProtoVerified *)verified
-                                transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_UNAVAILABLE("throws objc exceptions");
-
-- (BOOL)processIncomingVerifiedProto:(SSKProtoVerified *)verified
-                         transaction:(SDSAnyWriteTransaction *)transaction
-                               error:(NSError **)error;
-
 - (void)fireIdentityStateChangeNotificationAfterTransaction:(SDSAnyWriteTransaction *)transaction;
 
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey
-                   address:(SignalServiceAddress *)address
-             authedAccount:(AuthedAccount *)authedAccount;
+- (BOOL)saveRemoteIdentity:(NSData *)identityKey address:(SignalServiceAddress *)address;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey
                    address:(SignalServiceAddress *)address
-             authedAccount:(AuthedAccount *)authedAccount
                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isTrustedIdentityKey:(NSData *)identityKey

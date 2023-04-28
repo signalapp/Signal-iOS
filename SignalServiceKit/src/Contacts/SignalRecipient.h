@@ -7,8 +7,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class E164ObjC;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
+@class ServiceIdObjC;
 @class SignalServiceAddress;
 
 typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientTrustLevel) {
@@ -44,8 +46,8 @@ extern const uint64_t SignalRecipientDistantPastUnregisteredTimestamp;
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 // exposed for Swift interop
-- (instancetype)initWithAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithUUIDString:(NSString *)uuidString NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithServiceId:(nullable ServiceIdObjC *)serviceId
+                      phoneNumber:(nullable E164ObjC *)phoneNumber NS_DESIGNATED_INITIALIZER;
 - (void)addDevices:(NSSet<NSNumber *> *)devices source:(SignalRecipientSource)source;
 - (void)removeAllDevicesWithUnregisteredAtTimestamp:(uint64_t)unregisteredAtTimestamp
                                              source:(SignalRecipientSource)source;
@@ -79,13 +81,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPh
                                     transaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(get(address:mustHaveDevices:transaction:));
 
-+ (void)updateWithAddress:(SignalServiceAddress *)address
-             devicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
-          devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
-              transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)updateWithDevicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
-               devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
+- (void)updateWithDevicesToAdd:(NSArray<NSNumber *> *)devicesToAdd
+               devicesToRemove:(NSArray<NSNumber *> *)devicesToRemove
                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, nullable) NSString *recipientPhoneNumber;

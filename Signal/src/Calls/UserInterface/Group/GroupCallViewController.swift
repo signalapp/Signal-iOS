@@ -105,7 +105,7 @@ class GroupCallViewController: UIViewController {
 
     @discardableResult
     class func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) -> Bool {
-        guard tsAccountManager.isOnboarded() else {
+        guard tsAccountManager.isOnboarded else {
             Logger.warn("aborting due to user not being onboarded.")
             OWSActionSheets.showActionSheet(title: NSLocalizedString(
                 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
@@ -227,7 +227,7 @@ class GroupCallViewController: UIViewController {
         icon.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
 
         let label = UILabel()
-        label.font = .ows_dynamicTypeCaption1
+        label.font = .dynamicTypeCaption1
         label.text = NSLocalizedString("CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
                                        comment: "Indicates to the user that their camera is currently off.")
         label.textAlignment = .center

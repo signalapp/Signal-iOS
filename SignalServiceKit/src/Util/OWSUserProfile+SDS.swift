@@ -45,6 +45,7 @@ public struct UserProfileRecord: SDSRecord {
     public let profileBadgeInfo: Data?
     public let isStoriesCapable: Bool
     public let canReceiveGiftBadges: Bool
+    public let isPniCapable: Bool
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -64,6 +65,7 @@ public struct UserProfileRecord: SDSRecord {
         case profileBadgeInfo
         case isStoriesCapable
         case canReceiveGiftBadges
+        case isPniCapable
     }
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -104,6 +106,7 @@ public extension UserProfileRecord {
         profileBadgeInfo = row[14]
         isStoriesCapable = row[15]
         canReceiveGiftBadges = row[16]
+        isPniCapable = row[17]
     }
 }
 
@@ -141,6 +144,7 @@ extension OWSUserProfile {
             let bioEmoji: String? = record.bioEmoji
             let canReceiveGiftBadges: Bool = record.canReceiveGiftBadges
             let familyName: String? = record.familyName
+            let isPniCapable: Bool = record.isPniCapable
             let isStoriesCapable: Bool = record.isStoriesCapable
             let lastFetchDateInterval: Double? = record.lastFetchDate
             let lastFetchDate: Date? = SDSDeserialization.optionalDoubleAsDate(lastFetchDateInterval, name: "lastFetchDate")
@@ -162,6 +166,7 @@ extension OWSUserProfile {
                                   bioEmoji: bioEmoji,
                                   canReceiveGiftBadges: canReceiveGiftBadges,
                                   familyName: familyName,
+                                  isPniCapable: isPniCapable,
                                   isStoriesCapable: isStoriesCapable,
                                   lastFetchDate: lastFetchDate,
                                   lastMessagingDate: lastMessagingDate,
@@ -235,6 +240,7 @@ extension OWSUserProfile: DeepCopyable {
             let bioEmoji: String? = modelToCopy.bioEmoji
             let canReceiveGiftBadges: Bool = modelToCopy.canReceiveGiftBadges
             let familyName: String? = modelToCopy.familyName
+            let isPniCapable: Bool = modelToCopy.isPniCapable
             let isStoriesCapable: Bool = modelToCopy.isStoriesCapable
             let lastFetchDate: Date? = modelToCopy.lastFetchDate
             let lastMessagingDate: Date? = modelToCopy.lastMessagingDate
@@ -276,6 +282,7 @@ extension OWSUserProfile: DeepCopyable {
                                   bioEmoji: bioEmoji,
                                   canReceiveGiftBadges: canReceiveGiftBadges,
                                   familyName: familyName,
+                                  isPniCapable: isPniCapable,
                                   isStoriesCapable: isStoriesCapable,
                                   lastFetchDate: lastFetchDate,
                                   lastMessagingDate: lastMessagingDate,
@@ -313,6 +320,7 @@ extension OWSUserProfileSerializer {
     static var profileBadgeInfoColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "profileBadgeInfo", columnType: .blob, isOptional: true) }
     static var isStoriesCapableColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isStoriesCapable", columnType: .int) }
     static var canReceiveGiftBadgesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "canReceiveGiftBadges", columnType: .int) }
+    static var isPniCapableColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isPniCapable", columnType: .int) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -336,7 +344,8 @@ extension OWSUserProfileSerializer {
         bioEmojiColumn,
         profileBadgeInfoColumn,
         isStoriesCapableColumn,
-        canReceiveGiftBadgesColumn
+        canReceiveGiftBadgesColumn,
+        isPniCapableColumn
         ])
     }
 }
@@ -745,8 +754,9 @@ class OWSUserProfileSerializer: SDSSerializer {
         let profileBadgeInfo: Data? = optionalArchive(model.profileBadgeInfo)
         let isStoriesCapable: Bool = model.isStoriesCapable
         let canReceiveGiftBadges: Bool = model.canReceiveGiftBadges
+        let isPniCapable: Bool = model.isPniCapable
 
-        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, familyName: familyName, lastFetchDate: lastFetchDate, lastMessagingDate: lastMessagingDate, bio: bio, bioEmoji: bioEmoji, profileBadgeInfo: profileBadgeInfo, isStoriesCapable: isStoriesCapable, canReceiveGiftBadges: canReceiveGiftBadges)
+        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, familyName: familyName, lastFetchDate: lastFetchDate, lastMessagingDate: lastMessagingDate, bio: bio, bioEmoji: bioEmoji, profileBadgeInfo: profileBadgeInfo, isStoriesCapable: isStoriesCapable, canReceiveGiftBadges: canReceiveGiftBadges, isPniCapable: isPniCapable)
     }
 }
 

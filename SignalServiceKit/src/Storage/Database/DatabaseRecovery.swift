@@ -14,12 +14,15 @@ public enum DatabaseRecoveryError: Error {
 
 /// Tries to recover corrupted databases.
 ///
-/// Database recovery is split into two parts:
+/// Database recovery is split into three parts:
 ///
-/// 1. "Dump and restore". Before most of the app is set up (i.e., before database connections are
+/// 1. Rebuild existing database. If we're lucky, we might be able to rebuild the existing database
+///    in-place. This just runs `REINDEX` for now. We might be able to do other things in the future
+///    like rebuilding the FTS index. If this succeeds, we probably don't need to do the rest.
+/// 2. "Dump and restore". Before most of the app is set up (i.e., before database connections are
 ///    established), we copy some data into a new database and then make that new database the
 ///    primary database, clobbering the old one.
-/// 2. "Manual recreation". After the app is mostly set up, we attempt to recover some additional
+/// 3. "Manual recreation". After the app is mostly set up, we attempt to recover some additional
 ///    data, such as full-text search indexes, which can be recomputed.
 ///
 /// Why have this split?
@@ -30,8 +33,30 @@ public enum DatabaseRecoveryError: Error {
 /// - As of this writing, the code makes it challenging to do some data restoration, such as
 ///   restoring full-text search indexes, without the app being mostly set up.
 ///
-/// It's up to the caller to coordinate these two steps, and decide which is necessary.
+/// It's up to the caller to coordinate these steps, and decide which are necessary.
 public enum DatabaseRecovery {}
+
+// MARK: - Rebuild
+
+public extension DatabaseRecovery {
+    /// Rebuild the existing database in-place.
+    ///
+    /// This just runs `REINDEX` for now. We might be able to do other things in the future like
+    /// rebuilding the FTS index.
+    static func rebuildExistingDatabase(at databaseFileUrl: URL) {
+        Logger.info("Attempting to reindex the database...")
+
+        let databaseStorage = DatabaseRecovery.databaseStorage(at: databaseFileUrl)
+        databaseStorage.write { transaction in
+            do {
+                try SqliteUtil.reindex(db: transaction.unwrapGrdbWrite.database)
+                Logger.info("Reindexed database")
+            } catch {
+                Logger.warn("Failed to reindex database")
+            }
+        }
+    }
+}
 
 // MARK: - Dump and restore
 
@@ -294,7 +319,7 @@ public extension DatabaseRecovery {
             DisappearingMessagesConfigurationRecord.databaseTableName,
             // We don't want to get our linked devices wrong.
             // We *could* fetch these from the server. Could be a good followup change.
-            OWSDevice.table.tableName
+            OWSDevice.databaseTableName
         ]
 
         /// Copy tables that must be copied flawlessly. Operation throws if any tables fail.
@@ -394,7 +419,7 @@ public extension DatabaseRecovery {
             MessageSendLog.Payload.databaseTableName,
             MessageSendLog.Recipient.databaseTableName,
             // We'd rather not try to resurrect jobs, as they may result in unintended behavior (e.g., a bad message send).
-            JobRecordRecord.databaseTableName,
+            JobRecord.databaseTableName,
             PendingReadReceiptRecord.databaseTableName,
             PendingViewedReceiptRecord.databaseTableName,
             OWSMessageContentJob.table.tableName, // also, this one is deprecated
@@ -643,6 +668,19 @@ extension DatabaseRecovery {
 
     private static func databaseStorage(at url: URL) -> SDSDatabaseStorage {
         SDSDatabaseStorage(databaseFileUrl: url, delegate: databaseStorageDelegate)
+    }
+
+    public static func integrityCheck(databaseFileUrl: URL) -> SqliteUtil.IntegrityCheckResult {
+        Logger.info("Running integrity check on database...")
+        let result = databaseStorage(at: databaseFileUrl).read { transaction in
+            let db = transaction.unwrapGrdbRead.database
+            return SqliteUtil.quickCheck(db: db)
+        }
+        switch result {
+        case .ok: Logger.info("Integrity check succeeded!")
+        case .notOk: Logger.warn("Integrity check failed")
+        }
+        return result
     }
 }
 

@@ -14,13 +14,8 @@ public extension OWSTableItem {
         case tinted
     }
 
-    static var primaryLabelFont: UIFont {
-        return UIFont.ows_dynamicTypeBodyClamped
-    }
-
-    static var accessoryLabelFont: UIFont {
-        return UIFont.ows_dynamicTypeBodyClamped
-    }
+    static var primaryLabelFont: UIFont { .dynamicTypeBodyClamped }
+    static var accessoryLabelFont: UIFont { .dynamicTypeBodyClamped }
 
     static var iconSpacing: CGFloat { 16 }
     static var iconSize: CGFloat { 24 }
@@ -355,7 +350,7 @@ public extension OWSTableItem {
             let subtitleLabel = UILabel()
             subtitleLabel.text = subtitle
             subtitleLabel.textColor = accessoryGray()
-            subtitleLabel.font = .ows_dynamicTypeFootnoteClamped
+            subtitleLabel.font = .dynamicTypeFootnoteClamped
 
             let labels = UIStackView(arrangedSubviews: [nameLabel, subtitleLabel])
             labels.axis = .vertical

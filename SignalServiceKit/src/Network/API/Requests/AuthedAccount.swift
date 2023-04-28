@@ -10,11 +10,13 @@ public class AuthedAccount: NSObject {
 
     public struct Explicit: Equatable {
         public let aci: UUID
+        public let pni: UUID
         public let e164: E164
         public let authPassword: String
 
-        public init(aci: UUID, e164: E164, authPassword: String) {
+        public init(aci: UUID, pni: UUID, e164: E164, authPassword: String) {
             self.aci = aci
+            self.pni = pni
             self.e164 = e164
             self.authPassword = authPassword
         }
@@ -41,10 +43,11 @@ public class AuthedAccount: NSObject {
 
     public static func explicit(
         aci: UUID,
+        pni: UUID,
         e164: E164,
         authPassword: String
     ) -> AuthedAccount {
-        return AuthedAccount(.explicit(Explicit(aci: aci, e164: e164, authPassword: authPassword)))
+        return AuthedAccount(.explicit(Explicit(aci: aci, pni: pni, e164: e164, authPassword: authPassword)))
     }
 
     public override var hash: Int {
@@ -115,6 +118,10 @@ extension AuthedAccount.Explicit {
 
     public func localUserAddress() -> SignalServiceAddress {
         return SignalServiceAddress(uuid: aci, phoneNumber: e164.stringValue)
+    }
+
+    public var localIdentifiers: LocalIdentifiers {
+        return LocalIdentifiers(aci: ServiceId(aci), pni: ServiceId(pni), phoneNumber: e164.stringValue)
     }
 
     public var chatServiceAuth: ChatServiceAuth {

@@ -37,9 +37,11 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
 
         public struct ReRegisteringState: Codable, Equatable {
             public let e164: E164
+            public let aci: UUID
 
-            fileprivate init(e164: E164) {
+            fileprivate init(e164: E164, aci: UUID) {
                 self.e164 = e164
+                self.aci = aci
             }
         }
 
@@ -118,6 +120,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             deps.messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
         }
         let delegate = CoordinatorDelegate(loader: self)
+        Logger.info("Starting registration, mode: \(mode.logString)")
         return RegistrationCoordinatorImpl(mode: mode, loader: delegate, dependencies: deps)
     }
 
@@ -131,9 +134,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
         } catch {
             // Failed to parse, even though we know there is something there.
             // This is BAD. We might've been in the middle of change number, which NEEDS to recover.
-            // TODO[Registration]: this should probably de-register you.
-            owsFailBeta("Unable to restore in-progress registration mode: \(error)")
-            return nil
+            owsFail("Unable to restore in-progress registration mode: \(error)")
         }
     }
 
@@ -190,8 +191,8 @@ extension RegistrationMode {
         switch self {
         case .registering:
             return .registering(.init())
-        case .reRegistering(let e164):
-            return .reRegistering(.init(e164: e164))
+        case .reRegistering(let params):
+            return .reRegistering(.init(e164: params.e164, aci: params.aci))
         case .changingNumber(let params):
             return .changingNumber(.init(
                 oldE164: params.oldE164,
@@ -213,7 +214,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode {
         case .registering:
             return .registering
         case .reRegistering(let state):
-            return .reRegistering(e164: state.e164)
+            return .reRegistering(.init(e164: state.e164, aci: state.aci))
         case .changingNumber(let state):
             return .changingNumber(.init(
                 oldE164: state.oldE164,
@@ -223,6 +224,17 @@ extension RegistrationCoordinatorLoaderImpl.Mode {
                 localDeviceId: state.localDeviceId,
                 localUserAllDeviceIds: state.localUserAllDeviceIds
             ))
+        }
+    }
+
+    fileprivate var logString: String {
+        switch self {
+        case .registering:
+            return "initial registration"
+        case .reRegistering(let reRegisteringState):
+            return "re-registration aci:\(reRegisteringState.aci.uuidString) e164:\(reRegisteringState.e164.stringValue)"
+        case .changingNumber(let changeNumberState):
+            return "changing number: aci:\(changeNumberState.localAci.uuidString) old e164:\(changeNumberState.oldE164.stringValue)"
         }
     }
 }

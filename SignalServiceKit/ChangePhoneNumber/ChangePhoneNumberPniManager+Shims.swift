@@ -39,12 +39,12 @@ protocol _ChangePhoneNumberPniManager_MessageSenderShim {
     func buildDeviceMessage(
         forMessagePlaintextContent messagePlaintextContent: Data?,
         messageEncryptionStyle: EncryptionStyle,
-        recipientServiceId: ServiceId,
-        recipientAccountId: String,
-        recipientDeviceId: NSNumber,
+        recipientId: String,
+        serviceId: ServiceId,
+        deviceId: NSNumber,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
-        isStorySendMessage: Bool,
+        isStoryMessage: Bool,
         isResendRequestMessage: Bool,
         udSendingParamsProvider: UDSendingParamsProvider?
     ) throws -> DeviceMessage?
@@ -108,24 +108,24 @@ class _ChangePhoneNumberPniManager_MessageSenderWrapper: _ChangePhoneNumberPniMa
     func buildDeviceMessage(
         forMessagePlaintextContent messagePlaintextContent: Data?,
         messageEncryptionStyle: EncryptionStyle,
-        recipientServiceId: ServiceId,
-        recipientAccountId: String,
-        recipientDeviceId: NSNumber,
+        recipientId: String,
+        serviceId: ServiceId,
+        deviceId: NSNumber,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
-        isStorySendMessage: Bool,
+        isStoryMessage: Bool,
         isResendRequestMessage: Bool,
         udSendingParamsProvider: UDSendingParamsProvider?
     ) throws -> DeviceMessage? {
         try messageSender.buildDeviceMessage(
             forMessagePlaintextContent: messagePlaintextContent,
             messageEncryptionStyle: messageEncryptionStyle,
-            recipientAddress: SignalServiceAddress(recipientServiceId),
-            recipientAccountId: recipientAccountId,
-            recipientDeviceId: recipientDeviceId,
+            recipientId: recipientId,
+            serviceId: ServiceIdObjC(serviceId),
+            deviceId: deviceId,
             isOnlineMessage: isOnlineMessage,
             isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
-            isStorySendMessage: isStorySendMessage,
+            isStoryMessage: isStoryMessage,
             isResendRequestMessage: isResendRequestMessage,
             udSendingParamsProvider: udSendingParamsProvider
         )

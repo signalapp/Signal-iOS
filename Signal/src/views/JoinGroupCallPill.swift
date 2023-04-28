@@ -29,7 +29,7 @@ class JoinGroupCallPill: UIControl {
 
     private let callLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         label.isUserInteractionEnabled = false
         return label
     }()

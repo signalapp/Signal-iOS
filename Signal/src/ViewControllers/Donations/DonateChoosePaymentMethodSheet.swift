@@ -118,7 +118,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             }
 
             let titleLabel = UILabel()
-            titleLabel.font = .ows_dynamicTypeTitle2.ows_semibold
+            titleLabel.font = .dynamicTypeTitle2.semibold()
             titleLabel.textColor = Theme.primaryTextColor
             titleLabel.textAlignment = .center
             titleLabel.numberOfLines = 0
@@ -128,7 +128,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
 
             if let bodyText = bodyText {
                 let bodyLabel = UILabel()
-                bodyLabel.font = .ows_dynamicTypeBody
+                bodyLabel.font = .dynamicTypeBody
                 bodyLabel.textColor = Theme.primaryTextColor
                 bodyLabel.textAlignment = .center
                 bodyLabel.numberOfLines = 0
@@ -192,7 +192,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
                 creditOrDebitCardButton.layer.cornerRadius = 12
                 creditOrDebitCardButton.backgroundColor = .ows_accentBlue
                 creditOrDebitCardButton.dimsWhenHighlighted = true
-                creditOrDebitCardButton.titleLabel?.font = .ows_dynamicTypeBody.ows_semibold
+                creditOrDebitCardButton.titleLabel?.font = .dynamicTypeBody.semibold()
                 paymentMethodButtons.append(creditOrDebitCardButton)
             }
 

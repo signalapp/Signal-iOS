@@ -35,7 +35,7 @@ public class NewStoryHeaderView: UIStackView {
 
         let textView = LinkingTextView()
         textView.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-        textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        textView.font = UIFont.dynamicTypeBodyClamped.semibold()
         textView.text = title
 
         addArrangedSubview(textView)
@@ -47,7 +47,7 @@ public class NewStoryHeaderView: UIStackView {
                 "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON",
                 comment: "table section header button to add a new story"
             ),
-            font: UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold,
+            font: UIFont.dynamicTypeFootnoteClamped.semibold(),
             titleColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90,
             backgroundColor: delegate.cellBackgroundColor,
             target: self,

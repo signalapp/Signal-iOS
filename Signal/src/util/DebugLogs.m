@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [[ActionSheetAction alloc]
                                   initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
                                                     @"Label for the 'email debug log' option of the debug log alert.")
-                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_email")
+                        accessibilityIdentifier:@"DebugLogs.send_email"
                                           style:ActionSheetActionStyleDefault
                                         handler:^(ActionSheetAction *action) {
                                             [ComposeSupportEmailOperation
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
         [alert addAction:[[ActionSheetAction alloc]
                                        initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
                                                          @"Label for the 'copy link' option of the debug log alert.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"copy_link")
+                             accessibilityIdentifier:@"DebugLogs.copy_link"
                                                style:ActionSheetActionStyleDefault
                                              handler:^(ActionSheetAction *action) {
                                                  UIPasteboard *pb = [UIPasteboard generalPasteboard];
@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         [alert addAction:[[ActionSheetAction alloc]
                                        initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SHARE",
                                                          @"Label for the 'Share' option of the debug log alert.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share")
+                             accessibilityIdentifier:@"DebugLogs.share"
                                                style:ActionSheetActionStyleDefault
                                              handler:^(ActionSheetAction *action) {
                                                  [AttachmentSharing showShareUIForText:url.absoluteString

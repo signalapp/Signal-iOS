@@ -8,7 +8,7 @@ import XCTest
 @testable import Signal
 @testable import SignalMessaging
 
-class BatchUpdateTest: SignalBaseTest {
+class BatchUpdateTest: XCTestCase {
     func testScenario1() {
         let oldValueIdList = [
             "ggbb3dk2uJONs9yDvWUj+SFV5b5ITNlJRhzsAd03Lmts=",

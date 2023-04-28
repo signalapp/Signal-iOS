@@ -162,6 +162,10 @@ public final class AtomicValue<T> {
             return newValue
         }
     }
+
+    public func update<Result>(block: (inout T) throws -> Result) rethrows -> Result {
+        try lock.perform { try block(&self.value) }
+    }
 }
 
 // MARK: - 

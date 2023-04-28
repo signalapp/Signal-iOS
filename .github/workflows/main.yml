@@ -17,8 +17,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Path format pulled from https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md#xcode
-  DEVELOPER_DIR: /Applications/Xcode_14.0.1.app
+  # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-12-Readme.md#xcode
+  DEVELOPER_DIR: /Applications/Xcode_14.2.app
 
 jobs:
   build_and_test:

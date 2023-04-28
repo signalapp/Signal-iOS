@@ -8,7 +8,8 @@ import Foundation
 public enum RegistrationStep: Equatable {
 
     // MARK: - Opening Steps
-    case splash
+    case registrationSplash
+    case changeNumberSplash
     case permissions(RegistrationPermissionsState)
 
     // MARK: - Actually registering
@@ -18,7 +19,7 @@ public enum RegistrationStep: Equatable {
     /// the user to confirm the number at least once before proceeding.
     /// The number may be used to send an SMS or as a way to identify the
     /// account being registered for via KBS backup info.
-    case phoneNumberEntry(RegistrationPhoneNumberState)
+    case phoneNumberEntry(RegistrationPhoneNumberViewState)
 
     /// If registering via session, the step to enter the verification code.
     case verificationCodeEntry(RegistrationVerificationState)
@@ -35,6 +36,10 @@ public enum RegistrationStep: Equatable {
     /// When doing first time setup, the pin must be confirmed; that is
     /// considered part of this same "step" and is just a UI detail.
     case pinEntry(RegistrationPinState)
+
+    /// All PIN attempts have been exhausted. The user may still be able to register,
+    /// but they cannot recover their kbs backups.
+    case pinAttemptsExhaustedWithoutReglock(RegistrationPinAttemptsExhaustedViewState)
 
     /// At _any_ point during session-based registration, a captcha challenge may be
     /// requested.
@@ -61,25 +66,31 @@ public enum RegistrationStep: Equatable {
         /// We should tell the user their attempt has expired
         /// and they need to start over.
         case sessionInvalidated
+
         /// The user can no longer submit a verification code.
         /// This could be because the previously sent code expired,
         /// or because they used up their verification code attempts.
         /// In either case, they need to send a new code to proceed.
         case verificationCodeSubmissionUnavailable
-        /// All PIN guesses have been exhausted, locking the user out
-        /// of their KBS backups.
-        case pinGuessesExhausted
+
+        /// The user had completed registration, but before finishing
+        /// post-registration steps they were deregistered, likely by
+        /// another device registering on the same number.
+        /// The only path forward is to reset _everything_ and re-register.
+        case becameDeregistered(reregParams: RegistrationMode.ReregistrationParams)
+
         /// A network error occurred. The user can probably fix this by
         /// checking their internet connection.
         case networkError
+
         /// A generic error occurred. Prefer to use other error types.
         case genericError
-        // TODO[Registration]: define other error types.
-        case todo
     }
 
     /// Special cases; should display an error on the current screen, whatever it is.
     /// (If this is returned as the first step, show the splash and then this error).
+    /// This sheet should be undismissable; the user must ack it to proceed, and doing
+    /// so should call `RegistrationCoordinator.nextStep()`
     case showErrorSheet(ErrorSheet)
 
     /// Special case, should display a banner on the current screen, whatever it is.
@@ -90,4 +101,26 @@ public enum RegistrationStep: Equatable {
 
     /// Special case; done with the registration flow!
     case done
+
+    // MARK: - Logging
+
+    public var logSafeString: String {
+        switch self {
+        case .registrationSplash: return "registrationSplash"
+        case .changeNumberSplash: return "changeNumberSplash"
+        case .permissions: return "permissions"
+        case .phoneNumberEntry: return "phoneNumberEntry"
+        case .verificationCodeEntry: return "verificationCodeEntry"
+        case .transferSelection: return "transferSelection"
+        case .pinEntry: return "pinEntry"
+        case .pinAttemptsExhaustedWithoutReglock: return "pinAttemptsExhaustedWithoutReglock"
+        case .captchaChallenge: return "captchaChallenge"
+        case .reglockTimeout: return "reglockTimeout"
+        case .phoneNumberDiscoverability: return "phoneNumberDiscoverability"
+        case .setupProfile: return "setupProfile"
+        case .showErrorSheet: return "showErrorSheet"
+        case .appUpdateBanner: return "appUpdateBanner"
+        case .done: return "done"
+        }
+    }
 }

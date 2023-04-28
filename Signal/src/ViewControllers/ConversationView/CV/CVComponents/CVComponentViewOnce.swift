@@ -295,7 +295,7 @@ fileprivate extension CVComponentViewOnce {
     var labelConfig: CVLabelConfig {
         func buildDefaultConfig(text: String) -> CVLabelConfig {
             return CVLabelConfig(text: text,
-                                 font: UIFont.ows_dynamicTypeSubheadline.ows_semibold,
+                                 font: UIFont.dynamicTypeSubheadline.semibold(),
                                  textColor: textColor,
                                  numberOfLines: 1,
                                  lineBreakMode: .byTruncatingTail)
@@ -343,7 +343,7 @@ fileprivate extension CVComponentViewOnce {
                 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT", comment: "Label for view-once messages that have invalid content.")
             // Reconfigure label for this state only.
             return CVLabelConfig(text: text,
-                                 font: UIFont.ows_dynamicTypeSubheadline,
+                                 font: UIFont.dynamicTypeSubheadline,
                                  textColor: Theme.secondaryTextAndIconColor,
                                  numberOfLines: 0,
                                  lineBreakMode: .byWordWrapping)

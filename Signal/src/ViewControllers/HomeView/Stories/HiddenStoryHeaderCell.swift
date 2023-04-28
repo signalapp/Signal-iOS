@@ -27,7 +27,7 @@ class HiddenStoryHeaderCell: UITableViewCell {
             "STORIES_HIDDEN_SECTION_HEADER",
             comment: "Header for the hidden stories section of the stories list"
         )
-        label.font = UIFont.ows_dynamicTypeHeadline
+        label.font = UIFont.dynamicTypeHeadline
         label.autoPinEdge(toSuperviewMargin: .leading)
         label.autoVCenterInSuperview()
 

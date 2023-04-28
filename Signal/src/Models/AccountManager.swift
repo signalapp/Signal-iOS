@@ -13,10 +13,6 @@ public enum AccountManagerError: Error {
 
 // MARK: -
 
-/**
- * Signal is actually two services - textSecure for messages and red phone (for calls). 
- * AccountManager delegates to both.
- */
 @objc
 public class AccountManager: NSObject, Dependencies {
 
@@ -25,22 +21,9 @@ public class AccountManager: NSObject, Dependencies {
         super.init()
 
         SwiftSingletons.register(self)
-
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            if self.tsAccountManager.isRegistered {
-                self.recordUuidIfNecessary()
-            }
-        }
     }
 
     // MARK: registration
-
-    func deprecated_requestRegistrationVerification(e164: String, captchaToken: String?, isSMS: Bool) -> Promise<Void> {
-        deprecated_requestAccountVerification(e164: e164,
-                                   captchaToken: captchaToken,
-                                   isSMS: isSMS,
-                                   mode: .registration)
-    }
 
     public enum VerificationMode {
         case registration
@@ -331,7 +314,7 @@ public class AccountManager: NSObject, Dependencies {
         // * Secondary devices _cannot_ be re-linked to primaries with a different uuid.
         if tsAccountManager.isReregistering {
             var canChangePhoneNumbers = false
-            if let oldUUID = tsAccountManager.reregistrationUUID(),
+            if let oldUUID = tsAccountManager.reregistrationUUID,
                let newUUID = provisionMessage.aci {
                 if !tsAccountManager.isPrimaryDevice,
                    oldUUID != newUUID {
@@ -349,7 +332,7 @@ public class AccountManager: NSObject, Dependencies {
             // * Secondary devices _cannot_ be re-linked to primaries with a different phone number
             //   unless the uuid is present and has not changed.
             if !canChangePhoneNumbers,
-               let reregistrationPhoneNumber = tsAccountManager.reregistrationPhoneNumber(),
+               let reregistrationPhoneNumber = tsAccountManager.reregistrationPhoneNumber,
                reregistrationPhoneNumber != provisionMessage.phoneNumber {
                 Logger.verbose("reregistrationPhoneNumber: \(reregistrationPhoneNumber)")
                 Logger.verbose("provisionMessage.phoneNumber: \(provisionMessage.phoneNumber)")
@@ -404,9 +387,6 @@ public class AccountManager: NSObject, Dependencies {
                 self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
                                                                deviceId: response.deviceId,
                                                                transaction: transaction)
-
-                self.tsAccountManager.setStoredDeviceName(deviceName,
-                                                          transaction: transaction)
             }
         }.then { _ -> Promise<Void> in
             self.createPreKeys()
@@ -439,7 +419,7 @@ public class AccountManager: NSObject, Dependencies {
             let storageServiceRestorePromise = firstly {
                 NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
             }.then {
-                StorageServiceManager.shared.restoreOrCreateManifestIfNecessary(authedAccount: .implicit()).asVoid()
+                StorageServiceManagerImpl.shared.restoreOrCreateManifestIfNecessary(authedAccount: .implicit()).asVoid()
             }.ensure {
                 BenchEventComplete(eventId: "initial-storage-service-restore")
             }.timeout(seconds: 60)
@@ -512,9 +492,11 @@ public class AccountManager: NSObject, Dependencies {
                                                 failure: future.reject)
         }.map(on: DispatchQueue.global()) { responseObject throws -> RegistrationResponse in
             self.databaseStorage.write { transaction in
-                self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
-                                                               deviceId: OWSDevicePrimaryDeviceId,
-                                                               transaction: transaction)
+                self.tsAccountManager.setStoredServerAuthToken(
+                    serverAuthToken,
+                    deviceId: OWSDevice.primaryDeviceId,
+                    transaction: transaction
+                )
             }
 
             guard let responseObject = responseObject else {
@@ -583,37 +565,6 @@ public class AccountManager: NSObject, Dependencies {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
             return turnServerInfo
-        }
-    }
-
-    func recordUuidIfNecessary() {
-        DispatchQueue.global().async {
-            _ = self.ensureUuid().catch { error in
-                // Until we're in a UUID-only world, don't require a
-                // local UUID.
-                owsFailDebug("error: \(error)")
-            }
-        }
-    }
-
-    func ensureUuid() -> Promise<UUID> {
-        if let existingUuid = tsAccountManager.localUuid {
-            return Promise.value(existingUuid)
-        }
-
-        return accountServiceClient.getAccountWhoAmI().map(on: DispatchQueue.global()) { whoAmIResponse in
-            let uuid = whoAmIResponse.aci
-
-            // It's possible this method could be called multiple times, so we check
-            // again if it's been set. We dont bother serializing access since it should
-            // be idempotent.
-            if let existingUuid = self.tsAccountManager.localUuid {
-                assert(existingUuid == uuid)
-                return existingUuid
-            }
-            Logger.info("Recording UUID for legacy user")
-            self.tsAccountManager.recordUuidForLegacyUser(uuid)
-            return uuid
         }
     }
 

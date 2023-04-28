@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-class OWSURLBuilderUtilTest: SSKBaseTestSwift {
+class OWSURLBuilderUtilTest: XCTestCase {
 
     func test_buildUrl() {
         // No base url

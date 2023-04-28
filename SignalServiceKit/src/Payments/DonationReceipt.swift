@@ -6,7 +6,9 @@
 import Foundation
 import GRDB
 
-public final class DonationReceipt: NSObject, SDSCodableModel {
+public final class DonationReceipt: NSObject, SDSCodableModel, Decodable {
+    public static var recordType: UInt { 0 }
+
     public enum DonationReceiptType {
         case boost
         case subscription(subscriptionLevel: UInt)

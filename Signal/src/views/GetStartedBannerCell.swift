@@ -38,7 +38,7 @@ class GetStartedBannerCell: UICollectionViewCell {
 
     private let actionButton: OWSButton = {
         let button = OWSButton()
-        button.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        button.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.titleLabel?.lineBreakMode = .byTruncatingTail
 

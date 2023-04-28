@@ -157,6 +157,10 @@ fileprivate extension PhoneNumberUtilWrapper {
     func getCountryCode(forRegion regionCode: String) -> NSNumber {
         nbPhoneNumberUtil.getCountryCode(forRegion: regionCode)
     }
+
+    func getNationalSignificantNumber(_ number: NBPhoneNumber) -> String {
+        return nbPhoneNumberUtil.getNationalSignificantNumber(number)
+    }
 }
 
 // MARK: -
@@ -165,6 +169,11 @@ fileprivate extension PhoneNumberUtilWrapper {
 extension PhoneNumberUtil {
     private static let unfairLock = UnfairLock()
     private var unfairLock: UnfairLock { Self.unfairLock }
+
+    @objc(nationalNumberFromPhoneNumber:)
+    public func nationalNumber(phoneNumber: NBPhoneNumber) -> String {
+        return phoneNumberUtilWrapper.getNationalSignificantNumber(phoneNumber)
+    }
 
     @objc(callingCodeFromCountryCode:)
     public static func callingCode(fromCountryCode countryCode: String) -> String? {

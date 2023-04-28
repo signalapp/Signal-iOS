@@ -100,7 +100,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
 
     private lazy var selectionDescriptionLabel: UILabel = {
         let result = UILabel()
-        result.font = .ows_dynamicTypeCaption1Clamped
+        result.font = .dynamicTypeCaption1Clamped
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         return result
@@ -118,7 +118,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         let footerView = UIView()
         let continueButton = OWSFlatButton.insetButton(
             title: CommonStrings.continueButton,
-            font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            font: UIFont.dynamicTypeBodyClamped.semibold(),
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
@@ -128,7 +128,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         footerView.addSubview(continueButton)
 
         continueButton.contentEdgeInsets = Constants.continueButtonEdgeInsets
-        continueButton.autoPinEdgesToSuperviewEdges(withInsets: Constants.continueButtonInsets)
+        continueButton.autoPinEdgesToSuperviewEdges(with: Constants.continueButtonInsets)
 
         return footerView
     }()
@@ -269,7 +269,7 @@ private class ButtonRow: UIButton {
         setBackgroundImage(UIImage(color: Theme.backgroundColor), for: .normal)
 
         buttonLabel.textColor = Theme.primaryTextColor
-        buttonLabel.font = .ows_dynamicTypeBodyClamped
+        buttonLabel.font = .dynamicTypeBodyClamped
 
         divider.backgroundColor = Theme.middleGrayColor
 

@@ -16,21 +16,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
-    OWSLogInfo(@"");
-
     [super setUp];
 
     SetCurrentAppContext([TestAppContext new], YES);
     [MockSSKEnvironment activate];
     [MockEnvironment activate];
 
-    ((MockSSKEnvironment *)SSKEnvironment.shared).groupsV2Ref = [GroupsV2Impl new];
+    [SSKEnvironment.shared setGroupsV2ForUnitTests:[GroupsV2Impl new]];
 }
 
 - (void)tearDown
 {
-    OWSLogInfo(@"");
-
+    [MockSSKEnvironment flushAndWait];
     [super tearDown];
 }
 

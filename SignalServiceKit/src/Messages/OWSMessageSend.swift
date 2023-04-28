@@ -44,6 +44,9 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
     public let thread: TSThread
 
     @objc
+    public let serviceId: ServiceIdObjC
+
+    @objc
     public let address: SignalServiceAddress
 
     private static let kMaxRetriesPerRecipient: Int = 3
@@ -79,7 +82,7 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
                 plaintextContent: Data?,
                 plaintextPayloadId: NSNumber?,
                 thread: TSThread,
-                address: SignalServiceAddress,
+                serviceId: ServiceIdObjC,
                 udSendingAccess: OWSUDSendingAccess?,
                 localAddress: SignalServiceAddress,
                 sendErrorBlock: ((Error) -> Void)?) {
@@ -87,7 +90,8 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
         self.plaintextContent = plaintextContent
         self.plaintextPayloadId = plaintextPayloadId?.int64Value
         self.thread = thread
-        self.address = address
+        self.serviceId = serviceId
+        self.address = SignalServiceAddress(serviceId.wrappedValue)
         self.localAddress = localAddress
         self.isLocalAddress = address.isLocalAddress
 

@@ -20,9 +20,7 @@
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIView+SignalUI.h>

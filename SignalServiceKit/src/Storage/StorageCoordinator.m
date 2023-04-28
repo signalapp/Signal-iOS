@@ -10,8 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const StorageIsReadyNotification = @"StorageIsReadyNotification";
-
 NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
 {
     switch (value) {
@@ -36,8 +34,6 @@ NSString *NSStringForDataStore(DataStore value)
 
 @property (atomic) StorageCoordinatorState state;
 
-@property (atomic) BOOL isStorageSetupComplete;
-
 @end
 
 #pragma mark -
@@ -54,7 +50,7 @@ NSString *NSStringForDataStore(DataStore value)
     OWSSingletonAssert();
 
     NSURL *databaseFileUrl = [GRDBDatabaseStorageAdapter databaseFileUrlWithDirectoryMode:DirectoryModePrimary];
-    _databaseStorage = [[SDSDatabaseStorage alloc] initWithDatabaseFileUrl:databaseFileUrl delegate:self];
+    _nonGlobalDatabaseStorage = [[SDSDatabaseStorage alloc] initWithDatabaseFileUrl:databaseFileUrl delegate:self];
 
     [self configure];
 
@@ -84,11 +80,6 @@ NSString *NSStringForDataStore(DataStore value)
 
 - (void)configure
 {
-    OWSLogInfo(@"storageMode: %@", SSKFeatureFlags.storageModeDescription);
-
-    BOOL hasGrdbFile = self.class.hasGrdbFile;
-    OWSLogInfo(@"hasGrdbFile: %d", hasGrdbFile);
-
     switch (SSKFeatureFlags.storageMode) {
         case StorageModeGrdb:
             self.state = StorageCoordinatorStateGRDB;
@@ -108,41 +99,11 @@ NSString *NSStringForDataStore(DataStore value)
             self.state = StorageCoordinatorStateGRDBTests;
             break;
     }
-
-    OWSLogInfo(@"state: %@", NSStringFromStorageCoordinatorState(self.state));
 }
 
 - (BOOL)isDatabasePasswordAccessible
 {
     return [GRDBDatabaseStorageAdapter isKeyAccessible];
-}
-
-- (void)markStorageSetupAsComplete
-{
-    self.isStorageSetupComplete = YES;
-
-    [self postStorageIsReadyNotification];
-}
-
-- (void)postStorageIsReadyNotification
-{
-    OWSLogInfo(@"");
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:StorageIsReadyNotification
-                                                                 object:nil
-                                                               userInfo:nil];
-    });
-}
-
-- (BOOL)isStorageReady
-{
-    switch (self.state) {
-        case StorageCoordinatorStateGRDB:
-        case StorageCoordinatorStateGRDBTests:
-            return self.isStorageSetupComplete;
-    }
 }
 
 @end

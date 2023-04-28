@@ -21,7 +21,7 @@ public class GroupCallTooltip: TooltipView {
             "GROUP_CALL_START_TOOLTIP",
             comment: "Tooltip highlighting group calls."
         )
-        label.font = UIFont.ows_dynamicTypeSubheadline
+        label.font = UIFont.dynamicTypeSubheadline
         label.textColor = UIColor.ows_white
 
         return horizontalStack(forSubviews: [label])

@@ -1730,23 +1730,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         return url
     }
 
-    public func isPossibleGroupInviteLink(_ url: URL) -> Bool {
-        let possibleHosts: [String]
-        if url.scheme == "https" {
-            possibleHosts = ["signal.group"]
-        } else if url.scheme == "sgnl" {
-            possibleHosts = ["signal.group", "joingroup"]
-        } else {
-            return false
-        }
-        guard let host = url.host else {
-            return false
-        }
-        return possibleHosts.contains(host)
-    }
-
     public func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
-        guard isPossibleGroupInviteLink(url) else {
+        guard GroupManager.isPossibleGroupInviteLink(url) else {
             return nil
         }
         guard let protoBase64Url = url.fragment,

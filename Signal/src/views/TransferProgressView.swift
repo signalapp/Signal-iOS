@@ -18,14 +18,14 @@ class TransferProgressView: UIStackView {
         let label = UILabel()
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.font = .ows_dynamicTypeBody
+        label.font = .dynamicTypeBody
         label.textColor = Theme.primaryTextColor
         label.textAlignment = .center
         return label
     }()
     let bottomLabel: UILabel = {
         let label = UILabel()
-        label.font = .ows_dynamicTypeBody2
+        label.font = .dynamicTypeBody2
         label.textColor = Theme.secondaryTextAndIconColor
         label.textAlignment = .center
         return label

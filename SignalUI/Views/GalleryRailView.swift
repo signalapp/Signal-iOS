@@ -162,7 +162,15 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
     /**
      * If enabled, `GalleryRailView` will hide itself if there is less than two items.
      */
-    public var hidesAutomatically = true
+    public var hidesAutomatically = true {
+        didSet {
+            guard let itemProvider else { return }
+            // Unhide automatically if there's more than 1 item.
+            if hidesAutomatically && isHiddenInStackView && itemProvider.railItems.count > 1 {
+                isHiddenInStackView = false
+            }
+        }
+    }
 
     public var isScrollEnabled: Bool {
         get { scrollView.isScrollEnabled }
@@ -187,7 +195,11 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         preservesSuperviewLayoutMargins = true
 
         addSubview(scrollView)
-        scrollView.autoPinEdgesToSuperviewMargins()
+        // Constrain width to view and not layout guide because as of iOS 16.4
+        // UIStackView, that GalleryRailView is placed in, was messing with view's layout margins.
+        scrollView.autoPinWidthToSuperview()
+        // Constrain height to margins because view controller adjusts those to control view spacing.
+        scrollView.autoPinHeightToSuperviewMargins()
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -220,8 +232,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
         let currentRailItems = cellViews.compactMap { $0.item }
         if itemProvider === self.itemProvider, areRailItemsIdentical(itemProvider.railItems, currentRailItems) {
-            self.updateFocusedItem(focusedItem, animated: animated)
-            self.scrollToFocusedCell(animated: animated)
+            updateFocusedItem(focusedItem, animated: animated)
             return
         }
 
@@ -230,22 +241,24 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         let duration: TimeInterval = animated ? 0.2 : 0
 
         guard itemProvider.railItems.count > 1 || !hidesAutomatically else {
+            guard !isHiddenInStackView else { return }
+
             let existingStackView = stackView
-            UIView.animate(
-                withDuration: duration,
-                animations: {
-                    self.alpha = 0
-                },
-                completion: { _ in
-                    if let existingStackView {
-                        existingStackView.removeFromSuperview()
+            if animated {
+                UIView.animate(
+                    withDuration: duration,
+                    animations: {
+                        self.isHiddenInStackView = true
+                    },
+                    completion: { _ in
+                        existingStackView?.removeFromSuperview()
                     }
-                    self.isHidden = true
-                    self.alpha = 1
-                }
-            )
+                )
+            } else {
+                existingStackView?.removeFromSuperview()
+                isHiddenInStackView = true
+            }
             cellViews = []
-            stackView = nil
             return
         }
 
@@ -253,16 +266,27 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
             stackView.removeFromSuperview()
         }
 
-        if hidesAutomatically {
-            isHidden = false
-        }
-
         cellViews = buildCellViews(items: itemProvider.railItems, cellViewBuilder: cellViewBuilder)
         let stackView = installNewStackView(arrangedSubviews: cellViews)
         stackViewHeightConstraint = stackView.autoSetDimension(.height, toSize: itemSize)
+        stackView.layoutIfNeeded()
         self.stackView = stackView
 
-        layoutIfNeeded()
+        UIView.performWithoutAnimation {
+            self.layoutIfNeeded()
+        }
+
+        // Unhide only if view is hidden automatically.
+        if hidesAutomatically {
+            if animated && isHiddenInStackView {
+                UIView.animate(withDuration: duration) {
+                    self.isHiddenInStackView = false
+                    self.superview?.layoutIfNeeded()
+                }
+            } else {
+                isHiddenInStackView = false
+            }
+        }
 
         updateFocusedItem(focusedItem, animated: animated)
     }
@@ -378,6 +402,8 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
     }
 
     private func updateFocusedItem(_ focusedItem: GalleryRailItem, animated: Bool) {
+        guard !cellViews.isEmpty else { return }
+
         cellViews.forEach { cellView in
             if let item = cellView.item, item.isEqualToGalleryRailItem(focusedItem) {
                 cellView.isCellFocused = true

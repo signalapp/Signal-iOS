@@ -96,6 +96,34 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     }
 
     public class func present(
+        forAttachmentStreams attachmentStreams: [TSAttachmentStream],
+        fromMessage message: TSMessage,
+        from fromViewController: UIViewController,
+        delegate: ForwardMessageDelegate
+    ) {
+        do {
+            let builder = Item.Builder(interaction: message)
+
+            builder.attachments = try attachmentStreams.map { attachmentStream in
+                try attachmentStream.cloneAsSignalAttachment()
+            }
+
+            let item: Item = builder.build()
+
+            present(
+                content: .single(item: item),
+                from: fromViewController,
+                delegate: delegate
+            )
+        } catch let error {
+            ForwardMessageViewController.showAlertForForwardError(
+                error: error,
+                forwardedInteractionCount: 1
+            )
+        }
+    }
+
+    public class func present(
         forStoryMessage storyMessage: StoryMessage,
         from fromViewController: UIViewController,
         delegate: ForwardMessageDelegate
@@ -126,13 +154,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
             builder.textAttachment = textAttachment
         }
         present(content: .single(item: builder.build()), from: fromViewController, delegate: delegate)
-    }
-
-    public class func present(
-        _ textAttachment: TextAttachment,
-        from fromViewController: UIViewController,
-        delegate: ForwardMessageDelegate
-    ) {
     }
 
     private class func present(content: Content,
@@ -346,8 +367,6 @@ extension ForwardMessageViewController {
     private func send(item: Item, toOutgoingMessageRecipientThreads outgoingMessageRecipientThreads: [TSThread]) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let componentState = item.componentState
-
         if let stickerMetadata = item.stickerMetadata {
             let stickerInfo = stickerMetadata.stickerInfo
             if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
@@ -355,7 +374,7 @@ extension ForwardMessageViewController {
                     self.send(installedSticker: stickerInfo, thread: recipientThread)
                 }
             } else {
-                guard let stickerAttachment = componentState?.stickerAttachment else {
+                guard let stickerAttachment = item.stickerAttachment else {
                     return Promise(error: OWSAssertionError("Missing stickerAttachment."))
                 }
                 do {
@@ -633,52 +652,52 @@ public struct ForwardMessageItem {
     fileprivate typealias Item = ForwardMessageItem
 
     let interaction: TSInteraction?
-    let componentState: CVComponentState?
 
     let attachments: [SignalAttachment]?
     let contactShare: ContactShareViewModel?
     let messageBody: MessageBody?
     let linkPreviewDraft: OWSLinkPreviewDraft?
     let stickerMetadata: StickerMetadata?
+    let stickerAttachment: TSAttachmentStream?
     let textAttachment: TextAttachment?
 
     fileprivate class Builder {
         let interaction: TSInteraction?
-        let componentState: CVComponentState?
 
         var attachments: [SignalAttachment]?
         var contactShare: ContactShareViewModel?
         var messageBody: MessageBody?
         var linkPreviewDraft: OWSLinkPreviewDraft?
         var stickerMetadata: StickerMetadata?
+        var stickerAttachment: TSAttachmentStream?
         var textAttachment: TextAttachment?
 
-        init(interaction: TSInteraction? = nil, componentState: CVComponentState? = nil) {
+        init(interaction: TSInteraction? = nil) {
             self.interaction = interaction
-            self.componentState = componentState
         }
 
         func build() -> ForwardMessageItem {
             ForwardMessageItem(
                 interaction: interaction,
-                componentState: componentState,
                 attachments: attachments,
                 contactShare: contactShare,
                 messageBody: messageBody,
                 linkPreviewDraft: linkPreviewDraft,
                 stickerMetadata: stickerMetadata,
+                stickerAttachment: stickerAttachment,
                 textAttachment: textAttachment
             )
         }
     }
 
     fileprivate var asBuilder: Builder {
-        let builder = Builder(interaction: interaction, componentState: componentState)
+        let builder = Builder(interaction: interaction)
         builder.attachments = attachments
         builder.contactShare = contactShare
         builder.messageBody = messageBody
         builder.linkPreviewDraft = linkPreviewDraft
         builder.stickerMetadata = stickerMetadata
+        builder.stickerAttachment = stickerAttachment
         return builder
     }
 
@@ -702,7 +721,7 @@ public struct ForwardMessageItem {
         transaction: SDSAnyReadTransaction
     ) throws -> Item {
 
-        let builder = Builder(interaction: interaction, componentState: componentState)
+        let builder = Builder(interaction: interaction)
 
         let shouldHaveText = (selectionType == .allContent ||
                                 selectionType == .secondaryContent)
@@ -748,6 +767,10 @@ public struct ForwardMessageItem {
 
             if let stickerMetadata = componentState.stickerMetadata {
                 builder.stickerMetadata = stickerMetadata
+
+                if let stickerAttachment = componentState.stickerAttachment {
+                    builder.stickerAttachment = stickerAttachment
+                }
             }
         }
 

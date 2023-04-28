@@ -6,7 +6,6 @@
 #import "OWS2FAManager.h"
 #import "AppReadiness.h"
 #import "HTTPUtils.h"
-#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -86,10 +85,10 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     return [OWS2FAManager.keyValueStore getString:kOWS2FAManager_PinCode transaction:transaction];
 }
 
-- (void)setPinCode:(nullable NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction
+- (void)setPinCode:(NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (pin.length == 0) {
-        [OWS2FAManager.keyValueStore removeValueForKey:kOWS2FAManager_PinCode transaction:transaction];
+        [self clearLocalPinCodeWithTransaction:transaction];
         return;
     }
 

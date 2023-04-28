@@ -205,7 +205,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
 
         let nameLabel = UILabel()
         nameLabel.text = contactShare.displayName
-        nameLabel.font = UIFont.ows_dynamicTypeTitle1
+        nameLabel.font = UIFont.dynamicTypeTitle1
         nameLabel.textColor = Theme.primaryTextColor
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.textAlignment = .center
@@ -219,7 +219,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
         for phoneNumber in systemContactsWithSignalAccountsForContact() {
             let phoneNumberLabel = UILabel()
             phoneNumberLabel.text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
-            phoneNumberLabel.font = UIFont.ows_dynamicTypeFootnote
+            phoneNumberLabel.font = UIFont.dynamicTypeFootnote
             phoneNumberLabel.textColor = Theme.primaryTextColor
             phoneNumberLabel.lineBreakMode = .byTruncatingTail
             phoneNumberLabel.textAlignment = .center
@@ -368,7 +368,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
 
         let label = UILabel()
         label.text = labelText
-        label.font = UIFont.ows_dynamicTypeBody
+        label.font = UIFont.dynamicTypeBody
         label.textColor = Theme.accentBlueColor
         label.lineBreakMode = .byTruncatingTail
         row.addSubview(label)
@@ -405,7 +405,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
 
         let label = UILabel()
         label.text = text
-        label.font = UIFont.ows_dynamicTypeCaption2
+        label.font = UIFont.dynamicTypeCaption2
         label.textColor = Theme.primaryTextColor
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
@@ -427,7 +427,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
 
         let label = UILabel()
         label.text = text
-        label.font = UIFont.ows_dynamicTypeBody
+        label.font = UIFont.dynamicTypeBody
         label.textColor = Theme.accentBlueColor
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center

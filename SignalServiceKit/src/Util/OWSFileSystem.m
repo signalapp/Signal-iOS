@@ -355,7 +355,7 @@ NSString *OWSTemporaryDirectoryAccessibleAfterFirstAuth(void)
     return dirPath;
 }
 
-void ClearOldTemporaryDirectoriesSync(void)
+static void ClearOldTemporaryDirectoriesSync(void)
 {
     // Ignore the "current" temp directory.
     NSString *currentTempDirName = OWSTemporaryDirectory().lastPathComponent;

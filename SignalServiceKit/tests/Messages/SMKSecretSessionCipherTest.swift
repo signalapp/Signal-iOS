@@ -43,10 +43,15 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // senderCertificate, "smert za smert".getBytes());
         // NOTE: The java tests don't bother padding the plaintext.
         let alicePlaintext = "smert za smert".data(using: String.Encoding.utf8)!
-        let ciphertext = try! aliceCipher.encryptMessage(recipient: bobMockClient.address,
-                                                         deviceId: bobMockClient.deviceId,
-                                                         paddedPlaintext: alicePlaintext,
-                                                         senderCertificate: senderCertificate)
+        let ciphertext = try! aliceCipher.encryptMessage(
+            for: bobMockClient.address.serviceId!,
+            deviceId: bobMockClient.deviceId,
+            paddedPlaintext: alicePlaintext,
+            contentHint: .default,
+            groupId: nil,
+            senderCertificate: senderCertificate,
+            protocolContext: NullContext()
+        )
 
         // SealedSessionCipher bobCipher = new SealedSessionCipher(bobStore, new SignalProtocolAddress("+14152222222", 1));
         let bobCipher: SMKSecretSessionCipher = try! bobMockClient.createSecretSessionCipher()
@@ -61,10 +66,9 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // assertEquals(plaintext.first().getName(), "+14151111111");
         // assertEquals(plaintext.first().getDeviceId(), 1);
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "smert za smert")
-        XCTAssertEqual(bobPlaintext.senderAddress, aliceMockClient.address)
         XCTAssertEqual(bobPlaintext.senderDeviceId, Int(aliceMockClient.deviceId))
-        XCTAssertEqual(bobPlaintext.senderAddress.uuid, aliceMockClient.address.uuid)
-        XCTAssertEqual(bobPlaintext.senderAddress.phoneNumber, aliceMockClient.address.phoneNumber)
+        XCTAssertEqual(bobPlaintext.senderServiceId.uuidValue, aliceMockClient.address.uuid)
+        XCTAssertEqual(bobPlaintext.senderE164, aliceMockClient.address.phoneNumber)
     }
 
     // public void testEncryptDecryptUntrusted() throws Exception {
@@ -100,12 +104,15 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let alicePlaintext = "и вот я".data(using: String.Encoding.utf8)!
         let aliceGroupId = Randomness.generateRandomBytes(6)
         let aliceContentHint = UnidentifiedSenderMessageContent.ContentHint.implicit
-        let ciphertext = try! aliceCipher.encryptMessage(recipient: bobMockClient.address,
-                                                         deviceId: bobMockClient.deviceId,
-                                                         paddedPlaintext: alicePlaintext,
-                                                         contentHint: aliceContentHint,
-                                                         groupId: aliceGroupId,
-                                                         senderCertificate: senderCertificate)
+        let ciphertext = try! aliceCipher.encryptMessage(
+            for: bobMockClient.address.serviceId!,
+            deviceId: bobMockClient.deviceId,
+            paddedPlaintext: alicePlaintext,
+            contentHint: aliceContentHint,
+            groupId: aliceGroupId,
+            senderCertificate: senderCertificate,
+            protocolContext: NullContext()
+        )
 
         // SecretSessionCipher bobCipher = new SecretSessionCipher(bobStore);
         let bobCipher: SMKSecretSessionCipher = try! bobMockClient.createSecretSessionCipher()
@@ -179,12 +186,15 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let aliceGroupId = Randomness.generateRandomBytes(6)
         let aliceContentHint = UnidentifiedSenderMessageContent.ContentHint.resendable
 
-        let ciphertext = try! aliceCipher.encryptMessage(recipient: bobMockClient.address,
-                                                         deviceId: bobMockClient.deviceId,
-                                                         paddedPlaintext: alicePlaintext,
-                                                         contentHint: aliceContentHint,
-                                                         groupId: aliceGroupId,
-                                                         senderCertificate: senderCertificate)
+        let ciphertext = try! aliceCipher.encryptMessage(
+            for: bobMockClient.address.serviceId!,
+            deviceId: bobMockClient.deviceId,
+            paddedPlaintext: alicePlaintext,
+            contentHint: aliceContentHint,
+            groupId: aliceGroupId,
+            senderCertificate: senderCertificate,
+            protocolContext: NullContext()
+        )
 
         // SecretSessionCipher bobCipher = new SecretSessionCipher(bobStore);
         let bobCipher: SMKSecretSessionCipher = try! bobMockClient.createSecretSessionCipher()
@@ -257,10 +267,15 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         //    senderCertificate, "smert za smert".getBytes());
         // NOTE: The java tests don't bother padding the plaintext.
         let alicePlaintext = "smert za smert".data(using: String.Encoding.utf8)!
-        let ciphertext = try! aliceCipher.encryptMessage(recipient: bobMockClient.address,
-                                                         deviceId: bobMockClient.deviceId,
-                                                         paddedPlaintext: alicePlaintext,
-                                                         senderCertificate: senderCertificate)
+        let ciphertext = try! aliceCipher.encryptMessage(
+            for: bobMockClient.address.serviceId!,
+            deviceId: bobMockClient.deviceId,
+            paddedPlaintext: alicePlaintext,
+            contentHint: .default,
+            groupId: nil,
+            senderCertificate: senderCertificate,
+            protocolContext: NullContext()
+        )
 
         // SecretSessionCipher bobCipher = new SecretSessionCipher(bobStore);
         let bobCipher: SMKSecretSessionCipher = try! bobMockClient.createSecretSessionCipher()
@@ -341,7 +356,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
 
         // Verify
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "beltalowda")
-        XCTAssertEqual(bobPlaintext.senderAddress, aliceMockClient.address)
+        XCTAssertEqual(bobPlaintext.senderServiceId, aliceMockClient.address.serviceIdObjC)
         XCTAssertEqual(bobPlaintext.senderDeviceId, Int(aliceMockClient.deviceId))
         XCTAssertEqual(bobPlaintext.messageType, .senderKey)
     }

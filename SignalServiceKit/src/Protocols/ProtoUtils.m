@@ -5,7 +5,6 @@
 
 #import "ProtoUtils.h"
 #import "ProfileManagerProtocol.h"
-#import "SSKEnvironment.h"
 #import "TSThread.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

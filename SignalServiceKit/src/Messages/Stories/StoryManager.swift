@@ -12,13 +12,14 @@ public class StoryManager: NSObject {
 
     @objc
     public class func setup() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            cacheAreStoriesEnabled()
-            cacheAreViewReceiptsEnabled()
+        cacheAreStoriesEnabled()
+        cacheAreViewReceiptsEnabled()
 
-            // Create My Story thread if necessary
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Self.databaseStorage.asyncWrite { transaction in
+                // Create My Story thread if necessary
                 TSPrivateStoryThread.getOrCreateMyStory(transaction: transaction)
+
                 if CurrentAppContext().isMainApp {
                     TSPrivateStoryThread.cleanupDeletedTimestamps(transaction: transaction)
                 }

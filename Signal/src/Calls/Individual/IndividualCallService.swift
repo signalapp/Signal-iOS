@@ -51,7 +51,7 @@ final public class IndividualCallService: NSObject {
         call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingIncomplete)
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = tsAccountManager.storedDeviceId()
+        let localDeviceId = tsAccountManager.storedDeviceId
 
         do {
             try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId)
@@ -219,7 +219,7 @@ final public class IndividualCallService: NSObject {
 
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
-        guard tsAccountManager.isOnboarded(with: transaction) else {
+        guard tsAccountManager.isOnboarded(transaction: transaction) else {
             Logger.warn("user is not onboarded, skipping call.")
             newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissed, transaction: transaction)
 
@@ -271,7 +271,7 @@ final public class IndividualCallService: NSObject {
             Logger.info("Ignoring call offer from \(thread.contactAddress) due to insufficient permissions.")
 
             // Send the need permission message to the caller, so they know why we rejected their call.
-            let localDeviceId = tsAccountManager.storedDeviceId(with: transaction)
+            let localDeviceId = tsAccountManager.storedDeviceId(transaction: transaction)
             callManager(
                 callManager,
                 shouldSendHangup: callId,
@@ -319,7 +319,7 @@ final public class IndividualCallService: NSObject {
         }
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = tsAccountManager.storedDeviceId(with: transaction)
+        let localDeviceId = tsAccountManager.storedDeviceId(transaction: transaction)
         let isPrimaryDevice = tsAccountManager.isPrimaryDevice(transaction: transaction)
 
         do {

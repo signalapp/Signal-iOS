@@ -696,7 +696,7 @@ class CameraZoomSelectionControl: UIView {
             let label = UILabel()
             label.textAlignment = .center
             label.textColor = .ows_white
-            label.font = .ows_semiboldFont(withSize: 11)
+            label.font = .semiboldFont(ofSize: 11)
             return label
         }()
 
@@ -941,7 +941,7 @@ class RecordingDurationView: PillView {
 
     private let label: UILabel = {
         let label = UILabel()
-        label.font = UIFont.ows_monospacedDigitFont(withSize: 20)
+        label.font = UIFont.monospacedDigitFont(ofSize: 20)
         label.textAlignment = .center
         label.textColor = UIColor.white
         return label
@@ -1052,7 +1052,7 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
     }
 
     private static var font: UIFont {
-        return UIFont.ows_dynamicTypeSubheadline.ows_monospaced
+        return UIFont.dynamicTypeSubheadline.monospaced()
     }
 
     private let numberFormatter: NumberFormatter = {
@@ -1121,7 +1121,7 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
-            textLabel.font = .ows_dynamicTypeSubheadline.ows_monospaced
+            textLabel.font = .dynamicTypeSubheadline.monospaced()
             if #available(iOS 13, *) {
                 chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: textLabel.font.pointSize)
             }
@@ -1258,7 +1258,7 @@ class MediaPickerThumbnailButton: UIButton {
         placeholderView.clipsToBounds = true
         placeholderView.isUserInteractionEnabled = false
         insertSubview(placeholderView, at: 0)
-        placeholderView.autoPinEdgesToSuperviewEdges(withInsets: contentEdgeInsets)
+        placeholderView.autoPinEdgesToSuperviewEdges(with: contentEdgeInsets)
 
         var authorizationStatus: PHAuthorizationStatus
         if #available(iOS 14, *) {

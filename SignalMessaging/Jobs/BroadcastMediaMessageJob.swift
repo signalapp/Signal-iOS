@@ -7,13 +7,12 @@ import Foundation
 
 @objc
 public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
-
     public typealias DurableOperationType = BroadcastMediaMessageOperation
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { !CurrentAppContext().isNSE }
     public static let maxRetries: UInt = 4
     @objc
-    public static let jobRecordLabel: String = OWSBroadcastMediaMessageJobRecord.defaultLabel
+    public static let jobRecordLabel: String = BroadcastMediaMessageJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
     }
@@ -34,7 +33,7 @@ public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public func didMarkAsReady(oldJobRecord: OWSBroadcastMediaMessageJobRecord, transaction: SDSAnyWriteTransaction) {
+    public func didMarkAsReady(oldJobRecord: BroadcastMediaMessageJobRecord, transaction: SDSAnyWriteTransaction) {
         // no special handling
     }
 
@@ -46,34 +45,37 @@ public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
         return operationQueue
     }()
 
-    public func operationQueue(jobRecord: OWSBroadcastMediaMessageJobRecord) -> OperationQueue {
+    public func operationQueue(jobRecord: BroadcastMediaMessageJobRecord) -> OperationQueue {
         return defaultQueue
     }
 
-    public func buildOperation(jobRecord: OWSBroadcastMediaMessageJobRecord, transaction: SDSAnyReadTransaction) throws -> BroadcastMediaMessageOperation {
+    public func buildOperation(jobRecord: BroadcastMediaMessageJobRecord, transaction: SDSAnyReadTransaction) throws -> BroadcastMediaMessageOperation {
         return BroadcastMediaMessageOperation(jobRecord: jobRecord)
     }
 
     public func add(attachmentIdMap: [String: [String]], unsavedMessagesToSend: [TSOutgoingMessage], transaction: SDSAnyWriteTransaction) {
-        let jobRecord = OWSBroadcastMediaMessageJobRecord(attachmentIdMap: attachmentIdMap,
-                                                          unsavedMessagesToSend: unsavedMessagesToSend,
-                                                          label: self.jobRecordLabel)
+        let jobRecord = BroadcastMediaMessageJobRecord(
+            attachmentIdMap: attachmentIdMap,
+            unsavedMessagesToSend: unsavedMessagesToSend,
+            label: jobRecordLabel
+        )
+
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 }
 
 public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
-    public typealias JobRecordType = OWSBroadcastMediaMessageJobRecord
+    public typealias JobRecordType = BroadcastMediaMessageJobRecord
     public typealias DurableOperationDelegateType = BroadcastMediaMessageJobQueue
     public weak var durableOperationDelegate: BroadcastMediaMessageJobQueue?
-    public var jobRecord: OWSBroadcastMediaMessageJobRecord
+    public var jobRecord: BroadcastMediaMessageJobRecord
     public var operation: OWSOperation {
         return self
     }
 
     // MARK: -
 
-    init(jobRecord: OWSBroadcastMediaMessageJobRecord) {
+    init(jobRecord: BroadcastMediaMessageJobRecord) {
         self.jobRecord = jobRecord
     }
 

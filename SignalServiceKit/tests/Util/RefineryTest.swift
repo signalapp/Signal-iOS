@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-class RefineryTest: SSKBaseTestSwift {
+class RefineryTest: XCTestCase {
 
     func testBasic() {
         let keys = [1, 2, 3]

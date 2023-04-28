@@ -132,7 +132,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         func configureTextfield(_ textfield: UITextField, wordIndex: Int) {
             textfield.delegate = self
             textfield.textColor = Theme.primaryTextColor
-            textfield.font = .ows_dynamicTypeBodyClamped
+            textfield.font = .dynamicTypeBodyClamped
             textfield.keyboardAppearance = Theme.keyboardAppearance
             textfield.autocapitalizationType = .none
             textfield.autocorrectionType = .no
@@ -156,7 +156,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
             title: NSLocalizedString(
                 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM",
                 comment: "Label for 'confirm' button in the 'view payments passphrase' view of the app settings."),
-            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            font: UIFont.dynamicTypeBody.semibold(),
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
@@ -170,7 +170,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
             title: NSLocalizedString(
                 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN",
                 comment: "Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings."),
-            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            font: UIFont.dynamicTypeBody.semibold(),
             titleColor: .ows_accentBlue,
             backgroundColor: self.tableBackgroundColor,
             target: self,
@@ -270,7 +270,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE",
                                             comment: "Title for the 'confirm words' step of the 'view payments passphrase' views.")
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
@@ -282,7 +282,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
 
         let explanationLabel = UILabel()
         explanationLabel.text = explanation
-        explanationLabel.font = .ows_dynamicTypeBody2Clamped
+        explanationLabel.font = .dynamicTypeBody2Clamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0

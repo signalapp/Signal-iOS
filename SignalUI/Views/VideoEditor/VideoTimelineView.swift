@@ -66,7 +66,7 @@ class VideoTimelineView: UIView {
     private lazy var timeBubbleTextLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.font = .ows_dynamicTypeCaption1.ows_medium
+        label.font = .dynamicTypeCaption1.medium()
         return label
     }()
     private lazy var timeBubbleView: UIView = {

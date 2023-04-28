@@ -76,7 +76,7 @@ class ImageEditorViewController: OWSViewController {
     var blurToolUIInitialized = false
     lazy var blurToolbar: UIStackView = {
         let drawAnywhereHint = UILabel()
-        drawAnywhereHint.font = .ows_dynamicTypeCaption1
+        drawAnywhereHint.font = .dynamicTypeCaption1
         drawAnywhereHint.textColor = Theme.darkThemePrimaryColor
         drawAnywhereHint.textAlignment = .center
         drawAnywhereHint.numberOfLines = 0
@@ -106,7 +106,7 @@ class ImageEditorViewController: OWSViewController {
         let autoBlurLabel = UILabel()
         autoBlurLabel.text = OWSLocalizedString("IMAGE_EDITOR_BLUR_SETTING",
                                                 comment: "The image editor setting to blur faces")
-        autoBlurLabel.font = .ows_dynamicTypeSubheadlineClamped
+        autoBlurLabel.font = .dynamicTypeSubheadlineClamped
         autoBlurLabel.textColor = Theme.darkThemePrimaryColor
 
         let stackView = UIStackView(arrangedSubviews: [ autoBlurLabel, faceBlurSwitch ])

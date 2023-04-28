@@ -7,8 +7,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SDSDatabaseStorage;
 
-extern NSString *const StorageIsReadyNotification;
-
 typedef NS_CLOSED_ENUM(NSUInteger, DataStore) {
     DataStoreGrdb,
 };
@@ -22,11 +20,10 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 
 @interface StorageCoordinator : NSObject
 
-@property (atomic, readonly) SDSDatabaseStorage *databaseStorage;
+/// Named this way to avoid colliding with `-[NSObject databaseStorage]`.
+@property (atomic, readonly) SDSDatabaseStorage *nonGlobalDatabaseStorage;
 
 @property (atomic, readonly) StorageCoordinatorState state;
-
-@property (atomic, readonly) BOOL isStorageReady;
 
 - (instancetype)init;
 
@@ -35,8 +32,6 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 @property (class, nonatomic, readonly) BOOL hasInvalidDatabaseVersion;
 
 - (BOOL)isDatabasePasswordAccessible;
-
-- (void)markStorageSetupAsComplete;
 
 @end
 

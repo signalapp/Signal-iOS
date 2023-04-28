@@ -55,14 +55,14 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
         if !TSConstants.isUsingProductionService {
-            titleLabel.text = "Internal Staging Build" + "\n" + "\(appVersion.currentAppVersion4)"
+            titleLabel.text = "Internal Staging Build" + "\n" + "\(AppVersion.shared.currentAppVersion4)"
         }
 
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
                                                   comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view.")
         explanationLabel.textColor = Theme.accentBlueColor
-        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = UIFont.dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -91,13 +91,8 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
         stackView.autoPinEdgesToSuperviewMargins()
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        // Whenever this view appears, we should switch back to the default
-        // registration mode. If the user wants to use the other one, they need to
-        // tap the link icon and confirm their selection.
-        onboardingController.onboardingMode = Deprecated_OnboardingController.defaultOnboardingMode
+    override func shouldShowBackButton() -> Bool {
+        return false
     }
 
     // MARK: - Events

@@ -98,7 +98,7 @@ class GroupNameViewController: OWSTableViewController2 {
 
                 cell.selectionStyle = .none
 
-                nameTextField.font = .ows_dynamicTypeBodyClamped
+                nameTextField.font = .dynamicTypeBodyClamped
                 nameTextField.textColor = Theme.primaryTextColor
 
                 cell.contentView.addSubview(nameTextField)

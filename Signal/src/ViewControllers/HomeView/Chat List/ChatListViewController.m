@@ -20,7 +20,6 @@
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalUI/Theme.h>
-#import <SignalUI/UIUtil.h>
 #import <SignalUI/ViewControllerUtils.h>
 #import <StoreKit/StoreKit.h>
 
@@ -144,6 +143,17 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                         completion:nil];
 }
 
++ (UIFont *)dynamicTypeFontForTextStyle:(UIFontTextStyle)textStyle clampedTo:(CGFloat)maxPointSize
+{
+    UITraitCollection *defaultTraitCollection =
+        [UITraitCollection traitCollectionWithPreferredContentSizeCategory:UIContentSizeCategoryLarge];
+    UIFont *unscaledFont = [UIFont preferredFontForTextStyle:textStyle
+                               compatibleWithTraitCollection:defaultTraitCollection];
+
+    UIFontMetrics *desiredStyleMetrics = [[UIFontMetrics alloc] initForTextStyle:textStyle];
+    return [desiredStyleMetrics scaledFontForFont:unscaledFont maximumPointSize:maxPointSize];
+}
+
 #pragma mark - View Life Cycle
 
 - (void)loadView
@@ -152,8 +162,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self.view addSubview:self.tableView];
     [self.tableView autoPinEdgesToSuperviewEdges];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, self.tableView);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, self.searchBar);
+    self.tableView.accessibilityIdentifier = @"ChatListViewController.tableView";
+    self.searchBar.accessibilityIdentifier = @"ChatListViewController.searchBar";
 
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
@@ -164,7 +174,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.view addSubview:self.emptyInboxView];
     [self.emptyInboxView autoPinWidthToSuperviewMargins];
     [self.emptyInboxView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.view withMultiplier:0.85];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _emptyInboxView);
+    self.emptyInboxView.accessibilityIdentifier = @"ChatListViewController.emptyInboxView";
 
     [self createFirstConversationCueView];
     [self.view addSubview:self.firstConversationCueView];
@@ -178,8 +188,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                      relation:NSLayoutRelationGreaterThanOrEqual];
     [self.firstConversationCueView autoPinEdgeToSuperviewMargin:ALEdgeBottom
                                                        relation:NSLayoutRelationGreaterThanOrEqual];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _firstConversationCueView);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _firstConversationLabel);
+    self.firstConversationCueView.accessibilityIdentifier = @"ChatListViewController.firstConversationCueView";
+    self.firstConversationLabel.accessibilityIdentifier = @"ChatListViewController.firstConversationLabel";
 
     UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
     pullToRefreshView.tintColor = [UIColor grayColor];
@@ -187,7 +197,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     self.tableView.refreshControl = pullToRefreshView;
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, pullToRefreshView);
+    pullToRefreshView.accessibilityIdentifier = @"ChatListViewController.pullToRefreshView";
 }
 
 - (UIView *)createEmptyInboxView
@@ -195,7 +205,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UILabel *emptyInboxLabel = [UILabel new];
     emptyInboxLabel.text = NSLocalizedString(
         @"INBOX_VIEW_EMPTY_INBOX", @"Message shown in the conversation list when the inbox is empty.");
-    emptyInboxLabel.font = UIFont.ows_dynamicTypeSubheadlineClampedFont;
+    emptyInboxLabel.font = [ChatListViewController dynamicTypeFontForTextStyle:UIFontTextStyleSubheadline clampedTo:21];
     emptyInboxLabel.textColor
         = Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : UIColor.ows_gray45Color;
     emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
@@ -213,7 +223,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     UILabel *label = [UILabel new];
     label.textColor = UIColor.ows_whiteColor;
-    label.font = UIFont.ows_dynamicTypeBodyClampedFont;
+    label.font = [ChatListViewController dynamicTypeFontForTextStyle:UIFontTextStyleBody clampedTo:23];
     label.numberOfLines = 0;
     label.lineBreakMode = NSLineBreakByWordWrapping;
 
@@ -305,7 +315,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
     self.searchBar.delegate = self;
-    self.searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"conversation_search");
+    self.searchBar.textField.accessibilityIdentifier = @"ChatListViewController.conversation_search";
     [self.searchBar sizeToFit];
     self.searchBar.layoutMargins = UIEdgeInsetsZero;
 
@@ -403,7 +413,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, settingsButton);
+    settingsButton.accessibilityIdentifier = @"ChatListViewController.settingsButton";
 
     NSMutableArray *rightBarButtonItems = [@[] mutableCopy];
 
@@ -415,7 +425,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         = NSLocalizedString(@"COMPOSE_BUTTON_LABEL", @"Accessibility label from compose button.");
     compose.accessibilityHint = NSLocalizedString(
         @"COMPOSE_BUTTON_HINT", @"Accessibility hint describing what you can do with the compose button");
-    compose.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose");
+    compose.accessibilityIdentifier = @"ChatListViewController.compose";
     [rightBarButtonItems addObject:compose];
 
     UIBarButtonItem *camera = [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconCameraButton]
@@ -425,7 +435,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     camera.accessibilityLabel = NSLocalizedString(@"CAMERA_BUTTON_LABEL", @"Accessibility label for camera button.");
     camera.accessibilityHint = NSLocalizedString(
         @"CAMERA_BUTTON_HINT", @"Accessibility hint describing what you can do with the camera button");
-    camera.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"camera");
+    camera.accessibilityIdentifier = @"ChatListViewController.camera";
     [rightBarButtonItems addObject:camera];
 
     if (SignalProxy.isEnabled) {

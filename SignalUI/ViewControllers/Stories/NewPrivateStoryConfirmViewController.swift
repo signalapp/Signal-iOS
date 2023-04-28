@@ -70,7 +70,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
     private lazy var nameTextField: UITextField = {
         let textField = UITextField()
 
-        textField.font = .ows_dynamicTypeBody
+        textField.font = .dynamicTypeBody
         textField.backgroundColor = .clear
         textField.placeholder = OWSLocalizedString(
             "NEW_PRIVATE_STORY_NAME_PLACEHOLDER",

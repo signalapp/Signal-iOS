@@ -6,7 +6,7 @@
 import Foundation
 
 public class SSKJobQueues: NSObject {
-    override init() {
+    public override init() {
         messageSenderJobQueue = MessageSenderJobQueue()
 
         localUserLeaveGroupJobQueue = LocalUserLeaveGroupJobQueue()

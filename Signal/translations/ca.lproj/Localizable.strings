@@ -28,6 +28,42 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Missatge de veu";
 
+/* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Exportar informe";
+
+/* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Comparteix les dades del teu compte de Signal només amb persones o aplicacions de confiança.";
+
+/* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
+"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Comprova la connexió i torna-ho a provar.";
+
+/* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "No s'ha pogut generar l'informe";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Arxiu llegible per màquina";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Exportar com a JSON";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Arxiu de text fàcil de llegir";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Exportar com a TXT";
+
+/* Users can request a report of their account data. Users tap this button to export their data. */
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Exportar informe";
+
+/* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
+"ACCOUNT_DATA_REPORT_FOOTER" = "El teu informe només es genera en el moment de l'exportació i Signal no l'emmagatzema al teu dispositiu.";
+
+/* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "Descarrega i exporta un informe de les dades del teu compte de Signal. Aquest informe no inclou missatges ni arxius multimèdia.";
+
+/* Users can request a report of their account data. This is the title on the screen where they do this. */
+"ACCOUNT_DATA_REPORT_TITLE" = "Les dades del teu compte";
+
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Trucada del Signal";
 
@@ -139,11 +175,14 @@
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "El Signal no es pot iniciar. Envieu els informes de depuració a support@signal.org perquè puguem provar de solucionar-ho.";
 
-/* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
-
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "Obre el Signal";
+
+/* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+
+/* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Couldn’t Open Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "No s'ha pogut carregar la base de dades";
@@ -1619,7 +1658,10 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Torna a registrar aquest número";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "El dispositiu ja no està registrat. El número es pot registrar al Signal des d'un altre dispositiu. Toqueu per tornar a registrar-lo.";
+"DEREGISTRATION_WARNING" = "This device is no longer registered. This is likely because you registered your phone number with Signal on a different device.";
+
+/* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "Re-Register Device";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Darrera activitat: %1$@";
@@ -1629,6 +1671,12 @@
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "No s'ha pogut actualitzar la llista.";
+
+/* A label for this device in the device list. */
+"DEVICE_NAME_THIS_DEVICE" = "This Device";
+
+/* A label for an unnamed device in the device list. */
+"DEVICE_NAME_UNNAMED_DEVICE" = "Unnamed Device";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Interromp la transferència";
@@ -2233,11 +2281,23 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Usuari no registrat: %1$@";
 
+/* Button to exit change number, shown in context menu. */
+"EXIT_CHANGE_NUMBER" = "Sortir de Canviar número";
+
+/* Button to exit re-registration, shown in context menu. */
+"EXIT_REREGISTRATION" = "Sortir del registre";
+
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "La vostra versió del Signal ha caducat! Toqueu per actualitzar-la a la versió més recent.";
+"EXPIRATION_ERROR" = "This version of Signal has expired. Update to send and receive messages.";
+
+/* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
+"EXPIRATION_WARNING_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that the app will expire soon. Embeds {{date}}. */
+"EXPIRATION_WARNING_SOON" = "This version of Signal will expire on %1$@. Update to keep messaging.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "La versió del Signal venç avui. Toqueu per actualitzar-la a la versió més recent.";
+"EXPIRATION_WARNING_TODAY" = "This version of Signal will expire today. Update to keep messaging.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Massa errors amb aquest contacte. Torneu a provar-ho més tard.";
@@ -3568,6 +3628,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Aquest mes";
 
+/* Text explaining that the user will forward all media from a message. */
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "Es reenviaran tots els arxius multimèdia d'aquest missatge.";
+
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Eliminar";
 
@@ -4081,6 +4144,9 @@
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Notes personals";
 
+/* Body for a notification representing a message request. */
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Sol·licitud de missatge";
+
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Podeu haver rebut missatges mentre el vostre %1$@ es reiniciava.";
 
@@ -4152,6 +4218,9 @@
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "PIN incorrecte";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "PIN incorrecte. Et queda 1 intent.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Omet i crea un PIN nou";
@@ -4234,6 +4303,9 @@
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN incorrecte";
 
+/* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Se t'han acabat els intents del PIN, però encara pots accedir al compte de Signal verificant el teu número de telèfon. Per a la teva privacitat i seguretat, el teu compte es restaurarà sense la teva informació de perfil o ajustos guardats.";
+
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "Marqueu el PIN que heu creat per al compte. Això és diferent del codi de verificació d'SMS.";
 
@@ -4266,6 +4338,18 @@
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validant el codi…";
+
+/* First bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Assegura't que el telèfon té cobertura per a rebre missatges SMS o trucades.";
+
+/* Second bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Confirma que pots rebre trucades a aquest número";
+
+/* Third bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Comprova que has introduït el teu número de telèfon correctament";
+
+/* Label for a button to get help entering a verification code when registering. */
+"ONBOARDING_VERIFICATION_HELP_LINK" = "Problemes per registrar-te?";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Aquest codi no és correcte";
@@ -4672,12 +4756,6 @@
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemple: %1$@";
 
-/* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Els meus contactes";
-
-/* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Només els vostres contactes podran veure el número de telèfon al Signal.";
-
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Tothom";
 
@@ -4784,13 +4862,13 @@
 "PIN_CREATION_EXPLANATION" = "Els PIN mantenen encriptada la informació desada amb el Signal de manera que no hi pugui accedir ningú més. El perfil, la configuració i els contactes es restauraran quan el reinstal·leu. No necessitareu el PIN per obrir l'aplicació.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Més sobre els PINs";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "PINs keep your information stored with Signal encrypted so only you can access it. Your profile, settings and contacts will restore when you reinstall.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "Els PINs mantenen xifrada la teva informació emmagatzemada a Signal de manera que no hi pugui accedir ningú més a part de tu. El teu perfil, ajustos i contactes es restauraran quan reinstal·lis.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "About Signal PINs";
+"PIN_CREATION_LEARN_MORE_TITLE" = "Sobre els PINs de Signal";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Els PIN no coincideixen. Torneu-ho a provar.";
@@ -4847,7 +4925,7 @@
 "PIN_DISABLE_ERROR_TITLE" = "Ha fallat desactivar el PIN.";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
-"PIN_ENTER_EXISTING_SKIP" = "Skip PIN";
+"PIN_ENTER_EXISTING_SKIP" = "Ometre PIN";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "Ha fallat crear el PIN.";
@@ -5185,8 +5263,11 @@
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "El vostre PIN és un codi d'almenys 4 dígits que heu creat, que pot ser numèric o alfanumèric. Si no el recordeu, haureu d’esperar 7 dies per tornar a registrar el compte.";
 
-/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "El PIN és un codi de 4 dígits que heu creat que pot ser numèric o alfanumèric. Si no recordeu el PIN, en podeu crear un de nou. Podeu registrar-vos i usar el vostre compte, però perdreu algunes configuracions desades, com ara la informació del perfil.";
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "El teu PIN és un codi creat per tu d'almenys 4+ caràcters, i pot ser numèric o alfanumèric. Si no recordes el PIN, en pots crear un de nou. Pots registrar-te i utilitzar el teu compte, però perdràs alguns ajustos desats, com ara la informació del perfil.";
+
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "El PIN és un codi de 4 dígits que has creat que pot ser numèric o alfanumèric. Si no recordes el PIN, en pots crear un de nou. Pots registrar-te i utilitzar el teu compte, però perdràs alguns ajustos desats, com ara la informació del perfil.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "El vostre PIN és un codi numèric de 4 dígits que heu creat. Si no recordeu el PIN, haureu d’esperar 7 dies per tornar a registrar el compte.";
@@ -5199,6 +5280,9 @@
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Benvingut/da!";
+
+/* Body of action sheet shown when rate-limited during registration. */
+"REGISTER_RATE_LIMITING_ALERT" = "Ho has provat massa vegades. Espera uns minuts abans de tornar-ho a provar.";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Ho heu provat massa vegades. Espereu un minut abans de tornar a provar-ho.";
@@ -5272,6 +5356,9 @@
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "El teu número de telèfon";
 
+/* Message for confirmation alert when requesting a voice code during phone number registration. */
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "You’ll receive a call to verify this number. Is your phone number above correct?";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Número de telèfon";
 
@@ -5317,11 +5404,17 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Heu de registrar-vos per poder enviar un missatge.";
 
+/* Alert shown when running out of attempts at submitting a verification code. */
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Has fet massa intents per introduir el codi. Torna a enviar el codi i torna-ho a provar.";
+
+/* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Has fet massa intents per introduir el codi. Torna-ho a provar en %1$@";
+
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Hi havia un compte registrat anteriorment amb aquest número i es pot transferir.";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "The code you entered is not valid. Please resend the code and try again.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "El codi que has introduït no és vàlid. Torna a enviar el codi i torna-ho a provar.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "La verificació ha fallat";
@@ -5372,10 +5465,10 @@
 "REREGISTER_FOR_PUSH" = "Registra de nou per a les notificacions.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Te'n queda %1$@. Si esgotes els intents, pots crear un PIN nou. Pots registrar-te i utilitzar el teu compte, però perdràs alguns dels teus ajustos, com ara la informació del perfil.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, your account will be locked for 7 days. After 7 days of inactivity, you can re-register without your PIN. All content will be deleted.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Te'n queda %1$@. Si esgotes els intents, el teu compte es bloquejarà durant 7 dies. Després de 7 dies d'inactivitat, pots tornar a registrar-te sense el teu PIN. Tot el contingut serà eliminat.";
 
 /* Configure reactions reset button text */
 "RESET" = "Restableix";
@@ -5403,6 +5496,9 @@
 
 /* Title for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Canvis en el número de seguretat";
+
+/* Text explaining that the given contact has had their safety number verified. */
+"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Persona verificada";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Mostra";
@@ -5590,6 +5686,9 @@
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "Compte";
 
+/* Label for button in settings to get your account data report */
+"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Les dades del teu compte";
+
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Bloquejar";
 
@@ -5698,7 +5797,7 @@
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Número antic";
 
-/* Label for the 'country code' row in the 'change phone number' settings. */
+/* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Número de telèfon";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
@@ -7142,13 +7241,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Voleu desenllaçar «%1$@»?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "El dispositiu ja no està enllaçat. Torneu a enllaçar el Signal amb el telèfon per continuar enviant missatges.";
+"UNLINKED_WARNING" = "This device is no longer linked. Re-link Signal with your phone to continue messaging.";
+
+/* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
+"UNLINKED_WARNING_ACTION_TITLE" = "Re-Link Device";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal no ha pogut desenllaçar el dispositiu.";
-
-/* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Dispositiu sense nom";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "No ho fixis";

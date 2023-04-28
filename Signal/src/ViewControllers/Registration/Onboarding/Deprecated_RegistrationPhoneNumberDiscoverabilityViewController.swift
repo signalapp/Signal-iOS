@@ -86,7 +86,7 @@ public class Deprecated_RegistrationPhoneNumberDiscoverabilityViewController: De
             self?.isDiscoverableByPhoneNumber = false
         }
 
-        selectionDescriptionLabel.font = .ows_dynamicTypeCaption1Clamped
+        selectionDescriptionLabel.font = .dynamicTypeCaption1Clamped
         selectionDescriptionLabel.textColor = .ows_gray45
         selectionDescriptionLabel.numberOfLines = 0
         selectionDescriptionLabel.lineBreakMode = .byWordWrapping
@@ -177,7 +177,7 @@ private class ButtonRow: UIButton {
 
         let titleLabel = UILabel()
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = .ows_dynamicTypeBodyClamped
+        titleLabel.font = .dynamicTypeBodyClamped
         titleLabel.text = title
 
         selectedImageView.isHidden = true

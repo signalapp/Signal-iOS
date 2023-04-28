@@ -68,7 +68,7 @@ public class PaymentsQRScanViewController: OWSViewController {
         let instructionsLabel = UILabel()
         instructionsLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS",
                                                         comment: "Instructions in the 'scan payment address QR code' view in the payment settings.")
-        instructionsLabel.font = .ows_dynamicTypeBody
+        instructionsLabel.font = .dynamicTypeBody
         instructionsLabel.textColor = .ows_white
         instructionsLabel.textAlignment = .center
         instructionsLabel.numberOfLines = 0

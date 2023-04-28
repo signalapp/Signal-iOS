@@ -212,7 +212,7 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
             stackView.setCustomSpacing(16, after: badgeImageView)
 
             let titleLabel = UILabel()
-            titleLabel.font = .ows_dynamicTypeTitle2.ows_semibold
+            titleLabel.font = .dynamicTypeTitle2.semibold()
             titleLabel.textColor = Theme.primaryTextColor
             titleLabel.textAlignment = .center
             titleLabel.numberOfLines = 0
@@ -227,7 +227,7 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
                     comment: "Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure"
                 ).styled(with: .link(SupportConstants.badgeExpirationLearnMoreURL))
                 let label = LinkingTextView()
-                label.attributedText = .composed(of: [self.state.body.text, " ", learnMore]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
+                label.attributedText = .composed(of: [self.state.body.text, " ", learnMore]).styled(with: .color(Theme.primaryTextColor), .font(.dynamicTypeBody))
                 label.textAlignment = .center
                 label.linkTextAttributes = [
                     .foregroundColor: Theme.accentBlueColor,
@@ -237,7 +237,7 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
                 bodyLabel = label
             } else {
                 let label = UILabel()
-                label.font = .ows_dynamicTypeBody
+                label.font = .dynamicTypeBody
                 label.textColor = Theme.primaryTextColor
                 label.numberOfLines = 0
                 label.text = self.state.body.text
@@ -268,7 +268,7 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
             stackView.autoPinEdgesToSuperviewEdges()
 
             let actionButton = OWSFlatButton.button(title: self.state.actionButton.text,
-                                                    font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                    font: UIFont.dynamicTypeBody.semibold(),
                                                     titleColor: .white,
                                                     backgroundColor: .ows_accentBlue,
                                                     target: self,

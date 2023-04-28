@@ -9,12 +9,8 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
-#import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -82,8 +78,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return keyValueStore;
 }
 
-// Unlike CurrentAppContext().isMainAppAndActive, this method can be safely
-// invoked off the main thread.
+/// Unlike CurrentAppContext().isMainAppAndActive, this method can be safely
+/// invoked off the main thread.
 + (BOOL)isMainAppAndActive
 {
     return CurrentAppContext().reportedApplicationState == UIApplicationStateActive;
@@ -469,61 +465,62 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             return;
         }
 
-        [OWSReaction anyEnumerateWithTransaction:transaction
-                                         batched:YES
-                                           block:^(OWSReaction *reaction, BOOL *stop) {
-                                               if (!self.isMainAppAndActive) {
-                                                   shouldAbort = YES;
-                                                   *stop = YES;
-                                                   return;
-                                               }
-                                               if (![reaction isKindOfClass:[OWSReaction class]]) {
-                                                   return;
-                                               }
-                                               [allReactionIds addObject:reaction.uniqueId];
-                                               if ([allInteractionIds containsObject:reaction.uniqueMessageId]) {
-                                                   [allMessageReactionIds addObject:reaction.uniqueId];
-                                               }
-                                           }];
+        [OWSReaction anyEnumerateObjcWithTransaction:transaction
+                                             batched:YES
+                                               block:^(OWSReaction *reaction, BOOL *stop) {
+                                                   if (!self.isMainAppAndActive) {
+                                                       shouldAbort = YES;
+                                                       *stop = YES;
+                                                       return;
+                                                   }
+                                                   if (![reaction isKindOfClass:[OWSReaction class]]) {
+                                                       return;
+                                                   }
+                                                   [allReactionIds addObject:reaction.uniqueId];
+                                                   if ([allInteractionIds containsObject:reaction.uniqueMessageId]) {
+                                                       [allMessageReactionIds addObject:reaction.uniqueId];
+                                                   }
+                                               }];
 
         if (shouldAbort) {
             return;
         }
 
-        [TSMention anyEnumerateWithTransaction:transaction
-                                       batched:YES
-                                         block:^(TSMention *mention, BOOL *stop) {
-                                             if (!self.isMainAppAndActive) {
-                                                 shouldAbort = YES;
-                                                 *stop = YES;
-                                                 return;
-                                             }
-                                             if (![mention isKindOfClass:[TSMention class]]) {
-                                                 return;
-                                             }
-                                             [allMentionIds addObject:mention.uniqueId];
-                                             if ([allInteractionIds containsObject:mention.uniqueMessageId]) {
-                                                 [allMessageMentionIds addObject:mention.uniqueId];
-                                             }
-                                         }];
+        [TSMention anyEnumerateObjcWithTransaction:transaction
+                                           batched:YES
+                                             block:^(TSMention *mention, BOOL *stop) {
+                                                 if (!self.isMainAppAndActive) {
+                                                     shouldAbort = YES;
+                                                     *stop = YES;
+                                                     return;
+                                                 }
+                                                 if (![mention isKindOfClass:[TSMention class]]) {
+                                                     return;
+                                                 }
+                                                 [allMentionIds addObject:mention.uniqueId];
+                                                 if ([allInteractionIds containsObject:mention.uniqueMessageId]) {
+                                                     [allMessageMentionIds addObject:mention.uniqueId];
+                                                 }
+                                             }];
 
         if (shouldAbort) {
             return;
         }
 
-        [StoryMessage anyEnumerateWithTransaction:transaction
-                                          batched:YES
-                                            block:^(StoryMessage *message, BOOL *stop) {
-                                                if (!self.isMainAppAndActive) {
-                                                    shouldAbort = YES;
-                                                    *stop = YES;
-                                                    return;
-                                                }
-                                                if (![message isKindOfClass:[StoryMessage class]]) {
-                                                    return;
-                                                }
-                                                [allStoryAttachmentIds addObjectsFromArray:message.allAttachmentIds];
-                                            }];
+        [StoryMessage
+            anyEnumerateObjcWithTransaction:transaction
+                                    batched:YES
+                                      block:^(StoryMessage *message, BOOL *stop) {
+                                          if (!self.isMainAppAndActive) {
+                                              shouldAbort = YES;
+                                              *stop = YES;
+                                              return;
+                                          }
+                                          if (![message isKindOfClass:[StoryMessage class]]) {
+                                              return;
+                                          }
+                                          [allStoryAttachmentIds addObjectsFromArray:message.allAttachmentIds];
+                                      }];
 
         if (shouldAbort) {
             return;

@@ -28,6 +28,42 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Гласовна порука";
 
+/* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Извези извештај";
+
+/* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Делите податке са свог налога на Signal-у само са људима или апликацијама којима верујете.";
+
+/* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
+"ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Проверите да ли сте повезани и пробајте поново.";
+
+/* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Нисмо успели да генеришемо извештај";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Машински читљив фајл";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Извези као JSON";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Текстуални фајл који се лако чита";
+
+/* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Извези као TXT";
+
+/* Users can request a report of their account data. Users tap this button to export their data. */
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Извези извештај";
+
+/* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
+"ACCOUNT_DATA_REPORT_FOOTER" = "Извештај се генерише само у тренутку извоза и Signal га не чува на вашем уређају.";
+
+/* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "Преузмите и извезите извештај са подацима са вашег налога на Signal-у. Овај извештај не обухвата поруке нити медијске садржаје.";
+
+/* Users can request a report of their account data. This is the title on the screen where they do this. */
+"ACCOUNT_DATA_REPORT_TITLE" = "Подаци са налога";
+
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal позив";
 
@@ -139,11 +175,14 @@
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal не може да се покрене. Молимо вас да пошаљете извештај грешака на support@signal.org како бисмо отклонили квар.";
 
-/* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Грешка";
-
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "Уместо тога отворите Signal";
+
+/* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+
+/* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Couldn’t Open Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Неуспешно учитавање базе података";
@@ -1619,7 +1658,10 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Поново региструј овај број телефона.";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Уређај више није повезан. Могуће је да је ваш број телефона регистрован на Signal на другом уређају. Кликните овде како бисте поновили регистрацију.";
+"DEREGISTRATION_WARNING" = "This device is no longer registered. This is likely because you registered your phone number with Signal on a different device.";
+
+/* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "Re-Register Device";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Последња активност %1$@";
@@ -1629,6 +1671,12 @@
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Грешка при ажурирању листе уређаја.";
+
+/* A label for this device in the device list. */
+"DEVICE_NAME_THIS_DEVICE" = "This Device";
+
+/* A label for an unnamed device in the device list. */
+"DEVICE_NAME_UNNAMED_DEVICE" = "Unnamed Device";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Заустави пренос";
@@ -2233,11 +2281,23 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Нерегистрован корисник: %1$@";
 
+/* Button to exit change number, shown in context menu. */
+"EXIT_CHANGE_NUMBER" = "Изађи из промене броја";
+
+/* Button to exit re-registration, shown in context menu. */
+"EXIT_REREGISTRATION" = "Изађи из регистрације";
+
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Ваша верзија Signal-а је истекла. Пипните да ажурирате на најновију верзију.";
+"EXPIRATION_ERROR" = "This version of Signal has expired. Update to send and receive messages.";
+
+/* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
+"EXPIRATION_WARNING_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that the app will expire soon. Embeds {{date}}. */
+"EXPIRATION_WARNING_SOON" = "This version of Signal will expire on %1$@. Update to keep messaging.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Ваша верзија Signal-а истиче данас. Кликните овде да ажурирате на најновију верзију.";
+"EXPIRATION_WARNING_TODAY" = "This version of Signal will expire today. Update to keep messaging.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Дошло је до превише грешака са овим контактом. Покушајте поново касније.";
@@ -3568,6 +3628,9 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Овог месеца";
 
+/* Text explaining that the user will forward all media from a message. */
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "Сав медијски садржај у овој поруци биће прослеђен.";
+
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Избриши";
 
@@ -4081,6 +4144,9 @@
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Моја белешка";
 
+/* Body for a notification representing a message request. */
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Захтев за ћаскање";
+
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Могуће је да сте примили поруке док се %1$@ рестартовао.";
 
@@ -4152,6 +4218,9 @@
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Нетачан PIN";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Неисправан PIN. Преостао вам је још 1 покушај.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Прескочи и направи нови PIN";
@@ -4234,6 +4303,9 @@
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Нетачан PIN";
 
+/* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Искористили сте све покушаје за унос PIN-а, али још увек можете да пробате да приступите Signal-у верификовањем броја телефона. Зарад ваше безбедности и приватности, налог ће бити враћен, али информације са налога и подешавања неће бити враћени.";
+
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "Унесите PIN вашег налога. Овај није исти као и ваш SMS верификациони кôд.";
 
@@ -4266,6 +4338,18 @@
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Потврда шифре је у току…";
+
+/* First bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Проверите да ли је телефонска мрежа доступна и да ли имате могућност примања SMS порука и позива";
+
+/* Second bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Проверите да ли можете да примите телефонски позив на број";
+
+/* Third bullet point for the explainer sheet for registering via verification code. */
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Проверите да ли сте исправно унели број телефона";
+
+/* Label for a button to get help entering a verification code when registering. */
+"ONBOARDING_VERIFICATION_HELP_LINK" = "Имате проблема са регистрацијом?";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Унет је нетачан кôд";
@@ -4672,12 +4756,6 @@
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Пример: %1$@";
 
-/* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Моји контакти";
-
-/* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Само ваши контакти ће видети ваш број телефона на Signal-у.";
-
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Било ко";
 
@@ -4784,13 +4862,13 @@
 "PIN_CREATION_EXPLANATION" = "Употребом PIN-а се подаци које Signal складишти енкриптују, тако да им само ви можете приступити. Ваш налог, подешавања и контакти ће бити враћени када реинсталирате Signal. За отварање апликације неће вам требати PIN.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Више о PIN-овима";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "PINs keep your information stored with Signal encrypted so only you can access it. Your profile, settings and contacts will restore when you reinstall.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "PIN-ови чувају ваше информације шифрованим у Signal-у, тако да само ви можете да им приступите. Ваш профил, подешавања и контакти ће бити враћени када поново инсталирате апликацију.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "About Signal PINs";
+"PIN_CREATION_LEARN_MORE_TITLE" = "О Signal PIN-овима";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-ови се не подударају. Покушајте поново.";
@@ -4847,7 +4925,7 @@
 "PIN_DISABLE_ERROR_TITLE" = "Неуспешно онемогућавање PIN-а";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
-"PIN_ENTER_EXISTING_SKIP" = "Skip PIN";
+"PIN_ENTER_EXISTING_SKIP" = "Прескочи PIN";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "Додавање PIN-а неуспешно";
@@ -5185,8 +5263,11 @@
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Ваш PIN је кôд од 4 или више цифре или алфанумеричка карактера који сте раније направили. Ако се не сећате вашег PIN-а, мораћете сачекати 7 дана за поновну регистрацију налогa.";
 
-/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Ваш PIN је кôд од 4 или више цифре или алфанумеричка карактера који сте раније направили. Ако се не сећате вашег PIN-а, можете направити нови. Регистрација новог налогa је дозвољена, али ћете изгубити нека подешавања као што су личне информације профила.";
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Ваш PIN је шифра од {0} или више цифара коју сте креирали и која може бити нумеричка или алфанумеричка. Ако се не сећате PIN-а, моћи ћете да региструјете и користите свој налог, али ћете изгубити нека сачувана подешавања као што су личне информације.";
+
+/* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Ваш PIN је шифра од 4 или више цифара коју сте креирали и која може бити нумеричка или алфанумеричка. Ако се не сећате PIN-а, можете направити нови. Моћи ћете да региструјете и користите свој налог, али ћете изгубити нека сачувана подешавања као што су личне информације.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Ваш PIN је кôд од 4 или више цифре који сте раније направили. Ако се не сећате вашег PIN-а, мораћете сачекати 7 дана за поновну регистрацију налогa.";
@@ -5199,6 +5280,9 @@
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Добродошли!";
+
+/* Body of action sheet shown when rate-limited during registration. */
+"REGISTER_RATE_LIMITING_ALERT" = "Имали сте превише покушаја. Сачекајте неколико минута пре него што пробате поново.";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Имали сте превише учесталих покушаја. Молимо вас да сачекате један минут пре наредног покушаја.";
@@ -5272,6 +5356,9 @@
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Ваш број телефона";
 
+/* Message for confirmation alert when requesting a voice code during phone number registration. */
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "You’ll receive a call to verify this number. Is your phone number above correct?";
+
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Број телефона";
 
@@ -5317,11 +5404,17 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Морате се регистровати пре слања порука.";
 
+/* Alert shown when running out of attempts at submitting a verification code. */
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Превише пута сте покушали да унесете шифру. Пошаљите шифру поново и пробајте поново.";
+
+/* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Превише пута сте покушали да унесете шифру. Пробајте поново за %1$@";
+
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Постојао је рачун који је претходно регистрован у овом броју који је доступан за пренос.";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "The code you entered is not valid. Please resend the code and try again.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Шифра коју сте унели није важећа. Пошаљите шифру поново и пробајте поново.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Потврда није успела";
@@ -5372,10 +5465,10 @@
 "REREGISTER_FOR_PUSH" = "Поновите пријаву сервиса за обавештења";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "%1$@. Ако искористите све покушаје, мораћете да креирате нови PIN. Можете да региструјете и користите свој налог, али изгубићете нека сачувана подешавања као што су ваши подаци на профилу.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "You have %1$@ remaining. If you run out of attempts, your account will be locked for 7 days. After 7 days of inactivity, you can re-register without your PIN. All content will be deleted.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "%1$@. Ако искористите све покушаје, ваш налог ће бити закључан 7 дана. Након 7 дана неактивности моћи ћете поново да се региструјете без PIN-а. Сав садржај ће бити избрисан.";
 
 /* Configure reactions reset button text */
 "RESET" = "Ресетуј";
@@ -5403,6 +5496,9 @@
 
 /* Title for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Промене сигурносног броја";
+
+/* Text explaining that the given contact has had their safety number verified. */
+"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Верификовано";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Више";
@@ -5590,6 +5686,9 @@
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "Налог";
 
+/* Label for button in settings to get your account data report */
+"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Подаци са налога";
+
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Блокирај";
 
@@ -5698,7 +5797,7 @@
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Ваш стари број";
 
-/* Label for the 'country code' row in the 'change phone number' settings. */
+/* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Број телефона";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
@@ -7142,13 +7241,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Прекините везу са „%1$@”?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Уређај више није повезан. Поново повежите Signal са вашим телефоном да наставите са дописивањем.";
+"UNLINKED_WARNING" = "This device is no longer linked. Re-link Signal with your phone to continue messaging.";
+
+/* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
+"UNLINKED_WARNING_ACTION_TITLE" = "Re-Link Device";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal није успео да прекине везу са вашим уређајем.";
-
-/* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Уређај без назива";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "Одкачити";

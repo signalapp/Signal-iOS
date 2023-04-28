@@ -23,8 +23,6 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerMock
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
-        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigMock
-        public typealias SignalRecipient = _RegistrationCoordinator_SignalRecipientMock
         public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
     }
@@ -53,7 +51,7 @@ public class _RegistrationCoordinator_ContactsManagerMock: _RegistrationCoordina
 
     public init() {}
 
-    public func fetchSystemContactsOnceIfAlreadyAuthorized(authedAccount: AuthedAccount) {
+    public func fetchSystemContactsOnceIfAlreadyAuthorized() {
         // TODO[Registration]: test that this gets called.
     }
 
@@ -141,6 +139,12 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
 
     public func pinCode(_ tx: SignalServiceKit.DBReadTransaction) -> String? {
         return pinCodeMock!()
+    }
+
+    public var clearLocalPinCodeMock: (() -> Void)?
+
+    public func clearLocalPinCode(_ tx: SignalServiceKit.DBWriteTransaction) {
+        clearLocalPinCodeMock?()
     }
 
     public var isReglockEnabledMock: (() -> Bool)?
@@ -274,28 +278,6 @@ public class _RegistrationCoordinator_ReceiptManagerMock: _RegistrationCoordinat
     }
 }
 
-// MARK: - Remote Config
-
-public class _RegistrationCoordinator_RemoteConfigMock: _RegistrationCoordinator_RemoteConfigShim {
-
-    public var canReceiveGiftBadgesMock: (() -> Bool) = { true }
-
-    public var canReceiveGiftBadges: Bool { canReceiveGiftBadgesMock() }
-}
-
-// MARK: - SignalRecipient
-
-public class _RegistrationCoordinator_SignalRecipientMock: _RegistrationCoordinator_SignalRecipientShim {
-
-    public init() {}
-
-    public var createHighTrustRecipientMock: ((_ aci: UUID, _ e164: E164) -> Void)?
-
-    public func createHighTrustRecipient(aci: UUID, e164: E164, transaction: DBWriteTransaction) {
-        createHighTrustRecipientMock?(aci, e164)
-    }
-}
-
 // MARK: - TSAccountManager
 
 public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordinator_TSAccountManagerShim {
@@ -335,6 +317,19 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
 
     public func setIsManualMessageFetchEnabled(_ isEnabled: Bool, _ transaction: DBWriteTransaction) {
         setIsManualMessageFetchEnabledMock?(isEnabled)
+    }
+
+    public var resetForReregistrationMock: ((
+        _ e164: E164,
+        _ aci: UUID
+    ) -> Void)?
+
+    public func resetForReregistration(
+        e164: E164,
+        aci: UUID,
+        _ tx: DBWriteTransaction
+    ) {
+        resetForReregistrationMock?(e164, aci)
     }
 
     public var didRegisterMock: ((

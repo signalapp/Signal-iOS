@@ -15,7 +15,6 @@
 #import <SignalUI/ContactsViewHelper.h>
 #import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/SignalUI-Swift.h>
-#import <SignalUI/UIUtil.h>
 #import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -45,15 +44,11 @@ const NSUInteger kMinimumSearchLength = 1;
 
 @property (nonatomic, readonly) UIView *noSignalContactsView;
 
-@property (nonatomic, readonly) OWSTableViewController2 *tableViewController;
-
 @property (nonatomic, readonly) UILocalizedIndexedCollation *collation;
 
 @property (nonatomic, nullable, readonly) OWSSearchBar *searchBar;
 @property (nonatomic, nullable) ComposeScreenSearchResultSet *searchResults;
 @property (nonatomic, nullable) NSString *lastSearchText;
-
-@property (nonatomic) BOOL isNoContactsModeActive;
 
 @end
 
@@ -107,8 +102,8 @@ const NSUInteger kMinimumSearchLength = 1;
     }
     [searchBar sizeToFit];
 
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
-    searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
+    searchBar.accessibilityIdentifier = @"RecipientPickerViewController.searchBar";
+    searchBar.textField.accessibilityIdentifier = @"RecipientPickerViewController.contact_search";
     [self.signalContactsStackView addArrangedSubview:searchBar];
     [searchBar setCompressionResistanceVerticalHigh];
     [searchBar setContentHuggingVerticalHigh];
@@ -138,7 +133,7 @@ const NSUInteger kMinimumSearchLength = 1;
     [self.noSignalContactsView autoPinWidthToSuperview];
     [self.noSignalContactsView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.noSignalContactsView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _noSignalContactsView);
+    self.noSignalContactsView.accessibilityIdentifier = @"RecipientPickerViewController.noSignalContactsView";
 
     UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
     pullToRefreshView.tintColor = [UIColor grayColor];
@@ -146,7 +141,7 @@ const NSUInteger kMinimumSearchLength = 1;
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     self.tableViewController.tableView.refreshControl = pullToRefreshView;
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, pullToRefreshView);
+    pullToRefreshView.accessibilityIdentifier = @"RecipientPickerViewController.pullToRefreshView";
 
     [self updateTableContents];
 }
@@ -194,128 +189,6 @@ const NSUInteger kMinimumSearchLength = 1;
         OWSLogInfo(@"ending refreshing.");
         [refreshControl endRefreshing];
     });
-}
-
-- (UIView *)createNoSignalContactsView
-{
-    UIImage *heroImage = [UIImage imageNamed:@"uiEmptyContact"];
-    OWSAssertDebug(heroImage);
-    UIImageView *heroImageView = [[UIImageView alloc] initWithImage:heroImage];
-    heroImageView.layer.minificationFilter = kCAFilterTrilinear;
-    heroImageView.layer.magnificationFilter = kCAFilterTrilinear;
-    const CGFloat kHeroSize = ScaleFromIPhone5To7Plus(100, 150);
-    [heroImageView autoSetDimension:ALDimensionWidth toSize:kHeroSize];
-    [heroImageView autoSetDimension:ALDimensionHeight toSize:kHeroSize];
-
-    UILabel *titleLabel = [UILabel new];
-    titleLabel.text = OWSLocalizedString(
-        @"EMPTY_CONTACTS_LABEL_LINE1", "Full width label displayed when attempting to compose message");
-    titleLabel.textColor = Theme.primaryTextColor;
-    titleLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(17.f, 20.f)];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    titleLabel.numberOfLines = 0;
-
-    UILabel *subtitleLabel = [UILabel new];
-    subtitleLabel.text = OWSLocalizedString(
-        @"EMPTY_CONTACTS_LABEL_LINE2", "Full width label displayed when attempting to compose message");
-    subtitleLabel.textColor = Theme.secondaryTextAndIconColor;
-    subtitleLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(12.f, 14.f)];
-    subtitleLabel.textAlignment = NSTextAlignmentCenter;
-    subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    subtitleLabel.numberOfLines = 0;
-
-    UIStackView *headerStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-        heroImageView,
-        [UIView spacerWithHeight:30],
-        titleLabel,
-        [UIView spacerWithHeight:15],
-        subtitleLabel,
-    ]];
-    headerStack.axis = UILayoutConstraintAxisVertical;
-    headerStack.alignment = UIStackViewAlignmentCenter;
-
-    UIStackView *buttonStack = [[UIStackView alloc] init];
-    buttonStack.axis = UILayoutConstraintAxisVertical;
-    buttonStack.alignment = UIStackViewAlignmentFill;
-    buttonStack.spacing = 16;
-
-    void (^addButton)(NSString *, SEL, NSString *, ThemeIcon, NSUInteger)
-        = ^(NSString *title,
-            SEL selector,
-            NSString *accessibilityIdentifierName,
-            ThemeIcon icon,
-            NSUInteger innerIconSize) {
-              UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-              [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
-              SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, button);
-              button.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, accessibilityIdentifierName);
-              [buttonStack addArrangedSubview:button];
-
-              UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:icon innerIconSize:innerIconSize];
-              iconView.backgroundColor = self.tableViewController.cellBackgroundColor;
-
-              UILabel *label = [UILabel new];
-              label.text = title;
-              label.font = [UIFont ows_regularFontWithSize:17.f];
-              label.textColor = Theme.primaryTextColor;
-              label.lineBreakMode = NSLineBreakByTruncatingTail;
-
-              UIStackView *hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-                  iconView,
-                  label,
-              ]];
-              hStack.axis = UILayoutConstraintAxisHorizontal;
-              hStack.alignment = UIStackViewAlignmentCenter;
-              hStack.spacing = 12;
-              hStack.userInteractionEnabled = NO;
-              [button addSubview:hStack];
-              [hStack autoPinEdgesToSuperviewEdges];
-          };
-
-    if (self.shouldShowNewGroup) {
-        addButton(OWSLocalizedString(@"NEW_GROUP_BUTTON", comment
-                                    : @"Label for the 'create new group' button."),
-            @selector(newGroupButtonPressed),
-            @"newGroupButton",
-            ThemeIconComposeNewGroupLarge,
-            35);
-    }
-
-    if (self.allowsAddByPhoneNumber) {
-        addButton(OWSLocalizedString(@"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
-                      @"Label for a button that lets users search for contacts by phone number"),
-            @selector(hideBackgroundView),
-            @"searchByPhoneNumberButton",
-            ThemeIconComposeFindByPhoneNumberLarge,
-            42);
-    }
-
-    if (self.shouldShowInvites) {
-        addButton(OWSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                      "Label for the cell that presents the 'invite contacts' workflow."),
-            @selector(presentInviteFlow),
-            @"inviteContactsButton",
-            ThemeIconComposeInviteLarge,
-            38);
-    }
-
-    UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        headerStack,
-        buttonStack,
-    ]];
-    stackView.axis = UILayoutConstraintAxisVertical;
-    stackView.alignment = UIStackViewAlignmentCenter;
-    stackView.spacing = 50;
-    stackView.layoutMarginsRelativeArrangement = YES;
-    stackView.layoutMargins = UIEdgeInsetsMake(20, 20, 20, 20);
-
-    UIView *view = [UIView new];
-    view.backgroundColor = self.tableViewController.tableBackgroundColor;
-    [view addSubview:stackView];
-    [stackView autoPinWidthToSuperview];
-    [stackView autoVCenterInSuperview];
-    return view;
 }
 
 - (void)viewDidLoad
@@ -377,8 +250,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                                                         @"NEW_GROUP_BUTTON", comment
                                                                         : @"Label for the 'create new group' button.")
                                                       accessoryText:nil
-                                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                                        RecipientPickerViewController, @"new_group")
+                                            accessibilityIdentifier:@"RecipientPickerViewController.new_group"
                                                         actionBlock:^{ [weakSelf newGroupButtonPressed]; }]];
     }
 
@@ -390,8 +262,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                            name:OWSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
                                                     @"A label the cell that lets you add a new member to a group.")
                                   accessoryText:nil
-                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                    RecipientPickerViewController, @"find_by_phone")
+                        accessibilityIdentifier:@"RecipientPickerViewController.find_by_phone"
                                     actionBlock:^{
                                         typeof(self) strongSelf = weakSelf;
                                         if (!strongSelf) {
@@ -416,8 +287,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                            name:OWSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                                                     @"Label for the cell that presents the 'invite contacts' workflow.")
                                   accessoryText:nil
-                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                    RecipientPickerViewController, @"invite_contacts")
+                        accessibilityIdentifier:@"RecipientPickerViewController.invite_contacts"
                                     actionBlock:^{ [weakSelf presentInviteFlow]; }]];
     }
 
@@ -667,30 +537,6 @@ const NSUInteger kMinimumSearchLength = 1;
 }
 
 #pragma mark - No Contacts Mode
-
-- (void)hideBackgroundView
-{
-    [Environment.shared.preferences setHasDeclinedNoContactsView:YES];
-
-    [self showContactAppropriateViews];
-}
-
-- (void)presentInviteFlow
-{
-    OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
-    self.inviteFlow = inviteFlow;
-    [inviteFlow presentWithIsAnimated:YES completion:nil];
-}
-
-- (void)showContactAppropriateViews
-{
-    self.isNoContactsModeActive = [self shouldNoContactsModeBeActive];
-}
-
-- (void)newGroupButtonPressed
-{
-    [self.delegate recipientPickerNewGroupButtonWasPressed];
-}
 
 - (void)setIsNoContactsModeActive:(BOOL)isNoContactsModeActive
 {

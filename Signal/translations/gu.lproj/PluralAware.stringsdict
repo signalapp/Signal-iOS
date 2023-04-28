@@ -285,22 +285,6 @@
 			<string>%1$d સભ્યોની મહત્તમ ગ્રુપ સાઇઝ થઈ ગઈ.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Signalનું આ વર્ઝન %1$d દિવસમાં સમાપ્ત થઈ જશે. નવીનતમ વર્ઝન પર અપડેટ કરવા માટે ટૅપ કરો.</string>
-			<key>other</key>
-			<string>Signalનું આ વર્ઝન %1$d દિવસોમાં સમાપ્ત થઈ જશે. નવીનતમ વર્ઝન પર અપડેટ કરવા માટે ટૅપ કરો.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -781,6 +765,22 @@
 			<string>%1$d આઇટમ</string>
 		</dict>
 	</dict>
+	<key>MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d ફોરવર્ડ કરો</string>
+			<key>other</key>
+			<string>%1$d ફોરવર્ડ કરો</string>
+		</dict>
+	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1096,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d attempt</string>
+			<string>%1$d પ્રયાસ</string>
 			<key>other</key>
-			<string>%1$d attempts</string>
+			<string>%1$d પ્રયાસો</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

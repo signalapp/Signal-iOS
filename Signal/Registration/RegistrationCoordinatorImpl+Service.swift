@@ -273,16 +273,19 @@ extension RegistrationCoordinatorImpl {
 
         public static func makeEnableReglockRequest(
             reglockToken: String,
+            auth: ChatServiceAuth,
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers,
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) -> Promise<Void> {
             let request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
+            request.setAuth(auth)
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request).asVoid()
                 .recover(on: schedulers.sync) { error in
                     if error.isNetworkConnectivityFailure, retriesLeft > 0 {
                         return makeEnableReglockRequest(
                             reglockToken: reglockToken,
+                            auth: auth,
                             signalService: signalService,
                             schedulers: schedulers,
                             retriesLeft: retriesLeft - 1
@@ -307,8 +310,9 @@ extension RegistrationCoordinatorImpl {
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
                 .map(on: schedulers.sync) { response in
                     guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
-                        // TODO[Registration]: what other error codes can come up here?
-                        return OWSAssertionError("Got unexpected response code from update attributes request.")
+                        // Errors are undifferentiated; the only actual error we can get is an unauthenticated
+                        // one and there isn't any way to handle that as different from a, say server 500.
+                        return OWSAssertionError("Got unexpected response code from update attributes request: \(response.responseStatusCode).")
                     }
                     return nil
                 }

@@ -1229,7 +1229,11 @@ extension PhotoCaptureViewController: InteractiveDismissDelegate {
         view.backgroundColor = .clear
     }
 
-    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition,
+                            didChangeProgress: CGFloat,
+                            touchOffset: CGPoint) { }
+
+    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didFinishWithVelocity: CGVector?) {
         dismiss(animated: true)
     }
 
@@ -1526,7 +1530,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .ows_whiteAlpha60
-        label.font = .ows_dynamicTypeLargeTitle1Clamped
+        label.font = .dynamicTypeLargeTitle1Clamped
         label.text = NSLocalizedString("STORY_COMPOSER_TAP_ADD_TEXT",
                                        comment: "Placeholder text in text stories compose UI")
         return label

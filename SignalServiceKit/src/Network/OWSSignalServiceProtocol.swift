@@ -5,53 +5,23 @@
 
 import Foundation
 
-@objc
 public protocol OWSSignalServiceProtocol: AnyObject {
-    @objc
-    var keyValueStore: SDSKeyValueStore { get }
-
-    @objc
     func warmCaches()
 
     // MARK: - Censorship Circumvention
 
-    @objc
     var isCensorshipCircumventionActive: Bool { get }
-    @objc
     var hasCensoredPhoneNumber: Bool { get }
-    @objc
     var isCensorshipCircumventionManuallyActivated: Bool { get set }
-    @objc
     var isCensorshipCircumventionManuallyDisabled: Bool { get set }
-    @objc
     var manualCensorshipCircumventionCountryCode: String? { get set }
 
-    // The _real types here can't be exposed to objc, but this protocol must be exposed,
-    // so do a not-type-safe thing to enforce that all implemetors must implement this.
-    func typeUnsafe_buildUrlEndpoint(for signalServiceInfo: Any) -> Any
-    func typeUnsafe_buildUrlSession(
-        for signalServiceInfo: Any,
-        endpoint: OWSURLSessionEndpoint,
-        configuration: URLSessionConfiguration?
-    ) -> Any
-}
-
-extension OWSSignalServiceProtocol {
-    public func buildUrlEndpoint(for signalServiceType: SignalServiceInfo) -> OWSURLSessionEndpoint {
-        return typeUnsafe_buildUrlEndpoint(for: signalServiceType) as! OWSURLSessionEndpoint
-    }
-
-    public func buildUrlSession(
+    func buildUrlEndpoint(for signalServiceInfo: SignalServiceInfo) -> OWSURLSessionEndpoint
+    func buildUrlSession(
         for signalServiceInfo: SignalServiceInfo,
         endpoint: OWSURLSessionEndpoint,
-        configuration: URLSessionConfiguration? = nil
-    ) -> OWSURLSessionProtocol {
-        return typeUnsafe_buildUrlSession(
-            for: signalServiceInfo,
-            endpoint: endpoint,
-            configuration: configuration
-        ) as! OWSURLSessionProtocol
-    }
+        configuration: URLSessionConfiguration?
+    ) -> OWSURLSessionProtocol
 }
 
 public enum SignalServiceType {
@@ -87,7 +57,8 @@ public extension OWSSignalServiceProtocol {
         let signalServiceInfo = signalServiceType.signalServiceInfo()
         return buildUrlSession(
             for: signalServiceInfo,
-            endpoint: buildUrlEndpoint(for: signalServiceInfo)
+            endpoint: buildUrlEndpoint(for: signalServiceInfo),
+            configuration: nil
         )
     }
 

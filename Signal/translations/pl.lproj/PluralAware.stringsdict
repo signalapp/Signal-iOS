@@ -357,26 +357,6 @@
 			<string>Osiągnięto maksymalny rozmiar grupy %1$d członków grupy.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Twoja wersja Signal wygaśnie za %1$d dzień. Stuknij, aby zaktualizować do najnowszej wersji.</string>
-			<key>few</key>
-			<string>Twoja wersja Signal wygaśnie za %1$d dni. Stuknij, aby zaktualizować do najnowszej wersji.</string>
-			<key>many</key>
-			<string>Twoja wersja Signal wygaśnie za %1$d dni. Stuknij, aby zaktualizować do najnowszej wersji.</string>
-			<key>other</key>
-			<string>Twoja wersja Signal wygaśnie za %1$d dni. Stuknij, aby zaktualizować do najnowszej wersji.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -977,6 +957,26 @@
 			<string>%1$d elementy</string>
 		</dict>
 	</dict>
+	<key>MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Przekaż %1$d</string>
+			<key>few</key>
+			<string>Przekaż %1$d</string>
+			<key>many</key>
+			<string>Przekaż %1$d</string>
+			<key>other</key>
+			<string>Przekaż %1$d</string>
+		</dict>
+	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1368,13 +1368,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d attempt</string>
+			<string>%1$d próba</string>
 			<key>few</key>
-			<string>%1$d attempts</string>
+			<string>%1$d próby</string>
 			<key>many</key>
-			<string>%1$d attempts</string>
+			<string>%1$d prób</string>
 			<key>other</key>
-			<string>%1$d attempts</string>
+			<string>%1$d próby</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

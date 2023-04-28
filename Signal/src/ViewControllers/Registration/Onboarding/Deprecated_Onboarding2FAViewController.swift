@@ -82,7 +82,7 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
 
         let titleLabel = self.createTitleLabel(text: titleText)
         let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
-        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.font = UIFont.dynamicTypeSubheadlineClamped
         explanationLabel.accessibilityIdentifier = "onboarding.2fa." + "explanationLabel"
 
         pinTextField.delegate = self
@@ -90,7 +90,7 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
         pinTextField.isSecureTextEntry = true
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.textAlignment = .center
-        pinTextField.font = .ows_dynamicTypeBodyClamped
+        pinTextField.font = .dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
         pinTextField.keyboardAppearance = Theme.keyboardAppearance
@@ -101,7 +101,7 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
 
         validationWarningLabel.textColor = .ows_accentRed
         validationWarningLabel.textAlignment = .center
-        validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+        validationWarningLabel.font = UIFont.dynamicTypeCaption1Clamped
         validationWarningLabel.accessibilityIdentifier = "onboarding.2fa.validationWarningLabel"
         validationWarningLabel.numberOfLines = 0
         validationWarningLabel.setCompressionResistanceHigh()
@@ -188,7 +188,7 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
         if isUsingKBS {
             if hasPendingRestoration {
                 message = NSLocalizedString("REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE",
-                                            comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock")
+                                            comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN")
                 emailSupportFilter = "Signal PIN - iOS (V2 PIN without RegLock)"
 
                 let createNewPinAction = ActionSheetAction(

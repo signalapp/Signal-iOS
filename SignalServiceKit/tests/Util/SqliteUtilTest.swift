@@ -31,6 +31,68 @@ final class SqliteUtilTest: XCTestCase {
         }
     }
 
+    func testIntegrityCheckResult() {
+        let ok = SqliteUtil.IntegrityCheckResult.ok
+        let notOk = SqliteUtil.IntegrityCheckResult.notOk
+
+        XCTAssertEqual(ok && ok, .ok)
+        XCTAssertEqual(ok && notOk, .notOk)
+        XCTAssertEqual(notOk && ok, .notOk)
+        XCTAssertEqual(notOk && notOk, .notOk)
+    }
+
+    func testCipherProvider() throws {
+        let databasePath = OWSFileSystem.temporaryFilePath(fileExtension: "sqlite")
+
+        let databaseQueue = try DatabaseQueue(path: databasePath)
+        defer { try? databaseQueue.close() }
+
+        try databaseQueue.write { db in
+            try db.usePassphrase("test key")
+        }
+
+        let result = try databaseQueue.read { SqliteUtil.cipherProvider(db: $0) }
+        XCTAssertFalse(result.isEmpty, "PRAGMA cipher_provider should return something")
+    }
+
+    func testCipherIntegrityCheck() throws {
+        let databasePath = OWSFileSystem.temporaryFilePath(fileExtension: "sqlite")
+
+        let databaseQueue = try DatabaseQueue(path: databasePath)
+        defer { try? databaseQueue.close() }
+
+        let result = try databaseQueue.read { SqliteUtil.cipherIntegrityCheck(db: $0) }
+        XCTAssertEqual(result, .ok)
+    }
+
+    func testQuickCheck() throws {
+        guard #available(iOS 16, *) else { throw XCTSkip() }
+
+        let databasePath = OWSFileSystem.temporaryFilePath(fileExtension: "sqlite")
+        let databaseUrl = URL(filePath: databasePath)
+
+        let happyResult: SqliteUtil.IntegrityCheckResult = try {
+            let databaseQueue = try DatabaseQueue(path: databasePath)
+            defer { try? databaseQueue.close() }
+
+            try databaseQueue.write { db in
+                try db.create(table: "colors") { $0.column("name", .text).notNull() }
+            }
+            return try databaseQueue.read { SqliteUtil.quickCheck(db: $0) }
+        }()
+        XCTAssertEqual(happyResult, .ok)
+
+        let unhappyResult: SqliteUtil.IntegrityCheckResult = try {
+            let databaseQueue = try DatabaseQueue(path: databasePath)
+            defer { try? databaseQueue.close() }
+
+            try Data([1, 2, 3]).write(to: databaseUrl)
+
+            return try databaseQueue.read { SqliteUtil.quickCheck(db: $0) }
+        }()
+        XCTAssertEqual(unhappyResult, .notOk)
+    }
+
     // MARK: - FTS tests
 
     func testFtsIntegrityCheckNoExternalContent() throws {

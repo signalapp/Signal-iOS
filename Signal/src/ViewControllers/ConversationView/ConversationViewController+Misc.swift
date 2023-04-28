@@ -142,12 +142,13 @@ public extension ConversationViewController {
                     owsFailDebug("Invalid identityKey.")
                     continue
                 }
-                Self.identityManager.setVerificationState(.default,
-                                                          identityKey: recipientIdentity.identityKey,
-                                                          address: address,
-                                                          isUserInitiatedChange: true,
-                                                          authedAccount: .implicit(),
-                                                          transaction: transaction)
+                Self.identityManager.setVerificationState(
+                    .default,
+                    identityKey: recipientIdentity.identityKey,
+                    address: address,
+                    isUserInitiatedChange: true,
+                    transaction: transaction
+                )
             }
         }
     }

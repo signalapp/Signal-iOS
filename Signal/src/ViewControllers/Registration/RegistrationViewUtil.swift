@@ -24,12 +24,16 @@ extension UIEdgeInsets {
     ) -> UIEdgeInsets {
         switch horizontalSizeClass {
         case .unspecified, .compact:
-            return UIEdgeInsets(margin: 32)
+            return UIEdgeInsets(allButTop: 32)
         case .regular:
-            return UIEdgeInsets(margin: 112)
+            return UIEdgeInsets(allButTop: 112)
         @unknown default:
-            return UIEdgeInsets(margin: 32)
+            return UIEdgeInsets(allButTop: 32)
         }
+    }
+
+    private init(allButTop: CGFloat) {
+        self.init(top: 0, leading: allButTop, bottom: allButTop, trailing: allButTop)
     }
 }
 
@@ -43,7 +47,7 @@ extension UIColor {
 // MARK: - Fonts
 
 extension UIFont {
-    static var fontForRegistrationExplanationLabel: UIFont { .ows_dynamicTypeSubheadlineClamped }
+    static var fontForRegistrationExplanationLabel: UIFont { .dynamicTypeSubheadlineClamped }
 }
 
 // MARK: - Labels
@@ -53,7 +57,7 @@ extension UILabel {
         let result = UILabel()
         result.text = text
         result.textColor = .colorForRegistrationTitleLabel
-        result.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semibold
+        result.font = UIFont.dynamicTypeTitle1Clamped.semibold()
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
@@ -78,7 +82,7 @@ extension OWSFlatButton {
     static func primaryButtonForRegistration(title: String, target: Any, selector: Selector) -> OWSFlatButton {
         let result = insetButton(
             title: title,
-            font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            font: UIFont.dynamicTypeBodyClamped.semibold(),
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: target,
@@ -91,7 +95,7 @@ extension OWSFlatButton {
     static func linkButtonForRegistration(title: String, target: Any, selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton.button(
             title: title,
-            font: UIFont.ows_dynamicTypeSubheadlineClamped,
+            font: UIFont.dynamicTypeSubheadlineClamped,
             titleColor: Theme.accentBlueColor,
             backgroundColor: .clear,
             target: target,
@@ -118,6 +122,20 @@ extension ActionSheetController {
         didConfirm: @escaping () -> Void,
         didRequestEdit: @escaping () -> Void
     ) -> ActionSheetController {
+        let message: String
+        switch mode {
+        case .sms:
+            message = OWSLocalizedString(
+                "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE",
+                comment: "Message for confirmation alert during phone number registration."
+            )
+        case .voice:
+            message = OWSLocalizedString(
+                "REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE",
+                comment: "Message for confirmation alert when requesting a voice code during phone number registration."
+            )
+
+        }
         let result = ActionSheetController(
             title: {
                 let format = OWSLocalizedString(
@@ -126,10 +144,7 @@ extension ActionSheetController {
                 )
                 return String(format: format, e164.e164FormattedAsPhoneNumberWithoutBreaks)
             }(),
-            message: OWSLocalizedString(
-                "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE",
-                comment: "Message for confirmation alert during phone number registration."
-            )
+            message: message
         )
 
         let confirmButtonTitle = CommonStrings.yesButton
@@ -168,7 +183,7 @@ extension UIAlertController {
             ),
             style: .default
         ) { _ in
-            UIApplication.shared.open(TSConstants.appStoreUpdateURL)
+            UIApplication.shared.open(TSConstants.appStoreUrl)
         }
         result.addAction(updateAction)
         result.preferredAction = updateAction

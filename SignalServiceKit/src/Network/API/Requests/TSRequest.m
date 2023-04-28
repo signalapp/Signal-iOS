@@ -4,7 +4,6 @@
 //
 
 #import "TSRequest.h"
-#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

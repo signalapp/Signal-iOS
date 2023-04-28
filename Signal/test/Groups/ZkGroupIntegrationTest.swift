@@ -6,7 +6,7 @@
 import XCTest
 @testable import Signal
 
-class ZkGroupIntegrationTest: SignalBaseTest {
+class ZkGroupIntegrationTest: XCTestCase {
     func testServerParamsAreUpToDate() {
         XCTAssertNoThrow(try GroupsV2Protos.serverPublicParams(),
                          "The zkgroup server public parameters have changed!")

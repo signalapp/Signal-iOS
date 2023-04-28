@@ -10,7 +10,6 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSReceiptManager.h"
 #import "OWSUnknownProtocolVersionMessage.h"
-#import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"
 #import "TSGroupThread.h"
 #import "TSInfoMessage.h"

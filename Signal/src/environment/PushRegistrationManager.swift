@@ -60,7 +60,12 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         }
     }
 
-    public func requestPushTokens(forceRotation: Bool) -> Promise<(pushToken: String, voipToken: String?)> {
+    /// - parameter timeOutEventually: If the OS fails to get back to us with the apns token after
+    /// we have requested it and significant time has passed, do we time out or keep waiting? Default to keep waiting.
+    public func requestPushTokens(
+        forceRotation: Bool,
+        timeOutEventually: Bool = false
+    ) -> Promise<(pushToken: String, voipToken: String?)> {
         Logger.info("")
 
         return firstly {
@@ -70,11 +75,15 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
                 throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
             }
 
-            return self.registerForVanillaPushToken(forceRotation: forceRotation).then { vanillaPushToken -> Promise<(pushToken: String, voipToken: String?)> in
-                self.registerForVoipPushToken().map { voipPushToken in
-                    (pushToken: vanillaPushToken, voipToken: voipPushToken)
+            return self
+                .registerForVanillaPushToken(
+                    forceRotation: forceRotation,
+                    timeOutEventually: timeOutEventually
+                ).then { vanillaPushToken -> Promise<(pushToken: String, voipToken: String?)> in
+                    self.registerForVoipPushToken().map { voipPushToken in
+                        (pushToken: vanillaPushToken, voipToken: voipPushToken)
+                    }
                 }
-            }
         }
     }
 
@@ -343,7 +352,10 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         return true
     }
 
-    private func registerForVanillaPushToken(forceRotation: Bool) -> Promise<String> {
+    private func registerForVanillaPushToken(
+        forceRotation: Bool,
+        timeOutEventually: Bool
+    ) -> Promise<String> {
         AssertIsOnMainThread()
         Logger.info("")
 
@@ -364,7 +376,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         }
         UIApplication.shared.registerForRemoteNotifications()
 
-        return firstly {
+        let returnedPromise = firstly {
             promise.timeout(seconds: 10, description: "Register for vanilla push token") {
                 PushRegistrationError.timeout
             }
@@ -396,6 +408,10 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         }.ensure {
             self.vanillaTokenPromise = nil
         }
+        guard timeOutEventually else {
+            return returnedPromise
+        }
+        return returnedPromise.timeout(seconds: 20, timeoutErrorBlock: { return PushRegistrationError.timeout })
     }
 
     private func createVoipRegistryIfNecessary() {

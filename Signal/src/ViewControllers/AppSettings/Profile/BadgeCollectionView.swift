@@ -207,7 +207,7 @@ class BadgeCollectionViewCell: UICollectionViewCell {
 
     let badgeSubtitleView: UILabel = {
         let subtitle = UILabel()
-        subtitle.font = .ows_dynamicTypeCaption1Clamped
+        subtitle.font = .dynamicTypeCaption1Clamped
         subtitle.numberOfLines = 3
         return subtitle
     }()

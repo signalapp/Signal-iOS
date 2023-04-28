@@ -311,7 +311,7 @@ extension SharingThreadPickerViewController {
         progressLabel.textAlignment = .center
         progressLabel.numberOfLines = 0
         progressLabel.lineBreakMode = .byWordWrapping
-        progressLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        progressLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         progressLabel.textColor = Theme.primaryTextColor
         progressLabel.text = OWSLocalizedString("SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", comment: "Alert title")
 
@@ -501,7 +501,6 @@ extension SharingThreadPickerViewController {
                             identityKey: indentityKey,
                             address: untrustedAddress,
                             isUserInitiatedChange: true,
-                            authedAccount: .implicit(),
                             transaction: transaction
                         )
                     case .verified:

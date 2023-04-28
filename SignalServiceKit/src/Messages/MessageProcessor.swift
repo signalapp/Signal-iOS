@@ -59,9 +59,6 @@ public class MessageProcessor: NSObject {
         suspensionBehavior: SuspensionBehavior = .alwaysWait
     ) -> Promise<Void> {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("!shouldProcessIncomingMessages")
-            }
             return Promise.value(())
         }
 
@@ -87,23 +84,29 @@ public class MessageProcessor: NSObject {
             if DebugFlags.internalLogging {
                 Logger.info("hasPendingEnvelopes, queuedContentCount: \(self.queuedContentCount)")
             }
+
             return NotificationCenter.default.observe(
                 once: Self.messageProcessorDidDrainQueue
-            ).then { _ in self.processingCompletePromise() }.asVoid()
+            ).then { _ in
+                // Recur, in case we've enqueued messages handled in another block.
+                self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
+            }.asVoid()
         } else if shouldWaitForGV2MessageProcessing {
             if DebugFlags.internalLogging {
                 let pendingJobCount = databaseStorage.read {
                     Self.groupsV2MessageProcessor.pendingJobCount(transaction: $0)
                 }
-                Logger.verbose("groupsV2MessageProcessor.hasPendingJobs, pendingJobCount: \(pendingJobCount)")
+
+                Logger.info("groupsV2MessageProcessor.hasPendingJobs, pendingJobCount: \(pendingJobCount)")
             }
+
             return NotificationCenter.default.observe(
                 once: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue
-            ).then { _ in self.processingCompletePromise() }.asVoid()
+            ).then { _ in
+                // Recur, in case we've enqueued messages handled in another block.
+                self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
+            }.asVoid()
         } else {
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("!hasPendingEnvelopes && !hasPendingJobs")
-            }
             return Promise.value(())
         }
     }
@@ -182,7 +185,7 @@ public class MessageProcessor: NSObject {
                 // We may have legacy decrypt jobs queued. We want to schedule them for
                 // processing immediately when we launch, so that we can drain the old queue.
                 do {
-                    let legacyDecryptJobRecords = try AnyJobRecordFinder<SSKMessageDecryptJobRecord>().allRecords(
+                    let legacyDecryptJobRecords = try AnyJobRecordFinder<LegacyMessageDecryptJobRecord>().allRecords(
                         label: "SSKMessageDecrypt",
                         status: .ready,
                         transaction: transaction
@@ -534,7 +537,8 @@ struct ProcessingRequest {
                 }
                 return receiptMessage.timestamp
             case .syncMessage, .dataMessage, .callMessage, .typingMessage, .nullMessage,
-                    .decryptionErrorMessage, .storyMessage, .hasSenderKeyDistributionMessage, .unknown:
+                    .decryptionErrorMessage, .storyMessage, .hasSenderKeyDistributionMessage,
+                    .editMessage, .unknown:
                 return nil
             }
         }

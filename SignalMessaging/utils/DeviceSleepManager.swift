@@ -42,20 +42,12 @@ public class DeviceSleepManager: NSObject {
 
         SwiftSingletons.register(self)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didEnterBackground),
-                                               name: .OWSApplicationDidEnterBackground,
-                                               object: nil)
-
-        if CurrentAppContext().isMainApp {
-            // Prevent the device from sleeping during app startup,
-            // e.g. during long-running database migrations.
-            let launchBlockObject = self
-            addBlock(blockObject: launchBlockObject)
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-                self.removeBlock(blockObject: launchBlockObject)
-            }
-        }
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didEnterBackground),
+            name: .OWSApplicationDidEnterBackground,
+            object: nil
+        )
     }
 
     @objc

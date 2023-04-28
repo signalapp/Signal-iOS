@@ -55,7 +55,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
 @implementation SSKPreKeyStore
 
-- (instancetype)initForIdentity:(OWSIdentity)identity;
+- (instancetype)initForIdentity:(OWSIdentity)identity
 {
     self = [super init];
     if (!self) {

@@ -297,8 +297,8 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
             logger.info("Building device message for device with ID \(linkedDeviceId).")
 
             return encryptPniChangeNumber(
-                forRecipientAci: localAci,
-                recipientAccountId: localAccountId,
+                recipientId: localAccountId,
+                recipientAci: localAci,
                 recipientDeviceId: linkedDeviceId,
                 identityKeyPair: pniIdentityKeyPair,
                 signedPreKey: signedPreKey,
@@ -331,8 +331,8 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     /// The message for the linked device. If `nil`, indicates the device was
     /// invalid and should be skipped.
     private func encryptPniChangeNumber(
-        forRecipientAci recipientAci: ServiceId,
-        recipientAccountId: String,
+        recipientId: String,
+        recipientAci: ServiceId,
         recipientDeviceId: UInt32,
         identityKeyPair: ECKeyPair,
         signedPreKey: SignedPreKeyRecord,
@@ -357,12 +357,12 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
             let deviceMessage: DeviceMessage? = try self.messageSender.buildDeviceMessage(
                 forMessagePlaintextContent: plaintextContent,
                 messageEncryptionStyle: .whisper,
-                recipientServiceId: recipientAci,
-                recipientAccountId: recipientAccountId,
-                recipientDeviceId: NSNumber(value: recipientDeviceId),
+                recipientId: recipientId,
+                serviceId: recipientAci,
+                deviceId: NSNumber(value: recipientDeviceId),
                 isOnlineMessage: false,
                 isTransientSenderKeyDistributionMessage: false,
-                isStorySendMessage: false,
+                isStoryMessage: false,
                 isResendRequestMessage: false,
                 udSendingParamsProvider: nil // Sync messages do not use UD
             )

@@ -256,7 +256,7 @@ private class BannerView: UIView {
         hStack.addArrangedSubview(label)
         label.setCompressionResistanceHorizontalHigh()
         label.numberOfLines = 0
-        label.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         label.textColor = .ows_white
         label.text = actionText
 

@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalCoreKit
+import SignalServiceKit
 
 extension OWSOrphanDataCleaner {
     @objc
@@ -31,7 +32,7 @@ extension OWSOrphanDataCleaner {
         }
 
         let kvs = keyValueStore()
-        let currentAppVersion = appVersion.currentAppReleaseVersion
+        let currentAppVersion = AppVersion.shared.currentAppReleaseVersion
 
         return databaseStorage.read { transaction -> Bool in
             guard TSAccountManager.shared.isRegistered(transaction: transaction) else {
@@ -82,7 +83,7 @@ extension OWSOrphanDataCleaner {
         var attachmentIds = [String]()
         var shouldAbort = false
 
-        func findAttachmentIds<JobRecordType: SSKJobRecord>(
+        func findAttachmentIds<JobRecordType: JobRecord>(
             label: String,
             transaction: SDSAnyReadTransaction,
             jobRecordAttachmentIds: (JobRecordType) -> some Sequence<String>
@@ -108,7 +109,7 @@ extension OWSOrphanDataCleaner {
         findAttachmentIds(
             label: MessageSenderJobQueue.jobRecordLabel,
             transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: SSKMessageSenderJobRecord) in
+            jobRecordAttachmentIds: { (jobRecord: MessageSenderJobRecord) in
                 fetchMessage(for: jobRecord, transaction: transaction)?.allAttachmentIds() ?? []
             }
         )
@@ -118,9 +119,9 @@ extension OWSOrphanDataCleaner {
         }
 
         findAttachmentIds(
-            label: OWSBroadcastMediaMessageJobRecord.defaultLabel,
+            label: BroadcastMediaMessageJobRecord.defaultLabel,
             transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: OWSBroadcastMediaMessageJobRecord) in jobRecord.attachmentIdMap.keys }
+            jobRecordAttachmentIds: { (jobRecord: BroadcastMediaMessageJobRecord) in jobRecord.attachmentIdMap.keys }
         )
 
         if shouldAbort {
@@ -128,9 +129,9 @@ extension OWSOrphanDataCleaner {
         }
 
         findAttachmentIds(
-            label: OWSIncomingGroupSyncJobRecord.defaultLabel,
+            label: IncomingGroupSyncJobRecord.defaultLabel,
             transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: OWSIncomingGroupSyncJobRecord) in [jobRecord.attachmentId] }
+            jobRecordAttachmentIds: { (jobRecord: IncomingGroupSyncJobRecord) in [jobRecord.attachmentId] }
         )
 
         if shouldAbort {
@@ -138,9 +139,9 @@ extension OWSOrphanDataCleaner {
         }
 
         findAttachmentIds(
-            label: OWSIncomingContactSyncJobRecord.defaultLabel,
+            label: IncomingContactSyncJobRecord.defaultLabel,
             transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: OWSIncomingContactSyncJobRecord) in [jobRecord.attachmentId] }
+            jobRecordAttachmentIds: { (jobRecord: IncomingContactSyncJobRecord) in [jobRecord.attachmentId] }
         )
 
         if shouldAbort {
@@ -151,7 +152,7 @@ extension OWSOrphanDataCleaner {
     }
 
     private static func fetchMessage(
-        for jobRecord: SSKMessageSenderJobRecord,
+        for jobRecord: MessageSenderJobRecord,
         transaction: SDSAnyReadTransaction
     ) -> TSMessage? {
         if let invisibleMessage = jobRecord.invisibleMessage {

@@ -18,7 +18,7 @@ class MyStoriesViewController: OWSViewController {
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.secondaryTextAndIconColor
-        label.font = .ows_dynamicTypeBody
+        label.font = .dynamicTypeBody
         label.numberOfLines = 0
         label.textAlignment = .center
         label.text = NSLocalizedString("MY_STORIES_NO_STORIES", comment: "Indicates that there are no sent stories to render")
@@ -237,7 +237,7 @@ extension MyStoriesViewController: UITableViewDataSource {
 
         let textView = LinkingTextView()
         textView.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-        textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        textView.font = UIFont.dynamicTypeBodyClamped.semibold()
         textView.text = storyName(for: thread)
 
         var textContainerInset = OWSTableViewController2.cellOuterInsets(in: tableView)
@@ -384,11 +384,11 @@ class SentStoryCell: UITableViewCell {
         vStackView.alignment = .leading
         contentHStackView.addArrangedSubview(vStackView)
 
-        titleLabel.font = .ows_dynamicTypeHeadline
+        titleLabel.font = .dynamicTypeHeadline
 
         vStackView.addArrangedSubview(titleLabel)
 
-        subtitleLabel.font = .ows_dynamicTypeSubheadline
+        subtitleLabel.font = .dynamicTypeSubheadline
         vStackView.addArrangedSubview(subtitleLabel)
 
         contentHStackView.addArrangedSubview(.hStretchingSpacer())

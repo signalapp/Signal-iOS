@@ -101,11 +101,11 @@ class InternalSettingsViewController: OWSTableViewController2 {
         let infoSection = OWSTableSection()
         infoSection.add(.label(withText: "Environment: \(TSConstants.isUsingProductionService ? "Production" : "Staging")"))
         infoSection.add(.copyableItem(label: "Build variant", value: FeatureFlags.buildVariantString))
-        infoSection.add(.copyableItem(label: "App Release Version", value: AppVersion.shared().currentAppReleaseVersion))
-        infoSection.add(.copyableItem(label: "App Build Version", value: AppVersion.shared().currentAppBuildVersion))
-        infoSection.add(.copyableItem(label: "App Version 4", value: AppVersion.shared().currentAppVersion4))
+        infoSection.add(.copyableItem(label: "App Release Version", value: AppVersion.shared.currentAppReleaseVersion))
+        infoSection.add(.copyableItem(label: "App Build Version", value: AppVersion.shared.currentAppBuildVersion))
+        infoSection.add(.copyableItem(label: "App Version 4", value: AppVersion.shared.currentAppVersion4))
         // The first version of the app that was run on this device.
-        infoSection.add(.copyableItem(label: "First Version", value: AppVersion.shared().firstAppVersion))
+        infoSection.add(.copyableItem(label: "First Version", value: AppVersion.shared.firstAppVersion))
 
         infoSection.add(.copyableItem(label: "Local Phone Number", value: tsAccountManager.localNumber))
 
@@ -113,10 +113,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         infoSection.add(.copyableItem(label: "Local PNI", value: tsAccountManager.localPni?.uuidString))
 
-        infoSection.add(.copyableItem(label: "Device ID", value: "\(tsAccountManager.storedDeviceId())"))
-        if let deviceName = tsAccountManager.storedDeviceName() {
-            infoSection.add(.label(withText: "Device Name: \(deviceName)"))
-        }
+        infoSection.add(.copyableItem(label: "Device ID", value: "\(tsAccountManager.storedDeviceId)"))
 
         if let buildDetails = Bundle.main.object(forInfoDictionaryKey: "BuildDetails") as? [String: AnyObject] {
             if let signalCommit = (buildDetails["SignalCommit"] as? String)?.strippedOrNil?.prefix(12) {
@@ -171,7 +168,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         }
 
-        infoSection.add(.copyableItem(label: "iOS Version", value: AppVersion.iOSVersionString))
+        infoSection.add(.copyableItem(label: "iOS Version", value: AppVersion.iosVersionString))
         infoSection.add(.copyableItem(label: "Device Model", value: AppVersion.hardwareInfoString))
 
         infoSection.add(.copyableItem(label: "Locale Identifier", value: Locale.current.identifier.nilIfEmpty))

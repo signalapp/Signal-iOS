@@ -99,7 +99,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE",
                                             comment: "Title for the 'enter word' step of the 'restore payments wallet' views.")
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
@@ -124,7 +124,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         topStack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
 
         textfield.textColor = Theme.primaryTextColor
-        textfield.font = .ows_dynamicTypeBodyClamped
+        textfield.font = .dynamicTypeBodyClamped
         textfield.keyboardAppearance = Theme.keyboardAppearance
         textfield.autocapitalizationType = .none
         textfield.autocorrectionType = .no
@@ -156,7 +156,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
                                          cornerRadius: 10)
 
         warningLabel.text = " "
-        warningLabel.font = .ows_dynamicTypeCaption1
+        warningLabel.font = .dynamicTypeCaption1
         warningLabel.textColor = .ows_accentRed
 
         let warningStack = UIStackView(arrangedSubviews: [ warningLabel ])
@@ -167,7 +167,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
                                                   vMargin: 0)
 
         let nextButton = OWSFlatButton.button(title: CommonStrings.nextButton,
-                                              font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                              font: UIFont.dynamicTypeBody.semibold(),
                                               titleColor: .white,
                                               backgroundColor: .ows_accentBlue,
                                               target: self,

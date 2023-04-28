@@ -69,7 +69,7 @@ class ShareMyUsernameSheetViewController: OWSTableSheetViewController {
             let headerLabel: UILabel = {
                 let label = UILabel()
 
-                label.font = .ows_dynamicTypeSubheadlineClamped
+                label.font = .dynamicTypeSubheadlineClamped
                 label.textAlignment = .center
                 label.textColor = Theme.secondaryTextAndIconColor
                 label.numberOfLines = 0

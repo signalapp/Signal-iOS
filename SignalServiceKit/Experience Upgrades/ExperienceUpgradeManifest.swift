@@ -437,7 +437,7 @@ extension ExperienceUpgradeManifest {
 extension ExperienceUpgradeManifest {
     func shouldBeShown(transaction: SDSAnyReadTransaction) -> Bool {
         if
-            let registrationDate = tsAccountManager.registrationDate(with: transaction),
+            let registrationDate = tsAccountManager.registrationDate(transaction: transaction),
             Date().timeIntervalSince(registrationDate) < delayAfterRegistration
         {
             // We have not waited long enough after registration to show this
@@ -569,10 +569,10 @@ extension ExperienceUpgradeManifest {
         guard
             AppVersion.compare(
                 megaphone.manifest.minAppVersion,
-                with: appVersion.currentAppVersion4
+                with: AppVersion.shared.currentAppVersion4
             ) != .orderedDescending
         else {
-            Logger.debug("App version \(appVersion.currentAppVersion4) lower than required \(megaphone.manifest.minAppVersion)!")
+            Logger.debug("App version \(AppVersion.shared.currentAppVersion4) lower than required \(megaphone.manifest.minAppVersion)!")
             return false
         }
 

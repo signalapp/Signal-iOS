@@ -155,7 +155,7 @@ class RegistrationProfileViewController: OWSViewController {
         accessibilityIdentifierSuffix: String
     ) -> UITextField {
         let result = OWSTextField()
-        result.font = .ows_dynamicTypeSubheadlineClamped
+        result.font = .dynamicTypeSubheadlineClamped
         result.adjustsFontForContentSizeCategory = true
         result.textAlignment = .natural
         result.autocorrectionType = .no
@@ -584,10 +584,10 @@ extension RegistrationProfileViewController {
                 tintColor: Theme.primaryIconColor
             )
 
-            titleLabel.font = UIFont.ows_dynamicTypeBodyClamped
+            titleLabel.font = UIFont.dynamicTypeBodyClamped
             titleLabel.textColor = Theme.primaryTextColor
 
-            subTitleLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+            subTitleLabel.font = UIFont.dynamicTypeCaption1Clamped
             subTitleLabel.textColor = Theme.secondaryTextAndIconColor
 
             disclosureView.setTemplateImageName(

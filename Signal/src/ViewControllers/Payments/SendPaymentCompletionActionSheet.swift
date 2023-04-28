@@ -193,7 +193,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         let cancelLabel = UILabel()
         cancelLabel.text = CommonStrings.cancelButton
-        cancelLabel.font = UIFont.ows_dynamicTypeBodyClamped
+        cancelLabel.font = UIFont.dynamicTypeBodyClamped
         if canCancel {
             cancelLabel.textColor = Theme.primaryTextColor
             cancelLabel.isUserInteractionEnabled = true
@@ -209,7 +209,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         // TODO: Add support for requests.
         titleLabel.text = NSLocalizedString("PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE",
                                             comment: "Title for the 'confirm payment' ui in the 'send payment' UI.")
-        titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
         titleLabel.lineBreakMode = .byTruncatingTail
@@ -397,17 +397,17 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
             let titleLabel = UILabel()
             titleLabel.text = title
-            titleLabel.font = .ows_dynamicTypeBodyClamped
+            titleLabel.font = .dynamicTypeBodyClamped
             titleLabel.textColor = Theme.primaryTextColor
             titleLabel.lineBreakMode = .byTruncatingTail
 
             let valueLabel = UILabel()
             valueLabel.text = value
             if isTotal {
-                valueLabel.font = .ows_dynamicTypeTitle2Clamped
+                valueLabel.font = .dynamicTypeTitle2Clamped
                 valueLabel.textColor = Theme.primaryTextColor
             } else {
-                valueLabel.font = .ows_dynamicTypeBodyClamped
+                valueLabel.font = .dynamicTypeBodyClamped
                 valueLabel.textColor = Theme.secondaryTextAndIconColor
             }
 

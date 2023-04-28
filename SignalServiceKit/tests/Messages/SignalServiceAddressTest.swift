@@ -7,22 +7,27 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class SignalServiceAddressTest: SSKBaseTestSwift {
-    var cache: SignalServiceAddressCache {
-        return Self.signalServiceAddressCache
-    }
+class SignalServiceAddressTest: XCTestCase {
+
+    private lazy var cache = SignalServiceAddressCache()
 
     private func makeAddress(uuid: UUID? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
-        SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
+        SignalServiceAddress(
+            uuid: uuid,
+            phoneNumber: phoneNumber,
+            cache: cache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
     }
 
     private func makeHighTrustAddress(uuid: UUID? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
-        SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber, trustLevel: .high)
+        cache.updateRecipient(SignalRecipient(phoneNumber: phoneNumber, uuid: uuid, devices: []))
+        return makeAddress(uuid: uuid, phoneNumber: phoneNumber)
     }
 
     @discardableResult
     private func updateMapping(uuid: UUID, phoneNumber: String? = nil) -> SignalServiceAddress {
-        write { cache.updateMapping(uuid: uuid, phoneNumber: phoneNumber, transaction: $0) }
+        return makeHighTrustAddress(uuid: uuid, phoneNumber: phoneNumber)
     }
 
     func test_isEqualPermissive() {
@@ -257,10 +262,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         // uuid2, phoneNumber1
         let hash3 = updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
 
-        // There should not be hash continuity for uuid2, since the uuid has changed.
+        // There should be hash continuity for uuid2, even though the uuid has changed.
         XCTAssertEqual(hash1, hash2)
-        XCTAssertNotEqual(hash1, hash3)
-        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertEqual(hash2, hash3)
         XCTAssertEqual(hash2, makeAddress(uuid: uuid1).hash)
         XCTAssertEqual(hash3, makeAddress(uuid: uuid2).hash)
         XCTAssertEqual(hash3, makeAddress(phoneNumber: phoneNumber1).hash)
@@ -288,9 +293,11 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
 
         // uuid1 -> uuid2, phoneNumber1
+        _ = makeAddress(uuid: uuid2)
         let hash2 = makeHighTrustAddress(uuid: uuid2, phoneNumber: phoneNumber1).hash
 
-        // There should not be hash continuity for uuid2, since the phone number has been transferred between two uuids.
+        // There should not be hash continuity for uuid2 since the phone number was
+        // transferred to a UUID that already existed.
         XCTAssertNotEqual(hash1, hash2)
         XCTAssertEqual(hash1, makeAddress(uuid: uuid1).hash)
         XCTAssertEqual(hash2, makeAddress(uuid: uuid2).hash)
@@ -337,9 +344,11 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
 
         // uuid1 -> uuid2, phoneNumber1
+        _ = makeAddress(uuid: uuid2)
         let hash2 = updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
 
-        // There should not be hash continuity for uuid2, since the phone number has been transferred between two uuids.
+        // There should not be hash continuity for uuid2 since the phone number was
+        // transferred to a UUID that already existed.
         XCTAssertNotEqual(hash1, hash2)
         XCTAssertEqual(hash1, makeAddress(uuid: uuid1).hash)
         XCTAssertEqual(hash2, makeAddress(uuid: uuid2).hash)
@@ -724,5 +733,117 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         // the cure is probably worse than the disease.
         XCTAssertEqual(address_p1, makeAddress(uuid: nil, phoneNumber: phoneNumber1))
         XCTAssertNotEqual(address_p1.hash, makeAddress(uuid: nil, phoneNumber: phoneNumber1).hash)
+    }
+
+    func testInitializers() {
+        let sid_a = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000A")!
+        let pn_a = E164("+16505550101")!
+        let pn_b = E164("+16505550102")!
+
+        cache.updateRecipient(SignalRecipient(serviceId: ServiceIdObjC(sid_a), phoneNumber: E164ObjC(pn_a)))
+
+        let address1 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: nil,
+            cache: cache,
+            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+        )
+        let address2 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_a.stringValue,
+            cache: cache,
+            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+        )
+        let address3 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_b.stringValue,
+            cache: cache,
+            cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
+        )
+
+        XCTAssertEqual(address1.e164, pn_a)
+        XCTAssertEqual(address2.e164, pn_a)
+        XCTAssertEqual(address3.e164, pn_a)
+
+        let address4 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: nil,
+            cache: cache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
+        let address5 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_a.stringValue,
+            cache: cache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
+        let address6 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_b.stringValue,
+            cache: cache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
+
+        XCTAssertEqual(address4.e164, pn_a)
+        XCTAssertEqual(address5.e164, pn_a)
+        XCTAssertEqual(address6.e164, pn_b)
+
+        let address7 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: nil,
+            cache: cache,
+            cachePolicy: .ignoreCache
+        )
+        let address8 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_a.stringValue,
+            cache: cache,
+            cachePolicy: .ignoreCache
+        )
+        let address9 = SignalServiceAddress(
+            uuid: sid_a.uuidValue,
+            phoneNumber: pn_b.stringValue,
+            cache: cache,
+            cachePolicy: .ignoreCache
+        )
+
+        XCTAssertEqual(address7.e164, nil)
+        XCTAssertEqual(address8.e164, pn_a)
+        XCTAssertEqual(address9.e164, pn_b)
+
+        cache.updateRecipient(SignalRecipient(serviceId: ServiceIdObjC(sid_a), phoneNumber: E164ObjC(pn_b)))
+
+        XCTAssertEqual(address1.e164, pn_b)
+        XCTAssertEqual(address2.e164, pn_b)
+        XCTAssertEqual(address3.e164, pn_b)
+        XCTAssertEqual(address4.e164, pn_b)
+        XCTAssertEqual(address5.e164, pn_b)
+        XCTAssertEqual(address6.e164, pn_b)
+        XCTAssertEqual(address7.e164, nil)
+        XCTAssertEqual(address8.e164, pn_a)
+        XCTAssertEqual(address9.e164, pn_b)
+    }
+
+    func testInitializerPerformance() {
+        let iterations = 15_000
+
+        let serviceId = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000A")!
+        let phoneNumber = E164("+16505550101")!
+
+        cache.updateRecipient(SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: E164ObjC(phoneNumber)))
+
+        var addresses = [SignalServiceAddress]()
+        addresses.reserveCapacity(iterations)
+
+        for _ in 0..<iterations {
+            addresses.append(SignalServiceAddress(
+                uuid: serviceId.uuidValue,
+                phoneNumber: phoneNumber.stringValue,
+                cache: cache,
+                cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+            ))
+        }
+
+        XCTAssertEqual(addresses.count, iterations)
     }
 }

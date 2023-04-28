@@ -266,7 +266,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     }
 
     private var labelFont: UIFont {
-        UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(18, 24))
+        UIFont.regularFont(ofSize: ScaleFromIPhone5To7Plus(18, 24))
     }
 
     private func formattedFileExtension() -> String? {

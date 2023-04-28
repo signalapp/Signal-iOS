@@ -3,15 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@objc
+import SignalUI
+
 class TypingIndicatorView: ManualStackView {
     // This represents the spacing between the dots
     // _at their max size_.
     private static let kDotMaxHSpacing: CGFloat = 3
 
-    @objc
     public static let kMinRadiusPt: CGFloat = 6
-    @objc
     public static let kMaxRadiusPt: CGFloat = 8
 
     private let dot1 = DotView(dotType: .dotType1)
@@ -20,7 +19,6 @@ class TypingIndicatorView: ManualStackView {
 
     private var cachedMeasurement: ManualStackView.Measurement?
 
-    @objc
     public init() {
         super.init(name: "TypingIndicatorView")
     }
@@ -50,7 +48,6 @@ class TypingIndicatorView: ManualStackView {
 
     // MARK: -
 
-    @objc
     func configureForChatList() {
         if let measurement = self.cachedMeasurement {
             self.configureForReuse(config: Self.stackConfig,
@@ -128,7 +125,6 @@ class TypingIndicatorView: ManualStackView {
 
     private var isAnimating = false
 
-    @objc
     public func startAnimation() {
         isAnimating = true
 
@@ -137,7 +133,6 @@ class TypingIndicatorView: ManualStackView {
         }
     }
 
-    @objc
     public func stopAnimation() {
         isAnimating = false
 

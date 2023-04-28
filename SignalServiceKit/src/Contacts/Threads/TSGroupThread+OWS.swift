@@ -151,104 +151,14 @@ public extension TSGroupThread {
     static let membershipDidChange = Notification.Name("TSGroupThread.membershipDidChange")
 
     func updateGroupMemberRecords(transaction: SDSAnyWriteTransaction) {
-        let memberAddresses = Set(groupMembership.fullMembers)
-        let previousMembers = TSGroupMember.groupMembers(in: uniqueId, transaction: transaction)
-        let membersToDelete = previousMembers.filter { !memberAddresses.contains($0.address) }
-        let addressesToAdd = memberAddresses.subtracting(previousMembers.map { $0.address })
-
-        guard !membersToDelete.isEmpty || !addressesToAdd.isEmpty else { return }
-
-        Logger.info("Updating group members with \(membersToDelete.count) removed members and \(addressesToAdd.count) added members.")
-
-        for member in membersToDelete {
-            member.anyRemove(transaction: transaction)
-        }
-
-        let interactionFinder = InteractionFinder(threadUniqueId: uniqueId)
-        for address in addressesToAdd {
-            // We look up the latest interaction by this user, because they could
-            // have been a member of the group previously.
-            let lastInteraction = interactionFinder.latestInteraction(
-                from: address,
-                transaction: transaction
-            )
-            TSGroupMember(
-                address: address,
-                groupThreadId: uniqueId,
-                lastInteractionTimestamp: lastInteraction?.timestamp ?? 0
-            ).anyInsert(transaction: transaction)
-        }
-
-        transaction.addAsyncCompletionOnMain { [uniqueId = self.uniqueId] in
-            NotificationCenter.default.post(name: Self.membershipDidChange, object: uniqueId)
-        }
+        let groupMemberUpdater = GroupMemberUpdaterImpl(
+            temporaryShims: GroupMemberUpdaterTemporaryShimsImpl(),
+            groupMemberDataStore: GroupMemberDataStoreImpl(),
+            signalServiceAddressCache: Self.signalServiceAddressCache
+        )
+        groupMemberUpdater.updateRecords(groupThread: self, transaction: transaction.asV2Write)
     }
 
-    /// Returns a list of up to `limit` names of group members.
-    ///
-    /// The list will not contain the local user. If `includingBlocked` is `false`, it will also not contain
-    /// any users that have been blocked by the local user.
-    ///
-    /// The name returned is computed by `getDisplayName`, but sorting is always done using
-    /// `ContactsManager.comparableName(for:transaction:)`. Phone numbers are sorted to the end of the list.
-    ///
-    /// If `searchText` is provided, members will be sorted to the front of the list if their display names
-    /// (as returned by `getDisplayName`) contain the string. The names will also have the matching substring
-    /// bracketed as `<match>substring</match>`, similar to the results of FullTextSearchFinder.
-    func sortedMemberNames(searchText: String? = nil,
-                           includingBlocked: Bool,
-                           limit: Int = .max,
-                           transaction: SDSAnyReadTransaction,
-                           getDisplayName: (SignalServiceAddress) -> String) -> [String] {
-        let members: [(
-            address: SignalServiceAddress,
-            displayName: String?,
-            comparableName: String,
-            isMatched: Bool
-        )] = groupMembership.fullMembers.compactMap { address in
-            guard !address.isLocalAddress else {
-                return nil
-            }
-            guard includingBlocked || !blockingManager.isAddressBlocked(address, transaction: transaction) else {
-                return nil
-            }
-
-            var maybeDisplayName: String?
-            var isMatched = false
-            if let searchText = searchText {
-                var displayName = getDisplayName(address)
-                if let matchRange = displayName.range(of: searchText,
-                                                      options: [.caseInsensitive, .diacriticInsensitive]) {
-                    isMatched = true
-                    displayName = displayName.replacingCharacters(
-                        in: matchRange,
-                        with: "<\(FullTextSearchFinder.matchTag)>\(displayName[matchRange])</\(FullTextSearchFinder.matchTag)>")
-                }
-                maybeDisplayName = displayName
-            }
-            return (
-                address: address,
-                displayName: maybeDisplayName,
-                comparableName: contactsManager.comparableName(for: address, transaction: transaction),
-                isMatched: isMatched
-            )
-        }
-
-        let sortedMembers = members.sorted { lhs, rhs in
-            // Bubble matched members to the top
-            if rhs.isMatched != lhs.isMatched { return lhs.isMatched }
-            // Sort numbers to the end of the list
-            if lhs.comparableName.hasPrefix("+") != rhs.comparableName.hasPrefix("+") {
-                return !lhs.comparableName.hasPrefix("+")
-            }
-            // Otherwise, sort by comparable name
-            return lhs.comparableName.caseInsensitiveCompare(rhs.comparableName) == .orderedAscending
-        }
-
-        return sortedMembers.prefix(limit).map {
-            $0.displayName ?? getDisplayName($0.address)
-        }
-    }
 }
 
 // MARK: -

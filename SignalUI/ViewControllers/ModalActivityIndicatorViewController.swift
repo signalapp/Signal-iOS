@@ -131,7 +131,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     /// - Parameter completionIfNotCanceled:
     ///     If the modal hasn't been canceled, dismiss it and then call this
     ///     block. Note: If the modal was canceled, the block isn't invoked.
-    public func dismissIfNotCanceled(completionIfNotCanceled: @escaping () -> Void) {
+    public func dismissIfNotCanceled(completionIfNotCanceled: @escaping () -> Void = {}) {
         if wasCancelled {
             return
         }
@@ -162,7 +162,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
                 cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
                 cancelButton.setTitleColor(UIColor.white, for: .normal)
                 cancelButton.backgroundColor = UIColor.ows_gray80
-                let font = UIFont.ows_dynamicTypeBody.ows_semibold
+                let font = UIFont.dynamicTypeBody.semibold()
                 cancelButton.titleLabel?.font = font
                 cancelButton.layer.cornerRadius = ScaleFromIPhone5To7Plus(4, 5)
                 cancelButton.clipsToBounds = true

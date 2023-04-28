@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *localFullName;
 @property (nonatomic, nullable) NSData *localProfileAvatarData;
 @property (nonatomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *localProfileBadgeInfo;
+@property (nonatomic) BOOL localProfileIsPniCapable;
 
 @end
 
@@ -157,42 +158,37 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.threadWhitelist containsObject:thread.uniqueId];
 }
 
-- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address authedAccount:(nonnull AuthedAccount *)authedAccount
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
 {
     [self.recipientWhitelist addObject:address];
 }
 
 - (void)addUserToProfileWhitelist:(nonnull SignalServiceAddress *)address
                 userProfileWriter:(UserProfileWriter)userProfileWriter
-                    authedAccount:(nonnull AuthedAccount *)authedAccount
                       transaction:(nonnull SDSAnyWriteTransaction *)transaction
 {
     [self.recipientWhitelist addObject:address];
 }
 
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
-                     authedAccount:(nonnull AuthedAccount *)authedAccount
 {
     [self.recipientWhitelist addObjectsFromArray:addresses];
 }
 
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
                  userProfileWriter:(UserProfileWriter)userProfileWriter
-                     authedAccount:(nonnull AuthedAccount *)authedAccount
                        transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self.recipientWhitelist addObjectsFromArray:addresses];
 }
 
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
-                         authedAccount:(nonnull AuthedAccount *)authedAccount
 {
     [self.recipientWhitelist removeObject:address];
 }
 
 - (void)removeUserFromProfileWhitelist:(nonnull SignalServiceAddress *)address
                      userProfileWriter:(UserProfileWriter)userProfileWriter
-                         authedAccount:(nonnull AuthedAccount *)authedAccount
                            transaction:(nonnull SDSAnyWriteTransaction *)transaction
 {
     [self.recipientWhitelist removeObject:address];
@@ -227,27 +223,25 @@ NS_ASSUME_NONNULL_BEGIN
     [self.threadWhitelist removeObject:groupId.hexadecimalString];
 }
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread authedAccount:(nonnull AuthedAccount *)authedAccount
+- (void)addThreadToProfileWhitelist:(TSThread *)thread
 {
     if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         [self addGroupIdToProfileWhitelist:groupThread.groupModel.groupId];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [self addUserToProfileWhitelist:contactThread.contactAddress authedAccount:authedAccount];
+        [self addUserToProfileWhitelist:contactThread.contactAddress];
     }
 }
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread
-                      authedAccount:(nonnull AuthedAccount *)authedAccount
-                        transaction:(SDSAnyWriteTransaction *)transaction
+- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         [self addGroupIdToProfileWhitelist:groupThread.groupModel.groupId];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [self addUserToProfileWhitelist:contactThread.contactAddress authedAccount:authedAccount];
+        [self addUserToProfileWhitelist:contactThread.contactAddress];
     }
 }
 
@@ -314,12 +308,13 @@ NS_ASSUME_NONNULL_BEGIN
                      familyName:(nullable NSString *)familyName
                             bio:(nullable NSString *)bio
                        bioEmoji:(nullable NSString *)bioEmoji
-               isStoriesCapable:(BOOL)isStoriesCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
-           canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                   lastFetchDate:(NSDate *)lastFetchDate
+               isStoriesCapable:(BOOL)isStoriesCapable
+           canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
+                   isPniCapable:(BOOL)isPniCapable
               userProfileWriter:(UserProfileWriter)userProfileWriter
                   authedAccount:(nonnull AuthedAccount *)authedAccount
                     transaction:(SDSAnyWriteTransaction *)writeTx

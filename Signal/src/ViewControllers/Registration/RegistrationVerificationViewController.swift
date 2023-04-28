@@ -24,9 +24,17 @@ public struct RegistrationVerificationState: Equatable {
     let e164: E164
     let nextSMSDate: Date?
     let nextCallDate: Date?
-    // TODO[Registration]: use this state to render a countdown.
     let nextVerificationAttemptDate: Date
+    let showHelpText: Bool
     let validationError: RegistrationVerificationValidationError?
+
+    public enum ExitConfiguration: Equatable {
+        case noExitAllowed
+        case exitReRegistration
+        case exitChangeNumber
+    }
+
+    let exitConfiguration: ExitConfiguration
 }
 
 // MARK: - RegistrationVerificationPresenter
@@ -36,6 +44,7 @@ protocol RegistrationVerificationPresenter: AnyObject {
     func requestSMSCode()
     func requestVoiceCode()
     func submitVerificationCode(_ code: String)
+    func exitRegistration()
 }
 
 // MARK: - RegistrationVerificationViewController
@@ -96,18 +105,26 @@ class RegistrationVerificationViewController: OWSViewController {
         title: String = "",
         selector: Selector,
         accessibilityIdentifierSuffix: String
-    ) -> OWSFlatButton {
-        let result = OWSFlatButton.button(
-            title: title,
-            font: UIFont.ows_dynamicTypeSubheadlineClamped,
-            titleColor: .clear, // This should be overwritten in `render`.
-            backgroundColor: .clear,
-            target: self,
-            selector: selector
-        )
-        result.enableMultilineLabel()
-        result.contentEdgeInsets = UIEdgeInsets(margin: 12)
+    ) -> UIButton {
+        let result = UIButton(type: .system)
+
+        result.addTarget(self, action: selector, for: .touchUpInside)
+
+        result.setTitle(title, for: .normal)
+        if let titleLabel = result.titleLabel {
+            titleLabel.font = .dynamicTypeSubheadlineClamped
+            titleLabel.numberOfLines = 0
+            titleLabel.lineBreakMode = .byWordWrapping
+            titleLabel.textAlignment = .center
+            result.heightAnchor.constraint(
+                greaterThanOrEqualTo: titleLabel.heightAnchor
+            ).isActive = true
+        } else {
+            owsFailBeta("Button has no title label")
+        }
+
         result.accessibilityIdentifier = "registration.verification.\(accessibilityIdentifierSuffix)"
+
         return result
     }
 
@@ -132,7 +149,7 @@ class RegistrationVerificationViewController: OWSViewController {
         return result
     }()
 
-    private lazy var wrongNumberButton: OWSFlatButton = button(
+    private lazy var wrongNumberButton = button(
         title: OWSLocalizedString(
             "ONBOARDING_VERIFICATION_BACK_LINK",
             comment: "Label for the link that lets users change their phone number in the onboarding views."
@@ -147,18 +164,41 @@ class RegistrationVerificationViewController: OWSViewController {
         return result
     }()
 
-    private lazy var resendSMSCodeButton: OWSFlatButton = button(
+    private lazy var helpButton = button(
+        title: OWSLocalizedString(
+            "ONBOARDING_VERIFICATION_HELP_LINK",
+            comment: "Label for a button to get help entering a verification code when registering."
+        ),
+        selector: #selector(didTapHelpButton),
+        accessibilityIdentifierSuffix: "helpButton"
+    )
+
+    private lazy var resendSMSCodeButton = button(
         selector: #selector(didTapResendSMSCode),
         accessibilityIdentifierSuffix: "resendSMSCodeButton"
     )
 
-    private lazy var requestVoiceCodeButton: OWSFlatButton = button(
+    private lazy var requestVoiceCodeButton = button(
         selector: #selector(didTapSendVoiceCode),
         accessibilityIdentifierSuffix: "requestVoiceCodeButton"
     )
 
+    private lazy var contextButton: ContextMenuButton = {
+        let result = ContextMenuButton()
+        result.showsContextMenuAsPrimaryAction = true
+        result.autoSetDimensions(to: .square(40))
+        return result
+    }()
+
+    private lazy var contextBarButton = UIBarButtonItem(
+        customView: contextButton,
+        accessibilityIdentifier: "registration.verificationCode.contextButton"
+    )
+
     public override func viewDidLoad() {
         super.viewDidLoad()
+
+        navigationItem.setHidesBackButton(true, animated: false)
 
         initialRender()
 
@@ -169,10 +209,30 @@ class RegistrationVerificationViewController: OWSViewController {
         }
     }
 
+    private var isViewAppeared = false
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        verificationCodeView.becomeFirstResponder()
+        if !UIDevice.current.isIPhone5OrShorter {
+            // Small devices may obscure parts of the UI behind the keyboard, especially with larger
+            // font sizes.
+            verificationCodeView.becomeFirstResponder()
+        }
+
+        showValidationErrorUiIfNecessary()
+
+        isViewAppeared = true
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if contextButton.isShowingContextMenu {
+            contextButton.dismissContextMenu(animated: animated)
+        }
+
+        isViewAppeared = false
     }
 
     public override func themeDidChange() {
@@ -181,12 +241,28 @@ class RegistrationVerificationViewController: OWSViewController {
     }
 
     private func initialRender() {
-        let stackView = UIStackView()
+        let scrollView = UIScrollView()
+        view.addSubview(scrollView)
+        scrollView.autoPinWidthToSuperview()
+        scrollView.autoPinEdge(.top, to: .top, of: keyboardLayoutGuideViewSafeArea)
+        scrollView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
+        let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 12
-        view.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        stackView.layoutMargins = UIEdgeInsets.layoutMarginsForRegistration(
+            traitCollection.horizontalSizeClass
+        )
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.setContentHuggingHigh()
+        scrollView.addSubview(stackView)
+        stackView.autoPinWidth(toWidthOf: scrollView)
+        stackView.heightAnchor.constraint(
+            greaterThanOrEqualTo: scrollView.contentLayoutGuide.heightAnchor
+        ).isActive = true
+        stackView.heightAnchor.constraint(
+            greaterThanOrEqualTo: scrollView.frameLayoutGuide.heightAnchor
+        ).isActive = true
 
         stackView.addArrangedSubview(titleLabel)
 
@@ -196,10 +272,11 @@ class RegistrationVerificationViewController: OWSViewController {
         stackView.setCustomSpacing(24, after: wrongNumberButton)
 
         stackView.addArrangedSubview(verificationCodeView)
+        stackView.setCustomSpacing(24, after: verificationCodeView)
 
-        // TODO[Registration]: If the user has tried several times, show a "need help" button.
+        stackView.addArrangedSubview(helpButton)
 
-        stackView.addArrangedSubview(UIView.vStretchingSpacer(minHeight: 12))
+        stackView.addArrangedSubview(UIView.vStretchingSpacer())
 
         let resendButtonsContainer = UIStackView(arrangedSubviews: [
             resendSMSCodeButton,
@@ -207,18 +284,50 @@ class RegistrationVerificationViewController: OWSViewController {
         ])
         resendButtonsContainer.axis = .horizontal
         resendButtonsContainer.distribution = .fillEqually
+
         stackView.addArrangedSubview(resendButtonsContainer)
 
         render()
     }
 
     private func render() {
+        switch state.exitConfiguration {
+        case .noExitAllowed:
+            navigationItem.leftBarButtonItem = nil
+        case .exitReRegistration:
+            navigationItem.leftBarButtonItem = contextBarButton
+            contextButton.contextMenu = ContextMenu([
+                .init(
+                    title: OWSLocalizedString(
+                        "EXIT_REREGISTRATION",
+                        comment: "Button to exit re-registration, shown in context menu."
+                    ),
+                    handler: { [weak self] _ in
+                        self?.presenter?.exitRegistration()
+                    }
+                )
+            ])
+        case .exitChangeNumber:
+            navigationItem.leftBarButtonItem = contextBarButton
+            contextButton.contextMenu = ContextMenu([
+                .init(
+                    title: OWSLocalizedString(
+                        "EXIT_CHANGE_NUMBER",
+                        comment: "Button to exit change number, shown in context menu."
+                    ),
+                    handler: { [weak self] _ in
+                        self?.presenter?.exitRegistration()
+                    }
+                )
+            ])
+        }
+
+        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.tintColor = Theme.accentBlueColor
+
         renderResendButton(
             button: resendSMSCodeButton,
             date: state.nextSMSDate,
-            // TODO: This copy is ambiguous if you request a voice code. Does "resend code" mean
-            // that you'll get a new SMS code or a new voice code? We should update the wording to
-            // make it clearer that it's an SMS code.
             enabledString: OWSLocalizedString(
                 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON",
                 comment: "Label for button to resend SMS verification code."
@@ -241,13 +350,16 @@ class RegistrationVerificationViewController: OWSViewController {
             )
         )
 
-        showValidationErrorUiIfNecessary()
+        if isViewAppeared {
+            showValidationErrorUiIfNecessary()
+        }
 
         view.backgroundColor = Theme.backgroundColor
         titleLabel.textColor = .colorForRegistrationTitleLabel
         explanationLabel.textColor = .colorForRegistrationExplanationLabel
-        wrongNumberButton.setTitleColor(Theme.accentBlueColor)
-        // TODO: Update colors of `verificationCodeView`, which is relevant if the theme changes.
+        helpButton.isHidden = state.showHelpText.negated
+
+        verificationCodeView.updateColors()
     }
 
     private lazy var retryAfterFormatter: DateFormatter = {
@@ -258,32 +370,35 @@ class RegistrationVerificationViewController: OWSViewController {
     }()
 
     private func renderResendButton(
-        button: OWSFlatButton,
+        button: UIButton,
         date: Date?,
         enabledString: String,
         countdownFormat: String
     ) {
-        guard let date else {
-            button.alpha = 0
-            button.setEnabled(false)
-            return
-        }
+        // UIButton will flash when we update the title.
+        UIView.performWithoutAnimation {
+            defer { button.layoutIfNeeded() }
 
-        button.alpha = 1
+            guard let date else {
+                button.isHidden = true
+                button.isEnabled = false
+                return
+            }
 
-        if date <= now {
-            button.setEnabled(true)
-            button.setTitle(title: enabledString, titleColor: Theme.accentBlueColor)
-        } else {
-            button.setEnabled(false)
-            button.setTitle(
-                title: {
-                    let timeRemaining = max(date.timeIntervalSince(now), 0)
-                    let durationString = retryAfterFormatter.string(from: Date(timeIntervalSinceReferenceDate: timeRemaining))
-                    return String(format: countdownFormat, durationString)
-                }(),
-                titleColor: Theme.secondaryTextAndIconColor
-            )
+            if date <= now {
+                button.isEnabled = true
+                button.setTitle(enabledString, for: .normal)
+            } else {
+                button.isEnabled = false
+                button.setTitle(
+                    {
+                        let timeRemaining = max(date.timeIntervalSince(now), 0)
+                        let durationString = retryAfterFormatter.string(from: Date(timeIntervalSinceReferenceDate: timeRemaining))
+                        return String(format: countdownFormat, durationString)
+                    }(),
+                    for: .normal
+                )
+            }
         }
     }
 
@@ -298,27 +413,43 @@ class RegistrationVerificationViewController: OWSViewController {
         let title: String?
         let message: String
         switch newError {
-        case .invalidVerificationCode:
+        case .invalidVerificationCode(let code):
             title = nil
             message = OWSLocalizedString(
                 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE",
                 comment: "During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message."
             )
+            if verificationCodeView.verificationCode == code {
+                verificationCodeView.clear()
+            }
         case .smsResendTimeout, .voiceResendTimeout:
-            // This isn't the best error message but this should be a rare case. The UI would have
-            // to allow the user to request a code that the server would not allow. It could happen
-            // if the user changes their clock.
             title = nil
-            message = CommonStrings.somethingWentWrongTryAgainLaterError
-        case .submitCodeTimeout:
-            title = OWSLocalizedString(
-                "REGISTRATION_NETWORK_ERROR_TITLE",
-                comment: "A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet."
-            )
             message = OWSLocalizedString(
-                "REGISTRATION_NETWORK_ERROR_BODY",
-                comment: "A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet."
+                "REGISTER_RATE_LIMITING_ALERT",
+                comment: "Body of action sheet shown when rate-limited during registration."
             )
+        case .submitCodeTimeout:
+            title = nil
+
+            let now = Date()
+            if now >= state.nextVerificationAttemptDate {
+                return
+            }
+            let format = OWSLocalizedString(
+                "REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT",
+                comment: "Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\""
+            )
+
+            let formatter: DateFormatter = {
+                let result = DateFormatter()
+                result.dateFormat = "m:ss"
+                result.timeZone = TimeZone(identifier: "UTC")!
+                return result
+            }()
+
+            let timeRemaining = max(state.nextVerificationAttemptDate.timeIntervalSince(now), 0)
+            let durationString = formatter.string(from: Date(timeIntervalSinceReferenceDate: timeRemaining))
+            message = String(format: format, durationString)
         }
         OWSActionSheets.showActionSheet(title: title, message: message)
     }
@@ -330,6 +461,13 @@ class RegistrationVerificationViewController: OWSViewController {
         Logger.info("")
 
         presenter?.returnToPhoneNumberEntry()
+    }
+
+    @objc
+    private func didTapHelpButton() {
+        Logger.info("")
+
+        self.present(RegistrationVerificationHelpSheetViewController(), animated: true)
     }
 
     @objc
@@ -368,7 +506,112 @@ extension RegistrationVerificationViewController: RegistrationVerificationCodeVi
         if verificationCodeView.isComplete {
             Logger.info("Submitting verification code")
             verificationCodeView.resignFirstResponder()
+            // Clear any errors so we render new ones.
+            previouslyRenderedValidationError = nil
             presenter?.submitVerificationCode(verificationCodeView.verificationCode)
         }
+    }
+}
+
+// MARK: - RegistrationVerificationHelpSheetViewController
+
+private class RegistrationVerificationHelpSheetViewController: InteractiveSheetViewController {
+
+    private var intrinsicSizeObservation: NSKeyValueObservation?
+
+    public required init() {
+        super.init()
+
+        scrollView.bounces = false
+        scrollView.isScrollEnabled = false
+
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.spacing = 12
+
+        stackView.addArrangedSubview(header)
+        stackView.setCustomSpacing(20, after: header)
+        let bulletPoints = bulletPoints
+        stackView.addArrangedSubviews(bulletPoints)
+
+        // TODO[Registration]: there should be a contact support link here.
+
+        let insets = UIEdgeInsets(top: 20, left: 24, bottom: 80, right: 24)
+        contentView.addSubview(scrollView)
+        scrollView.autoPinEdgesToSuperviewEdges()
+        scrollView.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges(with: insets)
+        stackView.autoConstrainAttribute(.width, to: .width, of: contentView, withOffset: -insets.totalWidth)
+
+        self.allowsExpansion = false
+        intrinsicSizeObservation = stackView.observe(\.bounds, changeHandler: { [weak self] stackView, _ in
+            self?.minimizedHeight = stackView.bounds.height + insets.totalHeight
+            self?.scrollView.isScrollEnabled = (self?.maxHeight ?? 0) < stackView.bounds.height
+        })
+    }
+
+    override public func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        scrollView.isScrollEnabled = self.maxHeight < stackView.bounds.height
+    }
+
+    let scrollView = UIScrollView()
+    let stackView = UIStackView()
+
+    let header: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = UIFont.dynamicTypeTitle2.semibold()
+        label.text = NSLocalizedString(
+            "ONBOARDING_VERIFICATION_HELP_LINK",
+            comment: "Label for a button to get help entering a verification code when registering."
+        )
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }()
+
+    let bulletPoints: [UIView] = {
+        return [
+            OWSLocalizedString(
+                "ONBOARDING_VERIFICATION_HELP_BULLET_1",
+                comment: "First bullet point for the explainer sheet for registering via verification code."
+            ),
+            OWSLocalizedString(
+                "ONBOARDING_VERIFICATION_HELP_BULLET_2",
+                comment: "Second bullet point for the explainer sheet for registering via verification code."
+            ),
+            OWSLocalizedString(
+                "ONBOARDING_VERIFICATION_HELP_BULLET_3",
+                comment: "Third bullet point for the explainer sheet for registering via verification code."
+            )
+        ].map { text in
+            return RegistrationVerificationHelpSheetViewController.listPointView(text: text)
+        }
+    }()
+
+    private static func listPointView(text: String) -> UIStackView {
+        let stackView = UIStackView(frame: .zero)
+
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 8
+
+        let label = UILabel()
+        label.text = text
+        label.numberOfLines = 0
+        label.textColor = Theme.primaryTextColor
+        label.font = .dynamicTypeBodyClamped
+
+        let bulletPoint = UIView()
+        bulletPoint.backgroundColor = UIColor(rgbHex: 0xC4C4C4)
+
+        stackView.addArrangedSubview(.spacer(withWidth: 4))
+        stackView.addArrangedSubview(bulletPoint)
+        stackView.addArrangedSubview(label)
+
+        bulletPoint.autoSetDimensions(to: .init(width: 4, height: 14))
+        label.setCompressionResistanceHigh()
+        return stackView
     }
 }

@@ -213,9 +213,12 @@ public class SubscriptionManagerImpl: NSObject {
 
         SwiftSingletons.register(self)
 
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            Self.warmCaches()
+        }
+
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             DispatchQueue.global().async {
-                Self.warmCaches()
                 Self.performMigrationToStorageServiceIfNecessary()
                 Self.performSubscriptionKeepAliveIfNecessary()
             }
@@ -536,7 +539,7 @@ public class SubscriptionManagerImpl: NSObject {
             self.subscriptionJobQueue.addSubscriptionJob(
                 paymentProcessor: paymentProcessor,
                 receiptCredentialRequestContext: request.context.serialize().asData,
-                receiptCredentailRequest: request.request.serialize().asData,
+                receiptCredentialRequest: request.request.serialize().asData,
                 subscriberID: subscriberID,
                 targetSubscriptionLevel: subscriptionLevel,
                 priorSubscriptionLevel: priorSubscriptionLevel,
@@ -1090,7 +1093,7 @@ extension SubscriptionManagerImpl {
                 amount: amount,
                 paymentProcessor: paymentProcessor,
                 receiptCredentialRequestContext: request.context.serialize().asData,
-                receiptCredentailRequest: request.request.serialize().asData,
+                receiptCredentialRequest: request.request.serialize().asData,
                 boostPaymentIntentID: intentId,
                 transaction: transaction
             )
@@ -1257,17 +1260,15 @@ extension SubscriptionManagerImpl: SubscriptionManager {
         var showExpiryOnHomeScreen = Self.showExpirySheetOnHomeScreenKey(transaction: transaction)
         var displayBadgesOnProfile = Self.displayBadgesOnProfile(transaction: transaction)
 
-        if !currentBadges.isEmpty {
-            let isCurrentlyDisplayingBadgesOnProfile = currentBadges.allSatisfy { badge in
-                badge.isVisible ?? {
-                    owsFailDebug("Local user badges should always have a non-nil visibility flag")
-                    return true
-                }()
-            }
-            if displayBadgesOnProfile != isCurrentlyDisplayingBadgesOnProfile {
-                displayBadgesOnProfile = isCurrentlyDisplayingBadgesOnProfile
-                Logger.info("Updating displayBadgesOnProfile to reflect state on profile \(displayBadgesOnProfile)")
-            }
+        let isCurrentlyDisplayingBadgesOnProfile = currentBadges.allSatisfy { badge in
+            badge.isVisible ?? {
+                owsFailDebug("Local user badges should always have a non-nil visibility flag")
+                return true
+            }()
+        }
+        if displayBadgesOnProfile != isCurrentlyDisplayingBadgesOnProfile {
+            displayBadgesOnProfile = isCurrentlyDisplayingBadgesOnProfile
+            Logger.info("Updating displayBadgesOnProfile to reflect state on profile \(displayBadgesOnProfile)")
         }
 
         let newSubscriberBadgeIds = Set(currentSubscriberBadgeIDs).subtracting(persistedSubscriberBadgeIDs)

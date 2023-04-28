@@ -132,6 +132,17 @@ public extension OWSRequestFactory {
         )
     }
 
+    @nonobjc
+    static func deleteDeviceRequest(
+        _ device: OWSDevice
+    ) -> TSRequest {
+        return TSRequest(
+            url: URL(string: "/v1/devices/\(device.deviceId)")!,
+            method: HTTPMethod.delete.methodName,
+            parameters: nil
+        )
+    }
+
     // MARK: - Donations
 
     static func donationConfiguration() -> TSRequest {
@@ -245,9 +256,6 @@ extension OWSRequestFactory {
             return nil
         case .pni:
             return "identity=pni"
-        @unknown default:
-            owsFailDebug("Unrecognized identity type")
-            return nil
         }
     }
 

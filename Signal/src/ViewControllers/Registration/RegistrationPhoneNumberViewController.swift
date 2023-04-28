@@ -7,65 +7,37 @@ import Foundation
 import UIKit
 import SignalMessaging
 
-// MARK: - RegistrationPhoneNumberValidationError
-
-public enum RegistrationPhoneNumberValidationError: Equatable {
-    case invalidNumber(invalidE164: E164)
-    case rateLimited(expiration: Date)
-}
-
-// MARK: - RegistrationPhoneNumberState
-
-public struct RegistrationPhoneNumberState: Equatable {
-    public enum RegistrationPhoneNumberMode: Equatable {
-        /// previouslyEnteredE164 is if the user entered a number, quit, and came back.
-        /// Will be used to pre-populate the entry field.
-        case initialRegistration(previouslyEnteredE164: E164?)
-        case reregistration(e164: E164)
-        // TODO[Registration]: should also take a previously entered e164.
-        // we also shouldn't default to the old e164.
-        case changingPhoneNumber(oldE164: E164)
-    }
-
-    let mode: RegistrationPhoneNumberMode
-    let validationError: RegistrationPhoneNumberValidationError?
-}
-
 // MARK: - RegistrationPhoneNumberPresenter
 
 protocol RegistrationPhoneNumberPresenter: AnyObject {
     func goToNextStep(withE164: E164)
+
+    func exitRegistration()
 }
 
 // MARK: - RegistrationPhoneNumberViewController
 
 class RegistrationPhoneNumberViewController: OWSViewController {
     public init(
-        state: RegistrationPhoneNumberState,
+        state: RegistrationPhoneNumberViewState.RegistrationMode,
         presenter: RegistrationPhoneNumberPresenter
     ) {
         self.state = state
         self.presenter = presenter
 
         self.phoneNumberInput = RegistrationPhoneNumberInputView(initialPhoneNumber: {
-            switch state.mode {
-            case let .initialRegistration(previouslyEnteredE164):
-                if let e164 = previouslyEnteredE164, let result = RegistrationPhoneNumber(e164: e164) {
+            switch state {
+            case let .initialRegistration(state):
+                if let e164 = state.previouslyEnteredE164, let result = RegistrationPhoneNumber(e164: e164) {
                     return result
                 }
                 return RegistrationPhoneNumber(
                     countryState: .defaultValue,
                     nationalNumber: ""
                 )
-            case let .reregistration(e164):
-                guard let result = RegistrationPhoneNumber(e164: e164) else {
+            case let .reregistration(state):
+                guard let result = RegistrationPhoneNumber(e164: state.e164) else {
                     owsFail("Could not parse re-registration E164")
-                }
-                return result
-            case let .changingPhoneNumber(e164):
-                guard let result = RegistrationPhoneNumber(e164: e164) else {
-                    owsFailBeta("Could not parse re-registration E164. Using fallback")
-                    return RegistrationPhoneNumber(countryState: .defaultValue, nationalNumber: "")
                 }
                 return result
             }
@@ -76,7 +48,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         self.phoneNumberInput.delegate = self
     }
 
-    public func updateState(_ state: RegistrationPhoneNumberState) {
+    public func updateState(_ state: RegistrationPhoneNumberViewState.RegistrationMode) {
         self.state = state
     }
 
@@ -92,7 +64,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
     // MARK: Internal state
 
-    private var state: RegistrationPhoneNumberState {
+    private var state: RegistrationPhoneNumberViewState.RegistrationMode {
         didSet { render() }
     }
     private weak var presenter: RegistrationPhoneNumberPresenter?
@@ -105,17 +77,22 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     private var nationalNumber: String { phoneNumberInput.nationalNumber }
     private var e164: E164? { phoneNumberInput.e164 }
 
-    private var localValidationError: RegistrationPhoneNumberValidationError? {
+    private var localValidationError: RegistrationPhoneNumberViewState.ValidationError? {
         didSet { render() }
     }
 
-    private var validationError: RegistrationPhoneNumberValidationError? {
-        return state.validationError ?? localValidationError
+    private var validationError: RegistrationPhoneNumberViewState.ValidationError? {
+        switch state {
+        case .initialRegistration(let initialRegistration):
+            return initialRegistration.validationError ?? localValidationError
+        case .reregistration(let reregistration):
+            return reregistration.validationError ?? localValidationError
+        }
     }
 
     private var canChangePhoneNumber: Bool {
-        switch state.mode {
-        case .initialRegistration, .changingPhoneNumber:
+        switch state {
+        case .initialRegistration:
             return true
         case .reregistration:
             return false
@@ -127,22 +104,15 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             return false
         }
 
-        switch state.mode {
+        switch state {
         case .initialRegistration:
             break
         case .reregistration:
             return true
-        case let .changingPhoneNumber(oldE164):
-            if e164 == oldE164 { return false }
         }
 
-        switch validationError {
-        case nil:
-            break
-        case let .invalidNumber(invalidE164):
-            if e164 == invalidE164 { return false }
-        case let .rateLimited(expiration):
-            if expiration > now { return false }
+        if validationError?.canSubmit(e164: e164, dateProvider: Date.provider) == false {
+            return false
         }
 
         return true
@@ -150,28 +120,16 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
     // MARK: Rendering
 
-    private lazy var proxyButton: UIButton = {
-        let result = ContextMenuButton(contextMenu: .init([
-            .init(
-                title: OWSLocalizedString(
-                    "USE_PROXY_BUTTON",
-                    comment: "Button to activate the signal proxy"
-                ),
-                handler: { [weak self] _ in
-                    guard let self else { return }
-                    let vc = ProxySettingsViewController()
-                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-                }
-            )
-        ]))
+    private lazy var contextButton: ContextMenuButton = {
+        let result = ContextMenuButton()
         result.showsContextMenuAsPrimaryAction = true
         result.autoSetDimensions(to: .square(40))
         return result
     }()
 
-    private lazy var proxyBarButton = UIBarButtonItem(
-        customView: proxyButton,
-        accessibilityIdentifier: "registration.phonenumber.proxyButton"
+    private lazy var contextBarButton = UIBarButtonItem(
+        customView: contextButton,
+        accessibilityIdentifier: "registration.verificationCode.contextButton"
     )
 
     private lazy var nextBarButton = UIBarButtonItem(
@@ -209,15 +167,8 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         let result = UILabel()
         result.textColor = .ows_accentRed
         result.numberOfLines = 0
-        result.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        result.font = UIFont.dynamicTypeSubheadlineClamped
         result.accessibilityIdentifier = "registration.phonenumber.validationWarningLabel"
-        return result
-    }()
-
-    private lazy var retryAfterFormatter: DateFormatter = {
-        let result = DateFormatter()
-        result.dateFormat = "m:ss"
-        result.timeZone = TimeZone(identifier: "UTC")!
         return result
     }()
 
@@ -245,17 +196,23 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 break
             }
 
-            switch state.mode {
+            switch state {
             case .reregistration:
                 return false
-            case .initialRegistration, .changingPhoneNumber:
-                break
+            case .initialRegistration:
+                return true
             }
-
-            return true
         }()
         if shouldBecomeFirstResponder {
             phoneNumberInput.becomeFirstResponder()
+        }
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if contextButton.isShowingContextMenu {
+            contextButton.dismissContextMenu(animated: animated)
         }
     }
 
@@ -265,8 +222,6 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     }
 
     private func initialRender() {
-        navigationItem.leftBarButtonItem = proxyBarButton
-
         let stackView = UIStackView()
 
         stackView.axis = .vertical
@@ -290,40 +245,62 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     }
 
     private func render() {
+        var actions: [ContextMenuAction] = [
+            .init(
+                title: OWSLocalizedString(
+                    "USE_PROXY_BUTTON",
+                    comment: "Button to activate the signal proxy"
+                ),
+                handler: { [weak self] _ in
+                    guard let self else { return }
+                    let vc = ProxySettingsViewController(shouldWaitForWebsocketOnSave: false)
+                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                }
+            )
+        ]
+        switch state {
+        case .initialRegistration:
+            break
+        case .reregistration:
+            actions.append(.init(
+                title: OWSLocalizedString(
+                    "EXIT_REREGISTRATION",
+                    comment: "Button to exit re-registration, shown in context menu."
+                ),
+                handler: { [weak self] _ in
+                    self?.presenter?.exitRegistration()
+                }
+            ))
+        }
+        contextButton.contextMenu = ContextMenu(actions)
+        navigationItem.leftBarButtonItem = contextBarButton
+
+        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.tintColor = Theme.accentBlueColor
+
         navigationItem.rightBarButtonItem = canSubmit ? nextBarButton : nil
 
         phoneNumberInput.isEnabled = canChangePhoneNumber
         phoneNumberInput.render()
 
         // We always render the warning label but sometimes invisibly. This avoids UI jumpiness.
-        switch validationError {
-        case nil:
-            validationWarningLabel.alpha = 0
-            validationWarningLabel.text = OWSLocalizedString(
-                "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
-                comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view."
-            )
-        case let .invalidNumber(invalidE164):
+        if
+            let e164,
+            let warningLabelText = validationError?.warningLabelText(e164: e164, dateProvider: Date.provider)
+        {
             validationWarningLabel.alpha = 1
-            validationWarningLabel.text = OWSLocalizedString(
-                "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
-                comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view."
-            )
-            showInvalidPhoneNumberAlertIfNecessary(for: invalidE164.stringValue)
-        case let .rateLimited(expiration):
-            validationWarningLabel.alpha = expiration > now ? 1 : 0
-            let rateLimitFormat = OWSLocalizedString(
-                "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT",
-                comment: "Label indicating that registration has been ratelimited. Embeds {{remaining time string}}."
-            )
-            let timeRemaining = max(expiration.timeIntervalSince(now), 0)
-            let durationString = retryAfterFormatter.string(from: Date(timeIntervalSinceReferenceDate: timeRemaining))
-            validationWarningLabel.text = String(format: rateLimitFormat, durationString)
+            validationWarningLabel.text = warningLabelText
+        } else {
+            validationWarningLabel.alpha = 0
+        }
+        switch validationError {
+        case nil, .rateLimited:
+            break
+        case let .invalidNumber(error):
+            showInvalidPhoneNumberAlertIfNecessary(for: error.invalidE164.stringValue)
         }
 
         view.backgroundColor = Theme.backgroundColor
-        proxyButton.setImage(Theme.iconImage(.more24), for: .normal)
-        proxyButton.tintColor = Theme.accentBlueColor
         nextBarButton.tintColor = Theme.accentBlueColor
         titleLabel.textColor = .colorForRegistrationTitleLabel
         explanationLabel.textColor = .colorForRegistrationExplanationLabel
@@ -377,7 +354,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             let phoneNumber = PhoneNumber(fromE164: e164.stringValue),
             PhoneNumberValidator().isValidForRegistration(phoneNumber: phoneNumber)
         else {
-            localValidationError = .invalidNumber(invalidE164: e164)
+            localValidationError = .invalidNumber(.init(invalidE164: e164))
             return
         }
         localValidationError = nil
@@ -388,11 +365,6 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             didConfirm: { [weak self] in self?.presenter?.goToNextStep(withE164: e164) },
             didRequestEdit: { [weak self] in self?.phoneNumberInput.becomeFirstResponder() }
         ))
-    }
-
-    @objc
-    private func didTimeAdvance() {
-        now = Date()
     }
 }
 

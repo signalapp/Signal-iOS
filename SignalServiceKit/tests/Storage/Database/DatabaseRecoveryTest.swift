@@ -15,6 +15,33 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         tsAccountManager.registerForTests(withLocalNumber: "+12225550101", uuid: UUID(), pni: UUID())
     }
 
+    // MARK: - Rebuild existing database
+
+    func testRebuildExistingDatabase() throws {
+        let (databaseStorage, url) = database()
+        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
+        try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
+
+        DatabaseRecovery.rebuildExistingDatabase(at: url)
+
+        // As a smoke test, ensure that the database is still empty.
+        let finishedDatabaseStorage = SDSDatabaseStorage(
+            databaseFileUrl: url,
+            delegate: DatabaseTestHelpers.TestSDSDatabaseStorageDelegate()
+        )
+        finishedDatabaseStorage.read { transaction in
+            let database = transaction.unwrapGrdbRead.database
+            for tableName in allNormalTableNames(transaction: transaction) {
+                let sql = "SELECT EXISTS (SELECT 1 FROM \(tableName))"
+                guard let anyRowExists = try? XCTUnwrap(Bool.fetchOne(database, sql: sql)) else {
+                    XCTFail("Could not fetch boolean from test query")
+                    return
+                }
+                XCTAssertFalse(anyRowExists, "\(tableName) had at least one row, unexpectedly")
+            }
+        }
+    }
+
     // MARK: - Dump and restore
 
     func testDumpedTables() throws {

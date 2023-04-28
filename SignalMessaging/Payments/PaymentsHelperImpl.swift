@@ -9,6 +9,26 @@ import SignalCoreKit
 @objc
 public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
 
+    @objc
+    public required override init() {
+        super.init()
+
+        self.observeNotifications()
+    }
+
+    private func observeNotifications() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(registrationStateDidChange),
+                                               name: .registrationStateDidChange,
+                                               object: nil)
+    }
+
+    @objc
+    func registrationStateDidChange() {
+        // Caches should be re-warmed after a registration state change.
+        warmCaches()
+    }
+
     public var isKillSwitchActive: Bool {
         RemoteConfig.paymentsResetKillSwitch || !hasValidPhoneNumberForPayments
     }
@@ -102,8 +122,10 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
     }
 
     public func enablePayments(transaction: SDSAnyWriteTransaction) {
-        // We must preserve any existing paymentsEntropy.
-        let paymentsEntropy = self.paymentsEntropy ?? Self.generateRandomPaymentsEntropy()
+        // We must preserve any existing paymentsEntropy, and then prefer "old" entropy, then last resort generate new entropy.
+        let existingPaymentsEntropy = self.paymentsEntropy
+        let oldPaymentsEntropy = Self.loadPaymentsState(transaction: transaction).paymentsEntropy
+        let paymentsEntropy = existingPaymentsEntropy ?? oldPaymentsEntropy ?? Self.generateRandomPaymentsEntropy()
         _ = enablePayments(withPaymentsEntropy: paymentsEntropy, transaction: transaction)
     }
 
@@ -197,19 +219,10 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
     }
 
     private static func loadPaymentsState(transaction: SDSAnyReadTransaction) -> PaymentsState {
-        func loadPaymentsEntropy() -> Data? {
-            guard storageCoordinator.isStorageReady else {
-                owsFailDebug("Storage is not ready.")
-                return nil
-            }
-            guard tsAccountManager.isRegisteredAndReady else {
-                return nil
-            }
-            return keyValueStore.getData(paymentsEntropyKey, transaction: transaction)
-        }
-        guard let paymentsEntropy = loadPaymentsEntropy() else {
+        guard tsAccountManager.isRegisteredAndReady(transaction: transaction) else {
             return .disabled
         }
+        let paymentsEntropy = keyValueStore.getData(paymentsEntropyKey, transaction: transaction)
         let arePaymentsEnabled = keyValueStore.getBool(Self.arePaymentsEnabledKey,
                                                        defaultValue: false,
                                                        transaction: transaction)

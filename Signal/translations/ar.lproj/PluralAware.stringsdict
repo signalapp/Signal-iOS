@@ -429,30 +429,6 @@
 			<string>وصلت المجموعة إلى الحد الأقصى لـ %1$d عضو.</string>
 		</dict>
 	</dict>
-	<key>EXPIRATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>zero</key>
-			<string>إصدار Signal الخاص بك سينتهي في %1$d يوم. انقر لتحديثه إلى الإصدار الأحدث.</string>
-			<key>one</key>
-			<string>إصدار Signal الخاص بك سينتهي في %1$d يوم. انقر لتحديثه إلى الإصدار الأحدث.</string>
-			<key>two</key>
-			<string>إصدار Signal الخاص بك سينتهي في %1$d يومين. انقر لتحديثه إلى الإصدار الأحدث.</string>
-			<key>few</key>
-			<string>إصدار Signal الخاص بك سينتهي في %1$d أيام. انقر لتحديثه إلى الإصدار الأحدث.</string>
-			<key>many</key>
-			<string>إصدار Signal الخاص بك سينتهي في %1$d يومًا. انقر لتحديثه إلى الإصدار الأحدث.</string>
-			<key>other</key>
-			<string>إصدار Signal الخاص بك سينتهي في %1$d يوم. انقر لتحديثه إلى الإصدار الأحدث.</string>
-		</dict>
-	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1173,6 +1149,30 @@
 			<string>%1$d عنصر</string>
 		</dict>
 	</dict>
+	<key>MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>إعادة توجيه %1$d</string>
+			<key>one</key>
+			<string>إعادة توجيه %1$d</string>
+			<key>two</key>
+			<string>إعادة توجيه %1$d</string>
+			<key>few</key>
+			<string>إعادة توجيه %1$d</string>
+			<key>many</key>
+			<string>إعادة توجيه %1$d</string>
+			<key>other</key>
+			<string>إعادة توجيه %1$d</string>
+		</dict>
+	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1640,17 +1640,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d attempts</string>
+			<string>%1$d محاولة</string>
 			<key>one</key>
-			<string>%1$d attempt</string>
+			<string>%1$d محاولة</string>
 			<key>two</key>
-			<string>%1$d attempts</string>
+			<string>%1$d محاولتان</string>
 			<key>few</key>
-			<string>%1$d attempts</string>
+			<string>%1$d محاولات</string>
 			<key>many</key>
-			<string>%1$d attempts</string>
+			<string>%1$d محاولة</string>
 			<key>other</key>
-			<string>%1$d attempts</string>
+			<string>%1$d محاولة</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

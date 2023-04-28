@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 public class CVComponentBodyText: CVComponentBase, CVComponent {
 
@@ -13,6 +13,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let bodyText: CVComponentState.BodyText
         let isTextExpanded: Bool
         let searchText: String?
+        let revealedSpoilerIds: Set<Int>
         let hasTapForMore: Bool
         let shouldUseAttributedText: Bool
         let hasPendingMessageRequest: Bool
@@ -49,6 +50,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
     private var searchText: String? {
         bodyTextState.searchText
+    }
+    private var revealedSpoilerIds: Set<Int> {
+        bodyTextState.revealedSpoilerIds
     }
     private var hasTapForMore: Bool {
         bodyTextState.hasTapForMore
@@ -149,7 +153,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
             // Add mentions.
             if let attributedString = attributedString {
-                attributedString.enumerateMentions { mention, range, _ in
+                attributedString.enumerateMentionsAndStyles { mention, _, range, _ in
                     guard let mention = mention else { return }
                     let mentionItem = CVTextLabel.MentionItem(mention: mention, range: range)
                     let item: CVTextLabel.Item = .mention(mentionItem: mentionItem)
@@ -353,6 +357,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let textExpansion = viewStateSnapshot.textExpansion
         let searchText = viewStateSnapshot.searchText
         let isTextExpanded = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
+        let revealedSpoilerIds = viewStateSnapshot.spoilerReveal.revealedSpoilerIds(
+            interactionUniqueId: interaction.uniqueId
+        )
 
         let items: [CVTextLabel.Item]
         var shouldUseAttributedText = false
@@ -384,11 +391,37 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     shouldUseAttributedText = !items.isEmpty
                 }
             case .attributedText(let attributedText):
-                items = detectItems(text: attributedText.string,
-                                    attributedString: attributedText,
-                                    hasPendingMessageRequest: hasPendingMessageRequest,
-                                    shouldAllowLinkification: shouldAllowLinkification,
-                                    textWasTruncated: textWasTruncated)
+                let dataItems = detectItems(
+                    text: attributedText.string,
+                    attributedString: attributedText,
+                    hasPendingMessageRequest: hasPendingMessageRequest,
+                    shouldAllowLinkification: shouldAllowLinkification,
+                    textWasTruncated: textWasTruncated
+                )
+                if FeatureFlags.textFormattingReceiveSupport {
+                    let spoilerItems: [CVTextLabel.Item] = MessageBodyRanges
+                        .spoilerAttributes(in: attributedText).compactMap { spoilerAttribute in
+                            guard revealedSpoilerIds.contains(spoilerAttribute.id).negated else {
+                                return nil
+                            }
+                            return .unrevealedSpoiler(
+                                CVTextLabel.UnrevealedSpoilerItem(
+                                    spoilerId: spoilerAttribute.id,
+                                    interactionUniqueId: interaction.uniqueId,
+                                    range: spoilerAttribute.effectiveRange
+                                )
+                            )
+                        }
+                    // Spoilers take precedence and overwrite other items. Where their ranges overlap,
+                    // we need to cut off the detected item ranges and replace with spoiler range.
+                    items = NSRangeUtil.replacingRanges(
+                        in: dataItems.sorted(by: { $0.range.location < $1.range.location }),
+                        withOverlapsIn: spoilerItems
+                    )
+                } else {
+                    items = dataItems
+                }
+
                 shouldUseAttributedText = true
             }
         } else {
@@ -398,6 +431,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return State(bodyText: bodyText,
                      isTextExpanded: isTextExpanded,
                      searchText: searchText,
+                     revealedSpoilerIds: revealedSpoilerIds,
                      hasTapForMore: hasTapForMore,
                      shouldUseAttributedText: shouldUseAttributedText,
                      hasPendingMessageRequest: hasPendingMessageRequest,
@@ -446,26 +480,26 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         owsAssertDebug(DisplayableText.kMaxJumbomojiCount == 5)
 
         if let jumbomojiCount = bodyText.jumbomojiCount {
-            let basePointSize = UIFont.ows_dynamicTypeBodyClamped.pointSize
+            let basePointSize = UIFont.dynamicTypeBodyClamped.pointSize
             switch jumbomojiCount {
             case 0:
                 break
             case 1:
-                return UIFont.ows_regularFont(withSize: basePointSize * 3.5)
+                return UIFont.regularFont(ofSize: basePointSize * 3.5)
             case 2:
-                return UIFont.ows_regularFont(withSize: basePointSize * 3.0)
+                return UIFont.regularFont(ofSize: basePointSize * 3.0)
             case 3:
-                return UIFont.ows_regularFont(withSize: basePointSize * 2.75)
+                return UIFont.regularFont(ofSize: basePointSize * 2.75)
             case 4:
-                return UIFont.ows_regularFont(withSize: basePointSize * 2.5)
+                return UIFont.regularFont(ofSize: basePointSize * 2.5)
             case 5:
-                return UIFont.ows_regularFont(withSize: basePointSize * 2.25)
+                return UIFont.regularFont(ofSize: basePointSize * 2.25)
             default:
                 owsFailDebug("Unexpected jumbomoji count: \(jumbomojiCount)")
             }
         }
 
-        return UIFont.ows_dynamicTypeBody
+        return UIFont.dynamicTypeBody
     }
 
     private var bodyTextColor: UIColor {
@@ -583,7 +617,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                         ? NSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted")
                         : NSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you"))
         return CVLabelConfig(text: text,
-                             font: textMessageFont.ows_italic,
+                             font: textMessageFont.italic(),
                              textColor: bodyTextColor,
                              numberOfLines: 0,
                              lineBreakMode: .byWordWrapping,
@@ -594,7 +628,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let text = NSLocalizedString("MESSAGE_STATUS_DOWNLOADING",
                                      comment: "message status while message is downloading.")
         return CVLabelConfig(text: text,
-                             font: textMessageFont.ows_italic,
+                             font: textMessageFont.italic(),
                              textColor: bodyTextColor,
                              numberOfLines: 0,
                              lineBreakMode: .byWordWrapping,
@@ -672,8 +706,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 continue
             }
             switch item {
-            case .mention, .referencedUser:
-                // Do nothing; mentions and referenced users are already styled.
+            case .mention, .referencedUser, .unrevealedSpoiler:
+                // Do nothing; these are already styled.
                 continue
             case .dataItem(let dataItem):
                 guard let link = dataItem.url.absoluteString.nilIfEmpty else {
@@ -721,6 +755,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         )
         linkifyData(attributedText: attributedText)
 
+        var matchedSearchRangeColors = [(NSRange, UIColor)]()
         if let searchText = searchText,
            searchText.count >= ConversationSearchController.kMinimumSearchTextLength {
             let searchableText = FullTextSearchFinder.normalize(text: searchText)
@@ -731,12 +766,35 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                            options: [.withoutAnchoringBounds],
                                            range: attributedText.string.entireRange) {
                     owsAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength)
-                    attributedText.addAttribute(.backgroundColor, value: UIColor.yellow, range: match.range)
+                    let highlightColor = UIColor.yellow
+                    attributedText.addAttribute(.backgroundColor, value: highlightColor, range: match.range)
                     attributedText.addAttribute(.foregroundColor, value: UIColor.ows_black, range: match.range)
+                    matchedSearchRangeColors.append((match.range, highlightColor))
                 }
             } catch {
                 owsFailDebug("Error: \(error)")
             }
+        }
+
+        if FeatureFlags.textFormattingReceiveSupport {
+            // Styles take precedence over everything else, so apply them last.
+            // TODO[TextFormatting]: spoilers in search results should change both
+            // the highlight and the text color to yellow.
+            MessageBodyRanges.applyStyleAttributes(
+                on: attributedText,
+                baseFont: textMessageFont,
+                textColor: bodyTextColor,
+                spoilerStyler: { spoilerAttribute in
+                    if revealedSpoilerIds.contains(spoilerAttribute.id) {
+                        return .revealed
+                    } else {
+                        return .concealedWithHighlight(MessageBodyRanges.SpoilerStyle.HighlightColors(
+                            baseColor: bodyTextColor,
+                            otherColors: matchedSearchRangeColors
+                        ))
+                    }
+                }
+            )
         }
 
         var extraCacheKeyFactors = [String]()
@@ -803,10 +861,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         let bodyTextLabel = componentView.bodyTextLabel
         if let item = bodyTextLabel.itemForGesture(sender: sender) {
+            bodyTextLabel.animate(selectedItem: item)
             componentDelegate.didTapBodyTextItem(item)
             return true
         }
-
         if hasTapForMore {
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
             componentDelegate.didTapTruncatedTextMessage(itemViewModel)
@@ -834,6 +892,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         guard let item = bodyTextLabel.itemForGesture(sender: sender) else {
             return nil
         }
+        bodyTextLabel.animate(selectedItem: item)
         return CVLongPressHandler(delegate: componentDelegate,
                                   renderItem: renderItem,
                                   gestureLocation: .bodyText(item: item))

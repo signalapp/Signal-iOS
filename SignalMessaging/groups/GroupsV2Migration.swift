@@ -459,7 +459,7 @@ fileprivate extension GroupsV2Migration {
                                                      groupUpdateSourceAddress: localAddress,
                                                      shouldSendMessage: true)
         }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> TSGroupThread in
-            self.profileManager.addThread(toProfileWhitelist: groupThread, authedAccount: .implicit())
+            self.profileManager.addThread(toProfileWhitelist: groupThread)
 
             Logger.info("Group migrated to service")
 

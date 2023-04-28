@@ -20,7 +20,6 @@
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSUpload.h>
 #import <SignalServiceKit/OWSUserProfile.h>
-#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -347,6 +346,11 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return self.localUserProfile.profileBadgeInfo;
 }
 
+- (BOOL)localProfileIsPniCapable
+{
+    return self.localUserProfile.isPniCapable;
+}
+
 - (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
 {
     return [self profileSnapshotForUserProfile:self.localUserProfile shouldIncludeAvatar:shouldIncludeAvatar];
@@ -556,7 +560,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 }
 
 // TODO: We could add a userProfileWriter parameter.
-- (void)removeThreadFromProfileWhitelist:(TSThread *)thread authedAccount:(AuthedAccount *)authedAccount
+- (void)removeThreadFromProfileWhitelist:(TSThread *)thread
 {
     OWSLogWarn(@"Removing thread from profile whitelist: %@", thread);
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -564,7 +568,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
             TSContactThread *contactThread = (TSContactThread *)thread;
             [self removeUserFromProfileWhitelist:contactThread.contactAddress
                                userProfileWriter:UserProfileWriter_LocalUser
-                                   authedAccount:authedAccount
                                      transaction:transaction];
         } else {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
@@ -650,16 +653,15 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                                 completion:nil];
 }
 
-- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
 
-    [self addUsersToProfileWhitelist:@[ address ] authedAccount:authedAccount];
+    [self addUsersToProfileWhitelist:@[ address ]];
 }
 
 // TODO: We could add a userProfileWriter parameter.
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
-                     authedAccount:(AuthedAccount *)authedAccount
 {
     OWSAssertDebug(addresses);
 
@@ -676,7 +678,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
             DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
                 [self addConfirmedUnwhitelistedAddresses:addressesToAdd
                                        userProfileWriter:UserProfileWriter_LocalUser
-                                           authedAccount:authedAccount
                                              transaction:writeTransaction];
             });
         }];
@@ -685,7 +686,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
                 userProfileWriter:(UserProfileWriter)userProfileWriter
-                    authedAccount:(AuthedAccount *)authedAccount
                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -694,13 +694,11 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     NSSet *addressesToAdd = [self addressesNotBlockedOrInWhitelist:@[ address ] transaction:transaction];
     [self addConfirmedUnwhitelistedAddresses:addressesToAdd
                            userProfileWriter:userProfileWriter
-                               authedAccount:authedAccount
                                  transaction:transaction];
 }
 
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
                  userProfileWriter:(UserProfileWriter)userProfileWriter
-                     authedAccount:(AuthedAccount *)authedAccount
                        transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(addresses);
@@ -715,20 +713,18 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
     [self addConfirmedUnwhitelistedAddresses:addressesToAdd
                            userProfileWriter:userProfileWriter
-                               authedAccount:authedAccount
                                  transaction:transaction];
 }
 
-- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
 
-    [self removeUsersFromProfileWhitelist:@[ address ] authedAccount:authedAccount];
+    [self removeUsersFromProfileWhitelist:@[ address ]];
 }
 
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
                      userProfileWriter:(UserProfileWriter)userProfileWriter
-                         authedAccount:(AuthedAccount *)authedAccount
                            transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -737,13 +733,11 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     NSSet *addressesToRemove = [self addressesInWhitelist:@[ address ] transaction:transaction];
     [self removeConfirmedWhitelistedAddresses:addressesToRemove
                             userProfileWriter:userProfileWriter
-                                authedAccount:authedAccount
                                   transaction:transaction];
 }
 
 // TODO: We could add a userProfileWriter parameter.
 - (void)removeUsersFromProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
-                          authedAccount:(AuthedAccount *)authedAccount
 {
     OWSAssertDebug(addresses);
 
@@ -759,7 +753,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
             [self removeConfirmedWhitelistedAddresses:addressesToRemove
                                     userProfileWriter:UserProfileWriter_LocalUser
-                                        authedAccount:authedAccount
                                           transaction:writeTransaction];
         });
     }];
@@ -847,7 +840,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
 - (void)removeConfirmedWhitelistedAddresses:(NSSet<SignalServiceAddress *> *)addressesToRemove
                           userProfileWriter:(UserProfileWriter)userProfileWriter
-                              authedAccount:(AuthedAccount *)authedAccount
                                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (addressesToRemove.count == 0) {
@@ -873,8 +865,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     [transaction addSyncCompletion:^{
         // Mark the removed whitelisted addresses for update
         if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
-            [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects
-                                                                   authedAccount:authedAccount];
+            [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects];
         }
 
         for (SignalServiceAddress *address in addressesToRemove) {
@@ -891,7 +882,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
 - (void)addConfirmedUnwhitelistedAddresses:(NSSet<SignalServiceAddress *> *)addressesToAdd
                          userProfileWriter:(UserProfileWriter)userProfileWriter
-                             authedAccount:(AuthedAccount *)authedAccount
                                transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (addressesToAdd.count == 0) {
@@ -917,8 +907,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     [transaction addSyncCompletion:^{
         // Mark the new whitelisted addresses for update
         if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
-            [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects
-                                                                   authedAccount:authedAccount];
+            [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects];
         }
 
         for (SignalServiceAddress *address in addressesToAdd) {
@@ -1099,7 +1088,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     }];
 }
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread authedAccount:(AuthedAccount *)authedAccount
+- (void)addThreadToProfileWhitelist:(TSThread *)thread
 {
     OWSAssertDebug(thread);
 
@@ -1109,14 +1098,12 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         [self addGroupIdToProfileWhitelist:groupId];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [self addUserToProfileWhitelist:contactThread.contactAddress authedAccount:authedAccount];
+        [self addUserToProfileWhitelist:contactThread.contactAddress];
     }
 }
 
 // TODO: We could add a userProfileWriter parameter.
-- (void)addThreadToProfileWhitelist:(TSThread *)thread
-                      authedAccount:(AuthedAccount *)authedAccount
-                        transaction:(SDSAnyWriteTransaction *)transaction
+- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
 
@@ -1130,7 +1117,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress
                       userProfileWriter:UserProfileWriter_LocalUser
-                          authedAccount:authedAccount
                             transaction:transaction];
     }
 }
@@ -1693,12 +1679,13 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                      familyName:(nullable NSString *)familyName
                             bio:(nullable NSString *)bio
                        bioEmoji:(nullable NSString *)bioEmoji
-               isStoriesCapable:(BOOL)isStoriesCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
-           canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                   lastFetchDate:(NSDate *)lastFetchDate
+               isStoriesCapable:(BOOL)isStoriesCapable
+           canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
+                   isPniCapable:(BOOL)isPniCapable
               userProfileWriter:(UserProfileWriter)userProfileWriter
                   authedAccount:(AuthedAccount *)authedAccount
                     transaction:(SDSAnyWriteTransaction *)writeTx
@@ -1726,23 +1713,25 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                                                                     authedAccount:authedAccount
                                                                       transaction:writeTx];
     if (!userProfile.profileKey) {
-        [userProfile updateWithIsStoriesCapable:isStoriesCapable
-                           canReceiveGiftBadges:canReceiveGiftBadges
-                                  lastFetchDate:lastFetchDate
-                              userProfileWriter:userProfileWriter
-                                  authedAccount:authedAccount
-                                    transaction:writeTx];
+        [userProfile updateWithLastFetchDate:lastFetchDate
+                            isStoriesCapable:isStoriesCapable
+                        canReceiveGiftBadges:canReceiveGiftBadges
+                                isPniCapable:isPniCapable
+                           userProfileWriter:userProfileWriter
+                               authedAccount:authedAccount
+                                 transaction:writeTx];
     } else if (optionalAvatarFileUrl.lastPathComponent) {
         [userProfile updateWithGivenName:givenName
                               familyName:familyName
                                      bio:bio
                                 bioEmoji:bioEmoji
-                        isStoriesCapable:isStoriesCapable
                                   badges:profileBadges
-                    canReceiveGiftBadges:canReceiveGiftBadges
                            avatarUrlPath:avatarUrlPath
                           avatarFileName:optionalAvatarFileUrl.lastPathComponent
                            lastFetchDate:lastFetchDate
+                        isStoriesCapable:isStoriesCapable
+                    canReceiveGiftBadges:canReceiveGiftBadges
+                            isPniCapable:isPniCapable
                        userProfileWriter:userProfileWriter
                            authedAccount:authedAccount
                              transaction:writeTx
@@ -1752,11 +1741,12 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                               familyName:familyName
                                      bio:bio
                                 bioEmoji:bioEmoji
-                        isStoriesCapable:isStoriesCapable
                                   badges:profileBadges
-                    canReceiveGiftBadges:canReceiveGiftBadges
                            avatarUrlPath:avatarUrlPath
                            lastFetchDate:lastFetchDate
+                        isStoriesCapable:isStoriesCapable
+                    canReceiveGiftBadges:canReceiveGiftBadges
+                            isPniCapable:isPniCapable
                        userProfileWriter:userProfileWriter
                            authedAccount:authedAccount
                              transaction:writeTx

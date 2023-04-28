@@ -7,7 +7,6 @@
 #import "Contact.h"
 #import "ContactsManagerProtocol.h"
 #import "NSData+Image.h"
-#import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import "UIImage+OWS.h"
 #import <SignalCoreKit/Cryptography.h>

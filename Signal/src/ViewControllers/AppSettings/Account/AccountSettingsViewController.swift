@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 @objc
 class AccountSettingsViewController: OWSTableViewController2 {
@@ -30,6 +30,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         super.viewWillAppear(animated)
 
         updateTableContents()
+        tableView.layoutIfNeeded()
     }
 
     func updateTableContents() {
@@ -50,7 +51,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 " ",
                 CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/hc/articles/360007059792")!))
             ]).styled(
-                with: .font(.ows_dynamicTypeCaption1Clamped),
+                with: .font(.dynamicTypeCaption1Clamped),
                 .color(Theme.secondaryTextAndIconColor)
             )
 
@@ -123,7 +124,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         let accountSection = OWSTableSection()
         accountSection.headerTitle = NSLocalizedString("SETTINGS_ACCOUNT", comment: "Title for the 'account' link in settings.")
 
-        if tsAccountManager.isDeregistered() {
+        if tsAccountManager.isDeregistered {
             accountSection.add(.actionItem(
                 withText: tsAccountManager.isPrimaryDevice
                     ? NSLocalizedString("SETTINGS_REREGISTER_BUTTON", comment: "Label for re-registration button.")
@@ -144,51 +145,41 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 }
             ))
         } else if tsAccountManager.isRegisteredPrimaryDevice {
-            if FeatureFlags.useNewRegistrationFlow {
-                if self.changeNumberParams() != nil {
-                    accountSection.add(.actionItem(
-                        withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
-                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
-                        actionBlock: { [weak self] in
-                            guard let self, let changeNumberParams = self.changeNumberParams() else {
-                                return
-                            }
+            switch self.changeNumberState() {
+            case .disallowed:
+                break
+            case .allowed:
+                accountSection.add(.actionItem(
+                    withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
+                    actionBlock: { [weak self] in
+                        guard let self else {
+                            return
+                        }
+                        // Fetch the state again in case it changed from under us
+                        // between when the button was rendered and when it was tapped.
+                        switch self.changeNumberState() {
+                        case .disallowed:
+                            return
+                        case .allowed(let changeNumberParams):
                             self.changePhoneNumber(changeNumberParams)
                         }
-                    ))
-                }
-            } else {
-                let shouldShowChangePhoneNumber: Bool = {
-                    guard RemoteConfig.changePhoneNumberUI else {
-                        return false
-                    }
-                    return Self.databaseStorage.read { transaction in
-                        self.legacyChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction)
-                    }
-                }()
-                if shouldShowChangePhoneNumber {
-                    accountSection.add(.actionItem(
-                        withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
-                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
-                        actionBlock: { [weak self] in
-                            self?.deprecated_changePhoneNumber()
-                        }
-                    ))
-                }
-            }
-            if FeatureFlags.canRequestAccountData {
-                accountSection.add(.actionItem(
-                    // TODO[ADE]: Localize this string
-                    withText: "Request Account Data",
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(
-                        in: self,
-                        name: "request_account_data"
-                    ),
-                    actionBlock: { [weak self] in
-                        self?.requestAccountData()
                     }
                 ))
             }
+            accountSection.add(.actionItem(
+                withText: NSLocalizedString(
+                    "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON",
+                    comment: "Label for button in settings to get your account data report"
+                ),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(
+                    in: self,
+                    name: "request_account_data_report"
+                ),
+                actionBlock: { [weak self] in
+                    self?.requestAccountDataReport()
+                }
+            ))
             accountSection.add(.actionItem(
                 withText: NSLocalizedString("SETTINGS_DELETE_ACCOUNT_BUTTON", comment: ""),
                 textColor: .ows_accentRed,
@@ -247,8 +238,8 @@ class AccountSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    private func requestAccountData() {
-        let vc = RequestAccountDataViewController()
+    private func requestAccountDataReport() {
+        let vc = RequestAccountDataReportViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -258,19 +249,32 @@ class AccountSettingsViewController: OWSTableViewController2 {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    private func changeNumberParams() -> RegistrationMode.ChangeNumberParams? {
-        guard RemoteConfig.changePhoneNumberUI else {
-            return nil
-        }
-        return databaseStorage.read { transaction in
+    enum ChangeNumberState {
+        case disallowed
+        case allowed(RegistrationMode.ChangeNumberParams)
+    }
+
+    private func changeNumberState() -> ChangeNumberState {
+        return databaseStorage.read { transaction -> ChangeNumberState in
             guard self.legacyChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction) else {
-                return nil
+                return .disallowed
+            }
+            guard self.tsAccountManager.isDeregistered(transaction: transaction).negated else {
+                return .disallowed
+            }
+            let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
+            switch loader.restoreLastMode(transaction: transaction.asV2Read) {
+            case .none, .changingNumber:
+                break
+            case .registering, .reRegistering:
+                // Don't allow changing number if we are in the middle of registering.
+                return .disallowed
             }
             guard
                 let localAddress = tsAccountManager.localAddress(with: transaction),
                 let localAci = localAddress.uuid,
                 let localE164 = localAddress.e164,
-                let authToken = tsAccountManager.storedServerAuthToken(with: transaction),
+                let authToken = tsAccountManager.storedServerAuthToken(transaction: transaction),
                 let localRecipient = SignalRecipient.get(
                     address: localAddress,
                     mustHaveDevices: false,
@@ -279,25 +283,23 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 let localUserAllDeviceIds = localRecipient.deviceIds,
                 let localAccountId = localRecipient.accountId
             else {
-                return nil
+                return .disallowed
             }
-            let localDeviceId = tsAccountManager.storedDeviceId(with: transaction)
+            let localDeviceId = tsAccountManager.storedDeviceId(transaction: transaction)
 
-            return RegistrationMode.ChangeNumberParams(
+            return .allowed(RegistrationMode.ChangeNumberParams(
                 oldE164: localE164,
                 oldAuthToken: authToken,
                 localAci: localAci,
                 localAccountId: localAccountId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds
-            )
+            ))
         }
     }
 
     private func changePhoneNumber(_ params: RegistrationMode.ChangeNumberParams) {
-        guard FeatureFlags.useNewRegistrationFlow else {
-            return
-        }
+        Logger.info("Attempting to start change number from settings")
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.changingNumber(params)
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
@@ -426,7 +428,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     private func showChangePin() {
-        let vc = PinSetupViewController(mode: .changing) { [weak self] _, _ in
+        let vc = PinSetupViewController(mode: .changing, hideNavigationBar: false) { [weak self] _, _ in
             guard let self = self else { return }
             self.navigationController?.popToViewController(self, animated: true)
         }
@@ -436,10 +438,10 @@ class AccountSettingsViewController: OWSTableViewController2 {
     private func showCreatePin(enableRegistrationLock: Bool = false) {
         let vc = PinSetupViewController(
             mode: .creating,
+            hideNavigationBar: false,
             enableRegistrationLock: enableRegistrationLock
         ) { [weak self] _, _ in
             guard let self = self else { return }
-            self.navigationController?.setNavigationBarHidden(false, animated: false)
             self.navigationController?.popToViewController(self, animated: true)
         }
         navigationController?.pushViewController(vc, animated: true)

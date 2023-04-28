@@ -9,7 +9,6 @@
 #import "MessageSender.h"
 #import "OWSError.h"
 #import "OWSReceiptsForSenderMessage.h"
-#import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSYapDatabaseObject.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

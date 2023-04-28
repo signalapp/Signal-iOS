@@ -28,7 +28,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testShouldNotStartExpireTimerWithMessageThatDoesNotExpire() {
         write { transaction in
-            let otherAddress = SignalServiceAddress(phoneNumber: "+12223334444")
+            let otherServiceId = ServiceId(UUID())
+            let otherAddress = SignalServiceAddress(uuid: otherServiceId.uuidValue, phoneNumber: "+12223334444")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = 100
@@ -36,7 +37,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             XCTAssertFalse(message.shouldStartExpireTimer())
 
-            message.update(withSentRecipient: otherAddress, wasSentByUD: false, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: false, transaction: transaction)
 
             XCTAssertFalse(message.shouldStartExpireTimer())
         }
@@ -44,7 +45,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testShouldStartExpireTimerWithSentMessage() {
         write { transaction in
-            let otherAddress = SignalServiceAddress(phoneNumber: "+12223334444")
+            let otherServiceId = ServiceId(UUID())
+            let otherAddress = SignalServiceAddress(uuid: otherServiceId.uuidValue, phoneNumber: "+12223334444")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = 100
@@ -53,7 +55,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             XCTAssertFalse(message.shouldStartExpireTimer())
 
-            message.update(withSentRecipient: otherAddress, wasSentByUD: false, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: false, transaction: transaction)
 
             XCTAssertTrue(message.shouldStartExpireTimer())
         }
@@ -112,7 +114,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testReceiptClearsSharePhoneNumber() {
         write { transaction in
-            let otherAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+12223334444")
+            let otherServiceId = ServiceId(UUID())
+            let otherAddress = SignalServiceAddress(uuid: otherServiceId.uuidValue, phoneNumber: "+12223334444")
             identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
@@ -121,7 +124,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: otherAddress, wasSentByUD: true, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: true, transaction: transaction)
 
             let payloadId = MessageSendLog.recordPayload(messageData, forMessageBeingSent: message, transaction: transaction) as! Int64
             MessageSendLog.recordPendingDelivery(payloadId: payloadId,
@@ -145,7 +148,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testReceiptClearsSharePhoneNumberOnlyOnLastDevice() {
         write { transaction in
-            let otherAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+12223334444")
+            let otherServiceId = ServiceId(UUID())
+            let otherAddress = SignalServiceAddress(uuid: otherServiceId.uuidValue, phoneNumber: "+12223334444")
             identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
@@ -154,7 +158,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: otherAddress, wasSentByUD: true, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: true, transaction: transaction)
 
             let payloadId = MessageSendLog.recordPayload(messageData, forMessageBeingSent: message, transaction: transaction) as! Int64
             MessageSendLog.recordPendingDelivery(payloadId: payloadId,
@@ -193,7 +197,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testReceiptDoesNotClearSharePhoneNumberIfNotSealedSender() {
         write { transaction in
-            let otherAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+12223334444")
+            let otherServiceId = ServiceId(UUID())
+            let otherAddress = SignalServiceAddress(uuid: otherServiceId.uuidValue, phoneNumber: "+12223334444")
             identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
@@ -202,7 +207,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: otherAddress, wasSentByUD: false, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: false, transaction: transaction)
 
             let payloadId = MessageSendLog.recordPayload(messageData, forMessageBeingSent: message, transaction: transaction) as! Int64
             MessageSendLog.recordPendingDelivery(payloadId: payloadId,
@@ -227,7 +232,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testReceiptDoesNotClearSharePhoneNumberIfNoPniSignature() {
         write { transaction in
-            let otherAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+12223334444")
+            let otherServiceId = ServiceId(UUID())
+            let otherAddress = SignalServiceAddress(uuid: otherServiceId.uuidValue, phoneNumber: "+12223334444")
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
@@ -235,7 +241,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: otherAddress, wasSentByUD: true, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: true, transaction: transaction)
 
             let payloadId = MessageSendLog.recordPayload(messageData, forMessageBeingSent: message, transaction: transaction) as! Int64
             MessageSendLog.recordPendingDelivery(payloadId: payloadId,
@@ -260,7 +266,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
     }
 
     func testReceiptDoesNotClearSharePhoneNumberIfPniHasChanged() {
-        let otherAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+12223334444")
+        let otherServiceId = ServiceId(UUID())
+        let otherAddress = SignalServiceAddress(uuid: otherServiceId.uuidValue, phoneNumber: "+12223334444")
         var message: TSOutgoingMessage!
 
         write { transaction in
@@ -272,7 +279,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: otherAddress, wasSentByUD: true, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC(otherServiceId), wasSentByUD: true, transaction: transaction)
 
             let payloadId = MessageSendLog.recordPayload(messageData, forMessageBeingSent: message, transaction: transaction) as! Int64
             MessageSendLog.recordPendingDelivery(payloadId: payloadId,

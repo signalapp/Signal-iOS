@@ -163,7 +163,7 @@ extension BlockingManager {
         updateCurrentState(transaction: transaction, wasLocallyInitiated: blockMode.locallyInitiated) { state in
             let didAdd = state.addBlockedAddress(address)
             if didAdd && blockMode.locallyInitiated {
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [address], authedAccount: .implicit())
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
             }
         }
     }
@@ -181,7 +181,7 @@ extension BlockingManager {
         updateCurrentState(transaction: transaction, wasLocallyInitiated: wasLocallyInitiated) { state in
             let didRemove = state.removeBlockedAddress(address)
             if didRemove && wasLocallyInitiated {
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [address], authedAccount: .implicit())
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
             }
         }
     }
@@ -249,6 +249,8 @@ extension BlockingManager {
             return isAddressBlocked(contactThread.contactAddress, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
             return isGroupIdBlocked(groupThread.groupModel.groupId, transaction: transaction)
+        } else if thread is TSPrivateStoryThread {
+            return false
         } else {
             owsFailDebug("Invalid thread: \(type(of: thread))")
             return false

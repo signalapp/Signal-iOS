@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     private var callingCode = "+1"
@@ -106,7 +106,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         imageView.autoHCenterInSuperview()
 
         let titleLabel = UILabel()
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+        titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
         titleLabel.text = NSLocalizedString(
@@ -117,7 +117,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         let descriptionLabel = UILabel()
         descriptionLabel.numberOfLines = 0
         descriptionLabel.lineBreakMode = .byWordWrapping
-        descriptionLabel.font = .ows_dynamicTypeSubheadline
+        descriptionLabel.font = .dynamicTypeSubheadline
         descriptionLabel.textColor = Theme.secondaryTextAndIconColor
         descriptionLabel.textAlignment = .center
         descriptionLabel.text = NSLocalizedString(

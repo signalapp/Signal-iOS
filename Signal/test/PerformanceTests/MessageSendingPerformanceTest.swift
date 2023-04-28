@@ -27,11 +27,11 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
     override func setUp() {
         super.setUp()
 
-        let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.networkManagerRef = self.stubbableNetworkManager
+        let sskEnvironment = SSKEnvironment.shared
+        sskEnvironment.setNetworkManagerForUnitTests(self.stubbableNetworkManager)
 
-        // use the *real* message sender to measure it's perf
-        sskEnvironment.messageSenderRef = MessageSender()
+        // use the *real* message sender to measure its perf
+        sskEnvironment.setMessageSenderForUnitTests(MessageSender())
         Self.sskJobQueues.messageSenderJobQueue.setup()
 
         try! databaseStorage.grdbStorage.setup()
@@ -170,7 +170,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
             self.write { transaction in
                 TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
                 TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-                SSKMessageSenderJobRecord.anyRemoveAllWithInstantation(transaction: transaction)
+                MessageSenderJobRecord.anyRemoveAllWithInstantiation(transaction: transaction)
                 OWSRecipientIdentity.anyRemoveAllWithInstantation(transaction: transaction)
             }
         }

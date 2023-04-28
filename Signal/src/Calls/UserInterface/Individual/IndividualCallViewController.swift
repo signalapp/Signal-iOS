@@ -388,7 +388,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         contactNameLabel.trailingBuffer = ScaleFromIPhone5(80.0)
 
         // label config
-        contactNameLabel.font = UIFont.ows_dynamicTypeTitle1
+        contactNameLabel.font = UIFont.dynamicTypeTitle1
         contactNameLabel.textAlignment = .center
         contactNameLabel.textColor = UIColor.white
         contactNameLabel.layer.shadowOffset = .zero
@@ -397,7 +397,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         topGradientView.addSubview(contactNameLabel)
 
-        callStatusLabel.font = UIFont.ows_dynamicTypeBody
+        callStatusLabel.font = UIFont.dynamicTypeBody
         callStatusLabel.textAlignment = .center
         callStatusLabel.textColor = UIColor.white
         callStatusLabel.layer.shadowOffset = .zero
@@ -1004,12 +1004,12 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         needPermissionLabel.lineBreakMode = .byWordWrapping
         needPermissionLabel.textAlignment = .center
         needPermissionLabel.textColor = Theme.darkThemePrimaryColor
-        needPermissionLabel.font = .ows_dynamicTypeBody
+        needPermissionLabel.font = .dynamicTypeBody
         needPermissionStack.addArrangedSubview(needPermissionLabel)
 
         let okayButton = OWSFlatButton()
         okayButton.useDefaultCornerRadius()
-        okayButton.setTitle(title: CommonStrings.okayButton, font: UIFont.ows_dynamicTypeBody.ows_semibold, titleColor: Theme.accentBlueColor)
+        okayButton.setTitle(title: CommonStrings.okayButton, font: UIFont.dynamicTypeBody.semibold(), titleColor: Theme.accentBlueColor)
         okayButton.setBackgroundColors(upColor: .ows_gray05)
         okayButton.contentEdgeInsets = UIEdgeInsets(top: 13, left: 34, bottom: 13, right: 34)
 

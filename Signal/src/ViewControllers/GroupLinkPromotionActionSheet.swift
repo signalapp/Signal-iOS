@@ -131,7 +131,7 @@ public class GroupLinkPromotionActionSheet: UIView {
             let captionLabel = builder.buildLabel(text: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION",
                                                                      comment: "Explanation of the 'approve new group members' switch."),
                                              textColor: Theme.secondaryTextAndIconColor,
-                                             font: .ows_dynamicTypeCaption1)
+                                             font: .dynamicTypeCaption1)
 
             let captionContainer = UIView()
             captionContainer.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 0)

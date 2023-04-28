@@ -36,7 +36,7 @@ class StoryReplyPreviewView: UIView {
         hStack.addArrangedSubview(vStack)
 
         let authorLabel = UILabel()
-        authorLabel.font = UIFont.ows_dynamicTypeFootnote.ows_semibold
+        authorLabel.font = UIFont.dynamicTypeFootnote.semibold()
         authorLabel.textColor = Theme.darkThemePrimaryColor
         authorLabel.setCompressionResistanceHigh()
 
@@ -67,10 +67,10 @@ class StoryReplyPreviewView: UIView {
         descriptionLabel.setCompressionResistanceHigh()
 
         if let body = quotedReplyModel.body?.nilIfEmpty {
-            descriptionLabel.font = .ows_dynamicTypeSubheadline
+            descriptionLabel.font = .dynamicTypeSubheadline
             descriptionLabel.text = body
         } else {
-            descriptionLabel.font = UIFont.ows_dynamicTypeSubheadline.ows_italic
+            descriptionLabel.font = UIFont.dynamicTypeSubheadline.italic()
             descriptionLabel.text = description(forContentType: quotedReplyModel.contentType)
         }
 

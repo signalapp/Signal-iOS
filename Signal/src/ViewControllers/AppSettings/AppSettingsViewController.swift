@@ -271,7 +271,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                     if unreadPaymentsCount > 0 {
                         let unreadLabel = UILabel()
                         unreadLabel.text = OWSFormat.formatUInt(min(9, unreadPaymentsCount))
-                        unreadLabel.font = .ows_dynamicTypeBody2Clamped
+                        unreadLabel.font = .dynamicTypeBody2Clamped
                         unreadLabel.textColor = .ows_white
 
                         let unreadBadge = OWSLayerView.circleView()
@@ -383,7 +383,7 @@ class AppSettingsViewController: OWSTableViewController2 {
 
         let nameLabel = UILabel()
         vStackView.addArrangedSubview(nameLabel)
-        nameLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_medium
+        nameLabel.font = UIFont.dynamicTypeTitle2Clamped.medium()
         if let fullName = snapshot.fullName, !fullName.isEmpty {
             nameLabel.text = fullName
             nameLabel.textColor = Theme.primaryTextColor
@@ -399,7 +399,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             guard let text = text, !text.isEmpty else { return }
 
             let label = UILabel()
-            label.font = .ows_dynamicTypeFootnoteClamped
+            label.font = .dynamicTypeFootnoteClamped
             label.text = text
             label.textColor = Theme.secondaryTextAndIconColor
 

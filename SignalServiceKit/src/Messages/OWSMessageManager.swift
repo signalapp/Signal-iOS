@@ -190,6 +190,54 @@ extension OWSMessageManager {
     }
 
     @objc
+    func handleIncomingSyncRequest(_ request: SSKProtoSyncMessageRequest, transaction: SDSAnyWriteTransaction) {
+        guard tsAccountManager.isRegisteredPrimaryDevice else {
+            // Don't respond to sync requests from a linked device.
+            return
+        }
+        switch request.type {
+        case .contacts:
+            // We respond asynchronously because populating the sync message will
+            // create transactions and it's not practical (due to locking in the
+            // OWSIdentityManager) to plumb our transaction through.
+            //
+            // In rare cases this means we won't respond to the sync request, but
+            // that's acceptable.
+            let pendingTask = Self.buildPendingTask(label: "syncAllContacts")
+            DispatchQueue.global().async {
+                self.syncManager.syncAllContacts().ensure(on: DispatchQueue.global()) {
+                    pendingTask.complete()
+                }.catch(on: DispatchQueue.global()) { error in
+                    Logger.error("Error: \(error)")
+                }
+            }
+
+        case .groups:
+            let pendingTask = Self.buildPendingTask(label: "syncGroups")
+            syncManager.syncGroups(transaction: transaction) { pendingTask.complete() }
+
+        case .blocked:
+            Logger.info("Received request for block list")
+            let pendingTask = Self.buildPendingTask(label: "syncBlockList")
+            blockingManager.syncBlockList { pendingTask.complete() }
+
+        case .configuration:
+            // We send _two_ responses to the "configuration request".
+            syncManager.sendConfigurationSyncMessage()
+            StickerManager.syncAllInstalledPacks(transaction: transaction)
+
+        case .keys:
+            syncManager.sendKeysSyncMessage()
+
+        case .pniIdentity:
+            syncManager.sendPniIdentitySyncMessage()
+
+        case .unknown, .none:
+            owsFailDebug("Ignoring sync request with unexpected type")
+        }
+    }
+
+    @objc
     func handleIncomingEnvelope(
         _ envelope: SSKProtoEnvelope,
         withSenderKeyDistributionMessage skdmData: Data,
@@ -225,7 +273,7 @@ extension OWSMessageManager {
 
         do {
             let errorMessage = try DecryptionErrorMessage(bytes: bytes)
-            guard errorMessage.deviceId == tsAccountManager.storedDeviceId() else {
+            guard errorMessage.deviceId == tsAccountManager.storedDeviceId(transaction: writeTx) else {
                 Logger.info("Received a DecryptionError message targeting a linked device. Ignoring.")
                 return
             }
@@ -283,6 +331,68 @@ extension OWSMessageManager {
 
         } catch {
             owsFailDebug("Failed to process decryption error message \(error)")
+        }
+    }
+
+    @objc
+    func handleIncomingEnvelope(
+        _ envelope: SSKProtoEnvelope,
+        withEditMessage editMessage: SSKProtoEditMessage,
+        wasReceivedByUD: Bool,
+        serverDeliveryTimestamp: UInt64,
+        transaction writeTx: SDSAnyWriteTransaction
+    ) {
+        guard FeatureFlags.editMessageReceive else {
+            Logger.info("Ignoring edit message (author: \(envelope.formattedAddress), timestamp: \(editMessage) related to message (timestamp: \(editMessage.dataMessage?.timestamp ?? 0)")
+            return
+        }
+
+        guard let dataMessage = editMessage.dataMessage else {
+            Logger.warn("Missing edit message data.")
+            return
+        }
+
+        guard let thread = preprocessDataMessage(
+            dataMessage,
+            envelope: envelope,
+            transaction: writeTx
+        ) else {
+            Logger.warn("Missing edit message thread.")
+            return
+        }
+
+        guard let sourceAddress = envelope.sourceAddress else {
+            Logger.warn("Missing edit source address.")
+            return
+        }
+
+        let editManager = EditManager(
+            context: .init(
+                dataStore: EditManager.Wrappers.DataStore(),
+                groupsShim: EditManager.Wrappers.Groups(groupsV2: groupsV2),
+                linkPreviewShim: EditManager.Wrappers.LinkPreview()
+            )
+        )
+
+        let result = editManager.processIncomingEditMessage(
+            dataMessage,
+            thread: thread,
+            serverTimestamp: envelope.serverTimestamp,
+            targetTimestamp: editMessage.targetSentTimestamp,
+            author: sourceAddress,
+            tx: writeTx.asV2Write
+        )
+
+        if !result {
+            Logger.info("Failed to insert edit message")
+        }
+
+        DispatchQueue.main.async {
+            self.typingIndicatorsImpl.didReceiveIncomingMessage(
+                inThread: thread,
+                address: sourceAddress,
+                deviceId: UInt(envelope.sourceDevice)
+            )
         }
     }
 
@@ -422,6 +532,8 @@ extension SSKProtoContent {
             message.append("<DecryptionErrorMessage: \(decryptionErrorMessage) />")
         } else if let storyMessage = self.storyMessage {
             message.append("<StoryMessage: \(storyMessage) />")
+        } else if let editMessage = self.editMessage {
+            message.append("<EditMessage: \(editMessage) />")
         }
 
          // SKDM's are not mutually exclusive with other content types
@@ -686,6 +798,9 @@ class MessageManagerRequest: NSObject {
         }
         if protoContent?.hasSenderKeyDistributionMessage ?? false {
             return .hasSenderKeyDistributionMessage
+        }
+        if protoContent?.editMessage != nil {
+            return .editMessage
         }
         return .unknown
     }

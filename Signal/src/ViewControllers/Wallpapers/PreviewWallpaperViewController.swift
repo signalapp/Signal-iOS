@@ -512,7 +512,7 @@ class BlurButton: UIButton {
         checkImageView.contentMode = .scaleAspectFit
         checkImageView.isUserInteractionEnabled = false
 
-        label.font = .ows_semiboldFont(withSize: 14)
+        label.font = .semiboldFont(ofSize: 14)
         label.textColor = .white
         label.text = NSLocalizedString("WALLPAPER_PREVIEW_BLUR_BUTTON",
                                        comment: "Blur button on wallpaper preview.")

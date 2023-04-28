@@ -14,7 +14,6 @@
 #import "NotificationsProtocol.h"
 #import "OWSCallMessageHandler.h"
 #import "OWSContact.h"
-#import "OWSDevice.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -26,7 +25,6 @@
 #import "OWSRecordTranscriptJob.h"
 #import "OWSUnknownProtocolVersionMessage.h"
 #import "ProfileManagerProtocol.h"
-#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
@@ -160,27 +158,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - message handling
 
-- (BOOL)processEnvelope:(SSKProtoEnvelope *)envelope
-                   plaintextData:(NSData *_Nullable)plaintextData
-                 wasReceivedByUD:(BOOL)wasReceivedByUD
-         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-    shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
-                     transaction:(SDSAnyWriteTransaction *)transaction
-{
-    @try {
-        [self throws_processEnvelope:envelope
-                           plaintextData:plaintextData
-                         wasReceivedByUD:wasReceivedByUD
-                 serverDeliveryTimestamp:serverDeliveryTimestamp
-            shouldDiscardVisibleMessages:shouldDiscardVisibleMessages
-                             transaction:transaction];
-        return YES;
-    } @catch (NSException *exception) {
-        OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
-        return NO;
-    }
-}
-
 - (BOOL)canProcessEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -223,8 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-
-- (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
+- (void)processEnvelope:(SSKProtoEnvelope *)envelope
                    plaintextData:(NSData *_Nullable)plaintextData
                  wasReceivedByUD:(BOOL)wasReceivedByUD
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
@@ -247,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"missing decrypted data for envelope: %@", [self descriptionForEnvelope:envelope]);
                 return;
             }
-            [self throws_handleEnvelope:envelope
+            [self handleEnvelope:envelope
                                plaintextData:plaintextData
                              wasReceivedByUD:wasReceivedByUD
                      serverDeliveryTimestamp:serverDeliveryTimestamp
@@ -275,16 +251,34 @@ NS_ASSUME_NONNULL_BEGIN
     [self finishProcessingEnvelope:envelope transaction:transaction];
 }
 
+/// Called when we've finished processing an envelope.
+///
+/// If we call this method, we tried to process an envelope. However, the
+/// contents of that envelope may or may not be valid.
+///
+/// Cases where we won't call this method:
+/// - The envelope is missing a sender (or a device ID)
+/// - The envelope has a sender but they're blocked
+/// - The envelope is missing a timestamp
+/// - The user isn't registered
+///
+/// Cases where we will call this method:
+/// - The envelope contains a fully valid message
+/// - The envelope contains a message with an invalid reaction
+/// - The envelope contains a link preview but the URL isn't in the message
+/// - & so on, for many "errors" that are handled elsewhere
 - (void)finishProcessingEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self saveSpamReportingTokenForEnvelope:envelope transaction:transaction];
 
-    // If we reach here, we were able to successfully handle the message.
-    // We need to check to make sure that we clear any placeholders that may have been
-    // inserted for this message. This would happen if:
+    // We need to check to make sure that we clear any placeholders that may
+    // have been inserted for this message. This would happen if:
+    //
     // - This is a resend of a message that we had previously failed to decrypt
-    // - The message does not result in an inserted TSIncomingMessage or TSOutgoingMessage
-    // For example, a read receipt. In that case, we should just clear the placeholder
+    //
+    // - The message does not result in an inserted TSIncomingMessage or
+    // TSOutgoingMessage. For example, a read receipt. In that case, we should
+    // just clear the placeholder.
     if (envelope.timestamp > 0 && envelope.sourceAddress) {
         [self clearLeftoverPlaceholders:envelope.timestamp sender:envelope.sourceAddress transaction:transaction];
     }
@@ -410,7 +404,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
 }
 
-- (void)throws_handleEnvelope:(SSKProtoEnvelope *)envelope
+- (void)handleEnvelope:(SSKProtoEnvelope *)envelope
                    plaintextData:(NSData *)plaintextData
                  wasReceivedByUD:(BOOL)wasReceivedByUD
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
@@ -428,27 +422,12 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self throws_handleRequest:request
-                       context:[[PassthroughDeliveryReceiptContext alloc] init]
-                   transaction:transaction];
+    [self handleRequest:request context:[[PassthroughDeliveryReceiptContext alloc] init] transaction:transaction];
 }
 
-- (BOOL)handleRequest:(MessageManagerRequest *)request
+- (void)handleRequest:(MessageManagerRequest *)request
               context:(id<DeliveryReceiptContext>)context
           transaction:(SDSAnyWriteTransaction *)transaction
-{
-    @try {
-        [self throws_handleRequest:request context:context transaction:transaction];
-        return YES;
-    } @catch (NSException *exception) {
-        OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
-        return NO;
-    }
-}
-
-- (void)throws_handleRequest:(MessageManagerRequest *)request
-                     context:(id<DeliveryReceiptContext>)context
-                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     SSKProtoContent *contentProto = request.protoContent;
     if (contentProto == nil) {
@@ -458,14 +437,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (request.messageType) {
         case OWSMessageManagerMessageTypeSyncMessage:
-            [self throws_handleIncomingEnvelope:request.envelope
-                                withSyncMessage:contentProto.syncMessage
-                                  plaintextData:request.plaintextData
-                                wasReceivedByUD:request.wasReceivedByUD
-                        serverDeliveryTimestamp:request.serverDeliveryTimestamp
-                                    transaction:transaction];
+            [self handleIncomingEnvelope:request.envelope
+                         withSyncMessage:contentProto.syncMessage
+                           plaintextData:request.plaintextData
+                         wasReceivedByUD:request.wasReceivedByUD
+                 serverDeliveryTimestamp:request.serverDeliveryTimestamp
+                             transaction:transaction];
 
-            [[OWSDeviceManager shared] setHasReceivedSyncMessage];
+            [OWSDeviceManagerObjcBridge setHasReceivedSyncMessageWithTransaction:transaction];
             break;
         case OWSMessageManagerMessageTypeDataMessage:
             [self handleIncomingEnvelope:request.envelope
@@ -532,6 +511,14 @@ NS_ASSUME_NONNULL_BEGIN
             //
             // See: OWSMessageManager.preprocessEnvelope(envelope:plaintext:transaction:)
             break;
+        case OWSMessageManagerMessageTypeEditMessage:
+            if (SSKFeatureFlags.editMessageReceive) {
+                [self handleIncomingEnvelope:request.envelope
+                             withEditMessage:contentProto.editMessage
+                             wasReceivedByUD:request.wasReceivedByUD
+                     serverDeliveryTimestamp:request.serverDeliveryTimestamp
+                                 transaction:transaction];
+            }
         case OWSMessageManagerMessageTypeUnknown:
             OWSLogWarn(@"Ignoring envelope. Content with no known payload");
             break;
@@ -1579,12 +1566,12 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (void)throws_handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
-                      withSyncMessage:(SSKProtoSyncMessage *)syncMessage
-                        plaintextData:(NSData *)plaintextData
-                      wasReceivedByUD:(BOOL)wasReceivedByUD
-              serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-                          transaction:(SDSAnyWriteTransaction *)transaction
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+               withSyncMessage:(SSKProtoSyncMessage *)syncMessage
+                 plaintextData:(NSData *)plaintextData
+               wasReceivedByUD:(BOOL)wasReceivedByUD
+       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -1641,7 +1628,7 @@ NS_ASSUME_NONNULL_BEGIN
                 if (groupId != nil) {
                     [self.profileManager addGroupIdToProfileWhitelist:groupId];
                 } else {
-                    [self.profileManager addUserToProfileWhitelist:destination authedAccount:AuthedAccount.implicit];
+                    [self.profileManager addUserToProfileWhitelist:destination];
                 }
             }
 
@@ -1736,58 +1723,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     } else if (syncMessage.request) {
-        if (!syncMessage.request.hasType) {
-            OWSFailDebug(@"Ignoring sync request without type.");
-            return;
-        }
-        if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
-            // Don't respond to sync requests from a linked device.
-            return;
-        }
-        switch (syncMessage.request.unwrappedType) {
-            case SSKProtoSyncMessageRequestTypeContacts: {
-                // We respond asynchronously because populating the sync message will
-                // create transactions and it's not practical (due to locking in the OWSIdentityManager)
-                // to plumb our transaction through.
-                //
-                // In rare cases this means we won't respond to the sync request, but that's
-                // acceptable.
-                PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncAllContacts"];
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    [self.syncManager syncAllContacts]
-                        .catchInBackground(^(NSError *error) { OWSLogError(@"Error: %@", error); })
-                        .ensureOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                            ^{ [pendingTask complete]; });
-                });
-                break;
-            }
-            case SSKProtoSyncMessageRequestTypeGroups: {
-                PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncGroups"];
-                [self.syncManager syncGroupsWithTransaction:transaction completion:^{ [pendingTask complete]; }];
-                break;
-            }
-            case SSKProtoSyncMessageRequestTypeBlocked: {
-                OWSLogInfo(@"Received request for block list");
-                PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncBlockList"];
-                [self.blockingManager syncBlockListWithCompletion:^{ [pendingTask complete]; }];
-                break;
-            }
-            case SSKProtoSyncMessageRequestTypeConfiguration:
-                [self.syncManager sendConfigurationSyncMessage];
-
-                // We send _two_ responses to the "configuration request".
-                [StickerManager syncAllInstalledPacksWithTransaction:transaction];
-                break;
-            case SSKProtoSyncMessageRequestTypeKeys:
-                [self.syncManager sendKeysSyncMessage];
-                break;
-            case SSKProtoSyncMessageRequestTypePniIdentity:
-                [self.syncManager sendPniIdentitySyncMessage];
-                break;
-            case SSKProtoSyncMessageRequestTypeUnknown:
-                OWSLogWarn(@"ignoring unsupported sync request message");
-                break;
-        }
+        [self handleIncomingSyncRequest:syncMessage.request transaction:transaction];
     } else if (syncMessage.blocked) {
         OWSLogInfo(@"Received blocked sync message.");
         [self handleSyncedBlockList:syncMessage.blocked transaction:transaction];
@@ -1818,7 +1754,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destinationAddress);
-        [self.identityManager throws_processIncomingVerifiedProto:syncMessage.verified transaction:transaction];
+        NSError *error;
+        if (![self.identityManager processIncomingVerifiedProto:syncMessage.verified
+                                                    transaction:transaction
+                                                          error:&error]) {
+            OWSLogWarn(@"Couldn't process verification state: %@", error);
+            return;
+        }
         [self.identityManager fireIdentityStateChangeNotificationAfterTransaction:transaction];
     } else if (syncMessage.stickerPackOperation.count > 0) {
         OWSLogInfo(@"Received sticker pack operation(s): %d", (int)syncMessage.stickerPackOperation.count);
@@ -1876,6 +1818,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      transaction:transaction];
     } else if (syncMessage.pniChangeNumber) {
         [self.identityManager processIncomingPniChangePhoneNumberWithProto:syncMessage.pniChangeNumber
+                                                                updatedPni:envelope.updatedPni
                                                                transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
@@ -2250,6 +2193,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Check for any placeholders inserted because of a previously undecryptable message
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
     [message insertOrReplacePlaceholderFrom:authorAddress transaction:transaction];
+
+    // Inserting the message may have modified the thread on disk, so reload it.
+    // For example, we may have marked the thread as visible.
+    [thread anyReloadWithTransaction:transaction];
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:message];

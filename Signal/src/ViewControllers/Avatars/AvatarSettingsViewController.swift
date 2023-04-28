@@ -444,7 +444,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         imageView.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
 
         let label = UILabel()
-        label.font = .ows_dynamicTypeCaption2Clamped
+        label.font = .dynamicTypeCaption2Clamped
         label.textColor = Theme.primaryTextColor
         label.textAlignment = .center
         label.text = text
@@ -571,9 +571,7 @@ private class OptionView: UIView {
         editOverlayView.image = #imageLiteral(resourceName: "compose-solid-24").tintedImage(color: .ows_white)
         editOverlayView.contentMode = .center
         imageView.addSubview(editOverlayView)
-        editOverlayView.autoPinEdgesToSuperviewEdges(
-            withInsets: UIEdgeInsets(margin: 2.5)
-        )
+        editOverlayView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(margin: 2.5))
         editOverlayView.layer.borderWidth = 1.5
         editOverlayView.isHidden = true
 
