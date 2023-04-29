@@ -24,14 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (NSString *)probableCountryCodeForCallingCode:(NSString *)callingCode
-{
-    OWSAssertDebug(callingCode.length > 0);
-
-    NSArray<NSString *> *countryCodes = [self countryCodesFromCallingCode:callingCode];
-    return (countryCodes.count > 0 ? countryCodes[0] : nil);
-}
-
 // black  magic
 + (NSUInteger)translateCursorPosition:(NSUInteger)offset
                                  from:(NSString *)source
