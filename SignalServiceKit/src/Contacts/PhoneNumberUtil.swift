@@ -201,6 +201,13 @@ extension PhoneNumberUtil {
         }
     }
 
+    /// Returns the most likely country code for a calling code based on population.
+    /// If no country codes are found, returns the empty string.
+    @objc(probableCountryCodeForCallingCode:)
+    public func probableCountryCode(forCallingCode callingCode: String) -> String {
+        return countryCodes(fromCallingCode: callingCode).first ?? ""
+    }
+
     private class func does(_ string: String, matchQuery query: String) -> Bool {
         let searchOptions: String.CompareOptions = [.caseInsensitive, .anchored]
 

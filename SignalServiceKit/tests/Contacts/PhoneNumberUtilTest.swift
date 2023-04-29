@@ -7,6 +7,11 @@ import XCTest
 import SignalServiceKit
 
 class PhoneNumberUtilTestSwift: SSKBaseTestSwift {
+    func test_probableCountryCode() {
+        XCTAssertEqual(phoneNumberUtil.probableCountryCode(forCallingCode: "+1"), "US")
+        XCTAssertEqual(phoneNumberUtil.probableCountryCode(forCallingCode: "+44"), "GB")
+        XCTAssertEqual(phoneNumberUtil.probableCountryCode(forCallingCode: "+0"), "")
+    }
 
     func test_callingCodeFromCountryCode() {
         XCTAssertEqual("+1", phoneNumberUtil.callingCode(fromCountryCode: "US"))
