@@ -42,16 +42,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     DisplayableText *_Nullable displayableQuotedText = nil;
     if (quotedMessage.body.length > 0) {
-        __block DisplayableText *displayableText;
-        [SDSDatabaseStorage.shared readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            displayableText = [DisplayableText
-                displayableTextWithMessageBody:[[MessageBody alloc]
-                                                   initWithText:quotedMessage.body
-                                                         ranges:quotedMessage.bodyRanges ?: MessageBodyRanges.empty]
-                                  mentionStyle:MentionStyleQuotedReply
-                                   transaction:transaction];
-        }];
-        displayableQuotedText = displayableText;
+        displayableQuotedText = [OWSQuotedMessageView displayableTextWithSneakyTransactionForPreview:quotedMessage];
     }
 
     OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage

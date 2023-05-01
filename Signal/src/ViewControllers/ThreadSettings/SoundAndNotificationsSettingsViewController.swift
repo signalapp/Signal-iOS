@@ -110,7 +110,7 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
             }
         }))
 
-        if Mention.threadAllowsMentionSend(threadViewModel.threadRecord) {
+        if threadViewModel.threadRecord.allowsMentionSend {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")

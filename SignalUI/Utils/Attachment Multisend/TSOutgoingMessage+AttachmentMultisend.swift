@@ -20,10 +20,10 @@ extension TSOutgoingMessage {
                 transaction: transaction
             )
 
-            let messageBodyForContext = state.approvalMessageBody?.forNewContext(
-                destination.thread,
+            let messageBodyForContext = state.approvalMessageBody?.forForwarding(
+                to: destination.thread,
                 transaction: transaction.unwrapGrdbRead
-            )
+            ).asMessageBodyForForwarding()
 
             let message: TSOutgoingMessage
             let attachmentUUIDs: [UUID]

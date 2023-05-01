@@ -474,7 +474,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     NSString *_Nullable rawBody = [self rawBodyWithTransaction:transaction];
     if (rawBody) {
         if (self.bodyRanges) {
-            return [self.bodyRanges plaintextBodyWithText:rawBody transaction:transaction];
+            return [self previewTextForBodyRangesWithBodyRanges:self.bodyRanges
+                                                bodyDescription:rawBody
+                                                    transaction:transaction.asAnyRead];
         }
 
         return rawBody.filterStringForDisplay;
@@ -499,9 +501,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     if (self.bodyRanges) {
-        // TODO[TextFormatting]: apply styles (except spoiler which gets special treatment in notifications)
-        bodyDescription = [self.bodyRanges plaintextBodyWithText:bodyDescription
-                                                     transaction:transaction.unwrapGrdbRead];
+        bodyDescription = [self previewTextForBodyRangesWithBodyRanges:self.bodyRanges
+                                                       bodyDescription:bodyDescription
+                                                           transaction:transaction];
     }
 
     if (bodyDescription == nil) {

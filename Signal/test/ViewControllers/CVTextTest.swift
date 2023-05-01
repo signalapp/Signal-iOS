@@ -283,11 +283,15 @@ class CVTextTest: XCTestCase {
 
     func testLinkifyWithTruncation() {
         let truncatedData = NSMutableAttributedString(string: "https://signal.org/foo https://signal.org/ba…")
-        CVComponentBodyText.linkifyData(attributedText: truncatedData,
-                                        linkifyStyle: .linkAttribute,
-                                        hasPendingMessageRequest: false,
-                                        shouldAllowLinkification: true,
-                                        textWasTruncated: true)
+        CVComponentBodyText.linkifyData(
+            attributedText: truncatedData,
+            linkifyStyle: .linkAttribute,
+            hasPendingMessageRequest: false,
+            shouldAllowLinkification: true,
+            textWasTruncated: true,
+            revealedSpoilerIds: Set(),
+            interactionUniqueId: UUID().uuidString
+        )
         var values: [String] = []
         var ranges: [NSRange] = []
         truncatedData.enumerateAttribute(.link, in: truncatedData.entireRange, options: []) { value, range, _ in
@@ -300,11 +304,15 @@ class CVTextTest: XCTestCase {
         XCTAssertEqual([NSRange(location: 0, length: 22)], ranges)
 
         truncatedData.removeAttribute(.link, range: truncatedData.entireRange)
-        CVComponentBodyText.linkifyData(attributedText: truncatedData,
-                                        linkifyStyle: .linkAttribute,
-                                        hasPendingMessageRequest: false,
-                                        shouldAllowLinkification: true,
-                                        textWasTruncated: false)
+        CVComponentBodyText.linkifyData(
+            attributedText: truncatedData,
+            linkifyStyle: .linkAttribute,
+            hasPendingMessageRequest: false,
+            shouldAllowLinkification: true,
+            textWasTruncated: false,
+            revealedSpoilerIds: Set(),
+            interactionUniqueId: UUID().uuidString
+        )
         values.removeAll()
         ranges.removeAll()
         truncatedData.enumerateAttribute(.link, in: truncatedData.entireRange, options: []) { value, range, _ in
@@ -318,11 +326,15 @@ class CVTextTest: XCTestCase {
 
         // Should work on more than just URLs.
         let truncatedEmail = NSMutableAttributedString(string: "moxie@example.com moxie@signal.or…")
-        CVComponentBodyText.linkifyData(attributedText: truncatedEmail,
-                                        linkifyStyle: .linkAttribute,
-                                        hasPendingMessageRequest: false,
-                                        shouldAllowLinkification: true,
-                                        textWasTruncated: true)
+        CVComponentBodyText.linkifyData(
+            attributedText: truncatedEmail,
+            linkifyStyle: .linkAttribute,
+            hasPendingMessageRequest: false,
+            shouldAllowLinkification: true,
+            textWasTruncated: true,
+            revealedSpoilerIds: Set(),
+            interactionUniqueId: UUID().uuidString
+        )
         values.removeAll()
         truncatedEmail.enumerateAttribute(.link, in: truncatedEmail.entireRange, options: []) { value, _, _ in
             if let value = value {
@@ -332,11 +344,15 @@ class CVTextTest: XCTestCase {
         XCTAssertEqual(["mailto:moxie@example.com"], values)
 
         let truncatedPhone = NSMutableAttributedString(string: "+16505555555 +1650555555…")
-        CVComponentBodyText.linkifyData(attributedText: truncatedPhone,
-                                        linkifyStyle: .linkAttribute,
-                                        hasPendingMessageRequest: false,
-                                        shouldAllowLinkification: true,
-                                        textWasTruncated: true)
+        CVComponentBodyText.linkifyData(
+            attributedText: truncatedPhone,
+            linkifyStyle: .linkAttribute,
+            hasPendingMessageRequest: false,
+            shouldAllowLinkification: true,
+            textWasTruncated: true,
+            revealedSpoilerIds: Set(),
+            interactionUniqueId: UUID().uuidString
+        )
         values.removeAll()
         truncatedPhone.enumerateAttribute(.link, in: truncatedPhone.entireRange, options: []) { value, _, _ in
             if let value = value {

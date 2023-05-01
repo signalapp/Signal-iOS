@@ -80,9 +80,15 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var displayableQuotedText: DisplayableText?
         if let body = quotedReplyModel.body, !body.isEmpty {
             let messageBody = MessageBody(text: body, ranges: quotedReplyModel.bodyRanges ?? .empty)
-            displayableQuotedText = DisplayableText.displayableText(withMessageBody: messageBody,
-                                                                    mentionStyle: .quotedReply,
-                                                                    transaction: transaction)
+            displayableQuotedText = DisplayableText.displayableText(
+                withMessageBody: messageBody,
+                displayConfig: HydratedMessageBody.DisplayConfiguration(
+                    mention: .quotedReply,
+                    style: .quotedReply,
+                    searchRanges: nil
+                ),
+                transaction: transaction
+            )
         }
 
         return State(quotedReplyModel: quotedReplyModel,

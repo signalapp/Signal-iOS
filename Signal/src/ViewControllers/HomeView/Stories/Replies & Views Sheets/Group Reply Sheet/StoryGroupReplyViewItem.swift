@@ -36,7 +36,12 @@ class StoryGroupReplyViewItem: Dependencies {
         if !message.wasRemotelyDeleted {
             self.displayableText = DisplayableText.displayableText(
                 withMessageBody: .init(text: message.body ?? "", ranges: message.bodyRanges ?? .empty),
-                mentionStyle: .groupReply,
+                displayConfig: HydratedMessageBody.DisplayConfiguration(
+                    mention: .groupReply,
+                    style: .groupReply,
+                    // TODO[TextFormatting]: is search supported here?
+                    searchRanges: nil
+                ),
                 transaction: transaction
             )
         } else {

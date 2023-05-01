@@ -238,17 +238,25 @@ public class ConversationStyle: NSObject {
 
     @objc
     public static var bubbleTextColorIncoming: UIColor {
-        Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
+        return bubbleTextColorIncomingThemed.forCurrentTheme
+    }
+
+    public static var bubbleTextColorIncomingThemed: ThemedColor {
+        ThemedColor(light: UIColor.ows_gray90, dark: UIColor.ows_gray05)
     }
 
     @objc
     public static var bubbleTextColorOutgoing: UIColor {
-        Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_white
+        return bubbleTextColorOutgoingThemed.forCurrentTheme
+    }
+
+    public static var bubbleTextColorOutgoingThemed: ThemedColor {
+        ThemedColor(light: UIColor.ows_white, dark: UIColor.ows_gray05)
     }
 
     @objc
     public var bubbleTextColorIncoming: UIColor {
-        isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
+        Self.bubbleTextColorIncomingThemed.color(isDarkThemeEnabled: isDarkThemeEnabled)
     }
 
     @objc
@@ -258,7 +266,7 @@ public class ConversationStyle: NSObject {
 
     @objc
     public var bubbleTextColorOutgoing: UIColor {
-        isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_white
+        Self.bubbleTextColorOutgoingThemed.color(isDarkThemeEnabled: isDarkThemeEnabled)
     }
 
     @objc
@@ -308,6 +316,11 @@ public class ConversationStyle: NSObject {
         } else {
             return bubbleSecondaryTextColorOutgoing
         }
+    }
+
+    // Same across all themes
+    public static var searchMatchHighlightColor: UIColor {
+        return UIColor.yellow
     }
 
     @objc

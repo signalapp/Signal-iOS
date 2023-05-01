@@ -97,7 +97,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         }
 
         owsAssertDebug(groupThread != nil)
-        if let groupThread = groupThread, Mention.threadAllowsMentionSend(groupThread) {
+        if let groupThread = groupThread, groupThread.allowsMentionSend {
             mentionCandidates = groupThread.recipientAddressesWithSneakyTransaction
         } else {
             mentionCandidates = []

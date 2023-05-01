@@ -268,6 +268,22 @@ public extension TSMessage {
         }
     }
 
+    @objc(previewTextForBodyRangesWithBodyRanges:bodyDescription:transaction:)
+    func previewTextForBodyRanges(
+        bodyRanges: MessageBodyRanges,
+        bodyDescription: String?,
+        transaction: SDSAnyReadTransaction
+    ) -> String? {
+        guard let bodyDescription else {
+            return nil
+        }
+        let messageBody = MessageBody(text: bodyDescription, ranges: bodyRanges)
+        // TODO[TextFormatting]: apply styles depending on context.
+        return messageBody.hydrating(
+            mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)
+        ).asPlaintext()
+    }
+
     // MARK: - Stories
 
     @objc

@@ -347,9 +347,11 @@ extension AttachmentTextToolbar: MentionTextViewDelegate {
         return mentionTextViewDelegate?.textViewMentionPickerPossibleAddresses(textView) ?? []
     }
 
-    func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
+    public func textViewMentionDisplayConfiguration(_ textView: MentionTextView) -> MentionDisplayConfiguration {
+        return .composingAttachment
+    }
 
-    func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
+    public func mentionPickerStyle(_ textView: MentionTextView) -> MentionPickerStyle {
         return .composingAttachment
     }
 }

@@ -68,7 +68,7 @@ extension ConversationViewController {
                 didTapEmail(dataItem: dataItem)
             }
         case .mention(let mentionItem):
-            didTapOrLongPressMention(mentionItem.mention)
+            didTapOrLongPressMention(mentionItem.mentionUUID)
         case .unrevealedSpoiler(let unrevealedSpoilerItem):
             didTapOrLongPressUnrevealedSpoiler(unrevealedSpoilerItem)
         case .referencedUser(let referencedUserItem):
@@ -113,7 +113,7 @@ extension ConversationViewController {
                 didLongPressEmail(dataItem: dataItem)
             }
         case .mention(let mentionItem):
-            didTapOrLongPressMention(mentionItem.mention)
+            didTapOrLongPressMention(mentionItem.mentionUUID)
         case .unrevealedSpoiler(let unrevealedSpoilerItem):
             didTapOrLongPressUnrevealedSpoiler(unrevealedSpoilerItem)
         case .referencedUser(let referencedUserItem):
@@ -124,7 +124,7 @@ extension ConversationViewController {
     // * URL
     //   * tap - open URL in safari
     //   * long press - preview + open link in safari / add to reading list / copy link / share
-    private func didLongPressLink(dataItem: CVTextLabel.DataItem) {
+    private func didLongPressLink(dataItem: TextCheckingDataItem) {
         AssertIsOnMainThread()
 
         var title: String? = dataItem.snippet.strippedOrNil
@@ -191,7 +191,7 @@ extension ConversationViewController {
     // * phone number
     //   * tap - action sheet with call.
     //   * long press - show phone number + call PSTN / facetime audio / facetime video / send messages / add to contacts / copy
-    private func didLongPressPhoneNumber(dataItem: CVTextLabel.DataItem) {
+    private func didLongPressPhoneNumber(dataItem: TextCheckingDataItem) {
         guard let snippet = dataItem.snippet.strippedOrNil,
               let phoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: snippet),
               let e164 = phoneNumber.toE164().strippedOrNil else {
@@ -294,7 +294,7 @@ extension ConversationViewController {
         presentActionSheet(actionSheet)
     }
 
-    private func didLongPressEmail(dataItem: CVTextLabel.DataItem) {
+    private func didLongPressEmail(dataItem: TextCheckingDataItem) {
         let actionSheet = ActionSheetController(title: dataItem.snippet.strippedOrNil)
 
         actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE",
@@ -324,13 +324,13 @@ extension ConversationViewController {
         presentActionSheet(actionSheet)
     }
 
-    private func didTapLink(dataItem: CVTextLabel.DataItem) {
+    private func didTapLink(dataItem: TextCheckingDataItem) {
         AssertIsOnMainThread()
 
         openLink(dataItem: dataItem)
     }
 
-    private func openLink(dataItem: CVTextLabel.DataItem) {
+    private func openLink(dataItem: TextCheckingDataItem) {
         AssertIsOnMainThread()
 
         if StickerPackInfo.isStickerPackShare(dataItem.url) {
@@ -357,11 +357,11 @@ extension ConversationViewController {
         url.absoluteString.lowercased().hasPrefix("mailto:")
     }
 
-    private func didTapEmail(dataItem: CVTextLabel.DataItem) {
+    private func didTapEmail(dataItem: TextCheckingDataItem) {
         composeEmail(dataItem: dataItem)
     }
 
-    private func composeEmail(dataItem: CVTextLabel.DataItem) {
+    private func composeEmail(dataItem: TextCheckingDataItem) {
         AssertIsOnMainThread()
         owsAssertDebug(isMailtoUrl(dataItem.url))
 
@@ -375,10 +375,10 @@ extension ConversationViewController {
     }
 
     // For now, taps and long presses on mentions do the same thing.
-    private func didTapOrLongPressMention(_ mention: Mention) {
+    private func didTapOrLongPressMention(_ mentionUuid: UUID) {
         AssertIsOnMainThread()
 
-        showMemberActionSheet(forAddress: mention.address, withHapticFeedback: true)
+        showMemberActionSheet(forAddress: SignalServiceAddress(uuid: mentionUuid), withHapticFeedback: true)
     }
 
     // Taps and long presses do the same thing.

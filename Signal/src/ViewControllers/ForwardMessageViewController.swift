@@ -432,7 +432,7 @@ extension ForwardMessageViewController {
     fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft? = nil, recipientThread: TSThread) -> Promise<Void> {
         databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(
-                body: body.forNewContext(recipientThread, transaction: transaction.unwrapGrdbRead),
+                body: body.forForwarding(to: recipientThread, transaction: transaction.unwrapGrdbRead).asMessageBodyForForwarding(),
                 thread: recipientThread,
                 linkPreviewDraft: linkPreviewDraft,
                 transaction: transaction
@@ -737,7 +737,8 @@ public struct ForwardMessageItem {
            !displayableBodyText.fullAttributedText.isEmpty {
 
             let attributedText = displayableBodyText.fullAttributedText
-            builder.messageBody = MessageBody(attributedString: attributedText)
+            let recoveredHydratedBody = RecoveredHydratedMessageBody.recover(from: NSMutableAttributedString(attributedString: attributedText))
+            builder.messageBody = recoveredHydratedBody.toMessageBody()
 
             if let linkPreview = componentState.linkPreviewModel {
                 builder.linkPreviewDraft = Self.tryToCloneLinkPreview(linkPreview: linkPreview,

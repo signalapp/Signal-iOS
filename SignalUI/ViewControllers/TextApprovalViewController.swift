@@ -194,11 +194,13 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         return []
     }
 
-    public func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
+    public func textViewMentionDisplayConfiguration(_ textView: MentionTextView) -> MentionDisplayConfiguration {
         return .composing
     }
 
-    public func textView(_ textView: MentionTextView, didDeleteMention: Mention) {}
+    public func mentionPickerStyle(_ textView: MentionTextView) -> MentionPickerStyle {
+        return .default
+    }
 }
 
 // MARK: -

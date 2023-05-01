@@ -9,71 +9,21 @@ import UIKit
 @objc
 public class CVTextLabel: NSObject {
 
-    public struct DataItem: Equatable, NSRangeProviding {
-        public enum DataType: UInt, Equatable, CustomStringConvertible {
-            case link
-            case address
-            case phoneNumber
-            case date
-            case transitInformation
-            case emailAddress
+    // MARK: -
 
-            // MARK: - CustomStringConvertible
-
-            public var description: String {
-                switch self {
-                case .link:
-                    return ".link"
-                case .address:
-                    return ".address"
-                case .phoneNumber:
-                    return ".phoneNumber"
-                case .date:
-                    return ".date"
-                case .transitInformation:
-                    return ".transitInformation"
-                case .emailAddress:
-                    return ".emailAddress"
-                }
-            }
-        }
-
-        public let dataType: DataType
+    public struct MentionItem: Equatable {
+        public let mentionUUID: UUID
         public let range: NSRange
-        public let snippet: String
-        public let url: URL
 
-        public init(dataType: DataType, range: NSRange, snippet: String, url: URL) {
-            self.dataType = dataType
+        public init(mentionUUID: UUID, range: NSRange) {
+            self.mentionUUID = mentionUUID
             self.range = range
-            self.snippet = snippet
-            self.url = url
-        }
-
-        public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.DataItem {
-            return DataItem(dataType: dataType, range: range, snippet: snippet, url: url)
         }
     }
 
     // MARK: -
 
-    public struct MentionItem: Equatable, NSRangeProviding {
-        public let mention: Mention
-        public let range: NSRange
-
-        public init(mention: Mention, range: NSRange) {
-            self.mention = mention
-            self.range = range
-        }
-
-        public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.MentionItem {
-            return MentionItem(mention: mention, range: range)
-        }
-    }
-
-    // MARK: -
-
-    public struct ReferencedUserItem: Equatable, NSRangeProviding {
+    public struct ReferencedUserItem: Equatable {
         public let address: SignalServiceAddress
         public let range: NSRange
 
@@ -81,15 +31,11 @@ public class CVTextLabel: NSObject {
             self.address = address
             self.range = range
         }
-
-        public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.ReferencedUserItem {
-            return ReferencedUserItem(address: address, range: range)
-        }
     }
 
     // MARK: -
 
-    public struct UnrevealedSpoilerItem: Equatable, NSRangeProviding {
+    public struct UnrevealedSpoilerItem: Equatable {
         public let spoilerId: Int
         public let interactionUniqueId: String
         public let range: NSRange
@@ -99,20 +45,12 @@ public class CVTextLabel: NSObject {
             self.interactionUniqueId = interactionUniqueId
             self.range = range
         }
-
-        public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.UnrevealedSpoilerItem {
-            return UnrevealedSpoilerItem(
-                spoilerId: spoilerId,
-                interactionUniqueId: interactionUniqueId,
-                range: range
-            )
-        }
     }
 
     // MARK: -
 
-    public enum Item: Equatable, CustomStringConvertible, NSRangeProviding {
-        case dataItem(dataItem: DataItem)
+    public enum Item: Equatable, CustomStringConvertible {
+        case dataItem(dataItem: TextCheckingDataItem)
         case mention(mentionItem: MentionItem)
         case referencedUser(referencedUserItem: ReferencedUserItem)
         case unrevealedSpoiler(UnrevealedSpoilerItem)
@@ -140,19 +78,6 @@ public class CVTextLabel: NSObject {
                 return ".referencedUser"
             case .unrevealedSpoiler:
                 return ".unrevealedSpoiler"
-            }
-        }
-
-        public func copyWithNewRange(_ range: NSRange) -> CVTextLabel.Item {
-            switch self {
-            case .dataItem(let item):
-                return .dataItem(dataItem: item.copyWithNewRange(range))
-            case .mention(let item):
-                return .mention(mentionItem: item.copyWithNewRange(range))
-            case .referencedUser(let item):
-                return .referencedUser(referencedUserItem: item.copyWithNewRange(range))
-            case .unrevealedSpoiler(let item):
-                return .unrevealedSpoiler(item.copyWithNewRange(range))
             }
         }
     }

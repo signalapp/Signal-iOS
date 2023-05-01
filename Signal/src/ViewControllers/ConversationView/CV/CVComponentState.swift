@@ -1202,10 +1202,18 @@ public extension CVComponentState {
                                     ranges: MessageBodyRanges?,
                                     interaction: TSInteraction,
                                     transaction: SDSAnyReadTransaction) -> DisplayableText {
-        let mentionStyle: Mention.Style = (interaction as? TSOutgoingMessage != nil) ? .outgoing : .incoming
-        return DisplayableText.displayableText(withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
-                                               mentionStyle: mentionStyle,
-                                               transaction: transaction)
+        let isOutgoingMessage = interaction is TSOutgoingMessage
+        return DisplayableText.displayableText(
+            withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
+            displayConfig: HydratedMessageBody.DisplayConfiguration(
+                mention: isOutgoingMessage ? .outgoingMessageBubble : .incomingMessageBubble,
+                style: .forMessageBubble(
+                    isIncoming: !isOutgoingMessage,
+                    revealedSpoilerIds: Set()
+                ),
+                searchRanges: nil
+            ),
+            transaction: transaction)
     }
 
     static func displayableBodyText(oversizeTextAttachment attachmentStream: TSAttachmentStream,
@@ -1231,10 +1239,18 @@ public extension CVComponentState {
             }
         }()
 
-        let mentionStyle: Mention.Style = (interaction as? TSOutgoingMessage != nil) ? .outgoing : .incoming
-        return DisplayableText.displayableText(withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
-                                               mentionStyle: mentionStyle,
-                                               transaction: transaction)
+        let isOutgoingMessage = interaction is TSOutgoingMessage
+        return DisplayableText.displayableText(
+            withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
+            displayConfig: HydratedMessageBody.DisplayConfiguration(
+                mention: isOutgoingMessage ? .outgoingMessageBubble : .incomingMessageBubble,
+                style: .forMessageBubble(
+                    isIncoming: !isOutgoingMessage,
+                    revealedSpoilerIds: Set()
+                ),
+                searchRanges: nil
+            ),
+            transaction: transaction)
     }
 }
 
@@ -1246,17 +1262,32 @@ fileprivate extension CVComponentState {
                                       ranges: MessageBodyRanges?,
                                       interaction: TSInteraction,
                                       transaction: SDSAnyReadTransaction) -> DisplayableText {
-        return DisplayableText.displayableText(withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
-                                               mentionStyle: .quotedReply,
-                                               transaction: transaction)
+        return DisplayableText.displayableText(
+            withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
+            displayConfig: HydratedMessageBody.DisplayConfiguration(
+                mention: .quotedReply,
+                style: .quotedReply,
+                searchRanges: nil
+            ),
+            transaction: transaction
+        )
     }
 
     static func displayableCaption(text: String,
                                    attachmentId: String,
                                    transaction: SDSAnyReadTransaction) -> DisplayableText {
-        return DisplayableText.displayableText(withMessageBody: MessageBody(text: text, ranges: .empty),
-                                               mentionStyle: .incoming,
-                                               transaction: transaction)
+        return DisplayableText.displayableText(
+            withMessageBody: MessageBody(text: text, ranges: .empty),
+            displayConfig: HydratedMessageBody.DisplayConfiguration(
+                mention: .incomingMessageBubble,
+                style: .forMessageBubble(
+                    isIncoming: true,
+                    revealedSpoilerIds: Set()
+                ),
+                searchRanges: nil
+            ),
+            transaction: transaction
+        )
     }
 }
 

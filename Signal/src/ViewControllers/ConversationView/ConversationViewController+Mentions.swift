@@ -6,7 +6,7 @@
 import Foundation
 
 extension ConversationViewController: MentionTextViewDelegate {
-    var supportsMentions: Bool { Mention.threadAllowsMentionSend(thread) }
+    var supportsMentions: Bool { thread.allowsMentionSend }
 
     public func textViewDidBeginTypingMention(_ textView: MentionTextView) {}
 
@@ -24,9 +24,11 @@ extension ConversationViewController: MentionTextViewDelegate {
         supportsMentions ? thread.recipientAddressesWithSneakyTransaction : []
     }
 
-    public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
+    public func textViewMentionDisplayConfiguration(_ textView: MentionTextView) -> MentionDisplayConfiguration {
+        return .composing
+    }
 
-    public func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
-        .composing
+    public func mentionPickerStyle(_ textView: MentionTextView) -> MentionPickerStyle {
+        return .default
     }
 }

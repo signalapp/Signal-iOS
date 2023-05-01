@@ -63,7 +63,7 @@ public class LongTextViewController: OWSViewController {
         footer.tintColor = Theme.primaryIconColor
 
         if let displayableText = displayableText {
-            let mutableText = NSMutableAttributedString(attributedString: fullAttributedText)
+            var mutableText = NSMutableAttributedString(attributedString: fullAttributedText)
             mutableText.addAttributes(
                 [.font: UIFont.dynamicTypeBody, .foregroundColor: Theme.primaryTextColor],
                 range: mutableText.entireRange
@@ -71,7 +71,15 @@ public class LongTextViewController: OWSViewController {
 
             // Mentions have a custom style on the long-text view
             // that differs from the message, so we re-color them here.
-            Mention.updateWithStyle(.longMessageView, in: mutableText)
+            let recoveredMessageBody = RecoveredHydratedMessageBody.recover(from: mutableText)
+            mutableText = recoveredMessageBody.reapplyAttributes(
+                config: HydratedMessageBody.DisplayConfiguration(
+                    mention: .longMessageView,
+                    style: .todo(),
+                    searchRanges: nil
+                ),
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+            )
 
             let hasPendingMessageRequest = databaseStorage.read { transaction in
                 itemViewModel.thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
@@ -79,11 +87,15 @@ public class LongTextViewController: OWSViewController {
             CVComponentBodyText.configureTextView(messageTextView,
                                                   interaction: itemViewModel.interaction,
                                                   displayableText: displayableText)
-            CVComponentBodyText.linkifyData(attributedText: mutableText,
-                                            linkifyStyle: .linkAttribute,
-                                            hasPendingMessageRequest: hasPendingMessageRequest,
-                                            shouldAllowLinkification: displayableText.shouldAllowLinkification,
-                                            textWasTruncated: false)
+            CVComponentBodyText.linkifyData(
+                attributedText: mutableText,
+                linkifyStyle: .linkAttribute,
+                hasPendingMessageRequest: hasPendingMessageRequest,
+                shouldAllowLinkification: displayableText.shouldAllowLinkification,
+                textWasTruncated: false,
+                revealedSpoilerIds: Set(), // TODO[TextFormatting]
+                interactionUniqueId: itemViewModel.interaction.uniqueId
+            )
 
             messageTextView.attributedText = mutableText
             messageTextView.textAlignment = displayableText.fullTextNaturalAlignment

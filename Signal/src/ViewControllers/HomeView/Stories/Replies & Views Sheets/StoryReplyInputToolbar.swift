@@ -357,10 +357,12 @@ extension StoryReplyInputToolbar: MentionTextViewDelegate {
         delegate?.storyReplyInputToolbarMentionPickerPossibleAddresses(self) ?? []
     }
 
-    func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
+    public func textViewMentionDisplayConfiguration(_ textView: MentionTextView) -> MentionDisplayConfiguration {
+        return .groupReply
+    }
 
-    func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
-        .groupReply
+    public func mentionPickerStyle(_ textView: MentionTextView) -> MentionPickerStyle {
+        return .groupReply
     }
 
     public func textViewDidChange(_ textView: UITextView) {

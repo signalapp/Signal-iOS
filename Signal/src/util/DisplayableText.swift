@@ -127,10 +127,15 @@ public class DisplayableText: NSObject {
             case .text:
                 // We only need to update attributedText.
                 return content
-            case .attributedText(let attributedText):
-                let mutableFullText = NSMutableAttributedString(attributedString: attributedText)
-                Mention.refreshAttributes(in: mutableFullText)
-                return Content(textValue: .attributedText(attributedText: mutableFullText),
+            case .attributedText(var attributedText):
+                let body = RecoveredHydratedMessageBody.recover(from: attributedText)
+                switch body.applyable() {
+                case .unconfigured:
+                    Logger.debug("Theme changed before body ranges were configured; skipping")
+                case .alreadyConfigured(let apply):
+                    attributedText = apply(Theme.isDarkThemeEnabled)
+                }
+                return Content(textValue: .attributedText(attributedText: attributedText),
                                naturalAlignment: content.naturalAlignment)
             }
         }
@@ -265,12 +270,22 @@ public class DisplayableText: NSObject {
         )
     }
 
-    @objc
-    public class func displayableText(withMessageBody messageBody: MessageBody, mentionStyle: Mention.Style, transaction: SDSAnyReadTransaction) -> DisplayableText {
-        let textValue = messageBody.textValue(style: mentionStyle,
-                                              attributes: [:],
-                                              shouldResolveAddress: { _ in true }, // Resolve all mentions in messages.
-                                              transaction: transaction.unwrapGrdbRead)
+    public class func displayableText(
+        withMessageBody messageBody: MessageBody,
+        displayConfig: HydratedMessageBody.DisplayConfiguration,
+        transaction: SDSAnyReadTransaction
+    ) -> DisplayableText {
+        let textValue: CVTextValue
+        if messageBody.ranges.hasRanges {
+            let attributedString = messageBody
+                .hydrating(
+                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)
+                )
+                .asAttributedStringForDisplay(config: displayConfig, isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+            textValue = .attributedText(attributedText: attributedString)
+        } else {
+            textValue = .text(text: messageBody.text)
+        }
         let fullContent = Content(
             textValue: textValue,
             naturalAlignment: textValue.stringValue.naturalTextAlignment
@@ -303,21 +318,28 @@ public class DisplayableText: NSObject {
                 truncatedContent = Content(textValue: .text(text: truncatedText),
                                            naturalAlignment: truncatedText.naturalTextAlignment)
             case .attributedText(let attributedText):
-                var mentionRange = NSRange()
-                let possibleOverlappingMention = attributedText.attribute(
-                    .mention,
-                    at: snippetLength,
-                    longestEffectiveRange: &mentionRange,
-                    in: attributedText.entireRange
-                )
+                let mentionRanges = RecoveredHydratedMessageBody.recover(
+                    from: NSMutableAttributedString(attributedString: attributedText)
+                ).mentions()
+                var possibleOverlappingMention: NSRange?
+                for (candidateRange, _) in mentionRanges {
+                    if candidateRange.contains(snippetLength) {
+                        possibleOverlappingMention = candidateRange
+                        break
+                    }
+                    if candidateRange.location > snippetLength {
+                        // mentions are ordered; can early exit if we pass it.
+                        break
+                    }
+                }
 
                 // There's a mention overlapping our normal truncate point, we want to truncate sooner
                 // so we don't "split" the mention.
-                if possibleOverlappingMention != nil && mentionRange.location < snippetLength {
-                    snippetLength = mentionRange.location
+                if let possibleOverlappingMention, possibleOverlappingMention.location < snippetLength {
+                    snippetLength = possibleOverlappingMention.location
                 }
 
-                // Trim whitespace before _AND_ after slicing the snipper from the string.
+                // Trim whitespace before _AND_ after slicing the snippet from the string.
                 let truncatedAttributedText = attributedText
                     .attributedSubstring(from: NSRange(location: 0, length: snippetLength))
                     .ows_stripped()

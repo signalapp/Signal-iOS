@@ -59,7 +59,13 @@ public enum StorySharing: Dependencies {
     internal static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreviewDraft?) -> String? {
         // Turn any mentions in the message body to plaintext
         // TODO[TextFormatting]: preserve styles on the story message proto but hydrate mentions
-        let plaintextMessageBody = databaseStorage.read { messageBody.plaintextBody(transaction: $0.unwrapGrdbRead) }
+        let plaintextMessageBody = databaseStorage.read {
+            return messageBody
+                .hydrating(
+                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: $0.asV2Read)
+                )
+                .asPlaintext()
+        }
 
         let text: String?
         if linkPreview != nil, let linkPreviewUrlString = linkPreview?.urlString, plaintextMessageBody.contains(linkPreviewUrlString) {

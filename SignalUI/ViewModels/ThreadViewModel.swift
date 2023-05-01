@@ -146,7 +146,11 @@ public class ChatListInfo: Dependencies {
                 return nil
             }
             // TODO[TextFormatting]: apply styles to snippet
-            return draftMessageBody.plaintextBody(transaction: transaction.unwrapGrdbRead)
+            return draftMessageBody
+                .hydrating(
+                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)
+                )
+                .asPlaintext()
         }
         func hasVoiceMemoDraft() -> Bool {
             VoiceMessageInterruptedDraftStore.hasDraft(for: thread, transaction: transaction)

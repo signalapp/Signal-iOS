@@ -6,6 +6,12 @@
 import Foundation
 import SignalMessaging
 
+public enum MentionPickerStyle {
+    case `default`
+    case composingAttachment
+    case groupReply
+}
+
 class MentionPicker: UIView {
     private let tableView = UITableView()
     private let hairlineView = UIView()
@@ -20,10 +26,16 @@ class MentionPicker: UIView {
 
     lazy private(set) var filteredMentionableUsers = mentionableUsers
 
-    let style: Mention.Style
+    typealias Style = MentionPickerStyle
+
+    let style: Style
     let selectedAddressCallback: (SignalServiceAddress) -> Void
 
-    required init(mentionableAddresses: [SignalServiceAddress], style: Mention.Style, selectedAddressCallback: @escaping (SignalServiceAddress) -> Void) {
+    required init(
+        mentionableAddresses: [SignalServiceAddress],
+        style: Style,
+        selectedAddressCallback: @escaping (SignalServiceAddress) -> Void
+    ) {
         mentionableUsers = Self.databaseStorage.read { transaction in
             let sortedAddresses = Self.contactsManagerImpl.sortSignalServiceAddresses(
                 mentionableAddresses,
@@ -153,10 +165,11 @@ class MentionPicker: UIView {
 
     @objc
     private func applyTheme() {
-        if style == .composingAttachment {
+        switch style {
+        case .composingAttachment:
             tableView.backgroundColor = UIColor.ows_gray95
             hairlineView.backgroundColor = .ows_gray65
-        } else if style == .groupReply {
+        case .groupReply:
             blurView?.removeFromSuperview()
             blurView = nil
 
@@ -172,7 +185,7 @@ class MentionPicker: UIView {
             }
 
             hairlineView.backgroundColor = .ows_gray75
-        } else {
+        case .`default`:
             blurView?.removeFromSuperview()
             blurView = nil
 
@@ -339,11 +352,12 @@ private class MentionableUserCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with mentionableUser: MentionPicker.MentionableUser, style: Mention.Style) {
-        if [.composingAttachment, .groupReply].contains(style) {
+    func configure(with mentionableUser: MentionPicker.MentionableUser, style: MentionPicker.Style) {
+        switch style {
+        case .composingAttachment, .groupReply:
             displayNameLabel.textColor = Theme.darkThemePrimaryColor
             selectedBackgroundView?.backgroundColor = UIColor.white.withAlphaComponent(0.2)
-        } else {
+        case .`default`:
             displayNameLabel.textColor = Theme.primaryTextColor
             selectedBackgroundView?.backgroundColor = Theme.cellSelectedColor
         }
