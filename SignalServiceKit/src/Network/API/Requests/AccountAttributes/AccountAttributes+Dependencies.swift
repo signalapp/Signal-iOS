@@ -81,10 +81,6 @@ extension AccountAttributes {
         let udAccessKey: String
         do {
             udAccessKey = try SMKUDAccessKey(profileKey: profileKey.keyData).keyData.base64EncodedString()
-            guard udAccessKey.isEmpty.negated else {
-                // Crash app if UD cannot be enabled.
-                owsFail("Could not determine UD access key.")
-            }
         } catch {
             // Crash app if UD cannot be enabled.
             owsFail("Could not determine UD access key: \(error).")

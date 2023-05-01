@@ -18,15 +18,7 @@ public class SMKUDAccessKey: NSObject {
 
     @objc
     public init(profileKey: Data) throws {
-        let cipher = try Aes256GcmEncryption(
-            key: profileKey,
-            nonce: Data(count: Aes256GcmEncryptedData.nonceLength),
-            associatedData: []
-        )
-        // We derive the "ud access key" from the private key by encrypting zeroes.
-        var message = Data(count: Self.kUDAccessKeyLength)
-        try cipher.encrypt(&message)
-        self.keyData = message
+        self.keyData = try Data(ProfileKey(contents: [UInt8](profileKey)).deriveAccessKey())
     }
 
     @objc
