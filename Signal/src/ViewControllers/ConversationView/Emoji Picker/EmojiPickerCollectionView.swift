@@ -220,15 +220,30 @@ class EmojiPickerCollectionView: UICollectionView {
             return []
         }
 
-        return allSendableEmoji.filter { emoji in
+        // Anchored matches are emoji that have a term that starts with the search text
+        // Unanchored matches are emoji that have a term that contains the search text elsewhere
+        let initialResult = (anchoredMatches: [EmojiWithSkinTones](), unanchoredMatches: [EmojiWithSkinTones]())
+        let result = allSendableEmoji.reduce(into: initialResult) { partialResult, emoji in
             let terms = emojiSearchIndex?[emoji.baseEmoji.rawValue] ?? [emoji.baseEmoji.name]
+
+            var unanchoredMatch = false
             for term in terms {
-                if term.range(of: searchText, options: [.caseInsensitive]) != nil {
-                    return true
+                if let range = term.range(of: searchText, options: [.caseInsensitive]) {
+                    if range.lowerBound == term.startIndex {
+                        partialResult.anchoredMatches.append(emoji)
+                        return
+                    } else {
+                        unanchoredMatch = true
+                        // Don't break here to continue to check for anchored matches
+                    }
                 }
             }
-            return false
+            if unanchoredMatch {
+                partialResult.unanchoredMatches.append(emoji)
+            }
         }
+
+        return result.anchoredMatches + result.unanchoredMatches
     }
 
     @objc
