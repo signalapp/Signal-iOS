@@ -131,9 +131,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     self.clipsToBounds = YES;
 
     CAShapeLayer *maskLayer = [CAShapeLayer new];
-    UIRectCorner sharpCorners = [UIView uiRectCornerForOWSDirectionalRectCorner:OWSDirectionalRectCornerBottomLeading |
-                                        OWSDirectionalRectCornerBottomTrailing];
-
+    UIRectCorner sharpCorners = UIRectCornerBottomLeft | UIRectCornerBottomRight;
     OWSLayerView *innerBubbleView = [[OWSLayerView alloc]
          initWithFrame:CGRectZero
         layoutCallback:^(UIView *layerView) {

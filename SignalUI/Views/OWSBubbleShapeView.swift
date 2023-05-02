@@ -3,13 +3,37 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
+
+public struct OWSDirectionalRectCorner: OptionSet {
+    public let rawValue: Int8
+
+    public init(rawValue: Int8) {
+        self.rawValue = rawValue
+    }
+
+    public static let topLeading = OWSDirectionalRectCorner(rawValue: 1 << 0)
+    public static let topTrailing = OWSDirectionalRectCorner(rawValue: 1 << 1)
+    public static let bottomLeading = OWSDirectionalRectCorner(rawValue: 1 << 2)
+    public static let bottomTrailing = OWSDirectionalRectCorner(rawValue: 1 << 3)
+
+    public static let allCorners: OWSDirectionalRectCorner = [.topLeading, .topTrailing, .bottomLeading, .bottomTrailing]
+}
+
+public protocol OWSBubbleViewHost: AnyObject {
+    var maskPath: UIBezierPath { get }
+    var bubbleReferenceView: UIView { get }
+}
+
+public protocol OWSBubbleViewPartner: AnyObject {
+    func updateLayers()
+    func setBubbleViewHost(_ bubbleViewHost: OWSBubbleViewHost?)
+}
 
 // While rendering message bubbles, we often need to render
 // into a subregion of the bubble that reflects the intersection
 // of some subview (e.g. a media view) and the bubble shape
 // (including its rounding).
-@objc
 public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
     // This view support multiple kinds of rendering.
@@ -60,7 +84,6 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

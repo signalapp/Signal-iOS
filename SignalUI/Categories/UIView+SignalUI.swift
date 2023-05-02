@@ -847,7 +847,6 @@ extension CALayer {
 
 // MARK: - Corners
 
-@objc
 public extension UIView {
     static func uiRectCorner(forOWSDirectionalRectCorner corner: OWSDirectionalRectCorner) -> UIRectCorner {
         if corner == .allCorners {

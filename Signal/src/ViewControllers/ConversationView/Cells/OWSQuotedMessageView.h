@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalUI/OWSBubbleView.h>
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;

@@ -19,7 +19,6 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 #import <SignalUI/FingerprintViewController.h>
 #import <SignalUI/FingerprintViewScanController.h>
 #import <SignalUI/OWSAnyTouchGestureRecognizer.h>
-#import <SignalUI/OWSBubbleView.h>
 #import <SignalUI/OWSNavigationControllerBase.h>
 #import <SignalUI/OWSQuotedReplyModel.h>
 #import <SignalUI/OWSSearchBar.h>

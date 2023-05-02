@@ -156,7 +156,6 @@
 		3402AA9D271D9E180084CBAE /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9553F271B510400B05242 /* CircleView.swift */; };
 		3402AA9E271D9E180084CBAE /* ContactsViewHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95565271B510400B05242 /* ContactsViewHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA9F271D9E180084CBAE /* ViewOnceTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9554C271B510400B05242 /* ViewOnceTooltip.swift */; };
-		3402AAA1271D9E180084CBAE /* OWSBubbleView.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95534271B510400B05242 /* OWSBubbleView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AAA3271D9E180084CBAE /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95526271B510400B05242 /* DirectionalPanGestureRecognizer.swift */; };
 		3402AAA6271D9E180084CBAE /* MentionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9552C271B510400B05242 /* MentionPicker.swift */; };
 		3402AAA7271D9E180084CBAE /* AvatarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95545271B510400B05242 /* AvatarImageView.swift */; };
@@ -2840,7 +2839,6 @@
 		34A95530271B510400B05242 /* OWSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSButton.swift; sourceTree = "<group>"; };
 		34A95531271B510400B05242 /* ResizingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizingScrollView.swift; sourceTree = "<group>"; };
 		34A95532271B510400B05242 /* TappableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableView.swift; sourceTree = "<group>"; };
-		34A95534271B510400B05242 /* OWSBubbleView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSBubbleView.h; sourceTree = "<group>"; };
 		34A95535271B510400B05242 /* OWSBubbleShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSBubbleShapeView.swift; sourceTree = "<group>"; };
 		34A95536271B510400B05242 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
 		34A95537271B510400B05242 /* ThemeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeHeaderView.swift; sourceTree = "<group>"; };
@@ -5734,7 +5732,6 @@
 				34A9550A271B510400B05242 /* NonContactTableViewCell.swift */,
 				34A9553D271B510400B05242 /* OWSActionSheets.swift */,
 				34A95535271B510400B05242 /* OWSBubbleShapeView.swift */,
-				34A95534271B510400B05242 /* OWSBubbleView.h */,
 				34A95530271B510400B05242 /* OWSButton.swift */,
 				34A95511271B510400B05242 /* OWSFlatButton.swift */,
 				34A95538271B510400B05242 /* OWSLayerView.swift */,
@@ -9459,7 +9456,6 @@
 				88B98705288089C700F8C74D /* FingerprintViewController.h in Headers */,
 				88B98706288089CD00F8C74D /* FingerprintViewScanController.h in Headers */,
 				3402A9FE271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.h in Headers */,
-				3402AAA1271D9E180084CBAE /* OWSBubbleView.h in Headers */,
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
 				3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */,
