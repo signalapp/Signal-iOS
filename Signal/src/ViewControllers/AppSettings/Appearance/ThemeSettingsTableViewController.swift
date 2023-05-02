@@ -20,9 +20,6 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let themeSection = OWSTableSection()
-        themeSection.headerTitle = OWSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
-                                                     comment: "The title for the theme section in the appearance settings.")
-
         if #available(iOS 13, *) {
             themeSection.add(appearanceItem(.system))
         }
