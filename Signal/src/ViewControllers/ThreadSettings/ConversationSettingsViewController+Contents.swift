@@ -115,7 +115,7 @@ extension ConversationSettingsViewController {
                     stackView.addArrangedSubview(button)
                     button.autoSetDimensions(to: CGSize(square: imageWidth))
 
-                    imageView.backgroundColor = Theme.middleGrayColor
+                    imageView.backgroundColor = .ows_middleGray
 
                     button.addSubview(imageView)
                     imageView.autoPinEdgesToSuperviewEdges()

@@ -100,7 +100,7 @@ class CustomColorViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
-            name: .ThemeDidChange,
+            name: .themeDidChange,
             object: nil
         )
     }

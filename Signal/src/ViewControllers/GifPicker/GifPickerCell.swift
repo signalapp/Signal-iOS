@@ -49,7 +49,7 @@ class GifPickerCell: UICollectionViewCell {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applyTheme),
-            name: .ThemeDidChange,
+            name: .themeDidChange,
             object: nil)
 
         applyTheme()

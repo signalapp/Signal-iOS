@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import IntentsUI
 import SignalMessaging
 import SignalUI
 
-@objc
 class ChatsSettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +24,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func updateTableContents() {
+    private func updateTableContents() {
         let contents = OWSTableContents()
 
         let linkPreviewSection = OWSTableSection()
@@ -119,7 +117,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleLinkPreviewsEnabled(_ sender: UISwitch) {
+    private func didToggleLinkPreviewsEnabled(_ sender: UISwitch) {
         Logger.info("toggled to: \(sender.isOn)")
         databaseStorage.write { transaction in
             SSKPreferences.setAreLinkPreviewsEnabled(sender.isOn, sendSyncMessage: true, transaction: transaction)
@@ -127,7 +125,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleSharingSuggestionsEnabled(_ sender: UISwitch) {
+    private func didToggleSharingSuggestionsEnabled(_ sender: UISwitch) {
         Logger.info("toggled to: \(sender.isOn)")
 
         if sender.isOn {
@@ -153,7 +151,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleAvatarPreference(_ sender: UISwitch) {
+    private func didToggleAvatarPreference(_ sender: UISwitch) {
         Logger.info("toggled to: \(sender.isOn)")
         let currentValue = databaseStorage.read { SSKPreferences.preferContactAvatars(transaction: $0) }
         guard currentValue != sender.isOn else { return }
@@ -162,7 +160,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleShouldKeepMutedChatsArchivedSwitch(_ sender: UISwitch) {
+    private func didToggleShouldKeepMutedChatsArchivedSwitch(_ sender: UISwitch) {
         Logger.info("toggled to \(sender.isOn)")
         let currentValue = databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
         guard currentValue != sender.isOn else { return }

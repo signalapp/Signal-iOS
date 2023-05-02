@@ -100,7 +100,7 @@ public class MessageActionsToolbar: UIToolbar {
 
         buildItems()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
         applyTheme()
     }
 

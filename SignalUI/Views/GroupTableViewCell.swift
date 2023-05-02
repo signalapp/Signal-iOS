@@ -42,7 +42,7 @@ public class GroupTableViewCell: UITableViewCell {
 
         // Accessory Label
         accessoryLabel.font = .semiboldFont(ofSize: 13)
-        accessoryLabel.textColor = Theme.middleGrayColor
+        accessoryLabel.textColor = .ows_middleGray
         accessoryLabel.textAlignment = .right
         accessoryLabel.isHidden = true
     }

@@ -23,7 +23,7 @@ public class ConversationScrollButton: UIButton {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(themeDidChange(notification:)),
-            name: .ThemeDidChange,
+            name: .themeDidChange,
             object: nil)
     }
 

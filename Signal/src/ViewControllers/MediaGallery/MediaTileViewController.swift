@@ -211,7 +211,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         applyTheme()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
     }
 
     override public func viewWillAppear(_ animated: Bool) {

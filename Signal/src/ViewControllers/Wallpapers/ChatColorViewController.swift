@@ -56,7 +56,7 @@ class ChatColorViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(themeDidChangeNotification),
-            name: .ThemeDidChange,
+            name: .themeDidChange,
             object: nil
         )
     }

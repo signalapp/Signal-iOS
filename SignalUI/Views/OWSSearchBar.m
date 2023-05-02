@@ -4,7 +4,6 @@
 //
 
 #import "OWSSearchBar.h"
-#import "Theme.h"
 #import "UIView+SignalUI.h"
 #import <SignalUI/SignalUI-Swift.h>
 
@@ -55,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
+                                                 name:NSNotification.ThemeDidChange
                                                object:nil];
 }
 

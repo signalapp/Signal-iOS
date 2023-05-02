@@ -19,7 +19,7 @@ public class LoadingViewController: UIViewController {
 
     override public func loadView() {
         self.view = UIView()
-        view.backgroundColor = Theme.launchScreenBackground
+        view.backgroundColor = Theme.launchScreenBackgroundColor
 
         self.logoView = UIImageView(image: #imageLiteral(resourceName: "signal-logo-128-launch-screen"))
         view.addSubview(logoView)
@@ -60,7 +60,7 @@ public class LoadingViewController: UIViewController {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
-                                               name: .ThemeDidChange,
+                                               name: .themeDidChange,
                                                object: nil)
     }
 
@@ -148,7 +148,7 @@ public class LoadingViewController: UIViewController {
 
     @objc
     func themeDidChange() {
-        view.backgroundColor = Theme.launchScreenBackground
+        view.backgroundColor = Theme.launchScreenBackgroundColor
     }
 
     // MARK: Orientation

@@ -4,7 +4,6 @@
 //
 
 #import "OWSTableViewController.h"
-#import "Theme.h"
 #import "UIView+SignalUI.h"
 #import <SignalUI/SignalUI-Swift.h>
 
@@ -420,7 +419,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         textLabel.font = OWSTableItem.primaryLabelFont;
         // Soft color.
         // TODO: Theme, review with design.
-        textLabel.textColor = Theme.middleGrayColor;
+        textLabel.textColor = UIColor.ows_middleGrayColor;
         // Centered.
         textLabel.textAlignment = NSTextAlignmentCenter;
         [cell.contentView addSubview:textLabel];

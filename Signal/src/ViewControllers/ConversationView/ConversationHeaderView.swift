@@ -119,7 +119,7 @@ public class ConversationHeaderView: UIView {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
         rootStack.addGestureRecognizer(tapGesture)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .themeDidChange, object: nil)
     }
 
     required public init(coder: NSCoder) {

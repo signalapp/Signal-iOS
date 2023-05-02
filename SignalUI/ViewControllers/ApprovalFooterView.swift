@@ -103,7 +103,7 @@ public class ApprovalFooterView: UIView {
         textfieldBackgroundView.layer.cornerRadius = 10
         self.textfieldBackgroundView = textfieldBackgroundView
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
         applyTheme()
     }
 

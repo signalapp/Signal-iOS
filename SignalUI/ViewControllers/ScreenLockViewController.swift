@@ -52,7 +52,7 @@ open class ScreenLockViewController: UIViewController {
     open override func loadView() {
         super.loadView()
 
-        view.backgroundColor = Theme.launchScreenBackground
+        view.backgroundColor = Theme.launchScreenBackgroundColor
 
         view.addSubview(imageViewLogo)
         imageViewLogo.autoHCenterInSuperview()
@@ -65,7 +65,7 @@ open class ScreenLockViewController: UIViewController {
 
         updateUIWithState(.screenProtection, isLogoAtTop: false, animated: false)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .themeDidChange, object: nil)
     }
 
     // The "screen blocking" window has three possible states:
@@ -123,7 +123,7 @@ open class ScreenLockViewController: UIViewController {
 
     @objc
     private func themeDidChange() {
-        view.backgroundColor = Theme.launchScreenBackground
+        view.backgroundColor = Theme.launchScreenBackgroundColor
     }
 
     @objc

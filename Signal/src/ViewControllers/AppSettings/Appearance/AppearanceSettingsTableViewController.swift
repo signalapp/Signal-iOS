@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc
 class AppearanceSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +20,7 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    func updateTableContents() {
+    private func updateTableContents() {
         let contents = OWSTableContents()
 
         let firstSection = OWSTableSection()
@@ -54,26 +53,26 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    func appearanceItem(_ mode: ThemeMode) -> OWSTableItem {
+    private func appearanceItem(_ mode: Theme.Mode) -> OWSTableItem {
         return OWSTableItem(
-            text: nameForTheme(mode),
+            text: nameForThemeMode(mode),
             actionBlock: { [weak self] in
-                self?.changeTheme(mode)
+                self?.changeThemeMode(mode)
             },
-            accessoryType: Theme.getOrFetchCurrentTheme() == mode ? .checkmark : .none
+            accessoryType: Theme.getOrFetchCurrentMode() == mode ? .checkmark : .none
         )
     }
 
-    func changeTheme(_ mode: ThemeMode) {
-        Theme.setCurrent(mode)
+    private func changeThemeMode(_ mode: Theme.Mode) {
+        Theme.setCurrentMode(mode)
         updateTableContents()
     }
 
-    var currentThemeName: String {
-        return nameForTheme(Theme.getOrFetchCurrentTheme())
+    private var currentThemeName: String {
+        return nameForThemeMode(Theme.getOrFetchCurrentMode())
     }
 
-    func nameForTheme(_ mode: ThemeMode) -> String {
+    private func nameForThemeMode(_ mode: Theme.Mode) -> String {
         switch mode {
         case .dark:
             return OWSLocalizedString("APPEARANCE_SETTINGS_DARK_THEME_NAME", comment: "Name indicating that the dark theme is enabled.")

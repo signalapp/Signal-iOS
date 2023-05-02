@@ -79,7 +79,7 @@ class ScreenLockUI {
         window.isHidden = false
         window.windowLevel = ._Background
         window.isOpaque = true
-        window.backgroundColor = Theme.launchScreenBackground
+        window.backgroundColor = Theme.launchScreenBackgroundColor
         return window
     }()
     private lazy var screenBlockingViewController: ScreenLockViewController = {

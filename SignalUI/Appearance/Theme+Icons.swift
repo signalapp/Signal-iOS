@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import UIKit
 
 @objc
@@ -164,59 +163,7 @@ public enum ThemeIcon: UInt {
     case hide24
 }
 
-// MARK: - Theme setup
-
-public extension Theme {
-    @objc
-    class func setupSignalAppearance() {
-        UINavigationBar.appearance().barTintColor = Theme.navbarBackgroundColor
-        UINavigationBar.appearance().tintColor = Theme.primaryIconColor
-        UIToolbar.appearance().barTintColor = Theme.navbarBackgroundColor
-        UIToolbar.appearance().tintColor = Theme.primaryIconColor
-
-        // We do _not_ specify BarButton.appearance().tintColor because it is sufficient to specify
-        // UINavigationBar.appearance().tintColor. Furthermore, specifying the BarButtonItem's
-        // appearance makes it more difficult to override the navbar theme, e.g. how we _always_
-        // use dark theme in the media send flow and gallery views. If we were specifying
-        // barButton.appearance().tintColor we would then have to manually override each
-        // BarButtonItem's tint, rather than just the navbars.
-        //
-        // UIBarButtonItem.appearance.tintColor = Theme.primaryIconColor;
-
-        // Using UIText{View,Field}.appearance().keyboardAppearance crashes due to a bug in UIKit,
-        // so we don't do it.
-
-        UITableViewCell.appearance().tintColor = Theme.primaryIconColor
-        UIToolbar.appearance().tintColor = .ows_accentBlue
-
-        // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
-        UINavigationBar.appearance().titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: Theme.navbarTitleColor
-        ]
-
-        UITextView.appearance(whenContainedInInstancesOf: [OWSNavigationController.self]).tintColor = Theme.cursorColor
-        UITextField.appearance(whenContainedInInstancesOf: [OWSNavigationController.self]).tintColor = Theme.cursorColor
-    }
-}
-
-// MARK: - Colors
-
-@objc
-public extension Theme {
-    @objc(launchScreenBackgroundColor)
-    class var launchScreenBackground: UIColor {
-        // We only adapt for dark theme on iOS 13+, because only iOS 13 supports
-        // handling dark / light appearance in the launch screen storyboard.
-        guard #available(iOS 13, *) else { return .ows_signalBlue }
-        return Theme.isDarkThemeEnabled ? .ows_signalBlueDark : .ows_signalBlue
-    }
-
-    class var selectedConversationCellColor: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_accentBlue.withAlphaComponent(0.15)
-    }
-}
-
-// MARK: - Icons
+// MARK: -
 
 @objc
 public extension Theme {
@@ -542,7 +489,6 @@ public extension Theme {
 extension Theme {
 
     // Bridging the old name to new name for our ObjC friends
-    @objc
     public static var actionSheetBackgroundColor: UIColor {
         return ActionSheet.default.backgroundColor
     }
@@ -624,14 +570,5 @@ extension Theme {
                 return background
             }
         }
-    }
-}
-
-// MARK: -
-
-@objc
-public extension UIImageView {
-    func setThemeIcon(_ themeIcon: ThemeIcon, tintColor: UIColor) {
-        self.setTemplateImageName(Theme.iconName(themeIcon), tintColor: tintColor)
     }
 }

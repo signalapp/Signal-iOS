@@ -74,7 +74,7 @@ class JoinGroupCallPill: UIControl {
         backgroundPill.autoPinEdgesToSuperviewEdges()
         dimmingView.autoPinEdgesToSuperviewEdges()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .themeDidChange, object: nil)
         applyStyle()
     }
 

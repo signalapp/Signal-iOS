@@ -84,7 +84,7 @@ open class OWSNavigationController: OWSNavigationControllerBase {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(themeDidChange),
-            name: .ThemeDidChange,
+            name: .themeDidChange,
             object: nil
         )
     }

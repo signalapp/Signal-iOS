@@ -49,7 +49,7 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
 
         configure()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .themeDidChange, object: nil)
 
         addLayoutBlock { view in
             guard let view = view as? ColorOrGradientSwatchView else { return }

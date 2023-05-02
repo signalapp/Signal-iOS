@@ -804,7 +804,7 @@ public class Deprecated_OnboardingController: NSObject {
 
 public extension UIView {
     func addBottomStroke() -> UIView {
-        return addBottomStroke(color: Theme.middleGrayColor, strokeWidth: CGHairlineWidth())
+        return addBottomStroke(color: .ows_middleGray, strokeWidth: CGHairlineWidth())
     }
 
     func addBottomStroke(color: UIColor, strokeWidth: CGFloat) -> UIView {

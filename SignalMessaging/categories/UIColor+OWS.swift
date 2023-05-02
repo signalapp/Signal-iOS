@@ -152,6 +152,11 @@ public extension UIColor {
         return UIColor(rgbHex: 0x848484)
     }
 
+    @objc(ows_middleGrayColor)
+    class var ows_middleGray: UIColor {
+        return UIColor(white: 0.5, alpha: 1)
+    }
+
     @objc(ows_gray60Color)
     class var ows_gray60: UIColor {
         return UIColor(rgbHex: 0x5E5E5E)

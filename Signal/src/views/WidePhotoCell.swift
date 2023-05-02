@@ -380,7 +380,7 @@ class FilenameSenderView: UIView {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
-                                               name: .ThemeDidChange,
+                                               name: .themeDidChange,
                                                object: nil)
     }
 

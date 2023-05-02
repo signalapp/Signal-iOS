@@ -158,7 +158,7 @@ class ToastView: UIView {
         let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe(gesture:)))
         self.addGestureRecognizer(swipeGesture)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
         applyTheme()
 
     }

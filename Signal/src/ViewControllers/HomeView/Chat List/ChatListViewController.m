@@ -18,7 +18,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalUI/Theme.h>
 #import <SignalUI/ViewControllerUtils.h>
 #import <StoreKit/StoreKit.h>
 
@@ -452,7 +451,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 break;
             case OWSWebSocketStateConnecting:
                 proxyStatusImage = [UIImage imageNamed:@"proxy_failed_24"];
-                tintColor = Theme.middleGrayColor;
+                tintColor = UIColor.ows_middleGrayColor;
                 break;
         }
 

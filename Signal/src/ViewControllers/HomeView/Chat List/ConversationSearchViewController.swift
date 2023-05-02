@@ -98,7 +98,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
-                                               name: .ThemeDidChange,
+                                               name: .themeDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),

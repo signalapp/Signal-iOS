@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
 @objc
 public class OWSWindow: UIWindow {
@@ -13,7 +13,7 @@ public class OWSWindow: UIWindow {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(themeDidChange),
-            name: .ThemeDidChange,
+            name: .themeDidChange,
             object: nil
         )
 
@@ -39,7 +39,7 @@ public class OWSWindow: UIWindow {
         guard #available(iOS 13, *) else { return }
 
         // Ensure system UI elements use the appropriate styling for the selected theme.
-        switch Theme.getOrFetchCurrentTheme() {
+        switch Theme.getOrFetchCurrentMode() {
         case .light:
             overrideUserInterfaceStyle = .light
         case .dark:

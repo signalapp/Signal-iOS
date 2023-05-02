@@ -1353,7 +1353,7 @@ internal class ConversationPickerCell: ContactTableViewCell {
         }
 
         let timerView = DisappearingTimerConfigurationView(durationSeconds: disappearingMessagesConfig.durationSeconds)
-        timerView.tintColor = Theme.middleGrayColor
+        timerView.tintColor = .ows_middleGray
         let timerSize = CGSize(square: 44)
 
         let stackView = ManualStackView(name: "stackView")

@@ -549,7 +549,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
-                                               name: .ThemeDidChange,
+                                               name: .themeDidChange,
                                                object: nil)
 
         guard let dataSource = configuration.dataSource else { return }

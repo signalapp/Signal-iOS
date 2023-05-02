@@ -202,7 +202,7 @@ private class ButtonRow: UIButton {
         stackView.autoSetDimension(.height, toSize: 44, relation: .greaterThanOrEqual)
 
         let divider = UIView()
-        divider.backgroundColor = Theme.middleGrayColor
+        divider.backgroundColor = .ows_middleGray
         addSubview(divider)
         divider.autoSetDimension(.height, toSize: CGHairlineWidth())
         divider.autoPinEdge(toSuperviewEdge: .trailing)

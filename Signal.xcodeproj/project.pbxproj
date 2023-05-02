@@ -449,11 +449,9 @@
 		34A954BE271A471300B05242 /* SignalUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 34A954A8271A471200B05242 /* SignalUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		34A954CB271B4BE600B05242 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */; };
 		34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 34A954CE271B4D0700B05242 /* SignalUI-Prefix.pch */; };
-		34A954DB271B4F3E00B05242 /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A954D3271B4F3E00B05242 /* Theme.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34A954DC271B4F3E00B05242 /* Theme+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D4271B4F3E00B05242 /* Theme+OWS.swift */; };
+		34A954DC271B4F3E00B05242 /* Theme+Icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D4271B4F3E00B05242 /* Theme+Icons.swift */; };
 		34A954DE271B4F3E00B05242 /* ChatColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D6271B4F3E00B05242 /* ChatColors.swift */; };
 		34A954E0271B4F3E00B05242 /* ColorOrGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D8271B4F3E00B05242 /* ColorOrGradient.swift */; };
-		34A954E1271B4F3E00B05242 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D9271B4F3E00B05242 /* Theme.m */; };
 		34A954E2271B4F3E00B05242 /* ColorOrGradientSwatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */; };
 		34A954E6271B4F6A00B05242 /* AttachmentSharing.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A954E3271B4F6900B05242 /* AttachmentSharing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34A954E7271B4F6A00B05242 /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A954E4271B4F6A00B05242 /* AttachmentSharing.m */; };
@@ -948,6 +946,7 @@
 		7677E40F29F79BF300AC6A75 /* SAEScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E40E29F79BF300AC6A75 /* SAEScreenLockViewController.swift */; };
 		7677E41129F7A60500AC6A75 /* ScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E41029F7A60500AC6A75 /* ScreenLockViewController.swift */; };
 		7677E41329F84C2100AC6A75 /* ScreenLockUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */; };
+		7677E40D29F75C4200AC6A75 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E40C29F75C4200AC6A75 /* Theme.swift */; };
 		7685DFFF29EA1F6400542CBC /* UIFont+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */; };
 		76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */; };
 		76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */; };
@@ -2788,11 +2787,9 @@
 		34A954B1271A471300B05242 /* SignalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareViewDelegate.swift; sourceTree = "<group>"; };
 		34A954CE271B4D0700B05242 /* SignalUI-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalUI-Prefix.pch"; sourceTree = "<group>"; };
-		34A954D3271B4F3E00B05242 /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
-		34A954D4271B4F3E00B05242 /* Theme+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Theme+OWS.swift"; sourceTree = "<group>"; };
+		34A954D4271B4F3E00B05242 /* Theme+Icons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Theme+Icons.swift"; sourceTree = "<group>"; };
 		34A954D6271B4F3E00B05242 /* ChatColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColors.swift; sourceTree = "<group>"; };
 		34A954D8271B4F3E00B05242 /* ColorOrGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorOrGradient.swift; sourceTree = "<group>"; };
-		34A954D9271B4F3E00B05242 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Theme.m; sourceTree = "<group>"; };
 		34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorOrGradientSwatchView.swift; sourceTree = "<group>"; };
 		34A954E3271B4F6900B05242 /* AttachmentSharing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentSharing.h; sourceTree = "<group>"; };
 		34A954E4271B4F6A00B05242 /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentSharing.m; sourceTree = "<group>"; };
@@ -3446,6 +3443,7 @@
 		7677E40E29F79BF300AC6A75 /* SAEScreenLockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAEScreenLockViewController.swift; sourceTree = "<group>"; };
 		7677E41029F7A60500AC6A75 /* ScreenLockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockViewController.swift; sourceTree = "<group>"; };
 		7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockUI.swift; sourceTree = "<group>"; };
+		7677E40C29F75C4200AC6A75 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+OWS.swift"; sourceTree = "<group>"; };
 		76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAttachmentPrepViewController.swift; sourceTree = "<group>"; };
 		76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
@@ -5631,9 +5629,8 @@
 				34A954D6271B4F3E00B05242 /* ChatColors.swift */,
 				34A954D8271B4F3E00B05242 /* ColorOrGradient.swift */,
 				34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */,
-				34A954D4271B4F3E00B05242 /* Theme+OWS.swift */,
-				34A954D3271B4F3E00B05242 /* Theme.h */,
-				34A954D9271B4F3E00B05242 /* Theme.m */,
+				34A954D4271B4F3E00B05242 /* Theme+Icons.swift */,
+				7677E40C29F75C4200AC6A75 /* Theme.swift */,
 			);
 			path = Appearance;
 			sourceTree = "<group>";
@@ -9450,7 +9447,6 @@
 				88B986F828807E9000F8C74D /* RecipientPickerViewController.h in Headers */,
 				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
-				34A954DB271B4F3E00B05242 /* Theme.h in Headers */,
 				3402A9E9271D97090084CBAE /* UIView+SignalUI.h in Headers */,
 				34A954FD271B4FB000B05242 /* UIViewController+OWS.h in Headers */,
 				3402AA51271D9DCD0084CBAE /* UIViewController+Permissions.h in Headers */,
@@ -10879,8 +10875,8 @@
 				88B6D673280770C4005D86EC /* TextAttachmentView.swift in Sources */,
 				3402AAB0271D9E180084CBAE /* TextFieldWithPlaceholder.swift in Sources */,
 				3402AA8E271D9E180084CBAE /* TextViewWithPlaceholder.swift in Sources */,
-				34A954DC271B4F3E00B05242 /* Theme+OWS.swift in Sources */,
-				34A954E1271B4F3E00B05242 /* Theme.m in Sources */,
+				34A954DC271B4F3E00B05242 /* Theme+Icons.swift in Sources */,
+				7677E40D29F75C4200AC6A75 /* Theme.swift in Sources */,
 				66FC638429E2201500F00DAC /* ThemedColor+Theme.swift in Sources */,
 				3402AA8F271D9E180084CBAE /* ThemeHeaderView.swift in Sources */,
 				3402AA62271D9DEC0084CBAE /* ThreadUtil+SignalUI.swift in Sources */,

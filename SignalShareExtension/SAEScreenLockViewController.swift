@@ -24,7 +24,7 @@ final class SAEScreenLockViewController: ScreenLockViewController {
 
     override func loadView() {
         super.loadView()
-        view.backgroundColor = Theme.launchScreenBackground
+        view.backgroundColor = Theme.launchScreenBackgroundColor
         title = OWSLocalizedString("SHARE_EXTENSION_VIEW_TITLE", comment: "Title for the 'share extension' view.")
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .stop,

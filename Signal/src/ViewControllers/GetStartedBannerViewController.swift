@@ -77,7 +77,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applyTheme),
-            name: .ThemeDidChange,
+            name: .themeDidChange,
             object: nil)
 
         NotificationCenter.default.addObserver(

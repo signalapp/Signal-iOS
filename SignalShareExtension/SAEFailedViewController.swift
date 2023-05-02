@@ -41,7 +41,7 @@ class SAEFailedViewController: UIViewController {
                                                                 action: #selector(cancelPressed))
         self.navigationItem.title = "Signal"
 
-        self.view.backgroundColor = Theme.launchScreenBackground
+        self.view.backgroundColor = Theme.launchScreenBackgroundColor
 
         let logoImage = UIImage(named: "signal-logo-128-launch-screen")
         let logoImageView = UIImageView(image: logoImage)

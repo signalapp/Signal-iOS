@@ -54,7 +54,7 @@ class EmojiMoodPickerView: UIView {
         }
 
         applyTheme()
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
     }
 
     required init?(coder: NSCoder) {

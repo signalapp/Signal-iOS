@@ -46,7 +46,7 @@ open class ReminderView: UIStackView {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(render),
-            name: .ThemeDidChange,
+            name: .themeDidChange,
             object: nil
         )
 

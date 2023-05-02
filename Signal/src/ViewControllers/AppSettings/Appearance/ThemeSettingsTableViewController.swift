@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc
 class ThemeSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -16,7 +15,7 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    func updateTableContents() {
+    private func updateTableContents() {
         let contents = OWSTableContents()
 
         let themeSection = OWSTableSection()
@@ -31,26 +30,26 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    func appearanceItem(_ mode: ThemeMode) -> OWSTableItem {
+    private func appearanceItem(_ mode: Theme.Mode) -> OWSTableItem {
         return OWSTableItem(
-            text: Self.nameForTheme(mode),
+            text: Self.nameForThemeMode(mode),
             actionBlock: { [weak self] in
-                self?.changeTheme(mode)
+                self?.changeThemeMode(mode)
             },
-            accessoryType: Theme.getOrFetchCurrentTheme() == mode ? .checkmark : .none
+            accessoryType: Theme.getOrFetchCurrentMode() == mode ? .checkmark : .none
         )
     }
 
-    func changeTheme(_ mode: ThemeMode) {
-        Theme.setCurrent(mode)
+    private func changeThemeMode(_ mode: Theme.Mode) {
+        Theme.setCurrentMode(mode)
         updateTableContents()
     }
 
     static var currentThemeName: String {
-        return nameForTheme(Theme.getOrFetchCurrentTheme())
+        return nameForThemeMode(Theme.getOrFetchCurrentMode())
     }
 
-    static func nameForTheme(_ mode: ThemeMode) -> String {
+    private static func nameForThemeMode(_ mode: Theme.Mode) -> String {
         switch mode {
         case .dark:
             return OWSLocalizedString("APPEARANCE_SETTINGS_DARK_THEME_NAME",
@@ -61,14 +60,6 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
         case .system:
             return OWSLocalizedString("APPEARANCE_SETTINGS_SYSTEM_THEME_NAME",
                                      comment: "Name indicating that the system theme is enabled.")
-        }
-    }
-
-    @objc
-    func didToggleAvatarPreference(_ sender: UISwitch) {
-        Logger.info("Avatar preference toggled: \(sender.isOn)")
-        SDSDatabaseStorage.shared.asyncWrite { writeTx in
-            SSKPreferences.setPreferContactAvatars(sender.isOn, transaction: writeTx)
         }
     }
 }

@@ -271,7 +271,7 @@ private class ButtonRow: UIButton {
         buttonLabel.textColor = Theme.primaryTextColor
         buttonLabel.font = .dynamicTypeBodyClamped
 
-        divider.backgroundColor = Theme.middleGrayColor
+        divider.backgroundColor = .ows_middleGray
 
         selectedImageView.setTemplateImageName(Theme.iconName(.accessoryCheckmark), tintColor: Theme.primaryIconColor)
     }
