@@ -44,11 +44,19 @@ extension AppDelegate {
         let mainAppContext = MainAppContext()
         SetCurrentAppContext(mainAppContext, false)
 
-        enableLoggingIfNeeded()
+        let debugLogger = DebugLogger.shared()
+        debugLogger.enableTTYLoggingIfNeeded()
 
-        if CurrentAppContext().isRunningTests {
+        if mainAppContext.isRunningTests {
             _ = initializeWindow(mainAppContext: mainAppContext, rootViewController: UIViewController())
             return
+        }
+
+        debugLogger.setUpFileLoggingIfNeeded(appContext: mainAppContext, canLaunchInBackground: true)
+        debugLogger.wipeLogsIfDisabled(appContext: mainAppContext)
+        DebugLogger.configureSwiftLogging()
+        if DebugFlags.audibleErrorLogging {
+            debugLogger.enableErrorReporting()
         }
 
         Logger.warn("application: didFinishLaunchingWithOptions.")
@@ -110,7 +118,13 @@ extension AppDelegate {
         if let preflightError {
             let viewController = terminalErrorViewController()
             let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: viewController)
-            showPreflightErrorUI(preflightError, window: window, viewController: viewController, launchStartedAt: launchStartedAt)
+            showPreflightErrorUI(
+                preflightError,
+                appContext: mainAppContext,
+                window: window,
+                viewController: viewController,
+                launchStartedAt: launchStartedAt
+            )
             return
         }
 
@@ -123,24 +137,7 @@ extension AppDelegate {
 
         // Show LoadingViewController until the database migrations are complete.
         let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: LoadingViewController())
-        self.launchApp(in: window, launchStartedAt: launchStartedAt)
-    }
-
-    private func enableLoggingIfNeeded() {
-        let isLoggingEnabled: Bool
-        #if DEBUG
-        isLoggingEnabled = true
-        DebugLogger.shared().enableTTYLogging()
-        #else
-        isLoggingEnabled = OWSPreferences.isLoggingEnabled()
-        #endif
-        if isLoggingEnabled {
-            DebugLogger.shared().enableFileLogging()
-        }
-        if DebugFlags.audibleErrorLogging {
-            DebugLogger.shared().enableErrorReporting()
-        }
-        DebugLogger.configureSwiftLogging()
+        self.launchApp(in: window, appContext: mainAppContext, launchStartedAt: launchStartedAt)
     }
 
     private func initializeWindow(mainAppContext: MainAppContext, rootViewController: UIViewController) -> UIWindow {
@@ -152,13 +149,14 @@ extension AppDelegate {
         return window
     }
 
-    private func launchApp(in window: UIWindow, launchStartedAt: CFTimeInterval) {
+    private func launchApp(in window: UIWindow, appContext: MainAppContext, launchStartedAt: CFTimeInterval) {
         assert(window.rootViewController is LoadingViewController)
         configureGlobalUI(in: window)
         setUpMainAppEnvironment().done(on: DispatchQueue.main) { (finalContinuation, sleepBlockObject) in
             self.didLoadDatabase(
                 finalContinuation: finalContinuation,
                 sleepBlockObject: sleepBlockObject,
+                appContext: appContext,
                 window: window,
                 launchStartedAt: launchStartedAt
             )
@@ -240,6 +238,7 @@ extension AppDelegate {
     private func didLoadDatabase(
         finalContinuation: AppSetup.FinalContinuation,
         sleepBlockObject: NSObject,
+        appContext: MainAppContext,
         window: UIWindow,
         launchStartedAt: CFTimeInterval
     ) {
@@ -296,13 +295,21 @@ extension AppDelegate {
             firstly {
                 LaunchJobs.run(tsAccountManager: tsAccountManager, databaseStorage: databaseStorage)
             }.done(on: DispatchQueue.main) {
-                self.setAppIsReady(launchInterface: launchInterface, launchStartedAt: launchStartedAt)
+                self.setAppIsReady(
+                    launchInterface: launchInterface,
+                    launchStartedAt: launchStartedAt,
+                    appContext: appContext
+                )
                 DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
             }
         }
     }
 
-    private func setAppIsReady(launchInterface: LaunchInterface, launchStartedAt: CFTimeInterval) {
+    private func setAppIsReady(
+        launchInterface: LaunchInterface,
+        launchStartedAt: CFTimeInterval,
+        appContext: MainAppContext
+    ) {
         Logger.info("")
         AssertIsOnMainThread()
         owsAssert(!AppReadiness.isAppReady)
@@ -337,7 +344,7 @@ extension AppDelegate {
             }
         }
 
-        DebugLogger.shared().postLaunchLogCleanup()
+        DebugLogger.shared().postLaunchLogCleanup(appContext: appContext)
         AppVersion.shared.mainAppLaunchDidComplete()
 
         enableBackgroundRefreshIfNecessary()
@@ -513,6 +520,7 @@ extension AppDelegate {
 
     private func showPreflightErrorUI(
         _ preflightError: LaunchPreflightError,
+        appContext: MainAppContext,
         window: UIWindow,
         viewController: UIViewController,
         launchStartedAt: CFTimeInterval
@@ -528,7 +536,12 @@ extension AppDelegate {
 
         switch preflightError {
         case .databaseCorruptedAndMightBeRecoverable:
-            presentDatabaseRecovery(from: viewController, window: window, launchStartedAt: launchStartedAt)
+            presentDatabaseRecovery(
+                from: viewController,
+                appContext: appContext,
+                window: window,
+                launchStartedAt: launchStartedAt
+            )
             return
 
         case .databaseUnrecoverablyCorrupted:
@@ -573,7 +586,10 @@ extension AppDelegate {
                 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE",
                 comment: "Error indicating that the app crashed during the previous launch."
             )
-            actions = [.submitDebugLogsAndLaunchApp(window: window), .launchApp(window: window)]
+            actions = [
+                .submitDebugLogsAndLaunchApp(window: window, appContext: appContext),
+                .launchApp(window: window, appContext: appContext)
+            ]
 
         case .lowStorageSpaceAvailable:
             shouldKillAppWhenBackgrounded = true
@@ -600,6 +616,7 @@ extension AppDelegate {
 
     private func presentDatabaseRecovery(
         from viewController: UIViewController,
+        appContext: MainAppContext,
         window: UIWindow,
         launchStartedAt: CFTimeInterval
     ) {
@@ -616,6 +633,7 @@ extension AppDelegate {
                 self.didLoadDatabase(
                     finalContinuation: finalContinuation,
                     sleepBlockObject: sleepBlockObject,
+                    appContext: appContext,
                     window: window,
                     launchStartedAt: launchStartedAt
                 )
@@ -642,9 +660,9 @@ extension AppDelegate {
 
     private enum LaunchFailureActionSheetAction {
         case submitDebugLogsAndCrash
-        case submitDebugLogsAndLaunchApp(window: UIWindow)
+        case submitDebugLogsAndLaunchApp(window: UIWindow, appContext: MainAppContext)
         case submitDebugLogsWithDatabaseIntegrityCheckAndCrash
-        case launchApp(window: UIWindow)
+        case launchApp(window: UIWindow, appContext: MainAppContext)
     }
 
     private func presentLaunchFailureActionSheet(
@@ -679,11 +697,11 @@ extension AppDelegate {
             })
         }
 
-        func ignoreErrorAndLaunchApp(in window: UIWindow) {
+        func ignoreErrorAndLaunchApp(in window: UIWindow, appContext: MainAppContext) {
             // Pretend we didn't fail!
             self.didAppLaunchFail = false
             window.rootViewController = LoadingViewController()
-            self.launchApp(in: window, launchStartedAt: launchStartedAt)
+            self.launchApp(in: window, appContext: appContext, launchStartedAt: launchStartedAt)
         }
 
         for action in actions {
@@ -694,10 +712,10 @@ extension AppDelegate {
                         owsFail("Exiting after submitting debug logs")
                     }
                 }
-            case .submitDebugLogsAndLaunchApp(let window):
+            case .submitDebugLogsAndLaunchApp(let window, let appContext):
                 addSubmitDebugLogsAction { [unowned window] in
                     DebugLogs.submitLogsWithSupportTag(supportTag) {
-                        ignoreErrorAndLaunchApp(in: window)
+                        ignoreErrorAndLaunchApp(in: window, appContext: appContext)
                     }
                 }
             case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash:
@@ -708,7 +726,7 @@ extension AppDelegate {
                         }
                     }
                 }
-            case .launchApp(let window):
+            case .launchApp(let window, let appContext):
                 actionSheet.addAction(.init(
                     title: OWSLocalizedString(
                         "APP_LAUNCH_FAILURE_CONTINUE",
@@ -716,7 +734,7 @@ extension AppDelegate {
                     ),
                     style: .cancel, // Use a cancel-style button to draw attention.
                     handler: { [unowned window] _ in
-                        ignoreErrorAndLaunchApp(in: window)
+                        ignoreErrorAndLaunchApp(in: window, appContext: appContext)
                     }
                 ))
             }

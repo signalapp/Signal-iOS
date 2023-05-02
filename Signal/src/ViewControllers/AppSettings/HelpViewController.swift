@@ -6,6 +6,7 @@
 import Foundation
 import SafariServices
 import SignalMessaging
+import SignalUI
 
 @objc(OWSHelpViewController)
 final class HelpViewController: OWSTableViewController2 {
@@ -101,18 +102,13 @@ final class HelpViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleEnableLogSwitch(sender: UISwitch) {
-        if sender.isOn {
-            Logger.info("disabling logging.")
-            DebugLogger.shared().wipeLogs()
-            DebugLogger.shared().disableFileLogging()
-        } else {
-            DebugLogger.shared().enableFileLogging()
-            Logger.info("enabling logging.")
-        }
+    private func didToggleEnableLogSwitch(sender: UISwitch) {
+        let debugLogger = DebugLogger.shared()
+        let mainAppContext = CurrentAppContext() as! MainAppContext
 
         OWSPreferences.setIsLoggingEnabled(sender.isOn)
-
+        debugLogger.setUpFileLoggingIfNeeded(appContext: mainAppContext, canLaunchInBackground: true)
+        debugLogger.wipeLogsIfDisabled(appContext: mainAppContext)
         updateTableContents()
     }
 }

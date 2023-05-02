@@ -39,10 +39,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         let appContext = ShareAppExtensionContext(rootViewController: self)
         SetCurrentAppContext(appContext, false)
 
-        DebugLogger.shared().enableTTYLogging()
-        if OWSPreferences.isLoggingEnabled() || _isDebugAssertConfiguration() {
-            DebugLogger.shared().enableFileLogging()
-        }
+        let debugLogger = DebugLogger.shared()
+        debugLogger.enableTTYLoggingIfNeeded()
+        debugLogger.setUpFileLoggingIfNeeded(appContext: appContext, canLaunchInBackground: false)
 
         Logger.info("")
 

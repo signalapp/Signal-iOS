@@ -7,24 +7,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MainAppContext;
+
 @interface DebugLogger : NSObject
 
 + (instancetype)shared;
-
-- (void)enableFileLogging;
-
-- (void)disableFileLogging;
-
-- (void)enableTTYLogging;
 
 - (void)enableErrorReporting;
 
 @property (nonatomic, readonly) NSURL *errorLogsDir;
 
-- (void)wipeLogs;
-
-- (void)postLaunchLogCleanup;
-
++ (NSArray<NSString *> *)allLogsDirPaths;
 - (NSArray<NSString *> *)allLogFilePaths;
 
 @property (nonatomic, readonly, class) NSString *mainAppDebugLogsDirPath;
@@ -34,6 +27,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, class) NSString *testDebugLogsDirPath;
 #endif
 
+// exposed for Swift interop
+@property (nonatomic, nullable) DDFileLogger *fileLogger;
+
+@end
+
+#pragma mark -
+
+@interface DebugLogFileManager : DDLogFileManagerDefault
 @end
 
 #pragma mark -

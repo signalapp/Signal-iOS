@@ -243,11 +243,6 @@ public class AppVersionForObjC: NSObject {
         self.appVersion = appVersion
     }
 
-    @objc(compareAppVersion:with:)
-    public class func compare(
-        _ lhs: String, with rhs: String
-    ) -> ComparisonResult { AppVersion.compare(lhs, with: rhs) }
-
     public func mainAppLaunchDidComplete() { appVersion.mainAppLaunchDidComplete() }
 
     public func saeLaunchDidComplete() { appVersion.saeLaunchDidComplete() }

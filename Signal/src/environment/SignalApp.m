@@ -218,7 +218,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
         [AppDelegate updateApplicationShortcutItemsWithIsRegisteredAndReady:NO];
     });
 
-    [DebugLogger.shared wipeLogs];
+    [DebugLogger.shared wipeLogsAlwaysWithAppContext:(MainAppContext *)CurrentAppContext()];
     exit(0);
 }
 

@@ -8,6 +8,15 @@ import SignalServiceKit
 import SignalMessaging
 
 class NSEEnvironment: Dependencies {
+    let appContext: NSEContext
+
+    init() {
+        self.appContext = NSEContext()
+        SetCurrentAppContext(self.appContext, false)
+    }
+
+    // MARK: -
+
     var processingMessageCounter = AtomicUInt(0)
     var isProcessingMessages: Bool {
         processingMessageCounter.get() > 0
@@ -95,52 +104,33 @@ class NSEEnvironment: Dependencies {
         })
     }
 
-    // MARK: - Global state
-
-    private let globalStateLock = UnfairLock()
-    private var isGlobalStateConfigured = false
-
-    /// Ensures we have all required global state configured, such as an app
-    /// context and logging.
-    func ensureGlobalState() {
-        globalStateLock.withLock {
-            if isGlobalStateConfigured {
-                return
-            }
-
-            SetCurrentAppContext(NSEContext(), false)
-
-            DebugLogger.shared().enableTTYLogging()
-            if OWSPreferences.isLoggingEnabled() || _isDebugAssertConfiguration() {
-                DebugLogger.shared().enableFileLogging()
-            }
-
-            NSELogger.uncorrelated.info("Logging is now configured and available!", flushImmediately: true)
-
-            isGlobalStateConfigured = true
-        }
-    }
-
     // MARK: - Setup
 
-    private var isSetup = AtomicBool(false)
-
-    func setupIfNecessary(logger: NSELogger) -> UNNotificationContent? {
-        guard isSetup.tryToSetFlag() else { return nil }
-        logger.info("Running NSEEnvironment setup!", flushImmediately: true)
-        return DispatchQueue.main.sync { setup(logger: logger) }
-    }
-
-    private func setup(logger: NSELogger) -> UNNotificationContent? {
+    /// Called for each notification the NSE receives.
+    ///
+    /// Will be invoked multiple times in the same NSE process.
+    func setUpBeforeCheckingForFirstDeviceUnlock(logger: NSELogger) {
         AssertIsOnMainThread()
 
-        logger.info("NSEEnvironment setup()", flushImmediately: true)
+        let debugLogger = DebugLogger.shared()
+        debugLogger.enableTTYLoggingIfNeeded()
+        debugLogger.setUpFileLoggingIfNeeded(appContext: appContext, canLaunchInBackground: true)
+    }
+
+    private var didStartAppSetup = false
+
+    /// Called for each notification the NSE receives.
+    ///
+    /// Will be invoked multiple times in the same NSE process.
+    func setUpAfterCheckingForFirstDeviceUnlock(logger: NSELogger) {
+        logger.info("", flushImmediately: true)
+
+        if didStartAppSetup {
+            return
+        }
+        didStartAppSetup = true
 
         Cryptography.seedRandom()
-
-        if let errorContent = Self.verifyDBKeysAvailable(logger: logger) {
-            return errorContent
-        }
 
         let databaseContinuation = AppSetup().start(
             appContext: CurrentAppContext(),
@@ -169,11 +159,9 @@ class NSEEnvironment: Dependencies {
         OWSAnalytics.appLaunchDidBegin()
 
         listenForMainAppLaunch(logger: logger)
-
-        return nil
     }
 
-    public static func verifyDBKeysAvailable(logger: NSELogger) -> UNNotificationContent? {
+    func verifyDBKeysAvailable(logger: NSELogger) -> UNNotificationContent? {
         guard !StorageCoordinator.hasGrdbFile || !GRDBDatabaseStorageAdapter.isKeyAccessible else { return nil }
 
         logger.info("Database password is not accessible, posting generic notification.")
