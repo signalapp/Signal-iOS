@@ -260,7 +260,6 @@
 		34404275273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34404274273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift */; };
 		34429B3D273440420050D3EA /* DebugUIMisc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34429B3C273440420050D3EA /* DebugUIMisc.swift */; };
 		3444E6BB264EDFF300B32E3B /* CVColorOrGradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */; };
-		34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */; };
 		34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4D1FD0A7A300BC14EF /* DebugLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B4E1FD0A7A300BC14EF /* DebugLogger.m */; };
 		34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */; };
@@ -949,6 +948,7 @@
 		7666D54828331E6900A3BDB9 /* ImageEditorViewController+Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */; };
 		766BCA7D29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766BCA7C29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift */; };
 		76725D2D29143CEC000E8AE1 /* ConversationInputToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */; };
+		7677E40729F7472800AC6A75 /* ShareAppExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E40629F7472800AC6A75 /* ShareAppExtensionContext.swift */; };
 		7685DFFF29EA1F6400542CBC /* UIFont+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */; };
 		76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */; };
 		76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */; };
@@ -2585,8 +2585,6 @@
 		34404274273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_RegistrationPinAttemptsExhaustedViewController.swift; sourceTree = "<group>"; };
 		34429B3C273440420050D3EA /* DebugUIMisc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIMisc.swift; sourceTree = "<group>"; };
 		3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVColorOrGradientView.swift; sourceTree = "<group>"; };
-		34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareAppExtensionContext.h; sourceTree = "<group>"; };
-		34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareAppExtensionContext.m; sourceTree = "<group>"; };
 		34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalShareExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		34480B381FD092E300BC14EF /* SignalShareExtension-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalShareExtension-Prefix.pch"; sourceTree = "<group>"; };
 		34480B4D1FD0A7A300BC14EF /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
@@ -3451,6 +3449,7 @@
 		7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Text.swift"; sourceTree = "<group>"; };
 		766BCA7C29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTLEnabledCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputToolbar.swift; sourceTree = "<group>"; };
+		7677E40629F7472800AC6A75 /* ShareAppExtensionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareAppExtensionContext.swift; sourceTree = "<group>"; };
 		7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+OWS.swift"; sourceTree = "<group>"; };
 		76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAttachmentPrepViewController.swift; sourceTree = "<group>"; };
 		76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
@@ -5250,8 +5249,7 @@
 				34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */,
 				4CCB567B23C8D89C004A5731 /* NSItemProvider+TypedAccessors.h */,
 				4CCB567C23C8D89C004A5731 /* NSItemProvider+TypedAccessors.m */,
-				34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */,
-				34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */,
+				7677E40629F7472800AC6A75 /* ShareAppExtensionContext.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -10945,7 +10943,7 @@
 				347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */,
 				3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */,
 				34641E1F2088DA6D00E2EDE5 /* SAEScreenLockViewController.m in Sources */,
-				34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */,
+				7677E40729F7472800AC6A75 /* ShareAppExtensionContext.swift in Sources */,
 				4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */,
 				88EFF4FC25AD4230000FAFBA /* SharingThreadPickerViewController.swift in Sources */,
 			);

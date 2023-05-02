@@ -9,7 +9,6 @@
 // Separate iOS Frameworks from other imports.
 #import "NSItemProvider+TypedAccessors.h"
 #import "SAEScreenLockViewController.h"
-#import "ShareAppExtensionContext.h"
 #import <SignalCoreKit/NSObject+OWS.h>
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalCoreKit/OWSLogs.h>
