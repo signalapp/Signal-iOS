@@ -76,8 +76,8 @@ open class MentionTextView: OWSTextView {
         }
 
         let body = MessageBody(
-            text: "",
-            ranges: MessageBodyRanges(mentions: [NSRange(location: 0, length: 0): mentionUuid], styles: [])
+            text: "@",
+            ranges: MessageBodyRanges(mentions: [NSRange(location: 0, length: 1): mentionUuid], styles: [])
         )
         let hydrated = Self.databaseStorage.read { tx in
             return body.hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: tx.asV2Read))
