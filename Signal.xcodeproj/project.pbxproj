@@ -609,7 +609,6 @@
 		455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DB1F1FEA0000F86704 /* Metal.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DC1F1FEA0000F86704 /* MetalKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45638BDB1F3DD0D400128435 /* DebugUICalling.swift */; };
-		4579431E1E7C8CE9008ED0C0 /* DebugLogs.m in Sources */ = {isa = PBXBuildFile; fileRef = 4579431D1E7C8CE9008ED0C0 /* DebugLogs.m */; };
 		457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457C87B72032645C008D52D6 /* DebugUINotifications.swift */; };
 		457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457F671A20746193000EABCD /* QuotedReplyPreview.swift */; };
 		45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45847E861E4283C30080EAB3 /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -3081,8 +3080,6 @@
 		455A16DB1F1FEA0000F86704 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		455A16DC1F1FEA0000F86704 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		45638BDB1F3DD0D400128435 /* DebugUICalling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUICalling.swift; sourceTree = "<group>"; };
-		4579431C1E7C8CE9008ED0C0 /* DebugLogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogs.h; sourceTree = "<group>"; };
-		4579431D1E7C8CE9008ED0C0 /* DebugLogs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogs.m; sourceTree = "<group>"; };
 		457C87B72032645C008D52D6 /* DebugUINotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUINotifications.swift; sourceTree = "<group>"; };
 		457F671A20746193000EABCD /* QuotedReplyPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyPreview.swift; sourceTree = "<group>"; };
 		45847E861E4283C30080EAB3 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
@@ -6813,8 +6810,6 @@
 				34F1071F26D005340053EF4D /* BatchUpdate.swift */,
 				4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */,
 				F93461B8291ED28900366682 /* CreditAndDebitCards.swift */,
-				4579431C1E7C8CE9008ED0C0 /* DebugLogs.h */,
-				4579431D1E7C8CE9008ED0C0 /* DebugLogs.m */,
 				34067EAA2710D61A000407C3 /* DebugLogs.swift */,
 				3498AC882513896400B1F315 /* Dependencies+MainApp.swift */,
 				34A95500271B503E00B05242 /* DisplayableText.swift */,
@@ -11291,7 +11286,6 @@
 				88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */,
 				34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */,
 				349A5C5425CD7A6C00B30EE8 /* DebugContactsUtils.swift in Sources */,
-				4579431E1E7C8CE9008ED0C0 /* DebugLogs.m in Sources */,
 				34067EAB2710D61A000407C3 /* DebugLogs.swift in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,

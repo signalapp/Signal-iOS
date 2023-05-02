@@ -6,11 +6,9 @@
 import Foundation
 import SignalMessaging
 
-@objc
 public class LogPickerViewController: OWSTableViewController2 {
     let logDirUrl: URL
 
-    @objc
     public init(logDirUrl: URL) {
         self.logDirUrl = logDirUrl
         super.init()
@@ -95,12 +93,10 @@ public class LogPickerViewController: OWSTableViewController2 {
     }
 }
 
-@objc
 public class LogViewController: UIViewController {
 
     let logUrl: URL
 
-    @objc
     public init(logUrl: URL) {
         self.logUrl = logUrl
         super.init(nibName: nil, bundle: nil)

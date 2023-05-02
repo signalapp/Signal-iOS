@@ -690,20 +690,20 @@ extension AppDelegate {
             switch action {
             case .submitDebugLogsAndCrash:
                 addSubmitDebugLogsAction {
-                    DebugLogs.submitLogs(withSupportTag: supportTag) {
+                    DebugLogs.submitLogsWithSupportTag(supportTag) {
                         owsFail("Exiting after submitting debug logs")
                     }
                 }
             case .submitDebugLogsAndLaunchApp(let window):
                 addSubmitDebugLogsAction { [unowned window] in
-                    DebugLogs.submitLogs(withSupportTag: supportTag) {
+                    DebugLogs.submitLogsWithSupportTag(supportTag) {
                         ignoreErrorAndLaunchApp(in: window)
                     }
                 }
             case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash:
                 addSubmitDebugLogsAction { [unowned viewController] in
                     SignalApp.showDatabaseIntegrityCheckUI(from: viewController) {
-                        DebugLogs.submitLogs(withSupportTag: supportTag) {
+                        DebugLogs.submitLogsWithSupportTag(supportTag) {
                             owsFail("Exiting after submitting debug logs")
                         }
                     }

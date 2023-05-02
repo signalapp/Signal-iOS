@@ -280,7 +280,7 @@ public class NotificationActionHandler: NSObject {
 
     private class func submitDebugLogs() -> Promise<Void> {
         Promise { future in
-            DebugLogs.submitLogs(withSupportTag: nil) {
+            DebugLogs.submitLogsWithSupportTag(nil) {
                 future.resolve()
             }
         }

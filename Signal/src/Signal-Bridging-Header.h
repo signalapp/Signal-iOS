@@ -9,7 +9,6 @@
 #import "ChatListViewController.h"
 #import "ConversationViewController.h"
 #import "DebugContactsUtils.h"
-#import "DebugLogs.h"
 #import "DebugUIMessages.h"
 #import "DebugUIMisc.h"
 #import "DebugUIPage.h"
