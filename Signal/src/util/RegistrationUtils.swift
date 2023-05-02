@@ -3,19 +3,24 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalCoreKit
-import UIKit
+import SignalServiceKit
+import SignalUI
 
 @objc
-public extension RegistrationUtils {
+public class RegistrationUtils: NSObject {
 
-    static func reregister(fromViewController: UIViewController) {
+    private override init() {
+        super.init()
+    }
+
+    @objc
+    class func reregister(fromViewController: UIViewController) {
         AssertIsOnMainThread()
 
         // If this is not the primary device, jump directly to the re-linking flow.
-        guard self.tsAccountManager.isPrimaryDevice else {
-            Self.showRelinkingUI()
+        guard tsAccountManager.isPrimaryDevice else {
+            showRelinkingUI()
             return
         }
 
@@ -30,15 +35,47 @@ public extension RegistrationUtils {
 
         Logger.info("phoneNumber: \(e164)")
 
-        Self.preferences.unsetRecordedAPNSTokens()
+        preferences.unsetRecordedAPNSTokens()
 
         showReRegistration(e164: e164, aci: aci)
     }
-}
 
-extension RegistrationUtils {
+    class func showReregistrationUI(fromViewController viewController: UIViewController) {
+        // If this is not the primary device, jump directly to the re-linking flow.
+        guard tsAccountManager.isPrimaryDevice else {
+            showRelinkingUI()
+            return
+        }
 
-    fileprivate static func showReRegistration(e164: E164, aci: UUID) {
+        let actionSheet = ActionSheetController()
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString(
+                "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER",
+                comment: "Label for button that lets users re-register using the same phone number."
+            ),
+            style: .destructive,
+            handler: { _ in
+                Logger.info("Reregistering from banner")
+                RegistrationUtils.reregister(fromViewController: viewController)
+            }
+        ))
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        viewController.presentActionSheet(actionSheet)
+    }
+
+    private class func showRelinkingUI() {
+        Logger.info("showRelinkingUI")
+
+        guard tsAccountManager.resetForReregistration() else {
+            owsFailDebug("could not reset for re-registration.")
+            return
+        }
+
+        preferences.unsetRecordedAPNSTokens()
+        Deprecated_ProvisioningController.presentRelinkingFlow()
+    }
+
+    private class func showReRegistration(e164: E164, aci: UUID) {
         Logger.info("Attempting to start re-registration")
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.reRegistering(.init(e164: e164, aci: aci))

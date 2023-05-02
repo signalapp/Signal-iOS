@@ -5,7 +5,6 @@
 
 #import "ChatListViewController.h"
 #import "AppDelegate.h"
-#import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import <SignalCoreKit/NSDate+OWS.h>

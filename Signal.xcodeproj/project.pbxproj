@@ -549,7 +549,6 @@
 		34E20D4E2425672B002C011E /* ConversationSettingsViewController+Contents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E20D4D2425672A002C011E /* ConversationSettingsViewController+Contents.swift */; };
 		34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */; };
 		34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */; };
-		34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E5DC8120D8050D00C08145 /* RegistrationUtils.m */; };
 		34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E88D252098C5AE00A608F4 /* ContactViewController.swift */; };
 		34E93F9226668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */; };
 		34E95C1B269F4F1B004807EC /* CLVLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1A269F4F1A004807EC /* CLVLoader.swift */; };
@@ -3021,8 +3020,6 @@
 		34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIDiskUsage.m; sourceTree = "<group>"; };
 		34E3EF0E1EFC2684007F6822 /* DebugUIPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIPage.h; sourceTree = "<group>"; };
 		34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIPage.m; sourceTree = "<group>"; };
-		34E5DC8020D8050D00C08145 /* RegistrationUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationUtils.h; sourceTree = "<group>"; };
-		34E5DC8120D8050D00C08145 /* RegistrationUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegistrationUtils.m; sourceTree = "<group>"; };
 		34E88D252098C5AE00A608F4 /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
 		34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BodyTextItems.swift"; sourceTree = "<group>"; };
 		34E95C1A269F4F1A004807EC /* CLVLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLVLoader.swift; sourceTree = "<group>"; };
@@ -6830,8 +6827,6 @@
 				34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */,
 				F9FAABD729DB55940004B383 /* Progress+Signal.swift */,
 				888CC15828E3CE8100A13493 /* ProxyConnectionChecker.swift */,
-				34E5DC8020D8050D00C08145 /* RegistrationUtils.h */,
-				34E5DC8120D8050D00C08145 /* RegistrationUtils.m */,
 				3440426A273AB186008C9FA4 /* RegistrationUtils.swift */,
 				66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */,
 				8822558C26B9D1D7001A33C4 /* SignalMe.swift */,
@@ -11606,7 +11601,6 @@
 				F9426D18299FEC8900357352 /* RegistrationTransferChoiceViewController.swift in Sources */,
 				66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */,
 				66783C2B29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift in Sources */,
-				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */,
 				F9EC3FEA299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift in Sources */,
 				F9E3006C299D76C3000323F8 /* RegistrationVerificationViewController.swift in Sources */,

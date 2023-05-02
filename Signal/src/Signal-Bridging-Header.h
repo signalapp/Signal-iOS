@@ -21,6 +21,5 @@
 #import "OWSScreenLockUI.h"
 #import "OWSWindowManager.h"
 #import "RecipientPickerViewController.h"
-#import "RegistrationUtils.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"

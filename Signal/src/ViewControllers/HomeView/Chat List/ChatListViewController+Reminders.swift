@@ -121,11 +121,11 @@ public class CLVReminderViews: NSObject {
     @objc
     private func didTapDeregisteredView() {
         AssertIsOnMainThread()
-        guard let viewController = viewController else {
+        guard let viewController else {
             owsFailDebug("Missing viewController.")
             return
         }
-        RegistrationUtils.showReregistrationUI(from: viewController)
+        RegistrationUtils.showReregistrationUI(fromViewController: viewController)
     }
 
     @objc

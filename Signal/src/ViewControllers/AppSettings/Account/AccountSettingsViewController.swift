@@ -208,7 +208,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     // MARK: - Account
 
     private func reregisterUser() {
-        RegistrationUtils.showReregistrationUI(from: self)
+        RegistrationUtils.showReregistrationUI(fromViewController: self)
     }
 
     private func deleteLinkedData() {
