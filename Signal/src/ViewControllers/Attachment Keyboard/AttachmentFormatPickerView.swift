@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
+import SignalServiceKit
+import SignalUI
+import UIKit
 
 protocol AttachmentFormatPickerDelegate: AnyObject {
     func didTapCamera()
@@ -26,10 +29,10 @@ class AttachmentFormatPickerView: UICollectionView {
         }
     }
 
-    private let collectionViewFlowLayout = UICollectionViewFlowLayout()
+    private let collectionViewFlowLayout = RTLEnabledCollectionViewFlowLayout()
 
     private var isGroup: Bool {
-        guard let attachmentFormatPickerDelegate = attachmentFormatPickerDelegate else {
+        guard let attachmentFormatPickerDelegate else {
             owsFailDebug("Missing attachmentFormatPickerDelegate.")
             return false
         }
@@ -146,7 +149,7 @@ extension AttachmentFormatPickerView: UICollectionViewDataSource {
     }
 }
 
-class AttachmentFormatCell: UICollectionViewCell {
+private class AttachmentFormatCell: UICollectionViewCell {
 
     static let reuseIdentifier = "AttachmentFormatCell"
 

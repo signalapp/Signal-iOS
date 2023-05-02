@@ -64,7 +64,7 @@ class RecentPhotosCollectionView: UICollectionView {
         return size
     }
 
-    private let collectionViewFlowLayout = UICollectionViewFlowLayout()
+    private let collectionViewFlowLayout = RTLEnabledCollectionViewFlowLayout()
 
     init() {
         super.init(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
@@ -179,7 +179,7 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
     }
 }
 
-class SelectMorePhotosCell: UICollectionViewCell {
+private class SelectMorePhotosCell: UICollectionViewCell {
 
     static let reuseIdentifier = "SelectMorePhotosCell"
 
@@ -263,7 +263,7 @@ class SelectMorePhotosCell: UICollectionViewCell {
     }
 }
 
-class RecentPhotoCell: UICollectionViewCell {
+private class RecentPhotoCell: UICollectionViewCell {
 
     static let reuseIdentifier = "RecentPhotoCell"
 
@@ -303,7 +303,7 @@ class RecentPhotoCell: UICollectionViewCell {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        if let durationLabel = durationLabel,
+        if let durationLabel,
            previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
             durationLabel.font = RecentPhotoCell.durationLabelFont()
         }
