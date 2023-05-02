@@ -134,7 +134,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         let appSecuritySection = OWSTableSection()
         appSecuritySection.headerTitle = OWSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")
 
-        switch OWSScreenLock.shared.biometryType {
+        switch ScreenLock.shared.biometryType {
         case .unknown:
             appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL", comment: "Section footer")
         case .passcode:
@@ -156,17 +156,17 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL",
                 comment: "Label for the 'enable screen lock' switch of the privacy settings."
             ),
-            isOn: { OWSScreenLock.shared.isScreenLockEnabled() },
+            isOn: { ScreenLock.shared.isScreenLockEnabled() },
             target: self,
             selector: #selector(didToggleScreenLockSwitch)
         ))
-        if OWSScreenLock.shared.isScreenLockEnabled() {
+        if ScreenLock.shared.isScreenLockEnabled() {
             appSecuritySection.add(.disclosureItem(
                 withText: OWSLocalizedString(
                     "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",
                     comment: "Label for the 'screen lock activity timeout' setting of the privacy settings."
                 ),
-                detailText: formatScreenLockTimeout(OWSScreenLock.shared.screenLockTimeout()),
+                detailText: formatScreenLockTimeout(ScreenLock.shared.screenLockTimeout()),
                 actionBlock: { [weak self] in
                     self?.showScreenLockTimeoutPicker()
                 }
@@ -259,7 +259,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
     @objc
     func didToggleScreenLockSwitch(_ sender: UISwitch) {
-        OWSScreenLock.shared.setIsScreenLockEnabled(sender.isOn)
+        ScreenLock.shared.setIsScreenLockEnabled(sender.isOn)
         updateTableContents()
     }
 
@@ -293,11 +293,11 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             comment: "Label for the 'screen lock activity timeout' setting of the privacy settings."
         ))
 
-        for timeout in OWSScreenLock.shared.screenLockTimeouts {
+        for timeout in ScreenLock.shared.screenLockTimeouts {
             actionSheet.addAction(.init(
                 title: formatScreenLockTimeout(timeout, useShortFormat: false),
                 handler: { [weak self] _ in
-                    OWSScreenLock.shared.setScreenLockTimeout(timeout)
+                    ScreenLock.shared.setScreenLockTimeout(timeout)
                     self?.updateTableContents()
                 }
             ))

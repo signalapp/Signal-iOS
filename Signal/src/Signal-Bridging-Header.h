@@ -17,7 +17,6 @@
 #import "FingerprintViewController.h"
 #import "OWSLinkDeviceViewController.h"
 #import "OWSQuotedMessageView.h"
-#import "OWSScreenLockUI.h"
 #import "OWSWindowManager.h"
 #import "RecipientPickerViewController.h"
 #import "RemoteVideoView.h"

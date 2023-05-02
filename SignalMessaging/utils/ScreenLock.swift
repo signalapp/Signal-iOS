@@ -5,20 +5,19 @@
 
 import Foundation
 import LocalAuthentication
+import SignalServiceKit
 
-@objc
-public class OWSScreenLock: NSObject {
+public class ScreenLock: NSObject {
 
-    public enum OWSScreenLockOutcome {
+    public enum Outcome {
         case success
         case cancel
         case failure(error: String)
         case unexpectedFailure(error: String)
     }
 
-    @objc
     public static let screenLockTimeoutDefault = 15 * kMinuteInterval
-    @objc
+
     public let screenLockTimeouts = [
         1 * kMinuteInterval,
         5 * kMinuteInterval,
@@ -28,7 +27,6 @@ public class OWSScreenLock: NSObject {
         0
     ]
 
-    @objc
     public static let ScreenLockDidChange = Notification.Name("ScreenLockDidChange")
 
     private static let OWSScreenLock_Key_IsScreenLockEnabled = "OWSScreenLock_Key_IsScreenLockEnabled"
@@ -36,8 +34,7 @@ public class OWSScreenLock: NSObject {
 
     // MARK: - Singleton class
 
-    @objc(shared)
-    public static let shared = OWSScreenLock()
+    public static let shared = ScreenLock()
 
     private override init() {
         super.init()
@@ -47,12 +44,10 @@ public class OWSScreenLock: NSObject {
 
     // MARK: - KV Store
 
-    @objc
     public let keyValueStore = SDSKeyValueStore(collection: "OWSScreenLock_Collection")
 
     // MARK: - Properties
 
-    @objc
     public func isScreenLockEnabled() -> Bool {
         AssertIsOnMainThread()
 
@@ -62,27 +57,25 @@ public class OWSScreenLock: NSObject {
         }
 
         return databaseStorage.read { transaction in
-            return self.keyValueStore.getBool(OWSScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
+            return self.keyValueStore.getBool(ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
                                               defaultValue: false,
                                               transaction: transaction)
         }
     }
 
-    @objc
     public func setIsScreenLockEnabled(_ value: Bool) {
         AssertIsOnMainThread()
         assert(AppReadiness.isAppReady)
 
         databaseStorage.write { transaction in
             self.keyValueStore.setBool(value,
-                                       key: OWSScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
+                                       key: ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
                                        transaction: transaction)
         }
 
-        NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(ScreenLock.ScreenLockDidChange, object: nil)
     }
 
-    @objc
     public func screenLockTimeout() -> TimeInterval {
         AssertIsOnMainThread()
 
@@ -92,24 +85,23 @@ public class OWSScreenLock: NSObject {
         }
 
         return databaseStorage.read { transaction in
-            return self.keyValueStore.getDouble(OWSScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
-                                                defaultValue: OWSScreenLock.screenLockTimeoutDefault,
+            return self.keyValueStore.getDouble(ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
+                                                defaultValue: ScreenLock.screenLockTimeoutDefault,
                                                 transaction: transaction)
         }
     }
 
-    @objc
     public func setScreenLockTimeout(_ value: TimeInterval) {
         AssertIsOnMainThread()
         assert(AppReadiness.isAppReady)
 
         databaseStorage.write { transaction in
             self.keyValueStore.setDouble(value,
-                                         key: OWSScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
+                                         key: ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
                                          transaction: transaction)
         }
 
-        NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(ScreenLock.ScreenLockDidChange, object: nil)
     }
 
     public enum BiometryType {
@@ -145,7 +137,6 @@ public class OWSScreenLock: NSObject {
     //
     // * Asynchronously.
     // * On the main thread.
-    @objc
     public func tryToUnlockScreenLock(success: @escaping (() -> Void),
                                       failure: @escaping ((Error) -> Void),
                                       unexpectedFailure: @escaping ((Error) -> Void),
@@ -154,7 +145,7 @@ public class OWSScreenLock: NSObject {
 
         tryToVerifyLocalAuthentication(localizedReason: OWSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
                                                                           comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'."),
-                                       completion: { (outcome: OWSScreenLockOutcome) in
+                                       completion: { (outcome: Outcome) in
                                         AssertIsOnMainThread()
 
                                         switch outcome {
@@ -183,14 +174,14 @@ public class OWSScreenLock: NSObject {
     // * Asynchronously.
     // * On the main thread.
     private func tryToVerifyLocalAuthentication(localizedReason: String,
-                                                completion completionParam: @escaping ((OWSScreenLockOutcome) -> Void)) {
+                                                completion completionParam: @escaping ((Outcome) -> Void)) {
         AssertIsOnMainThread()
 
         let defaultErrorDescription = OWSLocalizedString("SCREEN_LOCK_ENABLE_UNKNOWN_ERROR",
                                                         comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode.")
 
         // Ensure completion is always called on the main thread.
-        let completion = { (outcome: OWSScreenLockOutcome) in
+        let completion = { (outcome: Outcome) in
             DispatchQueue.main.async {
                 completionParam(outcome)
             }
@@ -236,7 +227,7 @@ public class OWSScreenLock: NSObject {
 
     // MARK: - Outcome
 
-    private func outcomeForLAError(errorParam: Error?, defaultErrorDescription: String) -> OWSScreenLockOutcome {
+    private func outcomeForLAError(errorParam: Error?, defaultErrorDescription: String) -> Outcome {
         if let error = errorParam {
             guard let laError = error as? LAError else {
                 return .failure(error: defaultErrorDescription)

@@ -130,7 +130,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("")
 
-        if OWSScreenLock.shared.isScreenLockEnabled() {
+        if ScreenLock.shared.isScreenLockEnabled() {
             Logger.info("dismissing.")
             dismissAndCompleteExtension(animated: false, error: ShareViewControllerError.screenLockEnabled)
         }
@@ -236,7 +236,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("Presenting initial root view controller")
 
-        if OWSScreenLock.shared.isScreenLockEnabled() {
+        if ScreenLock.shared.isScreenLockEnabled() {
             presentScreenLock()
         } else {
             presentContentView()
