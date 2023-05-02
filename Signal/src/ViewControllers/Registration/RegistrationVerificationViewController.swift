@@ -214,11 +214,7 @@ class RegistrationVerificationViewController: OWSViewController {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if !UIDevice.current.isIPhone5OrShorter {
-            // Small devices may obscure parts of the UI behind the keyboard, especially with larger
-            // font sizes.
-            verificationCodeView.becomeFirstResponder()
-        }
+        verificationCodeView.becomeFirstResponder()
 
         showValidationErrorUiIfNecessary()
 

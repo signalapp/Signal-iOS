@@ -140,6 +140,8 @@ class RegistrationVerificationCodeView: UIView {
         self.addSubview(textfield)
 
         updateColors()
+
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapView)))
     }
 
     public func updateColors() {
@@ -200,6 +202,11 @@ class RegistrationVerificationCodeView: UIView {
         // Move cursor to end of text.
         let newPosition = textfield.endOfDocument
         textfield.selectedTextRange = textfield.textRange(from: newPosition, to: newPosition)
+    }
+
+    @objc
+    private func didTapView() {
+        becomeFirstResponder()
     }
 
     @discardableResult
