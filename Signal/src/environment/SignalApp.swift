@@ -66,8 +66,7 @@ extension SignalApp {
         case .deprecatedOnboarding(let onboardingController):
             showDeprecatedOnboardingView(onboardingController)
             AppReadiness.setUIIsReady()
-        case .chatList(let onboardingController):
-            onboardingController.markAsOnboarded()
+        case .chatList:
             showConversationSplitView()
         }
 

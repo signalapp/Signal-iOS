@@ -269,7 +269,8 @@ extension AppDelegate {
         switch launchInterface {
         case .registration, .deprecatedOnboarding:
             hasInProgressRegistration = true
-        case .chatList:
+        case .chatList(let onboardingController):
+            onboardingController.markAsOnboarded()
             hasInProgressRegistration = false
         }
 

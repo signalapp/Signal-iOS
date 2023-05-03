@@ -161,7 +161,7 @@ public class Deprecated_OnboardingController: NSObject {
     @objc
     public func markAsOnboarded() {
         guard !tsAccountManager.isOnboarded else { return }
-        self.databaseStorage.asyncWrite {
+        self.databaseStorage.write {
             Logger.info("completed onboarding")
             self.tsAccountManager.setIsOnboarded(true, transaction: $0)
         }
