@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 public enum GalleryDirection {
@@ -30,15 +31,27 @@ class MediaGalleryAlbum {
 }
 
 public class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
+    struct Sender {
+        let name: String
+        let abbreviatedName: String
+    }
+
     let message: TSMessage
+    let sender: Sender?
     let attachmentStream: TSAttachmentStream
+
     let galleryDate: GalleryDate
     let captionForDisplay: String?
     let albumIndex: Int
     let orderingKey: MediaGalleryItemOrderingKey
 
-    init(message: TSMessage, attachmentStream: TSAttachmentStream) {
+    init(
+        message: TSMessage,
+        sender: Sender?,
+        attachmentStream: TSAttachmentStream
+    ) {
         self.message = message
+        self.sender = sender
         self.attachmentStream = attachmentStream
         self.galleryDate = GalleryDate(message: message)
         self.albumIndex = message.attachmentIds.firstIndex(of: attachmentStream.uniqueId) ?? 0
@@ -387,7 +400,44 @@ class MediaGallery: Dependencies {
             return nil
         }
 
-        return MediaGalleryItem(message: message, attachmentStream: attachmentStream)
+        let sender: MediaGalleryItem.Sender? = {
+            let senderAddress: SignalServiceAddress? = {
+                if let incomingMessage = message as? TSIncomingMessage {
+                    return incomingMessage.authorAddress
+                }
+
+                return tsAccountManager.localAddress(with: transaction)
+            }()
+
+            if let senderAddress {
+                let senderName = contactsManager.nameForAddress(
+                    senderAddress,
+                    localUserDisplayMode: .asLocalUser,
+                    short: false,
+                    transaction: transaction
+                )
+
+                let senderAbbreviatedName = contactsManager.nameForAddress(
+                    senderAddress,
+                    localUserDisplayMode: .asLocalUser,
+                    short: true,
+                    transaction: transaction
+                )
+
+                return MediaGalleryItem.Sender(
+                    name: senderName.string,
+                    abbreviatedName: senderAbbreviatedName.string
+                )
+            }
+
+            return nil
+        }()
+
+        return MediaGalleryItem(
+            message: message,
+            sender: sender,
+            attachmentStream: attachmentStream
+        )
     }
 
     internal func album(for item: MediaGalleryItem) -> MediaGalleryAlbum {

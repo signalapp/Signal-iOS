@@ -1085,37 +1085,18 @@ class GalleryGridCellItem: PhotoGridItem {
     }
 
     lazy var photoMetadata: PhotoMetadata? = {
-        let authorAddress: SignalServiceAddress
-        if let incomingMessage = galleryItem.message as? TSIncomingMessage {
-            authorAddress = incomingMessage.authorAddress
-        } else if let localAddress = TSAccountManager.shared.localAddress {
-            authorAddress = localAddress
-        } else {
-            owsFailDebug("Local address lookup failed unexpectedly")
+        guard let sender = galleryItem.sender else {
+            owsFailDebug("Missing sender!")
             return nil
         }
+
         let filename = galleryItem.attachmentStream.originalFilePath.map {
             ($0 as NSString).lastPathComponent as String
         }
-        let (sender, abbreviatedSender) =
-        SDSDatabaseStorage.shared.read { transaction in
-            let contactsManager = SSKEnvironment.shared.contactsManager
-            return (
-                contactsManager.nameForAddress(
-                    authorAddress,
-                    localUserDisplayMode: .asLocalUser,
-                    short: false,
-                    transaction: transaction),
 
-                contactsManager.nameForAddress(
-                    authorAddress,
-                    localUserDisplayMode: .asLocalUser,
-                    short: true,
-                    transaction: transaction))
-        }
         return PhotoMetadata(
-            sender: sender.string,
-            abbreviatedSender: abbreviatedSender.string,
+            sender: sender.name,
+            abbreviatedSender: sender.abbreviatedName,
             filename: filename,
             byteSize: Int(galleryItem.attachmentStream.byteCount),
             creationDate: galleryItem.attachmentStream.creationTimestamp)
