@@ -192,7 +192,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             SpamReportingTokenRecord.self,
             UsernameLookupRecord.self,
             JobRecord.self,
-            OWSDevice.self
+            OWSDevice.self,
+            EditRecord.self
         ]
     }
 

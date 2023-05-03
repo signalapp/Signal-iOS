@@ -3916,6 +3916,9 @@
 /* message status while message is downloading. */
 "MESSAGE_STATUS_DOWNLOADING" = "Downloading";
 
+/* status meesage for edited messages */
+"MESSAGE_STATUS_EDITED" = "edited";
+
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Sending failed.";
 

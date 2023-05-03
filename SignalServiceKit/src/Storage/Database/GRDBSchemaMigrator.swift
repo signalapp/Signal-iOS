@@ -223,6 +223,7 @@ public class GRDBSchemaMigrator: NSObject {
         case populateStoryMessageReplyCount
         case addIndexToFindFailedAttachments
         case dropMessageSendLogTriggers
+        case addEditMessageChanges
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2222,6 +2223,48 @@ public class GRDBSchemaMigrator: NSObject {
                 ) WHERE "recordType" = 3 AND "state" IN (0, 1)
             """
             try tx.database.execute(sql: sql)
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addEditMessageChanges) { transaction in
+            try transaction.database.alter(table: "model_TSInteraction") { table in
+                table.add(column: "editState", .integer).defaults(to: 0)
+            }
+
+            try transaction.database.create(
+                table: "EditRecord"
+            ) { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("latestRevisionId", .text)
+                    .notNull()
+                    .references(
+                        "model_TSInteraction",
+                        column: "id",
+                        onDelete: .cascade
+                    )
+                table.column("pastRevisionId", .text)
+                    .notNull()
+                    .references(
+                        "model_TSInteraction",
+                        column: "id",
+                        onDelete: .cascade
+                    )
+            }
+
+            try transaction.database.create(
+                index: "index_edit_record_on_latest_revision_id",
+                on: "EditRecord",
+                columns: ["latestRevisionId"]
+            )
+
+            try transaction.database.create(
+                index: "index_edit_record_on_past_revision_id",
+                on: "EditRecord",
+                columns: ["pastRevisionId"]
+            )
+
             return .success(())
         }
 

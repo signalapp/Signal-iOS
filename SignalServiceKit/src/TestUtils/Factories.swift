@@ -310,6 +310,7 @@ public class IncomingMessageFactory: NSObject, Factory {
                                                        messageBody: messageBodyBuilder(),
                                                        bodyRanges: bodyRangesBuilder(),
                                                        attachmentIds: attachmentIdsBuilder(),
+                                                       editState: editStateBuilder(),
                                                        expiresInSeconds: expiresInSecondsBuilder(),
                                                        quotedMessage: quotedMessageBuilder(),
                                                        contactShare: contactShareBuilder(),
@@ -351,6 +352,11 @@ public class IncomingMessageFactory: NSObject, Factory {
     @objc
     public var bodyRangesBuilder: () -> MessageBodyRanges = {
         return MessageBodyRanges.empty
+    }
+
+    @objc
+    public var editStateBuilder: () -> TSEditState = {
+        return .none
     }
 
     @objc

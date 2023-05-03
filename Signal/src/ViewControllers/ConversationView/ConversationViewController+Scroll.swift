@@ -291,13 +291,39 @@ extension ConversationViewController {
                                           author: quotedReply.authorAddress,
                                           transaction: transaction)
         }
-        guard let message = quotedMessage, !message.wasRemotelyDeleted else {
-            presentMissingQuotedReplyToast()
-            return
+        if let quotedMessage {
+            if quotedMessage.wasRemotelyDeleted {
+                presentMissingQuotedReplyToast()
+                return
+            }
+
+            let targetUniqueId: String
+            switch quotedMessage.editState {
+            case .latestRevision, .none:
+                targetUniqueId = quotedMessage.uniqueId
+            case .pastRevision:
+                // If this is an older edit revision, find the current
+                // edit and use that uniqueId instead of the old one.
+                let currentEdit = databaseStorage.read { transaction in
+                    InteractionFinder.findMessage(
+                        fromEdit: quotedMessage,
+                        transaction: transaction
+                    )
+                }
+                if let currentEdit {
+                    targetUniqueId = currentEdit.uniqueId
+                } else {
+                    owsFailDebug("Couldn't find original edit")
+                    return
+                }
+            }
+
+            ensureInteractionLoadedThenScrollToInteraction(
+                targetUniqueId,
+                alignment: .centerIfNotEntirelyOnScreen,
+                isAnimated: isAnimated
+            )
         }
-        ensureInteractionLoadedThenScrollToInteraction(message.uniqueId,
-                                                       alignment: .centerIfNotEntirelyOnScreen,
-                                                       isAnimated: isAnimated)
     }
 
     func ensureInteractionLoadedThenScrollToInteraction(_ interactionId: String,

@@ -65,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
                             body:(nullable NSString *)body
                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
+                       editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
@@ -89,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
           configurationIsEnabled:(BOOL)configurationIsEnabled
              createdByRemoteName:(nullable NSString *)createdByRemoteName
           createdInExistingGroup:(BOOL)createdInExistingGroup
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:customMessage:infoMessageUserInfo:messageType:read:unregisteredAddress:configurationDurationSeconds:configurationIsEnabled:createdByRemoteName:createdInExistingGroup:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:customMessage:infoMessageUserInfo:messageType:read:unregisteredAddress:configurationDurationSeconds:configurationIsEnabled:createdByRemoteName:createdInExistingGroup:));
 
 // clang-format on
 

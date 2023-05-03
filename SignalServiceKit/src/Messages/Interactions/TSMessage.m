@@ -86,6 +86,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         OWSFailDebug(@"Empty message body.");
     }
     _attachmentIds = messageBuilder.attachmentIds;
+    _editState = messageBuilder.editState;
     _expiresInSeconds = messageBuilder.expiresInSeconds;
     _expireStartedAt = messageBuilder.expireStartedAt;
     [self updateExpiresAt];
@@ -124,6 +125,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                             body:(nullable NSString *)body
                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
+                       editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
@@ -155,6 +157,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _body = body;
     _bodyRanges = bodyRanges;
     _contactShare = contactShare;
+    _editState = editState;
     _expireStartedAt = expireStartedAt;
     _expiresAt = expiresAt;
     _expiresInSeconds = expiresInSeconds;

@@ -68,7 +68,6 @@ public class EditManager {
         let editedMessage = createEditedMessage(
             thread: thread,
             targetMessage: targetMessage,
-            editTimestamp: serverTimestamp,
             editMessage: newDataMessage,
             tx: tx
         )
@@ -76,9 +75,25 @@ public class EditManager {
 
         // Insert a new copy of the original message to preserve the
         // edit history.
-        let newMessageBuilder = targetMessage.createCopyBuilder(thread: thread)
+        let newMessageBuilder = targetMessage.createCopyBuilder(
+            thread: thread,
+            isLatestRevision: false
+        )
         let newMessage = newMessageBuilder.build()
         context.dataStore.insertMessageCopy(message: newMessage, tx: tx)
+
+        if
+            let originalId = editedMessage.grdbId?.int64Value,
+            let editId = newMessage.grdbId?.int64Value
+        {
+            let editRecord = EditRecord(
+                latestRevisionId: originalId,
+                pastRevisionId: editId
+            )
+            context.dataStore.insertEditRecord(record: editRecord, tx: tx)
+        } else {
+            owsFailDebug("Missing EditRecord IDs")
+        }
 
        return true
     }
@@ -94,7 +109,6 @@ public class EditManager {
     internal func createEditedMessage(
         thread: TSThread,
         targetMessage: TSIncomingMessage,
-        editTimestamp: UInt64,
         editMessage: SSKProtoDataMessage,
         tx: DBWriteTransaction
     ) -> TSIncomingMessage {
@@ -120,10 +134,14 @@ public class EditManager {
             }
         }
 
-        let builder = targetMessage.createCopyBuilder(thread: thread)
+        let builder = targetMessage.createCopyBuilder(
+            thread: thread,
+            isLatestRevision: true
+        )
         builder.messageBody = editMessage.body
         builder.bodyRanges = bodyRanges
         builder.linkPreview = linkPreview
+        builder.timestamp = editMessage.timestamp
 
         // Swap out the newly created grdbId/uniqueId with the
         // one from the original message
@@ -210,7 +228,10 @@ public class EditManager {
 }
 
 extension TSIncomingMessage {
-    fileprivate func createCopyBuilder(thread: TSThread) -> TSIncomingMessageBuilder {
+    fileprivate func createCopyBuilder(
+        thread: TSThread,
+        isLatestRevision: Bool
+    ) -> TSIncomingMessageBuilder {
         let builder = TSIncomingMessageBuilder(
             thread: thread,
             timestamp: self.timestamp,
@@ -219,6 +240,7 @@ extension TSIncomingMessage {
             messageBody: self.body,
             bodyRanges: self.bodyRanges,
             attachmentIds: self.attachmentIds,
+            editState: isLatestRevision ? .latestRevision : .pastRevision,
             expiresInSeconds: self.expiresInSeconds,
             quotedMessage: self.quotedMessage,
             contactShare: self.contactShare,

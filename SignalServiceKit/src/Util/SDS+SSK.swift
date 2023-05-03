@@ -53,3 +53,6 @@ extension TSPaymentFailure: DatabaseValueConvertible { }
 
 extension TSPaymentType: Codable { }
 extension TSPaymentType: DatabaseValueConvertible { }
+
+extension TSEditState: Codable { }
+extension TSEditState: DatabaseValueConvertible { }

@@ -120,7 +120,7 @@ public class FeatureFlags: BaseFlags {
     }
 
     @objc
-    public static let editMessageReceive: Bool = false
+    public static let editMessageReceive: Bool = true
 }
 
 // MARK: -

@@ -100,6 +100,7 @@ public struct InteractionRecord: SDSRecord {
     public let isGroupStoryReply: Bool?
     public let storyReactionEmoji: String?
     public let giftBadge: Data?
+    public let editState: TSEditState?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -174,6 +175,7 @@ public struct InteractionRecord: SDSRecord {
         case isGroupStoryReply
         case storyReactionEmoji
         case giftBadge
+        case editState
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -269,6 +271,7 @@ public extension InteractionRecord {
         isGroupStoryReply = row[69]
         storyReactionEmoji = row[70]
         giftBadge = row[71]
+        editState = row[72]
     }
 }
 
@@ -311,6 +314,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -350,6 +356,7 @@ extension TSInteraction {
                                                 body: body,
                                                 bodyRanges: bodyRanges,
                                                 contactShare: contactShare,
+                                                editState: editState,
                                                 expireStartedAt: expireStartedAt,
                                                 expiresAt: expiresAt,
                                                 expiresInSeconds: expiresInSeconds,
@@ -385,6 +392,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -424,6 +434,7 @@ extension TSInteraction {
                                                         body: body,
                                                         bodyRanges: bodyRanges,
                                                         contactShare: contactShare,
+                                                        editState: editState,
                                                         expireStartedAt: expireStartedAt,
                                                         expiresAt: expiresAt,
                                                         expiresInSeconds: expiresInSeconds,
@@ -459,6 +470,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -502,6 +516,7 @@ extension TSInteraction {
                                                                  body: body,
                                                                  bodyRanges: bodyRanges,
                                                                  contactShare: contactShare,
+                                                                 editState: editState,
                                                                  expireStartedAt: expireStartedAt,
                                                                  expiresAt: expiresAt,
                                                                  expiresInSeconds: expiresInSeconds,
@@ -567,6 +582,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -621,6 +639,7 @@ extension TSInteraction {
                                              body: body,
                                              bodyRanges: bodyRanges,
                                              contactShare: contactShare,
+                                             editState: editState,
                                              expireStartedAt: expireStartedAt,
                                              expiresAt: expiresAt,
                                              expiresInSeconds: expiresInSeconds,
@@ -665,6 +684,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -704,6 +726,7 @@ extension TSInteraction {
                                                        body: body,
                                                        bodyRanges: bodyRanges,
                                                        contactShare: contactShare,
+                                                       editState: editState,
                                                        expireStartedAt: expireStartedAt,
                                                        expiresAt: expiresAt,
                                                        expiresInSeconds: expiresInSeconds,
@@ -739,6 +762,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -778,6 +804,7 @@ extension TSInteraction {
                                                       body: body,
                                                       bodyRanges: bodyRanges,
                                                       contactShare: contactShare,
+                                                      editState: editState,
                                                       expireStartedAt: expireStartedAt,
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
@@ -813,6 +840,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -855,6 +885,7 @@ extension TSInteraction {
                                                     body: body,
                                                     bodyRanges: bodyRanges,
                                                     contactShare: contactShare,
+                                                    editState: editState,
                                                     expireStartedAt: expireStartedAt,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
@@ -892,6 +923,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -937,6 +971,7 @@ extension TSInteraction {
                                                      body: body,
                                                      bodyRanges: bodyRanges,
                                                      contactShare: contactShare,
+                                                     editState: editState,
                                                      expireStartedAt: expireStartedAt,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
@@ -1000,6 +1035,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -1039,6 +1077,7 @@ extension TSInteraction {
                                   body: body,
                                   bodyRanges: bodyRanges,
                                   contactShare: contactShare,
+                                  editState: editState,
                                   expireStartedAt: expireStartedAt,
                                   expiresAt: expiresAt,
                                   expiresInSeconds: expiresInSeconds,
@@ -1074,6 +1113,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -1113,6 +1155,7 @@ extension TSInteraction {
                                      body: body,
                                      bodyRanges: bodyRanges,
                                      contactShare: contactShare,
+                                     editState: editState,
                                      expireStartedAt: expireStartedAt,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
@@ -1152,6 +1195,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -1191,6 +1237,7 @@ extension TSInteraction {
                                  body: body,
                                  bodyRanges: bodyRanges,
                                  contactShare: contactShare,
+                                 editState: editState,
                                  expireStartedAt: expireStartedAt,
                                  expiresAt: expiresAt,
                                  expiresInSeconds: expiresInSeconds,
@@ -1241,6 +1288,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -1280,6 +1330,7 @@ extension TSInteraction {
                                                     body: body,
                                                     bodyRanges: bodyRanges,
                                                     contactShare: contactShare,
+                                                    editState: editState,
                                                     expireStartedAt: expireStartedAt,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
@@ -1315,6 +1366,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -1356,6 +1410,7 @@ extension TSInteraction {
                                                              body: body,
                                                              bodyRanges: bodyRanges,
                                                              contactShare: contactShare,
+                                                             editState: editState,
                                                              expireStartedAt: expireStartedAt,
                                                              expiresAt: expiresAt,
                                                              expiresInSeconds: expiresInSeconds,
@@ -1393,6 +1448,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -1435,6 +1493,7 @@ extension TSInteraction {
                                                            body: body,
                                                            bodyRanges: bodyRanges,
                                                            contactShare: contactShare,
+                                                           editState: editState,
                                                            expireStartedAt: expireStartedAt,
                                                            expiresAt: expiresAt,
                                                            expiresInSeconds: expiresInSeconds,
@@ -1472,6 +1531,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -1502,6 +1564,7 @@ extension TSInteraction {
                              body: body,
                              bodyRanges: bodyRanges,
                              contactShare: contactShare,
+                             editState: editState,
                              expireStartedAt: expireStartedAt,
                              expiresAt: expiresAt,
                              expiresInSeconds: expiresInSeconds,
@@ -1532,6 +1595,9 @@ extension TSInteraction {
             let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField
+            }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -1580,6 +1646,7 @@ extension TSInteraction {
                                      body: body,
                                      bodyRanges: bodyRanges,
                                      contactShare: contactShare,
+                                     editState: editState,
                                      expireStartedAt: expireStartedAt,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
@@ -1786,6 +1853,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -1922,6 +1990,7 @@ extension TSInteraction: DeepCopyable {
                                              body: body,
                                              bodyRanges: bodyRanges,
                                              contactShare: contactShare,
+                                             editState: editState,
                                              expireStartedAt: expireStartedAt,
                                              expiresAt: expiresAt,
                                              expiresInSeconds: expiresInSeconds,
@@ -1990,6 +2059,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -2087,6 +2157,7 @@ extension TSInteraction: DeepCopyable {
                                      body: body,
                                      bodyRanges: bodyRanges,
                                      contactShare: contactShare,
+                                     editState: editState,
                                      expireStartedAt: expireStartedAt,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
@@ -2152,6 +2223,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -2260,6 +2332,7 @@ extension TSInteraction: DeepCopyable {
                                                      body: body,
                                                      bodyRanges: bodyRanges,
                                                      contactShare: contactShare,
+                                                     editState: editState,
                                                      expireStartedAt: expireStartedAt,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
@@ -2322,6 +2395,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -2439,6 +2513,7 @@ extension TSInteraction: DeepCopyable {
                                                     body: body,
                                                     bodyRanges: bodyRanges,
                                                     contactShare: contactShare,
+                                                    editState: editState,
                                                     expireStartedAt: expireStartedAt,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
@@ -2500,6 +2575,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -2607,6 +2683,7 @@ extension TSInteraction: DeepCopyable {
                                                                  body: body,
                                                                  bodyRanges: bodyRanges,
                                                                  contactShare: contactShare,
+                                                                 editState: editState,
                                                                  expireStartedAt: expireStartedAt,
                                                                  expiresAt: expiresAt,
                                                                  expiresInSeconds: expiresInSeconds,
@@ -2670,6 +2747,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -2773,6 +2851,7 @@ extension TSInteraction: DeepCopyable {
                                                         body: body,
                                                         bodyRanges: bodyRanges,
                                                         contactShare: contactShare,
+                                                        editState: editState,
                                                         expireStartedAt: expireStartedAt,
                                                         expiresAt: expiresAt,
                                                         expiresInSeconds: expiresInSeconds,
@@ -2832,6 +2911,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -2935,6 +3015,7 @@ extension TSInteraction: DeepCopyable {
                                                 body: body,
                                                 bodyRanges: bodyRanges,
                                                 contactShare: contactShare,
+                                                editState: editState,
                                                 expireStartedAt: expireStartedAt,
                                                 expiresAt: expiresAt,
                                                 expiresInSeconds: expiresInSeconds,
@@ -2994,6 +3075,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -3097,6 +3179,7 @@ extension TSInteraction: DeepCopyable {
                                  body: body,
                                  bodyRanges: bodyRanges,
                                  contactShare: contactShare,
+                                 editState: editState,
                                  expireStartedAt: expireStartedAt,
                                  expiresAt: expiresAt,
                                  expiresInSeconds: expiresInSeconds,
@@ -3156,6 +3239,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -3239,6 +3323,7 @@ extension TSInteraction: DeepCopyable {
                                      body: body,
                                      bodyRanges: bodyRanges,
                                      contactShare: contactShare,
+                                     editState: editState,
                                      expireStartedAt: expireStartedAt,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
@@ -3302,6 +3387,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -3409,6 +3495,7 @@ extension TSInteraction: DeepCopyable {
                                                            body: body,
                                                            bodyRanges: bodyRanges,
                                                            contactShare: contactShare,
+                                                           editState: editState,
                                                            expireStartedAt: expireStartedAt,
                                                            expiresAt: expiresAt,
                                                            expiresInSeconds: expiresInSeconds,
@@ -3470,6 +3557,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -3575,6 +3663,7 @@ extension TSInteraction: DeepCopyable {
                                                              body: body,
                                                              bodyRanges: bodyRanges,
                                                              contactShare: contactShare,
+                                                             editState: editState,
                                                              expireStartedAt: expireStartedAt,
                                                              expiresAt: expiresAt,
                                                              expiresInSeconds: expiresInSeconds,
@@ -3636,6 +3725,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -3739,6 +3829,7 @@ extension TSInteraction: DeepCopyable {
                                                     body: body,
                                                     bodyRanges: bodyRanges,
                                                     contactShare: contactShare,
+                                                    editState: editState,
                                                     expireStartedAt: expireStartedAt,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
@@ -3798,6 +3889,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -3901,6 +3993,7 @@ extension TSInteraction: DeepCopyable {
                                                       body: body,
                                                       bodyRanges: bodyRanges,
                                                       contactShare: contactShare,
+                                                      editState: editState,
                                                       expireStartedAt: expireStartedAt,
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
@@ -3960,6 +4053,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -4063,6 +4157,7 @@ extension TSInteraction: DeepCopyable {
                                                        body: body,
                                                        bodyRanges: bodyRanges,
                                                        contactShare: contactShare,
+                                                       editState: editState,
                                                        expireStartedAt: expireStartedAt,
                                                        expiresAt: expiresAt,
                                                        expiresInSeconds: expiresInSeconds,
@@ -4122,6 +4217,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -4225,6 +4321,7 @@ extension TSInteraction: DeepCopyable {
                                   body: body,
                                   bodyRanges: bodyRanges,
                                   contactShare: contactShare,
+                                  editState: editState,
                                   expireStartedAt: expireStartedAt,
                                   expiresAt: expiresAt,
                                   expiresInSeconds: expiresInSeconds,
@@ -4284,6 +4381,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                contactShare = nil
             }
+            let editState: TSEditState = modelToCopy.editState
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
@@ -4358,6 +4456,7 @@ extension TSInteraction: DeepCopyable {
                              body: body,
                              bodyRanges: bodyRanges,
                              contactShare: contactShare,
+                             editState: editState,
                              expireStartedAt: expireStartedAt,
                              expiresAt: expiresAt,
                              expiresInSeconds: expiresInSeconds,
@@ -4534,6 +4633,7 @@ extension TSInteractionSerializer {
     static var isGroupStoryReplyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isGroupStoryReply", columnType: .int, isOptional: true) }
     static var storyReactionEmojiColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storyReactionEmoji", columnType: .unicodeString, isOptional: true) }
     static var giftBadgeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "giftBadge", columnType: .blob, isOptional: true) }
+    static var editStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "editState", columnType: .int, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -4612,7 +4712,8 @@ extension TSInteractionSerializer {
         storyTimestampColumn,
         isGroupStoryReplyColumn,
         storyReactionEmojiColumn,
-        giftBadgeColumn
+        giftBadgeColumn,
+        editStateColumn
         ])
     }
 }
@@ -5090,8 +5191,9 @@ class TSInteractionSerializer: SDSSerializer {
         let isGroupStoryReply: Bool? = nil
         let storyReactionEmoji: String? = nil
         let giftBadge: Data? = nil
+        let editState: TSEditState? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge, editState: editState)
     }
 }
 

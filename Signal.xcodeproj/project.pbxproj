@@ -1234,6 +1234,7 @@
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
 		C167387529E8397B0068EA92 /* EditMessageFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167387429E8397B0068EA92 /* EditMessageFinder.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
+		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
 		C182BEF629ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
 		C182C4BF29E45D80007F7A7C /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
@@ -3805,6 +3806,7 @@
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
 		C167387429E8397B0068EA92 /* EditMessageFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageFinder.swift; sourceTree = "<group>"; };
 		C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPrivacySettingsViewController.swift; sourceTree = "<group>"; };
+		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
@@ -7579,6 +7581,7 @@
 				C1DB22C229C9F95500757380 /* EditManager.swift */,
 				C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */,
 				C167387429E8397B0068EA92 /* EditMessageFinder.swift */,
+				C179B01D29ED94FA00275AD1 /* EditRecord.swift */,
 			);
 			path = Edit;
 			sourceTree = "<group>";
@@ -11867,6 +11870,7 @@
 				C1DB22C329C9F95500757380 /* EditManager.swift in Sources */,
 				C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */,
 				C167387529E8397B0068EA92 /* EditMessageFinder.swift in Sources */,
+				C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */,
 				F9C5CDDD289453B400548EEE /* Error+ErrorLocalizedDescription.swift in Sources */,
 				F9C5CE44289453B400548EEE /* Error+IsRetryable.swift in Sources */,
 				F9C5CE23289453B400548EEE /* Error+SSK.swift in Sources */,

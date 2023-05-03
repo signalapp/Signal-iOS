@@ -263,7 +263,10 @@ public extension DatabaseRecovery {
             DonationReceipt.databaseTableName,
             // We'd like to keep our own username, and lookups for our contacts'
             // usernames. However, we don't want to block recovery on them.
-            UsernameLookupRecord.databaseTableName
+            UsernameLookupRecord.databaseTableName,
+            // This table should be recovered with the same effort as the
+            // TSInteraction table. It doesn't hold any value without that data.
+            EditRecord.databaseTableName
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

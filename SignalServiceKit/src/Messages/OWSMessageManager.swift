@@ -343,7 +343,6 @@ extension OWSMessageManager {
         transaction writeTx: SDSAnyWriteTransaction
     ) {
         guard FeatureFlags.editMessageReceive else {
-            Logger.info("Ignoring edit message (author: \(envelope.formattedAddress), timestamp: \(editMessage) related to message (timestamp: \(editMessage.dataMessage?.timestamp ?? 0)")
             return
         }
 

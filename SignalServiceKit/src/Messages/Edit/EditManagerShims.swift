@@ -43,6 +43,11 @@ public protocol _EditManager_DataStore {
         message: TSMessage,
         tx: DBWriteTransaction
     )
+
+    func insertEditRecord(
+        record: EditRecord,
+        tx: DBWriteTransaction
+    )
 }
 
 internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
@@ -78,6 +83,17 @@ internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
         tx: DBWriteTransaction
     ) {
         message.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    func insertEditRecord(
+        record: EditRecord,
+        tx: DBWriteTransaction
+    ) {
+        do {
+            try record.insert(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
+        } catch {
+            owsFailDebug("Unexpected edit record insertion error \(error)")
+        }
     }
 }
 

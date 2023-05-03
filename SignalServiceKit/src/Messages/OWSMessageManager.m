@@ -2147,6 +2147,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         messageBody:body
                                          bodyRanges:bodyRanges
                                       attachmentIds:@[]
+                                          editState:0
                                    expiresInSeconds:dataMessage.expireTimer
                                       quotedMessage:quotedMessage
                                        contactShare:contact

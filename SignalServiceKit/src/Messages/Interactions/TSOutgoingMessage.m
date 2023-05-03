@@ -131,6 +131,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                             body:(nullable NSString *)body
                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
+                       editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
@@ -168,6 +169,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                               body:body
                         bodyRanges:bodyRanges
                       contactShare:contactShare
+                         editState:editState
                    expireStartedAt:expireStartedAt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds

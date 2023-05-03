@@ -73,6 +73,7 @@
     "InteractionRecord.createdInExistingGroup": 14,
     "InteractionRecord.creatorUuid": 57,
     "InteractionRecord.customMessage": 15,
+    "InteractionRecord.editState": 70,
     "InteractionRecord.envelopeData": 16,
     "InteractionRecord.eraId": 55,
     "InteractionRecord.errorType": 17,

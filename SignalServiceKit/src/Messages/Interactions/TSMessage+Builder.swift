@@ -23,6 +23,8 @@ public class TSMessageBuilder: NSObject {
     @objc
     public var attachmentIds = [String]()
     @objc
+    public var editState: TSEditState = .none
+    @objc
     public var expiresInSeconds: UInt32 = 0
     @objc
     public var expireStartedAt: UInt64 = 0
@@ -54,6 +56,7 @@ public class TSMessageBuilder: NSObject {
          messageBody: String? = nil,
          bodyRanges: MessageBodyRanges? = nil,
          attachmentIds: [String]? = nil,
+         editState: TSEditState = .none,
          expiresInSeconds: UInt32 = 0,
          expireStartedAt: UInt64 = 0,
          quotedMessage: TSQuotedMessage? = nil,
@@ -75,6 +78,7 @@ public class TSMessageBuilder: NSObject {
         if let attachmentIds = attachmentIds {
             self.attachmentIds = attachmentIds
         }
+        self.editState = editState
         self.expiresInSeconds = expiresInSeconds
         self.expireStartedAt = expireStartedAt
         self.quotedMessage = quotedMessage

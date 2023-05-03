@@ -125,6 +125,7 @@ CREATE
             ,"isGroupStoryReply" BOOLEAN DEFAULT 0
             ,"storyReactionEmoji" TEXT
             ,"giftBadge" BLOB
+            ,"editState" INTEGER DEFAULT 0
         )
 ;
 
@@ -1431,4 +1432,31 @@ WHERE
         0
         ,1
     )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "EditRecord" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"latestRevisionId" INTEGER NOT NULL REFERENCES "model_TSInteraction"("id"
+        )
+            ON DELETE
+                CASCADE
+            ,"pastRevisionId" INTEGER NOT NULL REFERENCES "model_TSInteraction"("id"
+        )
+            ON DELETE
+                CASCADE
+)
+;
+
+CREATE
+    INDEX "index_edit_record_on_latest_revision_id"
+        ON "EditRecord"("latestRevisionId"
+)
+;
+
+CREATE
+    INDEX "index_edit_record_on_past_revision_id"
+        ON "EditRecord"("pastRevisionId"
+)
 ;

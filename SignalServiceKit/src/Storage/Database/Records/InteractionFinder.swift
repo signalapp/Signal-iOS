@@ -242,6 +242,28 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     @objc
     public class func findMessage(
+        fromEdit edit: TSMessage,
+        transaction: SDSAnyReadTransaction
+    ) -> TSMessage? {
+
+        let sql = """
+                SELECT * FROM \(InteractionRecord.databaseTableName) AS interaction
+                INNER JOIN \(EditRecord.databaseTableName) AS editRecord
+                ON interaction.\(interactionColumn: .id) = editRecord.latestRevisionId
+                WHERE editRecord.pastRevisionId = ?
+                LIMIT 1
+            """
+
+        let arguments: StatementArguments = [edit.grdbId]
+        return TSMessage.grdbFetchOne(
+            sql: sql,
+            arguments: arguments,
+            transaction: transaction.unwrapGrdbRead
+        ) as? TSMessage
+    }
+
+    @objc
+    public class func findMessage(
         withTimestamp timestamp: UInt64,
         threadId: String,
         author: SignalServiceAddress,
@@ -618,6 +640,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         (
             \(interactionColumn: .read) IS 0
             \(GRDBInteractionFinder.filterStoryRepliesClause(for: storyReplyQueryMode))
+            \(GRDBInteractionFinder.filterEditHistoryClause())
             AND \(interactionColumn: .recordType) IN (\(recordTypesSql))
         )
         """
@@ -634,6 +657,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         return """
         \(columnPrefix)\(interactionColumn: .read) IS 0
         \(GRDBInteractionFinder.filterStoryRepliesClause(for: .excludeGroupReplies, interactionsAlias: interactionsAlias))
+        \(GRDBInteractionFinder.filterEditHistoryClause(interactionsAlias: interactionsAlias))
         AND (
             \(columnPrefix)\(interactionColumn: .recordType) IN (\(SDSRecordType.incomingMessage.rawValue), \(SDSRecordType.call.rawValue))
             OR (
@@ -1136,6 +1160,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 \(Self.filterStoryRepliesClause(for: .excludeGroupReplies))
+                \(Self.filterEditHistoryClause())
                 AND \(interactionColumn: .errorType) IS NOT ?
                 AND \(interactionColumn: .messageType) IS NOT ?
                 AND \(interactionColumn: .messageType) IS NOT ?
@@ -1216,6 +1241,22 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    fileprivate static func filterEditHistoryClause(interactionsAlias: String? = nil) -> String {
+        guard FeatureFlags.editMessageReceive else { return "" }
+
+        let columnPrefix: String
+        if let interactionsAlias = interactionsAlias {
+            columnPrefix = interactionsAlias + "."
+        } else {
+            columnPrefix = ""
+        }
+
+        return """
+            AND \(columnPrefix)\(interactionColumn: .editState)
+                IS NOT \(TSEditState.pastRevision.rawValue)
+        """
+    }
+
     func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool = true, storyReplyQueryMode: StoryReplyQueryMode = .excludeGroupReplies, transaction: GRDBReadTransaction) throws -> UInt? {
 
         let fetchInteractionIdSQL = """
@@ -1239,6 +1280,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .id) > ?
             \(Self.filterStoryRepliesClause(for: storyReplyQueryMode))
+            \(Self.filterEditHistoryClause())
             \(excludePlaceholders ? filterPlaceholdersClause : "")
         """
         let distanceArguments: StatementArguments = [threadUniqueId, interactionId]
@@ -1261,6 +1303,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 \(Self.filterStoryRepliesClause(for: storyReplyQueryMode))
+                \(Self.filterEditHistoryClause())
                 \(excludePlaceholders ? filterPlaceholdersClause : "")
             """
             let arguments: StatementArguments = [threadUniqueId]
@@ -1303,6 +1346,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
         \(Self.filterStoryRepliesClause(for: storyReplyQueryMode))
+        \(Self.filterEditHistoryClause())
         \(excludePlaceholders ? filterPlaceholdersClause : "")
         ORDER BY \(interactionColumn: .id) DESC
         """
@@ -1326,6 +1370,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
         \(Self.filterStoryRepliesClause(for: storyReplyQueryMode))
+        \(Self.filterEditHistoryClause())
         \(excludePlaceholders ? filterPlaceholdersClause : "")
         ORDER BY \(interactionColumn: .id)
         LIMIT \(range.length)
@@ -1351,6 +1396,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
         \(Self.filterStoryRepliesClause(for: storyReplyQueryMode))
+        \(Self.filterEditHistoryClause())
         \(excludePlaceholders ? filterPlaceholdersClause : "")
         ORDER BY \(interactionColumn: .id)
         LIMIT \(range.length)
@@ -1531,6 +1577,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                 ) OR \(interactionColumn: .recordType) IN (\(interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
             )
             \(Self.filterStoryRepliesClause(for: .excludeGroupReplies))
+            \(Self.filterEditHistoryClause())
             LIMIT 1
         )
         """

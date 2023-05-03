@@ -230,6 +230,7 @@ class EditManagerTests: SSKBaseTestSwift {
         customizationBlock: ((SSKProtoDataMessageBuilder) -> Void)
     ) -> SSKProtoDataMessage {
         let dataBuilder = SSKProtoDataMessage.builder()
+        dataBuilder.setTimestamp(1) // set a default timestamp
         customizationBlock(dataBuilder)
         return try! dataBuilder.build()
     }
@@ -254,6 +255,7 @@ class EditManagerTests: SSKBaseTestSwift {
         let targetMessage: TSMessage?
         var editMessageCopy: TSMessage?
         var oldMessageCopy: TSMessage?
+        var editRecord: EditRecord?
 
         init(targetMessage: TSMessage?) {
             self.targetMessage = targetMessage
@@ -269,10 +271,15 @@ class EditManagerTests: SSKBaseTestSwift {
 
         func insertMessageCopy(message: TSMessage, tx: DBWriteTransaction) {
             oldMessageCopy = message
+            message.replaceRowId(2, uniqueId: message.uniqueId)
         }
 
         func updateEditedMessage(message: TSMessage, tx: DBWriteTransaction) {
             editMessageCopy = message
+        }
+
+        func insertEditRecord(record: EditRecord, tx: DBWriteTransaction) {
+            editRecord = record
         }
     }
 
@@ -308,6 +315,7 @@ class EditManagerTests: SSKBaseTestSwift {
         "canSendToLocalAddress": .unchanged,
         "isIncoming": .unchanged,
         "isOutgoing": .unchanged,
+        "editState": .changed,
         "body": .changed,
         "bodyRanges": .changed,
         "expiresInSeconds": .unchanged,
