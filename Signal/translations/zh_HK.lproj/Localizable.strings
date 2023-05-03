@@ -160,8 +160,20 @@
 /* Menu option to limit All Media view to displaying only videos */
 "ALL_MEDIA_FILTER_VIDEOS" = "影片";
 
+/* Menu option to show All Media items in a grid of square thumbnails */
+"ALL_MEDIA_GRID_MODE" = "Grid";
+
+/* Menu option to show All Media items in a single-column list */
+"ALL_MEDIA_LIST_MODE" = "List";
+
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
+
+/* Label shown by thumbnails of images in the All Media view */
+"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "Image";
+
+/* Label shown by thumbnails of videos in the All Media view */
+"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "Video";
 
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "所有聯絡人";
@@ -179,10 +191,10 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "照樣開啟 Signal";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "請將除錯日誌傳送至 support@signal.org 協助我們解決問題。";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "無法開啟 Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "無法載入資料庫";
@@ -1658,10 +1670,10 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "重新注冊此電話號碼";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "This device is no longer registered. This is likely because you registered your phone number with Signal on a different device.";
+"DEREGISTRATION_WARNING" = "此裝置已不再註冊。通常是因為你已在另一部裝置上使用你的電話號碼註冊 Signal。";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
-"DEREGISTRATION_WARNING_ACTION_TITLE" = "Re-Register Device";
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "重新註冊裝置";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "上次使用於 %1$@";
@@ -1673,10 +1685,10 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "無法更新裝置列表。";
 
 /* A label for this device in the device list. */
-"DEVICE_NAME_THIS_DEVICE" = "This Device";
+"DEVICE_NAME_THIS_DEVICE" = "此裝置";
 
 /* A label for an unnamed device in the device list. */
-"DEVICE_NAME_UNNAMED_DEVICE" = "Unnamed Device";
+"DEVICE_NAME_UNNAMED_DEVICE" = "未命名裝置";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "停止轉移";
@@ -1760,7 +1772,7 @@
 "DEVICE_TRANSFER_QRCODE_TITLE" = "正等待其他裝置……";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "保持兩個裝置互相靠近。請勿關閉裝置並始終開啟Signal。轉移已端對諯加密。";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "保持兩個裝置互相靠近。請勿關閉裝置並始終開啟Signal。轉移已端對端加密。";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "正在接收資料";
@@ -2288,16 +2300,16 @@
 "EXIT_REREGISTRATION" = "離開註冊";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "This version of Signal has expired. Update to send and receive messages.";
+"EXPIRATION_ERROR" = "此版本的 Signal 已過期。立即更新以傳送和接收訊息。";
 
 /* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
-"EXPIRATION_WARNING_ACTION_TITLE" = "Update Now";
+"EXPIRATION_WARNING_ACTION_TITLE" = "立即更新";
 
 /* Label warning the user that the app will expire soon. Embeds {{date}}. */
-"EXPIRATION_WARNING_SOON" = "This version of Signal will expire on %1$@. Update to keep messaging.";
+"EXPIRATION_WARNING_SOON" = "此版本的 Signal 將於 %1$@ 天後過期。請更新以繼續收發訊息。";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "This version of Signal will expire today. Update to keep messaging.";
+"EXPIRATION_WARNING_TODAY" = "此版本的 Signal 將於今天到期。請更新以繼續收發訊息。";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "與該聯絡人對話時失敗次數過多。請稍後再試。";
@@ -3551,7 +3563,7 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "了解更多";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "已登記設備";
+"LINKED_DEVICES_TITLE" = "已連結裝置";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "允許通知";
@@ -4368,6 +4380,21 @@
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "設定";
+
+/* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal no longer works on this device. To use Signal again, update your device to a newer version of iOS.";
+
+/* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal no longer works on this device. To use Signal again, switch to a newer device.";
+
+/* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
+"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Update Now";
+
+/* Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}. */
+"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, update your device to a newer version of iOS by %1$@.";
+
+/* Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}. */
+"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, switch to a newer device by %1$@.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ 已停用限時訊息。";
@@ -5225,7 +5252,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "對你的貼圖表達了 %1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "對「%1$@」表達了 %2$@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "對「%2$@」表達了%1$@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "對你的影片表達了 %1$@ 心情";
@@ -5348,7 +5375,7 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "檢查連線";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "呢個電話唔可以用響Signal，請你同我地嘅技術支援傾下";
+"REGISTRATION_NON_VALID_NUMBER" = "不支援此電話號碼格式，請聯絡支援團隊。";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "輸入你的電話號碼以便開始使用。";
@@ -5357,7 +5384,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "你的電話號碼";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "You’ll receive a call to verify this number. Is your phone number above correct?";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "你將會收到一通來電，以驗證此電話號碼。上述電話號碼是否正確？";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "電話號碼";
@@ -5597,7 +5624,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "請選擇此裝置的名稱";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "您將在「已連結裝置」中見到此名稱。";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "你將在「已連結裝置」中見到此名稱。";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "選擇一個名稱";
@@ -7127,7 +7154,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%1$@、%2$@ 的群組成員及其他群組 %3$lu";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "您可在此對話中為自己新增筆記。若您的帳戶有任何已連結的裝置，新的筆記將會進行同步處理。";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "你可在此聊天中為自己新增筆記。若你的帳戶有任何已連結裝置，新的筆記將會進行同步處理。";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%1$@ 的成員";
@@ -7241,10 +7268,10 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "要解除與「%1$@」的連結嗎？";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "This device is no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "此裝置已解除連結。請將 Signal 與你的電話重新連結，以便繼續收發訊息。";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
-"UNLINKED_WARNING_ACTION_TITLE" = "Re-Link Device";
+"UNLINKED_WARNING_ACTION_TITLE" = "重新連結裝置";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal 無法與您的裝置解除連結。";
@@ -7265,7 +7292,7 @@
 "UNSUPPORTED_ATTACHMENT" = "收到不支援的附件格式";
 
 /* When inviting contacts to use Signal, this error is shown if the device doesn't support SMS or if there aren't any registered email accounts. */
-"UNSUPPORTED_FEATURE_ERROR" = "你呢個設備行唔到";
+"UNSUPPORTED_FEATURE_ERROR" = "你的裝置不支援此功能。";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
 "UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "您與 %1$@ 之間的安全碼已變更，通常是對方已重新安裝 Signal 或更換裝置。輕觸「驗證」以確認新的安全碼，這是可選的操作。";
