@@ -174,11 +174,11 @@ class EmojiPickerCollectionView: UICollectionView {
         var newRecentEmoji = recentEmoji
 
         // Remove any existing entries for this emoji
-        newRecentEmoji.removeAll { emoji == $0 }
+        newRecentEmoji.removeAll { emoji.baseEmoji == $0.baseEmoji }
         // Insert the selected emoji at the start of the list
         newRecentEmoji.insert(emoji, at: 0)
         // Truncate the recent emoji list to a maximum of 50 stored
-        newRecentEmoji = Array(newRecentEmoji[0..<min(50, newRecentEmoji.count)])
+        newRecentEmoji = Array(newRecentEmoji.suffix(50))
 
         EmojiPickerCollectionView.keyValueStore.setObject(
             newRecentEmoji.map { $0.rawValue },
@@ -218,6 +218,11 @@ class EmojiPickerCollectionView: UICollectionView {
     private func searchResults(_ searchText: String?) -> [EmojiWithSkinTones] {
         guard let searchText = searchText else {
             return []
+        }
+
+        if searchText.count == 1,
+           let searchEmoji = EmojiWithSkinTones(rawValue: searchText) {
+            return [searchEmoji]
         }
 
         return allSendableEmoji.filter { emoji in
@@ -318,6 +323,7 @@ extension EmojiPickerCollectionView: UICollectionViewDelegate {
 
         SDSDatabaseStorage.shared.asyncWrite { transaction in
             self.recordRecentEmoji(emoji, transaction: transaction)
+            emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
         }
 
         pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
