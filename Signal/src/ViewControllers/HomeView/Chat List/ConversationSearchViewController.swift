@@ -277,7 +277,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
 
         // If we have an existing CLVCellContentToken, use it.
         // Cell measurement/arrangement is expensive.
-        let cacheKey = "\(configuration.thread.threadRecord.uniqueId).\(configuration.overrideSnippet?.string ?? "")"
+        let cacheKey = "\(configuration.thread.threadRecord.uniqueId).\(configuration.overrideSnippet?.hash ?? 0)"
         if useCache {
             if let cellContentToken = cellContentCache.get(key: cacheKey) {
                 return cellContentToken
@@ -398,7 +398,15 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                 // a snippet for conversations that reflects the latest
                 // contents.
                 if let messageSnippet = searchResult.snippet {
-                    overrideSnippet = messageSnippet.styled(with: Self.matchSnippetStyle)
+                    overrideSnippet = RecoveredHydratedMessageBody.recover(from: messageSnippet)
+                        .reapplyAttributes(
+                            config: HydratedMessageBody.DisplayConfiguration(
+                                mention: .conversationListSearchResultSnippet,
+                                style: .conversationListSearchResultSnippet,
+                                searchRanges: nil
+                            ),
+                            isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                        )
                 } else {
                     owsFailDebug("message search result is missing message snippet")
                 }

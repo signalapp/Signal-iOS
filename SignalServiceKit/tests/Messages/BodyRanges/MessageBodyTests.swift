@@ -211,9 +211,9 @@ final class MessageBodyTests: XCTestCase {
                 ranges: .init(
                     mentions: [:],
                     styles: [
-                        (NSRange(location: 8, length: 4), .bold),
-                        (NSRange(location: 14, length: 6), .italic),
-                        (NSRange(location: 26, length: 4), .monospace)
+                        .init(.bold, range: NSRange(location: 8, length: 4)),
+                        .init(.italic, range: NSRange(location: 14, length: 6)),
+                        .init(.monospace, range: NSRange(location: 26, length: 4))
                     ]
                 )
             ),
@@ -257,9 +257,9 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 32, length: 1): uuids[0]
                     ],
                     styles: [
-                        (NSRange(location: 8, length: 4), .bold),
-                        (NSRange(location: 14, length: 6), .italic),
-                        (NSRange(location: 26, length: 4), .monospace)
+                        .init(.bold, range: NSRange(location: 8, length: 4)),
+                        .init(.italic, range: NSRange(location: 14, length: 6)),
+                        .init(.monospace, range: NSRange(location: 26, length: 4))
                     ]
                 )
             ),
@@ -311,9 +311,9 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 0, length: 1): uuids[0]
                     ],
                     styles: [
-                        (NSRange(location: 11, length: 4), .bold),
-                        (NSRange(location: 17, length: 6), .italic),
-                        (NSRange(location: 29, length: 4), .monospace)
+                        .init(.bold, range: NSRange(location: 11, length: 4)),
+                        .init(.italic, range: NSRange(location: 17, length: 6)),
+                        .init(.monospace, range: NSRange(location: 29, length: 4))
                     ]
                 )
             ),
@@ -365,7 +365,7 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 15, length: 1): uuids[0]
                     ],
                     styles: [
-                        (NSRange(location: 0, length: 16), .italic)
+                        .init(.italic, range: NSRange(location: 0, length: 16))
                     ]
                 )
             ),
@@ -396,13 +396,13 @@ final class MessageBodyTests: XCTestCase {
 
     func testHydration_overlappingStylesAndMentions() {
         // The styles are flattened out into this before hydration applies:
-        // (NSRange(location: 0, length: 3), .bold),
-        // (NSRange(location: 3, length: 3), .bold.union(.italic)),
-        // (NSRange(location: 6, length: 2), .bold),
-        // (NSRange(location: 8, length: 16), .bold.union(.monospace)),
-        // (NSRange(location: 24, length: 3), .bold.union(.monospace).union(.spoiler)),
-        // (NSRange(location: 27, length: 4), .bold.union(.spoiler)),
-        // (NSRange(location: 31, length: 20), .bold),
+        // .init(.bold, range: NSRange(location: 0, length: 3)),
+        // .init(.bold.union(.italic), range: NSRange(location: 3, length: 3)),
+        // .init(.bold, range: NSRange(location: 6, length: 2)),
+        // .init(.bold.union(.monospace), range: NSRange(location: 8, length: 16)),
+        // .init(.bold.union(.monospace).union(.spoiler), range: NSRange(location: 24, length: 3)),
+        // .init(.bold.union(.spoiler), range: NSRange(location: 27, length: 4)),
+        // .init(.bold, range: NSRange(location: 31, length: 20)),
         runHydrationTest(
             input: .init(
                 text: "@, @@@, @@@@@@@@@@@@@@@ and @@@ are stylish people.",
@@ -414,10 +414,10 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 28, length: 3): uuids[3]
                     ],
                     styles: [
-                        (NSRange(location: 0, length: 51), .bold),
-                        (NSRange(location: 4, length: 1), .italic),
-                        (NSRange(location: 12, length: 15), .monospace),
-                        (NSRange(location: 24, length: 5), .spoiler)
+                        .init(.bold, range: NSRange(location: 0, length: 51)),
+                        .init(.italic, range: NSRange(location: 4, length: 1)),
+                        .init(.monospace, range: NSRange(location: 12, length: 15)),
+                        .init(.spoiler, range: NSRange(location: 24, length: 5))
                     ]
                 )
             ),
@@ -516,13 +516,13 @@ final class MessageBodyTests: XCTestCase {
 
     func testHydration_overlappingStylesAndSomeUnhydratedMentions() {
         // The styles are flattened out into this before hydration applies:
-        // (NSRange(location: 0, length: 3), .bold),
-        // (NSRange(location: 3, length: 3), .bold.union(.italic)),
-        // (NSRange(location: 6, length: 2), .bold),
-        // (NSRange(location: 8, length: 16), .bold.union(.monospace)),
-        // (NSRange(location: 24, length: 3), .bold.union(.monospace).union(.spoiler)),
-        // (NSRange(location: 27, length: 4), .bold.union(.spoiler)),
-        // (NSRange(location: 31, length: 20), .bold),
+        // .init(, range: NSRange(location: 0, length: 3), .bold),
+        // .init(, range: NSRange(location: 3, length: 3), .bold.union(.italic)),
+        // .init(, range: NSRange(location: 6, length: 2), .bold),
+        // .init(, range: NSRange(location: 8, length: 16), .bold.union(.monospace)),
+        // .init(, range: NSRange(location: 24, length: 3), .bold.union(.monospace).union(.spoiler)),
+        // .init(, range: NSRange(location: 27, length: 4), .bold.union(.spoiler)),
+        // .init(, range: NSRange(location: 31, length: 20), .bold),
         runHydrationTest(
             input: .init(
                 text: "@, @@@, @@@@@@@@@@@@@@@ and @@@ are stylish people.",
@@ -534,10 +534,10 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 28, length: 3): uuids[3]
                     ],
                     styles: [
-                        (NSRange(location: 0, length: 51), .bold),
-                        (NSRange(location: 4, length: 1), .italic),
-                        (NSRange(location: 12, length: 15), .monospace),
-                        (NSRange(location: 24, length: 5), .spoiler)
+                        .init(.bold, range: NSRange(location: 0, length: 51)),
+                        .init(.italic, range: NSRange(location: 4, length: 1)),
+                        .init(.monospace, range: NSRange(location: 12, length: 15)),
+                        .init(.spoiler, range: NSRange(location: 24, length: 5))
                     ]
                 )
             ),
@@ -671,7 +671,7 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 12, length: 1): uuids[0]
                     ],
                     styles: [
-                        (NSRange(location: 5, length: 3), .italic)
+                        .init(.italic, range: NSRange(location: 5, length: 3))
                     ]
                 )
             ),
@@ -708,7 +708,7 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 0, length: 1): uuids[0]
                     ],
                     styles: [
-                        (NSRange(location: 5, length: 3), .italic)
+                        .init(.italic, range: NSRange(location: 5, length: 3))
                     ]
                 )
             ),
@@ -747,7 +747,7 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 12, length: 1): uuids[0]
                     ],
                     styles: [
-                        (NSRange(location: 0, length: 13), .italic)
+                        .init(.italic, range: NSRange(location: 0, length: 13))
                     ]
                 )
             ),
@@ -784,7 +784,7 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 0, length: 1): uuids[0]
                     ],
                     styles: [
-                        (NSRange(location: 0, length: 13), .italic)
+                        .init(.italic, range: NSRange(location: 0, length: 13))
                     ]
                 )
             ),
@@ -823,7 +823,7 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 12, length: 3): uuids[0]
                     ],
                     styles: [
-                        (NSRange(location: 5, length: 8), .italic)
+                        .init(.italic, range: NSRange(location: 5, length: 8))
                     ]
                 )
             ),
@@ -859,7 +859,7 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 0, length: 3): uuids[0]
                     ],
                     styles: [
-                        (NSRange(location: 1, length: 8), .italic)
+                        .init(.italic, range: NSRange(location: 1, length: 8))
                     ]
                 )
             ),
@@ -899,9 +899,9 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 13, length: 3): uuids[1]
                     ],
                     styles: [
-                        (NSRange(location: 1, length: 9), .bold),
-                        (NSRange(location: 4, length: 6), .italic),
-                        (NSRange(location: 11, length: 3), .monospace)
+                        .init(.bold, range: NSRange(location: 1, length: 9)),
+                        .init(.italic, range: NSRange(location: 4, length: 6)),
+                        .init(.monospace, range: NSRange(location: 11, length: 3))
                     ]
                 )
             ),
@@ -985,9 +985,9 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: secondMentionLocation + 1, length: 3): uuids[1]
                     ],
                     styles: [
-                        (NSRange(location: 1, length: 3 + firstEmojiLength + 5), .bold),
-                        (NSRange(location: firstEmojiLocation, length: firstEmojiLength + 5 + secondEmojiLength), .italic),
-                        (NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 2), .monospace)
+                        .init(.bold, range: NSRange(location: 1, length: 3 + firstEmojiLength + 5)),
+                        .init(.italic, range: NSRange(location: firstEmojiLocation, length: firstEmojiLength + 5 + secondEmojiLength)),
+                        .init(.monospace, range: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 2))
                     ]
                 )
             ),

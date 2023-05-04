@@ -56,10 +56,12 @@ public class NewAccountDiscovery: NSObject {
                 }
 
                 // Keep these notifications less obtrusive by making them silent.
-                notificationPresenter.notifyUser(forPreviewableInteraction: message,
-                                                 thread: thread,
-                                                 wantsSound: false,
-                                                 transaction: transaction)
+                notificationPresenter.notifyUser(
+                    forTSMessage: message,
+                    thread: thread,
+                    wantsSound: false,
+                    transaction: transaction
+                )
             }
         }
     }

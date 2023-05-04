@@ -61,7 +61,7 @@ public enum CVTextValue: Equatable, Hashable {
         case .text(let text):
             return "t\(text)"
         case .attributedText(let attributedText):
-            return "a\(attributedText.string.description)"
+            return "a\(attributedText.description)"
         }
     }
 }

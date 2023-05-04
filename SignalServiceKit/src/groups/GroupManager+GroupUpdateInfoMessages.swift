@@ -106,7 +106,7 @@ extension GroupManager {
         } else if !wasLocalUserInGroup && isLocalUserInGroup {
             // Notify when the local user is added or invited to a group.
             self.notificationsManager?.notifyUser(
-                forPreviewableInteraction: infoMessage,
+                forTSMessage: infoMessage,
                 thread: groupThread,
                 wantsSound: true,
                 transaction: transaction

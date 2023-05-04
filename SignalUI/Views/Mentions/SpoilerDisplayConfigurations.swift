@@ -41,6 +41,27 @@ extension StyleDisplayConfiguration {
         )
     }
 
+    public static func forConversationListSnippet(
+        baseFont: UIFont,
+        textColor: ThemedColor
+    ) -> StyleDisplayConfiguration {
+        return StyleDisplayConfiguration(
+            baseFont: baseFont,
+            textColor: textColor,
+            revealAllIds: false,
+            revealedIds: Set()
+        )
+    }
+
+    public static var conversationListSearchResultSnippet: StyleDisplayConfiguration {
+        return StyleDisplayConfiguration(
+            baseFont: UIFont.dynamicTypeBody2,
+            textColor: ThemedColor(light: Theme.lightThemeSecondaryTextAndIconColor, dark: Theme.darkThemeSecondaryTextAndIconColor),
+            revealAllIds: false,
+            revealedIds: Set()
+        )
+    }
+
     private static let primaryTextColor = ThemedColor(
         light: Theme.lightThemePrimaryColor,
         dark: Theme.darkThemePrimaryColor

@@ -58,6 +58,10 @@ public class HydratedMessageBody: Equatable, Hashable {
         self.styleAttributes = styleAttributes
     }
 
+    public static func fromPlaintextWithoutRanges(_ text: String) -> HydratedMessageBody {
+        return HydratedMessageBody(hydratedText: text, mentionAttributes: [], styleAttributes: [])
+    }
+
     internal init(
         messageBody: MessageBody,
         mentionHydrator: MentionHydrator,
@@ -85,25 +89,25 @@ public class HydratedMessageBody: Equatable, Hashable {
         } else {
             strippedPrefixLength = 0
         }
-        var mentionsInOriginal: [(NSRange, UUID)]
-        var stylesInOriginal: [(NSRange, Style)]
+        var mentionsInOriginal: [NSRangedValue<UUID>]
+        var stylesInOriginal: [NSRangedValue<Style>]
         if strippedPrefixLength != 0 {
-            mentionsInOriginal = messageBody.ranges.orderedMentions.map { range, uuid in
-                return (
-                    NSRange(
-                        location: range.location + strippedPrefixLength,
-                        length: range.length
-                    ),
-                    uuid
+            mentionsInOriginal = messageBody.ranges.orderedMentions.map { mention in
+                return .init(
+                    mention.value,
+                    range: NSRange(
+                        location: mention.range.location + strippedPrefixLength,
+                        length: mention.range.length
+                    )
                 )
             }
-            stylesInOriginal = messageBody.ranges.styles.map { range, style in
-                return (
-                    NSRange(
-                        location: range.location + strippedPrefixLength,
-                        length: range.length
-                    ),
-                    style
+            stylesInOriginal = messageBody.ranges.styles.map { style in
+                return .init(
+                    style.value,
+                    range: NSRange(
+                        location: style.range.location + strippedPrefixLength,
+                        length: style.range.length
+                    )
                 )
             }
         } else {
@@ -143,25 +147,26 @@ public class HydratedMessageBody: Equatable, Hashable {
                 styleAtCurrentIndex = nil
             }
             // Check for any new styles starting at the current index.
-            if stylesInOriginal.first?.0.contains(currentIndex) == true {
-                let (originalRange, style) = stylesInOriginal.removeFirst()
+            if stylesInOriginal.first?.range.contains(currentIndex) == true {
+                let style = stylesInOriginal.removeFirst()
+                let originalRange = style.range
                 styleAtCurrentIndex = .init(
                     originalRange: originalRange,
                     newRange: NSRange(
                         location: originalRange.location + rangeOffset,
                         length: originalRange.length
                     ),
-                    style: style
+                    style: style.value
                 )
             }
 
             // Check for any mentions at the current index.
             // Mentions can't overlap, so we don't need a while loop to check for multiple.
             guard
-                let (originalMentionRange, mentionUuid) = mentionsInOriginal.first,
+                let mention = mentionsInOriginal.first,
                 (
-                    originalMentionRange.contains(currentIndex)
-                    || originalMentionRange.location == currentIndex
+                    mention.range.contains(currentIndex)
+                    || mention.range.location == currentIndex
                 )
             else {
                 // No mentions, so no additional logic needed, just go to the next index.
@@ -170,17 +175,17 @@ public class HydratedMessageBody: Equatable, Hashable {
             mentionsInOriginal.removeFirst()
 
             let newMentionRange = NSRange(
-                location: originalMentionRange.location + rangeOffset,
-                length: originalMentionRange.length
+                location: mention.range.location + rangeOffset,
+                length: mention.range.length
             )
 
             let finalMentionLength: Int
             let mentionOffsetDelta: Int
-            switch mentionHydrator(mentionUuid) {
+            switch mentionHydrator(mention.value) {
             case .preserveMention:
                 // Preserve the mention without replacement and proceed.
                 unhydratedMentions.append(.init(
-                    MentionAttribute.fromOriginalRange(originalMentionRange, mentionUuid: mentionUuid),
+                    MentionAttribute.fromOriginalRange(mention.range, mentionUuid: mention.value),
                     range: newMentionRange
                 ))
                 continue
@@ -192,10 +197,10 @@ public class HydratedMessageBody: Equatable, Hashable {
                     mentionPlaintext = MentionAttribute.mentionPrefix + displayName
                 }
                 finalMentionLength = (mentionPlaintext as NSString).length
-                mentionOffsetDelta = finalMentionLength - originalMentionRange.length
+                mentionOffsetDelta = finalMentionLength - mention.range.length
                 finalText.replaceCharacters(in: newMentionRange, with: mentionPlaintext)
                 finalMentionAttributes.append(.init(
-                    MentionAttribute.fromOriginalRange(originalMentionRange, mentionUuid: mentionUuid),
+                    MentionAttribute.fromOriginalRange(mention.range, mentionUuid: mention.value),
                     range: NSRange(location: newMentionRange.location, length: finalMentionLength)
                 ))
             }
@@ -203,7 +208,7 @@ public class HydratedMessageBody: Equatable, Hashable {
 
             // We have to adjust style ranges for the active style
             if let style = styleAtCurrentIndex {
-                if style.originalRange.upperBound <= originalMentionRange.upperBound {
+                if style.originalRange.upperBound <= mention.range.upperBound {
                     // If the style ended inside (or right at the end of) the mention,
                     // it should now end at the end of the replacement text.
                     let finalLength = (newMentionRange.location + finalMentionLength) - style.newRange.location
@@ -294,9 +299,10 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     public func asAttributedStringForDisplay(
         config: DisplayConfiguration,
+        baseAttributes: [NSAttributedString.Key: Any]? = nil,
         isDarkThemeEnabled: Bool
     ) -> NSAttributedString {
-        let string = NSMutableAttributedString(string: hydratedText)
+        let string = NSMutableAttributedString(string: hydratedText, attributes: baseAttributes ?? [:])
         return Self.applyAttributes(
             on: string,
             mentionAttributes: mentionAttributes,
@@ -397,8 +403,40 @@ public class HydratedMessageBody: Equatable, Hashable {
             ranges: MessageBodyRanges(
                 mentions: unhydratedMentionsDict,
                 styles: styleAttributes.map {
-                    return ($0.range, $0.value.style)
+                    return .init($0.value.style, range: $0.range)
                 }
+            )
+        )
+    }
+
+    // MARK: - Adding prefix
+
+    public func addingPrefix(_ prefix: String) -> HydratedMessageBody {
+        let offset = (prefix as NSString).length
+        return HydratedMessageBody(
+            hydratedText: prefix + hydratedText,
+            unhydratedMentions: unhydratedMentions.map { $0.offset(by: offset) },
+            mentionAttributes: mentionAttributes.map { $0.offset(by: offset) },
+            styleAttributes: styleAttributes.map { $0.offset(by: offset) }
+        )
+    }
+
+    public var nilIfEmpty: HydratedMessageBody? {
+        if self.hydratedText.isEmpty {
+            return nil
+        }
+        return self
+    }
+}
+
+fileprivate extension NSRangedValue {
+
+    func offset(by offset: Int) -> Self {
+        return Self.init(
+            value,
+            range: NSRange(
+                location: self.range.location + offset,
+                length: self.range.length
             )
         )
     }

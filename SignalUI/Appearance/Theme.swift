@@ -274,7 +274,7 @@ final public class Theme: NSObject {
 
     @objc
     public class var secondaryTextAndIconColor: UIColor {
-        isDarkThemeEnabled ? darkThemeSecondaryTextAndIconColor : .ows_gray60
+        isDarkThemeEnabled ? darkThemeSecondaryTextAndIconColor : lightThemeSecondaryTextAndIconColor
     }
 
     public class var ternaryTextColor: UIColor { .ows_gray45 }
@@ -380,6 +380,9 @@ final public class Theme: NSObject {
 
     @objc
     public class var lightThemePrimaryColor: UIColor { .ows_gray90 }
+
+    @objc
+    public class var lightThemeSecondaryTextAndIconColor: UIColor { .ows_gray60 }
 
     // MARK: - Dark Theme Colors
 

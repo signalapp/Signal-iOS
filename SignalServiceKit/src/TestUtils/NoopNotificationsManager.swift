@@ -26,6 +26,15 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         Logger.warn("skipping notification for: \(errorMessage.description)")
     }
 
+    public func notifyUser(
+        forTSMessage message: TSMessage,
+        thread: TSThread,
+        wantsSound: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        Logger.warn("skipping notification for: \(message.description)")
+    }
+
     public func notifyUser(forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
                            thread: TSThread,
                            wantsSound: Bool,

@@ -51,6 +51,11 @@ open class CVLabel: UILabel, CVView {
     }
 
     public func reset() {
+        // NOTE: we have to reset the attributed text and then the text;
+        // this is the magic incantation that prevents properties from
+        // a previously-set attributed string from applying to subsequent
+        // attributed strings.
+        self.attributedText = nil
         self.text = nil
     }
 }

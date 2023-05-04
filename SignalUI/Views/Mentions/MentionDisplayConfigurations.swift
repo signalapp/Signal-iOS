@@ -52,9 +52,21 @@ extension MentionDisplayConfiguration {
         )
     }
 
-    public static var conversationListSnippet: Self {
-        return config(
-            foregroundColor: primaryTextColor,
+    public static func conversationListSnippet(
+        font: UIFont,
+        textColor: ThemedColor
+    ) -> Self {
+        return MentionDisplayConfiguration(
+            font: font,
+            foregroundColor: textColor,
+            backgroundColor: nil
+        )
+    }
+
+    public static var conversationListSearchResultSnippet: MentionDisplayConfiguration {
+        return MentionDisplayConfiguration(
+            font: .dynamicTypeBody2,
+            foregroundColor: ThemedColor(light: Theme.lightThemeSecondaryTextAndIconColor, dark: Theme.darkThemeSecondaryTextAndIconColor),
             backgroundColor: nil
         )
     }

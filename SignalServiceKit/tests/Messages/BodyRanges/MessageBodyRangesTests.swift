@@ -14,83 +14,83 @@ final class MessageBodyRangesTests: XCTestCase {
 
     func testStyleCollapsing_sequential() {
         // They don't overlap but they're out of order.
-        let styles: [(NSRange, Style)] = [
-            (NSRange(location: 11, length: 5), .strikethrough),
-            (NSRange(location: 0, length: 1), .bold),
-            (NSRange(location: 1, length: 2), .italic),
-            (NSRange(location: 120, length: 10), .bold.union(.italic)),
-            (NSRange(location: 3, length: 3), .monospace),
-            (NSRange(location: 6, length: 4), .spoiler)
+        let styles: [NSRangedValue<Style>] = [
+            .init(.strikethrough, range: NSRange(location: 11, length: 5)),
+            .init(.bold, range: NSRange(location: 0, length: 1)),
+            .init(.italic, range: NSRange(location: 1, length: 2)),
+            .init(.bold.union(.italic), range: NSRange(location: 120, length: 10)),
+            .init(.monospace, range: NSRange(location: 3, length: 3)),
+            .init(.spoiler, range: NSRange(location: 6, length: 4))
         ]
-        let expectedOutput: [(NSRange, Style)] = [
-            (NSRange(location: 0, length: 1), .bold),
-            (NSRange(location: 1, length: 2), .italic),
-            (NSRange(location: 3, length: 3), .monospace),
-            (NSRange(location: 6, length: 4), .spoiler),
-            (NSRange(location: 11, length: 5), .strikethrough),
-            (NSRange(location: 120, length: 10), .bold.union(.italic))
+        let expectedOutput: [NSRangedValue<Style>] = [
+            .init(.bold, range: NSRange(location: 0, length: 1)),
+            .init(.italic, range: NSRange(location: 1, length: 2)),
+            .init(.monospace, range: NSRange(location: 3, length: 3)),
+            .init(.spoiler, range: NSRange(location: 6, length: 4)),
+            .init(.strikethrough, range: NSRange(location: 11, length: 5)),
+            .init(.bold.union(.italic), range: NSRange(location: 120, length: 10))
         ]
         let output = MessageBodyRanges(mentions: [:], styles: styles).styles
         assertStylesEqual(expectedOutput, output)
     }
 
     func testStyleCollapsing_overlap() {
-        var styles: [(NSRange, Style)] = [
-            (NSRange(location: 0, length: 3), .bold),
-            (NSRange(location: 1, length: 3), .italic)
+        var styles: [NSRangedValue<Style>] = [
+            .init(.bold, range: NSRange(location: 0, length: 3)),
+            .init(.italic, range: NSRange(location: 1, length: 3))
         ]
-        var expectedOutput: [(NSRange, Style)] = [
-            (NSRange(location: 0, length: 1), .bold),
-            (NSRange(location: 1, length: 2), .bold.union(.italic)),
-            (NSRange(location: 3, length: 1), .italic)
+        var expectedOutput: [NSRangedValue<Style>] = [
+            .init(.bold, range: NSRange(location: 0, length: 1)),
+            .init(.bold.union(.italic), range: NSRange(location: 1, length: 2)),
+            .init(.italic, range: NSRange(location: 3, length: 1))
         ]
         var output = MessageBodyRanges(mentions: [:], styles: styles).styles
         assertStylesEqual(expectedOutput, output)
 
         styles = [
-            (NSRange(location: 0, length: 5), .bold),
-            (NSRange(location: 1, length: 3), .italic)
+            .init(.bold, range: NSRange(location: 0, length: 5)),
+            .init(.italic, range: NSRange(location: 1, length: 3))
         ]
         expectedOutput = [
-            (NSRange(location: 0, length: 1), .bold),
-            (NSRange(location: 1, length: 3), .bold.union(.italic)),
-            (NSRange(location: 4, length: 1), .bold)
+            .init(.bold, range: NSRange(location: 0, length: 1)),
+            .init(.bold.union(.italic), range: NSRange(location: 1, length: 3)),
+            .init(.bold, range: NSRange(location: 4, length: 1))
         ]
         output = MessageBodyRanges(mentions: [:], styles: styles).styles
         assertStylesEqual(expectedOutput, output)
 
         styles = [
-            (NSRange(location: 0, length: 5), .bold),
-            (NSRange(location: 4, length: 5), .italic),
-            (NSRange(location: 8, length: 5), .spoiler)
+            .init(.bold, range: NSRange(location: 0, length: 5)),
+            .init(.italic, range: NSRange(location: 4, length: 5)),
+            .init(.spoiler, range: NSRange(location: 8, length: 5))
         ]
         expectedOutput = [
-            (NSRange(location: 0, length: 4), .bold),
-            (NSRange(location: 4, length: 1), .bold.union(.italic)),
-            (NSRange(location: 5, length: 3), .italic),
-            (NSRange(location: 8, length: 1), .italic.union(.spoiler)),
-            (NSRange(location: 9, length: 4), .spoiler)
+            .init(.bold, range: NSRange(location: 0, length: 4)),
+            .init(.bold.union(.italic), range: NSRange(location: 4, length: 1)),
+            .init(.italic, range: NSRange(location: 5, length: 3)),
+            .init(.italic.union(.spoiler), range: NSRange(location: 8, length: 1)),
+            .init(.spoiler, range: NSRange(location: 9, length: 4))
         ]
         output = MessageBodyRanges(mentions: [:], styles: styles).styles
         assertStylesEqual(expectedOutput, output)
 
         styles = [
-            (NSRange(location: 0, length: 6), .bold),
-            (NSRange(location: 1, length: 6), .italic),
-            (NSRange(location: 2, length: 6), .spoiler),
-            (NSRange(location: 3, length: 6), .strikethrough),
-            (NSRange(location: 4, length: 6), .monospace)
+            .init(.bold, range: NSRange(location: 0, length: 6)),
+            .init(.italic, range: NSRange(location: 1, length: 6)),
+            .init(.spoiler, range: NSRange(location: 2, length: 6)),
+            .init(.strikethrough, range: NSRange(location: 3, length: 6)),
+            .init(.monospace, range: NSRange(location: 4, length: 6))
         ]
         expectedOutput = [
-            (NSRange(location: 0, length: 1), .bold),
-            (NSRange(location: 1, length: 1), .bold.union(.italic)),
-            (NSRange(location: 2, length: 1), .bold.union(.italic).union(.spoiler)),
-            (NSRange(location: 3, length: 1), .bold.union(.italic).union(.spoiler).union(.strikethrough)),
-            (NSRange(location: 4, length: 2), .bold.union(.italic).union(.spoiler).union(.strikethrough).union(.monospace)),
-            (NSRange(location: 6, length: 1), .italic.union(.spoiler).union(.strikethrough).union(.monospace)),
-            (NSRange(location: 7, length: 1), .spoiler.union(.strikethrough).union(.monospace)),
-            (NSRange(location: 8, length: 1), .strikethrough.union(.monospace)),
-            (NSRange(location: 9, length: 1), .monospace)
+            .init(.bold, range: NSRange(location: 0, length: 1)),
+            .init(.bold.union(.italic), range: NSRange(location: 1, length: 1)),
+            .init(.bold.union(.italic).union(.spoiler), range: NSRange(location: 2, length: 1)),
+            .init(.bold.union(.italic).union(.spoiler).union(.strikethrough), range: NSRange(location: 3, length: 1)),
+            .init(.bold.union(.italic).union(.spoiler).union(.strikethrough).union(.monospace), range: NSRange(location: 4, length: 2)),
+            .init(.italic.union(.spoiler).union(.strikethrough).union(.monospace), range: NSRange(location: 6, length: 1)),
+            .init(.spoiler.union(.strikethrough).union(.monospace), range: NSRange(location: 7, length: 1)),
+            .init(.strikethrough.union(.monospace), range: NSRange(location: 8, length: 1)),
+            .init(.monospace, range: NSRange(location: 9, length: 1))
         ]
         output = MessageBodyRanges(mentions: [:], styles: styles).styles
         assertStylesEqual(expectedOutput, output)
@@ -125,12 +125,12 @@ final class MessageBodyRangesTests: XCTestCase {
                 NSRange(location: 5, length: 7): UUID(uuidString: "AE9EFF5A-706F-46BE-BEA1-A4E86256B8C7")!
             ],
             styles: [
-                (NSRange(location: 0, length: 1), .bold),
-                (NSRange(location: 2, length: 1), .italic),
-                (NSRange(location: 3, length: 1), .italic.union(.monospace).union(.strikethrough)),
-                (NSRange(location: 4, length: 1), .italic.union(.monospace)),
-                (NSRange(location: 5, length: 2), .monospace),
-                (NSRange(location: 8, length: 10), .spoiler)
+                .init(.bold, range: NSRange(location: 0, length: 1)),
+                .init(.italic, range: NSRange(location: 2, length: 1)),
+                .init(.italic.union(.monospace).union(.strikethrough), range: NSRange(location: 3, length: 1)),
+                .init(.italic.union(.monospace), range: NSRange(location: 4, length: 1)),
+                .init(.monospace, range: NSRange(location: 5, length: 2)),
+                .init(.spoiler, range: NSRange(location: 8, length: 10))
             ]
         )
 
@@ -145,15 +145,15 @@ final class MessageBodyRangesTests: XCTestCase {
     // MARK: - Helpers
 
     private func assertStylesEqual(
-        _ lhs: [(NSRange, Style)],
-        _ rhs: [(NSRange, Style)],
+        _ lhs: [NSRangedValue<Style>],
+        _ rhs: [NSRangedValue<Style>],
         file: StaticString = #file,
         line: UInt = #line
     ) {
         XCTAssertEqual(lhs.count, rhs.count, file: file, line: line)
         for i in 0..<lhs.count {
-            XCTAssertEqual(lhs[i].0, rhs[i].0)
-            XCTAssertEqual(lhs[i].1, rhs[i].1)
+            XCTAssertEqual(lhs[i].value, rhs[i].value)
+            XCTAssertEqual(lhs[i].range, rhs[i].range)
         }
     }
 

@@ -41,7 +41,7 @@ extern NSUInteger TSErrorMessageSchemaVersion;
 
 #pragma mark -
 
-@interface TSErrorMessage : TSMessage <OWSReadTracking>
+@interface TSErrorMessage : TSMessage <OWSReadTracking, OWSPreviewText>
 
 - (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder NS_UNAVAILABLE;
 

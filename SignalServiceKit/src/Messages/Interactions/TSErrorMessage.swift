@@ -83,3 +83,10 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
         return TSErrorMessage(errorMessageWithBuilder: self)
     }
 }
+
+extension TSErrorMessage {
+
+    public func plaintextBody(_ tx: SDSAnyReadTransaction) -> String {
+        return self.rawBody(with: tx.unwrapGrdbRead) ?? ""
+    }
+}

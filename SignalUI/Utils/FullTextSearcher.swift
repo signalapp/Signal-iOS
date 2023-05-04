@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import BonMot
 import Foundation
 import SignalServiceKit
 import SignalMessaging
@@ -41,11 +42,11 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
     public let messageId: String?
     public let messageDate: Date?
 
-    public let snippet: String?
+    public let snippet: NSAttributedString?
 
     private let sortKey: SortKey
 
-    init(thread: ThreadViewModel, sortKey: SortKey, messageId: String? = nil, messageDate: Date? = nil, snippet: String? = nil) {
+    init(thread: ThreadViewModel, sortKey: SortKey, messageId: String? = nil, messageDate: Date? = nil, snippet: NSAttributedString? = nil) {
         self.thread = thread
         self.sortKey = sortKey
         self.messageId = messageId
@@ -722,7 +723,7 @@ public class FullTextSearcher: NSObject {
             return mentionedMessages
         }
 
-        func appendMessage(_ message: TSMessage, snippet: String?) {
+        func appendMessage(_ message: TSMessage, snippet: NSAttributedString?) {
             guard let thread = getThread(message.uniqueThreadId) else {
                 owsFailDebug("Missing thread: \(type(of: message))")
                 return
@@ -748,7 +749,15 @@ public class FullTextSearcher: NSObject {
                 .forEach { message in
                     appendMessage(
                         message,
-                        snippet: message.plaintextBody(with: transaction.unwrapGrdbRead)
+                        snippet: message.conversationListPreviewText(transaction)
+                            .asAttributedStringForDisplay(
+                                config: HydratedMessageBody.DisplayConfiguration(
+                                    mention: .conversationListSearchResultSnippet,
+                                    style: .conversationListSearchResultSnippet,
+                                    searchRanges: nil
+                                ),
+                                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                            )
                     )
             }
         }
@@ -907,7 +916,42 @@ public class FullTextSearcher: NSObject {
                 stop = true
                 return
             }
-            appendMessage(message, snippet: snippet)
+            let styledSnippet: NSAttributedString? = { () -> NSAttributedString? in
+                guard let snippet else {
+                    return nil
+                }
+                let attributeKey = NSAttributedString.Key("OWSSearchMatch")
+                let matchStyle = BonMot.StringStyle(
+                    .xmlRules([
+                        .style(FullTextSearchFinder.matchTag, StringStyle(.extraAttributes([attributeKey: 0])))
+                    ])
+                )
+                let matchStyleApplied = snippet.styled(with: matchStyle)
+                var styles = [NSRangedValue<MessageBodyRanges.Style>]()
+                matchStyleApplied.enumerateAttributes(in: matchStyleApplied.entireRange, using: { attrs, range, _ in
+                    guard attrs[attributeKey] != nil else {
+                        return
+                    }
+                    styles.append(NSRangedValue(.bold, range: range))
+                })
+                let mergedMessageBody: MessageBody
+                if let messageBody = message.conversationListSearchResultsBody(transaction) {
+                    mergedMessageBody = messageBody.mergeIntoFirstMatchOfStyledSubstring(matchStyleApplied.string, styles: styles)
+                } else {
+                    mergedMessageBody = MessageBody(text: matchStyleApplied.string, ranges: .init(mentions: [:], styles: styles))
+                }
+                return mergedMessageBody
+                    .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read))
+                    .asAttributedStringForDisplay(
+                        config: HydratedMessageBody.DisplayConfiguration(
+                            mention: .conversationListSearchResultSnippet,
+                            style: .conversationListSearchResultSnippet,
+                            searchRanges: nil
+                        ),
+                        isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                    )
+            }()
+            appendMessage(message, snippet: styledSnippet)
         }
 
         guard !isCanceled() else {

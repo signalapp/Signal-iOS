@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSErrorMessage;
 @class TSIncomingMessage;
 @class TSInteraction;
+@class TSMessage;
 @class TSOutgoingMessage;
 @class TSThread;
 @class ThreadlessErrorMessage;
@@ -35,6 +36,12 @@ NS_ASSUME_NONNULL_BEGIN
                            thread:(TSThread *)thread
                       transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(notifyUser(forErrorMessage:thread:transaction:));
+
+- (void)notifyUserForTSMessage:(TSMessage *)message
+                        thread:(TSThread *)thread
+                    wantsSound:(BOOL)wantsSound
+                   transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(notifyUser(forTSMessage:thread:wantsSound:transaction:));
 
 - (void)notifyUserForPreviewableInteraction:(TSInteraction<OWSPreviewText> *)previewableInteraction
                                      thread:(TSThread *)thread

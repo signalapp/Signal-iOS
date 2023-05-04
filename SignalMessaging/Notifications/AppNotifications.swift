@@ -562,7 +562,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         // While batch processing, some of the necessary changes have not been committed.
-        let rawMessageText = incomingMessage.previewText(transaction: transaction)
+        let rawMessageText = incomingMessage.notificationPreviewText(transaction)
 
         let messageText = rawMessageText.filterStringForDisplay()
 
@@ -691,8 +691,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let notificationBody: String
         if let bodyDescription: String = {
-            // TODO[TextFormatting]: apply styles for notification
-            if let messageBody = message.plaintextBody(with: transaction.unwrapGrdbRead), !messageBody.isEmpty {
+            if let messageBody = message.notificationPreviewText(transaction).nilIfEmpty {
                 return messageBody
             } else {
                 return nil
@@ -882,17 +881,56 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
              .groupCreationFailed:
             return
         case .sessionRefresh:
-            notifyUser(forPreviewableInteraction: errorMessage as TSMessage,
-                       thread: thread,
-                       wantsSound: true,
-                       transaction: transaction)
+            notifyUser(
+                forTSMessage: errorMessage as TSMessage,
+                thread: thread,
+                wantsSound: true,
+                transaction: transaction
+            )
         }
     }
 
-    public func notifyUser(forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
-                           thread: TSThread,
-                           wantsSound: Bool,
-                           transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(
+        forTSMessage message: TSMessage,
+        thread: TSThread,
+        wantsSound: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        notifyUser(
+            tsInteraction: message,
+            previewProvider: { tx in
+                return message.notificationPreviewText(tx)
+            },
+            thread: thread,
+            wantsSound: wantsSound,
+            transaction: transaction
+        )
+    }
+
+    public func notifyUser(
+        forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
+        thread: TSThread,
+        wantsSound: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        notifyUser(
+            tsInteraction: previewableInteraction,
+            previewProvider: { tx in
+                return previewableInteraction.previewText(transaction: tx)
+            },
+            thread: thread,
+            wantsSound: wantsSound,
+            transaction: transaction
+        )
+    }
+
+    private func notifyUser(
+        tsInteraction: TSInteraction,
+        previewProvider: (SDSAnyWriteTransaction) -> String,
+        thread: TSThread,
+        wantsSound: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
         let notificationTitle: String?
@@ -911,17 +949,16 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .noNameNoPreview, .nameNoPreview:
             notificationBody = NotificationStrings.genericIncomingMessageNotification
         case .namePreview:
-            // TODO[TextFormatting]: apply styles (except spoiler which gets a special treatment in notifications)
-            notificationBody = previewableInteraction.previewText(transaction: transaction)
+            notificationBody = previewProvider(transaction)
         }
 
-        let isGroupCallMessage = previewableInteraction is OWSGroupCallMessage
+        let isGroupCallMessage = tsInteraction is OWSGroupCallMessage
         let preferredDefaultAction: AppNotificationAction = isGroupCallMessage ? .showCallLobby : .showThread
 
         let threadId = thread.uniqueId
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.messageId: previewableInteraction.uniqueId,
+            AppNotificationUserInfoKey.messageId: tsInteraction.uniqueId,
             AppNotificationUserInfoKey.defaultAction: preferredDefaultAction.rawValue
         ]
 
@@ -936,7 +973,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 interaction = wrapper
             }
 
-            if let infoMessage = previewableInteraction as? TSInfoMessage {
+            if let infoMessage = tsInteraction as? TSInfoMessage {
                 switch infoMessage.messageType {
                 case .typeGroupUpdate:
                     if let groupUpdateAuthor = infoMessage.groupUpdateSourceAddress,
@@ -951,7 +988,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 default:
                     break
                 }
-            } else if let callMessage = previewableInteraction as? OWSGroupCallMessage,
+            } else if let callMessage = tsInteraction as? OWSGroupCallMessage,
                       let callCreator = callMessage.creatorAddress,
                       let intent = thread.generateSendMessageIntent(context: .senderAddress(callCreator), transaction: transaction) {
                 wrapIntent(intent)

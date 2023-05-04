@@ -557,7 +557,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 XCTFail("Missing snippet.", file: file, line: line)
                 continue
             }
-            XCTAssertTrue(snippet.lowercased().contains(expectedSnippetContent.lowercased()), file: file, line: line)
+            XCTAssertTrue(snippet.string.lowercased().contains(expectedSnippetContent.lowercased()), file: file, line: line)
         }
     }
 

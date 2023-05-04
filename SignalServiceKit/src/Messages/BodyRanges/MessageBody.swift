@@ -103,6 +103,36 @@ extension MessageBody {
 
         return hydrating(mentionHydrator: mentionHydrator, isRTL: isRTL)
     }
+
+    // MARK: Merging
+
+    /// Given a substring and set of styles _within that substring_, returns the same
+    /// substring if found with provided styles merged with the overall styles from
+    /// the entire message body.
+    ///
+    /// If the substring is not found, returns self.
+    ///
+    /// The provided styles should have their locations in the substring's local coordinates,
+    /// e.g. 0 being the first character of the substring.
+    public func mergeIntoFirstMatchOfStyledSubstring(
+        _ substring: String,
+        styles: [NSRangedValue<MessageBodyRanges.Style>]
+    ) -> MessageBody {
+        // First find the offset.
+        let substringRange = (text as NSString).range(of: substring)
+        guard substringRange.location != NSNotFound else {
+            return self
+        }
+        let subrangeStyles = MessageBodyRanges.SubrangeStyles(
+            substringRange: substringRange,
+            stylesInSubstring: styles
+        )
+        let newRanges = self.ranges.mergingStyles(subrangeStyles)
+        return MessageBody(
+            text: substring,
+            ranges: newRanges
+        )
+    }
 }
 
 public extension TSThread {

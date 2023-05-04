@@ -266,7 +266,7 @@ public class RecoveredHydratedMessageBody {
             text: string.string,
             ranges: MessageBodyRanges(
                 mentions: mentions,
-                styles: styleAttributes.map { ($0.range, $0.value.style) }
+                styles: styleAttributes.map { .init($0.value.style, range: $0.range) }
             )
         )
     }

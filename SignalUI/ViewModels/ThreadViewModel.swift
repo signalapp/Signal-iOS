@@ -140,27 +140,29 @@ public class ChatListInfo: Dependencies {
 
         let isBlocked = blockingManager.isThreadBlocked(thread, transaction: transaction)
 
-        func loadDraftText() -> String? {
+        func loadDraftText() -> HydratedMessageBody? {
             guard let draftMessageBody = thread.currentDraft(shouldFetchLatest: false,
                                                              transaction: transaction) else {
                 return nil
             }
-            // TODO[TextFormatting]: apply styles to snippet
             return draftMessageBody
                 .hydrating(
                     mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)
                 )
-                .asPlaintext()
         }
         func hasVoiceMemoDraft() -> Bool {
             VoiceMessageInterruptedDraftStore.hasDraft(for: thread, transaction: transaction)
         }
-        func loadLastMessageText() -> String? {
-            guard let previewable = lastMessageForInbox as? OWSPreviewText else {
+        func loadLastMessageText() -> HydratedMessageBody? {
+            if let previewable = lastMessageForInbox as? OWSPreviewText {
+                return HydratedMessageBody.fromPlaintextWithoutRanges(
+                    previewable.previewText(transaction: transaction).filterStringForDisplay()
+                )
+            } else if let tsMessage = lastMessageForInbox as? TSMessage {
+                return tsMessage.conversationListPreviewText(transaction)
+            } else {
                 return nil
             }
-            // TODO[TextFormatting]: apply styles to snippet
-            return previewable.previewText(transaction: transaction).filterStringForDisplay()
         }
         func loadLastMessageSenderName() -> String? {
             guard let groupThread = thread as? TSGroupThread else {
@@ -211,9 +213,9 @@ public class ChatListInfo: Dependencies {
 public enum CLVSnippet {
     case blocked
     case pendingMessageRequest(addedToGroupByName: String?)
-    case draft(draftText: String)
+    case draft(draftText: HydratedMessageBody)
     case voiceMemoDraft
-    case contactSnippet(lastMessageText: String)
-    case groupSnippet(lastMessageText: String, senderName: String)
+    case contactSnippet(lastMessageText: HydratedMessageBody)
+    case groupSnippet(lastMessageText: HydratedMessageBody, senderName: String)
     case none
 }

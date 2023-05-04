@@ -268,20 +268,163 @@ public extension TSMessage {
         }
     }
 
-    @objc(previewTextForBodyRangesWithBodyRanges:bodyDescription:transaction:)
-    func previewTextForBodyRanges(
-        bodyRanges: MessageBodyRanges,
-        bodyDescription: String?,
-        transaction: SDSAnyReadTransaction
-    ) -> String? {
-        guard let bodyDescription else {
+    func notificationPreviewText(_ tx: SDSAnyReadTransaction) -> String {
+        switch previewText(tx) {
+        case let .body(body, prefix, ranges):
+            let hydrated = MessageBody(text: body, ranges: ranges ?? .empty)
+                .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: tx.asV2Read))
+                .asPlaintext()
+            guard let prefix else {
+                return hydrated.filterForDisplay
+            }
+            return prefix.appending(hydrated).filterForDisplay
+        case let .remotelyDeleted(text),
+            let .storyReactionEmoji(text),
+            let .viewOnceMessage(text),
+            let .contactShare(text),
+            let .stickerDescription(text),
+            let .giftBadge(text):
+            return text
+        case .empty:
+            return ""
+        }
+    }
+
+    func conversationListPreviewText(_ tx: SDSAnyReadTransaction) -> HydratedMessageBody {
+        switch previewText(tx) {
+        case let .body(body, prefix, ranges):
+            let hydrated = MessageBody(text: body, ranges: ranges ?? .empty)
+                .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: tx.asV2Read))
+            guard let prefix else {
+                return hydrated
+            }
+            return hydrated.addingPrefix(prefix)
+        case let .remotelyDeleted(text),
+            let .storyReactionEmoji(text),
+            let .viewOnceMessage(text),
+            let .contactShare(text),
+            let .stickerDescription(text),
+            let .giftBadge(text):
+            return HydratedMessageBody.fromPlaintextWithoutRanges(text)
+        case .empty:
+            return HydratedMessageBody.fromPlaintextWithoutRanges("")
+        }
+    }
+
+    func conversationListSearchResultsBody(_ tx: SDSAnyReadTransaction) -> MessageBody? {
+        switch previewText(tx) {
+        case let .body(body, _, ranges):
+            // We ignore the prefix here.
+            return MessageBody(text: body, ranges: ranges ?? .empty)
+        case .remotelyDeleted,
+            .storyReactionEmoji,
+            .viewOnceMessage,
+            .contactShare,
+            .stickerDescription,
+            .giftBadge,
+            .empty:
             return nil
         }
-        let messageBody = MessageBody(text: bodyDescription, ranges: bodyRanges)
-        // TODO[TextFormatting]: apply styles depending on context.
-        return messageBody.hydrating(
-            mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)
-        ).asPlaintext()
+    }
+
+    private enum PreviewText {
+        case body(String, prefix: String?, ranges: MessageBodyRanges?)
+        case remotelyDeleted(String)
+        case storyReactionEmoji(String)
+        case viewOnceMessage(String)
+        case contactShare(String)
+        case stickerDescription(String)
+        case giftBadge(String)
+        case empty
+    }
+
+    private func previewText(_ tx: SDSAnyReadTransaction) -> PreviewText {
+        if self.wasRemotelyDeleted {
+            return .remotelyDeleted((self is TSIncomingMessage)
+                ? OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted")
+                : OWSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you")
+            )
+        }
+
+        let bodyDescription = self.rawBody(with: tx.unwrapGrdbRead)
+        if
+            bodyDescription == nil,
+            let storyReactionEmoji,
+            storyReactionEmoji.isEmpty.negated
+        {
+            if let storyAuthorAddress, storyAuthorAddress.isLocalAddress.negated {
+                let storyAuthorName = self.contactsManager.shortDisplayName(for: storyAuthorAddress, transaction: tx)
+                return .storyReactionEmoji(String(
+                    format: OWSLocalizedString(
+                        "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT",
+                        comment: "inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}"
+                    ),
+                    storyReactionEmoji,
+                    storyAuthorName
+                ))
+            } else {
+                return .storyReactionEmoji(String(
+                    format: OWSLocalizedString(
+                        "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT",
+                        comment: "inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}}"
+                    ),
+                    storyReactionEmoji
+                ))
+            }
+        }
+
+        let mediaAttachment = self.mediaAttachments(with: tx.unwrapGrdbRead).first
+        let attachmentEmoji = mediaAttachment?.emoji
+        let attachmentDescription = mediaAttachment?.description()
+
+        if isViewOnceMessage {
+            if self is TSOutgoingMessage || mediaAttachment == nil {
+                return .viewOnceMessage(OWSLocalizedString(
+                    "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
+                    comment: "inbox cell and notification text for an already viewed view-once media message."
+                ))
+            } else if mediaAttachment?.isVideo == true {
+                return .viewOnceMessage(OWSLocalizedString(
+                    "PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW",
+                    comment: "inbox cell and notification text for a view-once video."
+                ))
+            } else {
+                // Make sure that if we add new types we cover them here.
+                owsAssertDebug(
+                    mediaAttachment?.isImage == true
+                    || mediaAttachment?.isLoopingVideo == true
+                    || mediaAttachment?.isAnimated == true
+                )
+                return .viewOnceMessage(OWSLocalizedString(
+                    "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW",
+                    comment: "inbox cell and notification text for a view-once photo."
+                ))
+            }
+        }
+
+        if let bodyDescription = bodyDescription?.nilIfEmpty {
+            return .body(bodyDescription, prefix: attachmentDescription?.nilIfEmpty?.appending(" "), ranges: bodyRanges)
+        } else if let attachmentDescription = attachmentDescription?.nilIfEmpty {
+            return .body(attachmentDescription, prefix: nil, ranges: bodyRanges)
+        } else if let contactShare {
+            return .contactShare("👤".appending(" ").appending(contactShare.name.displayName))
+        } else if let messageSticker {
+            let stickerDescription = OWSLocalizedString(
+                "STICKER_MESSAGE_PREVIEW",
+                comment: "Preview text shown in notifications and conversation list for sticker messages."
+            )
+            if let stickerEmoji = StickerManager.firstEmoji(inEmojiString: messageSticker.emoji)?.nilIfEmpty {
+                return .stickerDescription(stickerEmoji.appending(" ").appending(stickerDescription))
+            } else {
+                return .stickerDescription(stickerDescription)
+            }
+        } else if giftBadge != nil {
+            return .giftBadge(self.previewTextForGiftBadge(transaction: tx))
+        } else {
+            // This can happen when initially saving outgoing messages
+            // with camera first capture over the conversation list.
+            return .empty
+        }
     }
 
     // MARK: - Stories
