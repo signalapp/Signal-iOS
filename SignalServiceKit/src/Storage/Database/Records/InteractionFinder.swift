@@ -1466,6 +1466,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
         AND \(interactionColumn: .id) <= ?
+        \(Self.filterEditHistoryClause())
         ORDER BY \(interactionColumn: .id) DESC
         LIMIT 1
         """
@@ -1487,6 +1488,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
         AND \(interactionColumn: .id) > ?
+        \(Self.filterEditHistoryClause())
         ORDER BY \(interactionColumn: .id) ASC
         LIMIT 1
         """

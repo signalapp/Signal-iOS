@@ -269,11 +269,13 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 )
             }
 
-            switch message.editState {
-            case .latestRevision, .pastRevision:
-                wasEdited = true
-            case .none:
-                wasEdited = false
+            if FeatureFlags.editMessageReceive {
+                switch message.editState {
+                case .latestRevision, .pastRevision:
+                    wasEdited = true
+                case .none:
+                    wasEdited = false
+                }
             }
         }
 
@@ -364,10 +366,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         outerSubviewInfos.append(ManualStackSubviewInfo.empty)
 
         let editedLabelConfig = self.editedLabelConfig(textColor: .black)
-        let editedLabelSize = CVText.measureLabel(
-            config: editedLabelConfig,
-            maxWidth: maxWidth
-        )
+        let editedLabelSize = wasEdited
+            ? CVText.measureLabel(
+                config: editedLabelConfig,
+                maxWidth: maxWidth
+            )
+            : .zero
         innerSubviewInfos.append(editedLabelSize.asManualSubviewInfo(hasFixedWidth: true))
 
         // The color doesn't matter for measurement.
