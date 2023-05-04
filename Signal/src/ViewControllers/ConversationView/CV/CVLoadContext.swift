@@ -15,21 +15,25 @@ struct CVLoadContext: CVItemBuildingContext {
     let loadRequest: CVLoadRequest
     let threadViewModel: ThreadViewModel
     let viewStateSnapshot: CVViewStateSnapshot
+    let spoilerReveal: CVSpoilerReveal
     let messageMapping: CVMessageMapping
     let prevRenderState: CVRenderState
     let transaction: SDSAnyReadTransaction
     let avatarBuilder: CVAvatarBuilder
 
-    init(loadRequest: CVLoadRequest,
-         threadViewModel: ThreadViewModel,
-         viewStateSnapshot: CVViewStateSnapshot,
-         messageMapping: CVMessageMapping,
-         prevRenderState: CVRenderState,
-         transaction: SDSAnyReadTransaction) {
-
+    init(
+        loadRequest: CVLoadRequest,
+        threadViewModel: ThreadViewModel,
+        viewStateSnapshot: CVViewStateSnapshot,
+        spoilerReveal: CVSpoilerReveal,
+        messageMapping: CVMessageMapping,
+        prevRenderState: CVRenderState,
+        transaction: SDSAnyReadTransaction
+    ) {
         self.loadRequest = loadRequest
         self.threadViewModel = threadViewModel
         self.viewStateSnapshot = viewStateSnapshot
+        self.spoilerReveal = spoilerReveal
         self.messageMapping = messageMapping
         self.prevRenderState = prevRenderState
         self.transaction = transaction
@@ -53,6 +57,7 @@ protocol CVItemBuildingContext {
     var viewStateSnapshot: CVViewStateSnapshot { get }
     var transaction: SDSAnyReadTransaction { get }
     var avatarBuilder: CVAvatarBuilder { get }
+    var spoilerReveal: CVSpoilerReveal { get }
 }
 
 // MARK: -
@@ -72,6 +77,7 @@ struct CVItemBuildingContextImpl: CVItemBuildingContext {
     let viewStateSnapshot: CVViewStateSnapshot
     let transaction: SDSAnyReadTransaction
     let avatarBuilder: CVAvatarBuilder
+    let spoilerReveal: CVSpoilerReveal
 }
 
 // MARK: -
@@ -89,6 +95,7 @@ extension CVItemBuilding {
     var threadAssociatedData: ThreadAssociatedData { threadViewModel.associatedData }
     var viewStateSnapshot: CVViewStateSnapshot { itemBuildingContext.viewStateSnapshot }
     var conversationStyle: ConversationStyle { itemBuildingContext.conversationStyle }
+    var spoilerReveal: CVSpoilerReveal { itemBuildingContext.spoilerReveal }
     var mediaCache: CVMediaCache { itemBuildingContext.mediaCache }
     var transaction: SDSAnyReadTransaction { itemBuildingContext.transaction }
     var avatarBuilder: CVAvatarBuilder { itemBuildingContext.avatarBuilder }

@@ -284,13 +284,16 @@ extension ConversationViewController {
             quotedReply = nil
         }
 
-        let inputToolbar = ConversationInputToolbar(conversationStyle: conversationStyle,
-                                                    mediaCache: mediaCache,
-                                                    messageDraft: messageDraft,
-                                                    quotedReply: quotedReply,
-                                                    inputToolbarDelegate: self,
-                                                    inputTextViewDelegate: self,
-                                                    mentionDelegate: self)
+        let inputToolbar = ConversationInputToolbar(
+            conversationStyle: conversationStyle,
+            spoilerReveal: viewState.spoilerReveal,
+            mediaCache: mediaCache,
+            messageDraft: messageDraft,
+            quotedReply: quotedReply,
+            inputToolbarDelegate: self,
+            inputTextViewDelegate: self,
+            mentionDelegate: self
+        )
         inputToolbar.accessibilityIdentifier = "inputToolbar"
         if let voiceMemoDraft = voiceMemoDraft {
             inputToolbar.showVoiceMemoDraft(voiceMemoDraft)
@@ -323,8 +326,11 @@ extension ConversationViewController {
             ).first else {
                 return nil
             }
-            guard let componentState = CVLoader.buildStandaloneComponentState(interaction: interaction,
-                                                                              transaction: transaction) else {
+            guard let componentState = CVLoader.buildStandaloneComponentState(
+                interaction: interaction,
+                spoilerReveal: self.viewState.spoilerReveal,
+                transaction: transaction
+            ) else {
                 owsFailDebug("Failed to create component state.")
                 return nil
             }

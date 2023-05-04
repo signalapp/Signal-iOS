@@ -326,8 +326,11 @@ extension ConversationViewController {
                 owsFailDebug("Invalid interaction: \(type(of: interaction)).")
                 return false
             }
-            guard let componentState = CVLoader.buildStandaloneComponentState(interaction: interaction,
-                                                                              transaction: transaction) else {
+            guard let componentState = CVLoader.buildStandaloneComponentState(
+                interaction: interaction,
+                spoilerReveal: CVSpoilerReveal(),
+                transaction: transaction
+            ) else {
                 owsFailDebug("Could not load componentState.")
                 return false
             }

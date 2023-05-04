@@ -15,19 +15,24 @@ public class CVLoader: NSObject {
     private let threadUniqueId: String
     private let loadRequest: CVLoadRequest
     private let viewStateSnapshot: CVViewStateSnapshot
+    private let spoilerReveal: CVSpoilerReveal
     private let prevRenderState: CVRenderState
     private let messageMapping: CVMessageMapping
 
     private let benchSteps = BenchSteps(title: "CVLoader")
 
-    required init(threadUniqueId: String,
-                  loadRequest: CVLoadRequest,
-                  viewStateSnapshot: CVViewStateSnapshot,
-                  prevRenderState: CVRenderState,
-                  messageMapping: CVMessageMapping) {
+    required init(
+        threadUniqueId: String,
+        loadRequest: CVLoadRequest,
+        viewStateSnapshot: CVViewStateSnapshot,
+        spoilerReveal: CVSpoilerReveal,
+        prevRenderState: CVRenderState,
+        messageMapping: CVMessageMapping
+    ) {
         self.threadUniqueId = threadUniqueId
         self.loadRequest = loadRequest
         self.viewStateSnapshot = viewStateSnapshot
+        self.spoilerReveal = spoilerReveal
         self.prevRenderState = prevRenderState
         self.messageMapping = messageMapping
     }
@@ -37,6 +42,7 @@ public class CVLoader: NSObject {
         let threadUniqueId = self.threadUniqueId
         let loadRequest = self.loadRequest
         let viewStateSnapshot = self.viewStateSnapshot
+        let spoilerReveal = self.spoilerReveal
         let prevRenderState = self.prevRenderState
         let messageMapping = self.messageMapping
 
@@ -64,12 +70,15 @@ public class CVLoader: NSObject {
                 }
                 let threadViewModel = loadThreadViewModel()
 
-                let loadContext = CVLoadContext(loadRequest: loadRequest,
-                                                threadViewModel: threadViewModel,
-                                                viewStateSnapshot: viewStateSnapshot,
-                                                messageMapping: messageMapping,
-                                                prevRenderState: prevRenderState,
-                                                transaction: transaction)
+                let loadContext = CVLoadContext(
+                    loadRequest: loadRequest,
+                    threadViewModel: threadViewModel,
+                    viewStateSnapshot: viewStateSnapshot,
+                    spoilerReveal: spoilerReveal,
+                    messageMapping: messageMapping,
+                    prevRenderState: prevRenderState,
+                    transaction: transaction
+                )
 
                 self.benchSteps.step("threadViewModel")
 
@@ -259,12 +268,36 @@ public class CVLoader: NSObject {
                              itemModel: itemModel)
     }
 
+    #if DEBUG
+
     @objc
-    public static func buildStandaloneRenderItem(interaction: TSInteraction,
-                                                 thread: TSThread,
-                                                 threadAssociatedData: ThreadAssociatedData,
-                                                 containerView: UIView,
-                                                 transaction: SDSAnyReadTransaction) -> CVRenderItem? {
+    public static func debugui_buildStandaloneRenderItem(
+        interaction: TSInteraction,
+        thread: TSThread,
+        threadAssociatedData: ThreadAssociatedData,
+        containerView: UIView,
+        transaction: SDSAnyReadTransaction
+    ) -> CVRenderItem? {
+        buildStandaloneRenderItem(
+            interaction: interaction,
+            thread: thread,
+            threadAssociatedData: threadAssociatedData,
+            containerView: containerView,
+            spoilerReveal: CVSpoilerReveal(),
+            transaction: transaction
+        )
+    }
+
+    #endif
+
+    public static func buildStandaloneRenderItem(
+        interaction: TSInteraction,
+        thread: TSThread,
+        threadAssociatedData: ThreadAssociatedData,
+        containerView: UIView,
+        spoilerReveal: CVSpoilerReveal,
+        transaction: SDSAnyReadTransaction
+    ) -> CVRenderItem? {
         let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
         let conversationStyle = ConversationStyle(type: .`default`,
                                                   thread: thread,
@@ -274,44 +307,63 @@ public class CVLoader: NSObject {
                                                   chatColor: chatColor)
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: CVMediaCache())
-        return CVLoader.buildStandaloneRenderItem(interaction: interaction,
-                                                  thread: thread,
-                                                  threadAssociatedData: threadAssociatedData,
-                                                  coreState: coreState,
-                                                  transaction: transaction)
+        return CVLoader.buildStandaloneRenderItem(
+            interaction: interaction,
+            thread: thread,
+            threadAssociatedData: threadAssociatedData,
+            coreState: coreState,
+            spoilerReveal: spoilerReveal,
+            transaction: transaction
+        )
     }
 
-    @objc
-    public static func buildStandaloneRenderItem(interaction: TSInteraction,
-                                                 thread: TSThread,
-                                                 threadAssociatedData: ThreadAssociatedData,
-                                                 conversationStyle: ConversationStyle,
-                                                 transaction: SDSAnyReadTransaction) -> CVRenderItem? {
-        let coreState = CVCoreState(conversationStyle: conversationStyle,
-                                    mediaCache: CVMediaCache())
-        return CVLoader.buildStandaloneRenderItem(interaction: interaction,
-                                                  thread: thread,
-                                                  threadAssociatedData: threadAssociatedData,
-                                                  coreState: coreState,
-                                                  transaction: transaction)
+    public static func buildStandaloneRenderItem(
+        interaction: TSInteraction,
+        thread: TSThread,
+        threadAssociatedData: ThreadAssociatedData,
+        conversationStyle: ConversationStyle,
+        spoilerReveal: CVSpoilerReveal,
+        transaction: SDSAnyReadTransaction
+    ) -> CVRenderItem? {
+        let coreState = CVCoreState(
+            conversationStyle: conversationStyle,
+            mediaCache: CVMediaCache()
+        )
+        return CVLoader.buildStandaloneRenderItem(
+            interaction: interaction,
+            thread: thread,
+            threadAssociatedData: threadAssociatedData,
+            coreState: coreState,
+            spoilerReveal: spoilerReveal,
+            transaction: transaction
+        )
     }
 
-    private static func buildStandaloneRenderItem(interaction: TSInteraction,
-                                                  thread: TSThread,
-                                                  threadAssociatedData: ThreadAssociatedData,
-                                                  coreState: CVCoreState,
-                                                  transaction: SDSAnyReadTransaction) -> CVRenderItem? {
+    private static func buildStandaloneRenderItem(
+        interaction: TSInteraction,
+        thread: TSThread,
+        threadAssociatedData: ThreadAssociatedData,
+        coreState: CVCoreState,
+        spoilerReveal: CVSpoilerReveal,
+        transaction: SDSAnyReadTransaction
+    ) -> CVRenderItem? {
         AssertIsOnMainThread()
 
         let threadViewModel = ThreadViewModel(thread: thread,
                                               forChatList: false,
                                               transaction: transaction)
-        let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(coreState: coreState)
+        let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(
+            coreState: coreState,
+            spoilerReveal: spoilerReveal
+        )
         let avatarBuilder = CVAvatarBuilder(transaction: transaction)
-        let itemBuildingContext = CVItemBuildingContextImpl(threadViewModel: threadViewModel,
-                                                            viewStateSnapshot: viewStateSnapshot,
-                                                            transaction: transaction,
-                                                            avatarBuilder: avatarBuilder)
+        let itemBuildingContext = CVItemBuildingContextImpl(
+            threadViewModel: threadViewModel,
+            viewStateSnapshot: viewStateSnapshot,
+            transaction: transaction,
+            avatarBuilder: avatarBuilder,
+            spoilerReveal: spoilerReveal
+        )
         guard let itemModel = CVItemModelBuilder.buildStandaloneItem(interaction: interaction,
                                                                      thread: thread,
                                                                      threadAssociatedData: threadAssociatedData,
@@ -325,8 +377,11 @@ public class CVLoader: NSObject {
                                     itemModel: itemModel)
     }
 
-    public static func buildStandaloneComponentState(interaction: TSInteraction,
-                                                     transaction: SDSAnyReadTransaction) -> CVComponentState? {
+    public static func buildStandaloneComponentState(
+        interaction: TSInteraction,
+        spoilerReveal: CVSpoilerReveal,
+        transaction: SDSAnyReadTransaction
+    ) -> CVComponentState? {
         AssertIsOnMainThread()
 
         let thread = interaction.thread(transaction: transaction)
@@ -343,12 +398,18 @@ public class CVLoader: NSObject {
         let threadViewModel = ThreadViewModel(thread: thread,
                                               forChatList: false,
                                               transaction: transaction)
-        let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(coreState: coreState)
+        let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(
+            coreState: coreState,
+            spoilerReveal: spoilerReveal
+        )
         let avatarBuilder = CVAvatarBuilder(transaction: transaction)
-        let itemBuildingContext = CVItemBuildingContextImpl(threadViewModel: threadViewModel,
-                                                            viewStateSnapshot: viewStateSnapshot,
-                                                            transaction: transaction,
-                                                            avatarBuilder: avatarBuilder)
+        let itemBuildingContext = CVItemBuildingContextImpl(
+            threadViewModel: threadViewModel,
+            viewStateSnapshot: viewStateSnapshot,
+            transaction: transaction,
+            avatarBuilder: avatarBuilder,
+            spoilerReveal: spoilerReveal
+        )
         do {
             return try CVComponentState.build(interaction: interaction,
                                               itemBuildingContext: itemBuildingContext)

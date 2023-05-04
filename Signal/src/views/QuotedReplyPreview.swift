@@ -9,12 +9,13 @@ protocol QuotedReplyPreviewDelegate: AnyObject {
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview)
 }
 
-class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
+class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, CVSpoilerObserver {
 
     public weak var delegate: QuotedReplyPreviewDelegate?
 
     private let quotedReply: OWSQuotedReplyModel
     private let conversationStyle: ConversationStyle
+    private let spoilerReveal: CVSpoilerReveal
     private var quotedMessageView: OWSQuotedMessageView?
     private var heightConstraint: NSLayoutConstraint!
 
@@ -28,9 +29,14 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
         fatalError("init(frame:) has not been implemented")
     }
 
-    init(quotedReply: OWSQuotedReplyModel, conversationStyle: ConversationStyle) {
+    init(
+        quotedReply: OWSQuotedReplyModel,
+        conversationStyle: ConversationStyle,
+        spoilerReveal: CVSpoilerReveal
+    ) {
         self.quotedReply = quotedReply
         self.conversationStyle = conversationStyle
+        self.spoilerReveal = spoilerReveal
 
         super.init(frame: .zero)
 
@@ -38,7 +44,19 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
 
         updateContents()
 
+        spoilerReveal.observeChanges(
+            for: CVInteractionIdentifier(
+                timestamp: quotedReply.timestamp,
+                authorUuid: quotedReply.authorAddress.uuidString
+            ),
+            observer: self
+        )
+
         NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
+    }
+
+    public func didUpdateRevealedSpoilers() {
+        updateContents()
     }
 
     private let draftMarginTop: CGFloat = 6
@@ -55,7 +73,11 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
         // We instantiate quotedMessageView late to ensure that it is updated
         // every time contentSizeCategoryDidChange (i.e. when dynamic type
         // sizes changes).
-        let quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply, conversationStyle: conversationStyle)
+        let quotedMessageView = OWSQuotedMessageView.forPreview(
+            quotedReply,
+            conversationStyle: conversationStyle,
+            spoilerReveal: spoilerReveal
+        )
         quotedMessageView.delegate = self
         self.quotedMessageView = quotedMessageView
         quotedMessageView.setContentHuggingHorizontalLow()

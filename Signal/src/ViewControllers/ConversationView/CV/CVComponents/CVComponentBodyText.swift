@@ -121,14 +121,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     private static let unfairLock = UnfairLock()
 
-    private static func detectItems(
+    public static func detectItems(
         text: String,
         attributedString: NSAttributedString?,
         hasPendingMessageRequest: Bool,
         shouldAllowLinkification: Bool,
         textWasTruncated: Bool,
         revealedSpoilerIds: Set<StyleIdType>,
-        interactionUniqueId: String
+        interactionUniqueId: String,
+        interactionIdentifier: CVInteractionIdentifier
     ) -> [CVTextLabel.Item] {
 
         // Use a lock to ensure that measurement on and off the main thread
@@ -179,6 +180,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                             return .unrevealedSpoiler(CVTextLabel.UnrevealedSpoilerItem(
                                 spoilerId: unrevealedSpoilerItem.id,
                                 interactionUniqueId: interactionUniqueId,
+                                interactionIdentifier: interactionIdentifier,
                                 range: unrevealedSpoilerItem.range
                             ))
                         case .mention(let mentionItem):
@@ -215,7 +217,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let searchText = viewStateSnapshot.searchText
         let isTextExpanded = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
         let revealedSpoilerIds = viewStateSnapshot.spoilerReveal.revealedSpoilerIds(
-            interactionUniqueId: interaction.uniqueId
+            interactionIdentifier: .fromInteraction(interaction)
         )
 
         let items: [CVTextLabel.Item]
@@ -235,7 +237,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     shouldAllowLinkification: shouldAllowLinkification,
                     textWasTruncated: textWasTruncated,
                     revealedSpoilerIds: revealedSpoilerIds,
-                    interactionUniqueId: interaction.uniqueId
+                    interactionUniqueId: interaction.uniqueId,
+                    interactionIdentifier: .fromInteraction(interaction)
                 )
 
                 // UILabels are much cheaper than UITextViews, and we can
@@ -259,7 +262,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     shouldAllowLinkification: shouldAllowLinkification,
                     textWasTruncated: textWasTruncated,
                     revealedSpoilerIds: revealedSpoilerIds,
-                    interactionUniqueId: interaction.uniqueId
+                    interactionUniqueId: interaction.uniqueId,
+                    interactionIdentifier: .fromInteraction(interaction)
                 )
 
                 shouldUseAttributedText = true
@@ -519,7 +523,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         shouldAllowLinkification: Bool,
         textWasTruncated: Bool,
         revealedSpoilerIds: Set<StyleIdType>,
-        interactionUniqueId: String
+        interactionUniqueId: String,
+        interactionIdentifier: CVInteractionIdentifier
     ) {
 
         let items = detectItems(
@@ -529,16 +534,19 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             shouldAllowLinkification: shouldAllowLinkification,
             textWasTruncated: textWasTruncated,
             revealedSpoilerIds: revealedSpoilerIds,
-            interactionUniqueId: interactionUniqueId
+            interactionUniqueId: interactionUniqueId,
+            interactionIdentifier: interactionIdentifier
         )
         Self.linkifyData(attributedText: attributedText,
                          linkifyStyle: linkifyStyle,
                          items: items)
     }
 
-    private static func linkifyData(attributedText: NSMutableAttributedString,
-                                    linkifyStyle: LinkifyStyle,
-                                    items: [CVTextLabel.Item]) {
+    public static func linkifyData(
+        attributedText: NSMutableAttributedString,
+        linkifyStyle: LinkifyStyle,
+        items: [CVTextLabel.Item]
+    ) {
 
         // Sort so that we can detect overlap.
         let items = items.sorted {

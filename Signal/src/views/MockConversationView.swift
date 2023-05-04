@@ -146,6 +146,7 @@ class MockConversationView: UIView {
                     thread: self.thread,
                     threadAssociatedData: threadAssociatedData,
                     conversationStyle: conversationStyle,
+                    spoilerReveal: CVSpoilerReveal(),
                     transaction: transaction
                 ) else {
                     owsFailDebug("Could not build renderItem.")

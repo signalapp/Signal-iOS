@@ -25,9 +25,17 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let quotedReplyModel: OWSQuotedReplyModel
         let displayableQuotedText: DisplayableText?
         let conversationStyle: ConversationStyle
+        let spoilerReveal: CVSpoilerReveal
         let isOutgoing: Bool
         let isForPreview: Bool
         let quotedAuthorName: String
+
+        var quotedInteractionIdentifier: CVInteractionIdentifier {
+            return CVInteractionIdentifier(
+                timestamp: quotedReplyModel.timestamp,
+                authorUuid: quotedReplyModel.authorAddress.uuidString
+            )
+        }
     }
 
     private var state: State?
@@ -53,11 +61,14 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     private let chatColorView = CVColorOrGradientView()
     private let tintView = ManualLayoutViewWithLayer(name: "tintView")
 
-    static func stateForConversation(quotedReplyModel: OWSQuotedReplyModel,
-                                     displayableQuotedText: DisplayableText?,
-                                     conversationStyle: ConversationStyle,
-                                     isOutgoing: Bool,
-                                     transaction: SDSAnyReadTransaction) -> State {
+    static func stateForConversation(
+        quotedReplyModel: OWSQuotedReplyModel,
+        displayableQuotedText: DisplayableText?,
+        conversationStyle: ConversationStyle,
+        spoilerReveal: CVSpoilerReveal,
+        isOutgoing: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> State {
 
         let quotedAuthorName = contactsManager.displayName(for: quotedReplyModel.authorAddress,
                                                            transaction: transaction)
@@ -65,14 +76,18 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         return State(quotedReplyModel: quotedReplyModel,
                      displayableQuotedText: displayableQuotedText,
                      conversationStyle: conversationStyle,
+                     spoilerReveal: spoilerReveal,
                      isOutgoing: isOutgoing,
                      isForPreview: false,
                      quotedAuthorName: quotedAuthorName)
     }
 
-    static func stateForPreview(quotedReplyModel: OWSQuotedReplyModel,
-                                conversationStyle: ConversationStyle,
-                                transaction: SDSAnyReadTransaction) -> State {
+    static func stateForPreview(
+        quotedReplyModel: OWSQuotedReplyModel,
+        conversationStyle: ConversationStyle,
+        spoilerReveal: CVSpoilerReveal,
+        transaction: SDSAnyReadTransaction
+    ) -> State {
 
         let quotedAuthorName = contactsManager.displayName(for: quotedReplyModel.authorAddress,
                                                            transaction: transaction)
@@ -84,7 +99,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 withMessageBody: messageBody,
                 displayConfig: HydratedMessageBody.DisplayConfiguration(
                     mention: .quotedReply,
-                    style: .quotedReply,
+                    style: .quotedReply(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
+                        interactionIdentifier: CVInteractionIdentifier(
+                            timestamp: quotedReplyModel.timestamp,
+                            authorUuid: quotedReplyModel.authorAddress.uuidString
+                        )
+                    )),
                     searchRanges: nil
                 ),
                 transaction: transaction
@@ -94,6 +114,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         return State(quotedReplyModel: quotedReplyModel,
                      displayableQuotedText: displayableQuotedText,
                      conversationStyle: conversationStyle,
+                     spoilerReveal: spoilerReveal,
                      isOutgoing: true,
                      isForPreview: true,
                      quotedAuthorName: quotedAuthorName)
@@ -109,6 +130,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var quotedReplyModel: OWSQuotedReplyModel { state.quotedReplyModel }
         var displayableQuotedText: DisplayableText? { state.displayableQuotedText }
         var conversationStyle: ConversationStyle { state.conversationStyle }
+        var revealedSpoilerIds: Set<StyleIdType> {
+            return state.spoilerReveal.revealedSpoilerIds(
+                interactionIdentifier: state.quotedInteractionIdentifier
+            )
+        }
         var isOutgoing: Bool { state.isOutgoing }
         var isIncoming: Bool { !isOutgoing }
         var isForPreview: Bool { state.isForPreview }
@@ -267,7 +293,23 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     .font: quotedTextFont,
                     .foregroundColor: quotedTextColor
                 ])
-                attributedText = mutableText
+                attributedText = RecoveredHydratedMessageBody.recover(from: mutableText).reapplyAttributes(
+                    config: HydratedMessageBody.DisplayConfiguration(
+                        mention: MentionDisplayConfiguration(
+                            font: quotedTextFont,
+                            foregroundColor: .fixed(quotedTextColor),
+                            backgroundColor: nil
+                        ),
+                        style: StyleDisplayConfiguration(
+                            baseFont: quotedTextFont,
+                            textColor: .fixed(quotedTextColor),
+                            revealAllIds: false,
+                            revealedIds: revealedSpoilerIds
+                        ),
+                        searchRanges: nil
+                    ),
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                )
                 textAlignment = displayableQuotedText.displayTextNaturalAlignment
             } else if let fileTypeForSnippet = self.fileTypeForSnippet {
                 attributedText = NSAttributedString(string: fileTypeForSnippet,
@@ -422,6 +464,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                       cellMeasurement: CVCellMeasurement) {
         self.state = state
         self.delegate = delegate
+
+        state.spoilerReveal.observeChanges(
+            for: state.quotedInteractionIdentifier,
+            observer: self
+        )
 
         let configurator = Configurator(state: state)
         let conversationStyle = configurator.conversationStyle
@@ -838,6 +885,13 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     public override func reset() {
         super.reset()
 
+        if let state {
+            state.spoilerReveal.removeObserver(
+                for: state.quotedInteractionIdentifier,
+                observer: self
+            )
+        }
+
         self.state = nil
         self.delegate = nil
 
@@ -860,5 +914,17 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         chatColorView.removeFromSuperview()
         tintView.reset()
         tintView.removeFromSuperview()
+    }
+}
+
+extension QuotedMessageView: CVSpoilerObserver {
+    public func didUpdateRevealedSpoilers() {
+        guard let state else {
+            return
+        }
+        let configurator = Configurator(state: state)
+        let quotedTextLabelConfig = configurator.quotedTextLabelConfig
+        // Note: measurement doesn't change when spoiler state changes.
+        quotedTextLabelConfig.applyForRendering(label: quotedTextLabel)
     }
 }

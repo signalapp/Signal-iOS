@@ -7,8 +7,35 @@ import Foundation
 
 extension OWSQuotedMessageView {
 
-    @objc
-    static func displayableTextWithSneakyTransaction(forPreview quotedMessage: OWSQuotedReplyModel) -> DisplayableText? {
+    static func forPreview(
+        _ quotedMessage: OWSQuotedReplyModel,
+        conversationStyle: ConversationStyle,
+        spoilerReveal: CVSpoilerReveal
+    ) -> OWSQuotedMessageView {
+
+        let displayableQuotedText: DisplayableText?
+        if quotedMessage.body?.isEmpty == false {
+            displayableQuotedText = displayableTextWithSneakyTransaction(
+                forPreview: quotedMessage,
+                spoilerReveal: spoilerReveal
+            )
+        } else {
+            displayableQuotedText = nil
+        }
+        let instance = OWSQuotedMessageView(
+            quotedMessage: quotedMessage,
+            displayableQuotedText: displayableQuotedText,
+            conversationStyle: conversationStyle,
+            spoilerReveal: spoilerReveal
+        )
+        instance.createContents()
+        return instance
+    }
+
+    static func displayableTextWithSneakyTransaction(
+        forPreview quotedMessage: OWSQuotedReplyModel,
+        spoilerReveal: CVSpoilerReveal
+    ) -> DisplayableText? {
         guard let text = quotedMessage.body else {
             return nil
         }
@@ -18,11 +45,55 @@ extension OWSQuotedMessageView {
                 withMessageBody: messageBody,
                 displayConfig: HydratedMessageBody.DisplayConfiguration(
                     mention: .quotedReply,
-                    style: .quotedReply,
+                    style: .quotedReply(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
+                        interactionIdentifier: CVInteractionIdentifier(
+                            timestamp: quotedMessage.timestamp,
+                            authorUuid: quotedMessage.authorAddress.uuidString
+                        )
+                    )),
                     searchRanges: nil
                 ),
                 transaction: tx
             )
         }
+    }
+
+    @objc
+    func restyleDisplayableQuotedText(
+        _ displayableQuotedText: DisplayableText,
+        font: UIFont,
+        textColor: UIColor,
+        quotedReplyModel: OWSQuotedReplyModel,
+        spoilerReveal: CVSpoilerReveal
+    ) -> NSAttributedString {
+        let mutableCopy = NSMutableAttributedString(attributedString: displayableQuotedText.displayAttributedText)
+        mutableCopy.addAttributesToEntireString([
+            .font: font,
+            .foregroundColor: textColor
+        ])
+        return RecoveredHydratedMessageBody
+            .recover(from: mutableCopy)
+            .reapplyAttributes(
+                config: HydratedMessageBody.DisplayConfiguration(
+                    mention: MentionDisplayConfiguration(
+                        font: font,
+                        foregroundColor: .fixed(textColor),
+                        backgroundColor: nil
+                    ),
+                    style: StyleDisplayConfiguration(
+                        baseFont: font,
+                        textColor: .fixed(textColor),
+                        revealAllIds: false,
+                        revealedIds: spoilerReveal.revealedSpoilerIds(
+                            interactionIdentifier: CVInteractionIdentifier(
+                                timestamp: quotedReplyModel.timestamp,
+                                authorUuid: quotedReplyModel.authorAddress.uuidString
+                            )
+                        )
+                    ),
+                    searchRanges: nil
+                ),
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+            )
     }
 }

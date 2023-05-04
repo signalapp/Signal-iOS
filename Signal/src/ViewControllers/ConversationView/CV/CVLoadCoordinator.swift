@@ -57,6 +57,7 @@ public class CVLoadCoordinator: NSObject {
     private let threadUniqueId: String
 
     private var conversationStyle: ConversationStyle
+    private let spoilerReveal: CVSpoilerReveal
 
     var renderState: CVRenderState
 
@@ -86,6 +87,7 @@ public class CVLoadCoordinator: NSObject {
         self.threadUniqueId = threadViewModel.threadRecord.uniqueId
         self.thread = threadViewModel.threadRecord
         self.conversationStyle = viewState.conversationStyle
+        self.spoilerReveal = viewState.spoilerReveal
 
         let viewStateSnapshot = CVViewStateSnapshot.snapshot(viewState: viewState,
                                                              typingIndicatorsSender: nil,
@@ -513,6 +515,7 @@ public class CVLoadCoordinator: NSObject {
         AssertIsOnMainThread()
 
         let conversationStyle = self.conversationStyle
+        let spoilerReveal = self.spoilerReveal
         guard conversationStyle.viewWidth > 0 else {
             Logger.info("viewWidth not yet set.")
             return
@@ -535,11 +538,18 @@ public class CVLoadCoordinator: NSObject {
 
         loadRequestBuilder = CVLoadRequest.Builder()
 
-        load(loadRequest: loadRequest,
-             conversationStyle: conversationStyle)
+        load(
+            loadRequest: loadRequest,
+            conversationStyle: conversationStyle,
+            spoilerReveal: spoilerReveal
+        )
     }
 
-    private func load(loadRequest: CVLoadRequest, conversationStyle: ConversationStyle) {
+    private func load(
+        loadRequest: CVLoadRequest,
+        conversationStyle: ConversationStyle,
+        spoilerReveal: CVSpoilerReveal
+    ) {
         AssertIsOnMainThread()
         // We should do an "initial" load IFF this is our first load.
         owsAssertDebug(loadRequest.isInitialLoad == renderState.isEmptyInitialState)
@@ -564,6 +574,7 @@ public class CVLoadCoordinator: NSObject {
         let loader = CVLoader(threadUniqueId: threadUniqueId,
                               loadRequest: loadRequest,
                               viewStateSnapshot: viewStateSnapshot,
+                              spoilerReveal: spoilerReveal,
                               prevRenderState: prevRenderState,
                               messageMapping: messageMapping)
 

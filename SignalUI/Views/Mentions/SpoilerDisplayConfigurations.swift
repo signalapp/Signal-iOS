@@ -22,13 +22,12 @@ extension StyleDisplayConfiguration {
         )
     }
 
-    public static var quotedReply: Self {
+    public static func quotedReply(revealedSpoilerIds: Set<StyleIdType>) -> Self {
         return StyleDisplayConfiguration(
             baseFont: .dynamicTypeBody,
             textColor: primaryTextColor,
             revealAllIds: false,
-            // No reveals in quoted replies under any circumstances.
-            revealedIds: Set()
+            revealedIds: revealedSpoilerIds
         )
     }
 
@@ -59,6 +58,15 @@ extension StyleDisplayConfiguration {
             textColor: ThemedColor(light: Theme.lightThemeSecondaryTextAndIconColor, dark: Theme.darkThemeSecondaryTextAndIconColor),
             revealAllIds: false,
             revealedIds: Set()
+        )
+    }
+
+    public static func longTextView(revealedSpoilerIds: Set<StyleIdType>) -> StyleDisplayConfiguration {
+        return StyleDisplayConfiguration(
+            baseFont: .dynamicTypeBody,
+            textColor: primaryTextColor,
+            revealAllIds: false,
+            revealedIds: revealedSpoilerIds
         )
     }
 

@@ -886,6 +886,7 @@
 		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
+		66A5F2A72A016C5E0039AAC1 /* CVInteractionIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A5F2A62A016C5E0039AAC1 /* CVInteractionIdentifier.swift */; };
 		66A93A8029940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A93A7F29940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift */; };
 		66AAC2C429CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AAC2C329CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift */; };
 		66AAC2C629CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AAC2C529CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift */; };
@@ -921,8 +922,6 @@
 		66FC638829E8B7CC00F00DAC /* OWSQuotedMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638729E8B7CC00F00DAC /* OWSQuotedMessageView.swift */; };
 		66FC638C29E9E9D200F00DAC /* TextCheckingDataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */; };
 		66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */; };
-		66FC636929DE21A600F00DAC /* NSRangeUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC636829DE21A600F00DAC /* NSRangeUtil.swift */; };
-		66FC636B29DE27A500F00DAC /* NSRangeUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC636A29DE27A500F00DAC /* NSRangeUtilTests.swift */; };
 		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
 		76057C4B29D268A800C9EDBD /* VideoPlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76057C4A29D268A800C9EDBD /* VideoPlaybackControls.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
@@ -3385,6 +3384,7 @@
 		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
+		66A5F2A62A016C5E0039AAC1 /* CVInteractionIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVInteractionIdentifier.swift; sourceTree = "<group>"; };
 		66A93A7F29940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RegistrationCoordinatorImpl+Service.swift"; sourceTree = "<group>"; };
 		66AAC2C329CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChangeNumberSplashViewController.swift; sourceTree = "<group>"; };
 		66AAC2C529CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChangePhoneNumberViewController.swift; sourceTree = "<group>"; };
@@ -3419,8 +3419,6 @@
 		66FC638729E8B7CC00F00DAC /* OWSQuotedMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSQuotedMessageView.swift; sourceTree = "<group>"; };
 		66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCheckingDataItem.swift; sourceTree = "<group>"; };
 		66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDisplayConfigurations.swift; sourceTree = "<group>"; };
-		66FC636829DE21A600F00DAC /* NSRangeUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangeUtil.swift; sourceTree = "<group>"; };
-		66FC636A29DE27A500F00DAC /* NSRangeUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangeUtilTests.swift; sourceTree = "<group>"; };
 		66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactSupportAlert+Registration.swift"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5780,6 +5778,7 @@
 			isa = PBXGroup;
 			children = (
 				34A95523271B510400B05242 /* CVCellMeasurement.swift */,
+				66A5F2A62A016C5E0039AAC1 /* CVInteractionIdentifier.swift */,
 				34A95525271B510400B05242 /* CVText.swift */,
 				34A95522271B510400B05242 /* CVTextLabel.swift */,
 				34A95524271B510400B05242 /* CVUtils.swift */,
@@ -10745,6 +10744,7 @@
 				508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */,
 				3402AA7B271D9E180084CBAE /* CustomKeyboard.swift in Sources */,
 				3402AA87271D9E180084CBAE /* CVCellMeasurement.swift in Sources */,
+				66A5F2A72A016C5E0039AAC1 /* CVInteractionIdentifier.swift in Sources */,
 				3402AA92271D9E180084CBAE /* CVText.swift in Sources */,
 				3402AAB3271D9E180084CBAE /* CVTextLabel.swift in Sources */,
 				3402AA7A271D9E180084CBAE /* CVUtils.swift in Sources */,

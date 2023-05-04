@@ -38,11 +38,18 @@ public class CVTextLabel: NSObject {
     public struct UnrevealedSpoilerItem: Equatable {
         public let spoilerId: Int
         public let interactionUniqueId: String
+        public let interactionIdentifier: CVInteractionIdentifier
         public let range: NSRange
 
-        public init(spoilerId: Int, interactionUniqueId: String, range: NSRange) {
+        public init(
+            spoilerId: Int,
+            interactionUniqueId: String,
+            interactionIdentifier: CVInteractionIdentifier,
+            range: NSRange
+        ) {
             self.spoilerId = spoilerId
             self.interactionUniqueId = interactionUniqueId
+            self.interactionIdentifier = interactionIdentifier
             self.range = range
         }
     }

@@ -5,6 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class CVSpoilerReveal;
 @class ConversationStyle;
 @class DisplayableText;
 @class OWSQuotedReplyModel;
@@ -35,8 +36,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)sizeForMaxWidth:(CGFloat)maxWidth;
 
 // Factory method for "message compose" views.
-+ (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
-                                    conversationStyle:(ConversationStyle *)conversationStyle;
+- (instancetype)initWithQuotedMessage:(OWSQuotedReplyModel *)quotedMessage
+                displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
+                    conversationStyle:(ConversationStyle *)conversationStyle
+                        spoilerReveal:(CVSpoilerReveal *)spoilerReveal;
 
 @end
 

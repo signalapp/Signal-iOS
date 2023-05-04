@@ -21,7 +21,11 @@ extension ConversationViewController: MessageActionsDelegate {
             return owsFailDebug("Missing panHandler")
         }
 
-        let detailVC = MessageDetailViewController(message: message, thread: thread)
+        let detailVC = MessageDetailViewController(
+            message: message,
+            spoilerReveal: self.viewState.spoilerReveal,
+            thread: thread
+        )
         detailVC.detailDelegate = self
         conversationSplitViewController?.navigationTransitionDelegate = detailVC
         panHandler.messageDetailViewController = detailVC
@@ -44,7 +48,11 @@ extension ConversationViewController: MessageActionsDelegate {
             detailVC = messageDetailViewController
             detailVC.pushPercentDrivenTransition = panHandler.percentDrivenTransition
         } else {
-            detailVC = MessageDetailViewController(message: message, thread: thread)
+            detailVC = MessageDetailViewController(
+                message: message,
+                spoilerReveal: self.viewState.spoilerReveal,
+                thread: thread
+            )
             detailVC.detailDelegate = self
             conversationSplitViewController?.navigationTransitionDelegate = detailVC
         }

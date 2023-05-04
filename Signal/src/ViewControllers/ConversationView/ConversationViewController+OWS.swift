@@ -491,7 +491,11 @@ extension ConversationViewController: LongTextViewDelegate {
             self.loadCoordinator.enqueueReload(updatedInteractionIds: [itemViewModel.interaction.uniqueId],
                                                deletedInteractionIds: [])
         } else {
-            let viewController = LongTextViewController(itemViewModel: itemViewModel)
+            let viewController = LongTextViewController(
+                itemViewModel: itemViewModel,
+                threadViewModel: self.threadViewModel,
+                spoilerReveal: self.viewState.spoilerReveal
+            )
             viewController.delegate = self
             navigationController?.pushViewController(viewController, animated: true)
         }

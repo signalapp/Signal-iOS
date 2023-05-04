@@ -25,6 +25,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var thread: TSThread? { renderItem?.itemModel.thread }
 
     private(set) var message: TSMessage
+    private let spoilerReveal: CVSpoilerReveal
     private var wasDeleted: Bool = false
     private var isIncoming: Bool { message as? TSIncomingMessage != nil }
     private var expires: Bool { message.expiresInSeconds > 0 }
@@ -116,9 +117,11 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     required init(
         message: TSMessage,
+        spoilerReveal: CVSpoilerReveal,
         thread: TSThread
     ) {
         self.message = message
+        self.spoilerReveal = spoilerReveal
         super.init()
     }
 
@@ -198,7 +201,11 @@ class MessageDetailViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    private func buildRenderItem(message interaction: TSMessage, transaction: SDSAnyReadTransaction) -> CVRenderItem? {
+    private func buildRenderItem(
+        message interaction: TSMessage,
+        spoilerReveal: CVSpoilerReveal,
+        transaction: SDSAnyReadTransaction
+    ) -> CVRenderItem? {
         guard let thread = TSThread.anyFetch(
             uniqueId: interaction.uniqueThreadId,
             transaction: transaction
@@ -224,6 +231,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             thread: thread,
             threadAssociatedData: threadAssociatedData,
             conversationStyle: conversationStyle,
+            spoilerReveal: spoilerReveal,
             transaction: transaction
         )
     }
@@ -832,7 +840,11 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
             }
             self.message = newMessage
             self.attachments = newMessage.mediaAttachments(with: transaction.unwrapGrdbRead)
-            guard let renderItem = buildRenderItem(message: newMessage, transaction: transaction) else {
+            guard let renderItem = buildRenderItem(
+                message: newMessage,
+                spoilerReveal: spoilerReveal,
+                transaction: transaction
+            ) else {
                 return false
             }
             self.renderItem = renderItem
@@ -978,13 +990,7 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapReactions(reactionState: InteractionReactionState,
                          message: TSMessage) {}
 
-    func didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {
-        AssertIsOnMainThread()
-
-        let viewController = LongTextViewController(itemViewModel: itemViewModel)
-        viewController.delegate = self
-        navigationController?.pushViewController(viewController, animated: true)
-    }
+    func didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
     var hasPendingMessageRequest: Bool { false }

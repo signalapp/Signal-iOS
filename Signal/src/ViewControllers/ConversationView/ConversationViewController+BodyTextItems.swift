@@ -385,7 +385,7 @@ extension ConversationViewController {
     private func didTapOrLongPressUnrevealedSpoiler(_ unrevealedSpoilerItem: CVTextLabel.UnrevealedSpoilerItem) {
         viewState.spoilerReveal.setSpoilerRevealed(
             withID: unrevealedSpoilerItem.spoilerId,
-            onInteractionUniqueId: unrevealedSpoilerItem.interactionUniqueId
+            interactionIdentifier: unrevealedSpoilerItem.interactionIdentifier
         )
         self.loadCoordinator.enqueueReload(
             updatedInteractionIds: [unrevealedSpoilerItem.interactionUniqueId],

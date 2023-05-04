@@ -6,6 +6,7 @@
 import Foundation
 import SignalServiceKit
 import SignalMessaging
+import SignalUI
 
 protocol LongTextViewDelegate: AnyObject {
     func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController)
@@ -19,17 +20,27 @@ public class LongTextViewController: OWSViewController {
     weak var delegate: LongTextViewDelegate?
 
     let itemViewModel: CVItemViewModelImpl
+    let threadViewModel: ThreadViewModel
+    let spoilerReveal: CVSpoilerReveal
 
     var messageTextView: UITextView!
     let footer = UIToolbar.clear()
+
+    private var linkItems: [CVTextLabel.Item]?
 
     var displayableText: DisplayableText? { itemViewModel.displayableBodyText }
     var fullAttributedText: NSAttributedString { displayableText?.fullAttributedText ?? NSAttributedString() }
 
     // MARK: Initializers
 
-    public required init(itemViewModel: CVItemViewModelImpl) {
+    public required init(
+        itemViewModel: CVItemViewModelImpl,
+        threadViewModel: ThreadViewModel,
+        spoilerReveal: CVSpoilerReveal
+    ) {
         self.itemViewModel = itemViewModel
+        self.threadViewModel = threadViewModel
+        self.spoilerReveal = spoilerReveal
         super.init()
     }
 
@@ -84,21 +95,49 @@ public class LongTextViewController: OWSViewController {
             let hasPendingMessageRequest = databaseStorage.read { transaction in
                 itemViewModel.thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
             }
-            CVComponentBodyText.configureTextView(messageTextView,
-                                                  interaction: itemViewModel.interaction,
-                                                  displayableText: displayableText)
-            CVComponentBodyText.linkifyData(
-                attributedText: mutableText,
-                linkifyStyle: .linkAttribute,
+            CVComponentBodyText.configureTextView(
+                messageTextView,
+                interaction: itemViewModel.interaction,
+                displayableText: displayableText
+            )
+
+            let items = CVComponentBodyText.detectItems(
+                text: mutableText.string,
+                attributedString: mutableText,
                 hasPendingMessageRequest: hasPendingMessageRequest,
                 shouldAllowLinkification: displayableText.shouldAllowLinkification,
                 textWasTruncated: false,
-                revealedSpoilerIds: Set(), // TODO[TextFormatting]
-                interactionUniqueId: itemViewModel.interaction.uniqueId
+                revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
+                    interactionIdentifier: .fromInteraction(itemViewModel.interaction)
+                ),
+                interactionUniqueId: itemViewModel.interaction.uniqueId,
+                interactionIdentifier: .fromInteraction(itemViewModel.interaction)
             )
-
-            messageTextView.attributedText = mutableText
+            CVComponentBodyText.linkifyData(
+                attributedText: mutableText,
+                linkifyStyle: .linkAttribute,
+                items: items
+            )
+            messageTextView.attributedText = RecoveredHydratedMessageBody.recover(from: mutableText)
+                .reapplyAttributes(
+                    config: HydratedMessageBody.DisplayConfiguration(
+                        mention: .longMessageView,
+                        style: .longTextView(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
+                            interactionIdentifier: .fromInteraction(itemViewModel.interaction))
+                        ),
+                        searchRanges: nil
+                    ),
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                )
             messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
+            self.linkItems = items
+
+            if items.isEmpty.negated {
+                messageTextView.addGestureRecognizer(UITapGestureRecognizer(
+                    target: self,
+                    action: #selector(didTapMessageTextView)
+                ))
+            }
         } else {
             owsFailDebug("displayableText was unexpectedly nil")
             messageTextView.text = ""
@@ -200,6 +239,72 @@ public class LongTextViewController: OWSViewController {
                                              from: self,
                                              delegate: self)
     }
+
+    @objc
+    func didTapMessageTextView(_ sender: UIGestureRecognizer) {
+        guard let linkItems else {
+            return
+        }
+        let location = sender.location(in: messageTextView)
+
+        let layoutManager = messageTextView.layoutManager
+        let textContainer = messageTextView.textContainer
+        let glyphRange = layoutManager.glyphRange(for: textContainer)
+        let boundingRect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
+        guard boundingRect.contains(location) else {
+            return
+        }
+
+        let glyphIndex = layoutManager.glyphIndex(for: location, in: textContainer)
+
+        // We have the _closest_ index, but that doesn't mean we tapped in a glyph.
+        // Check that directly.
+        // This will catch the below case, where "*" is the tap location:
+        //
+        // This is the first line that is long.
+        // Tap on the second line.    *
+        //
+        // The bounding rect includes the empty space below the first line,
+        // but the tap doesn't actually lie on any glyph.
+        let glyphRect = layoutManager.boundingRect(forGlyphRange: NSRange(location: glyphIndex, length: 1), in: textContainer)
+        guard glyphRect.contains(location) else {
+            return
+        }
+        let characterIndex = layoutManager.characterIndexForGlyph(at: glyphIndex)
+
+        for item in linkItems {
+            if item.range.contains(characterIndex) {
+                switch item {
+                case .referencedUser:
+                    owsFailDebug("Should not have referenced user in long message body.")
+                    return
+                case .dataItem(let dataItem):
+                    UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
+                    return
+                case .mention(let mentionItem):
+                    ImpactHapticFeedback.impactOccurred(style: .light)
+
+                    var groupViewHelper: GroupViewHelper?
+                    if threadViewModel.isGroupThread {
+                        groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
+                        groupViewHelper!.delegate = self
+                    }
+
+                    let address = SignalServiceAddress(uuid: mentionItem.mentionUUID)
+                    let actionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
+                    actionSheet.present(from: self)
+                    return
+                case .unrevealedSpoiler(let unrevealedSpoiler):
+                    self.spoilerReveal.setSpoilerRevealed(
+                        withID: unrevealedSpoiler.spoilerId,
+                        interactionIdentifier: unrevealedSpoiler.interactionIdentifier
+                    )
+                    self.loadContent()
+                    return
+                }
+            }
+        }
+    }
 }
 
 // MARK: -
@@ -244,5 +349,19 @@ extension LongTextViewController: ForwardMessageDelegate {
 
     public func forwardMessageFlowDidCancel() {
         dismiss(animated: true)
+    }
+}
+
+// MARK: -
+
+extension LongTextViewController: GroupViewHelperDelegate {
+    var currentGroupModel: TSGroupModel? {
+        return (threadViewModel.threadRecord as? TSGroupThread)?.groupModel
+    }
+
+    func groupViewHelperDidUpdateGroup() {}
+
+    var fromViewController: UIViewController? {
+        return self
     }
 }

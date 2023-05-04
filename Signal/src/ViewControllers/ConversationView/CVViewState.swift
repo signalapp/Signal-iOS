@@ -409,30 +409,92 @@ public class CVTextExpansion {
 
 // MARK: -
 
-public class CVSpoilerReveal {
-    private var revealedSpoilerIdsByInteractionUniqueId = [String: Set<Int>]()
+public protocol CVSpoilerObserver: NSObjectProtocol {
+    func didUpdateRevealedSpoilers()
+}
+
+@objc
+public class CVSpoilerReveal: NSObject {
+    private var revealedSpoilerIdsByMessage = [CVInteractionIdentifier: Set<StyleIdType>]()
 
     /// Returns the set of IDs in the ordered list of spoiler ranges for a given message that
     /// should be revealed.
     public func revealedSpoilerIds(
-        interactionUniqueId: String
-    ) -> Set<Int> {
-        return revealedSpoilerIdsByInteractionUniqueId[interactionUniqueId] ?? []
+        interactionIdentifier: CVInteractionIdentifier
+    ) -> Set<StyleIdType> {
+        return revealedSpoilerIdsByMessage[interactionIdentifier] ?? []
     }
 
     public func setSpoilerRevealed(
-        withID id: Int,
-        onInteractionUniqueId interactionUniqueId: String
+        withID id: StyleIdType,
+        interactionIdentifier: CVInteractionIdentifier
     ) {
-        var revealedIds = revealedSpoilerIdsByInteractionUniqueId[interactionUniqueId] ?? Set()
+        var revealedIds = revealedSpoilerIdsByMessage[interactionIdentifier] ?? Set()
         revealedIds.insert(id)
-        revealedSpoilerIdsByInteractionUniqueId[interactionUniqueId] = revealedIds
+        revealedSpoilerIdsByMessage[interactionIdentifier] = revealedIds
+        observers[interactionIdentifier]?.forEach {
+            $0.value?.didUpdateRevealedSpoilers()
+        }
+    }
+
+    private var observers = [CVInteractionIdentifier: [Weak<CVSpoilerObserver>]]()
+
+    public func observeChanges(
+        for interactionIdentifier: CVInteractionIdentifier,
+        observer: CVSpoilerObserver
+    ) {
+        var observers = observers[interactionIdentifier] ?? []
+        guard !observers.contains(where: {
+            $0.value === observer
+        }) else {
+            return
+        }
+        observers.append(Weak(value: observer))
+        self.observers[interactionIdentifier] = observers
+    }
+
+    public func removeObserver(
+        for interactionIdentifier: CVInteractionIdentifier,
+        observer: CVSpoilerObserver
+    ) {
+        var observers = observers[interactionIdentifier] ?? []
+        observers.removeAll(where: {
+            $0.value === observer
+        })
+        self.observers[interactionIdentifier] = observers
     }
 
     func copy() -> CVSpoilerReveal {
         let returnValue = CVSpoilerReveal()
-        returnValue.revealedSpoilerIdsByInteractionUniqueId = revealedSpoilerIdsByInteractionUniqueId
+        returnValue.revealedSpoilerIdsByMessage = revealedSpoilerIdsByMessage
         return returnValue
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        let lhs = self
+        guard let rhs = object as? CVSpoilerReveal else {
+            return false
+        }
+        guard lhs.revealedSpoilerIdsByMessage == rhs.revealedSpoilerIdsByMessage else {
+            return false
+        }
+        guard lhs.observers.count == rhs.observers.count else {
+            return false
+        }
+        for key in lhs.observers.keys {
+            guard let lhsObs = lhs.observers[key], let rhsObs = rhs.observers[key] else {
+                return false
+            }
+            guard lhsObs.count == rhsObs.count else {
+                return false
+            }
+            for i in 0..<lhsObs.count {
+                guard lhsObs[i].value === rhsObs[i].value else {
+                    return false
+                }
+            }
+        }
+        return true
     }
 }
 

@@ -55,16 +55,21 @@ struct CVViewStateSnapshot: Dependencies {
                             currentCallThreadId: callService.currentCall?.thread.uniqueId)
     }
 
-    static func mockSnapshotForStandaloneItems(coreState: CVCoreState) -> CVViewStateSnapshot {
-        CVViewStateSnapshot(textExpansion: CVTextExpansion(),
-                            spoilerReveal: CVSpoilerReveal(),
-                            messageSwipeActionState: CVMessageSwipeActionState(),
-                            coreState: coreState,
-                            typingIndicatorsSender: nil,
-                            uiMode: .normal,
-                            previousUIMode: .normal,
-                            searchText: nil,
-                            hasClearedUnreadMessagesIndicator: false,
-                            currentCallThreadId: nil)
+    static func mockSnapshotForStandaloneItems(
+        coreState: CVCoreState,
+        spoilerReveal: CVSpoilerReveal
+    ) -> CVViewStateSnapshot {
+        CVViewStateSnapshot(
+            textExpansion: CVTextExpansion(),
+            spoilerReveal: spoilerReveal,
+            messageSwipeActionState: CVMessageSwipeActionState(),
+            coreState: coreState,
+            typingIndicatorsSender: nil,
+            uiMode: .normal,
+            previousUIMode: .normal,
+            searchText: nil,
+            hasClearedUnreadMessagesIndicator: false,
+            currentCallThreadId: nil
+        )
     }
 }

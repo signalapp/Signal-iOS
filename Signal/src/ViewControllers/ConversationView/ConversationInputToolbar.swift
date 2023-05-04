@@ -60,6 +60,7 @@ protocol ConversationInputToolbarDelegate: AnyObject {
 public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, QuotedReplyPreviewDelegate {
 
     private var conversationStyle: ConversationStyle
+    private let spoilerReveal: CVSpoilerReveal
 
     private let mediaCache: CVMediaCache
 
@@ -67,6 +68,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     init(
         conversationStyle: ConversationStyle,
+        spoilerReveal: CVSpoilerReveal,
         mediaCache: CVMediaCache,
         messageDraft: MessageBody?,
         quotedReply: OWSQuotedReplyModel?,
@@ -75,6 +77,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         mentionDelegate: MentionTextViewDelegate
     ) {
         self.conversationStyle = conversationStyle
+        self.spoilerReveal = spoilerReveal
         self.mediaCache = mediaCache
         self.inputToolbarDelegate = inputToolbarDelegate
         self.linkPreviewFetcher = LinkPreviewFetcher(
@@ -918,7 +921,11 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             return
         }
 
-        let quotedMessagePreview = QuotedReplyPreview(quotedReply: quotedReply, conversationStyle: conversationStyle)
+        let quotedMessagePreview = QuotedReplyPreview(
+            quotedReply: quotedReply,
+            conversationStyle: conversationStyle,
+            spoilerReveal: spoilerReveal
+        )
         quotedMessagePreview.delegate = self
         quotedMessagePreview.setContentHuggingHorizontalLow()
         quotedMessagePreview.setCompressionResistanceHorizontalLow()

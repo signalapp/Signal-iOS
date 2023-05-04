@@ -732,7 +732,7 @@ fileprivate extension CVComponentState.Builder {
                 owsFailDebug("Invalid message.")
                 return build()
             }
-            return try populateAndBuild(message: message)
+            return try populateAndBuild(message: message, spoilerReveal: self.spoilerReveal)
         case .unknown:
             owsFailDebug("Unknown interaction type.")
             return build()
@@ -770,7 +770,10 @@ fileprivate extension CVComponentState.Builder {
         return FailedOrPendingDownloads(attachmentPointers: attachmentPointers)
     }
 
-    mutating func populateAndBuild(message: TSMessage) throws -> CVComponentState {
+    mutating func populateAndBuild(
+        message: TSMessage,
+        spoilerReveal: CVSpoilerReveal
+    ) throws -> CVComponentState {
 
         if message.wasRemotelyDeleted {
             // If the message has been remotely deleted, suppress everything else.
@@ -792,7 +795,7 @@ fileprivate extension CVComponentState.Builder {
 
         // Check for quoted replies _before_ media album handling,
         // since that logic may exit early.
-        buildQuotedReply(message: message)
+        buildQuotedReply(message: message, spoilerReveal: spoilerReveal)
 
         try buildBodyText(message: message)
 
@@ -1013,23 +1016,32 @@ fileprivate extension CVComponentState.Builder {
     }
 
     // TODO: Should we validate and throw errors?
-    mutating func buildQuotedReply(message: TSMessage) {
+    mutating func buildQuotedReply(
+        message: TSMessage,
+        spoilerReveal: CVSpoilerReveal
+    ) {
         guard let quotedReplyModel = OWSQuotedReplyModel.quotedReply(from: message, transaction: transaction) else {
             return
         }
         var displayableQuotedText: DisplayableText?
         if let quotedBody = quotedReplyModel.body,
            !quotedBody.isEmpty {
-            displayableQuotedText = CVComponentState.displayableQuotedText(text: quotedBody,
-                                                                           ranges: quotedReplyModel.bodyRanges,
-                                                                           interaction: message,
-                                                                           transaction: transaction)
+            displayableQuotedText = CVComponentState.displayableQuotedText(
+                text: quotedBody,
+                ranges: quotedReplyModel.bodyRanges,
+                interaction: message,
+                spoilerReveal: spoilerReveal,
+                transaction: transaction
+            )
         }
-        let viewState = QuotedMessageView.stateForConversation(quotedReplyModel: quotedReplyModel,
-                                                               displayableQuotedText: displayableQuotedText,
-                                                               conversationStyle: conversationStyle,
-                                                               isOutgoing: isOutgoing,
-                                                               transaction: transaction)
+        let viewState = QuotedMessageView.stateForConversation(
+            quotedReplyModel: quotedReplyModel,
+            displayableQuotedText: displayableQuotedText,
+            conversationStyle: conversationStyle,
+            spoilerReveal: spoilerReveal,
+            isOutgoing: isOutgoing,
+            transaction: transaction
+        )
         self.quotedReply = QuotedReply(viewState: viewState)
     }
 
@@ -1258,15 +1270,20 @@ public extension CVComponentState {
 
 fileprivate extension CVComponentState {
 
-    static func displayableQuotedText(text: String,
-                                      ranges: MessageBodyRanges?,
-                                      interaction: TSInteraction,
-                                      transaction: SDSAnyReadTransaction) -> DisplayableText {
+    static func displayableQuotedText(
+        text: String,
+        ranges: MessageBodyRanges?,
+        interaction: TSInteraction,
+        spoilerReveal: CVSpoilerReveal,
+        transaction: SDSAnyReadTransaction
+    ) -> DisplayableText {
         return DisplayableText.displayableText(
             withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
             displayConfig: HydratedMessageBody.DisplayConfiguration(
                 mention: .quotedReply,
-                style: .quotedReply,
+                style: .quotedReply(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
+                    interactionIdentifier: .fromInteraction(interaction)
+                )),
                 searchRanges: nil
             ),
             transaction: transaction

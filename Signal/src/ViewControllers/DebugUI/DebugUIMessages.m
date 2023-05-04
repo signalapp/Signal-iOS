@@ -1956,11 +1956,12 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                 OWSAssertDebug(messageToQuote);
 
                 UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-                CVRenderItem *renderItem = [CVLoader buildStandaloneRenderItemWithInteraction:messageToQuote
-                                                                                       thread:thread
-                                                                         threadAssociatedData:threadAssociatedData
-                                                                                containerView:containerView
-                                                                                  transaction:transaction];
+                CVRenderItem *renderItem =
+                    [CVLoader debugui_buildStandaloneRenderItemWithInteraction:messageToQuote
+                                                                        thread:thread
+                                                          threadAssociatedData:threadAssociatedData
+                                                                 containerView:containerView
+                                                                   transaction:transaction];
                 CVItemViewModelImpl *itemViewModel = [[CVItemViewModelImpl alloc] initWithRenderItem:renderItem];
 
                 quotedMessage =
@@ -1982,11 +1983,12 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                 ThreadAssociatedData *threadAssociatedData = [self createFakeThreadAssociatedData:thread];
 
                 UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-                CVRenderItem *renderItem = [CVLoader buildStandaloneRenderItemWithInteraction:messageToQuote
-                                                                                       thread:thread
-                                                                         threadAssociatedData:threadAssociatedData
-                                                                                containerView:containerView
-                                                                                  transaction:transaction];
+                CVRenderItem *renderItem =
+                    [CVLoader debugui_buildStandaloneRenderItemWithInteraction:messageToQuote
+                                                                        thread:thread
+                                                          threadAssociatedData:threadAssociatedData
+                                                                 containerView:containerView
+                                                                   transaction:transaction];
                 CVItemViewModelImpl *itemViewModel = [[CVItemViewModelImpl alloc] initWithRenderItem:renderItem];
 
                 quotedMessage =

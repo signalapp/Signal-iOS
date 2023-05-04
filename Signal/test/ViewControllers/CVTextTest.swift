@@ -290,7 +290,8 @@ class CVTextTest: XCTestCase {
             shouldAllowLinkification: true,
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
-            interactionUniqueId: UUID().uuidString
+            interactionUniqueId: UUID().uuidString,
+            interactionIdentifier: CVInteractionIdentifier(timestamp: 0, authorUuid: nil)
         )
         var values: [String] = []
         var ranges: [NSRange] = []
@@ -311,7 +312,8 @@ class CVTextTest: XCTestCase {
             shouldAllowLinkification: true,
             textWasTruncated: false,
             revealedSpoilerIds: Set(),
-            interactionUniqueId: UUID().uuidString
+            interactionUniqueId: UUID().uuidString,
+            interactionIdentifier: CVInteractionIdentifier(timestamp: 0, authorUuid: nil)
         )
         values.removeAll()
         ranges.removeAll()
@@ -333,7 +335,8 @@ class CVTextTest: XCTestCase {
             shouldAllowLinkification: true,
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
-            interactionUniqueId: UUID().uuidString
+            interactionUniqueId: UUID().uuidString,
+            interactionIdentifier: CVInteractionIdentifier(timestamp: 0, authorUuid: nil)
         )
         values.removeAll()
         truncatedEmail.enumerateAttribute(.link, in: truncatedEmail.entireRange, options: []) { value, _, _ in
@@ -351,7 +354,8 @@ class CVTextTest: XCTestCase {
             shouldAllowLinkification: true,
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
-            interactionUniqueId: UUID().uuidString
+            interactionUniqueId: UUID().uuidString,
+            interactionIdentifier: CVInteractionIdentifier(timestamp: 0, authorUuid: nil)
         )
         values.removeAll()
         truncatedPhone.enumerateAttribute(.link, in: truncatedPhone.entireRange, options: []) { value, _, _ in

@@ -24,6 +24,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 @property (nonatomic, readonly) OWSQuotedReplyModel *quotedMessage;
 @property (nonatomic, nullable, readonly) DisplayableText *displayableQuotedText;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
+@property (nonatomic, readonly) CVSpoilerReveal *spoilerReveal;
 
 @property (nonatomic, readonly) UILabel *quotedAuthorLabel;
 @property (nonatomic, readonly) UILabel *quotedTextLabel;
@@ -35,26 +36,10 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 @implementation OWSQuotedMessageView
 
-+ (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
-                                    conversationStyle:(ConversationStyle *)conversationStyle
-{
-    OWSAssertDebug(quotedMessage);
-
-    DisplayableText *_Nullable displayableQuotedText = nil;
-    if (quotedMessage.body.length > 0) {
-        displayableQuotedText = [OWSQuotedMessageView displayableTextWithSneakyTransactionForPreview:quotedMessage];
-    }
-
-    OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
-                                                                   displayableQuotedText:displayableQuotedText
-                                                                       conversationStyle:conversationStyle];
-    [instance createContents];
-    return instance;
-}
-
 - (instancetype)initWithQuotedMessage:(OWSQuotedReplyModel *)quotedMessage
                 displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                     conversationStyle:(ConversationStyle *)conversationStyle
+                        spoilerReveal:(CVSpoilerReveal *)spoilerReveal
 {
     self = [super init];
 
@@ -67,6 +52,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
     _conversationStyle = conversationStyle;
+    _spoilerReveal = spoilerReveal;
 
     _quotedAuthorLabel = [UILabel new];
     _quotedTextLabel = [UILabel new];
@@ -403,13 +389,11 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     NSString *_Nullable sourceFilename = [self.quotedMessage.sourceFilename filterStringForDisplay];
 
     if (self.displayableQuotedText.displayAttributedText.length > 0) {
-        NSMutableAttributedString *mutableText = [self.displayableQuotedText.displayAttributedText mutableCopy];
-        [mutableText addAttributes:@{
-            NSFontAttributeName : self.quotedTextFont,
-            NSForegroundColorAttributeName : self.quotedTextColor
-        }
-                             range:NSMakeRange(0, mutableText.length)];
-        attributedText = mutableText;
+        attributedText = [self restyleDisplayableQuotedText:self.displayableQuotedText
+                                                       font:self.quotedTextFont
+                                                  textColor:self.quotedTextColor
+                                           quotedReplyModel:self.quotedMessage
+                                              spoilerReveal:self.spoilerReveal];
     } else if (fileTypeForSnippet) {
         attributedText = [[NSAttributedString alloc] initWithString:fileTypeForSnippet
                                                          attributes:@{
