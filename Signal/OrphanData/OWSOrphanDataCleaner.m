@@ -366,6 +366,12 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
+    NSSet<NSString *> *wallpaperOrphanedPaths = [self findOrphanedWallpaperPaths];
+
+    if (!self.isMainAppAndActive) {
+        return nil;
+    }
+
     NSUInteger fileCount = allOnDiskFilePaths.count;
 
     // Attachments
@@ -575,7 +581,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSLogDebug(@"orphan mentionIds: %zu", orphanMentionIds.count);
     OWSLogDebug(@"missing mentionIds: %zu", missingMentionIds.count);
 
-    NSSet<NSString *> *orphanFileAndDirectoryPaths = voiceMessageDraftOrphanedPaths;
+    NSMutableSet<NSString *> *orphanFileAndDirectoryPaths = [NSMutableSet set];
+    [orphanFileAndDirectoryPaths unionSet:voiceMessageDraftOrphanedPaths];
+    [orphanFileAndDirectoryPaths unionSet:wallpaperOrphanedPaths];
 
     OWSLogDebug(@"orphan file/directory paths: %zu", orphanFileAndDirectoryPaths.count);
 

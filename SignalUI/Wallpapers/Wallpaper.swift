@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 public enum Wallpaper: String, CaseIterable {
     public static let wallpaperDidChangeNotification = NSNotification.Name("wallpaperDidChangeNotification")
@@ -37,59 +38,6 @@ public enum Wallpaper: String, CaseIterable {
     case photo
 
     public static var defaultWallpapers: [Wallpaper] { allCases.filter { $0 != .photo } }
-
-    public static func warmCaches() {
-        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-        owsAssertDebug(!Thread.isMainThread)
-
-        guard CurrentAppContext().hasUI else { return }
-
-        let photoURLs: [URL]
-        do {
-            photoURLs = try OWSFileSystem.recursiveFilesInDirectory(wallpaperDirectory.path).map { URL(fileURLWithPath: $0) }
-        } catch {
-            owsFailDebug("Failed to enumerate wallpaper photos \(error)")
-            return
-        }
-
-        guard !photoURLs.isEmpty else { return }
-
-        var keysToCache = [String]()
-        var orphanedKeys = [String]()
-
-        SDSDatabaseStorage.shared.read { transaction in
-            for url in photoURLs {
-                guard let key = url.lastPathComponent.removingPercentEncoding else {
-                    owsFailDebug("Failed to remove percent encoding in key")
-                    continue
-                }
-                guard case .photo = get(for: key, transaction: transaction) else {
-                    orphanedKeys.append(key)
-                    continue
-                }
-                keysToCache.append(key)
-            }
-        }
-
-        if !orphanedKeys.isEmpty {
-            Logger.info("Cleaning up \(orphanedKeys.count) orphaned wallpaper photos")
-            for key in orphanedKeys {
-                do {
-                    try cleanupPhotoIfNecessary(for: key)
-                } catch {
-                    owsFailDebug("Failed to cleanup orphaned wallpaper photo \(key) \(error)")
-                }
-            }
-        }
-
-        for key in keysToCache {
-            do {
-                try photo(for: key)
-            } catch {
-                owsFailDebug("Failed to cache wallpaper photo \(key) \(error)")
-            }
-        }
-    }
 
     public static func clear(for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
         owsAssertDebug(!Thread.isMainThread)
@@ -246,7 +194,7 @@ fileprivate extension Wallpaper {
 
 // MARK: -
 
-fileprivate extension Wallpaper {
+private extension Wallpaper {
     private static let enumStore = SDSKeyValueStore(collection: "Wallpaper+Enum")
 
     static func set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?, transaction: SDSAnyWriteTransaction) throws {
@@ -277,6 +225,11 @@ fileprivate extension Wallpaper {
         }
         return wallpaper
     }
+
+    static func allKeysWithCustomPhotos(tx: DBReadTransaction) -> [String] {
+        let allKeys = enumStore.allKeys(transaction: SDSDB.shimOnlyBridge(tx))
+        return allKeys.filter { get(for: $0, transaction: SDSDB.shimOnlyBridge(tx)) == .photo }
+    }
 }
 
 // MARK: -
@@ -299,11 +252,17 @@ extension Wallpaper {
 
 // MARK: - Photo management
 
-fileprivate extension Wallpaper {
-    static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
-    static let wallpaperDirectory = URL(fileURLWithPath: "Wallpapers", isDirectory: true, relativeTo: appSharedDataDirectory)
-    static let cache = LRUCache<String, UIImage>(maxSize: 3,
-                                                 shouldEvacuateInBackground: true)
+extension Wallpaper {
+    private static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+    public static let wallpaperDirectory = URL(fileURLWithPath: "Wallpapers", isDirectory: true, relativeTo: appSharedDataDirectory)
+
+    public static func allCustomPhotoRelativePaths(tx: DBReadTransaction) -> Set<String> {
+        Set(allKeysWithCustomPhotos(tx: tx).compactMap { try? photoFilename(for: $0) })
+    }
+}
+
+private extension Wallpaper {
+    private static let cache = LRUCache<String, UIImage>(maxSize: 3, shouldEvacuateInBackground: true)
 
     static func ensureWallpaperDirectory() throws {
         guard OWSFileSystem.ensureDirectoryExists(wallpaperDirectory.path) else {
@@ -362,11 +321,15 @@ fileprivate extension Wallpaper {
         return try photoURL(for: key(for: thread))
     }
 
-    static func photoURL(for key: String) throws -> URL {
+    static func photoFilename(for key: String) throws -> String {
         guard let filename = key.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
             throw OWSAssertionError("Failed to percent encode filename")
         }
-        return URL(fileURLWithPath: filename, relativeTo: wallpaperDirectory)
+        return filename
+    }
+
+    static func photoURL(for key: String) throws -> URL {
+        return URL(fileURLWithPath: try photoFilename(for: key), relativeTo: wallpaperDirectory)
     }
 }
 

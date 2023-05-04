@@ -7,6 +7,7 @@ import Foundation
 import SignalCoreKit
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 extension OWSOrphanDataCleaner {
     static func auditOnLaunchIfNecessary() {
@@ -174,7 +175,7 @@ extension OWSOrphanDataCleaner {
         baseUrl: URL,
         fetchExpectedRelativePaths: (SDSAnyReadTransaction) -> Set<String>
     ) -> Set<String> {
-        let basePath = VoiceMessageInterruptedDraftStore.draftVoiceMessageDirectory.path
+        let basePath = baseUrl.path
 
         // The ordering within this method is important. First, we search the file
         // system for files that already exist. Next, we ensure that any pending
@@ -223,6 +224,14 @@ extension OWSOrphanDataCleaner {
             fetchExpectedRelativePaths: {
                 VoiceMessageInterruptedDraftStore.allDraftFilePaths(transaction: $0)
             }
+        )
+    }
+
+    @objc
+    static func findOrphanedWallpaperPaths() -> Set<String> {
+        findOrphanedPaths(
+            baseUrl: Wallpaper.wallpaperDirectory,
+            fetchExpectedRelativePaths: { Wallpaper.allCustomPhotoRelativePaths(tx: $0.asV2Read) }
         )
     }
 

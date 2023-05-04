@@ -20,11 +20,6 @@ extension SignalApp {
                 Emoji.warmAvailableCache()
             }
         }
-        DispatchQueue.sharedBackground.async {
-            InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmWallpaperCaches") {
-                Wallpaper.warmCaches()
-            }
-        }
     }
 
     @objc
