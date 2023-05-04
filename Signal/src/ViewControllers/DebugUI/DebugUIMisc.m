@@ -171,9 +171,6 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Log all sticker suggestions"
                                      actionBlock:^() { [DebugUIMisc logStickerSuggestions]; }]];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Create chat colors"
-                                     actionBlock:^() { [DebugUIMisc createChatColors]; }]];
-
     [items addObject:[OWSTableItem itemWithTitle:@"Log Local Account"
                                      actionBlock:^() { [DebugUIMisc logLocalAccount]; }]];
 
@@ -411,12 +408,6 @@ NS_ASSUME_NONNULL_BEGIN
     }];
     OWSLogVerbose(@"emoji: %@",
         [[emojiSet.allObjects sortedArrayUsingSelector:@selector(compare:)] componentsJoinedByString:@" "]);
-}
-
-+ (void)createChatColors
-{
-    DatabaseStorageWrite(SDSDatabaseStorage.shared,
-        ^(SDSAnyWriteTransaction *transaction) { [ChatColors createFakeChatColorsWithTransaction:transaction]; });
 }
 
 @end
