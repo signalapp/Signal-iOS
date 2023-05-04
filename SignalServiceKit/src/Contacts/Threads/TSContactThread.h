@@ -70,7 +70,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 // --- CODE GENERATION MARKER
 
 @property (nonatomic, readonly) SignalServiceAddress *contactAddress;
-@property (nonatomic) BOOL hasDismissedOffers;
+@property (nonatomic) BOOL hasDismissedOffers; // deprecated
 
 + (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
     NS_SWIFT_NAME(getOrCreateThread(contactAddress:));

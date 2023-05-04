@@ -37,11 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
-                                     actionBlock:^{
-                                         [DebugUIMisc clearHasDismissedOffers];
-                                     }]];
-
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Delete disappearing messages config"
                            actionBlock:^{
@@ -254,30 +249,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"re-registering.");
 
     [RegistrationUtils reregisterFromViewController:[SignalApp.shared conversationSplitViewController]];
-}
-
-+ (void)clearHasDismissedOffers
-{
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
-        [TSThread anyEnumerateWithTransaction:transaction
-                                        block:^(TSThread *thread, BOOL *stop) {
-                                            if (thread.isGroupThread) {
-                                                return;
-                                            }
-                                            TSContactThread *contactThread = (TSContactThread *)thread;
-                                            [contactThreads addObject:contactThread];
-                                        }];
-
-        for (TSContactThread *contactThread in contactThreads) {
-            if (contactThread.hasDismissedOffers) {
-                [contactThread anyUpdateContactThreadWithTransaction:transaction
-                                                               block:^(TSContactThread *thread) {
-                                                                   thread.hasDismissedOffers = NO;
-                                                               }];
-            }
-        }
-    });
 }
 
 + (void)sendAttachment:(SignalAttachment *)attachment thread:(TSThread *)thread
