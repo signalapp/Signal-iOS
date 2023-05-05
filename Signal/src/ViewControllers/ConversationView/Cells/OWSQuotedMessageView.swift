@@ -10,7 +10,7 @@ extension OWSQuotedMessageView {
     static func forPreview(
         _ quotedMessage: OWSQuotedReplyModel,
         conversationStyle: ConversationStyle,
-        spoilerReveal: CVSpoilerReveal
+        spoilerReveal: SpoilerRevealState
     ) -> OWSQuotedMessageView {
 
         let displayableQuotedText: DisplayableText?
@@ -34,7 +34,7 @@ extension OWSQuotedMessageView {
 
     static func displayableTextWithSneakyTransaction(
         forPreview quotedMessage: OWSQuotedReplyModel,
-        spoilerReveal: CVSpoilerReveal
+        spoilerReveal: SpoilerRevealState
     ) -> DisplayableText? {
         guard let text = quotedMessage.body else {
             return nil
@@ -46,7 +46,7 @@ extension OWSQuotedMessageView {
                 displayConfig: HydratedMessageBody.DisplayConfiguration(
                     mention: .quotedReply,
                     style: .quotedReply(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
-                        interactionIdentifier: CVInteractionIdentifier(
+                        interactionIdentifier: InteractionSnapshotIdentifier(
                             timestamp: quotedMessage.timestamp,
                             authorUuid: quotedMessage.authorAddress.uuidString
                         )
@@ -64,7 +64,7 @@ extension OWSQuotedMessageView {
         font: UIFont,
         textColor: UIColor,
         quotedReplyModel: OWSQuotedReplyModel,
-        spoilerReveal: CVSpoilerReveal
+        spoilerReveal: SpoilerRevealState
     ) -> NSAttributedString {
         let mutableCopy = NSMutableAttributedString(attributedString: displayableQuotedText.displayAttributedText)
         mutableCopy.addAttributesToEntireString([
@@ -85,7 +85,7 @@ extension OWSQuotedMessageView {
                         textColor: .fixed(textColor),
                         revealAllIds: false,
                         revealedIds: spoilerReveal.revealedSpoilerIds(
-                            interactionIdentifier: CVInteractionIdentifier(
+                            interactionIdentifier: InteractionSnapshotIdentifier(
                                 timestamp: quotedReplyModel.timestamp,
                                 authorUuid: quotedReplyModel.authorAddress.uuidString
                             )

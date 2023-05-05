@@ -129,7 +129,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         textWasTruncated: Bool,
         revealedSpoilerIds: Set<StyleIdType>,
         interactionUniqueId: String,
-        interactionIdentifier: CVInteractionIdentifier
+        interactionIdentifier: InteractionSnapshotIdentifier
     ) -> [CVTextLabel.Item] {
 
         // Use a lock to ensure that measurement on and off the main thread
@@ -524,7 +524,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         textWasTruncated: Bool,
         revealedSpoilerIds: Set<StyleIdType>,
         interactionUniqueId: String,
-        interactionIdentifier: CVInteractionIdentifier
+        interactionIdentifier: InteractionSnapshotIdentifier
     ) {
 
         let items = detectItems(

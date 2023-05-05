@@ -57,7 +57,7 @@ public class CVLoadCoordinator: NSObject {
     private let threadUniqueId: String
 
     private var conversationStyle: ConversationStyle
-    private let spoilerReveal: CVSpoilerReveal
+    private let spoilerReveal: SpoilerRevealState
 
     var renderState: CVRenderState
 
@@ -548,7 +548,7 @@ public class CVLoadCoordinator: NSObject {
     private func load(
         loadRequest: CVLoadRequest,
         conversationStyle: ConversationStyle,
-        spoilerReveal: CVSpoilerReveal
+        spoilerReveal: SpoilerRevealState
     ) {
         AssertIsOnMainThread()
         // We should do an "initial" load IFF this is our first load.

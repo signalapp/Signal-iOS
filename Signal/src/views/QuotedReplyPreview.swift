@@ -9,13 +9,13 @@ protocol QuotedReplyPreviewDelegate: AnyObject {
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview)
 }
 
-class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, CVSpoilerObserver {
+class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, SpoilerRevealStateObserver {
 
     public weak var delegate: QuotedReplyPreviewDelegate?
 
     private let quotedReply: OWSQuotedReplyModel
     private let conversationStyle: ConversationStyle
-    private let spoilerReveal: CVSpoilerReveal
+    private let spoilerReveal: SpoilerRevealState
     private var quotedMessageView: OWSQuotedMessageView?
     private var heightConstraint: NSLayoutConstraint!
 
@@ -32,7 +32,7 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, CVSpoilerObserve
     init(
         quotedReply: OWSQuotedReplyModel,
         conversationStyle: ConversationStyle,
-        spoilerReveal: CVSpoilerReveal
+        spoilerReveal: SpoilerRevealState
     ) {
         self.quotedReply = quotedReply
         self.conversationStyle = conversationStyle
@@ -45,7 +45,7 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, CVSpoilerObserve
         updateContents()
 
         spoilerReveal.observeChanges(
-            for: CVInteractionIdentifier(
+            for: InteractionSnapshotIdentifier(
                 timestamp: quotedReply.timestamp,
                 authorUuid: quotedReply.authorAddress.uuidString
             ),

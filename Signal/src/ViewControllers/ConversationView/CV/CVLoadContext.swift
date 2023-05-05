@@ -15,7 +15,7 @@ struct CVLoadContext: CVItemBuildingContext {
     let loadRequest: CVLoadRequest
     let threadViewModel: ThreadViewModel
     let viewStateSnapshot: CVViewStateSnapshot
-    let spoilerReveal: CVSpoilerReveal
+    let spoilerReveal: SpoilerRevealState
     let messageMapping: CVMessageMapping
     let prevRenderState: CVRenderState
     let transaction: SDSAnyReadTransaction
@@ -25,7 +25,7 @@ struct CVLoadContext: CVItemBuildingContext {
         loadRequest: CVLoadRequest,
         threadViewModel: ThreadViewModel,
         viewStateSnapshot: CVViewStateSnapshot,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         messageMapping: CVMessageMapping,
         prevRenderState: CVRenderState,
         transaction: SDSAnyReadTransaction
@@ -57,7 +57,7 @@ protocol CVItemBuildingContext {
     var viewStateSnapshot: CVViewStateSnapshot { get }
     var transaction: SDSAnyReadTransaction { get }
     var avatarBuilder: CVAvatarBuilder { get }
-    var spoilerReveal: CVSpoilerReveal { get }
+    var spoilerReveal: SpoilerRevealState { get }
 }
 
 // MARK: -
@@ -77,7 +77,7 @@ struct CVItemBuildingContextImpl: CVItemBuildingContext {
     let viewStateSnapshot: CVViewStateSnapshot
     let transaction: SDSAnyReadTransaction
     let avatarBuilder: CVAvatarBuilder
-    let spoilerReveal: CVSpoilerReveal
+    let spoilerReveal: SpoilerRevealState
 }
 
 // MARK: -
@@ -95,7 +95,7 @@ extension CVItemBuilding {
     var threadAssociatedData: ThreadAssociatedData { threadViewModel.associatedData }
     var viewStateSnapshot: CVViewStateSnapshot { itemBuildingContext.viewStateSnapshot }
     var conversationStyle: ConversationStyle { itemBuildingContext.conversationStyle }
-    var spoilerReveal: CVSpoilerReveal { itemBuildingContext.spoilerReveal }
+    var spoilerReveal: SpoilerRevealState { itemBuildingContext.spoilerReveal }
     var mediaCache: CVMediaCache { itemBuildingContext.mediaCache }
     var transaction: SDSAnyReadTransaction { itemBuildingContext.transaction }
     var avatarBuilder: CVAvatarBuilder { itemBuildingContext.avatarBuilder }

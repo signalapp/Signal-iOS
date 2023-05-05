@@ -25,7 +25,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var thread: TSThread? { renderItem?.itemModel.thread }
 
     private(set) var message: TSMessage
-    private let spoilerReveal: CVSpoilerReveal
+    private let spoilerReveal: SpoilerRevealState
     private var wasDeleted: Bool = false
     private var isIncoming: Bool { message as? TSIncomingMessage != nil }
     private var expires: Bool { message.expiresInSeconds > 0 }
@@ -117,7 +117,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     required init(
         message: TSMessage,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         thread: TSThread
     ) {
         self.message = message
@@ -203,7 +203,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private func buildRenderItem(
         message interaction: TSMessage,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         transaction: SDSAnyReadTransaction
     ) -> CVRenderItem? {
         guard let thread = TSThread.anyFetch(
@@ -1013,6 +1013,7 @@ extension MessageDetailViewController: CVComponentDelegate {
         let mediaPageVC = MediaPageViewController(
             initialMediaAttachment: attachmentStream,
             thread: thread,
+            spoilerReveal: self.spoilerReveal,
             showingSingleMessage: true
         )
         mediaPageVC.mediaGallery.addDelegate(self)

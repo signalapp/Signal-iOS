@@ -15,7 +15,7 @@ public class CVLoader: NSObject {
     private let threadUniqueId: String
     private let loadRequest: CVLoadRequest
     private let viewStateSnapshot: CVViewStateSnapshot
-    private let spoilerReveal: CVSpoilerReveal
+    private let spoilerReveal: SpoilerRevealState
     private let prevRenderState: CVRenderState
     private let messageMapping: CVMessageMapping
 
@@ -25,7 +25,7 @@ public class CVLoader: NSObject {
         threadUniqueId: String,
         loadRequest: CVLoadRequest,
         viewStateSnapshot: CVViewStateSnapshot,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         prevRenderState: CVRenderState,
         messageMapping: CVMessageMapping
     ) {
@@ -283,7 +283,7 @@ public class CVLoader: NSObject {
             thread: thread,
             threadAssociatedData: threadAssociatedData,
             containerView: containerView,
-            spoilerReveal: CVSpoilerReveal(),
+            spoilerReveal: SpoilerRevealState(),
             transaction: transaction
         )
     }
@@ -295,7 +295,7 @@ public class CVLoader: NSObject {
         thread: TSThread,
         threadAssociatedData: ThreadAssociatedData,
         containerView: UIView,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         transaction: SDSAnyReadTransaction
     ) -> CVRenderItem? {
         let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
@@ -322,7 +322,7 @@ public class CVLoader: NSObject {
         thread: TSThread,
         threadAssociatedData: ThreadAssociatedData,
         conversationStyle: ConversationStyle,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         transaction: SDSAnyReadTransaction
     ) -> CVRenderItem? {
         let coreState = CVCoreState(
@@ -344,7 +344,7 @@ public class CVLoader: NSObject {
         thread: TSThread,
         threadAssociatedData: ThreadAssociatedData,
         coreState: CVCoreState,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         transaction: SDSAnyReadTransaction
     ) -> CVRenderItem? {
         AssertIsOnMainThread()
@@ -379,7 +379,7 @@ public class CVLoader: NSObject {
 
     public static func buildStandaloneComponentState(
         interaction: TSInteraction,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         transaction: SDSAnyReadTransaction
     ) -> CVComponentState? {
         AssertIsOnMainThread()

@@ -70,6 +70,15 @@ extension StyleDisplayConfiguration {
         )
     }
 
+    public static func mediaCaption(revealedSpoilerIds: Set<StyleIdType>) -> StyleDisplayConfiguration {
+        return StyleDisplayConfiguration(
+            baseFont: .dynamicTypeBodyClamped,
+            textColor: .fixed(.white),
+            revealAllIds: false,
+            revealedIds: revealedSpoilerIds
+        )
+    }
+
     private static let primaryTextColor = ThemedColor(
         light: Theme.lightThemePrimaryColor,
         dark: Theme.darkThemePrimaryColor

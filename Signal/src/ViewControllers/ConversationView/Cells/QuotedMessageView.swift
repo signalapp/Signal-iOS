@@ -25,13 +25,13 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let quotedReplyModel: OWSQuotedReplyModel
         let displayableQuotedText: DisplayableText?
         let conversationStyle: ConversationStyle
-        let spoilerReveal: CVSpoilerReveal
+        let spoilerReveal: SpoilerRevealState
         let isOutgoing: Bool
         let isForPreview: Bool
         let quotedAuthorName: String
 
-        var quotedInteractionIdentifier: CVInteractionIdentifier {
-            return CVInteractionIdentifier(
+        var quotedInteractionIdentifier: InteractionSnapshotIdentifier {
+            return InteractionSnapshotIdentifier(
                 timestamp: quotedReplyModel.timestamp,
                 authorUuid: quotedReplyModel.authorAddress.uuidString
             )
@@ -65,7 +65,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         quotedReplyModel: OWSQuotedReplyModel,
         displayableQuotedText: DisplayableText?,
         conversationStyle: ConversationStyle,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         isOutgoing: Bool,
         transaction: SDSAnyReadTransaction
     ) -> State {
@@ -85,7 +85,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     static func stateForPreview(
         quotedReplyModel: OWSQuotedReplyModel,
         conversationStyle: ConversationStyle,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         transaction: SDSAnyReadTransaction
     ) -> State {
 
@@ -100,7 +100,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 displayConfig: HydratedMessageBody.DisplayConfiguration(
                     mention: .quotedReply,
                     style: .quotedReply(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
-                        interactionIdentifier: CVInteractionIdentifier(
+                        interactionIdentifier: InteractionSnapshotIdentifier(
                             timestamp: quotedReplyModel.timestamp,
                             authorUuid: quotedReplyModel.authorAddress.uuidString
                         )
@@ -917,7 +917,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     }
 }
 
-extension QuotedMessageView: CVSpoilerObserver {
+extension QuotedMessageView: SpoilerRevealStateObserver {
     public func didUpdateRevealedSpoilers() {
         guard let state else {
             return

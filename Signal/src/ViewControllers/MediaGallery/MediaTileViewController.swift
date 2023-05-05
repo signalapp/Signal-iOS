@@ -69,10 +69,13 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
     private typealias Cell = (UICollectionViewCell & MediaTileCell)
     typealias Layout = UICollectionViewFlowLayout & ScrollPositionPreserving
+
     private let thread: TSThread
     private let accessoriesHelper: MediaGalleryAccessoriesHelper
+    private let spoilerReveal: SpoilerRevealState
+
     private lazy var mediaGallery: MediaGallery = {
-        let mediaGallery = MediaGallery(thread: thread)
+        let mediaGallery = MediaGallery(thread: thread, spoilerReveal: spoilerReveal)
         mediaGallery.addDelegate(self)
         return mediaGallery
     }()
@@ -109,9 +112,14 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
     private var toolbarHeight = CGFloat(0)
 
-    public init(thread: TSThread, accessoriesHelper: MediaGalleryAccessoriesHelper) {
+    public init(
+        thread: TSThread,
+        accessoriesHelper: MediaGalleryAccessoriesHelper,
+        spoilerReveal: SpoilerRevealState
+    ) {
         self.thread = thread
         self.accessoriesHelper = accessoriesHelper
+        self.spoilerReveal = spoilerReveal
         let layout: Layout = Self.buildLayout(mode: mode)
         self.mediaTileViewLayout = layout
 
@@ -536,7 +544,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
             let pageVC = MediaPageViewController(
                 initialMediaAttachment: galleryItem.attachmentStream,
-                mediaGallery: mediaGallery
+                mediaGallery: mediaGallery,
+                spoilerReveal: spoilerReveal
             )
             present(pageVC, animated: true)
         }

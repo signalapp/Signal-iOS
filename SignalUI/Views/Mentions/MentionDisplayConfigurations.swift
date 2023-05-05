@@ -73,6 +73,14 @@ extension MentionDisplayConfiguration {
 
     public static var composing: Self { .incomingMessageBubble }
 
+    public static var mediaCaption: MentionDisplayConfiguration {
+        return MentionDisplayConfiguration(
+            font: .dynamicTypeBodyClamped,
+            foregroundColor: .fixed(.white),
+            backgroundColor: nil
+        )
+    }
+
     private static let primaryTextColor = ThemedColor(
         light: Theme.lightThemePrimaryColor,
         dark: Theme.darkThemePrimaryColor

@@ -41,14 +41,16 @@ public class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     let attachmentStream: TSAttachmentStream
 
     let galleryDate: GalleryDate
-    let captionForDisplay: String?
+    let captionForDisplay: MediaCaptionView.Content?
     let albumIndex: Int
     let orderingKey: MediaGalleryItemOrderingKey
 
     init(
         message: TSMessage,
         sender: Sender?,
-        attachmentStream: TSAttachmentStream
+        attachmentStream: TSAttachmentStream,
+        spoilerReveal: SpoilerRevealState,
+        transaction: SDSAnyReadTransaction
     ) {
         self.message = message
         self.sender = sender
@@ -57,9 +59,17 @@ public class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         self.albumIndex = message.attachmentIds.firstIndex(of: attachmentStream.uniqueId) ?? 0
         self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
         if let captionText = attachmentStream.caption?.filterForDisplay {
-            self.captionForDisplay = captionText
+            self.captionForDisplay = .attachmentStreamCaption(captionText)
+        } else if let body = message.body {
+            let hydratedMessageBody = MessageBody(
+                text: body,
+                ranges: message.bodyRanges ?? .empty
+            ).hydrating(
+                mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)
+            )
+            self.captionForDisplay = .messageBody(hydratedMessageBody, .fromInteraction(message))
         } else {
-            self.captionForDisplay = message.body?.filterForDisplay
+            self.captionForDisplay = nil
         }
     }
 
@@ -252,15 +262,17 @@ class MediaGallery: Dependencies {
 
     private var mediaGalleryFinder: MediaGalleryFinder
     private var sections: Sections!
+    private let spoilerReveal: SpoilerRevealState
 
     deinit {
         Logger.debug("")
     }
 
     @objc
-    init(thread: TSThread) {
+    init(thread: TSThread, spoilerReveal: SpoilerRevealState) {
         let finder = MediaGalleryFinder(thread: thread, allowedMediaType: nil)
         self.mediaGalleryFinder = finder
+        self.spoilerReveal = spoilerReveal
         self.sections = MediaGallerySections(loader: Loader(mediaGallery: self, finder: finder))
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(Self.newAttachmentsAvailable(_:)),
@@ -388,7 +400,11 @@ class MediaGallery: Dependencies {
     internal var hasFetchedMostRecent: Bool { sections.hasFetchedMostRecent }
     internal var galleryDates: [GalleryDate] { sections.sectionDates }
 
-    private func buildGalleryItem(attachment: TSAttachment, transaction: SDSAnyReadTransaction) -> MediaGalleryItem? {
+    private func buildGalleryItem(
+        attachment: TSAttachment,
+        spoilerReveal: SpoilerRevealState,
+        transaction: SDSAnyReadTransaction
+    ) -> MediaGalleryItem? {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             owsFailDebug("gallery doesn't yet support showing undownloaded attachments")
             return nil
@@ -436,7 +452,9 @@ class MediaGallery: Dependencies {
         return MediaGalleryItem(
             message: message,
             sender: sender,
-            attachmentStream: attachmentStream
+            attachmentStream: attachmentStream,
+            spoilerReveal: spoilerReveal,
+            transaction: transaction
         )
     }
 
@@ -550,7 +568,11 @@ class MediaGallery: Dependencies {
     internal func ensureLoadedForDetailView(focusedAttachment: TSAttachment) -> MediaGalleryItem? {
         Logger.info("")
         let newItem: MediaGalleryItem? = databaseStorage.read { transaction -> MediaGalleryItem? in
-            guard let focusedItem = buildGalleryItem(attachment: focusedAttachment, transaction: transaction) else {
+            guard let focusedItem = buildGalleryItem(
+                attachment: focusedAttachment,
+                spoilerReveal: spoilerReveal,
+                transaction: transaction
+            ) else {
                 return nil
             }
 
@@ -897,8 +919,11 @@ extension MediaGallery {
                 transaction: transaction.unwrapGrdbRead
             ) { offset, attachment in
                 block(offset, attachment.uniqueId) {
-                    guard let item: MediaGalleryItem = mediaGallery.buildGalleryItem(attachment: attachment,
-                                                                                     transaction: transaction) else {
+                    guard let item: MediaGalleryItem = mediaGallery.buildGalleryItem(
+                        attachment: attachment,
+                        spoilerReveal: mediaGallery.spoilerReveal,
+                        transaction: transaction
+                    ) else {
                         owsFail("unexpectedly failed to buildGalleryItem for attachment #\(offset) \(attachment)")
                     }
                     return item

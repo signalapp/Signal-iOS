@@ -427,6 +427,114 @@ public class HydratedMessageBody: Equatable, Hashable {
         }
         return self
     }
+
+    // MARK: - Tappable items
+
+    public enum TappableItem {
+        public struct Mention {
+            public let range: NSRange
+            public let mentionUuid: UUID
+        }
+
+        public struct UnrevealedSpoiler {
+            public let range: NSRange
+            public let id: StyleIdType
+        }
+
+        case mention(Mention)
+        case unrevealedSpoiler(UnrevealedSpoiler)
+        case data(TextCheckingDataItem)
+    }
+
+    public func tappableItems(
+        revealedSpoilerIds: Set<Int>,
+        dataDetector: NSDataDetector?
+    ) -> [TappableItem] {
+        return Self.tappableItems(
+            text: hydratedText,
+            mentionAttributes: mentionAttributes,
+            styleAttributes: styleAttributes,
+            revealedSpoilerIds: revealedSpoilerIds,
+            dataDetector: dataDetector
+        )
+    }
+
+    internal static func tappableItems(
+        text: String,
+        mentionAttributes: [NSRangedValue<MentionAttribute>],
+        styleAttributes: [NSRangedValue<StyleAttribute>],
+        revealedSpoilerIds: Set<Int>,
+        dataDetector: NSDataDetector?
+    ) -> [TappableItem] {
+        // We "cheat" by using NSAttributedString to deal with overlapping
+        // ranges for us. We add our items and their ranges as attributes,
+        // then enumerate attributes to deal with overlaps.
+        let attrString = NSMutableAttributedString(string: "")
+
+        func setRange(
+            value: Any,
+            key: NSAttributedString.Key,
+            range: NSRange
+        ) {
+            if range.upperBound > attrString.length {
+                attrString.append(String(repeating: " ", count: range.upperBound - attrString.length))
+            }
+            attrString.addAttribute(key, value: value, range: range)
+        }
+
+        // These are used in a string tied to the scope of this
+        // function; no need to be too careful about them.
+        let unrevealedSpoilerKey = NSAttributedString.Key("ows.spoiler")
+        let mentionKey = NSAttributedString.Key("ows.mention")
+        let dataKey = NSAttributedString.Key("ows.data")
+
+        if FeatureFlags.textFormattingReceiveSupport {
+            styleAttributes.forEach {
+                if
+                    $0.value.style.contains(.spoiler),
+                    revealedSpoilerIds.contains($0.value.id).negated
+                {
+                    setRange(
+                        value: TappableItem.UnrevealedSpoiler(range: $0.range, id: $0.value.id),
+                        key: unrevealedSpoilerKey,
+                        range: $0.range
+                    )
+                }
+            }
+        }
+        mentionAttributes.forEach {
+            setRange(
+                value: TappableItem.Mention(range: $0.range, mentionUuid: $0.value.mentionUuid),
+                key: mentionKey,
+                range: $0.range
+            )
+        }
+
+        let dataItems = TextCheckingDataItem.detectedItems(in: text, using: dataDetector)
+        dataItems.forEach {
+            setRange(
+                value: $0,
+                key: dataKey,
+                range: $0.range
+            )
+        }
+
+        var items = [TappableItem]()
+        attrString.enumerateAttributes(in: attrString.entireRange) { attrs, range, _ in
+            // Spoilers are highest priority; if we have those, stick with them.
+            // Then comes mentions and last data items.
+            // The attributed string will have split out overlapping subranges for us.
+            if let unrevealedSpoiler = attrs[unrevealedSpoilerKey] as? TappableItem.UnrevealedSpoiler {
+                items.append(.unrevealedSpoiler(.init(range: range, id: unrevealedSpoiler.id)))
+            } else if let mention = attrs[mentionKey] as? TappableItem.Mention {
+                items.append(.mention(.init(range: range, mentionUuid: mention.mentionUuid)))
+            } else if let dataItem = attrs[dataKey] as? TextCheckingDataItem {
+                items.append(.data(dataItem.copyInNewRange(range)))
+            }
+        }
+
+        return items
+    }
 }
 
 fileprivate extension NSRangedValue {

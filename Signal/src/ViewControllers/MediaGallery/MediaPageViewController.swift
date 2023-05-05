@@ -13,17 +13,30 @@ class MediaPageViewController: UIPageViewController {
 
     private let isShowingSingleMessage: Bool
     let mediaGallery: MediaGallery
+    let spoilerReveal: SpoilerRevealState
 
-    convenience init(initialMediaAttachment: TSAttachment, thread: TSThread, showingSingleMessage: Bool = false) {
+    convenience init(
+        initialMediaAttachment: TSAttachment,
+        thread: TSThread,
+        spoilerReveal: SpoilerRevealState,
+        showingSingleMessage: Bool = false
+    ) {
         self.init(
             initialMediaAttachment: initialMediaAttachment,
-            mediaGallery: MediaGallery(thread: thread),
+            mediaGallery: MediaGallery(thread: thread, spoilerReveal: spoilerReveal),
+            spoilerReveal: spoilerReveal,
             showingSingleMessage: showingSingleMessage
         )
     }
 
-    init(initialMediaAttachment: TSAttachment, mediaGallery: MediaGallery, showingSingleMessage: Bool = false) {
+    init(
+        initialMediaAttachment: TSAttachment,
+        mediaGallery: MediaGallery,
+        spoilerReveal: SpoilerRevealState,
+        showingSingleMessage: Bool = false
+    ) {
         self.mediaGallery = mediaGallery
+        self.spoilerReveal = spoilerReveal
         self.isShowingSingleMessage = showingSingleMessage
 
         super.init(
@@ -91,7 +104,7 @@ class MediaPageViewController: UIPageViewController {
     private var footerBarHeight: CGFloat { topBarHeight }
     private var footerBarHeightConstraint: NSLayoutConstraint?
 
-    private lazy var captionView = MediaCaptionView()
+    private lazy var captionView = MediaCaptionView(spoilerReveal: spoilerReveal)
     private lazy var galleryRailView: GalleryRailView = {
         let view = GalleryRailView()
         view.delegate = self
@@ -212,7 +225,7 @@ class MediaPageViewController: UIPageViewController {
         verticalSwipe.direction = [.up, .down]
         view.addGestureRecognizer(verticalSwipe)
 
-        captionView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toggleCaptionBoxIsExpanded)))
+        captionView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCaption)))
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -526,7 +539,7 @@ class MediaPageViewController: UIPageViewController {
 
         let animateChanges = view.window != nil
         if traitCollection.verticalSizeClass == .compact {
-            let noCaption = captionView.text.isEmptyOrNil
+            let noCaption = captionView.hasNilOrEmptyContent
             let mediaRailHidden = galleryRailView.isHiddenInStackView
             let videoPlaybackControlsHidden = videoPlaybackControlView?.isHiddenInStackView ?? true
             bottomPanel.setIsHidden(noCaption && mediaRailHidden && videoPlaybackControlsHidden, animated: animateChanges)
@@ -552,7 +565,7 @@ class MediaPageViewController: UIPageViewController {
         }
 
         let isLandscapeLayout = traitCollection.verticalSizeClass == .compact
-        galleryRailView.layoutMargins.top = captionView.text.isEmptyOrNil ? 20 : 4
+        galleryRailView.layoutMargins.top = captionView.hasNilOrEmptyContent ? 20 : 4
         galleryRailView.hidesAutomatically = !isLandscapeLayout
         galleryRailView.configureCellViews(
             itemProvider: mostRecentAlbum!,
@@ -787,12 +800,19 @@ class MediaPageViewController: UIPageViewController {
     // MARK: Caption Box
 
     private func updateCaption() {
-        captionView.text = currentItem.captionForDisplay
+        captionView.content = currentItem.captionForDisplay
     }
 
     @objc
-    private func toggleCaptionBoxIsExpanded(_ gestureRecognizer: UITapGestureRecognizer) {
-        guard !captionView.isTransitionInProgress, captionView.canBeExpanded else { return }
+    private func didTapCaption(_ gestureRecognizer: UITapGestureRecognizer) {
+        guard !captionView.isTransitionInProgress else { return }
+
+        // Let the view handle first; if it does, exit.
+        if captionView.handleTap(gestureRecognizer) {
+            return
+        }
+
+        guard captionView.canBeExpanded else { return }
 
         let animator = UIViewPropertyAnimator(duration: 0.25, springDamping: 0.645, springResponse: 0.25)
         animator.addAnimations {
@@ -816,7 +836,7 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
             return
         }
 
-        captionView.beginInteractiveTransition(text: pendingViewController.galleryItem.captionForDisplay?.nilIfEmpty)
+        captionView.beginInteractiveTransition(content: pendingViewController.galleryItem.captionForDisplay?.nilIfEmpty)
     }
 
     func pageViewController(

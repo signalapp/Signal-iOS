@@ -849,6 +849,7 @@
 		66586D4129009C0000DDA9B9 /* TextAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66586D4029009C0000DDA9B9 /* TextAttachment.swift */; };
 		6659CCB129CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */; };
 		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
+		665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */; };
 		6673FF702978C40300F96CFD /* KBSAuthCredentialStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF6F2978C40300F96CFD /* KBSAuthCredentialStorage.swift */; };
 		6673FF722979B33800F96CFD /* KBSAuthCredentialStorageImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF712979B33800F96CFD /* KBSAuthCredentialStorageImpl.swift */; };
 		6673FF752979F87500F96CFD /* KBSAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* KBSAuthCredentialStorageTests.swift */; };
@@ -889,7 +890,6 @@
 		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
-		66A5F2A72A016C5E0039AAC1 /* CVInteractionIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A5F2A62A016C5E0039AAC1 /* CVInteractionIdentifier.swift */; };
 		66A93A8029940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A93A7F29940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift */; };
 		66AAC2C429CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AAC2C329CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift */; };
 		66AAC2C629CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AAC2C529CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift */; };
@@ -3345,6 +3345,7 @@
 		66586D4029009C0000DDA9B9 /* TextAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAttachment.swift; sourceTree = "<group>"; };
 		6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationConfirmModeSwitchViewController.swift; sourceTree = "<group>"; };
 		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
+		665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealState.swift; sourceTree = "<group>"; };
 		6673FF6F2978C40300F96CFD /* KBSAuthCredentialStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredentialStorage.swift; sourceTree = "<group>"; };
 		6673FF712979B33800F96CFD /* KBSAuthCredentialStorageImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredentialStorageImpl.swift; sourceTree = "<group>"; };
 		6673FF742979F87500F96CFD /* KBSAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
@@ -3388,7 +3389,6 @@
 		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
-		66A5F2A62A016C5E0039AAC1 /* CVInteractionIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVInteractionIdentifier.swift; sourceTree = "<group>"; };
 		66A93A7F29940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RegistrationCoordinatorImpl+Service.swift"; sourceTree = "<group>"; };
 		66AAC2C329CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChangeNumberSplashViewController.swift; sourceTree = "<group>"; };
 		66AAC2C529CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChangePhoneNumberViewController.swift; sourceTree = "<group>"; };
@@ -5778,7 +5778,6 @@
 			isa = PBXGroup;
 			children = (
 				34A95523271B510400B05242 /* CVCellMeasurement.swift */,
-				66A5F2A62A016C5E0039AAC1 /* CVInteractionIdentifier.swift */,
 				34A95525271B510400B05242 /* CVText.swift */,
 				34A95522271B510400B05242 /* CVTextLabel.swift */,
 				34A95524271B510400B05242 /* CVUtils.swift */,
@@ -6755,6 +6754,7 @@
 				F9C5C8D4289453B100548EEE /* MessageBody.swift */,
 				66FC636E29DF797700F00DAC /* MessageBodyRanges.swift */,
 				66FC638529E4B9AF00F00DAC /* RecoveredHydratedMessageBody.swift */,
+				665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */,
 				66FC637729DF8BEF00F00DAC /* StyleAttribute.swift */,
 				66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */,
 			);
@@ -10756,7 +10756,6 @@
 				508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */,
 				3402AA7B271D9E180084CBAE /* CustomKeyboard.swift in Sources */,
 				3402AA87271D9E180084CBAE /* CVCellMeasurement.swift in Sources */,
-				66A5F2A72A016C5E0039AAC1 /* CVInteractionIdentifier.swift in Sources */,
 				3402AA92271D9E180084CBAE /* CVText.swift in Sources */,
 				3402AAB3271D9E180084CBAE /* CVTextLabel.swift in Sources */,
 				3402AA7A271D9E180084CBAE /* CVUtils.swift in Sources */,
@@ -12292,6 +12291,7 @@
 				F9C5CD8E289453B300548EEE /* SpamChallengeResolver.swift in Sources */,
 				F9427EAB297F1E88008EF0AC /* SpamReportingToken.swift in Sources */,
 				F9427EB0297F24AB008EF0AC /* SpamReportingTokenRecord.swift in Sources */,
+				665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */,
 				F9613CDC2981F11400894B55 /* SqliteUtil.swift in Sources */,
 				50E642C929E4E9CD00566D5D /* SSKEnvironment.swift in Sources */,
 				D9668B2F291AF63500665298 /* SSKJobQueues.swift in Sources */,

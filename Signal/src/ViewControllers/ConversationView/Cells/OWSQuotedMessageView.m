@@ -24,7 +24,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 @property (nonatomic, readonly) OWSQuotedReplyModel *quotedMessage;
 @property (nonatomic, nullable, readonly) DisplayableText *displayableQuotedText;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
-@property (nonatomic, readonly) CVSpoilerReveal *spoilerReveal;
+@property (nonatomic, readonly) SpoilerRevealState *spoilerReveal;
 
 @property (nonatomic, readonly) UILabel *quotedAuthorLabel;
 @property (nonatomic, readonly) UILabel *quotedTextLabel;
@@ -39,7 +39,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 - (instancetype)initWithQuotedMessage:(OWSQuotedReplyModel *)quotedMessage
                 displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                     conversationStyle:(ConversationStyle *)conversationStyle
-                        spoilerReveal:(CVSpoilerReveal *)spoilerReveal
+                        spoilerReveal:(SpoilerRevealState *)spoilerReveal
 {
     self = [super init];
 

@@ -772,7 +772,7 @@ fileprivate extension CVComponentState.Builder {
 
     mutating func populateAndBuild(
         message: TSMessage,
-        spoilerReveal: CVSpoilerReveal
+        spoilerReveal: SpoilerRevealState
     ) throws -> CVComponentState {
 
         if message.wasRemotelyDeleted {
@@ -1018,7 +1018,7 @@ fileprivate extension CVComponentState.Builder {
     // TODO: Should we validate and throw errors?
     mutating func buildQuotedReply(
         message: TSMessage,
-        spoilerReveal: CVSpoilerReveal
+        spoilerReveal: SpoilerRevealState
     ) {
         guard let quotedReplyModel = OWSQuotedReplyModel.quotedReply(from: message, transaction: transaction) else {
             return
@@ -1274,7 +1274,7 @@ fileprivate extension CVComponentState {
         text: String,
         ranges: MessageBodyRanges?,
         interaction: TSInteraction,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         transaction: SDSAnyReadTransaction
     ) -> DisplayableText {
         return DisplayableText.displayableText(

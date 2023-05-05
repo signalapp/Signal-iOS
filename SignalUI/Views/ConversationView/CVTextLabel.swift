@@ -38,13 +38,13 @@ public class CVTextLabel: NSObject {
     public struct UnrevealedSpoilerItem: Equatable {
         public let spoilerId: Int
         public let interactionUniqueId: String
-        public let interactionIdentifier: CVInteractionIdentifier
+        public let interactionIdentifier: InteractionSnapshotIdentifier
         public let range: NSRange
 
         public init(
             spoilerId: Int,
             interactionUniqueId: String,
-            interactionIdentifier: CVInteractionIdentifier,
+            interactionIdentifier: InteractionSnapshotIdentifier,
             range: NSRange
         ) {
             self.spoilerId = spoilerId
@@ -358,28 +358,13 @@ public class CVTextLabel: NSObject {
                 return nil
             }
 
-            let glyphRange = layoutManager.glyphRange(for: textContainer)
-            let boundingRect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
-            guard boundingRect.contains(location) else {
+            guard let characterIndex = textContainer.characterIndex(
+                of: location,
+                textStorage: textStorage,
+                layoutManager: layoutManager
+            ) else {
                 return nil
             }
-
-            let glyphIndex = layoutManager.glyphIndex(for: location, in: textContainer)
-
-            // We have the _closest_ index, but that doesn't mean we tapped in a glyph.
-            // Check that directly.
-            // This will catch the below case, where "*" is the tap location:
-            //
-            // This is the first line that is long.
-            // Tap on the second line.    *
-            //
-            // The bounding rect includes the empty space below the first line,
-            // but the tap doesn't actually lie on any glyph.
-            let glyphRect = layoutManager.boundingRect(forGlyphRange: NSRange(location: glyphIndex, length: 1), in: textContainer)
-            guard glyphRect.contains(location) else {
-                return nil
-            }
-            let characterIndex = layoutManager.characterIndexForGlyph(at: glyphIndex)
 
             for item in config.items {
                 if item.range.contains(characterIndex) {

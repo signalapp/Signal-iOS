@@ -205,8 +205,11 @@ extension ConversationViewController: CVComponentDelegate {
 
         dismissKeyBoard()
 
-        let pageVC = MediaPageViewController(initialMediaAttachment: attachmentStream,
-                                             thread: self.thread)
+        let pageVC = MediaPageViewController(
+            initialMediaAttachment: attachmentStream,
+            thread: self.thread,
+            spoilerReveal: self.viewState.spoilerReveal
+        )
         self.present(pageVC, animated: true, completion: nil)
     }
 

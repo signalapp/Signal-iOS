@@ -21,7 +21,7 @@ public class LongTextViewController: OWSViewController {
 
     let itemViewModel: CVItemViewModelImpl
     let threadViewModel: ThreadViewModel
-    let spoilerReveal: CVSpoilerReveal
+    let spoilerReveal: SpoilerRevealState
 
     var messageTextView: UITextView!
     let footer = UIToolbar.clear()
@@ -36,7 +36,7 @@ public class LongTextViewController: OWSViewController {
     public required init(
         itemViewModel: CVItemViewModelImpl,
         threadViewModel: ThreadViewModel,
-        spoilerReveal: CVSpoilerReveal
+        spoilerReveal: SpoilerRevealState
     ) {
         self.itemViewModel = itemViewModel
         self.threadViewModel = threadViewModel
@@ -247,30 +247,9 @@ public class LongTextViewController: OWSViewController {
         }
         let location = sender.location(in: messageTextView)
 
-        let layoutManager = messageTextView.layoutManager
-        let textContainer = messageTextView.textContainer
-        let glyphRange = layoutManager.glyphRange(for: textContainer)
-        let boundingRect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
-        guard boundingRect.contains(location) else {
+        guard let characterIndex = messageTextView.characterIndex(of: location) else {
             return
         }
-
-        let glyphIndex = layoutManager.glyphIndex(for: location, in: textContainer)
-
-        // We have the _closest_ index, but that doesn't mean we tapped in a glyph.
-        // Check that directly.
-        // This will catch the below case, where "*" is the tap location:
-        //
-        // This is the first line that is long.
-        // Tap on the second line.    *
-        //
-        // The bounding rect includes the empty space below the first line,
-        // but the tap doesn't actually lie on any glyph.
-        let glyphRect = layoutManager.boundingRect(forGlyphRange: NSRange(location: glyphIndex, length: 1), in: textContainer)
-        guard glyphRect.contains(location) else {
-            return
-        }
-        let characterIndex = layoutManager.characterIndexForGlyph(at: glyphIndex)
 
         for item in linkItems {
             if item.range.contains(characterIndex) {

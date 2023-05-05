@@ -60,7 +60,7 @@ protocol ConversationInputToolbarDelegate: AnyObject {
 public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, QuotedReplyPreviewDelegate {
 
     private var conversationStyle: ConversationStyle
-    private let spoilerReveal: CVSpoilerReveal
+    private let spoilerReveal: SpoilerRevealState
 
     private let mediaCache: CVMediaCache
 
@@ -68,7 +68,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     init(
         conversationStyle: ConversationStyle,
-        spoilerReveal: CVSpoilerReveal,
+        spoilerReveal: SpoilerRevealState,
         mediaCache: CVMediaCache,
         messageDraft: MessageBody?,
         quotedReply: OWSQuotedReplyModel?,

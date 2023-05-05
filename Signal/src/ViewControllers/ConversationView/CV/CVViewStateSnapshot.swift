@@ -10,7 +10,7 @@ import Foundation
 struct CVViewStateSnapshot: Dependencies {
 
     let textExpansion: CVTextExpansion
-    let spoilerReveal: CVSpoilerReveal
+    let spoilerReveal: SpoilerRevealState
     let messageSwipeActionState: CVMessageSwipeActionState
 
     // We can only measure (configure) with a given ConversationStyle.
@@ -57,7 +57,7 @@ struct CVViewStateSnapshot: Dependencies {
 
     static func mockSnapshotForStandaloneItems(
         coreState: CVCoreState,
-        spoilerReveal: CVSpoilerReveal
+        spoilerReveal: SpoilerRevealState
     ) -> CVViewStateSnapshot {
         CVViewStateSnapshot(
             textExpansion: CVTextExpansion(),

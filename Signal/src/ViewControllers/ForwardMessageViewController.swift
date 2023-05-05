@@ -909,7 +909,7 @@ private enum ForwardMessageContent {
                                             transaction: SDSAnyReadTransaction) throws -> CVComponentState {
         guard let componentState = CVLoader.buildStandaloneComponentState(
             interaction: interaction,
-            spoilerReveal: CVSpoilerReveal(), // Nothing revealed, doesn't matter.
+            spoilerReveal: SpoilerRevealState(), // Nothing revealed, doesn't matter.
             transaction: transaction
         ) else {
             throw ForwardError.invalidInteraction

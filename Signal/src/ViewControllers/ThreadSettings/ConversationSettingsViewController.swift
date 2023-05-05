@@ -40,6 +40,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 
     private(set) var threadViewModel: ThreadViewModel
+    private let spoilerReveal: SpoilerRevealState
 
     var thread: TSThread {
         threadViewModel.threadRecord
@@ -68,8 +69,12 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     var shouldRefreshAttachmentsOnReappear = false
 
     @objc
-    public required init(threadViewModel: ThreadViewModel) {
+    public required init(
+        threadViewModel: ThreadViewModel,
+        spoilerReveal: SpoilerRevealState
+    ) {
         self.threadViewModel = threadViewModel
+        self.spoilerReveal = spoilerReveal
         groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
 
         disappearingMessagesConfiguration = Self.databaseStorage.read { transaction in
@@ -852,12 +857,20 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     func showMediaGallery() {
         Logger.debug("")
 
-        let tileVC = AllMediaViewController(thread: thread, name: threadViewModel.name)
+        let tileVC = AllMediaViewController(
+            thread: thread,
+            spoilerReveal: spoilerReveal,
+            name: threadViewModel.name
+        )
         navigationController?.pushViewController(tileVC, animated: true)
     }
 
     func showMediaPageView(for attachmentStream: TSAttachmentStream) {
-        let vc = MediaPageViewController(initialMediaAttachment: attachmentStream, thread: thread)
+        let vc = MediaPageViewController(
+            initialMediaAttachment: attachmentStream,
+            thread: thread,
+            spoilerReveal: spoilerReveal
+        )
         if vc.viewControllers?.isEmpty ?? true {
             // Failed to load the item. Could be because it was deleted just as we tried to show it.
             return

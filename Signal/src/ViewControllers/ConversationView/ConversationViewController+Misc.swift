@@ -235,7 +235,10 @@ public extension ConversationViewController {
         }
         var viewControllers = viewControllersUpToSelf
 
-        let settingsView = ConversationSettingsViewController(threadViewModel: threadViewModel)
+        let settingsView = ConversationSettingsViewController(
+            threadViewModel: threadViewModel,
+            spoilerReveal: viewState.spoilerReveal
+        )
         settingsView.conversationSettingsViewDelegate = self
         viewControllers.append(settingsView)
 
@@ -249,7 +252,11 @@ public extension ConversationViewController {
                 viewControllers.append(view)
             }
         case .showAllMedia:
-            viewControllers.append(AllMediaViewController(thread: thread, name: title))
+            viewControllers.append(AllMediaViewController(
+                thread: thread,
+                spoilerReveal: viewState.spoilerReveal,
+                name: title
+            ))
         }
 
         navigationController?.setViewControllers(viewControllers, animated: true)

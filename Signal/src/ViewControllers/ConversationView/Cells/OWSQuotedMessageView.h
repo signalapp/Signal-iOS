@@ -5,10 +5,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class CVSpoilerReveal;
 @class ConversationStyle;
 @class DisplayableText;
 @class OWSQuotedReplyModel;
+@class SpoilerRevealState;
 @class TSAttachmentPointer;
 @class TSQuotedMessage;
 
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithQuotedMessage:(OWSQuotedReplyModel *)quotedMessage
                 displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                     conversationStyle:(ConversationStyle *)conversationStyle
-                        spoilerReveal:(CVSpoilerReveal *)spoilerReveal;
+                        spoilerReveal:(SpoilerRevealState *)spoilerReveal;
 
 @end
 
