@@ -85,12 +85,17 @@ open class MentionTextView: OWSTextView {
 
         let replacementString: NSAttributedString
         if mentionDelegate.textViewMentionPickerPossibleAddresses(self).contains(mentionAddress) {
+            let mentionConfig =  mentionDelegate.textViewMentionDisplayConfiguration(self)
             replacementString = hydrated.asAttributedStringForDisplay(
                 config: HydratedMessageBody.DisplayConfiguration(
-                    mention: mentionDelegate.textViewMentionDisplayConfiguration(self),
+                    mention: mentionConfig,
                     style: .todo(),
                     searchRanges: nil
                 ),
+                baseAttributes: [
+                    .font: mentionConfig.font,
+                    .foregroundColor: mentionConfig.foregroundColor.forCurrentTheme
+                ],
                 isDarkThemeEnabled: Theme.isDarkThemeEnabled
             )
         } else {
@@ -132,6 +137,10 @@ open class MentionTextView: OWSTextView {
                         style: .todo(),
                         searchRanges: nil
                     ),
+                    baseAttributes: [
+                        .font: mentionConfig.font,
+                        .foregroundColor: mentionConfig.foregroundColor.forCurrentTheme
+                    ],
                     isDarkThemeEnabled: Theme.isDarkThemeEnabled
                 )
         }

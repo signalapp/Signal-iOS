@@ -294,9 +294,10 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     public func asAttributedStringForDisplay(
         config: DisplayConfiguration,
+        baseAttributes: [NSAttributedString.Key: Any]? = nil,
         isDarkThemeEnabled: Bool
     ) -> NSAttributedString {
-        let string = NSMutableAttributedString(string: hydratedText)
+        let string = NSMutableAttributedString(string: hydratedText, attributes: baseAttributes ?? [:])
         return Self.applyAttributes(
             on: string,
             mentionAttributes: mentionAttributes,
