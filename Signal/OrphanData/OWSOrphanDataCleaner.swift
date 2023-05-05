@@ -5,10 +5,10 @@
 
 import Foundation
 import SignalCoreKit
+import SignalMessaging
 import SignalServiceKit
 
 extension OWSOrphanDataCleaner {
-    @objc
     static func auditOnLaunchIfNecessary() {
         AssertIsOnMainThread()
 
@@ -21,16 +21,6 @@ extension OWSOrphanDataCleaner {
     }
 
     private static func shouldAuditWithSneakyTransaction() -> Bool {
-        guard CurrentAppContext().isMainApp else {
-            Logger.info("Orphan data audit skipped because we're not the main app")
-            return false
-        }
-
-        guard !CurrentAppContext().isRunningTests else {
-            Logger.info("Orphan data audit skipped because we're running tests")
-            return false
-        }
-
         let kvs = keyValueStore()
         let currentAppVersion = AppVersion.shared.currentAppReleaseVersion
 

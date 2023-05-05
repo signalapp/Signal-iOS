@@ -4,9 +4,9 @@
 //
 
 #import "DebugUIDiskUsage.h"
+#import "OWSOrphanDataCleaner.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalMessaging/OWSOrphanDataCleaner.h>
 #import <SignalServiceKit/TSInteraction.h>
 #import <SignalUI/OWSTableViewController.h>
 

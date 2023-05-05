@@ -6,8 +6,8 @@
 #import "OWSOrphanDataCleaner.h"
 #import "DateUtil.h"
 #import "OWSProfileManager.h"
+#import "Signal-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSFileSystem.h>
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // LOG_ALL_FILE_PATHS can be used to determine if there are other kinds of files
 // that we're not cleaning up.
-//#define LOG_ALL_FILE_PATHS
+// #define LOG_ALL_FILE_PATHS
 
 NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey = @"OWSOrphanDataCleaner_LastCleaningVersionKey";
 NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleaner_LastCleaningDateKey";
@@ -52,21 +52,6 @@ NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleane
 typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 @implementation OWSOrphanDataCleaner
-
-- (instancetype)init
-{
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    OWSSingletonAssert();
-
-    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{ [OWSOrphanDataCleaner auditOnLaunchIfNecessary]; });
-
-    return self;
-}
 
 + (SDSKeyValueStore *)keyValueStore
 {
@@ -181,9 +166,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 {
     if (remainingRetries < 1) {
         OWSLogInfo(@"Aborting orphan data search. No more retries.");
-        dispatch_async(self.workQueue, ^{
-            failure();
-        });
+        dispatch_async(self.workQueue, ^{ failure(); });
         return;
     }
 
@@ -199,9 +182,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             if (orphanData) {
                 success(orphanData);
             } else {
-                [self findOrphanDataWithRetries:remainingRetries - 1
-                                        success:success
-                                        failure:failure];
+                [self findOrphanDataWithRetries:remainingRetries - 1 success:success failure:failure];
             }
             [backgroundTask endBackgroundTask];
         });
@@ -611,9 +592,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans
 {
-    [self auditAndCleanup:shouldRemoveOrphans
-               completion:^{
-               }];
+    [self auditAndCleanup:shouldRemoveOrphans completion:^ {}];
 }
 
 // We use the lowest priority possible.
@@ -622,8 +601,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
 }
 
-+ (void)auditAndCleanup:(BOOL)shouldRemoveOrphans
-             completion:(nullable dispatch_block_t)completion
++ (void)auditAndCleanup:(BOOL)shouldRemoveOrphans completion:(nullable dispatch_block_t)completion
 {
     OWSAssertIsOnMainThread();
 
@@ -725,9 +703,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
     if (remainingRetries < 1) {
         OWSLogInfo(@"Aborting orphan data audit.");
-        dispatch_async(self.workQueue, ^{
-            failure();
-        });
+        dispatch_async(self.workQueue, ^{ failure(); });
         return;
     }
 
@@ -755,8 +731,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 // Returns NO on failure, usually indicating that orphan processing
 // aborted due to the app resigning active.  This method is extremely careful to
 // abort if the app resigns active, in order to avoid 0xdead10cc crashes.
-+ (BOOL)processOrphansSync:(OWSOrphanData *)orphanData
-       shouldRemoveOrphans:(BOOL)shouldRemoveOrphans
++ (BOOL)processOrphansSync:(OWSOrphanData *)orphanData shouldRemoveOrphans:(BOOL)shouldRemoveOrphans
 {
     OWSAssertDebug(orphanData);
 
@@ -779,8 +754,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 shouldAbort = YES;
                 return;
             }
-            TSInteraction *_Nullable interaction =
-                [TSInteraction anyFetchWithUniqueId:interactionId transaction:transaction];
+            TSInteraction *_Nullable interaction = [TSInteraction anyFetchWithUniqueId:interactionId
+                                                                           transaction:transaction];
             if (!interaction) {
                 // This could just be a race condition, but it should be very unlikely.
                 OWSLogWarn(@"Could not load interaction: %@", interactionId);
@@ -807,8 +782,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 shouldAbort = YES;
                 return;
             }
-            TSAttachment *_Nullable attachment =
-                [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
+            TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId
+                                                                        transaction:transaction];
             if (!attachment) {
                 // This can happen on launch since we sync contacts/groups, especially if you have a lot of attachments
                 // to churn through, it's likely it's been deleted since starting this job.

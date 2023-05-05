@@ -17,7 +17,8 @@ extern NSString *const OWSOrphanDataCleaner_LastCleaningDateKey;
 
 + (SDSKeyValueStore *)keyValueStore;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 // This is exposed for the debug UI.
 + (void)auditAndCleanup:(BOOL)shouldCleanup;

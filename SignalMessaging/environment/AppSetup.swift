@@ -85,7 +85,6 @@ public class AppSetup {
         let preferences = OWSPreferences()
         let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
         let sounds = OWSSounds()
-        let orphanDataCleaner = OWSOrphanDataCleaner()
         let avatarBuilder = AvatarBuilder()
         let smJobQueues = SignalMessagingJobQueues()
 
@@ -150,7 +149,6 @@ public class AppSetup {
             preferences: preferences,
             proximityMonitoringManager: proximityMonitoringManager,
             sounds: sounds,
-            orphanDataCleaner: orphanDataCleaner,
             avatarBuilder: avatarBuilder,
             smJobQueues: smJobQueues
         )

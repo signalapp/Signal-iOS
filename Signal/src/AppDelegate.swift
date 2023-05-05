@@ -316,6 +316,10 @@ extension AppDelegate {
         owsAssert(!AppReadiness.isAppReady)
         owsAssert(!CurrentAppContext().isRunningTests)
 
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            OWSOrphanDataCleaner.auditOnLaunchIfNecessary()
+        }
+
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReadyUIStillPending()
 

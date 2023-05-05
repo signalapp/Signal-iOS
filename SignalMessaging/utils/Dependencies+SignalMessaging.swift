@@ -65,14 +65,6 @@ public extension NSObject {
         Environment.shared.soundsRef
     }
 
-    final var orphanDataCleaner: OWSOrphanDataCleaner {
-        Environment.shared.orphanDataCleanerRef
-    }
-
-    static var orphanDataCleaner: OWSOrphanDataCleaner {
-        Environment.shared.orphanDataCleanerRef
-    }
-
     var avatarBuilder: AvatarBuilder {
         Environment.shared.avatarBuilderRef
     }
@@ -155,14 +147,6 @@ public extension Dependencies {
 
     static var sounds: OWSSounds {
         Environment.shared.soundsRef
-    }
-
-    var orphanDataCleaner: OWSOrphanDataCleaner {
-        Environment.shared.orphanDataCleanerRef
-    }
-
-    static var orphanDataCleaner: OWSOrphanDataCleaner {
-        Environment.shared.orphanDataCleanerRef
     }
 
     var avatarBuilder: AvatarBuilder {

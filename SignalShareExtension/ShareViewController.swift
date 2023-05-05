@@ -200,8 +200,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         ensureRootViewController()
 
-        // We don't need to use OWSOrphanDataCleaner in the SAE.
-
         // We don't need to fetch the local profile in the SAE
     }
 

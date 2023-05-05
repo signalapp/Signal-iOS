@@ -5,7 +5,6 @@
 
 #import "MockEnvironment.h"
 #import "OWSWindowManager.h"
-#import <SignalMessaging/OWSOrphanDataCleaner.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -29,14 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSPreferences *preferences = [OWSPreferences new];
     OWSSounds *sounds = [OWSSounds new];
     id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
-    OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
     AvatarBuilder *avatarBuilder = [AvatarBuilder new];
     SignalMessagingJobQueues *smJobQueues = [SignalMessagingJobQueues new];
 
     self = [super initWithPreferences:preferences
            proximityMonitoringManager:proximityMonitoringManager
                                sounds:sounds
-                    orphanDataCleaner:orphanDataCleaner
                         avatarBuilder:avatarBuilder
                           smJobQueues:smJobQueues];
 

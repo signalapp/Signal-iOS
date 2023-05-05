@@ -292,8 +292,6 @@
 		34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463532E256EA525003C5428 /* ConversationViewTest.swift */; };
 		34635332257549F2003C5428 /* CVReactionCountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34635331257549F1003C5428 /* CVReactionCountsView.swift */; };
 		34641E182088D7E900E2EDE5 /* ScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641E172088D7E900E2EDE5 /* ScreenLock.swift */; };
-		3464450D22B7F93600A957B1 /* OWSOrphanDataCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */; };
-		3464450E22B7F93600A957B1 /* OWSOrphanDataCleaner.h in Headers */ = {isa = PBXBuildFile; fileRef = 3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3464451122B7F97100A957B1 /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450F22B7F97000A957B1 /* DateUtil.m */; };
 		3464451222B7F97100A957B1 /* DateUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 3464451022B7F97100A957B1 /* DateUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947D2434CCC100E5C510 /* NewGroupConfirmViewController.swift */; };
@@ -742,6 +740,8 @@
 		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
 		5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
 		5011D9522A0191F9000FE8E5 /* MessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D9512A0191F9000FE8E5 /* MessageManagerTest.swift */; };
+		5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
+		5011D9732A04721A000FE8E5 /* OWSOrphanDataCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
@@ -947,10 +947,10 @@
 		766BCA7D29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766BCA7C29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift */; };
 		76725D2D29143CEC000E8AE1 /* ConversationInputToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */; };
 		7677E40729F7472800AC6A75 /* ShareAppExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E40629F7472800AC6A75 /* ShareAppExtensionContext.swift */; };
+		7677E40D29F75C4200AC6A75 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E40C29F75C4200AC6A75 /* Theme.swift */; };
 		7677E40F29F79BF300AC6A75 /* SAEScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E40E29F79BF300AC6A75 /* SAEScreenLockViewController.swift */; };
 		7677E41129F7A60500AC6A75 /* ScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E41029F7A60500AC6A75 /* ScreenLockViewController.swift */; };
 		7677E41329F84C2100AC6A75 /* ScreenLockUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */; };
-		7677E40D29F75C4200AC6A75 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E40C29F75C4200AC6A75 /* Theme.swift */; };
 		7685DFFF29EA1F6400542CBC /* UIFont+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */; };
 		76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */; };
 		76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */; };
@@ -2235,7 +2235,6 @@
 		F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC77E29199B9200EEC1DE /* StringTest.swift */; };
 		F9CAC7832919B35E00EEC1DE /* PhoneNumberRegions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC7822919B35E00EEC1DE /* PhoneNumberRegions.swift */; };
 		F9CAC7852919B5A400EEC1DE /* PhoneNumberRegionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC7842919B5A400EEC1DE /* PhoneNumberRegionsTest.swift */; };
-		F9CC66C12937B71E002172D0 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
 		F9D289B6291EDC8D00187394 /* DonationJobError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D289B5291EDC8D00187394 /* DonationJobError.swift */; };
 		F9D3122D298C60E1004ED3D9 /* FullTextSearchFinderForObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D3122C298C60E1004ED3D9 /* FullTextSearchFinderForObjC.swift */; };
 		F9D47A4829D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D47A4729D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift */; };
@@ -3448,10 +3447,10 @@
 		766BCA7C29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTLEnabledCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputToolbar.swift; sourceTree = "<group>"; };
 		7677E40629F7472800AC6A75 /* ShareAppExtensionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareAppExtensionContext.swift; sourceTree = "<group>"; };
+		7677E40C29F75C4200AC6A75 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		7677E40E29F79BF300AC6A75 /* SAEScreenLockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAEScreenLockViewController.swift; sourceTree = "<group>"; };
 		7677E41029F7A60500AC6A75 /* ScreenLockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockViewController.swift; sourceTree = "<group>"; };
 		7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockUI.swift; sourceTree = "<group>"; };
-		7677E40C29F75C4200AC6A75 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+OWS.swift"; sourceTree = "<group>"; };
 		76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAttachmentPrepViewController.swift; sourceTree = "<group>"; };
 		76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
@@ -5277,9 +5276,6 @@
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */,
 				34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */,
-				3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */,
-				3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */,
-				F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */,
 				501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */,
 				346129371FD1B47200532771 /* OWSPreferences.h */,
 				346129381FD1B47200532771 /* OWSPreferences.m */,
@@ -6419,6 +6415,16 @@
 				4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */,
 			);
 			path = Transitions;
+			sourceTree = "<group>";
+		};
+		5011D9712A0471E8000FE8E5 /* OrphanData */ = {
+			isa = PBXGroup;
+			children = (
+				3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */,
+				3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */,
+				F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */,
+			);
+			path = OrphanData;
 			sourceTree = "<group>";
 		};
 		5033D46C29DCA8DE007FEADA /* URLs */ = {
@@ -7678,6 +7684,7 @@
 			isa = PBXGroup;
 			children = (
 				88BFD4712335C2A4001797D7 /* Lottie */,
+				5011D9712A0471E8000FE8E5 /* OrphanData */,
 				6600F38C29918A5100B1EDB7 /* Registration */,
 				34074F54203D0722004596AE /* Sounds */,
 				76EB03C118170B33006006FC /* src */,
@@ -9477,7 +9484,6 @@
 				34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */,
 				3461295A1FD1D74C00532771 /* Environment.h in Headers */,
 				346129A51FD1F09100532771 /* OWSContactsManager.h in Headers */,
-				3464450E22B7F93600A957B1 /* OWSOrphanDataCleaner.h in Headers */,
 				346129391FD1B47300532771 /* OWSPreferences.h in Headers */,
 				346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */,
 				34074F62203D0CBE004596AE /* OWSSounds.h in Headers */,
@@ -11002,8 +11008,6 @@
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
 				3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
-				3464450D22B7F93600A957B1 /* OWSOrphanDataCleaner.m in Sources */,
-				F9CC66C12937B71E002172D0 /* OWSOrphanDataCleaner.swift in Sources */,
 				501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
@@ -11516,6 +11520,8 @@
 				34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */,
 				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,
 				505C2ED42997015800C23FB2 /* OWSLinkDeviceViewController.swift in Sources */,
+				5011D9732A04721A000FE8E5 /* OWSOrphanDataCleaner.m in Sources */,
+				5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */,
 				887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */,
 				881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */,
 				881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */,
