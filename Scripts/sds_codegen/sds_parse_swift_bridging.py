@@ -87,21 +87,7 @@ def process_file(file_path, namespace):
     if filename == 'EmojiWithSkinTones+String.swift':
         return
 
-    command = [
-        'which',
-        'sourcekitten',
-        ]
-    exit_code, output, error_output = ows_getoutput(command)
-    if exit_code != 0:
-        fail('Missing sourcekitten. Install with homebrew?')
-
-    print('Extracting Swift Bridging Info For:', file_path)
-    command = [
-        'sourcekitten',
-        'structure',
-        '--file',
-        file_path,
-        ]
+    command = ['sourcekitten', 'structure', '--file', file_path]
     # for part in command:
     #     print '\t', part
     # command = ' '.join(command).strip()
@@ -113,6 +99,7 @@ def process_file(file_path, namespace):
     exit_code, output, error_output = ows_getoutput(command)
     if exit_code != 0:
         print('exit_code:', exit_code)
+        fail('Are you missing sourcekitten? Install with homebrew?')
     if len(error_output.strip()) > 0:
         print('error_output:', error_output)
     # print 'output:', len(output)
@@ -183,12 +170,17 @@ def process_dir(src_dir_path, dir_name, dst_dir_path):
 
     dir_path = os.path.abspath(os.path.join(src_dir_path, dir_name))
 
-    print('Searching:', dir_path)
-
+    file_paths = []
     for rootdir, dirnames, filenames in os.walk(dir_path):
         for filename in filenames:
             file_path = os.path.abspath(os.path.join(rootdir, filename))
-            process_file(file_path, namespace)
+            file_paths.append(file_path)
+
+    print(f"Found {len(file_paths)} files in {dir_path}")
+    for (idx, file_path) in enumerate(file_paths):
+        process_file(file_path, namespace)
+        if idx % 100 == 99:
+            print(f"... {idx+1} / {len(file_paths)}")
 
     bridging_header_path = os.path.abspath(os.path.join(dst_dir_path, dir_name, dir_name + '-Swift.h'))
     generate_swift_bridging_header(namespace, bridging_header_path)

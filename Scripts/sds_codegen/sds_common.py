@@ -13,7 +13,6 @@ def fail(*args):
 git_repo_path = os.path.abspath(
     subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
 )
-print('git_repo_path:', git_repo_path)
 
 def sds_to_relative_path(path):
     path = os.path.abspath(path)
