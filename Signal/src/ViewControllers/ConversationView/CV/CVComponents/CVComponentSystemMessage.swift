@@ -676,7 +676,7 @@ extension CVComponentSystemMessage {
                                                     comment: "Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}.")))
             return String(format: format, displayName)
         } else if let infoMessage = interaction as? TSInfoMessage {
-            return infoMessage.systemMessageText(with: transaction)
+            return infoMessage.conversationSystemMessageComponentText(with: transaction)
         } else if let call = interaction as? TSCall {
             return call.previewText(transaction: transaction)
         } else if let groupCall = interaction as? OWSGroupCallMessage {

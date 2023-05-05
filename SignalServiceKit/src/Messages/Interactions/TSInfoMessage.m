@@ -218,19 +218,22 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     return OWSInteractionType_Info;
 }
 
-- (NSString *)systemMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)conversationSystemMessageComponentTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     switch (self.messageType) {
         case TSInfoMessageSyncedThread:
+            // This particular string is here, and not in `infoMessagePreviewTextWithTransaction`,
+            // because we want it to be excluded from everywhere except chat list rendering.
+            // e.g. not in the conversation list preview.
             return OWSLocalizedString(@"INFO_MESSAGE_SYNCED_THREAD",
                                      @"Shown in inbox and conversation after syncing as a placeholder indicating why your message history "
                                      @"is missing.");
         default:
-            return [self previewTextWithTransaction:transaction];
+            return [self infoMessagePreviewTextWithTransaction:transaction];
     }
 }
 
-- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)infoMessagePreviewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     switch (_messageType) {
         case TSInfoMessageTypeSessionDidEnd:

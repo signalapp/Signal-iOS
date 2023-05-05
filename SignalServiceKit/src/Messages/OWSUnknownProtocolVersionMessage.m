@@ -145,7 +145,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
 
 // --- CODE GENERATION MARKER
 
-- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)infoMessagePreviewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self messageTextWithTransaction:transaction];
 }

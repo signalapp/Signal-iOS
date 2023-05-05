@@ -283,7 +283,8 @@ public extension TSMessage {
             let .viewOnceMessage(text),
             let .contactShare(text),
             let .stickerDescription(text),
-            let .giftBadge(text):
+            let .giftBadge(text),
+            let .infoMessage(text):
             return text
         case .empty:
             return ""
@@ -304,7 +305,8 @@ public extension TSMessage {
             let .viewOnceMessage(text),
             let .contactShare(text),
             let .stickerDescription(text),
-            let .giftBadge(text):
+            let .giftBadge(text),
+            let .infoMessage(text):
             return HydratedMessageBody.fromPlaintextWithoutRanges(text)
         case .empty:
             return HydratedMessageBody.fromPlaintextWithoutRanges("")
@@ -322,6 +324,7 @@ public extension TSMessage {
             .contactShare,
             .stickerDescription,
             .giftBadge,
+            .infoMessage,
             .empty:
             return nil
         }
@@ -335,10 +338,15 @@ public extension TSMessage {
         case contactShare(String)
         case stickerDescription(String)
         case giftBadge(String)
+        case infoMessage(String)
         case empty
     }
 
     private func previewText(_ tx: SDSAnyReadTransaction) -> PreviewText {
+        if let infoMessage = self as? TSInfoMessage {
+            return .infoMessage(infoMessage.infoMessagePreviewText(with: tx))
+        }
+
         if self.wasRemotelyDeleted {
             return .remotelyDeleted((self is TSIncomingMessage)
                 ? OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted")
@@ -374,7 +382,6 @@ public extension TSMessage {
         }
 
         let mediaAttachment = self.mediaAttachments(with: tx.unwrapGrdbRead).first
-        let attachmentEmoji = mediaAttachment?.emoji
         let attachmentDescription = mediaAttachment?.description()
 
         if isViewOnceMessage {
