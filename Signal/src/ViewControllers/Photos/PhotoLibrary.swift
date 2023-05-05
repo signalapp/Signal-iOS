@@ -78,8 +78,9 @@ class PhotoPickerAssetItem: PhotoGridItem {
 
 class PhotoCollectionContents {
 
-    let fetchResult: PHFetchResult<PHAsset>
-    let localizedTitle: String?
+    private let fetchResult: PHFetchResult<PHAsset>
+    private let ascending: Bool
+    private let limit: Int
 
     enum PhotoLibraryError: Error {
         case assertionError(description: String)
@@ -87,9 +88,10 @@ class PhotoCollectionContents {
         case failedToExportAsset(underlyingError: Error?)
     }
 
-    init(fetchResult: PHFetchResult<PHAsset>, localizedTitle: String?) {
+    init(fetchResult: PHFetchResult<PHAsset>, ascending: Bool, limit: Int) {
         self.fetchResult = fetchResult
-        self.localizedTitle = localizedTitle
+        self.ascending = ascending
+        self.limit = limit == 0 ? .max : limit
     }
 
     private let imageManager = PHCachingImageManager()
@@ -97,7 +99,7 @@ class PhotoCollectionContents {
     // MARK: - Asset Accessors
 
     var assetCount: Int {
-        return fetchResult.count
+        return min(fetchResult.count, limit)
     }
 
     var lastAsset: PHAsset? {
@@ -115,7 +117,7 @@ class PhotoCollectionContents {
     }
 
     func asset(at index: Int) -> PHAsset {
-        return fetchResult.object(at: index)
+        return fetchResult.object(at: ascending ? index : fetchResult.count - index - 1)
     }
 
     // MARK: - AssetItem Accessors
@@ -254,12 +256,8 @@ class PhotoCollection {
     }
 
     func contents(ascending: Bool = true, limit: Int = 0) -> PhotoCollectionContents {
-        let options = PHFetchOptions()
-        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: ascending)]
-        options.fetchLimit = limit
-        let fetchResult = PHAsset.fetchAssets(in: collection, options: options)
-
-        return PhotoCollectionContents(fetchResult: fetchResult, localizedTitle: localizedTitle())
+        let fetchResult = PHAsset.fetchAssets(in: collection, options: nil)
+        return PhotoCollectionContents(fetchResult: fetchResult, ascending: ascending, limit: limit)
     }
 }
 

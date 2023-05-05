@@ -1270,12 +1270,8 @@ class MediaPickerThumbnailButton: UIButton {
 
         // Async Fetch last image
         DispatchQueue.global(qos: .userInteractive).async {
-            let fetchOptions = PHFetchOptions()
-            fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-            fetchOptions.fetchLimit = 1
-
-            let fetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: fetchOptions)
-            if fetchResult.count > 0, let asset = fetchResult.firstObject {
+            let fetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: nil)
+            if let asset = fetchResult.lastObject {
                 let targetImageSize = CGSize(square: MediaPickerThumbnailButton.visibleSize)
                 PHImageManager.default().requestImage(for: asset, targetSize: targetImageSize, contentMode: .aspectFill, options: nil) { (image, _) in
                     if let image = image {
