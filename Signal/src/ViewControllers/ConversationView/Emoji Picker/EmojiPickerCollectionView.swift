@@ -220,6 +220,13 @@ class EmojiPickerCollectionView: UICollectionView {
             return []
         }
 
+        if
+            searchText.count == 1,
+            let searchEmoji = EmojiWithSkinTones(rawValue: searchText)
+        {
+            return [searchEmoji]
+        }
+
         return allSendableEmoji.filter { emoji in
             let terms = emojiSearchIndex?[emoji.baseEmoji.rawValue] ?? [emoji.baseEmoji.name]
             for term in terms {
@@ -318,6 +325,7 @@ extension EmojiPickerCollectionView: UICollectionViewDelegate {
 
         SDSDatabaseStorage.shared.asyncWrite { transaction in
             self.recordRecentEmoji(emoji, transaction: transaction)
+            emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
         }
 
         pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
