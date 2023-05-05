@@ -646,6 +646,7 @@ private extension GroupV2UpdatesImpl {
                 groupId: groupId,
                 groupV2Params: groupV2Params,
                 groupChanges: groupChanges,
+                groupModelOptions: groupModelOptions,
                 transaction: transaction
             ) else {
                 throw OWSAssertionError("Missing group thread.")
@@ -739,6 +740,7 @@ private extension GroupV2UpdatesImpl {
         groupId: Data,
         groupV2Params: GroupV2Params,
         groupChanges: [GroupV2Change],
+        groupModelOptions: TSGroupModelOptions,
         transaction: SDSAnyWriteTransaction
     ) -> (TSGroupThread, addedToNewThreadBy: SignalServiceAddress?)? {
 
@@ -760,6 +762,7 @@ private extension GroupV2UpdatesImpl {
                 groupV2Snapshot: snapshot,
                 transaction: transaction
             )
+            builder.apply(options: groupModelOptions)
             if snapshot.revision == 0, groupUpdateSourceAddress?.isLocalAddress == true {
                 builder.wasJustCreatedByLocalUser = true
             }
