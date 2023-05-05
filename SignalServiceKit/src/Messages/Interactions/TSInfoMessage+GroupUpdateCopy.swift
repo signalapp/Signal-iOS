@@ -1653,8 +1653,9 @@ extension GroupUpdateCopy {
             case .unknown:
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: OWSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
-                                                comment: "Message indicating that the local user was added to the group."))
+                        copy: OWSLocalizedString(
+                            "GROUP_LOCAL_USER_REQUEST_APPROVED",
+                            comment: "Message indicating that the local user's request to join the group was approved."))
             }
         } else {
             let requesterName = contactsManager.displayName(for: address, transaction: tx)
