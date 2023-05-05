@@ -42,10 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
                                        actionBlock:^{ [DebugContactsUtils deleteAllRandomContacts]; }],
                        [OWSTableItem itemWithTitle:@"Delete All Contacts"
                                        actionBlock:^{ [DebugContactsUtils deleteAllContacts]; }],
-                       [OWSTableItem itemWithTitle:@"Clear SignalAccount Cache"
-                                       actionBlock:^{ [DebugUIContacts clearSignalAccountCache]; }],
-                       [OWSTableItem itemWithTitle:@"Clear SignalRecipient Cache"
-                                       actionBlock:^{ [DebugUIContacts clearSignalRecipientCache]; }],
                        [OWSTableItem itemWithTitle:@"New Unregistered Contact Thread"
                                        actionBlock:^{ [DebugUIContacts createUnregisteredContactThread]; }],
                        [OWSTableItem itemWithTitle:@"New Unregistered Group Thread"
@@ -55,22 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
                        [OWSTableItem itemWithTitle:@"Log SignalAccounts"
                                        actionBlock:^{ [DebugContactsUtils logSignalAccounts]; }],
                    ]];
-}
-
-+ (void)clearSignalAccountCache
-{
-    OWSLogWarn(@"Deleting all signal accounts.");
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [SignalAccount anyRemoveAllWithoutInstantationWithTransaction:transaction];
-    });
-}
-
-+ (void)clearSignalRecipientCache
-{
-    OWSLogWarn(@"Deleting all signal recipients.");
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [SignalRecipient anyRemoveAllWithoutInstantationWithTransaction:transaction];
-    });
 }
 
 + (SignalServiceAddress *)unregisteredRecipient

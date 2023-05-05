@@ -134,13 +134,6 @@ NS_ASSUME_NONNULL_BEGIN
                                      }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Clear Random KV keys"
                                      actionBlock:^() { [DebugUIMisc clearRandomKeyValueStores]; }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Delete all threads without leaving groups or removing interactions"
-                                     actionBlock:^{
-                                         DatabaseStorageWrite(
-                                             SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-                                                 [TSThread anyRemoveAllWithoutInstantationWithTransaction:transaction];
-                                             });
-                                     }]];
 
     [items addObject:[OWSTableItem itemWithTitle:@"Save plaintext database key"
                                      actionBlock:^() { [DebugUIMisc enableExternalDatabaseAccess]; }]];

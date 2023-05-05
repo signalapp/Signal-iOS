@@ -1702,23 +1702,6 @@ public extension %(class_name)s {
         # ---- Remove All ----
 
         swift_body += '''
-    // WARNING: Do not use this method for any models which do cleanup
-    //          in their anyWillRemove(), anyDidRemove() methods.
-    class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdbTransaction):
-            do {
-                try %s.deleteAll(grdbTransaction.database)
-            } catch {
-                owsFailDebug("deleteAll() failed: \(error)")
-            }
-        }
-
-        if ftsIndexMode != .never {
-            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
-        }
-    }
-
     class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
         // To avoid mutationDuringEnumerationException, we need to remove the
         // instances outside the enumeration.
@@ -1753,7 +1736,7 @@ public extension %(class_name)s {
         }
     }
 }
-''' % ( record_name, record_name, record_identifier(clazz.name), )
+''' % ( record_name, record_identifier(clazz.name), )
 
         # ---- Fetch ----
 

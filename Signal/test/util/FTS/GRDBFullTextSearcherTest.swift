@@ -492,35 +492,6 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messages.count)
     }
 
-    func testModelLifecycle3() {
-
-        self.write { transaction in
-            let thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, self.tsAccountManager.localAddress!],
-                                                               name: "Lifecycle",
-                                                               transaction: transaction)
-
-            let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.", attachmentId: nil)
-            let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.", attachmentId: nil)
-
-            message1.anyInsert(transaction: transaction)
-            message2.anyInsert(transaction: transaction)
-        }
-
-        XCTAssertEqual(1, getResultSet(searchText: "GLORY").messages.count)
-        XCTAssertEqual(1, getResultSet(searchText: "HOPE").messages.count)
-        XCTAssertEqual(2, getResultSet(searchText: "DESPAIR").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messages.count)
-
-        self.write { transaction in
-            TSInteraction.anyRemoveAllWithoutInstantation(transaction: transaction)
-        }
-
-        XCTAssertEqual(0, getResultSet(searchText: "GLORY").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "HOPE").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DESPAIR").messages.count)
-        XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messages.count)
-    }
-
     func testDiacritics() {
 
         self.write { transaction in
