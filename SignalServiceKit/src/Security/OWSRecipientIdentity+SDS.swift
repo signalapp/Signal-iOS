@@ -93,7 +93,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSRecipientIdentity {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
@@ -215,8 +214,6 @@ extension OWSRecipientIdentitySerializer {
     static var isFirstKnownKeyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isFirstKnownKey", columnType: .int) }
     static var verificationStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "verificationState", columnType: .int) }
 
-    // TODO: We should decide on a naming convention for
-    //       tables that store models.
     public static var table: SDSTableMetadata {
         SDSTableMetadata(collection: OWSRecipientIdentity.collection(),
                          tableName: "model_OWSRecipientIdentity",
@@ -371,14 +368,6 @@ public class OWSRecipientIdentityCursor: NSObject, SDSCursor {
 
 // MARK: - Obj-C Fetch
 
-// TODO: We may eventually want to define some combination of:
-//
-// * fetchCursor, fetchOne, fetchAll, etc. (ala GRDB)
-// * Optional "where clause" parameters for filtering.
-// * Async flavors with completions.
-//
-// TODO: I've defined flavors that take a read transaction.
-//       Or we might take a "connection" if we end up having that class.
 @objc
 public extension OWSRecipientIdentity {
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSRecipientIdentityCursor {

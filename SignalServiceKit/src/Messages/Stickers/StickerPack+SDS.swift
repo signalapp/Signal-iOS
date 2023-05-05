@@ -99,7 +99,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Rework metadata to not include, for example, columns, column indices.
 extension StickerPack {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
@@ -240,8 +239,6 @@ extension StickerPackSerializer {
     static var itemsColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "items", columnType: .blob) }
     static var titleColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true) }
 
-    // TODO: We should decide on a naming convention for
-    //       tables that store models.
     public static var table: SDSTableMetadata {
         SDSTableMetadata(collection: StickerPack.collection(),
                          tableName: "model_StickerPack",
@@ -398,14 +395,6 @@ public class StickerPackCursor: NSObject, SDSCursor {
 
 // MARK: - Obj-C Fetch
 
-// TODO: We may eventually want to define some combination of:
-//
-// * fetchCursor, fetchOne, fetchAll, etc. (ala GRDB)
-// * Optional "where clause" parameters for filtering.
-// * Async flavors with completions.
-//
-// TODO: I've defined flavors that take a read transaction.
-//       Or we might take a "connection" if we end up having that class.
 @objc
 public extension StickerPack {
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> StickerPackCursor {

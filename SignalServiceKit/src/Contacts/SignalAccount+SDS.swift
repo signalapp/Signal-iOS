@@ -96,7 +96,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Rework metadata to not include, for example, columns, column indices.
 extension SignalAccount {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
@@ -235,8 +234,6 @@ extension SignalAccountSerializer {
     static var recipientPhoneNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true) }
     static var recipientUUIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true) }
 
-    // TODO: We should decide on a naming convention for
-    //       tables that store models.
     public static var table: SDSTableMetadata {
         SDSTableMetadata(collection: SignalAccount.collection(),
                          tableName: "model_SignalAccount",
@@ -394,14 +391,6 @@ public class SignalAccountCursor: NSObject, SDSCursor {
 
 // MARK: - Obj-C Fetch
 
-// TODO: We may eventually want to define some combination of:
-//
-// * fetchCursor, fetchOne, fetchAll, etc. (ala GRDB)
-// * Optional "where clause" parameters for filtering.
-// * Async flavors with completions.
-//
-// TODO: I've defined flavors that take a read transaction.
-//       Or we might take a "connection" if we end up having that class.
 @objc
 public extension SignalAccount {
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> SignalAccountCursor {

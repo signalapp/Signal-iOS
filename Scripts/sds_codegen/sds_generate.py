@@ -1006,10 +1006,10 @@ public extension String.StringInterpolation {
 ''' % { 'record_identifier': record_identifier(clazz.name), 'record_name': record_name }
 
 
+        # TODO: Rework metadata to not include, for example, columns, column indices.
         swift_body += '''
 // MARK: - Deserialization
 
-// TODO: Rework metadata to not include, for example, columns, column indices.
 extension %s {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
@@ -1356,8 +1356,6 @@ extension %sSerializer {
 
         database_table_name = 'model_%s' % str(clazz.name)
         swift_body += '''
-    // TODO: We should decide on a naming convention for
-    //       tables that store models.
     public static var table: SDSTableMetadata {
         SDSTableMetadata(collection: %s.collection(),
                          tableName: "%s",
@@ -1532,14 +1530,6 @@ public class %sCursor: NSObject, SDSCursor {
         swift_body += '''
 // MARK: - Obj-C Fetch
 
-// TODO: We may eventually want to define some combination of:
-//
-// * fetchCursor, fetchOne, fetchAll, etc. (ala GRDB)
-// * Optional "where clause" parameters for filtering.
-// * Async flavors with completions.
-//
-// TODO: I've defined flavors that take a read transaction.
-//       Or we might take a "connection" if we end up having that class.
 @objc
 public extension %(class_name)s {
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %(class_name)sCursor {

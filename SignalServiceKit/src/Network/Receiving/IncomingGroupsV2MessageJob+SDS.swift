@@ -96,7 +96,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Rework metadata to not include, for example, columns, column indices.
 extension IncomingGroupsV2MessageJob {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
@@ -223,8 +222,6 @@ extension IncomingGroupsV2MessageJobSerializer {
     static var groupIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "groupId", columnType: .blob, isOptional: true) }
     static var serverDeliveryTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64) }
 
-    // TODO: We should decide on a naming convention for
-    //       tables that store models.
     public static var table: SDSTableMetadata {
         SDSTableMetadata(collection: IncomingGroupsV2MessageJob.collection(),
                          tableName: "model_IncomingGroupsV2MessageJob",
@@ -380,14 +377,6 @@ public class IncomingGroupsV2MessageJobCursor: NSObject, SDSCursor {
 
 // MARK: - Obj-C Fetch
 
-// TODO: We may eventually want to define some combination of:
-//
-// * fetchCursor, fetchOne, fetchAll, etc. (ala GRDB)
-// * Optional "where clause" parameters for filtering.
-// * Async flavors with completions.
-//
-// TODO: I've defined flavors that take a read transaction.
-//       Or we might take a "connection" if we end up having that class.
 @objc
 public extension IncomingGroupsV2MessageJob {
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> IncomingGroupsV2MessageJobCursor {
