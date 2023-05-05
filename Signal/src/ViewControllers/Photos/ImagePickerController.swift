@@ -423,7 +423,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         guard navigationController?.topViewController == self else {
             collectionPickerController.view.removeFromSuperview()
             collectionPickerController.removeFromParent()
-            // TODO: Custom transition
             titleView.rotateIcon(.down)
             navigationController?.popToRootViewController(animated: true)
             return
@@ -562,6 +561,15 @@ extension ImagePickerGridController: UIGestureRecognizerDelegate {
     }
 }
 
+extension ImagePickerGridController: UINavigationControllerDelegate {
+    func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        // If collectionPickerController is a descendent, that means the user is browsing folders.
+        // If it isn't, that means hideCollectionPicker has been called and we want to drop the view down.
+        guard !collectionPickerController.view.isDescendant(of: view) else { return nil }
+        return AnimationController()
+    }
+}
+
 private protocol TitleViewDelegate: AnyObject {
     func titleViewWasTapped(_ titleView: TitleView)
 }
@@ -668,6 +676,28 @@ extension ImagePickerGridController: TitleViewDelegate {
             hideCollectionPicker()
         } else {
             showCollectionPicker()
+        }
+    }
+}
+
+private class AnimationController: NSObject, UIViewControllerAnimatedTransitioning {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+        0.25
+    }
+
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        guard let fromView = transitionContext.view(forKey: .from),
+              let toView = transitionContext.view(forKey: .to) else {
+            owsFailDebug("Missing view controllers.")
+            return transitionContext.completeTransition(false)
+        }
+
+        transitionContext.containerView.insertSubview(toView, at: 0)
+
+        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: .curveEaseInOut) {
+            fromView.frame = fromView.frame.offsetBy(dx: 0, dy: fromView.height)
+        } completion: { _ in
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
     }
 }
