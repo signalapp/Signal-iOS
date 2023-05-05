@@ -232,12 +232,12 @@ class PhotoCollectionContents {
     }
 }
 
-class PhotoCollection {
+class PhotoAlbum {
     private let collection: PHAssetCollection
 
     // The user never sees this collection, but we use it for a null object pattern
     // when the user has denied photos access.
-    static let empty = PhotoCollection(collection: PHAssetCollection())
+    static let empty = PhotoAlbum(collection: PHAssetCollection())
 
     init(collection: PHAssetCollection) {
         self.collection = collection
@@ -263,9 +263,73 @@ class PhotoCollection {
     }
 }
 
-extension PhotoCollection: Equatable {
-    static func == (lhs: PhotoCollection, rhs: PhotoCollection) -> Bool {
+extension PhotoAlbum: Equatable {
+    static func == (lhs: PhotoAlbum, rhs: PhotoAlbum) -> Bool {
         return lhs.collection == rhs.collection
+    }
+}
+
+class PhotoCollectionFolder {
+    private let collection: PHCollectionList
+
+    init(collectionList: PHCollectionList) {
+        self.collection = collectionList
+    }
+
+    func localizedTitle() -> String {
+        guard
+            let localizedTitle = collection.localizedTitle?.stripped,
+            !localizedTitle.isEmpty
+        else {
+            return OWSLocalizedString("PHOTO_PICKER_UNNAMED_COLLECTION", comment: "label for system photo collections which have no name.")
+        }
+        return localizedTitle
+    }
+
+    // TODO: Update return type.
+    func contents() -> [PhotoCollection] {
+        let fetchResult = PHAssetCollection.fetchCollections(in: collection, options: nil)
+        let collections = fetchResult.objects(at: IndexSet(0..<fetchResult.count)).compactMap { collection in
+            if let assetCollection = collection as? PHAssetCollection {
+                return PhotoCollection(collection: assetCollection)
+            } else if let assetCollectionList = collection as? PHCollectionList {
+                return PhotoCollection(collectionList: assetCollectionList)
+            }
+            return nil
+        }
+        return collections
+    }
+}
+
+extension PhotoCollectionFolder: Equatable {
+    static func == (lhs: PhotoCollectionFolder, rhs: PhotoCollectionFolder) -> Bool {
+        return lhs.collection == rhs.collection
+    }
+}
+
+enum PhotoCollection {
+    case album(PhotoAlbum)
+    case folder(PhotoCollectionFolder)
+
+    // The user never sees this collection, but we use it for a null object pattern
+    // when the user has denied photos access.
+    static let empty = PhotoCollection.album(.empty)
+
+    init(collection: PHAssetCollection) {
+        self = .album(PhotoAlbum(collection: collection))
+    }
+
+    init(collectionList: PHCollectionList) {
+        self = .folder(PhotoCollectionFolder(collectionList: collectionList))
+    }
+
+    func localizedTitle() -> String {
+        switch self {
+        case .album(let album):
+            return album.localizedTitle()
+        case .folder(let folder):
+            return folder.localizedTitle()
+        }
     }
 }
 
@@ -296,21 +360,21 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
 
-    func defaultPhotoCollection() -> PhotoCollection {
-        var fetchedCollection: PhotoCollection?
+    func defaultPhotoCollection() -> PhotoAlbum {
+        var fetchedCollection: PhotoAlbum?
         PHAssetCollection.fetchAssetCollections(
             with: .smartAlbum,
             subtype: .smartAlbumUserLibrary,
             options: fetchOptions
         ).enumerateObjects { collection, _, stop in
-            fetchedCollection = PhotoCollection(collection: collection)
+            fetchedCollection = PhotoAlbum(collection: collection)
             stop.pointee = true
         }
 
         guard let photoCollection = fetchedCollection else {
             Logger.info("Using empty photo collection.")
             assert(PHPhotoLibrary.authorizationStatus() == .denied)
-            return PhotoCollection.empty
+            return PhotoAlbum.empty
         }
 
         return photoCollection
@@ -336,18 +400,17 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
             }
             collectionIds.insert(collectionId)
 
-            guard let assetCollection = collection as? PHAssetCollection else {
-                // TODO: Add support for albmus nested in folders.
-                if collection is PHCollectionList { return }
+            if let assetCollection = collection as? PHAssetCollection {
+                guard !hideIfEmpty || assetCollection.estimatedAssetCount > 0 else {
+                    return
+                }
+
+                collections.append(PhotoCollection(collection: assetCollection))
+            } else if let assetCollectionList = collection as? PHCollectionList {
+                collections.append(PhotoCollection(collectionList: assetCollectionList))
+            } else {
                 owsFailDebug("Asset collection has unexpected type: \(type(of: collection))")
-                return
             }
-
-            guard !hideIfEmpty || assetCollection.estimatedAssetCount > 0 else {
-                return
-            }
-
-            collections.append(PhotoCollection(collection: assetCollection))
         }
         let processPHAssetCollections: ((fetchResult: PHFetchResult<PHAssetCollection>, hideIfEmpty: Bool)) -> Void = { arg in
             let (fetchResult, hideIfEmpty) = arg

@@ -7,21 +7,30 @@ import Foundation
 import Photos
 
 protocol PhotoCollectionPickerDelegate: AnyObject {
-    func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection)
+    func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoAlbum)
 }
 
 class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDelegate {
+
+    override var prefersStatusBarHidden: Bool {
+        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveCall
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
     private weak var collectionDelegate: PhotoCollectionPickerDelegate?
 
     private let library: PhotoLibrary
     private var photoCollections: [PhotoCollection]
+    private let folder: PhotoCollectionFolder?
 
     required init(library: PhotoLibrary,
-                  collectionDelegate: PhotoCollectionPickerDelegate) {
+                  collectionDelegate: PhotoCollectionPickerDelegate,
+                  folder: PhotoCollectionFolder? = nil) {
         self.library = library
         self.photoCollections = library.allPhotoCollections()
         self.collectionDelegate = collectionDelegate
+        self.folder = folder
         super.init()
     }
 
@@ -33,6 +42,8 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         library.add(delegate: self)
 
         updateContents()
+
+        preferredNavigationBarStyle = OWSNavigationBarStyle.alwaysDark.rawValue
     }
 
     override func applyTheme() {
@@ -45,7 +56,11 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     // MARK: -
 
     private func updateContents() {
-        photoCollections = library.allPhotoCollections()
+        if let folder {
+            photoCollections = folder.contents()
+        } else {
+            photoCollections = library.allPhotoCollections()
+        }
 
         let sectionItems = photoCollections.map { collection in
             return OWSTableItem(customCellBlock: { [weak self] in
@@ -78,7 +93,21 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         cell.backgroundColor = Theme.darkThemeBackgroundColor
         cell.selectedBackgroundView?.backgroundColor = UIColor(white: 0.2, alpha: 1)
 
-        let contents = collection.contents()
+        let kImageSize: CGFloat = 80
+        let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(square: kImageSize))
+
+        let contentCount: Int
+        let assetItem: PhotoPickerAssetItem?
+
+        switch collection {
+        case .album(let album):
+            let contents = album.contents()
+            contentCount = contents.assetCount
+            assetItem = contents.lastAssetItem(photoMediaSize: photoMediaSize)
+        case .folder(let folder):
+            contentCount = folder.contents().count
+            assetItem = nil // TODO: Folder item(s)
+        }
 
         let titleLabel = UILabel()
         titleLabel.text = collection.localizedTitle()
@@ -86,7 +115,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         titleLabel.textColor = Theme.darkThemePrimaryColor
 
         let countLabel = UILabel()
-        countLabel.text = numberFormatter.string(for: contents.assetCount)
+        countLabel.text = numberFormatter.string(for: contentCount)
         countLabel.font = UIFont.dynamicTypeCaption1
         countLabel.textColor = Theme.darkThemePrimaryColor
 
@@ -98,7 +127,6 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        let kImageSize: CGFloat = 80
         imageView.autoSetDimensions(to: CGSize(square: kImageSize))
 
         let hStackView = UIStackView(arrangedSubviews: [imageView, textStack])
@@ -106,8 +134,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         hStackView.alignment = .center
         hStackView.spacing = 11
 
-        let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(square: kImageSize))
-        if let assetItem = contents.lastAssetItem(photoMediaSize: photoMediaSize) {
+        if let assetItem {
             imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
                 AssertIsOnMainThread()
 
@@ -133,7 +160,19 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     // MARK: Actions
 
     func didSelectCollection(collection: PhotoCollection) {
-        collectionDelegate?.photoCollectionPicker(self, didPickCollection: collection)
+        guard let collectionDelegate else { return }
+        switch collection {
+        case .album(let album):
+            collectionDelegate.photoCollectionPicker(self, didPickCollection: album)
+        case .folder(let folder):
+            let collectionPickerController = PhotoCollectionPickerController(
+                library: library,
+                collectionDelegate: collectionDelegate,
+                folder: folder
+            )
+            // TODO: Set title view
+            navigationController?.pushViewController(collectionPickerController, animated: true)
+        }
     }
 
     // MARK: PhotoLibraryDelegate

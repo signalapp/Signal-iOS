@@ -30,7 +30,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     weak var dataSource: ImagePickerGridControllerDataSource?
 
     private let library: PhotoLibrary = PhotoLibrary()
-    private var photoCollection: PhotoCollection
+    private var photoCollection: PhotoAlbum
     private var photoCollectionContents: PhotoCollectionContents
     private let photoMediaSize = PhotoMediaSize()
 
@@ -420,6 +420,15 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         assert(isShowingCollectionPickerController)
         isShowingCollectionPickerController = false
 
+        guard navigationController?.topViewController == self else {
+            collectionPickerController.view.removeFromSuperview()
+            collectionPickerController.removeFromParent()
+            // TODO: Custom transition
+            titleView.rotateIcon(.down)
+            navigationController?.popToRootViewController(animated: true)
+            return
+        }
+
         UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
             self.collectionPickerController.view.frame = self.collectionPickerController.view.frame.offsetBy(
                 dx: 0,
@@ -434,7 +443,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: - PhotoCollectionPickerDelegate
 
-    func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection) {
+    func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoAlbum) {
         BenchEventStart(title: "Picked Collection", eventId: "Picked Collection")
         defer { BenchEventComplete(eventId: "Picked Collection") }
         guard photoCollection != collection else {
