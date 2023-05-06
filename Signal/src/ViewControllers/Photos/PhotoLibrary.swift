@@ -232,6 +232,47 @@ class PhotoCollectionContents {
     }
 }
 
+class PhotoCollectionFolderContents {
+    private let fetchResult: PHFetchResult<PHCollection>
+
+    init(fetchResult: PHFetchResult<PHCollection>) {
+        self.fetchResult = fetchResult
+    }
+
+    var collectionCount: Int {
+        fetchResult.count
+    }
+
+    func collections() -> [PhotoCollection] {
+        fetchResult
+            .objects(at: IndexSet(0..<fetchResult.count))
+            .compactMap(PhotoCollection.init(collection:))
+    }
+
+    func previewAssetItems(photoMediaSize: PhotoMediaSize) -> [PhotoPickerAssetItem] {
+        var assetItems: [PhotoPickerAssetItem] = []
+
+        let options = PHFetchOptions()
+        options.fetchLimit = 1
+
+        for i in 0..<fetchResult.count {
+            guard let assetCollection = fetchResult.object(at: i) as? PHAssetCollection else { continue }
+            let contentsFetchResults = PHAsset.fetchAssets(in: assetCollection, options: options)
+            let contents = PhotoCollectionContents(fetchResult: contentsFetchResults, localizedTitle: assetCollection.localizedTitle)
+
+            if let assetItem = contents.firstAssetItem(photoMediaSize: photoMediaSize) {
+                assetItems.append(assetItem)
+            }
+
+            if assetItems.count >= 4 {
+                break
+            }
+        }
+        
+        return assetItems
+    }
+}
+
 class PhotoAlbum {
     private let collection: PHAssetCollection
 
@@ -286,18 +327,9 @@ class PhotoCollectionFolder {
         return localizedTitle
     }
 
-    // TODO: Update return type.
-    func contents() -> [PhotoCollection] {
+    func contents() -> PhotoCollectionFolderContents {
         let fetchResult = PHAssetCollection.fetchCollections(in: collection, options: nil)
-        let collections = fetchResult.objects(at: IndexSet(0..<fetchResult.count)).compactMap { collection in
-            if let assetCollection = collection as? PHAssetCollection {
-                return PhotoCollection(collection: assetCollection)
-            } else if let assetCollectionList = collection as? PHCollectionList {
-                return PhotoCollection(collectionList: assetCollectionList)
-            }
-            return nil
-        }
-        return collections
+        return PhotoCollectionFolderContents(fetchResult: fetchResult)
     }
 }
 
@@ -315,12 +347,22 @@ enum PhotoCollection {
     // when the user has denied photos access.
     static let empty = PhotoCollection.album(.empty)
 
-    init(collection: PHAssetCollection) {
-        self = .album(PhotoAlbum(collection: collection))
+    init(assetCollection: PHAssetCollection) {
+        self = .album(PhotoAlbum(collection: assetCollection))
     }
 
     init(collectionList: PHCollectionList) {
         self = .folder(PhotoCollectionFolder(collectionList: collectionList))
+    }
+
+    init?(collection: PHCollection) {
+        if let assetCollection = collection as? PHAssetCollection {
+            self.init(assetCollection: assetCollection)
+        } else if let assetCollectionList = collection as? PHCollectionList {
+            self.init(collectionList: assetCollectionList)
+        } else {
+            return nil
+        }
     }
 
     func localizedTitle() -> String {
@@ -405,7 +447,7 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
                     return
                 }
 
-                collections.append(PhotoCollection(collection: assetCollection))
+                collections.append(PhotoCollection(assetCollection: assetCollection))
             } else if let assetCollectionList = collection as? PHCollectionList {
                 collections.append(PhotoCollection(collectionList: assetCollectionList))
             } else {

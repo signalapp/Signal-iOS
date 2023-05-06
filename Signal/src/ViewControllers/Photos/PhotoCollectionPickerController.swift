@@ -57,7 +57,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
 
     private func updateContents() {
         if let folder {
-            photoCollections = folder.contents()
+            photoCollections = folder.contents().collections()
         } else {
             photoCollections = library.allPhotoCollections()
         }
@@ -94,10 +94,14 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         cell.selectedBackgroundView?.backgroundColor = UIColor(white: 0.2, alpha: 1)
 
         let kImageSize: CGFloat = 80
+        let folderImageSpacing: CGFloat = 1
+        let folderImageSize = (kImageSize - folderImageSpacing) / 2
         let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(square: kImageSize))
+        let folderMediaSize = PhotoMediaSize(thumbnailSize: CGSize(square: folderImageSize))
 
         let contentCount: Int
-        let assetItem: PhotoPickerAssetItem?
+        var assetItem: PhotoPickerAssetItem?
+        var assetItems: [PhotoPickerAssetItem]?
 
         switch collection {
         case .album(let album):
@@ -105,8 +109,10 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
             contentCount = contents.assetCount
             assetItem = contents.lastAssetItem(photoMediaSize: photoMediaSize)
         case .folder(let folder):
-            contentCount = folder.contents().count
-            assetItem = nil // TODO: Folder item(s)
+            let contents = folder.contents()
+            contentCount = contents.collectionCount
+            let previewAssetItems = contents.previewAssetItems(photoMediaSize: folderMediaSize)
+            assetItems = previewAssetItems
         }
 
         let titleLabel = UILabel()
@@ -135,19 +141,34 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         hStackView.spacing = 11
 
         if let assetItem {
-            imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
-                AssertIsOnMainThread()
+            // Album
+            loadThumbnail(for: imageView, using: assetItem)
+        } else if let assetItems {
+            // Folder
+            assetItems.enumerated().forEach { i, asset in
+                let folderImageView = UIImageView()
+                folderImageView.contentMode = .scaleAspectFill
+                folderImageView.clipsToBounds = true
 
-                guard let imageView = imageView else {
-                    return
+                imageView.addSubview(folderImageView)
+
+                folderImageView.autoSetDimensions(to: CGSize(square: folderImageSize))
+
+                // 2x2 grid
+                // 0 1
+                // 2 3
+                if [0, 2].contains(i) {
+                    folderImageView.autoPinEdge(toSuperviewEdge: .leading)
+                } else {
+                    folderImageView.autoPinEdge(toSuperviewEdge: .trailing)
+                }
+                if [0, 1].contains(i) {
+                    folderImageView.autoPinEdge(toSuperviewEdge: .top)
+                } else {
+                    folderImageView.autoPinEdge(toSuperviewEdge: .bottom)
                 }
 
-                guard let image = image else {
-                    owsFailDebug("image was unexpectedly nil")
-                    return
-                }
-
-                imageView.image = image
+                loadThumbnail(for: folderImageView, using: asset)
             }
         }
 
@@ -155,6 +176,23 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         hStackView.autoPinEdgesToSuperviewMargins()
 
         return cell
+    }
+
+    private func loadThumbnail(for imageView: UIImageView, using assetItem: PhotoPickerAssetItem) {
+        imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
+            AssertIsOnMainThread()
+
+            guard let imageView = imageView else {
+                return
+            }
+
+            guard let image = image else {
+                owsFailDebug("image was unexpectedly nil")
+                return
+            }
+
+            imageView.image = image
+        }
     }
 
     // MARK: Actions
