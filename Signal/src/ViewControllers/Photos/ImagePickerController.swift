@@ -93,7 +93,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         titleView.delegate = self
         titleView.tintColor = .ows_gray05
         titleView.text = photoCollection.localizedTitle()
-        navigationItem.titleView = titleView
+
+        // Add as a subview to the navigation bar so it appears on any pushed folder views
+        navigationController?.navigationBar.addSubview(titleView)
+        titleView.autoCenterInSuperview()
+
         self.titleView = titleView
 
         view.addSubview(doneButton)
@@ -423,7 +427,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         guard navigationController?.topViewController == self else {
             collectionPickerController.view.removeFromSuperview()
             collectionPickerController.removeFromParent()
-            titleView.rotateIcon(.down)
+            UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
+                self.titleView.rotateIcon(.down)
+            }
             navigationController?.popToRootViewController(animated: true)
             return
         }

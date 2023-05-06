@@ -170,7 +170,6 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
                 collectionDelegate: collectionDelegate,
                 folder: folder
             )
-            // TODO: Set title view
             navigationController?.pushViewController(collectionPickerController, animated: true)
         }
     }
