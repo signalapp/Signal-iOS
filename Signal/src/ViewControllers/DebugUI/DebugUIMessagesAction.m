@@ -6,7 +6,7 @@
 #import "DebugUIMessagesAction.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 
 NS_ASSUME_NONNULL_BEGIN
 

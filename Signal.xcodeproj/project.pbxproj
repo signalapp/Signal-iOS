@@ -14934,6 +14934,7 @@
 					"$(inherited)",
 					"DEBUG=1",
 					"TESTABLE_BUILD=1",
+					USE_DEBUG_UI,
 				);
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
@@ -14965,7 +14966,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Signal Messenger, LLC";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_SWIFT_FLAGS = "-DTESTABLE_BUILD";
+				OTHER_SWIFT_FLAGS = "-DTESTABLE_BUILD -DUSE_DEBUG_UI";
 				SDKROOT = iphoneos;
 				SIGNAL_BUNDLEID_PREFIX = org.whispersystems;
 				SIGNAL_MERCHANTID = org.signalfoundation;
@@ -15089,7 +15090,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
 					"$(inherited)",
 					HAVE_CONFIG_H,
 				);

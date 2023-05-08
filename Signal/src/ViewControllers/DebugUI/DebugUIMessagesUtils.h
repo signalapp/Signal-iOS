@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 
 NS_ASSUME_NONNULL_BEGIN
 

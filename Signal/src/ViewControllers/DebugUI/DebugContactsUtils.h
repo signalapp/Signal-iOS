@@ -5,7 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 
 @class CNContact;
 

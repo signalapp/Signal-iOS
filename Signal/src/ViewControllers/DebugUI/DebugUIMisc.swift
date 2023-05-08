@@ -7,7 +7,7 @@ import Foundation
 import MobileCoin
 import SignalServiceKit
 
-#if DEBUG
+#if USE_DEBUG_UI
 
 @objc
 public extension DebugUIMisc {

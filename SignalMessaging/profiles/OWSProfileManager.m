@@ -356,7 +356,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return [self profileSnapshotForUserProfile:self.localUserProfile shouldIncludeAvatar:shouldIncludeAvatar];
 }
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 - (void)logLocalProfile
 {
     OWSLogVerbose(@"Local profile: %@", self.localUserProfile.dictionaryValue);
@@ -1907,7 +1907,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self rotateLocalProfileKeyIfNecessary]; });
 }
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 + (void)discardAllProfileKeysWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     NSArray<OWSUserProfile *> *userProfiles = [OWSUserProfile anyFetchAllWithTransaction:transaction];

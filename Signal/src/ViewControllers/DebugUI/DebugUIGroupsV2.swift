@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-#if DEBUG
+#if USE_DEBUG_UI
 
 class DebugUIGroupsV2: DebugUIPage {
 

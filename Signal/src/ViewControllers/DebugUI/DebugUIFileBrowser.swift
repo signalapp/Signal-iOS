@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#if DEBUG
+import SignalUI
+
+#if USE_DEBUG_UI
 
 @objc
 class DebugUIFileBrowser: OWSTableViewController {

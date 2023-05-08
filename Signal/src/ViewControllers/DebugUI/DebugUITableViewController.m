@@ -15,7 +15,7 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -160,15 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     viewController.contents = contents;
     [viewController presentFromViewController:fromViewController];
-}
-
-+ (BOOL)useDebugUI
-{
-#ifdef USE_DEBUG_UI
-    return YES;
-#else
-    return NO;
-#endif
 }
 
 @end

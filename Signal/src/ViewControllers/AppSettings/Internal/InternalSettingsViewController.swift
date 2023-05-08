@@ -23,16 +23,14 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         let debugSection = OWSTableSection()
 
-        #if DEBUG
-        if DebugUITableViewController.useDebugUI() {
-            debugSection.add(.disclosureItem(
-                withText: "Debug UI",
-                actionBlock: { [weak self] in
-                    guard let self = self else { return }
-                    DebugUITableViewController.presentDebugUI(from: self)
-                }
-            ))
-        }
+        #if USE_DEBUG_UI
+        debugSection.add(.disclosureItem(
+            withText: "Debug UI",
+            actionBlock: { [weak self] in
+                guard let self = self else { return }
+                DebugUITableViewController.presentDebugUI(from: self)
+            }
+        ))
         #endif
 
         if DebugFlags.audibleErrorLogging {

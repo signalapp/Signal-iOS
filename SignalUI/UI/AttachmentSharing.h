@@ -40,7 +40,7 @@ typedef void (^AttachmentSharingCompletion)(void);
                     sender:(nullable id)sender
                 completion:(nullable AttachmentSharingCompletion)completion;
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 + (void)showShareUIForUIImage:(UIImage *)image;
 #endif
 

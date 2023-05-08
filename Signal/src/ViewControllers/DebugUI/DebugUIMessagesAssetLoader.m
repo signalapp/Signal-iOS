@@ -12,7 +12,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachment.h>
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 
 NS_ASSUME_NONNULL_BEGIN
 

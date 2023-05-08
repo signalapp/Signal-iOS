@@ -27,7 +27,7 @@ void showDebugUI(TSThread *thread, UIViewController *fromViewController)
 #endif
 }
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 
 @implementation DebugUIPage
 

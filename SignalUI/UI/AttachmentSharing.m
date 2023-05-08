@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         completion:completion];
 }
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 + (void)showShareUIForUIImage:(UIImage *)image
 {
     OWSAssertDebug(image);

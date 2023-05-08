@@ -843,7 +843,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
 #pragma mark - Debug
 
-#if DEBUG
+#if USE_DEBUG_UI
 - (void)clearIdentityState:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);

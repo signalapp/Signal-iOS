@@ -10,7 +10,7 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalUI/OWSTableViewController.h>
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 
 NS_ASSUME_NONNULL_BEGIN
 

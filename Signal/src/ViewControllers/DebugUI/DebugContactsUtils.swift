@@ -5,7 +5,7 @@
 
 import Foundation
 
-#if DEBUG
+#if USE_DEBUG_UI
 
 @objc
 public extension DebugContactsUtils {

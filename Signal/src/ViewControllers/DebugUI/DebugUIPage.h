@@ -12,12 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 BOOL shouldUseDebugUI(void);
 void showDebugUI(TSThread *thread, UIViewController *fromViewController);
 
-// This preprocessor symbol controls whether or not the Debug UI is active.
-//
-// To show the DebugUI in production builds, comment out the #ifdef and #endif
-#ifdef DEBUG
-
-#define USE_DEBUG_UI
+#ifdef USE_DEBUG_UI
 
 @class OWSTableSection;
 @class TSThread;

@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
+
+#if USE_DEBUG_UI
 
 @objc
 class DebugUIReportsViewController: OWSTableViewController2 {
@@ -104,3 +106,5 @@ class DebugUIReportsViewController: OWSTableViewController2 {
         return reportText
     }
 }
+
+#endif

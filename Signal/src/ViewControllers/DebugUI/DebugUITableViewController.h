@@ -6,7 +6,7 @@
 #import "DebugUIPage.h"
 #import <SignalUI/OWSTableViewController.h>
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,8 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)presentDebugUIFromViewController:(UIViewController *)fromViewController;
 
 + (void)presentDebugUIForThread:(TSThread *)thread fromViewController:(UIViewController *)fromViewController;
-
-+ (BOOL)useDebugUI;
 
 @end
 

@@ -140,7 +140,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (NSString *)groupKeyForGroupId:(NSData *)groupId;
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 + (void)discardAllProfileKeysWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)logLocalProfile;

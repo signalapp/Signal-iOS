@@ -130,7 +130,7 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
 
 #pragma mark - Debug
 
-#if DEBUG
+#if USE_DEBUG_UI
 // Clears everything except the local identity key.
 - (void)clearIdentityState:(SDSAnyWriteTransaction *)transaction;
 #endif
