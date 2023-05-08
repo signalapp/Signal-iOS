@@ -382,6 +382,7 @@ public extension TSMessage {
         }
 
         let mediaAttachment = self.mediaAttachments(with: tx.unwrapGrdbRead).first
+        let attachmentEmoji = mediaAttachment?.emoji
         let attachmentDescription = mediaAttachment?.description()
 
         if isViewOnceMessage {
@@ -410,7 +411,7 @@ public extension TSMessage {
         }
 
         if let bodyDescription = bodyDescription?.nilIfEmpty {
-            return .body(bodyDescription, prefix: attachmentDescription?.nilIfEmpty?.appending(" "), ranges: bodyRanges)
+            return .body(bodyDescription, prefix: attachmentEmoji?.nilIfEmpty?.appending(" "), ranges: bodyRanges)
         } else if let attachmentDescription = attachmentDescription?.nilIfEmpty {
             return .body(attachmentDescription, prefix: nil, ranges: bodyRanges)
         } else if let contactShare {
