@@ -5,7 +5,6 @@
 
 #import "RESTNetworkManager.h"
 #import "OWSQueues.h"
-#import "TSRequest.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

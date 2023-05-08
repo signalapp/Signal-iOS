@@ -162,7 +162,7 @@ public extension OWSRequestFactory {
             parameters: nil
         )
         result.shouldHaveAuthorizationHeaders = false
-        result.shouldRedactUrlInLogs = true
+        result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
 
@@ -173,7 +173,7 @@ public extension OWSRequestFactory {
             parameters: nil
         )
         result.shouldHaveAuthorizationHeaders = false
-        result.shouldRedactUrlInLogs = true
+        result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
 
@@ -195,7 +195,7 @@ public extension OWSRequestFactory {
             parameters: nil
         )
         result.shouldHaveAuthorizationHeaders = false
-        result.shouldRedactUrlInLogs = true
+        result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
 }

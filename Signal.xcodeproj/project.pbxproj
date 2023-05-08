@@ -900,6 +900,7 @@
 		66AF4D7328D1377E008A156E /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
 		66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */; };
+		66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1302A05D28A008DDE72 /* TSRequest.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
 		66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */; };
 		66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */; };
@@ -2048,9 +2049,7 @@
 		F9C5CDB3289453B400548EEE /* GiphyImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADF289453B200548EEE /* GiphyImageInfo.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDB4289453B400548EEE /* HTTPUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE0289453B200548EEE /* HTTPUtils.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDB5289453B400548EEE /* OWSRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE2289453B200548EEE /* OWSRequestFactory.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDB6289453B400548EEE /* TSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE3289453B200548EEE /* TSRequest.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDB7289453B400548EEE /* OWSRequestFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAE4289453B200548EEE /* OWSRequestFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CDB8289453B400548EEE /* TSRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAE5289453B200548EEE /* TSRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDB9289453B400548EEE /* OWSRequestFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE6289453B200548EEE /* OWSRequestFactory.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDBA289453B400548EEE /* OWSDevicesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDBB289453B400548EEE /* SignalServiceProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3398,6 +3397,7 @@
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
 		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
 		66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextOnboardingOverlayView.swift; sourceTree = "<group>"; };
+		66C2B1302A05D28A008DDE72 /* TSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequest.swift; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
 		66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentOnboarding.swift; sourceTree = "<group>"; };
 		66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextAssociatedData.swift; sourceTree = "<group>"; };
@@ -4629,9 +4629,7 @@
 		F9C5CADF289453B200548EEE /* GiphyImageInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyImageInfo.swift; sourceTree = "<group>"; };
 		F9C5CAE0289453B200548EEE /* HTTPUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPUtils.swift; sourceTree = "<group>"; };
 		F9C5CAE2289453B200548EEE /* OWSRequestFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSRequestFactory.swift; sourceTree = "<group>"; };
-		F9C5CAE3289453B200548EEE /* TSRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequest.m; sourceTree = "<group>"; };
 		F9C5CAE4289453B200548EEE /* OWSRequestFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSRequestFactory.h; sourceTree = "<group>"; };
-		F9C5CAE5289453B200548EEE /* TSRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequest.h; sourceTree = "<group>"; };
 		F9C5CAE6289453B200548EEE /* OWSRequestFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSRequestFactory.m; sourceTree = "<group>"; };
 		F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDevicesService.swift; sourceTree = "<group>"; };
 		F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceProfile.swift; sourceTree = "<group>"; };
@@ -9191,8 +9189,7 @@
 				F9C5CAE4289453B200548EEE /* OWSRequestFactory.h */,
 				F9C5CAE6289453B200548EEE /* OWSRequestFactory.m */,
 				F9C5CAE2289453B200548EEE /* OWSRequestFactory.swift */,
-				F9C5CAE5289453B200548EEE /* TSRequest.h */,
-				F9C5CAE3289453B200548EEE /* TSRequest.m */,
+				66C2B1302A05D28A008DDE72 /* TSRequest.swift */,
 			);
 			path = Requests;
 			sourceTree = "<group>";
@@ -9659,7 +9656,6 @@
 				F9C5CCA7289453B300548EEE /* TSPreKeyManager.h in Headers */,
 				F9C5CCCC289453B300548EEE /* TSPrivateStoryThread.h in Headers */,
 				F9C5CC03289453B300548EEE /* TSQuotedMessage.h in Headers */,
-				F9C5CDB8289453B400548EEE /* TSRequest.h in Headers */,
 				F9C5CD5B289453B300548EEE /* TSStorageKeys.h in Headers */,
 				F9C5CCBA289453B300548EEE /* TSThread.h in Headers */,
 				F9C5CBF1289453B300548EEE /* TSUnreadIndicatorInteraction.h in Headers */,
@@ -12415,7 +12411,7 @@
 				F9C5CCD3289453B300548EEE /* TSPrivateStoryThread.m in Sources */,
 				F9C5CCCB289453B300548EEE /* TSPrivateStoryThread.swift in Sources */,
 				F9C5CBE4289453B300548EEE /* TSQuotedMessage.m in Sources */,
-				F9C5CDB6289453B400548EEE /* TSRequest.m in Sources */,
+				66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */,
 				6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */,
 				F9C5CCCF289453B300548EEE /* TSThread+OWS.swift in Sources */,
 				F9C5CCDF289453B300548EEE /* TSThread+SDS.swift in Sources */,

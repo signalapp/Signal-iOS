@@ -204,6 +204,16 @@ final class OWSScrubbingLogFormatterTest: XCTestCase {
             }()
             let fakeGroupId = Randomness.generateRandomBytes(fakeGroupIdCount)
             let fakeGroupIdString = TSGroupThread.defaultThreadId(forGroupId: fakeGroupId)
+            // Unfortunately, a portion of the fake groupID can look like a base64-encoded
+            // uuid. For example:
+            // "SAFsdfdsafSDGHJ/SggGREgAFhGEWRGCDSFfds=="
+            // Is that a long group id, or a segment of a url with one path segment being
+            // "SAFsdfdsafSDGHJ" and another path segment being the 22 char length + 2 char
+            // padding of a base64 encoded uuid? We can't know with a simple regex.
+            // Just stop that case here.
+            if fakeGroupIdString.hasSuffix("=="), fakeGroupIdString.suffix(25).starts(with: "/") {
+                continue
+            }
             let input = "Hello \(fakeGroupIdString)!"
 
             let result = format(input)
@@ -321,6 +331,63 @@ final class OWSScrubbingLogFormatterTest: XCTestCase {
                 expectedOutput,
                 "Failed redaction: \(input)"
             )
+        }
+    }
+
+    func testBase64UUIDsScrubbed_Random() {
+        let expectedOutputPrefix = "My base64 UUID is [ REDACTED_BASE64_UUID:"
+        let expectedOutputSuffix = "... ]"
+        let expectedOutputLength = expectedOutputPrefix.count + 3 + expectedOutputSuffix.count
+
+        for _ in (1...10) {
+            let uuid = UUID().data.base64EncodedString()
+            let result = stripDate(fromRawMessage: format("My base64 UUID is \(uuid)"))
+            XCTAssertTrue(result.hasPrefix(expectedOutputPrefix), "Failed to redact base64 UUID string: \(result)")
+            XCTAssertTrue(result.hasSuffix(expectedOutputSuffix), "Failed to redact base64 UUID string: \(result)")
+            XCTAssertEqual(result.count, expectedOutputLength, "Failed to redact base64 UUID string: \(result)")
+            XCTAssertFalse(result.contains(uuid), "Failed to redact base64 UUID string: \(result)")
+        }
+    }
+
+    func testBase64UUIDsScrubbed_Specific() {
+        let uuid = "GW/VMbPjTiyr5cSoblKBmQ=="
+        let result = format("My base64 UUID is \(uuid)")
+        XCTAssertEqual(
+            stripDate(fromRawMessage: result),
+            "My base64 UUID is [ REDACTED_BASE64_UUID:GW/... ]",
+            "Failed to redact base64 UUID string: \(uuid)"
+        )
+        XCTAssertFalse(result.contains(uuid), "Failed to redact base64 UUID string: \(uuid)")
+    }
+
+    func testBase64UUIDsScrubbed_SpecificInURL() {
+        var uuid = "sdfssAFFDSAFdsFFsdaFfg=="
+        var result = format("http://signal.org/\(uuid)")
+        XCTAssertEqual(
+            stripDate(fromRawMessage: result),
+            "http://signal.org/[ REDACTED_BASE64_UUID:sdf... ]",
+            "Failed to redact base64 UUID string: \(uuid)"
+        )
+        XCTAssertFalse(result.contains(uuid), "Failed to redact base64 UUID string: \(uuid)")
+
+        // Do one with a leading / in itself.
+        uuid = "/dfssAFFDSAFdsFFsdaFfg=="
+        result = format("http://signal.org/\(uuid)")
+        XCTAssertEqual(
+            stripDate(fromRawMessage: result),
+            "http://signal.org/[ REDACTED_BASE64_UUID:/df... ]",
+            "Failed to redact base64 UUID string: \(uuid)"
+        )
+        XCTAssertFalse(result.contains(uuid), "Failed to redact base64 UUID string: \(uuid)")
+    }
+
+    func testBase64UUIDsScrubbed_dontScrubDifferentLengths() {
+        for byteLength in [15, 17, 32, 1] {
+            for _ in (1...10) {
+                let uuid = Data.secRngGenBytes(byteLength).base64EncodedString()
+                let result = stripDate(fromRawMessage: format("My not base64 UUID is \(uuid)"))
+                XCTAssert(result.contains(uuid), "Incorrectly redacted non base64 UUID string: \(result)")
+            }
         }
     }
 }

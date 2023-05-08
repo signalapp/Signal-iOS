@@ -87,6 +87,28 @@ class OWSScrubbingLogFormatter: DDLogFileFormatterDefault {
             pattern: "[\\da-f]{11,}([\\da-f]{3})",
             options: .caseInsensitive,
             replacementTemplate: "[ REDACTED_HEX:...$1 ]"
+        ),
+        // Redact base64 encoded UUIDs.
+        // We take advantage of the known length of UUIDs (16 bytes, 128 bits),
+        // which when encoded to base64 means 22 chars (6 bits per char, so 128/6 = 21.3)
+        // plus we add padding ("=" is the reserved padding character) to make it 24.
+        // Otherwise we'd just be matching arbitrary length text since all letters are covered.
+        .init(
+            pattern: (
+                // Leading can be any non-matching character (so we
+                // want leading whitespace or something else)
+                // The exception is "/". The uuid might be in a url path,
+                // and we want to redact it, so we need to allow leading
+                // path delimiters.
+                "([^\\da-zA-Z+])"
+                // Capture the first 3 chars to retain after redaction
+                + "([\\da-zA-Z/+]{3})"
+                // Match the rest but throw it away
+                + "[\\da-zA-Z/+]{19}"
+                // Match the trailing padding
+                + "\\=\\="
+            ),
+            replacementTemplate: "$1[ REDACTED_BASE64_UUID:$2... ]"
         )
     ]
 

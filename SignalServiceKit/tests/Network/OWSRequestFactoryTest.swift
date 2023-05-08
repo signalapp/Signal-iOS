@@ -170,7 +170,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.url?.path, "v1/subscription/_4A")
         XCTAssertEqual(request.httpMethod, "PUT")
         XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
-        XCTAssertTrue(request.shouldRedactUrlInLogs)
     }
 
     func testDeleteSubscriberID() {
@@ -179,7 +178,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.url?.path, "v1/subscription/_4A")
         XCTAssertEqual(request.httpMethod, "DELETE")
         XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
-        XCTAssertTrue(request.shouldRedactUrlInLogs)
     }
 
     func testSubscriptionSetDefaultPaymentMethod() {
@@ -192,7 +190,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.url?.path, "v1/subscription/_4A/default_payment_method/STRIPE/xyz")
         XCTAssertEqual(request.httpMethod, "POST")
         XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
-        XCTAssertTrue(request.shouldRedactUrlInLogs)
     }
 
     // MARK: - Spam

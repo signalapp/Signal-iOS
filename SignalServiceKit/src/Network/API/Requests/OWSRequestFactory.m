@@ -10,11 +10,12 @@
 #import "ProfileManagerProtocol.h"
 #import "SignedPrekeyRecord.h"
 #import "TSAccountManager.h"
-#import "TSRequest.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+
+static NSString *const kSenderKeySendRequestBodyContentType = @"application/vnd.signal-messenger.mrm";
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -624,7 +625,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                 method:@"POST"
             parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
-    request.shouldRedactUrlInLogs = YES;
+    [request objc_applySuccessResponsesURLRedactionStrategy];
     return request;
 }
 
@@ -639,7 +640,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                 method:@"POST"
             parameters:@{ @"returnUrl" : returnUrl.absoluteString, @"cancelUrl" : cancelUrl.absoluteString }];
     request.shouldHaveAuthorizationHeaders = NO;
-    request.shouldRedactUrlInLogs = YES;
+    [request objc_applySuccessResponsesURLRedactionStrategy];
     return request;
 }
 
@@ -648,7 +649,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                               method:@"PUT"
                                          parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
-    request.shouldRedactUrlInLogs = YES;
+    [request objc_applySuccessResponsesURLRedactionStrategy];
     return request;
 }
 
@@ -659,7 +660,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                               method:@"POST"
                                          parameters:@{@"receiptCredentialRequest" : base64ReceiptCredentialRequest}];
     request.shouldHaveAuthorizationHeaders = NO;
-    request.shouldRedactUrlInLogs = YES;
+    [request objc_applySuccessResponsesURLRedactionStrategy];
     return request;
 }
 
@@ -681,7 +682,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@", base64SubscriberID]]
                 method:@"GET"
             parameters:@{}];
-    request.shouldRedactUrlInLogs = YES;
+    [request objc_applySuccessResponsesURLRedactionStrategy];
     request.shouldHaveAuthorizationHeaders = NO;
     return request;
 }

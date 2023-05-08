@@ -58,6 +58,7 @@ public enum RegistrationRequestFactory {
 
         let result = TSRequest(url: url, method: "GET", parameters: nil)
         result.shouldHaveAuthorizationHeaders = false
+        redactSessionIdFromLogs(sessionId, in: result)
         return result
     }
 
@@ -89,6 +90,7 @@ public enum RegistrationRequestFactory {
 
         let result = TSRequest(url: url, method: "PATCH", parameters: parameters)
         result.shouldHaveAuthorizationHeaders = false
+        redactSessionIdFromLogs(sessionId, in: result)
         return result
     }
 
@@ -138,6 +140,7 @@ public enum RegistrationRequestFactory {
         let result = TSRequest(url: url, method: "POST", parameters: parameters)
         result.shouldHaveAuthorizationHeaders = false
         result.setValue(languageHeader, forHTTPHeaderField: OWSHttpHeaders.acceptLanguageHeaderKey)
+        redactSessionIdFromLogs(sessionId, in: result)
         return result
     }
 
@@ -162,6 +165,7 @@ public enum RegistrationRequestFactory {
 
         let result = TSRequest(url: url, method: "PUT", parameters: parameters)
         result.shouldHaveAuthorizationHeaders = false
+        redactSessionIdFromLogs(sessionId, in: result)
         return result
     }
 
@@ -328,5 +332,13 @@ public enum RegistrationRequestFactory {
         // bogus session id and expect to get a 4xx response. Getting a 4xx means we connected; that's
         // all we care about. (A 2xx too, is fine, though would be quite unusual)
         return fetchSessionRequest(sessionId: UUID().data.base64EncodedString())
+    }
+
+    // MARK: - Helpers
+
+    private static func redactSessionIdFromLogs(_ sessionId: String, in request: TSRequest) {
+        request.applyRedactionStrategy(.redactURLForSuccessResponses(
+            replacementString: request.url?.absoluteString.replacingOccurrences(of: sessionId, with: "[REDACTED]") ?? "[REDACTED]"
+        ))
     }
 }
