@@ -224,7 +224,7 @@ extension OWSRequestFactory {
     static func preKeyRequestParameters(_ preKeyRecord: PreKeyRecord) -> [String: Any] {
         [
             "keyId": preKeyRecord.id,
-            "publicKey": preKeyRecord.keyPair.publicKey.prependKeyType().base64EncodedString()
+            "publicKey": preKeyRecord.keyPair.publicKey.prependKeyType().base64EncodedStringWithoutPadding()
         ]
     }
 
@@ -232,8 +232,8 @@ extension OWSRequestFactory {
     static func signedPreKeyRequestParameters(_ signedPreKeyRecord: SignedPreKeyRecord) -> [String: Any] {
         [
             "keyId": signedPreKeyRecord.id,
-            "publicKey": signedPreKeyRecord.keyPair.publicKey.prependKeyType().base64EncodedString(),
-            "signature": signedPreKeyRecord.signature.base64EncodedString()
+            "publicKey": signedPreKeyRecord.keyPair.publicKey.prependKeyType().base64EncodedStringWithoutPadding(),
+            "signature": signedPreKeyRecord.signature.base64EncodedStringWithoutPadding()
         ]
     }
 
@@ -256,7 +256,6 @@ extension OWSRequestFactory {
             path = path.appending("?\(queryParam)")
         }
 
-        let publicIdentityKey = identityKey.prependKeyType().base64EncodedString()
         let serializedPrekeys = prekeyRecords.map { self.preKeyRequestParameters($0) }
         let request = TSRequest(
             url: URL(string: path)!,
@@ -264,7 +263,7 @@ extension OWSRequestFactory {
             parameters: [
                 "preKeys": serializedPrekeys,
                 "signedPreKey": signedPreKeyRequestParameters(signedPreKeyRecord),
-                "identityKey": publicIdentityKey
+                "identityKey": identityKey.prependKeyType().base64EncodedStringWithoutPadding()
             ]
         )
         request.setAuth(auth)

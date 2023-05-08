@@ -43,6 +43,12 @@ public extension Data {
             .replacingOccurrences(of: "=", with: "")
         return base64Url
     }
+
+    func base64EncodedStringWithoutPadding() -> String {
+        let resultWithPadding = base64EncodedString()
+        let paddingCount = (3 - (self.count % 3)) % 3
+        return String(resultWithPadding.dropLast(paddingCount))
+    }
 }
 
 // MARK: -

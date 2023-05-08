@@ -39,4 +39,12 @@ class DataSSKTests: XCTestCase {
             XCTAssertEqual(tupleResult?.1, 8)
         }
     }
+
+    func testBase64EncodedStringWithoutPadding() {
+        XCTAssertEqual(Data(count: 0).base64EncodedStringWithoutPadding(), "")
+        XCTAssertEqual(Data(count: 1).base64EncodedStringWithoutPadding(), "AA")
+        XCTAssertEqual(Data(count: 2).base64EncodedStringWithoutPadding(), "AAA")
+        XCTAssertEqual(Data(count: 3).base64EncodedStringWithoutPadding(), "AAAA")
+        XCTAssertEqual(Data(count: 4).base64EncodedStringWithoutPadding(), "AAAAAA")
+    }
 }
