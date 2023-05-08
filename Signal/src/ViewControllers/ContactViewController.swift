@@ -243,7 +243,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
                                                                     strongSelf.didPressSendMessage()
             }))
                 stackView.addArrangedSubview(createCircleActionButton(text: OWSLocalizedString("ACTION_AUDIO_CALL",
-                                                                                              comment: "Label for 'audio call' button in contact view."),
+                                                                                              comment: "Label for 'voice call' button in contact view."),
                                                                       imageName: "contact_view_audio_call",
                                                                       actionBlock: { [weak self] in
                                                                         guard let strongSelf = self else { return }
@@ -504,7 +504,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
                                                         SignalApp.shared().presentConversation(for: address, action: .compose, animated: true)
                 })
                 actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("ACTION_AUDIO_CALL",
-                                                                             comment: "Label for 'audio call' button in contact view."),
+                                                                             comment: "Label for 'voice call' button in contact view."),
                                                     style: .default) { _ in
                                                         SignalApp.shared().presentConversation(for: address, action: .audioCall, animated: true)
                 })
