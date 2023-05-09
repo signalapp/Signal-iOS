@@ -216,6 +216,7 @@ class CameraCaptureSession: NSObject {
         }
 
         videoCaptureInput = newInput
+        photoCapture.capturePosition = newInput.device.position
 
         // Camera by default has zoom factor of 1, which would be UW camera on triple camera systems, but default camera in the UI is "wide".
         // Also it is necessary to reset camera to "1x" when switching between front and rear to match Camera app behavior.
@@ -1422,6 +1423,7 @@ private class PhotoCapture: NSObject {
     let avCaptureOutput = AVCapturePhotoOutput()
 
     var flashMode: AVCaptureDevice.FlashMode = .off
+    var capturePosition: AVCaptureDevice.Position = .back
 
     override init() {
         super.init()
@@ -1446,7 +1448,7 @@ private class PhotoCapture: NSObject {
         photoSettings.isHighResolutionPhotoEnabled = true
         photoSettings.isAutoStillImageStabilizationEnabled = avCaptureOutput.isStillImageStabilizationSupported
 
-        let photoProcessor = PhotoProcessor(delegate: delegate, captureRect: captureRect) { [weak self] in
+        let photoProcessor = PhotoProcessor(delegate: delegate, captureRect: captureRect, capturePosition: capturePosition) { [weak self] in
             self?.photoProcessors[photoSettings.uniqueID] = nil
         }
         photoProcessors[photoSettings.uniqueID] = photoProcessor
@@ -1456,11 +1458,13 @@ private class PhotoCapture: NSObject {
 
     private class PhotoProcessor: NSObject, AVCapturePhotoCaptureDelegate {
         private weak var delegate: PhotoCaptureDelegate?
+        private let capturePosition: AVCaptureDevice.Position
         private let captureRect: CGRect
         private let completion: () -> Void
 
-        init(delegate: PhotoCaptureDelegate, captureRect: CGRect, completion: @escaping () -> Void) {
+        init(delegate: PhotoCaptureDelegate, captureRect: CGRect, capturePosition: AVCaptureDevice.Position, completion: @escaping () -> Void) {
             self.delegate = delegate
+            self.capturePosition = capturePosition
             self.captureRect = captureRect
             self.completion = completion
         }
@@ -1479,7 +1483,19 @@ private class PhotoCapture: NSObject {
                     throw OWSAssertionError("photo data was unexpectedly empty")
                 }
 
-                let resizedData = try crop(photoData: rawData, to: captureRect)
+                guard let originalImage = UIImage(data: rawData) else {
+                    throw OWSAssertionError("originalImage was unexpectedly nil")
+                }
+
+                var resizedImage = try crop(image: originalImage, to: captureRect)
+                if capturePosition == .front {
+                    resizedImage = try flipHorizontally(image: resizedImage)
+                }
+
+                guard let resizedData = resizedImage.jpegData(compressionQuality: 0.9) else {
+                    throw OWSAssertionError("Resized image was unexpectedly nil")
+                }
+
                 result = .success(resizedData)
             } catch {
                 result = .failure(error)
@@ -1490,11 +1506,27 @@ private class PhotoCapture: NSObject {
             }
         }
 
-        private func crop(photoData: Data, to outputRect: CGRect) throws -> Data {
-            guard
-                let originalImage = UIImage(data: photoData),
-                let cgImage = originalImage.cgImage
-            else {
+        private func flipHorizontally(image: UIImage) throws -> UIImage {
+            UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
+
+            guard let context = UIGraphicsGetCurrentContext() else {
+                throw OWSAssertionError("Unable to fetch context")
+            }
+            context.translateBy(x: image.size.width, y: 0)
+            context.scaleBy(x: -1.0, y: 1.0)
+            image.draw(in: CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
+            let flippedImage = UIGraphicsGetImageFromCurrentImageContext()
+
+            UIGraphicsEndImageContext()
+
+            guard let flippedImage = flippedImage else {
+                throw OWSAssertionError("flippedImage was unexpectedly nil")
+            }
+            return flippedImage
+        }
+
+        private func crop(image: UIImage, to outputRect: CGRect) throws -> UIImage {
+            guard let cgImage = image.cgImage else {
                 throw OWSAssertionError("originalImage was unexpectedly nil")
             }
 
@@ -1509,11 +1541,7 @@ private class PhotoCapture: NSObject {
                                   width: outputRect.size.width * width,
                                   height: outputRect.size.height * height)
             let croppedCGImage = cgImage.cropping(to: cropRect)!
-            let croppedUIImage = UIImage(cgImage: croppedCGImage, scale: 1, orientation: originalImage.imageOrientation)
-            guard let croppedData = croppedUIImage.jpegData(compressionQuality: 0.9) else {
-                throw OWSAssertionError("croppedData was unexpectedly nil")
-            }
-            return croppedData
+            return UIImage(cgImage: croppedCGImage, scale: image.scale, orientation: image.imageOrientation)
         }
     }
 }
