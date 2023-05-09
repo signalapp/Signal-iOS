@@ -268,7 +268,7 @@ class PhotoCollectionFolderContents {
                 break
             }
         }
-        
+
         return assetItems
     }
 }
