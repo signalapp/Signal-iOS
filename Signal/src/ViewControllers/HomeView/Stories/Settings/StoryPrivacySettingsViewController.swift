@@ -62,7 +62,6 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
                     "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON",
                     comment: "Button to turn on stories on the story privacy settings view"
                 ),
-                accessibilityIdentifier: nil,
                 actionBlock: {
                     Self.databaseStorage.write { transaction in
                         StoryManager.setAreStoriesEnabled(true, transaction: transaction)

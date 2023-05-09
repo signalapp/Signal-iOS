@@ -28,7 +28,7 @@ class NetworkInterfacePreferenceViewController: OWSTableViewController2 {
 
     func updateTableContents() {
         self.contents = OWSTableContents(sections: [
-            OWSTableSection(header: nil, items: availableOptions.compactMap { option in
+            OWSTableSection(items: availableOptions.compactMap { option in
                 guard let name = Self.name(forInterfaceSet: option) else { return nil }
 
                 return OWSTableItem(

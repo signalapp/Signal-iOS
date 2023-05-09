@@ -77,7 +77,7 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         if gestureRecognizer.state == .began {
-            showDebugUI(thread, self)
+            showDebugUIForThread(thread, fromViewController: self)
         }
     }
 

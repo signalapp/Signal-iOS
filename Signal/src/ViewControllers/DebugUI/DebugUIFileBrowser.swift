@@ -7,7 +7,6 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-@objc
 class DebugUIFileBrowser: OWSTableViewController {
 
     // MARK: - Dependencies
@@ -19,7 +18,6 @@ class DebugUIFileBrowser: OWSTableViewController {
     // MARK: Overrides
     let fileURL: URL
 
-    @objc
     init(fileURL: URL) {
         self.fileURL = fileURL
 
@@ -50,13 +48,12 @@ class DebugUIFileBrowser: OWSTableViewController {
     }
 
     func buildContents() -> OWSTableContents {
-        let contents = OWSTableContents()
-
         let isDirectoryPtr: UnsafeMutablePointer<ObjCBool> = UnsafeMutablePointer<ObjCBool>.allocate(capacity: 1)
         guard fileManager.fileExists(atPath: fileURL.path, isDirectory: isDirectoryPtr) else {
-            contents.title = "File not found: \(fileURL)"
-            return contents
+            return OWSTableContents(title: "File not found: \(fileURL)")
         }
+
+        var sections = [OWSTableSection]()
 
         let isDirectory: Bool = isDirectoryPtr.pointee.boolValue
 
@@ -116,7 +113,7 @@ class DebugUIFileBrowser: OWSTableViewController {
             }
         }()
         let attributesSection = OWSTableSection(title: "Attributes", items: attributeItems)
-        contents.addSection(attributesSection)
+        sections.append(attributesSection)
 
         var managementItems = [
             OWSTableItem.disclosureItem(withText: "✎ Rename") { [weak self] in
@@ -372,10 +369,9 @@ class DebugUIFileBrowser: OWSTableViewController {
 
         let fileType = isDirectory ? "Dir" : "File"
         let filesSection = OWSTableSection(title: "\(fileType): \(fileURL.lastPathComponent)", items: managementItems)
-        contents.addSection(filesSection)
+        sections.append(filesSection)
 
-        contents.title = "\(fileType): \(fileURL)"
-        return contents
+        return OWSTableContents(title: "\(fileType): \(fileURL)", sections: sections)
     }
 }
 

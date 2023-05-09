@@ -8,7 +8,6 @@
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
-#import <SignalUI/OWSTableViewController.h>
 
 #ifdef USE_DEBUG_UI
 

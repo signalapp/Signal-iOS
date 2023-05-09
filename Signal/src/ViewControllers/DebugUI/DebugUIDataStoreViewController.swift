@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import SignalUI
 
 #if USE_DEBUG_UI
 
-@objc
 class DebugUIReportsViewController: OWSTableViewController2 {
 
     public override func viewDidLoad() {
@@ -53,7 +53,7 @@ class DebugUIReportsViewController: OWSTableViewController2 {
 
                     return cell
                 })
-            item.customRowHeight = NSNumber(value: 400)
+            item.customRowHeight = 400
 
             contents.addSection(
                 OWSTableSection(title: "Report: \(report.title)", items: [ item ])

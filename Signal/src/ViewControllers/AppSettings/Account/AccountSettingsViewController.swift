@@ -79,7 +79,6 @@ class AccountSettingsViewController: OWSTableViewController2 {
                         comment: "Label for the 'pin reminder' switch of the privacy settings."
                     ),
                     isOn: { OWS2FAManager.shared.areRemindersEnabled },
-                    isEnabledBlock: { true },
                     target: self,
                     selector: #selector(arePINRemindersEnabledDidChange)
                 ))
@@ -99,7 +98,6 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     comment: "Label for the 'enable registration lock' switch of the privacy settings."
                 ),
                 isOn: { OWS2FAManager.shared.isRegistrationLockV2Enabled },
-                isEnabledBlock: { true },
                 target: self,
                 selector: #selector(isRegistrationLockV2EnabledDidChange)
             ))

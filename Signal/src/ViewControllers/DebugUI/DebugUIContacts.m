@@ -10,7 +10,6 @@
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalUI/OWSTableViewController.h>
 
 #ifdef USE_DEBUG_UI
 

@@ -67,7 +67,6 @@
 		3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95598271B510500B05242 /* AttachmentItemCollection.swift */; };
 		3402AA35271D9DCD0084CBAE /* ActionSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95569271B510500B05242 /* ActionSheetController.swift */; };
 		3402AA37271D9DCD0084CBAE /* ConversationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557C271B510500B05242 /* ConversationItem.swift */; };
-		3402AA39271D9DCD0084CBAE /* OWSTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95594271B510500B05242 /* OWSTableViewController.swift */; };
 		3402AA3B271D9DCD0084CBAE /* OWSWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95567271B510500B05242 /* OWSWindow.swift */; };
 		3402AA3C271D9DCD0084CBAE /* SheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95595271B510500B05242 /* SheetViewController.swift */; };
 		3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95599271B510500B05242 /* AttachmentPrepViewController.swift */; };
@@ -76,13 +75,11 @@
 		3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559E271B510500B05242 /* AttachmentTextToolbar.swift */; };
 		3402AA43271D9DCD0084CBAE /* ContactShareApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */; };
 		3402AA44271D9DCD0084CBAE /* ModalActivityIndicatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */; };
-		3402AA46271D9DCD0084CBAE /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95590271B510500B05242 /* OWSTableViewController.m */; };
 		3402AA47271D9DCD0084CBAE /* StickerHorizontalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95572271B510500B05242 /* StickerHorizontalListView.swift */; };
 		3402AA48271D9DCD0084CBAE /* StickerKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95573271B510500B05242 /* StickerKeyboard.swift */; };
 		3402AA49271D9DCD0084CBAE /* EditContactShareNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */; };
 		3402AA4A271D9DCD0084CBAE /* AttachmentApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559C271B510500B05242 /* AttachmentApprovalViewController.swift */; };
 		3402AA4B271D9DCD0084CBAE /* AttachmentApprovalToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559D271B510500B05242 /* AttachmentApprovalToolbar.swift */; };
-		3402AA4C271D9DCD0084CBAE /* OWSTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95577271B510500B05242 /* OWSTableViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA4D271D9DCD0084CBAE /* StickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9556F271B510500B05242 /* StickerView.swift */; };
 		3402AA4E271D9DCD0084CBAE /* ApprovalFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558E271B510500B05242 /* ApprovalFooterView.swift */; };
 		3402AA4F271D9DCD0084CBAE /* SpamCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */; };
@@ -528,7 +525,6 @@
 		34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDB206939B100CB1A14 /* DebugUIMessagesAction.m */; };
 		34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDC206939B200CB1A14 /* DebugUIMessagesAssetLoader.m */; };
 		34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0241ED3673300188D7C /* DebugUIMessages.m */; };
-		34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0261ED3673300188D7C /* DebugUITableViewController.m */; };
 		34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C02A1ED3685800188D7C /* DebugUIContacts.m */; };
 		34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
 		34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99CE3217509C1000AFB39 /* AppEnvironment.swift */; };
@@ -941,6 +937,9 @@
 		76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */; };
 		763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */; };
 		763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */; };
+		765283AE2A00D8B4004583A9 /* OWSTableContents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283AD2A00D8B4004583A9 /* OWSTableContents.swift */; };
+		765283B02A00D8CE004583A9 /* OWSTableSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283AF2A00D8CE004583A9 /* OWSTableSection.swift */; };
+		765283B22A00D8EC004583A9 /* OWSTableItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283B12A00D8EC004583A9 /* OWSTableItem.swift */; };
 		766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766035A8286CE4CB00F6B71C /* MediaTopBar.swift */; };
 		7666D54428331E1100A3BDB9 /* ImageEditorViewController+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */; };
 		7666D54628331E4800A3BDB9 /* ImageEditorViewController+Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */; };
@@ -966,6 +965,9 @@
 		76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */; };
 		76DFBF8C29AE6B80004A771D /* MediaTransitionImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76DFBF8B29AE6B80004A771D /* MediaTransitionImageView.swift */; };
 		76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */; };
+		76E7A20F2A01A50C00A8F538 /* OWSTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */; };
+		76E7A2112A01B6A500A8F538 /* DebugUITableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */; };
+		76E7A2192A01DD0500A8F538 /* DebugUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A2182A01DD0500A8F538 /* DebugUI.swift */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76ECBA922915B5BB00676507 /* ConversationScrollButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */; };
 		76F4B581293ACCD200A7CF2F /* UIKit+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F4B580293ACCD200A7CF2F /* UIKit+SignalUI.swift */; };
@@ -2877,7 +2879,6 @@
 		34A95573271B510500B05242 /* StickerKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerKeyboard.swift; sourceTree = "<group>"; };
 		34A95575271B510500B05242 /* OWSViewControllerObjc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSViewControllerObjc.m; sourceTree = "<group>"; };
 		34A95576271B510500B05242 /* ViewControllerUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerUtils.h; sourceTree = "<group>"; };
-		34A95577271B510500B05242 /* OWSTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSTableViewController.h; sourceTree = "<group>"; };
 		34A95578271B510500B05242 /* MediaMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaMessageView.swift; sourceTree = "<group>"; };
 		34A9557B271B510500B05242 /* ConversationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPicker.swift; sourceTree = "<group>"; };
 		34A9557C271B510500B05242 /* ConversationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationItem.swift; sourceTree = "<group>"; };
@@ -2892,10 +2893,8 @@
 		34A9558B271B510500B05242 /* OWSTableViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController2.swift; sourceTree = "<group>"; };
 		34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactShareNameViewController.swift; sourceTree = "<group>"; };
 		34A9558E271B510500B05242 /* ApprovalFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalFooterView.swift; sourceTree = "<group>"; };
-		34A95590271B510500B05242 /* OWSTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSTableViewController.m; sourceTree = "<group>"; };
 		34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalActivityIndicatorViewController.swift; sourceTree = "<group>"; };
 		34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareApprovalViewController.swift; sourceTree = "<group>"; };
-		34A95594271B510500B05242 /* OWSTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController.swift; sourceTree = "<group>"; };
 		34A95595271B510500B05242 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
 		34A95597271B510500B05242 /* AttachmentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentTextView.swift; sourceTree = "<group>"; };
 		34A95598271B510500B05242 /* AttachmentItemCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentItemCollection.swift; sourceTree = "<group>"; };
@@ -2991,8 +2990,6 @@
 		34D2CCE220693A1700CB1A14 /* DebugUIMessagesUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessagesUtils.h; sourceTree = "<group>"; };
 		34D8C0231ED3673300188D7C /* DebugUIMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessages.h; sourceTree = "<group>"; };
 		34D8C0241ED3673300188D7C /* DebugUIMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMessages.m; sourceTree = "<group>"; };
-		34D8C0251ED3673300188D7C /* DebugUITableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUITableViewController.h; sourceTree = "<group>"; };
-		34D8C0261ED3673300188D7C /* DebugUITableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = DebugUITableViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		34D8C0291ED3685800188D7C /* DebugUIContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIContacts.h; sourceTree = "<group>"; };
 		34D8C02A1ED3685800188D7C /* DebugUIContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIContacts.m; sourceTree = "<group>"; };
 		34D913491F62D4A500722898 /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAttachment.swift; sourceTree = "<group>"; };
@@ -3440,6 +3437,9 @@
 		76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseIterable.swift; sourceTree = "<group>"; };
 		763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundMediaButton.swift; sourceTree = "<group>"; };
 		763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalTopBar.swift; sourceTree = "<group>"; };
+		765283AD2A00D8B4004583A9 /* OWSTableContents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableContents.swift; sourceTree = "<group>"; };
+		765283AF2A00D8CE004583A9 /* OWSTableSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableSection.swift; sourceTree = "<group>"; };
+		765283B12A00D8EC004583A9 /* OWSTableItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableItem.swift; sourceTree = "<group>"; };
 		766035A8286CE4CB00F6B71C /* MediaTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTopBar.swift; sourceTree = "<group>"; };
 		7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Draw.swift"; sourceTree = "<group>"; };
 		7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Blur.swift"; sourceTree = "<group>"; };
@@ -3465,6 +3465,9 @@
 		76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewAttachmentViewController.swift; sourceTree = "<group>"; };
 		76DFBF8B29AE6B80004A771D /* MediaTransitionImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTransitionImageView.swift; sourceTree = "<group>"; };
 		76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+TextStyle.swift"; sourceTree = "<group>"; };
+		76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController.swift; sourceTree = "<group>"; };
+		76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUITableViewController.swift; sourceTree = "<group>"; };
+		76E7A2182A01DD0500A8F538 /* DebugUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUI.swift; sourceTree = "<group>"; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationScrollButton.swift; sourceTree = "<group>"; };
@@ -5840,6 +5843,7 @@
 				34A95596271B510500B05242 /* AttachmentApproval */,
 				34A9557A271B510500B05242 /* ConversationPicker */,
 				88A47174286666AF001A3065 /* Member Picker */,
+				765283AC2A00D893004583A9 /* OWSTableView */,
 				88B986F728807D7400F8C74D /* Recipient Picker */,
 				88B9870B28808C2900F8C74D /* Safety Numbers */,
 				34A9556D271B510500B05242 /* Stickers */,
@@ -5860,10 +5864,6 @@
 				34A95582271B510500B05242 /* OWSNavigationControllerBase.h */,
 				34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */,
 				8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */,
-				34A95577271B510500B05242 /* OWSTableViewController.h */,
-				34A95590271B510500B05242 /* OWSTableViewController.m */,
-				34A95594271B510500B05242 /* OWSTableViewController.swift */,
-				34A9558B271B510500B05242 /* OWSTableViewController2.swift */,
 				66F44B4A2909EEDA004CF66C /* OWSViewController.swift */,
 				34A95588271B510500B05242 /* OWSViewControllerObjc.h */,
 				34A95575271B510500B05242 /* OWSViewControllerObjc.m */,
@@ -6185,6 +6185,7 @@
 				34DC9BD821543E0B00FDDCEC /* DebugContactsUtils.h */,
 				34DC9BD721543E0A00FDDCEC /* DebugContactsUtils.m */,
 				349A5C5325CD7A6C00B30EE8 /* DebugContactsUtils.swift */,
+				76E7A2182A01DD0500A8F538 /* DebugUI.swift */,
 				45638BDB1F3DD0D400128435 /* DebugUICalling.swift */,
 				34D8C0291ED3685800188D7C /* DebugUIContacts.h */,
 				34D8C02A1ED3685800188D7C /* DebugUIContacts.m */,
@@ -6217,8 +6218,7 @@
 				344DAEDE248A7526000AD4FA /* DebugUIStress.swift */,
 				343A65931FC47D5D000477A1 /* DebugUISyncMessages.h */,
 				343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */,
-				34D8C0251ED3673300188D7C /* DebugUITableViewController.h */,
-				34D8C0261ED3673300188D7C /* DebugUITableViewController.m */,
+				76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */,
 				4CBBFE492306F5D300B37450 /* LogViewController.swift */,
 			);
 			path = DebugUI;
@@ -6766,6 +6766,18 @@
 				66883A3829D7630300E898CF /* MessageBodyTests.swift */,
 			);
 			path = BodyRanges;
+			sourceTree = "<group>";
+		};
+		765283AC2A00D893004583A9 /* OWSTableView */ = {
+			isa = PBXGroup;
+			children = (
+				765283AD2A00D8B4004583A9 /* OWSTableContents.swift */,
+				765283B12A00D8EC004583A9 /* OWSTableItem.swift */,
+				765283AF2A00D8CE004583A9 /* OWSTableSection.swift */,
+				76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */,
+				34A9558B271B510500B05242 /* OWSTableViewController2.swift */,
+			);
+			path = OWSTableView;
 			sourceTree = "<group>";
 		};
 		76EB03C118170B33006006FC /* src */ = {
@@ -9460,7 +9472,6 @@
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
 				3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */,
-				3402AA4C271D9DCD0084CBAE /* OWSTableViewController.h in Headers */,
 				3402AA50271D9DCD0084CBAE /* OWSViewControllerObjc.h in Headers */,
 				88B986F828807E9000F8C74D /* RecipientPickerViewController.h in Headers */,
 				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
@@ -10838,9 +10849,11 @@
 				3402AA6E271D9E180084CBAE /* OWSSearchBar.m in Sources */,
 				342FFE57271DA8C9000AC89F /* OWSSounds+SignalUI.swift in Sources */,
 				3402AA70271D9E180084CBAE /* OWSStackView.swift in Sources */,
+				765283AE2A00D8B4004583A9 /* OWSTableContents.swift in Sources */,
+				765283B22A00D8EC004583A9 /* OWSTableItem.swift in Sources */,
+				765283B02A00D8CE004583A9 /* OWSTableSection.swift in Sources */,
 				8868A08C287F4F81000E74A5 /* OWSTableSheetViewController.swift in Sources */,
-				3402AA46271D9DCD0084CBAE /* OWSTableViewController.m in Sources */,
-				3402AA39271D9DCD0084CBAE /* OWSTableViewController.swift in Sources */,
+				76E7A20F2A01A50C00A8F538 /* OWSTableViewController.swift in Sources */,
 				3402AA5A271D9DCD0084CBAE /* OWSTableViewController2.swift in Sources */,
 				F9C8CFD0293580D00094469C /* OWSTextField.swift in Sources */,
 				7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */,
@@ -11289,6 +11302,7 @@
 				349A5C5425CD7A6C00B30EE8 /* DebugContactsUtils.swift in Sources */,
 				50A1CE3A2A00931900730C40 /* DebugLogger+MainApp.swift in Sources */,
 				34067EAB2710D61A000407C3 /* DebugLogs.swift in Sources */,
+				76E7A2192A01DD0500A8F538 /* DebugUI.swift in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
 				4C68FDAE2385F5A4002576B1 /* DebugUIDataStoreViewController.swift in Sources */,
@@ -11310,7 +11324,7 @@
 				34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */,
 				344DAEDF248A7526000AD4FA /* DebugUIStress.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
-				34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */,
+				76E7A2112A01B6A500A8F538 /* DebugUITableViewController.swift in Sources */,
 				88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */,
 				66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */,
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,

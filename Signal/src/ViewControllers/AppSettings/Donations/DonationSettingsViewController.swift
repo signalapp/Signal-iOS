@@ -376,7 +376,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             ))
         }
 
-        guard section.itemCount() > 0 else {
+        guard section.itemCount > 0 else {
             return nil
         }
         return section
@@ -460,7 +460,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             ))
         }
 
-        guard section.itemCount() > 0 else {
+        guard section.itemCount > 0 else {
             return nil
         }
 

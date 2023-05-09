@@ -18,7 +18,6 @@
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/UIImage+OWS.h>
 #import <SignalUI/AttachmentSharing.h>
-#import <SignalUI/OWSTableViewController.h>
 
 #ifdef USE_DEBUG_UI
 

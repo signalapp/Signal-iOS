@@ -152,7 +152,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             isOn: { () -> Bool in
                 self.databaseStorage.read { Wallpaper.dimInDarkMode(for: self.thread, transaction: $0) }
             },
-            isEnabledBlock: {
+            isEnabled: {
                 self.databaseStorage.read { Wallpaper.exists(for: self.thread, transaction: $0) }
             },
             target: self,

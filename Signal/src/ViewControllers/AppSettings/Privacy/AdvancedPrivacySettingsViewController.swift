@@ -96,7 +96,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 comment: "Label for the 'manual censorship circumvention' switch."
             ),
             isOn: { self.signalService.isCensorshipCircumventionActive },
-            isEnabledBlock: { isCensorshipCircumventionSwitchEnabled || DebugFlags.exposeCensorshipCircumvention },
+            isEnabled: { isCensorshipCircumventionSwitchEnabled || DebugFlags.exposeCensorshipCircumvention },
             target: self,
             selector: #selector(didToggleEnableCensorshipCircumventionSwitch)
         ))

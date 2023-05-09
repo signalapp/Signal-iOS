@@ -4,28 +4,8 @@
 //
 
 #import "DebugUIPage.h"
-#import "DebugUITableViewController.h"
-#import <SignalUI/OWSTableViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-BOOL shouldUseDebugUI(void)
-{
-#ifdef USE_DEBUG_UI
-    return YES;
-#else
-    return NO;
-#endif
-}
-
-void showDebugUI(TSThread *thread, UIViewController *fromViewController)
-{
-#ifdef USE_DEBUG_UI
-    [DebugUITableViewController presentDebugUIForThread:thread fromViewController:fromViewController];
-#else
-    OWSCFailDebug(@"Debug UI not enabled.");
-#endif
-}
 
 #ifdef USE_DEBUG_UI
 

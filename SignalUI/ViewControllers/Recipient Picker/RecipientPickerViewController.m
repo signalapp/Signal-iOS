@@ -13,7 +13,6 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalUI/ContactsViewHelper.h>
-#import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/SignalUI-Swift.h>
 #import <SignalUI/UIView+SignalUI.h>
 
@@ -511,8 +510,7 @@ const NSUInteger kMinimumSearchLength = 1;
         [noResultsSection
             addItem:[OWSTableItem softCenterLabelItemWithText:
                      OWSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
-                                          @"A label that indicates the user's search has no matching results.")
-                                              customRowHeight:UITableViewAutomaticDimension]];
+                                          @"A label that indicates the user's search has no matching results.")]];
 
         [sections addObject:noResultsSection];
     }
@@ -565,7 +563,7 @@ const NSUInteger kMinimumSearchLength = 1;
 
 #pragma mark - OWSTableViewControllerDelegate
 
-- (void)tableViewWillBeginDragging
+- (void)tableViewWillBeginDragging:(UITableView *)tableView
 {
     [self.searchBar resignFirstResponder];
     [self.delegate recipientPickerTableViewWillBeginDragging:self];

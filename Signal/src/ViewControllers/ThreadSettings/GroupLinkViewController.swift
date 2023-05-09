@@ -53,7 +53,6 @@ public class GroupLinkViewController: OWSTableViewController2 {
                                             comment: "Label for the 'enable group link' switch in the 'group link' view."),
                 accessibilityIdentifier: "group_link_view_enable_group_link",
                 isOn: { groupModelV2.isGroupInviteLinkEnabled },
-                isEnabledBlock: { true },
                 target: self,
                 selector: switchAction
             ))
@@ -118,11 +117,8 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
             if groupModelV2.isGroupInviteLinkEnabled {
                 section.add(OWSTableItem.switch(withText: OWSLocalizedString("GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH",
-                                                                            comment: "Label for the 'approve new members' switch in the 'group link' view."),
+                                                                             comment: "Label for the 'approve new members' switch in the 'group link' view."),
                                                 isOn: { groupModelV2.access.addFromInviteLink == .administrator },
-                                                isEnabledBlock: {
-                                                    true
-                },
                                                 target: self,
                                                 selector: #selector(didToggleApproveNewMembers(_:))))
 

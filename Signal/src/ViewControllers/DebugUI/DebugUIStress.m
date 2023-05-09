@@ -18,7 +18,6 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
-#import <SignalUI/OWSTableViewController.h>
 
 #ifdef USE_DEBUG_UI
 

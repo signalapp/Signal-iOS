@@ -1,11 +1,349 @@
 //
-// Copyright 2020 Signal Messenger, LLC
+// Copyright 2023 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SignalMessaging
 import UIKit
+
+public class OWSTableItemEditAction: NSObject {
+
+    public var title: String
+
+    public var block: () -> Void
+
+    public init(title: String, block: @escaping () -> Void) {
+        self.title = title
+        self.block = block
+        super.init()
+    }
+}
+
+@objc
+public class OWSTableItem: NSObject {
+
+    @objc
+    public weak var tableViewController: UIViewController?
+
+    public private(set) var title: String?
+
+    private var customCellBlock: (() -> UITableViewCell)?
+    private var dequeueCellBlock: ((UITableView) -> UITableViewCell)?
+
+    public var customRowHeight: CGFloat?
+
+    public private(set) var actionBlock: (() -> Void)?
+    public var deleteAction: OWSTableItemEditAction?
+
+    // MARK: -
+
+    public init(title: String?, actionBlock: (() -> Void)?) {
+        self.title = title
+        self.actionBlock = actionBlock
+        super.init()
+    }
+
+    public convenience override init() {
+        self.init(title: nil, actionBlock: nil)
+    }
+
+    public convenience init(
+        customCellBlock: @escaping () -> UITableViewCell,
+        actionBlock: (() -> Void)? = nil
+    ) {
+        self.init(title: nil, actionBlock: actionBlock)
+        self.customCellBlock = customCellBlock
+    }
+
+    public convenience init(
+        dequeueCellBlock: @escaping (UITableView) -> UITableViewCell,
+        actionBlock: (() -> Void)? = nil
+    ) {
+        self.init(title: nil, actionBlock: actionBlock)
+        self.dequeueCellBlock = dequeueCellBlock
+    }
+
+    public convenience init(
+        text: String,
+        actionBlock: (() -> Void)?,
+        accessoryText: String? = nil,
+        accessoryType: UITableViewCell.AccessoryType,
+        accessibilityIdentifier: String? = nil
+    ) {
+        self.init(title: nil, actionBlock: actionBlock)
+        self.customCellBlock = {
+            OWSTableItem.buildCellWithAccessoryLabel(
+                itemName: text,
+                textColor: nil,
+                accessoryText: accessoryText,
+                accessoryType: accessoryType,
+                accessoryImage: nil,
+                accessibilityIdentifier: accessibilityIdentifier
+            )
+        }
+    }
+
+    // MARK: - Convenience constructors
+
+    public static func checkmark(
+        withText text: String,
+        actionBlock: (() -> Void)? = nil,
+        accessibilityIdentifier: String? = nil
+    ) -> OWSTableItem {
+        return OWSTableItem(
+            text: text,
+            actionBlock: actionBlock,
+            accessoryText: nil,
+            accessoryType: .checkmark,
+            accessibilityIdentifier: accessibilityIdentifier
+        )
+    }
+
+    public static func disclosureItem(
+        withText text: String,
+        detailText: String? = nil,
+        accessibilityIdentifier: String? = nil,
+        actionBlock: (() -> Void)? = nil
+    ) -> OWSTableItem {
+        let item = OWSTableItem(
+            text: text,
+            actionBlock: actionBlock,
+            accessoryText: detailText,
+            accessoryType: .disclosureIndicator,
+            accessibilityIdentifier: accessibilityIdentifier
+        )
+        return item
+    }
+
+    public static func actionItem(
+        withText text: String,
+        textColor: UIColor? = nil,
+        accessibilityIdentifier: String? = nil,
+        actionBlock: (() -> Void)? = nil
+    ) -> OWSTableItem {
+        let item = OWSTableItem(title: nil, actionBlock: actionBlock)
+        item.customCellBlock = {
+            OWSTableItem.buildCellWithAccessoryLabel(
+                itemName: text,
+                textColor: textColor,
+                accessibilityIdentifier: accessibilityIdentifier
+            )
+        }
+        return item
+    }
+
+    public static func actionItem(
+        withText text: String,
+        accessoryImage: UIImage,
+        accessibilityIdentifier: String? = nil,
+        actionBlock: (() -> Void)? = nil
+    ) -> OWSTableItem {
+        let item = OWSTableItem(title: nil, actionBlock: actionBlock)
+        item.customCellBlock = {
+            OWSTableItem.buildCellWithAccessoryLabel(
+                itemName: text,
+                accessoryImage: accessoryImage,
+                accessibilityIdentifier: accessibilityIdentifier
+            )
+        }
+        return item
+    }
+
+    public static func subpage(
+        withText text: String,
+        accessibilityIdentifier: String? = nil,
+        actionBlock: @escaping ((UIViewController) -> Void)
+    ) -> OWSTableItem {
+        let item = OWSTableItem()
+        item.actionBlock = { [weak item] in
+            guard let item else { return }
+            guard let viewController = item.tableViewController else {
+                owsFailDebug("viewController == nil")
+                return
+            }
+            actionBlock(viewController)
+        }
+        item.customCellBlock = {
+            OWSTableItem.buildCellWithAccessoryLabel(
+                itemName: text,
+                accessoryType: .disclosureIndicator,
+                accessibilityIdentifier: accessibilityIdentifier
+            )
+        }
+        return item
+    }
+
+    @objc(softCenterLabelItemWithText:)
+    public static func softCenterLabel(
+        withText text: String
+    ) -> OWSTableItem {
+        let item = OWSTableItem()
+        item.customCellBlock = {
+            let cell = OWSTableItem.newCell()
+            let textLabel = UILabel()
+            textLabel.text = text
+            // These cells look quite different.
+            //
+            // Smaller font.
+            textLabel.font = OWSTableItem.primaryLabelFont
+            // Soft color.
+            // TODO: Theme, review with design.
+            textLabel.textColor = UIColor.ows_middleGray
+            // Centered.
+            textLabel.textAlignment = .center
+            cell.contentView.addSubview(textLabel)
+            textLabel.autoPinEdgesToSuperviewMargins()
+            cell.isUserInteractionEnabled = false
+            return cell
+        }
+        return item
+    }
+
+    public static func label(
+        withText text: String,
+        accessoryText: String? = nil
+    ) -> OWSTableItem {
+        let item = OWSTableItem()
+        item.customCellBlock = {
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                itemName: text,
+                accessoryText: accessoryText
+            )
+            cell.isUserInteractionEnabled = false
+            return cell
+        }
+        return item
+    }
+
+    public static func longDisclosure(
+        withText text: String,
+        actionBlock: (() -> Void)? = nil
+    ) -> OWSTableItem {
+        let item = OWSTableItem(title: nil, actionBlock: actionBlock)
+        item.customCellBlock = {
+            let cell = OWSTableItem.newCell()
+            cell.accessoryType = .disclosureIndicator
+
+            let textLabel = UILabel()
+            textLabel.text = text
+            textLabel.numberOfLines = 0
+            textLabel.lineBreakMode = .byWordWrapping
+            cell.contentView.addSubview(textLabel)
+            textLabel.autoPinEdgesToSuperviewMargins()
+
+            return cell
+        }
+        return item
+    }
+
+    public static func `switch`(
+        withText text: String,
+        accessibilityIdentifier: String? = nil,
+        isOn: @escaping (() -> Bool),
+        isEnabled: @escaping (() -> Bool) = { true },
+        target: AnyObject,
+        selector: Selector
+    ) -> OWSTableItem {
+        let item = OWSTableItem()
+        item.customCellBlock = { [weak target] in
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                itemName: text,
+                accessibilityIdentifier: accessibilityIdentifier
+            )
+            cell.selectionStyle = .none
+
+            let cellSwitch = UISwitch()
+            cell.accessoryView = cellSwitch
+            cellSwitch.isOn = isOn()
+            cellSwitch.isEnabled = isEnabled()
+            cellSwitch.accessibilityIdentifier = accessibilityIdentifier
+            cellSwitch.addTarget(target, action: selector, for: .valueChanged)
+
+            return cell
+        }
+        return item
+    }
+
+    // MARK: -
+
+    public class func newCell() -> UITableViewCell {
+        let cell = UITableViewCell()
+        configureCell(cell)
+        return cell
+    }
+
+    public class func configureCell(_ cell: UITableViewCell) {
+        cell.selectedBackgroundView = UIView()
+        cell.backgroundColor = Theme.backgroundColor
+        cell.selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+        cell.multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
+        configureCellLabels(cell)
+    }
+
+    private class func configureCellLabels(_ cell: UITableViewCell) {
+        cell.textLabel?.font = self.primaryLabelFont
+        cell.textLabel?.textColor = Theme.primaryTextColor
+        cell.detailTextLabel?.textColor = Theme.secondaryTextAndIconColor
+        cell.detailTextLabel?.font = OWSTableItem.accessoryLabelFont
+    }
+
+    func getOrBuildCustomCell(_ tableView: UITableView) -> UITableViewCell? {
+        if let customCellBlock {
+            owsAssertDebug(dequeueCellBlock == nil)
+            return customCellBlock()
+        }
+        if let dequeueCellBlock {
+            return dequeueCellBlock(tableView)
+        }
+        return nil
+    }
+}
+
+@objc
+@available(swift, obsoleted: 1.0)
+public extension OWSTableItem {
+
+    static func itemWithTitle(
+        _ title: String,
+        actionBlock: @escaping (() -> Void)
+    ) -> OWSTableItem {
+        return OWSTableItem(title: title, actionBlock: actionBlock)
+    }
+
+    static func itemWithCustomCellBlock(
+        _ customCellBlock: @escaping () -> UITableViewCell,
+        actionBlock: @escaping (() -> Void)
+    ) -> OWSTableItem {
+        return OWSTableItem(customCellBlock: customCellBlock, actionBlock: actionBlock)
+    }
+
+    static func itemWithDequeueCellBlock(
+        _ dequeueCellBlock: @escaping (UITableView) -> UITableViewCell,
+        actionBlock: @escaping () -> Void
+    ) -> OWSTableItem {
+        return OWSTableItem(dequeueCellBlock: dequeueCellBlock, actionBlock: actionBlock)
+    }
+
+    static func disclosureItemWithText(
+        _ text: String,
+        accessibilityIdentifier: String,
+        actionBlock: @escaping (() -> Void)
+    ) -> OWSTableItem {
+        return disclosureItem(
+            withText: text,
+            accessibilityIdentifier: accessibilityIdentifier,
+            actionBlock: actionBlock
+        )
+    }
+
+    static func subPageItemWithText(
+        _ text: String,
+        actionBlock: @escaping (UIViewController) -> Void
+    ) -> OWSTableItem {
+        return subpage(withText: text, actionBlock: actionBlock)
+    }
+}
 
 @objc
 public extension OWSTableItem {
@@ -96,20 +434,6 @@ public extension OWSTableItem {
         return cell
     }
 
-    @available(swift, obsoleted: 1.0)
-    static func disclosureItem(icon: ThemeIcon,
-                               name: String,
-                               accessoryText: String? = nil,
-                               accessibilityIdentifier: String,
-                               actionBlock: (() -> Void)?) -> OWSTableItem {
-        item(icon: icon,
-             name: name,
-             accessoryText: accessoryText,
-             accessoryType: .disclosureIndicator,
-             accessibilityIdentifier: accessibilityIdentifier,
-             actionBlock: actionBlock)
-    }
-
     @nonobjc
     static func disclosureItem(icon: ThemeIcon,
                                name: String,
@@ -120,6 +444,20 @@ public extension OWSTableItem {
         item(icon: icon,
              name: name,
              maxNameLines: maxNameLines,
+             accessoryText: accessoryText,
+             accessoryType: .disclosureIndicator,
+             accessibilityIdentifier: accessibilityIdentifier,
+             actionBlock: actionBlock)
+    }
+
+    @available(swift, obsoleted: 1.0)
+    static func disclosureItem(icon: ThemeIcon,
+                               name: String,
+                               accessoryText: String? = nil,
+                               accessibilityIdentifier: String,
+                               actionBlock: (() -> Void)?) -> OWSTableItem {
+        item(icon: icon,
+             name: name,
              accessoryText: accessoryText,
              accessoryType: .disclosureIndicator,
              accessibilityIdentifier: accessibilityIdentifier,
@@ -179,21 +517,6 @@ public extension OWSTableItem {
             )
         },
                      actionBlock: actionBlock)
-    }
-
-    @available(swift, obsoleted: 1.0)
-    static func buildCellWithAccessoryLabel(itemName: String,
-                                            textColor: UIColor?,
-                                            accessoryText: String?,
-                                            accessoryType: UITableViewCell.AccessoryType,
-                                            accessoryImage: UIImage?,
-                                            accessibilityIdentifier: String?) -> UITableViewCell {
-        buildIconNameCell(itemName: itemName,
-                          textColor: textColor,
-                          accessoryText: accessoryText,
-                          accessoryType: accessoryType,
-                          accessoryImage: accessoryImage,
-                          accessibilityIdentifier: accessibilityIdentifier)
     }
 
     @nonobjc
@@ -439,14 +762,6 @@ public extension OWSTableItem {
     }
 }
 
-public extension OWSTableContents {
-    func addSections<T: Sequence>(_ sections: T) where T.Element == OWSTableSection {
-        for section in sections {
-            addSection(section)
-        }
-    }
-}
-
 // MARK: -
 
 public extension OWSTableItem {
@@ -504,51 +819,5 @@ public extension OWSTableItem {
 
             }
         )
-    }
-}
-
-// MARK: - Declarative Initializers
-
-public extension OWSTableContents {
-
-    convenience init(title: String? = nil,
-                     sections: [OWSTableSection] = []) {
-        self.init()
-        if let title = title {
-            self.title = title
-        }
-        self.addSections(sections)
-    }
-
-}
-
-public extension OWSTableSection {
-
-    convenience init(title: String? = nil,
-                     items: [OWSTableItem] = [],
-                     footerTitle: String? = nil) {
-
-        self.init(title: title, items: items)
-        self.footerTitle = footerTitle
-    }
-
-    convenience init(title: String? = nil,
-                     header: UIView? = nil,
-                     items: [OWSTableItem] = [],
-                     footer: UIView? = nil) {
-
-        self.init(title: title, items: items)
-        self.customHeaderView = header
-        self.customFooterView = footer
-    }
-
-    convenience init(title: String? = nil,
-                     header: (() -> UIView?) = {nil},
-                     items: [OWSTableItem] = [],
-                     footer: (() -> UIView?) = {nil}) {
-        self.init(title: title,
-                  header: header(),
-                  items: items,
-                  footer: footer())
     }
 }

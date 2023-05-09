@@ -138,7 +138,7 @@ extension CountryCodeViewController: UISearchBarDelegate {
 
 extension CountryCodeViewController: OWSTableViewControllerDelegate {
 
-    public func tableViewWillBeginDragging() {
+    public func tableViewWillBeginDragging(_ tableView: UITableView) {
         searchBar.resignFirstResponder()
     }
 }

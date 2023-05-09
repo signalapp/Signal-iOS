@@ -574,9 +574,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             return defaultCellHeight
         }
         if let customRowHeight = item.customRowHeight {
-            return CGFloat(customRowHeight.floatValue)
+            return customRowHeight
         }
-        return defaultCellHeight
+        return UITableView.automaticDimension
     }
 
     public static let cellRounding: CGFloat = 10
@@ -772,8 +772,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
             return textView
         } else if let customHeaderHeight = section.customHeaderHeight,
-                  customHeaderHeight.floatValue > 0 {
-            return buildDefaultHeaderOrFooter(height: CGFloat(customHeaderHeight.floatValue))
+                  customHeaderHeight > 0 {
+            return buildDefaultHeaderOrFooter(height: customHeaderHeight)
         } else if let defaultHeaderHeight = defaultHeaderHeight,
                   defaultHeaderHeight > 0 {
             return buildDefaultHeaderOrFooter(height: defaultHeaderHeight)
@@ -806,8 +806,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
             return textView
         } else if let customFooterHeight = section.customFooterHeight,
-                  customFooterHeight.floatValue > 0 {
-            return buildDefaultHeaderOrFooter(height: CGFloat(customFooterHeight.floatValue))
+                  customFooterHeight > 0 {
+            return buildDefaultHeaderOrFooter(height: customFooterHeight)
         } else if let defaultFooterHeight = defaultFooterHeight,
                   defaultFooterHeight > 0 {
             return buildDefaultHeaderOrFooter(height: defaultFooterHeight)
@@ -830,9 +830,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         }
 
         if let customHeaderHeight = section.customHeaderHeight {
-            let height = CGFloat(customHeaderHeight.floatValue)
-            owsAssertDebug(height > 0 || height == automaticDimension)
-            return height
+            owsAssertDebug(customHeaderHeight > 0 || customHeaderHeight == automaticDimension)
+            return customHeaderHeight
         } else if let headerTitle = section.headerTitle, !headerTitle.isEmpty {
             // Get around a bug sizing UITextView in iOS 16 by manually sizing instead
             // of relying on UITableView.automaticDimension
@@ -883,9 +882,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         }
 
         if let customFooterHeight = section.customFooterHeight {
-            let height = CGFloat(customFooterHeight.floatValue)
-            owsAssertDebug(height > 0 || height == automaticDimension)
-            return height
+            owsAssertDebug(customFooterHeight > 0 || customFooterHeight == automaticDimension)
+            return customFooterHeight
         } else if let footerTitle = section.footerTitle, !footerTitle.isEmpty {
             // Get around a bug sizing UITextView in iOS 16 by manually sizing instead
             // of relying on UITableView.automaticDimension
@@ -1016,7 +1014,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     // MARK: - UIScrollViewDelegate
 
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        delegate?.tableViewWillBeginDragging()
+        delegate?.tableViewWillBeginDragging(tableView)
     }
 
     // MARK: - Theme

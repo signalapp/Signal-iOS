@@ -7,11 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSThread;
-
-BOOL shouldUseDebugUI(void);
-void showDebugUI(TSThread *thread, UIViewController *fromViewController);
-
 #ifdef USE_DEBUG_UI
 
 @class OWSTableSection;

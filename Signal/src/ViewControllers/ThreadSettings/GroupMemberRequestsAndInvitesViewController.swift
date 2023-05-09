@@ -164,9 +164,10 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                 })
             }
         } else {
-            section.add(OWSTableItem.softCenterLabel(withText: OWSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS",
-                                                                                      comment: "Label indicating that a group has no pending member requests."),
-                                                          customRowHeight: UITableView.automaticDimension))
+            section.add(OWSTableItem.softCenterLabel(
+                withText: OWSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS",
+                                             comment: "Label indicating that a group has no pending member requests.")
+            ))
         }
         contents.addSection(section)
     }
@@ -279,9 +280,10 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                 })
             }
         } else {
-            localSection.add(OWSTableItem.softCenterLabel(withText: OWSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
-                                                                                      comment: "Label indicating that a group has no pending members."),
-                                                          customRowHeight: UITableView.automaticDimension))
+            localSection.add(OWSTableItem.softCenterLabel(
+                withText: OWSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
+                                             comment: "Label indicating that a group has no pending members.")
+            ))
         }
         contents.addSection(localSection)
 
@@ -330,9 +332,10 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                 })
             }
         } else {
-            otherUsersSection.add(OWSTableItem.softCenterLabel(withText: OWSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
-                                                                                           comment: "Label indicating that a group has no pending members."),
-                                                               customRowHeight: UITableView.automaticDimension))
+            otherUsersSection.add(OWSTableItem.softCenterLabel(
+                withText: OWSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
+                                             comment: "Label indicating that a group has no pending members.")
+            ))
         }
         contents.addSection(otherUsersSection)
 

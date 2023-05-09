@@ -8,7 +8,6 @@
 #import "Signal-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/TSInteraction.h>
-#import <SignalUI/OWSTableViewController.h>
 
 #ifdef USE_DEBUG_UI
 

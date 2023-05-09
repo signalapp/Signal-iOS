@@ -81,7 +81,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let avatarSection = OWSTableSection(header: nil, items: [
+        let avatarSection = OWSTableSection(items: [
             OWSTableItem(customCellBlock: { [weak self] in
                 self?.avatarCell() ?? UITableViewCell()
             }, actionBlock: nil),

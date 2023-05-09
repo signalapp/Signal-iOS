@@ -27,8 +27,7 @@ final class HelpViewController: OWSTableViewController2 {
         let localizedSheetMessage = OWSLocalizedString("EMAIL_SIGNAL_MESSAGE",
                                                       comment: "Description for the fallback support sheet if user cannot send email")
 
-        let contents = OWSTableContents()
-        contents.title = helpTitle
+        let contents = OWSTableContents(title: helpTitle)
 
         let helpSection = OWSTableSection()
         helpSection.add(.disclosureItem(
@@ -63,7 +62,6 @@ final class HelpViewController: OWSTableViewController2 {
             withText: OWSLocalizedString("SETTINGS_ADVANCED_DEBUGLOG", comment: ""),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "enable_debug_log"),
             isOn: { OWSPreferences.isLoggingEnabled() },
-            isEnabledBlock: { true },
             target: self,
             selector: #selector(didToggleEnableLogSwitch)
         ))

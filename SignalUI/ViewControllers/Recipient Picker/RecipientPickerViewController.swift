@@ -360,8 +360,7 @@ extension RecipientPickerViewController {
             withText: OWSLocalizedString(
                 "SETTINGS_BLOCK_LIST_NO_CONTACTS",
                 comment: "A label that indicates the user has no Signal contacts that they haven't blocked."
-            ),
-            customRowHeight: UITableView.automaticDimension
+            )
         )
     }
 
@@ -377,10 +376,9 @@ extension RecipientPickerViewController {
 
         cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "loading")
 
-        return OWSTableItem(
-            customCellBlock: { cell },
-            customRowHeight: 40
-        )
+        let tableItem = OWSTableItem(customCellBlock: { cell })
+        tableItem.customRowHeight = 40
+        return tableItem
     }
 
     private func contactAccessDeniedReminderItem() -> OWSTableItem {
