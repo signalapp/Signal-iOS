@@ -148,9 +148,12 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
             owsFailDebug("App is not ready.")
             return
         }
-        let canProcess = (messagePipelineSupervisor.isMessageProcessingPermitted &&
-                            tsAccountManager.isRegisteredAndReady &&
-                            !DebugFlags.suppressBackgroundActivity)
+
+        let canProcess = (
+            messagePipelineSupervisor.isMessageProcessingPermitted &&
+            tsAccountManager.isRegisteredAndReady
+        )
+
         guard canProcess else {
             // Don't process queues.
             return
@@ -311,9 +314,11 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     private func processWorkStep(retryDelayAfterFailure: TimeInterval = 1.0) {
         owsAssertDebug(isDrainingQueue.get())
 
-        let canProcess = (messagePipelineSupervisor.isMessageProcessingPermitted &&
-                            tsAccountManager.isRegisteredAndReady &&
-                            !DebugFlags.suppressBackgroundActivity)
+        let canProcess = (
+            messagePipelineSupervisor.isMessageProcessingPermitted &&
+            tsAccountManager.isRegisteredAndReady
+        )
+
         guard canProcess else {
             Logger.warn("Cannot process.")
             future.resolve()

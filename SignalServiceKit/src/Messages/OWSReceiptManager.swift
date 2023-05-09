@@ -50,13 +50,6 @@ public extension OWSReceiptManager {
     }
 
     func processReceiptsForLinkedDevices(completion: @escaping () -> Void) {
-        guard !DebugFlags.suppressBackgroundActivity else {
-            // Don't process queues.
-            return completion()
-        }
-
-        Logger.verbose("Processing receipts for linked devices.")
-
         let didWork = databaseStorage.write { transaction -> Bool in
             let readReceiptsForLinkedDevices: [ReceiptForLinkedDevice]
             do {

@@ -625,10 +625,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         OWSLogVerbose(@"Ignoring audit orphan data in tests.");
         return;
     }
-    if (SSKDebugFlags.suppressBackgroundActivity) {
-        OWSLogInfo(@"Background activity is suppressed. Not cleaning orphaned data");
-        return;
-    }
 
     if (shouldRemoveOrphans) {
         OWSLogInfo(@"Starting orphan data cleanup");

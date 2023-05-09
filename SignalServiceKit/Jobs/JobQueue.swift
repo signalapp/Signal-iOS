@@ -114,7 +114,6 @@ public extension JobQueue {
         guard isEnabled else { return }
         guard !CurrentAppContext().isRunningTests else { return }
         guard AppReadiness.isAppReady else { return }
-        guard !DebugFlags.suppressBackgroundActivity else { return }
         guard isSetup.get() else { return }
         workStep(transaction: transaction)
     }
@@ -143,11 +142,6 @@ public extension JobQueue {
         Logger.debug("")
 
         guard isEnabled else { return }
-
-        guard !DebugFlags.suppressBackgroundActivity else {
-            // Don't process queues.
-            return
-        }
 
         guard isSetup.get() else {
             if !CurrentAppContext().isRunningTests {
@@ -209,10 +203,6 @@ public extension JobQueue {
         guard CurrentAppContext().isMainApp else { return }
         guard isEnabled else { return }
 
-        guard !DebugFlags.suppressBackgroundActivity else {
-            // Don't process queues.
-            return
-        }
         databaseStorage.write { transaction in
             let runningRecords: [JobRecordType]
             do {
@@ -238,10 +228,6 @@ public extension JobQueue {
         guard CurrentAppContext().isMainApp else { return }
         guard isEnabled else { return }
 
-        guard !DebugFlags.suppressBackgroundActivity else {
-            // Don't process queues.
-            return
-        }
         databaseStorage.write { transaction in
             let staleRecords: [JobRecordType]
             do {

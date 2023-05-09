@@ -217,10 +217,6 @@ public class DebugFlags: BaseFlags {
 
     public static let internalMegaphoneEligible = build.includes(.internal)
 
-    // This can be used to shut down various background operations.
-    @objc
-    public static let suppressBackgroundActivity = false
-
     @objc
     public static let reduceLogChatter: Bool = {
         // This is a little verbose to make it easy to change while developing.
