@@ -194,8 +194,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     }
 
     public func dataTaskPromise(request: URLRequest, ignoreAppExpiry: Bool = false) -> Promise<HTTPResponse> {
-        let appExpiry = DependenciesBridge.shared.appExpiry
-        guard ignoreAppExpiry || !appExpiry.isExpired else {
+        if !ignoreAppExpiry && DependenciesBridge.shared.appExpiry.isExpired {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
@@ -601,8 +600,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         ignoreAppExpiry: Bool = false,
         progress progressBlock: ProgressBlock? = nil
     ) -> Promise<HTTPResponse> {
-        let appExpiry = DependenciesBridge.shared.appExpiry
-        guard ignoreAppExpiry || !appExpiry.isExpired else {
+        if !ignoreAppExpiry && DependenciesBridge.shared.appExpiry.isExpired {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 

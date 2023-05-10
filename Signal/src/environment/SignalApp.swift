@@ -169,9 +169,9 @@ extension SignalApp {
             progressView.autoCenterInSuperview()
             progressView.startAnimating()
 
-            DispatchQueue.sharedUserInitiated.async {
-                var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "showDatabaseIntegrityCheckUI")
+            var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "showDatabaseIntegrityCheckUI")
 
+            DispatchQueue.sharedUserInitiated.async {
                 GRDBDatabaseStorageAdapter.checkIntegrity()
 
                 owsAssertDebug(backgroundTask != nil)
