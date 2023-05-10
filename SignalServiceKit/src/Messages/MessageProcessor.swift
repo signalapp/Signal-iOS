@@ -430,16 +430,18 @@ public class MessageProcessor: NSObject {
                 guard handleProcessingRequest(request, context: context, transaction: transaction) else {
                     continue
                 }
-                if let protoEnvelope = request.protoEnvelope {
-                    messageManager.finishProcessingEnvelope(protoEnvelope, transaction: transaction)
+                if let envelope = request.identifiedEnvelope {
+                    messageManager.finishProcessingEnvelope(envelope, tx: transaction)
                 }
             }
         }
     }
 
-    private func reallyHandleProcessingRequest(_ request: ProcessingRequest,
-                                               context: DeliveryReceiptContext,
-                                               transaction: SDSAnyWriteTransaction) -> (Bool, Error?) {
+    private func reallyHandleProcessingRequest(
+        _ request: ProcessingRequest,
+        context: DeliveryReceiptContext,
+        transaction: SDSAnyWriteTransaction
+    ) -> (Bool, Error?) {
         switch request.state {
         case .completed(error: let error):
             Logger.info("Envelope completed early with error \(String(describing: error))")
@@ -452,17 +454,16 @@ public class MessageProcessor: NSObject {
                 plaintextData: decryptedEnvelope.plaintextData!,
                 wasReceivedByUD: decryptedEnvelope.wasReceivedByUD,
                 serverDeliveryTimestamp: decryptedEnvelope.serverDeliveryTimestamp,
-                transaction: transaction)
+                transaction: transaction
+            )
             return (false, nil)
         case .messageManagerRequest(let messageManagerRequest):
             Logger.info("Pass envelope to message manager")
             messageManager.handle(messageManagerRequest, context: context, transaction: transaction)
             return (true, nil)
-        case .plaintextReceipt(let protoEnvelope):
+        case .plaintextReceipt(let identifiedEnvelope):
             Logger.info("Handle server-generated receipt")
-            messageManager.handleDeliveryReceipt(protoEnvelope,
-                                                 context: context,
-                                                 transaction: transaction)
+            messageManager.handleDeliveryReceipt(identifiedEnvelope, context: context, transaction: transaction)
             return (true, nil)
         case .clearPlaceholdersOnly:
             return (true, nil)
@@ -519,25 +520,24 @@ public class MessageProcessor: NSObject {
 struct ProcessingRequest {
     enum State {
         case completed(error: Error?)
-        case enqueueForGroup(decryptedEnvelope: DecryptedEnvelope,
-                             envelopeData: Data)
+        case enqueueForGroup(decryptedEnvelope: DecryptedEnvelope, envelopeData: Data)
         case messageManagerRequest(MessageManagerRequest)
-        case plaintextReceipt(SSKProtoEnvelope)
-
+        case plaintextReceipt(IdentifiedIncomingEnvelope)
         // Message decrypted but had an invalid protobuf.
-        case clearPlaceholdersOnly(SSKProtoEnvelope)
+        case clearPlaceholdersOnly(IdentifiedIncomingEnvelope)
     }
 
     let state: State
     let pendingEnvelope: PendingEnvelope
-    var protoEnvelope: SSKProtoEnvelope? {
+
+    var identifiedEnvelope: IdentifiedIncomingEnvelope? {
         switch state {
         case .completed, .enqueueForGroup:
             return nil
         case .messageManagerRequest(let messageManagerRequest):
-            return messageManagerRequest.envelope
-        case .plaintextReceipt(let protoEnvelope), .clearPlaceholdersOnly(let protoEnvelope):
-            return protoEnvelope
+            return messageManagerRequest.identifiedEnvelope
+        case .plaintextReceipt(let identifiedEnvelope), .clearPlaceholdersOnly(let identifiedEnvelope):
+            return identifiedEnvelope
         }
     }
 
@@ -547,8 +547,8 @@ struct ProcessingRequest {
         switch state {
         case .completed, .enqueueForGroup, .clearPlaceholdersOnly:
             return nil
-        case .plaintextReceipt(let protoEnvelope):
-            return [protoEnvelope.timestamp]
+        case .plaintextReceipt(let identifiedEnvelope):
+            return [identifiedEnvelope.timestamp]
         case .messageManagerRequest(let request):
             switch request.messageType {
             case .receiptMessage:
@@ -730,11 +730,11 @@ struct ProcessingRequestBuilder {
                 }
                 if messageManagerRequest.protoContent == nil {
                     messageManager.logUnactionablePayload(identifiedEnvelope.envelope)
-                    return ProcessingRequest(pendingEnvelope, state: .clearPlaceholdersOnly(identifiedEnvelope.envelope))
+                    return ProcessingRequest(pendingEnvelope, state: .clearPlaceholdersOnly(identifiedEnvelope))
                 }
                 return ProcessingRequest(pendingEnvelope, state: .messageManagerRequest(messageManagerRequest))
             case .receipt:
-                return ProcessingRequest(pendingEnvelope, state: .plaintextReceipt(identifiedEnvelope.envelope))
+                return ProcessingRequest(pendingEnvelope, state: .plaintextReceipt(identifiedEnvelope))
             case .keyExchange:
                 Logger.warn("Received Key Exchange Message, not supported")
                 return ProcessingRequest(pendingEnvelope, state: .completed(error: nil))

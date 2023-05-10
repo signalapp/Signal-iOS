@@ -129,45 +129,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - message handling
 
-/// Called when we've finished processing an envelope.
-///
-/// If we call this method, we tried to process an envelope. However, the
-/// contents of that envelope may or may not be valid.
-///
-/// Cases where we won't call this method:
-/// - The envelope is missing a sender (or a device ID)
-/// - The envelope has a sender but they're blocked
-/// - The envelope is missing a timestamp
-/// - The user isn't registered
-///
-/// Cases where we will call this method:
-/// - The envelope contains a fully valid message
-/// - The envelope contains a message with an invalid reaction
-/// - The envelope contains a link preview but the URL isn't in the message
-/// - & so on, for many "errors" that are handled elsewhere
-- (void)finishProcessingEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self saveSpamReportingTokenForEnvelope:envelope transaction:transaction];
-
-    // We need to check to make sure that we clear any placeholders that may
-    // have been inserted for this message. This would happen if:
-    //
-    // - This is a resend of a message that we had previously failed to decrypt
-    //
-    // - The message does not result in an inserted TSIncomingMessage or
-    // TSOutgoingMessage. For example, a read receipt. In that case, we should
-    // just clear the placeholder.
-    if (envelope.timestamp > 0 && envelope.sourceAddress) {
-        [self clearLeftoverPlaceholders:envelope.timestamp sender:envelope.sourceAddress transaction:transaction];
-    }
-}
-
 // This code path is for server-generated receipts only.
-- (void)handleDeliveryReceipt:(SSKProtoEnvelope *)envelope
+- (void)handleDeliveryReceipt:(IdentifiedIncomingEnvelope *)identifiedEnvelope
                       context:(id<DeliveryReceiptContext>)context
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (!envelope) {
+    if (!identifiedEnvelope) {
         OWSFailDebug(@"Missing envelope.");
         return;
     }
@@ -175,10 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
-    if (![SDS fitsInInt64:envelope.timestamp]) {
-        OWSFailDebug(@"Invalid timestamp.");
-        return;
-    }
+    SSKProtoEnvelope *envelope = identifiedEnvelope.envelope;
     // Server-generated delivery receipts don't include a "delivery timestamp".
     // The envelope's timestamp gives the timestamp of the message this receipt
     // is for. Unlike UD receipts, it is not meant to be the time the message
@@ -2086,37 +2050,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                sender:sender
                                                                       protocolVersion:protocolVersion];
     [message anyInsertWithTransaction:transaction];
-}
-
-- (void)clearLeftoverPlaceholders:(uint64_t)timestamp
-                           sender:(SignalServiceAddress *)address
-                      transaction:(SDSAnyWriteTransaction *)transaction
-{
-    NSError *_Nullable error = nil;
-    NSArray<TSInteraction *> *placeholders = nil;
-
-    placeholders = [InteractionFinder
-        interactionsWithTimestamp:timestamp
-                           filter:^BOOL(TSInteraction *interaction) {
-                               if ([interaction isKindOfClass:[OWSRecoverableDecryptionPlaceholder class]]) {
-                                   OWSRecoverableDecryptionPlaceholder *placeholder
-                                       = (OWSRecoverableDecryptionPlaceholder *)interaction;
-                                   return [placeholder.sender isEqualToAddress:address];
-                               } else {
-                                   return false;
-                               }
-                           }
-                      transaction:transaction
-                            error:&error];
-
-    if (!error) {
-        OWSAssertDebug(placeholders.count <= 1);
-        for (OWSRecoverableDecryptionPlaceholder *placeholder in placeholders) {
-            [placeholder anyRemoveWithTransaction:transaction];
-        }
-    } else {
-        OWSFailDebug(@"Failed to fetch placeholders: %@", error);
-    }
 }
 
 #pragma mark - Group ID Mapping

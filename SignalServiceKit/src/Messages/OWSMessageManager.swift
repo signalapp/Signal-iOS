@@ -188,7 +188,7 @@ extension OWSMessageManager {
             }
         case .receipt:
             owsAssertDebug(plaintextData == nil)
-            handleDeliveryReceipt(envelope, context: PassthroughDeliveryReceiptContext(), transaction: tx)
+            handleDeliveryReceipt(identifiedEnvelope, context: PassthroughDeliveryReceiptContext(), transaction: tx)
         case .keyExchange:
             Logger.warn("Received Key Exchange Message, not supported")
         case .unknown:
@@ -196,42 +196,75 @@ extension OWSMessageManager {
         default:
             Logger.warn("Received unhandled envelope type: \(identifiedEnvelope.envelopeType)")
         }
-        finishProcessingEnvelope(envelope, transaction: tx)
+        finishProcessingEnvelope(identifiedEnvelope, tx: tx)
     }
 
-    @objc(saveSpamReportingTokenForEnvelope:transaction:)
-    func saveSpamReportingToken(
-        for envelope: SSKProtoEnvelope,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        guard
-            let sourceUuid = envelope.sourceUuid,
-            let sourceServiceId = ServiceId(uuidString: sourceUuid)
-        else {
-            Logger.warn(
-                "Received an envelope without a valid source UUID. Did the server send bad data?"
-            )
-            return
-        }
+    /// Called when we've finished processing an envelope.
+    ///
+    /// If we call this method, we tried to process an envelope. However, the
+    /// contents of that envelope may or may not be valid.
+    ///
+    /// Cases where we won't call this method:
+    /// - The envelope is missing a sender (or a device ID)
+    /// - The envelope has a sender but they're blocked
+    /// - The envelope is missing a timestamp
+    /// - The user isn't registered
+    ///
+    /// Cases where we will call this method:
+    /// - The envelope contains a fully valid message
+    /// - The envelope contains a message with an invalid reaction
+    /// - The envelope contains a link preview but the URL isn't in the message
+    /// - & so on, for many "errors" that are handled elsewhere
+    func finishProcessingEnvelope(_ identifiedEnvelope: IdentifiedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
+        saveSpamReportingToken(for: identifiedEnvelope, tx: tx)
+        clearLeftoverPlaceholders(for: identifiedEnvelope, tx: tx)
+    }
 
+    private func saveSpamReportingToken(for identifiedEnvelope: IdentifiedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
         guard
-            let rawSpamReportingToken = envelope.spamReportingToken,
+            let rawSpamReportingToken = identifiedEnvelope.envelope.spamReportingToken,
             let spamReportingToken = SpamReportingToken(data: rawSpamReportingToken)
         else {
             Logger.debug("Received an envelope without a spam reporting token. Doing nothing")
             return
         }
 
-        Logger.info("Saving spam reporting token. Envelope timestamp: \(envelope.timestamp)")
+        Logger.info("Saving spam reporting token. Envelope timestamp: \(identifiedEnvelope.timestamp)")
         do {
             try SpamReportingTokenRecord(
-                sourceUuid: sourceServiceId,
+                sourceUuid: identifiedEnvelope.sourceServiceId,
                 spamReportingToken: spamReportingToken
-            ).upsert(transaction.unwrapGrdbWrite.database)
+            ).upsert(tx.unwrapGrdbWrite.database)
         } catch {
             owsFailBeta(
                 "Couldn't save spam reporting token record. Continuing on, to avoid interrupting message processing. Error: \(error)"
             )
+        }
+    }
+
+    /// Clear any remaining placeholders for a fully-processed message.
+    ///
+    /// We need to check to make sure that we clear any placeholders that may
+    /// have been inserted for this message. This would happen if:
+    ///
+    /// - This is a resend of a message that we had previously failed to decrypt
+    ///
+    /// - The message does not result in an inserted TSIncomingMessage or
+    /// TSOutgoingMessage. For example, a read receipt. In that case, we should
+    /// just clear the placeholder.
+    private func clearLeftoverPlaceholders(for envelope: IdentifiedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
+        do {
+            let placeholders = try InteractionFinder.interactions(
+                withTimestamp: envelope.timestamp,
+                filter: { ($0 as? OWSRecoverableDecryptionPlaceholder)?.sender?.serviceId == envelope.sourceServiceId },
+                transaction: tx
+            )
+            owsAssertDebug(placeholders.count <= 1)
+            for placeholder in placeholders {
+                placeholder.anyRemove(transaction: tx)
+            }
+        } catch {
+            owsFailDebug("Failed to fetch placeholders: \(error)")
         }
     }
 
