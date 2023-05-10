@@ -19,7 +19,7 @@ protocol InteractionFinderAdapter {
 
     static func fetch(uniqueId: String, transaction: ReadTransaction) throws -> TSInteraction?
 
-    static func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
+    static func existsIncomingMessage(timestamp: UInt64, sourceServiceId: ServiceId, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
 
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
 
@@ -101,11 +101,10 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    @objc
-    public class func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: SDSAnyReadTransaction) -> Bool {
+    public class func existsIncomingMessage(timestamp: UInt64, sourceServiceId: ServiceId, sourceDeviceId: UInt32, transaction: SDSAnyReadTransaction) -> Bool {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            return GRDBInteractionFinder.existsIncomingMessage(timestamp: timestamp, address: address, sourceDeviceId: sourceDeviceId, transaction: grdbRead)
+            return GRDBInteractionFinder.existsIncomingMessage(timestamp: timestamp, sourceServiceId: sourceServiceId, sourceDeviceId: sourceDeviceId, transaction: grdbRead)
         }
     }
 
@@ -698,37 +697,26 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead)
     }
 
-    static func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {
-        var exists = false
-        if let uuidString = address.uuidString {
-            let sql = """
-                SELECT EXISTS(
-                    SELECT 1
-                    FROM \(InteractionRecord.databaseTableName)
-                    WHERE \(interactionColumn: .timestamp) = ?
-                    AND \(interactionColumn: .authorUUID) = ?
-                    AND \(interactionColumn: .sourceDeviceId) = ?
+    static func existsIncomingMessage(timestamp: UInt64, sourceServiceId: ServiceId, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {
+        let sql = """
+            SELECT EXISTS(
+                SELECT 1
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .timestamp) = ?
+                AND (
+                    \(interactionColumn: .authorUUID) = ?
+                    OR (\(interactionColumn: .authorUUID) IS NULL AND \(interactionColumn: .authorPhoneNumber) = ?)
                 )
-            """
-            let arguments: StatementArguments = [timestamp, uuidString, sourceDeviceId]
-            exists = try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
-        }
-
-        if !exists, let phoneNumber = address.phoneNumber {
-            let sql = """
-                SELECT EXISTS(
-                    SELECT 1
-                    FROM \(InteractionRecord.databaseTableName)
-                    WHERE \(interactionColumn: .timestamp) = ?
-                    AND \(interactionColumn: .authorPhoneNumber) = ?
-                    AND \(interactionColumn: .sourceDeviceId) = ?
-                )
-            """
-            let arguments: StatementArguments = [timestamp, phoneNumber, sourceDeviceId]
-            exists = try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
-        }
-
-        return exists
+                AND \(interactionColumn: .sourceDeviceId) = ?
+            )
+        """
+        let arguments: StatementArguments = [
+            timestamp,
+            sourceServiceId.uuidValue.uuidString,
+            SignalServiceAddress(sourceServiceId).phoneNumber,
+            sourceDeviceId
+        ]
+        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
     }
 
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {

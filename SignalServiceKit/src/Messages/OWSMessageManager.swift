@@ -879,7 +879,7 @@ class MessageManagerRequest: NSObject {
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
         self.shouldDiscardVisibleMessages = shouldDiscardVisibleMessages
 
-        if Self.isDuplicate(envelope, sourceServiceId: identifiedEnvelope.sourceServiceId, transaction: transaction) {
+        if Self.isDuplicate(identifiedEnvelope, tx: transaction) {
             Logger.info("Ignoring previously received envelope from \(envelope.formattedAddress) with timestamp: \(envelope.timestamp)")
             return nil
         }
@@ -918,16 +918,12 @@ class MessageManagerRequest: NSObject {
         }
     }
 
-    private static func isDuplicate(
-        _ envelope: SSKProtoEnvelope,
-        sourceServiceId: ServiceId,
-        transaction: SDSAnyReadTransaction
-    ) -> Bool {
+    private static func isDuplicate(_ identifiedEnvelope: IdentifiedIncomingEnvelope, tx: SDSAnyReadTransaction) -> Bool {
         return InteractionFinder.existsIncomingMessage(
-            timestamp: envelope.timestamp,
-            address: SignalServiceAddress(sourceServiceId),
-            sourceDeviceId: envelope.sourceDevice,
-            transaction: transaction
+            timestamp: identifiedEnvelope.timestamp,
+            sourceServiceId: identifiedEnvelope.sourceServiceId,
+            sourceDeviceId: identifiedEnvelope.sourceDeviceId,
+            transaction: tx
         )
     }
 }
