@@ -1,26 +1,19 @@
-Millones de personas utilizan Signal cada día para comunicarse instantáneamente y sin costes en cualquier parte del mundo. Envía y recibe mensajes confidenciales, participa en llamadas de vídeo/voz de alta definición y explora un sinfín de nuevas funciones que te permitirán estar conectada. La avanzada tecnología de Signal pensada para mantener la privacidad de tus conversaciones siempre está activada para que puedas centrarte en compartir momentos importantes con la gente que te importa.
+Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
 
-• Di lo que quieras - Signal utiliza un avanzado protocolo de código abierto con cifrado de extremo a extremo para mantener la privacidad de tus chats. La privacidad no es una opción configurable, es la manera como funciona Signal. En todos tus mensajes, todas tus llamadas. Siempre.
+• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
 
-• Rápida - Con Signal, los mensajes se entregan de forma rápida y fiable, incluso si la red es lenta. El protocolo de Signal está diseñado para funcionar en el entorno más restringido posible.
+• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
 
-• Sin ataduras – Signal es una organización 501c3 sin ánimo de lucro y totalmente independiente. Usuarias como tú participan en su desarrollo. Sin anuncios, sin rastreadores, sin engaños.
+• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
 
-• Sé tú misma - Puedes utilizar tu número de teléfono y libreta de direcciones existentes para comunicarte con total seguridad con tus amistades.
+• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
 
-• Habla con libertad - Haz llamadas y videollamadas de calidad cristalina a amistades y familiares que viven al otro lado de la ciudad o al otro lado del océano y creerás que están a tu lado.
+• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
 
-• Susurra en la penumbra – Si te molesta la luz a ciertas horas, activa el modo oscuro.
+• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
 
-• Personalízala – Selecciona alertas personalizadas para cada parsona o desactiva el sonido completemente. Al igual que en la canción de Simon & Garfunkel, puedes experimentar el sonido del silencio siempre que quieras eliminando el tono de llamada para notificaciones. Además, puedes seleccionar un fondo y color de chat especial para esas personas tan especiales.
+• For support, questions, or more information please visit https://support.signal.org/
 
-• Imaginación al poder – Utiliza las funciones de edición de imagen integradas para editar, recortar y girar tus fotos. Con la herramienta de texto podrás añadir más palabras a las más que mil que vale tu imagen.
+To check out our source code, visit https://github.com/signalapp 
 
-
-Para ayuda, preguntas o más información, ve a la página:
-https://support.signal.org
-
-Código fuente:
-https://github.com/signalapp
-
-Síguenos en Twitter (@signalapp) e Instagram (@signal_app) para ver las últimas actualizaciones y anuncios.
+Follow us on Twitter @signalapp and Instagram @signal_app

@@ -1,26 +1,19 @@
-매일 수백만 명의 사용자가 세계 각지에서 Signal을 사용하여 즉각적으로, 그리고 무료로 대화하고 있습니다. 하이파이 메시지를 주고받고, HD 음성 및 영상 통화에 참여하고 더욱 편리한 소통을 위한 여러 새로운 기능을 만나보세요. Signal의 고급 개인 정보 보호 기술은 항상 활성화되어 있으므로, 사용자는 주변의 소중한 사람들과 연락을 주고받는 것 외에는 아무것도 신경 쓸 필요가 없습니다.
+Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
 
-• 늘 안전한 대화 - 최신 단대단 암호화(오픈 소스 Signal Protocol™로 구동) 기술로 안전하게 대화를 나눠보세요.  더 이상 개인 정보 보호는 선택 사항이 아닙니다. Signal은 모든 메시지와 통화에 대해, 그리고 매 순간 개인 정보를 보호해 드립니다.
+• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
 
-• 빠른 메시지 전송 - 네트워크 속도가 느려도 메시지는 늘 빠르고 안전하게 전달됩니다. Signal은 극도로 제한적인 환경에서의 작동에 최적화되어 있습니다.
+• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
 
-• 100% 무료 - Signal은 완전히 독립적인 501c3 비영리 앱입니다. 사용자 여러분이 곧 개발자입니다. 어떠한 광고도, 추적도 없답니다. 진짜로요.
+• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
 
-• 휴대 전화와 연동 - 내 전화번호와 기존 주소록으로 친구들과 안전하게 대화를 나눌 수 있습니다.
+• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
 
-• 고품질 통화 - Signal의 고품질 음성 및 영상 통화를 통해, 우리 동네에 있든, 바다 건너에 있든 상관없이 친구와 가족들을 더 가까이 연결해 드립니다.
+• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
 
-• 아늑한 대화 - 화면이 밝아 거슬린다면 어두운 테마로 전환할 수 있습니다.
+• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
 
-• 편안한 사운드 - 연락처별로 맞춤형 알림을 선택하거나 잡음을 완전히 끌 수도 있습니다. '침묵은 금이다'라는 속담처럼, 언제든지 알림 벨소리를 '없음'으로 설정하여 조용한 대화를 즐길 수 있습니다.
+• For support, questions, or more information please visit https://support.signal.org/
 
-• 생생한 이미지로 대화 - 기본으로 제공되는 이미지 편집 기능으로 사진을 스케치하고, 자르고 뒤집어 보세요. 텍스트 도구도 내장되어 있어 내 소중한 사진에 최대 1,000자의 단어들을 추가할 수 있습니다.
+To check out our source code, visit https://github.com/signalapp 
 
-
-지원, 질문 또는 자세한 정보는 다음을 방문해 주세요.
-https://support.signal.org
-
-소스 코드:
-https://github.com/signalapp
-
-트위터(@signalapp)와 인스타그램(@signal_app)에서 Signal을 팔로우하여 최신 업데이트와 알림을 모두 확인해 보세요.
+Follow us on Twitter @signalapp and Instagram @signal_app

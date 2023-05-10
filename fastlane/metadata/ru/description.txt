@@ -1,26 +1,19 @@
-Миллионы людей используют Signal каждый день, чтобы бесплатно и моментально обмениваться сообщениями в любой точке мира. Отправляйте и получайте сообщения, участвуйте в голосовых и видеозвонках высокого качества и изучайте все новые и новые функции, которые помогают вам оставаться на связи. Передовая технология обеспечения конфиденциальности Signal всегда включена, поэтому вы можете сосредоточиться на том, чтобы делиться важными моментами с людьми, которые важны для вас.
+Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
 
-• Говорите что угодно — новейшая технология сквозного шифрования (основанная на протоколе Signal Protocol™ с открытым исходным кодом) надёжно защищает ваши разговоры. Приватность здесь не дополнительная функция — Signal просто так работает. При каждом сообщении, при каждом звонке, каждый раз.
+• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
 
-• Ощутите скорость — сообщения доставляются быстро и бесперебойно даже при медленном соединении. Signal разработан так, чтобы отлично работать даже в самых сложных условиях.
+• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
 
-• Почувствуйте свободу — Signal является полностью независимым некоммерческим продуктом. Разработка поддерживается нашими пользователями. Без рекламы. Без отслеживания. Без обмана.
+• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
 
-• Будьте собой — вы можете использовать свой действующий номер телефона и адресную книгу для защищенного общения с друзьями.
+• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
 
-• Говорите и слушайте — живут ли ваши друзья и родственники за городом или за океаном, благодаря улучшенному качеству звука и видео в Signal вы почувствуете себя рядом.
+• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
 
-• Шепчитесь в тени — переключитесь на темную тему, если вас не привлекает светлая сторона.
+• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
 
-• Найдите свой звук — выберите разные звуки уведомлений для каждого контакта или полностью отключите их. Если предпочитаете звуки тишины, просто выберите "Без звука" в качестве мелодии звонка.
+• For support, questions, or more information please visit https://support.signal.org/
 
-• Творите — используйте встроенные функции редактирования изображений, чтобы рисовать, обрезать и вращать фотографии перед отправкой. Хотя фотография стоит тысячи слов, вы сможете добавить еще несколько при помощи инструмента "Текст".
+To check out our source code, visit https://github.com/signalapp 
 
-
-За поддержкой или дополнительной информацией обращайтесь на сайт: 
-https://support.signal.org
-
-Исходный код:
-https://github.com/signalapp
-
-Подпишитесь на нас в Twitter (@signalapp) и Instagram (@signal_app), чтобы быть в курсе последних обновлений и анонсов.
+Follow us on Twitter @signalapp and Instagram @signal_app

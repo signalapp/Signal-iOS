@@ -1,26 +1,19 @@
-Hàng triệu người dùng Signal miễn phí mỗi ngày để liên lạc ngay tức thời từ mọi nơi trên thế giới. Gửi và nhận tin nhắn chất lượng cao, tham gia các cuộc gọi âm thanh và hình ảnh HD, khám phá các tính năng mới ngày càng phát triển để giúp bạn kết nối. Công nghệ tiên tiến bảo đảm sự riêng tư của Signal luôn được bật để bạn có thể tập trung chia sẻ những giây phút quan trọng với những người quan trọng đối với bạn.
+Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
 
-• Nói bất cứ điều gì - Công nghệ mã hóa hai chiều tiên tiến (dựa trên giao thức mã nguồn mở Signal Protocol™) duy trì tính bảo mật cho các cuộc trò chuyện của bạn. Tính riêng tư không phải là một chế độ tùy chọn - đây là phương châm mà Signal hoạt động. Mọi tin nhắn, mọi cuộc gọi, mọi lúc.
+• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
 
-• Đi nhanh - Tin nhắn được gửi đi một cách nhanh chóng và đáng tin cậy, ngay cả với các kết nối mạng chậm. Signal được tối ưu hóa để hoạt động trong các môi trường trở ngại nhất.
+• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
 
-• Miễn phí - Signal là ứng dụng phi lợi nhuận 501c3 hoàn toàn độc lập. Việc phát triển hoàn toàn được hỗ trợ bởi người dùng như bạn. Không quảng cáo. Không người theo dõi. Không phải nói đùa.
+• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
 
-• Hãy là chính bạn - Bạn có thể dùng số điện thoại và danh bạ hiện tại để liên lạc một cách an toàn với bạn bè của mình.
+• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
 
-• Nói to - Dù mọi người có đang ở phía bên kia thành phố hay đại dương, cuộc gọi âm thanh và hình ảnh chất lượng cao của Signal sẽ khiến bạn cảm thấy như bạn bè và gia đình của mình đang ở gần bên.
+• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
 
-• Thì thầm trong bóng tối - Chuyển sang chế độ tối nếu bạn không muốn nhìn thấy ánh sáng.
+• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
 
-• Âm thanh quen thuộc - Chọn âm báo tùy chỉnh cho mỗi liên hệ, hoặc tắt hẳn âm báo. Simon & Garfunkel đã sáng tác một bài hát nổi tiếng về điều này vào năm 1964, bạn hoàn toàn có thể trải nghiệm âm thanh của tĩnh lặng bằng cách chọn "Không âm thanh" làm chuông báo của mình.
+• For support, questions, or more information please visit https://support.signal.org/
 
-• Phác họa - Sử dụng các tính năng chỉnh sửa hình ảnh tích hợp sẵn để vẽ, cắt và lật các ảnh bạn gửi đi. Chúng tôi còn trang bị một công cụ văn bản để bạn có thể thêm nhiều hơn 1000 từ mà hình ảnh của bạn đã có sẵn.
+To check out our source code, visit https://github.com/signalapp 
 
-
-Để được hỗ trợ, trả lời câu hỏi, hoặc tìm hiểu thêm, vui lòng xem: 
-https://support.signal.org
-
-Mã nguồn:
-https://github.com/signalapp
-
-Theo dõi chúng tôi trên Twitter (@signalapp) và Instagram (@signal_app) để nhận được mọi thông tin cập nhật và thông báo mới nhất.
+Follow us on Twitter @signalapp and Instagram @signal_app

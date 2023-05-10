@@ -1,26 +1,19 @@
-दुनिया में कहीं भी मुफ़्त और तुरंत संचार के लिए हर दिन लाखों लोग Signal का उपयोग करते हैं। उच्च-निष्ठा संदेश भेजें और प्राप्त करें, HD ऑडियो/वीडियो कॉल में भाग लें, और नई सुविधाओं के ऐसे बढ़ते हुए सेट की पड़ताल करें, जो आपको कनेक्टेड रहने में मदद करता है। Signal की उन्नत गोपनीयता-संरक्षण प्रौद्योगिकी हमेशा सक्षम होती है, इसलिए आप उन लोगों के साथ अपने महत्वपूर्ण पल साझा करने पर ध्यान केंद्रित कर सकते हैं, जो आपके लिए महत्वपूर्ण हैं।
+Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
 
-• कुछ भी कहें - अत्याधुनिक सतत एन्क्रिप्शन (ओपन स्रोत Signal प्रोटोकॉल™ द्वारा संचालित) आपके वार्तालापों को सुरक्षित रखता है। गोपनीयता वैकल्पिक मोड नहीं है - यह बस Signal के काम करने का तरीका है। हर संदेश, हर कॉल, हर बार।
+• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
 
-• जल्दी करें - संदेश धीमे नेटवर्कों पर भी जल्दी और भरोसेमंद ढंग से वितरित किए जाते हैं। Signal को सबसे संभव प्रतिबंधित परिवेश में संचालित होने के लिए इष्टतम किया गया है।
+• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
 
-• स्वतंत्र महसूस करें - Signal पूरी तरह से स्वतंत्र 501c3 गैर-मुनाफ़ा है। विकास आपके जैसे उपयोगकर्ताओं द्वारा समर्थित है। कोई विज्ञापन नहीं। कोई ट्रैकर नहीं। यह मजाक नहीं है।
+• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
 
-• जो आप हैं, वही बनें - अपने दोस्तों के साथ सुरक्षित रूप से संवाद करने के लिए आप अपने मौजूदा फ़ोन नंबर और पता पुस्तिका का उपयोग कर सकते हैं।
+• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
 
-• अपनी बात सामने रखें - चाहे वे शहर में रहते हैं या सागर के पार, Signal की बढ़ी हुई ऑडियो और वीडियो गुणवत्ता आपके दोस्तों और परिवार को करीब महसूस कराएगी।
+• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
 
-• छाया में कानाफूसी करें - यदि आप प्रकाश नहीं देखना चाहते हैं, तो गहरी थीम पर स्विच करें।
+• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
 
-• परिचित ध्वनि - प्रत्येक संपर्क के लिए अनुकूलित अलर्ट चुनें, या शोर को पूरी तरह से अक्षम करें। साइमन एंड गारफ़ंकल ने 1964 में इसके बारे में हिट गीत लिखा था, और जब भी आप चाहें, तब आप अपनी अधिसूचना रिंगटोन के रूप में "कोई नहीं" चुनकर मौन की ध्वनि का अनुभव कर सकते हैं।
+• For support, questions, or more information please visit https://support.signal.org/
 
-• इसे चित्रित करें - अपनी बाहर जाने वाली फ़ोटोज़ को स्केच, क्रॉप, और फ़्लिप करने के लिए अंतर्निर्मित छवि संपादन सुविधाओं का उपयोग करें। यहाँ तक ​​कि टेक्स्ट टूल भी है, ताकि आप 1,000 में और अधिक शब्द जोड़ सकें, जिनके लिए आपका चित्र पहले से ही लायक है।
+To check out our source code, visit https://github.com/signalapp 
 
-
-समर्थन, प्रश्न, या अधिक जानकारी के लिए, कृपया यहाँ जाएँ:
-https://support.signal.org
-
-स्रोत कोड:
-https://github.com/signalapp
-
-सभी नवीनतम अपडेटों और घोषणाओं के लिए हमें Twitter (@signalapp) और Instagram (@signal_app) पर फ़ॉलो करें।
+Follow us on Twitter @signalapp and Instagram @signal_app

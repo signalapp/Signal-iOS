@@ -1,26 +1,19 @@
-Milióny ľudí po celom svete každý deň používajú Signal na komunikáciu zadarmo. Posielajte a prijímajte správy vo vysokom rozlíšení, zúčastňujte sa na HD (video) hovoroch a objavujte nové možnosti, ktoré vám pomáhajú zostať v kontakte. Pokročilá technológia na udržanie súkromia je v aplikácii Signal vždy zapnutá, takže sa môžete plne sústrediť na zdieľanie momentov, na ktorých záleží, s ľuďmi, na ktorých vám záleží.
+Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
 
-• Povedzte čokoľvek – Najmodernejšie koncové šifrovanie (postavené na otvorenom protokole Signal Protocol) udržuje vaše rozhovory v bezpečí. Súkromie nie je niečo voliteľné - tak proste funguje Signal. Každá správa, každý hovor, každý raz.
+• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
 
-• Buďte rýchli – Správy sú doručené rýchlo a spoľahlivo a to i v pomalých sieťach. Signal je optimalizovaný na fungovanie aj v tých najťažších podmienkach.
+• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
 
-• Cíťte sa slobodne – Signal je úplne nezávislá 501c3 nezisková organizácia. Vývoj je podporovaný ľudmi, ako ste vy. Žiadne reklamy. Žiadne trackery. Žiadne žarty.
+• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
 
-• Buďte sami sebou – Na komunikáciu s priateľmi môžete používať svoje telefónne číslo a adresár kontaktov.
+• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
 
-• Ozvite sa – Či už žijú na druhom konci mesta, alebo na druhom konci sveta, kvalita zvuku a videa v aplikácii Signal vám dá s priateľmi a rodinou pocit blízkosti.
+• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
 
-• Šepkajte pod rúškom tmy – Ak odmietate vidieť svetlo, tak sa prepnite do tmavého prostredia.
+• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
 
-• Známe zvuky – Priraďte každému kontaktu vlastnú zvučku, alebo si zvuky úplne vypnite. Simon & Garfunkel o ňom v roku 1964 napísali hit a vy si zvuk ticha môžete vychutnať kedykoľvek, keď si zvolíte "žiadne" zvonenie pre upozornenia.
+• For support, questions, or more information please visit https://support.signal.org/
 
-• Predstavte si toto – Používať vstavaný editor na kreslenie, orezávanie a otáčanie odosielanej fotky. A ak by ste mali pocit, že fotka nehovorí sama za seba, môžete k nej ešte pridať vlastný text.
+To check out our source code, visit https://github.com/signalapp 
 
-
-Ak potrebujete pomoc, máte otázky, alebo potrebujete viac informácií, navštívte:
-https://support.signal.org
-
-Zdrojový kód:
-https://github.com/signalapp
-
-Sledujte náš Twitter (@signalapp) a Instagram (@signal_app) pre všetky najnovšie aktualizácie a oznamy.
+Follow us on Twitter @signalapp and Instagram @signal_app

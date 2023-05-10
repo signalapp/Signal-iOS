@@ -1,26 +1,19 @@
-Berjuta-juta orang menggunakan Signal setiap hari untuk komunikasi segera dan percuma di mana-mana sahaja di dunia. Menghantar dan menerima mesej ketepatan tinggi, mengambil bahagian dalam panggilan suara/video HD, dan meneroka set ciri baru yang semakin meningkat yang membantu anda terus berhubung. Teknologi pemeliharaan privasi yang maju Signal sentiasa didayakan, jadi anda boleh memberi tumpuan untuk berkongsi saat-saat indah bersama orang yang penting bagi anda.
+Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
 
-• Katakan apa-apa - Penyulitan hujung ke hujung terkini (dikuasakan oleh Protokol Signal™ sumber terbuka) memastikan perbualan anda selamat. Privasi bukan sejenis mod pilihan — ia tugas kerja Signal. Setiap mesej, setiap panggilan, setiap masa.
+• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
 
-• Cepat – Mesej dihantarkan laju dan dengan pasti, walaupun dengan rangkaian yang lambat. Signal dioptimumkan untuk beroperasi dalam lingkungan yang paling terkawal.
+• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
 
-• Rasa kebebasan - Signal ialah satu 501c3 bukan keuntungan bebas sepenuhnya. Pembangunan adalah disokong oleh pengguna-pengguna seperti anda. Tiada iklan. Tiada penjejak. Tiada muslihat.
+• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
 
-• Menjadi diri sendiri - Anda boleh menggunakan nombor telefon anda dan buku alamat yang sedia ada untuk komunikasi dengan kawan-kawan anda dengan selamat.
+• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
 
-• Bersuara - Sama ada mereka yang tinggal di seluruh bandar atau di seberang lautan, kualiti audio dan video yang diperkuatkan oleh Signal akan membolehkan anda dengan kawan dan keluarga anda terasa lebih rapat.
+• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
 
-• Bisik dalam bayang-bayang - Beralih ke tema gelap jika anda enggan melihat cahaya.
+• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
 
-• Bunyian biasa - Pilih makluman khusus untuk setiap kenalan, atau nyahaktifkan bunyi sepenuhnya. Simon & Garfunkel menulis lagu hit tentangnya pada tahun 1964, anda boleh mengalami bunyi senyap apabila anda ingin dengan memilih "Tiada" sebagai nada dering pemberitahuan anda.
+• For support, questions, or more information please visit https://support.signal.org/
 
-• Gambarkan ini - Gunakan ciri penyuntingan imej terbina dalam untuk lakaran, potong, dan flip foto keluar anda. Terdapat juga alat teks supaya anda boleh menambah lebih banyak perkataan kepada 1,000 yang mana gambar anda sudah bernilai.
+To check out our source code, visit https://github.com/signalapp 
 
-
-Untuk sokongan, soalan, atau maklumat selanjutnya, sila layari:
-https://support.signal.org
-
-Kod sumber:
-https://github.com/signalapp
-
-Ikuti kami di Twitter (@signalapp) dan Instagram (@signal_app) untuk semua kemas kini dan pengumuman terkini.
+Follow us on Twitter @signalapp and Instagram @signal_app
