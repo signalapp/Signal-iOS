@@ -1444,9 +1444,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.read.count > 0) {
         OWSLogInfo(@"Received %lu read receipt(s) in sync message", (unsigned long)syncMessage.read.count);
         NSArray<SSKProtoSyncMessageRead *> *earlyReceipts =
-            [OWSReceiptManager.shared processReadReceiptsFromLinkedDevice:syncMessage.read
-                                                            readTimestamp:envelope.timestamp
-                                                              transaction:transaction];
+            [self.receiptManager processReadReceiptsFromLinkedDevice:syncMessage.read
+                                                       readTimestamp:envelope.timestamp
+                                                                  tx:transaction];
         for (SSKProtoSyncMessageRead *readReceiptProto in earlyReceipts) {
             [self.earlyMessageManager recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
                                                                associatedMessageTimestamp:readReceiptProto.timestamp
@@ -1456,9 +1456,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.viewed.count > 0) {
         OWSLogInfo(@"Received %lu viewed receipt(s) in sync message", (unsigned long)syncMessage.viewed.count);
         NSArray<SSKProtoSyncMessageViewed *> *earlyReceipts =
-            [OWSReceiptManager.shared processViewedReceiptsFromLinkedDevice:syncMessage.viewed
-                                                            viewedTimestamp:envelope.timestamp
-                                                                transaction:transaction];
+            [self.receiptManager processViewedReceiptsFromLinkedDevice:syncMessage.viewed
+                                                       viewedTimestamp:envelope.timestamp
+                                                                    tx:transaction];
         for (SSKProtoSyncMessageViewed *viewedReceiptProto in earlyReceipts) {
             [self.earlyMessageManager
                 recordEarlyViewedReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp

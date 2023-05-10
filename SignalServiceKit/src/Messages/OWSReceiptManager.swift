@@ -265,6 +265,107 @@ public extension OWSReceiptManager {
         }
     }
 
+    @nonobjc
+    private func processReceiptsFromLinkedDevice<T>(
+        _ receiptProtos: [T],
+        senderServiceId: KeyPath<T, String?>,
+        messageTimestamp: KeyPath<T, UInt64>,
+        tx: SDSAnyWriteTransaction,
+        markMessage: (TSMessage) -> Void,
+        markStoryMessage: (StoryMessage) -> Void
+    ) -> [T] {
+        var earlyReceiptProtos = [T]()
+        for receiptProto in receiptProtos {
+            guard let senderServiceId = ServiceId(uuidString: receiptProto[keyPath: senderServiceId]) else {
+                owsFailDebug("Missing serviceId.")
+                continue
+            }
+            let messageTimestamp = receiptProto[keyPath: messageTimestamp]
+            guard messageTimestamp > 0, SDS.fitsInInt64(messageTimestamp) else {
+                owsFailDebug("Invalid timestamp.")
+                continue
+            }
+
+            let interactions: [TSInteraction]
+            do {
+                interactions = try InteractionFinder.interactions(
+                    withTimestamp: messageTimestamp,
+                    filter: { _ in true },
+                    transaction: tx
+                )
+            } catch {
+                owsFailDebug("Error loading interactions: \(error)")
+                interactions = []
+            }
+
+            let messages = interactions.compactMap({ $0 as? TSMessage }).filter {
+                switch $0 {
+                case is TSOutgoingMessage:
+                    return senderServiceId == tsAccountManager.localIdentifiers(transaction: tx)?.aci
+                case let incomingMessage as TSIncomingMessage:
+                    return senderServiceId == incomingMessage.authorAddress.serviceId
+                default:
+                    return false
+                }
+            }
+
+            Logger.info("Handling receipts from linked device for \(messages.count) messages with timestamp \(messageTimestamp)")
+
+            if !messages.isEmpty {
+                messages.forEach { markMessage($0) }
+                continue
+            }
+
+            let senderAddress = SignalServiceAddress(senderServiceId)
+            let storyMessage = StoryFinder.story(timestamp: messageTimestamp, author: senderAddress, transaction: tx)
+            if let storyMessage {
+                markStoryMessage(storyMessage)
+                continue
+            }
+
+            earlyReceiptProtos.append(receiptProto)
+        }
+        return earlyReceiptProtos
+    }
+
+    func processReadReceiptsFromLinkedDevice(
+        _ readReceiptProtos: [SSKProtoSyncMessageRead],
+        readTimestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) -> [SSKProtoSyncMessageRead] {
+        return processReceiptsFromLinkedDevice(
+            readReceiptProtos,
+            senderServiceId: \.senderUuid,
+            messageTimestamp: \.timestamp,
+            tx: tx,
+            markMessage: {
+                markAsReadOnLinkedDevice($0, thread: $0.thread(transaction: tx), readTimestamp: readTimestamp, transaction: tx)
+            },
+            markStoryMessage: {
+                $0.markAsRead(at: readTimestamp, circumstance: .onLinkedDevice, transaction: tx)
+            }
+        )
+    }
+
+    func processViewedReceiptsFromLinkedDevice(
+        _ viewedReceiptProtos: [SSKProtoSyncMessageViewed],
+        viewedTimestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) -> [SSKProtoSyncMessageViewed] {
+        return processReceiptsFromLinkedDevice(
+            viewedReceiptProtos,
+            senderServiceId: \.senderUuid,
+            messageTimestamp: \.timestamp,
+            tx: tx,
+            markMessage: {
+                markAsViewed(onLinkedDevice: $0, thread: $0.thread(transaction: tx), viewedTimestamp: viewedTimestamp, transaction: tx)
+            },
+            markStoryMessage: {
+                $0.markAsViewed(at: viewedTimestamp, circumstance: .onLinkedDevice, transaction: tx)
+            }
+        )
+    }
+
     // MARK: - Mark as read
 
     func markAsReadLocally(beforeSortId sortId: UInt64,
