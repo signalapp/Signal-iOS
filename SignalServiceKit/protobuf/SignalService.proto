@@ -508,7 +508,7 @@ message SyncMessage {
       BLOCKED       = 3;
       CONFIGURATION = 4;
       KEYS          = 5;
-      PNI_IDENTITY  = 6;
+      reserved        6; // Formerly, PNI_IDENTITY
     }
 
     optional Type type = 1;
@@ -569,11 +569,6 @@ message SyncMessage {
 
   message Keys {
     optional bytes storageService = 1;
-  }
-
-  message PniIdentity {
-    optional bytes publicKey  = 1;
-    optional bytes privateKey = 2;
   }
 
   message MessageRequestResponse {
@@ -662,7 +657,7 @@ message SyncMessage {
   optional MessageRequestResponse messageRequestResponse = 14;
   optional OutgoingPayment        outgoingPayment        = 15;
   repeated Viewed                 viewed                 = 16;
-  optional PniIdentity            pniIdentity            = 17;
+  reserved                                                 17; // Formerly, PNI identity sync messages
   optional PniChangeNumber        pniChangeNumber        = 18;
   optional CallEvent              callEvent              = 19;
 }

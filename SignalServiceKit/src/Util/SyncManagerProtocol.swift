@@ -30,7 +30,6 @@ public protocol SyncManagerProtocolObjc {
     func sendFetchLatestProfileSyncMessage()
     func sendFetchLatestStorageManifestSyncMessage()
     func sendFetchLatestSubscriptionStatusSyncMessage()
-    func sendPniIdentitySyncRequestMessage()
 }
 
 // MARK: -
@@ -43,8 +42,6 @@ public protocol SyncManagerProtocolSwift {
     func sendKeysSyncMessage()
     func processIncomingKeysSyncMessage(_ syncMessage: SSKProtoSyncMessageKeys, transaction: SDSAnyWriteTransaction)
     func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction)
-
-    func sendPniIdentitySyncMessage()
 
     func processIncomingMessageRequestResponseSyncMessage(
         _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,

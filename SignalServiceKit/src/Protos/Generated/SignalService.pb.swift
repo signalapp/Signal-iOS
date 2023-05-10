@@ -2774,15 +2774,6 @@ struct SignalServiceProtos_SyncMessage {
     set {_uniqueStorage()._viewed = newValue}
   }
 
-  var pniIdentity: SignalServiceProtos_SyncMessage.PniIdentity {
-    get {return _storage._pniIdentity ?? SignalServiceProtos_SyncMessage.PniIdentity()}
-    set {_uniqueStorage()._pniIdentity = newValue}
-  }
-  /// Returns true if `pniIdentity` has been explicitly set.
-  var hasPniIdentity: Bool {return _storage._pniIdentity != nil}
-  /// Clears the value of `pniIdentity`. Subsequent reads from it will return its default value.
-  mutating func clearPniIdentity() {_uniqueStorage()._pniIdentity = nil}
-
   var pniChangeNumber: SignalServiceProtos_SyncMessage.PniChangeNumber {
     get {return _storage._pniChangeNumber ?? SignalServiceProtos_SyncMessage.PniChangeNumber()}
     set {_uniqueStorage()._pniChangeNumber = newValue}
@@ -3066,7 +3057,6 @@ struct SignalServiceProtos_SyncMessage {
       case blocked // = 3
       case configuration // = 4
       case keys // = 5
-      case pniIdentity // = 6
 
       init() {
         self = .unknown
@@ -3080,7 +3070,6 @@ struct SignalServiceProtos_SyncMessage {
         case 3: self = .blocked
         case 4: self = .configuration
         case 5: self = .keys
-        case 6: self = .pniIdentity
         default: return nil
         }
       }
@@ -3093,7 +3082,6 @@ struct SignalServiceProtos_SyncMessage {
         case .blocked: return 3
         case .configuration: return 4
         case .keys: return 5
-        case .pniIdentity: return 6
         }
       }
 
@@ -3432,37 +3420,6 @@ struct SignalServiceProtos_SyncMessage {
     init() {}
 
     fileprivate var _storageService: Data? = nil
-  }
-
-  struct PniIdentity {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    var publicKey: Data {
-      get {return _publicKey ?? Data()}
-      set {_publicKey = newValue}
-    }
-    /// Returns true if `publicKey` has been explicitly set.
-    var hasPublicKey: Bool {return self._publicKey != nil}
-    /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
-    mutating func clearPublicKey() {self._publicKey = nil}
-
-    var privateKey: Data {
-      get {return _privateKey ?? Data()}
-      set {_privateKey = newValue}
-    }
-    /// Returns true if `privateKey` has been explicitly set.
-    var hasPrivateKey: Bool {return self._privateKey != nil}
-    /// Clears the value of `privateKey`. Subsequent reads from it will return its default value.
-    mutating func clearPrivateKey() {self._privateKey = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _publicKey: Data? = nil
-    fileprivate var _privateKey: Data? = nil
   }
 
   struct MessageRequestResponse {
@@ -5019,7 +4976,6 @@ extension SignalServiceProtos_SyncMessage.ViewOnceOpen: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.FetchLatest: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.Keys: @unchecked Sendable {}
-extension SignalServiceProtos_SyncMessage.PniIdentity: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.MessageRequestResponse: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.OutgoingPayment: @unchecked Sendable {}
@@ -7739,7 +7695,6 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     14: .same(proto: "messageRequestResponse"),
     15: .same(proto: "outgoingPayment"),
     16: .same(proto: "viewed"),
-    17: .same(proto: "pniIdentity"),
     18: .same(proto: "pniChangeNumber"),
     19: .same(proto: "callEvent"),
   ]
@@ -7761,7 +7716,6 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _messageRequestResponse: SignalServiceProtos_SyncMessage.MessageRequestResponse? = nil
     var _outgoingPayment: SignalServiceProtos_SyncMessage.OutgoingPayment? = nil
     var _viewed: [SignalServiceProtos_SyncMessage.Viewed] = []
-    var _pniIdentity: SignalServiceProtos_SyncMessage.PniIdentity? = nil
     var _pniChangeNumber: SignalServiceProtos_SyncMessage.PniChangeNumber? = nil
     var _callEvent: SignalServiceProtos_SyncMessage.CallEvent? = nil
 
@@ -7786,7 +7740,6 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _messageRequestResponse = source._messageRequestResponse
       _outgoingPayment = source._outgoingPayment
       _viewed = source._viewed
-      _pniIdentity = source._pniIdentity
       _pniChangeNumber = source._pniChangeNumber
       _callEvent = source._callEvent
     }
@@ -7823,7 +7776,6 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 14: try { try decoder.decodeSingularMessageField(value: &_storage._messageRequestResponse) }()
         case 15: try { try decoder.decodeSingularMessageField(value: &_storage._outgoingPayment) }()
         case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._viewed) }()
-        case 17: try { try decoder.decodeSingularMessageField(value: &_storage._pniIdentity) }()
         case 18: try { try decoder.decodeSingularMessageField(value: &_storage._pniChangeNumber) }()
         case 19: try { try decoder.decodeSingularMessageField(value: &_storage._callEvent) }()
         default: break
@@ -7886,9 +7838,6 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if !_storage._viewed.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._viewed, fieldNumber: 16)
       }
-      try { if let v = _storage._pniIdentity {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
-      } }()
       try { if let v = _storage._pniChangeNumber {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 18)
       } }()
@@ -7920,7 +7869,6 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._messageRequestResponse != rhs_storage._messageRequestResponse {return false}
         if _storage._outgoingPayment != rhs_storage._outgoingPayment {return false}
         if _storage._viewed != rhs_storage._viewed {return false}
-        if _storage._pniIdentity != rhs_storage._pniIdentity {return false}
         if _storage._pniChangeNumber != rhs_storage._pniChangeNumber {return false}
         if _storage._callEvent != rhs_storage._callEvent {return false}
         return true
@@ -8284,7 +8232,6 @@ extension SignalServiceProtos_SyncMessage.Request.TypeEnum: SwiftProtobuf._Proto
     3: .same(proto: "BLOCKED"),
     4: .same(proto: "CONFIGURATION"),
     5: .same(proto: "KEYS"),
-    6: .same(proto: "PNI_IDENTITY"),
   ]
 }
 
@@ -8623,48 +8570,6 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Keys, rhs: SignalServiceProtos_SyncMessage.Keys) -> Bool {
     if lhs._storageService != rhs._storageService {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SignalServiceProtos_SyncMessage.PniIdentity: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".PniIdentity"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "publicKey"),
-    2: .same(proto: "privateKey"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularBytesField(value: &self._publicKey) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self._privateKey) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._publicKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._privateKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
-    } }()
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SignalServiceProtos_SyncMessage.PniIdentity, rhs: SignalServiceProtos_SyncMessage.PniIdentity) -> Bool {
-    if lhs._publicKey != rhs._publicKey {return false}
-    if lhs._privateKey != rhs._privateKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

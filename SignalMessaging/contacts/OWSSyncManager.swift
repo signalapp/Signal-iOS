@@ -110,42 +110,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         sendSyncRequestMessage(.keys, transaction: transaction)
     }
 
-    private static let pniIdentitySyncMessagePending = AtomicBool(false)
-
-    @objc
-    public func sendPniIdentitySyncMessage() {
-        Logger.info("")
-
-        guard Self.pniIdentitySyncMessagePending.tryToSetFlag() else {
-            // Already scheduled!
-            return
-        }
-
-        _ = messageProcessor.fetchingAndProcessingCompletePromise().done(on: DispatchQueue.global()) {
-            guard self.tsAccountManager.isRegisteredAndReady else {
-                return owsFailDebug("Unexpectedly tried to send sync message before registration.")
-            }
-
-            guard self.tsAccountManager.isRegisteredPrimaryDevice else {
-                return owsFailDebug("PNI identity sync should only be initiated from the primary device")
-            }
-
-            self.databaseStorage.write { transaction in
-                guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
-                    return owsFailDebug("Missing thread")
-                }
-
-                guard let keyPair = self.identityManager.identityKeyPair(for: .pni) else {
-                    Logger.warn("no PNI identity key yet; ignoring request")
-                    return
-                }
-                let syncMessage = OWSSyncPniIdentityMessage(thread: thread, keyPair: keyPair, transaction: transaction)
-                Self.pniIdentitySyncMessagePending.set(false)
-                self.sskJobQueues.messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
-            }
-        }
-    }
-
     @objc
     public func processIncomingMessageRequestResponseSyncMessage(
         _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,
@@ -275,8 +239,6 @@ public extension OWSSyncManager {
             Logger.info("configuration")
         case .keys:
             Logger.info("keys")
-        case .pniIdentity:
-            Logger.info("pniIdentity")
         }
 
         guard tsAccountManager.isRegisteredAndReady else {

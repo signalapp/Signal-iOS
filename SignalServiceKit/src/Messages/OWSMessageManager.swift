@@ -308,9 +308,6 @@ extension OWSMessageManager {
         case .keys:
             syncManager.sendKeysSyncMessage()
 
-        case .pniIdentity:
-            syncManager.sendPniIdentitySyncMessage()
-
         case .unknown, .none:
             owsFailDebug("Ignoring sync request with unexpected type")
         }
@@ -713,10 +710,8 @@ extension SSKProtoSyncMessage {
                 return "ConfigurationRequest"
             case .keys:
                 return "KeysRequest"
-            case .pniIdentity:
-                return "PniIdentityRequest"
             default:
-                owsFailDebug("Unknown sync message request type")
+                owsFailDebug("Unknown sync message request type: \(request.unwrappedType)")
                 return "UnknownRequest"
             }
         }
@@ -776,9 +771,6 @@ extension SSKProtoSyncMessage {
         }
         if !viewed.isEmpty {
             return "ViewedReceipt"
-        }
-        if pniIdentity != nil {
-            return "PniIdentity"
         }
         if callEvent != nil {
             return "CallDispositionEvent"

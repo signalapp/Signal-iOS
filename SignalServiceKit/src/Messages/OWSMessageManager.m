@@ -1522,9 +1522,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self.paymentsHelper processIncomingPaymentSyncMessage:syncMessage.outgoingPayment
                                               messageTimestamp:serverDeliveryTimestamp
                                                    transaction:transaction];
-    } else if (syncMessage.pniIdentity) {
-        OWSLogInfo(@"Received PNI identity");
-        [self.identityManager processIncomingPniIdentityProto:syncMessage.pniIdentity transaction:transaction];
     } else if (syncMessage.callEvent) {
         OWSLogInfo(@"Received call event sync message.");
         [CallRecord createOrUpdateForSyncMessage:syncMessage.callEvent

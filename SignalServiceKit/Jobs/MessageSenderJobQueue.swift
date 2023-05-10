@@ -215,7 +215,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                                                                   transaction: transaction) as? TSOutgoingMessage {
             message = fetchedMessage
         } else {
-            assert(jobRecord.messageId != nil)
             throw JobError.obsolete(description: "message no longer exists")
         }
 

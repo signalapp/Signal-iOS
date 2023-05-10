@@ -92,11 +92,16 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         invisibleMessage = try container.decodeIfPresent(
             Data.self,
             forKey: .invisibleMessage
-        ).map { invisibleMessageData in
-            try LegacySDSSerializer().deserializeLegacySDSData(
-                invisibleMessageData,
-                propertyName: "invisibleMessage"
-            )
+        ).flatMap { invisibleMessageData -> TSOutgoingMessage? in
+            do {
+                return try LegacySDSSerializer().deserializeLegacySDSData(
+                    invisibleMessageData,
+                    propertyName: "invisibleMessage"
+                )
+            } catch let error {
+                owsFailDebug("Failed to deserialize invisible message data! Has this message type been removed? \(error)")
+                return nil
+            }
         }
 
         removeMessageAfterSending = try container.decode(Bool.self, forKey: .removeMessageAfterSending)

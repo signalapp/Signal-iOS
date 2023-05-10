@@ -594,13 +594,6 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
     });
 }
 
-- (void)sendPniIdentitySyncRequestMessage
-{
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self sendSyncRequestMessage:SSKProtoSyncMessageRequestTypePniIdentity transaction:transaction];
-    });
-}
-
 - (void)processIncomingFetchLatestSyncMessage:(SSKProtoSyncMessageFetchLatest *)syncMessage
                                   transaction:(SDSAnyWriteTransaction *)transaction
 {

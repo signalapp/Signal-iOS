@@ -240,35 +240,6 @@ extension OWSIdentityManager {
 extension OWSIdentityManager {
 
     @objc
-    public func processIncomingPniIdentityProto(_ pniIdentity: SSKProtoSyncMessagePniIdentity,
-                                                transaction: SDSAnyWriteTransaction) {
-        do {
-            guard let publicKeyData = pniIdentity.publicKey, let privateKeyData = pniIdentity.privateKey else {
-                throw OWSAssertionError("missing key data in PniIdentity message")
-            }
-            let publicKey = try PublicKey(publicKeyData)
-
-            let previousKeyPair = identityKeyPair(for: .pni, transaction: transaction)
-            guard previousKeyPair?.identityKeyPair.publicKey != publicKey else {
-                // The identity key didn't change; we don't need to do anything.
-                return
-            }
-
-            let privateKey = try PrivateKey(privateKeyData)
-            let keyPair = ECKeyPair(IdentityKeyPair(publicKey: publicKey, privateKey: privateKey))
-            storeIdentityKeyPair(keyPair, for: .pni, transaction: transaction)
-            TSPreKeyManager.createPreKeys(
-                success: {},
-                failure: { error in
-                    owsFailDebug("Failed to create PNI pre-keys after receiving PniIdentity sync message: \(error)")
-                }
-            )
-        } catch {
-            owsFailDebug("Invalid PNI identity data: \(error)")
-        }
-    }
-
-    @objc
     public func processIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber,
         updatedPni updatedPniString: String?,
@@ -375,10 +346,6 @@ extension OWSIdentityManager {
         }
 
         guard tsAccountManager.isPrimaryDevice else {
-            // Linked devices can ask the primary for the PNI identity key pair if they don't have it.
-            if identityKeyPair(for: .pni) == nil {
-                syncManager.sendPniIdentitySyncRequestMessage()
-            }
             return
         }
 
@@ -419,9 +386,7 @@ extension OWSIdentityManager {
             guard needsUpdate else {
                 return
             }
-            TSPreKeyManager.createPreKeys(for: .pni, success: {
-                self.syncManager.sendPniIdentitySyncMessage()
-            }, failure: { error in
+            TSPreKeyManager.createPreKeys(for: .pni, success: {}, failure: { error in
                 owsFailDebug("failed to create PNI identity and pre-keys: \(error)")
             })
         }.catch(on: DispatchQueue.global()) { error in

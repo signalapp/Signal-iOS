@@ -44,8 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{ [DebugUISyncMessages sendConfigurationSyncMessage]; }],
         [OWSTableItem itemWithTitle:@"Send Verification Sync Message"
                         actionBlock:^{ [DebugUISyncMessages sendVerificationSyncMessage]; }],
-        [OWSTableItem itemWithTitle:@"Send PNI Identity Request"
-                        actionBlock:^{ [self.syncManager sendPniIdentitySyncRequestMessage]; }],
     ] mutableCopy];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];

@@ -11259,7 +11259,6 @@ public enum SSKProtoSyncMessageRequestType: Int32 {
     case blocked = 3
     case configuration = 4
     case keys = 5
-    case pniIdentity = 6
 }
 
 private func SSKProtoSyncMessageRequestTypeWrap(_ value: SignalServiceProtos_SyncMessage.Request.TypeEnum) -> SSKProtoSyncMessageRequestType {
@@ -11270,7 +11269,6 @@ private func SSKProtoSyncMessageRequestTypeWrap(_ value: SignalServiceProtos_Syn
     case .blocked: return .blocked
     case .configuration: return .configuration
     case .keys: return .keys
-    case .pniIdentity: return .pniIdentity
     }
 }
 
@@ -11282,7 +11280,6 @@ private func SSKProtoSyncMessageRequestTypeUnwrap(_ value: SSKProtoSyncMessageRe
     case .blocked: return .blocked
     case .configuration: return .configuration
     case .keys: return .keys
-    case .pniIdentity: return .pniIdentity
     }
 }
 
@@ -13011,191 +13008,6 @@ extension SSKProtoSyncMessageKeysBuilder {
 
 #endif
 
-// MARK: - SSKProtoSyncMessagePniIdentity
-
-@objc
-public class SSKProtoSyncMessagePniIdentity: NSObject, Codable, NSSecureCoding {
-
-    fileprivate let proto: SignalServiceProtos_SyncMessage.PniIdentity
-
-    @objc
-    public var publicKey: Data? {
-        guard hasPublicKey else {
-            return nil
-        }
-        return proto.publicKey
-    }
-    @objc
-    public var hasPublicKey: Bool {
-        return proto.hasPublicKey
-    }
-
-    @objc
-    public var privateKey: Data? {
-        guard hasPrivateKey else {
-            return nil
-        }
-        return proto.privateKey
-    }
-    @objc
-    public var hasPrivateKey: Bool {
-        return proto.hasPrivateKey
-    }
-
-    public var hasUnknownFields: Bool {
-        return !proto.unknownFields.data.isEmpty
-    }
-    public var unknownFields: SwiftProtobuf.UnknownStorage? {
-        guard hasUnknownFields else { return nil }
-        return proto.unknownFields
-    }
-
-    private init(proto: SignalServiceProtos_SyncMessage.PniIdentity) {
-        self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc
-    public convenience init(serializedData: Data) throws {
-        let proto = try SignalServiceProtos_SyncMessage.PniIdentity(serializedData: serializedData)
-        self.init(proto)
-    }
-
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.PniIdentity) {
-        self.init(proto: proto)
-    }
-
-    public required convenience init(from decoder: Swift.Decoder) throws {
-        let singleValueContainer = try decoder.singleValueContainer()
-        let serializedData = try singleValueContainer.decode(Data.self)
-        try self.init(serializedData: serializedData)
-    }
-    public func encode(to encoder: Swift.Encoder) throws {
-        var singleValueContainer = encoder.singleValueContainer()
-        try singleValueContainer.encode(try serializedData())
-    }
-
-    public static var supportsSecureCoding: Bool { true }
-
-    public required convenience init?(coder: NSCoder) {
-        guard let serializedData = coder.decodeData() else { return nil }
-        do {
-            try self.init(serializedData: serializedData)
-        } catch {
-            owsFailDebug("Failed to decode serialized data \(error)")
-            return nil
-        }
-    }
-
-    public func encode(with coder: NSCoder) {
-        do {
-            coder.encode(try serializedData())
-        } catch {
-            owsFailDebug("Failed to encode serialized data \(error)")
-        }
-    }
-
-    @objc
-    public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-extension SSKProtoSyncMessagePniIdentity {
-    @objc
-    public static func builder() -> SSKProtoSyncMessagePniIdentityBuilder {
-        return SSKProtoSyncMessagePniIdentityBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> SSKProtoSyncMessagePniIdentityBuilder {
-        let builder = SSKProtoSyncMessagePniIdentityBuilder()
-        if let _value = publicKey {
-            builder.setPublicKey(_value)
-        }
-        if let _value = privateKey {
-            builder.setPrivateKey(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-}
-
-@objc
-public class SSKProtoSyncMessagePniIdentityBuilder: NSObject {
-
-    private var proto = SignalServiceProtos_SyncMessage.PniIdentity()
-
-    @objc
-    fileprivate override init() {}
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setPublicKey(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.publicKey = valueParam
-    }
-
-    public func setPublicKey(_ valueParam: Data) {
-        proto.publicKey = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setPrivateKey(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.privateKey = valueParam
-    }
-
-    public func setPrivateKey(_ valueParam: Data) {
-        proto.privateKey = valueParam
-    }
-
-    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-        proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func build() throws -> SSKProtoSyncMessagePniIdentity {
-        return SSKProtoSyncMessagePniIdentity(proto)
-    }
-
-    @objc
-    public func buildInfallibly() -> SSKProtoSyncMessagePniIdentity {
-        return SSKProtoSyncMessagePniIdentity(proto)
-    }
-
-    @objc
-    public func buildSerializedData() throws -> Data {
-        return try SSKProtoSyncMessagePniIdentity(proto).serializedData()
-    }
-}
-
-#if TESTABLE_BUILD
-
-extension SSKProtoSyncMessagePniIdentity {
-    @objc
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SSKProtoSyncMessagePniIdentityBuilder {
-    @objc
-    public func buildIgnoringErrors() -> SSKProtoSyncMessagePniIdentity? {
-        return self.buildInfallibly()
-    }
-}
-
-#endif
-
 // MARK: - SSKProtoSyncMessageMessageRequestResponseType
 
 @objc
@@ -14685,9 +14497,6 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
     public let viewed: [SSKProtoSyncMessageViewed]
 
     @objc
-    public let pniIdentity: SSKProtoSyncMessagePniIdentity?
-
-    @objc
     public let pniChangeNumber: SSKProtoSyncMessagePniChangeNumber?
 
     @objc
@@ -14729,7 +14538,6 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                  messageRequestResponse: SSKProtoSyncMessageMessageRequestResponse?,
                  outgoingPayment: SSKProtoSyncMessageOutgoingPayment?,
                  viewed: [SSKProtoSyncMessageViewed],
-                 pniIdentity: SSKProtoSyncMessagePniIdentity?,
                  pniChangeNumber: SSKProtoSyncMessagePniChangeNumber?,
                  callEvent: SSKProtoSyncMessageCallEvent?) {
         self.proto = proto
@@ -14748,7 +14556,6 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
         self.messageRequestResponse = messageRequestResponse
         self.outgoingPayment = outgoingPayment
         self.viewed = viewed
-        self.pniIdentity = pniIdentity
         self.pniChangeNumber = pniChangeNumber
         self.callEvent = callEvent
     }
@@ -14834,11 +14641,6 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
         var viewed: [SSKProtoSyncMessageViewed] = []
         viewed = try proto.viewed.map { try SSKProtoSyncMessageViewed($0) }
 
-        var pniIdentity: SSKProtoSyncMessagePniIdentity?
-        if proto.hasPniIdentity {
-            pniIdentity = SSKProtoSyncMessagePniIdentity(proto.pniIdentity)
-        }
-
         var pniChangeNumber: SSKProtoSyncMessagePniChangeNumber?
         if proto.hasPniChangeNumber {
             pniChangeNumber = SSKProtoSyncMessagePniChangeNumber(proto.pniChangeNumber)
@@ -14865,7 +14667,6 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                   messageRequestResponse: messageRequestResponse,
                   outgoingPayment: outgoingPayment,
                   viewed: viewed,
-                  pniIdentity: pniIdentity,
                   pniChangeNumber: pniChangeNumber,
                   callEvent: callEvent)
     }
@@ -14958,9 +14759,6 @@ extension SSKProtoSyncMessage {
             builder.setOutgoingPayment(_value)
         }
         builder.setViewed(viewed)
-        if let _value = pniIdentity {
-            builder.setPniIdentity(_value)
-        }
         if let _value = pniChangeNumber {
             builder.setPniChangeNumber(_value)
         }
@@ -15153,17 +14951,6 @@ public class SSKProtoSyncMessageBuilder: NSObject {
     @objc
     public func setViewed(_ wrappedItems: [SSKProtoSyncMessageViewed]) {
         proto.viewed = wrappedItems.map { $0.proto }
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setPniIdentity(_ valueParam: SSKProtoSyncMessagePniIdentity?) {
-        guard let valueParam = valueParam else { return }
-        proto.pniIdentity = valueParam.proto
-    }
-
-    public func setPniIdentity(_ valueParam: SSKProtoSyncMessagePniIdentity) {
-        proto.pniIdentity = valueParam.proto
     }
 
     @objc
