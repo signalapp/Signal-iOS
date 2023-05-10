@@ -36,6 +36,10 @@ public class LocalIdentifiers {
         self.phoneNumber = phoneNumber
     }
 
+    public convenience init(aci: ServiceId, pni: ServiceId?, e164: E164) {
+        self.init(aci: aci, pni: pni, phoneNumber: e164.stringValue)
+    }
+
     /// Checks if `serviceId` refers to ourself.
     ///
     /// Returns true if it's our ACI or our PNI.

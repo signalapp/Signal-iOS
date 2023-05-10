@@ -78,7 +78,6 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     OWSSingletonAssert();
 
     [self observeNotifications];
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self checkForPniIdentity]; });
 
     return self;
 }

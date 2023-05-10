@@ -50,6 +50,8 @@ public class DependenciesBridge {
     public let kbsCredentialStorage: KBSAuthCredentialStorage
     public let keyBackupService: KeyBackupService
 
+    public let learnMyOwnPniManager: LearnMyOwnPniManager
+
     public let recipientFetcher: RecipientFetcher
     public let recipientMerger: RecipientMerger
 
@@ -164,6 +166,17 @@ public class DependenciesBridge {
             syncManager: syncManager,
             tsConstants: tsConstants,
             twoFAManager: KBS.Wrappers.OWS2FAManager(ows2FAManager)
+        )
+
+        self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
+            accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
+            identityManager: LearnMyOwnPniManagerImpl.Wrappers.IdentityManager(identityManager),
+            preKeyManager: LearnMyOwnPniManagerImpl.Wrappers.PreKeyManager(),
+            profileFetcher: LearnMyOwnPniManagerImpl.Wrappers.ProfileFetcher(schedulers: schedulers),
+            tsAccountManager: LearnMyOwnPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager),
+            databaseStorage: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            schedulers: schedulers
         )
 
         self.registrationSessionManager = RegistrationSessionManagerImpl(

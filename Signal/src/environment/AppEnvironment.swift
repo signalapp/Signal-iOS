@@ -39,8 +39,6 @@ public class AppEnvironment: NSObject {
     @objc
     public var accountManagerRef: AccountManager
 
-    private var usernameValidationObserverRef: UsernameValidationObserver?
-
     // A temporary hack until `.shared` goes away and this can be provided to `init`.
     static let sharedNotificationPresenter = NotificationPresenter()
 
@@ -65,6 +63,8 @@ public class AppEnvironment: NSObject {
     @objc
     public var windowManagerRef: OWSWindowManager = OWSWindowManager()
 
+    private var usernameValidationObserverRef: UsernameValidationObserver?
+
     private override init() {
         self.callMessageHandlerRef = Self.sharedCallMessageHandler
         self.callServiceRef = CallService()
@@ -85,6 +85,12 @@ public class AppEnvironment: NSObject {
             manager: DependenciesBridge.shared.usernameValidationManager,
             database: DependenciesBridge.shared.db
         )
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            DependenciesBridge.shared.db.read { tx in
+                DependenciesBridge.shared.learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            }
+        }
 
         // Hang certain singletons on Environment too.
         Environment.shared.lightweightCallManagerRef = callServiceRef

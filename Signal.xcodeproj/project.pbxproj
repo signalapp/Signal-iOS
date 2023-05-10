@@ -1276,6 +1276,8 @@
 		D925F570298DF41B00158EE4 /* UsernameLookupRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D938CD6029283402006FB16A /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
+		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
+		D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */; };
 		D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABF292C5A3900DDD37E /* Paypal+API.swift */; };
@@ -3845,6 +3847,8 @@
 		D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecordTest.swift; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
 		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
+		D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManager.swift; sourceTree = "<group>"; };
+		D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManagerTest.swift; sourceTree = "<group>"; };
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
 		D9517ABF292C5A3900DDD37E /* Paypal+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+API.swift"; sourceTree = "<group>"; };
@@ -8084,6 +8088,7 @@
 		F94261FF289B1B5400460798 /* Account */ = {
 			isa = PBXGroup;
 			children = (
+				D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */,
 				5003BB44299F650E0037159B /* ServiceIdTest.swift */,
 				F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */,
 				F9426201289B1B5400460798 /* SignedPreKeyDeletionTests.m */,
@@ -8724,6 +8729,7 @@
 			children = (
 				F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */,
 				F9C5C9BE289453B100548EEE /* CreatePreKeysOperation.swift */,
+				D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */,
 				5033D46629D76BD0007FEADA /* LocalIdentifiers.swift */,
 				F9C5C9C3289453B100548EEE /* RefreshPreKeysOperation.swift */,
 				F9C5C9BC289453B100548EEE /* RotateSignedKeyOperation.swift */,
@@ -11964,6 +11970,7 @@
 				6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */,
 				F9C5CC1A289453B300548EEE /* KnownStickerPack+SDS.swift in Sources */,
 				F9C5CC10289453B300548EEE /* KnownStickerPack.m in Sources */,
+				D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */,
 				F9C5CD47289453B300548EEE /* LegacyChainKey.m in Sources */,
 				D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */,
 				F9C5CE0E289453B400548EEE /* LegacyChangePhoneNumber.swift in Sources */,
@@ -12500,6 +12507,7 @@
 				6673FF752979F87500F96CFD /* KBSAuthCredentialStorageTests.swift in Sources */,
 				F9426257289B1B5500460798 /* KeyBackupServiceTests.swift in Sources */,
 				66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */,
+				D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */,
 				50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */,
 				F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */,
 				F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */,
