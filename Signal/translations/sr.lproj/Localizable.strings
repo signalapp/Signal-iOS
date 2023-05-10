@@ -64,7 +64,7 @@
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
 "ACCOUNT_DATA_REPORT_TITLE" = "Подаци са налога";
 
-/* Label for 'audio call' button in contact view. */
+/* Label for 'voice call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal позив";
 
 /* Label for 'invite' button in contact view. */
@@ -161,19 +161,19 @@
 "ALL_MEDIA_FILTER_VIDEOS" = "Видео снимци";
 
 /* Menu option to show All Media items in a grid of square thumbnails */
-"ALL_MEDIA_GRID_MODE" = "Grid";
+"ALL_MEDIA_GRID_MODE" = "Мрежа";
 
 /* Menu option to show All Media items in a single-column list */
-"ALL_MEDIA_LIST_MODE" = "List";
+"ALL_MEDIA_LIST_MODE" = "Листа";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
 
 /* Label shown by thumbnails of images in the All Media view */
-"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "Image";
+"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "Слика";
 
 /* Label shown by thumbnails of videos in the All Media view */
-"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "Video";
+"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "Видео запис";
 
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "Све везе";
@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Звучна порука";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Аудио позив";
+"AUDIO_CALL_LABEL" = "Voice Call";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Звучник";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Позови поново";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Долазни аудио позив…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Пропуштен аудио позив у %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Пропуштен позив";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Пропуштен аудио позив у %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Пропуштен аудио позив у %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Како бисте могли вршити позиве и снимати гласовне поруке, дозволите Signal-у коришћење микрофона у iOS апликацији за подешавања.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Промени смер камере";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Пређи на звучни позив";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Пређи на видео позив";
@@ -2881,6 +2881,9 @@
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Уклоњени сте из групе.";
 
+/* Message indicating that the local user's request to join the group was approved. */
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ је прихватио/ла Ваш захтев за придруживање групи.";
 
@@ -3392,7 +3395,7 @@
 "IN_CALL_RINGING" = "Звони…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Аудио позив…";
+"IN_CALL_RINGING_AUDIO" = "Voice Call…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "Видео позив…";
@@ -3916,6 +3919,9 @@
 /* message status while message is downloading. */
 "MESSAGE_STATUS_DOWNLOADING" = "Преузима се";
 
+/* status meesage for edited messages */
+"MESSAGE_STATUS_EDITED" = "edited";
+
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Слање није успело.";
 
@@ -4382,19 +4388,19 @@
 "OPEN_SETTINGS_BUTTON" = "Подешавања";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal no longer works on this device. To use Signal again, update your device to a newer version of iOS.";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal више не ради на овом уређају. Да бисте поново користили Signal, ажурирајте уређај на новију верзију iOS-а.";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal no longer works on this device. To use Signal again, switch to a newer device.";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal више не ради на овом уређају. Да бисте поново користили Signal, пређите на новији уређај.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
-"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Update Now";
+"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Ажурирајте сада";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, update your device to a newer version of iOS by %1$@.";
+"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal ускоро више неће подржавати верзију iOS-а на вашем уређају. Да бисте наставили да користите Signal, ажурирајте уређај на новију верзију iOS-а до %1$@.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, switch to a newer device by %1$@.";
+"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal ускоро више неће подржавати верзију iOS-а на вашем уређају. Да бисте наставили да користите Signal, пређите на новији уређај до %1$@.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ је искључио/ла нестајуће поруке.";

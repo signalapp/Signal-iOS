@@ -64,7 +64,7 @@
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
 "ACCOUNT_DATA_REPORT_TITLE" = "आपला अकाऊंट डेटा";
 
-/* Label for 'audio call' button in contact view. */
+/* Label for 'voice call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal कॉल";
 
 /* Label for 'invite' button in contact view. */
@@ -161,19 +161,19 @@
 "ALL_MEDIA_FILTER_VIDEOS" = "व्हिडिओज";
 
 /* Menu option to show All Media items in a grid of square thumbnails */
-"ALL_MEDIA_GRID_MODE" = "Grid";
+"ALL_MEDIA_GRID_MODE" = "ग्रीड";
 
 /* Menu option to show All Media items in a single-column list */
-"ALL_MEDIA_LIST_MODE" = "List";
+"ALL_MEDIA_LIST_MODE" = "सूची";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
 
 /* Label shown by thumbnails of images in the All Media view */
-"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "Image";
+"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "चित्र";
 
 /* Label shown by thumbnails of videos in the All Media view */
-"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "Video";
+"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "व्हिडिओ";
 
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "सर्व कनेक्शन्स";
@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ऑडिओ संदेश";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "ऑडिओ कॉल";
+"AUDIO_CALL_LABEL" = "Voice Call";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "स्पीकर";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "पुन्हा कॉल करा";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 येणारा ऑडिओ कॉल…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞  %1$@ वाजता एक ऑडिओ मिस्ड कॉल";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 सुटलेला ऑडिओ कॉल";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞  %1$@रोजी एक मिस्ड ऑडिओ कॉल";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞  %1$@रोजी एक मिस्ड ऑडिओ कॉल";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal मध्ये कॉल करण्यासाठी आणि व्हॉईस रेकॉर्ड करण्यासाठी आपण iOS सेटिंग अॅप मध्ये मायक्रोफोन अॅक्सेस सक्षम करू शकता.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "कॅमेरा दिशा स्विच करा";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "ऑडिओ कॉलवर स्विच करा";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "व्हिडिओ कॉलवर स्विच करा";
@@ -2881,6 +2881,9 @@
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "आपणांस ग्रुपमधून काढून टाकले होते.";
 
+/* Message indicating that the local user's request to join the group was approved. */
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ ने गटामध्ये सामील होण्याची आपली विनंती मान्य केली.";
 
@@ -3392,7 +3395,7 @@
 "IN_CALL_RINGING" = "रिंग होत आहे…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "ऑडिओ कॉल…";
+"IN_CALL_RINGING_AUDIO" = "Voice Call…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "व्हिडीओ कॉल…";
@@ -3916,6 +3919,9 @@
 /* message status while message is downloading. */
 "MESSAGE_STATUS_DOWNLOADING" = "डाऊनलोड करत आहे";
 
+/* status meesage for edited messages */
+"MESSAGE_STATUS_EDITED" = "edited";
+
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "पाठविणे अयशस्वी";
 
@@ -4382,19 +4388,19 @@
 "OPEN_SETTINGS_BUTTON" = "सेटिंग";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal no longer works on this device. To use Signal again, update your device to a newer version of iOS.";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal यापुढे या डिव्हाइसवर काम करणार नाही. Signal पुन्हा वापरण्यास, आपल्या डिव्हाइसला iOS च्या नवीनतम आवृत्तीवर अद्ययावत करा.";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal no longer works on this device. To use Signal again, switch to a newer device.";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal यापुढे या डिव्हाइसवर काम करणार नाही. Signal पुन्हा वापरण्यास, नवीनतम डिव्हाइसवर स्वीच करा.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
-"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Update Now";
+"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "आता अद्यतनित करा";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, update your device to a newer version of iOS by %1$@.";
+"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal लवकरच यापुढे आपल्या डिव्हाइसच्या iOS आवृत्तीला सपोर्ट करणार नाही. Signal वापरणे सुरू ठेवण्यासाठी, %1$@ पर्यंत आपले डिव्हाइस iOS च्या नवीनतम आवृत्तीवर अपडेट करा.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, switch to a newer device by %1$@.";
+"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal लवकरच यापुढे आपल्या डिव्हाइसच्या iOS आवृत्तीला सपोर्ट करणार नाही. Signal वापरणे पुढे सुरू ठेवण्यासाठी, %1$@ पर्यंत नवीन डिव्हाइस वर स्वीच करा.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ याने नाहीसे होणारे संदेश अक्षम केले.";
