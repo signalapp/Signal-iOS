@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 struct ReceiptForLinkedDevice: Codable {
     let senderAddress: SignalServiceAddress
@@ -472,6 +473,158 @@ public extension OWSReceiptManager {
                 arguments += [sqlId]
             }
             transaction.unwrapGrdbWrite.execute(sql: sql, arguments: arguments)
+        }
+    }
+}
+
+// MARK: -
+
+extension OWSReceiptManager {
+    /// Fetches outgoing messages that need to have incoming receipts applied to them.
+    private func outgoingMessages(sentAt timestamp: UInt64, tx: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
+        let interactions: [TSInteraction]
+        do {
+            interactions = try InteractionFinder.interactions(withTimestamp: timestamp, filter: { _ in true }, transaction: tx)
+        } catch {
+            owsFailDebug("Error loading interactions: \(error)")
+            interactions = []
+        }
+
+        let result = interactions.compactMap({ $0 as? TSOutgoingMessage })
+
+        if result.count > 1 {
+            Logger.error("More than one matching message with timestamp: \(timestamp)")
+        }
+
+        return result
+    }
+
+    /// Processes a bundle of `sentTimestamps` from a receipt from another user.
+    ///
+    /// - Returns: A subset of `sentTimestamps` that don't have corresponding
+    /// messages. These should be persisted by the caller since the messages
+    /// might arrive after the receipts.
+    private func processReceiptsForMessages(
+        sentAt sentTimestamps: [NSNumber],
+        tx: SDSAnyReadTransaction,
+        handleTimestampMessages: (UInt64, [TSOutgoingMessage]) -> Bool
+    ) -> [NSNumber] {
+        return sentTimestamps.filter {
+            let sentTimestamp = $0.uint64Value
+            let messages = outgoingMessages(sentAt: sentTimestamp, tx: tx)
+            return !handleTimestampMessages(sentTimestamp, messages)
+        }
+    }
+
+    /// Processes a bundle of delivery receipts from another user.
+    ///
+    /// - Returns: A subset of `sentTimestamps` that don't have corresponding
+    /// messages. These should be persisted by the caller since the messages
+    /// might arrive after the receipts.
+    @objc
+    func processDeliveryReceipts(
+        from recipientServiceId: ServiceIdObjC,
+        recipientDeviceId: UInt32,
+        sentTimestamps: [NSNumber],
+        deliveryTimestamp: UInt64,
+        context: DeliveryReceiptContext,
+        tx: SDSAnyWriteTransaction
+    ) -> [NSNumber] {
+        return processReceiptsForMessages(sentAt: sentTimestamps, tx: tx) { _, messages in
+            if !messages.isEmpty {
+                for message in messages {
+                    message.update(
+                        withDeliveredRecipient: SignalServiceAddress(recipientServiceId.wrappedValue),
+                        recipientDeviceId: recipientDeviceId,
+                        deliveryTimestamp: deliveryTimestamp,
+                        context: context,
+                        transaction: tx
+                    )
+                }
+                return true
+            }
+            return false
+        }
+    }
+
+    /// Processes a bundle of read receipts from another user.
+    ///
+    /// - Returns: A subset of `sentTimestamps` that don't have corresponding
+    /// messages. These should be persisted by the caller since the messages
+    /// might arrive after the receipts.
+    @objc
+    func processReadReceipts(
+        from recipientServiceId: ServiceIdObjC,
+        recipientDeviceId: UInt32,
+        sentTimestamps: [NSNumber],
+        readTimestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) -> [NSNumber] {
+        guard self.areReadReceiptsEnabled() else {
+            return []
+        }
+        return processReceiptsForMessages(sentAt: sentTimestamps, tx: tx) { _, messages in
+            if !messages.isEmpty {
+                // TODO: We might also need to "mark as read by recipient" any older messages
+                // from us in that thread. Or maybe this state should hang on the thread?
+                for message in messages {
+                    message.update(
+                        withReadRecipient: SignalServiceAddress(recipientServiceId.wrappedValue),
+                        recipientDeviceId: recipientDeviceId,
+                        readTimestamp: readTimestamp,
+                        transaction: tx
+                    )
+                }
+                return true
+            }
+            return false
+        }
+    }
+
+    /// Processes a bundle of viewed receipts from another user.
+    ///
+    /// - Returns: A subset of `sentTimestamps` that don't have corresponding
+    /// messages. These should be persisted by the caller since the messages
+    /// might arrive after the receipts.
+    @objc
+    func processViewedReceipts(
+        from recipientServiceId: ServiceIdObjC,
+        recipientDeviceId: UInt32,
+        sentTimestamps: [NSNumber],
+        viewedTimestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) -> [NSNumber] {
+        return processReceiptsForMessages(sentAt: sentTimestamps, tx: tx) { sentTimestamp, messages in
+            if !messages.isEmpty {
+                if self.areReadReceiptsEnabled() {
+                    for message in messages {
+                        message.update(
+                            withViewedRecipient: SignalServiceAddress(recipientServiceId.wrappedValue),
+                            recipientDeviceId: recipientDeviceId,
+                            viewedTimestamp: viewedTimestamp,
+                            transaction: tx
+                        )
+                    }
+                } else {
+                    Logger.info("Ignoring incoming receipt message as read receipts are disabled.")
+                }
+                return true
+            }
+            let localAddress = tsAccountManager.localAddress!
+            let storyMessage = StoryFinder.story(timestamp: sentTimestamp, author: localAddress, transaction: tx)
+            if let storyMessage {
+                if StoryManager.areViewReceiptsEnabled {
+                    storyMessage.markAsViewed(
+                        at: viewedTimestamp,
+                        by: SignalServiceAddress(recipientServiceId.wrappedValue),
+                        transaction: tx
+                    )
+                } else {
+                    Logger.info("Ignoring incoming story receipt message as view receipts are disabled.")
+                }
+                return true
+            }
+            return false
         }
     }
 }

@@ -230,18 +230,14 @@ public class EarlyMessageManager: NSObject {
     @objc
     public func recordEarlyReceiptForOutgoingMessage(
         type: SSKProtoReceiptMessageType,
-        senderAddress: SignalServiceAddress?,
+        senderServiceId: ServiceIdObjC,
         senderDeviceId: UInt32,
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) {
         guard let localAddress = TSAccountManager.localAddress else {
             return owsFailDebug("missing local address")
-        }
-
-        guard let senderAddress = senderAddress else {
-            return owsFailDebug("unexpectedly missing senderAddress for early \(type) receipt with timestamp \(timestamp)")
         }
 
         let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: localAddress)
@@ -249,9 +245,14 @@ public class EarlyMessageManager: NSObject {
         Logger.info("Recording early \(type) receipt for outgoing message \(identifier)")
 
         recordEarlyReceipt(
-            .init(receiptType: type, senderAddress: senderAddress, senderDeviceId: senderDeviceId, timestamp: timestamp),
+            .init(
+                receiptType: type,
+                senderAddress: SignalServiceAddress(senderServiceId.wrappedValue),
+                senderDeviceId: senderDeviceId,
+                timestamp: timestamp
+            ),
             identifier: identifier,
-            transaction: transaction
+            transaction: tx
         )
     }
 

@@ -53,26 +53,6 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-#pragma mark - Sender/Recipient Read Receipts
-
-// This method should be called when we receive a read receipt
-// from a user to whom we have sent a message.
-//
-// This method can be called from any thread.
-
-/// Returns an array of timestamps that had missing messages
-- (NSArray<NSNumber *> *)processReadReceiptsFromRecipient:(SignalServiceAddress *)address
-                                        recipientDeviceId:(uint32_t)deviceId
-                                           sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
-                                            readTimestamp:(uint64_t)readTimestamp
-                                              transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (NSArray<NSNumber *> *)processViewedReceiptsFromRecipient:(SignalServiceAddress *)address
-                                          recipientDeviceId:(uint32_t)deviceId
-                                             sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
-                                            viewedTimestamp:(uint64_t)viewedTimestamp
-                                                transaction:(SDSAnyWriteTransaction *)transaction;
-
 #pragma mark - Linked Device Read Receipts
 
 /// Returns an array of receipts that had missing messages.
