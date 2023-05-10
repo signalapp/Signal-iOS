@@ -74,16 +74,6 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {self._timestamp = nil}
 
-  /// Contains an encrypted DataMessage
-  var legacyMessage: Data {
-    get {return _legacyMessage ?? Data()}
-    set {_legacyMessage = newValue}
-  }
-  /// Returns true if `legacyMessage` has been explicitly set.
-  var hasLegacyMessage: Bool {return self._legacyMessage != nil}
-  /// Clears the value of `legacyMessage`. Subsequent reads from it will return its default value.
-  mutating func clearLegacyMessage() {self._legacyMessage = nil}
-
   /// Contains an encrypted Content
   var content: Data {
     get {return _content ?? Data()}
@@ -204,7 +194,6 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _sourceDevice: UInt32? = nil
   fileprivate var _destinationUuid: String? = nil
   fileprivate var _timestamp: UInt64? = nil
-  fileprivate var _legacyMessage: Data? = nil
   fileprivate var _content: Data? = nil
   fileprivate var _serverGuid: String? = nil
   fileprivate var _serverTimestamp: UInt64? = nil
@@ -5073,7 +5062,6 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     7: .same(proto: "sourceDevice"),
     13: .same(proto: "destinationUuid"),
     5: .same(proto: "timestamp"),
-    6: .same(proto: "legacyMessage"),
     8: .same(proto: "content"),
     9: .same(proto: "serverGuid"),
     10: .same(proto: "serverTimestamp"),
@@ -5091,7 +5079,6 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
       case 5: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
-      case 6: try { try decoder.decodeSingularBytesField(value: &self._legacyMessage) }()
       case 7: try { try decoder.decodeSingularUInt32Field(value: &self._sourceDevice) }()
       case 8: try { try decoder.decodeSingularBytesField(value: &self._content) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self._serverGuid) }()
@@ -5116,9 +5103,6 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     } }()
     try { if let v = self._timestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
-    } }()
-    try { if let v = self._legacyMessage {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
     } }()
     try { if let v = self._sourceDevice {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 7)
@@ -5155,7 +5139,6 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._sourceDevice != rhs._sourceDevice {return false}
     if lhs._destinationUuid != rhs._destinationUuid {return false}
     if lhs._timestamp != rhs._timestamp {return false}
-    if lhs._legacyMessage != rhs._legacyMessage {return false}
     if lhs._content != rhs._content {return false}
     if lhs._serverGuid != rhs._serverGuid {return false}
     if lhs._serverTimestamp != rhs._serverTimestamp {return false}

@@ -88,6 +88,5 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
         XCTAssertEqual(envelope.sourceDevice, 1)
         XCTAssertTrue(envelope.hasContent)
         XCTAssertEqual(envelope.content, phonyContent)
-        XCTAssertFalse(envelope.hasLegacyMessage)
     }
 }

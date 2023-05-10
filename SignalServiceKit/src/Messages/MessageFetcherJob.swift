@@ -427,21 +427,14 @@ public class MessageFetcherJob: NSObject {
 
             let builder = SSKProtoEnvelope.builder(timestamp: timestamp)
             builder.setType(type)
-
             if let sourceUuid: String = try params.optional(key: "sourceUuid") {
                 builder.setSourceUuid(sourceUuid)
             }
-
             if let sourceDevice: UInt32 = try params.optional(key: "sourceDevice") {
                 builder.setSourceDevice(sourceDevice)
             }
-
             if let destinationUuid: String = try params.optional(key: "destinationUuid") {
                 builder.setDestinationUuid(destinationUuid)
-            }
-
-            if let legacyMessage = try params.optionalBase64EncodedData(key: "message") {
-                builder.setLegacyMessage(legacyMessage)
             }
             if let content = try params.optionalBase64EncodedData(key: "content") {
                 builder.setContent(content)
@@ -451,6 +444,9 @@ public class MessageFetcherJob: NSObject {
             }
             if let serverGuid: String = try params.optional(key: "guid") {
                 builder.setServerGuid(serverGuid)
+            }
+            if let story: Bool = try params.optional(key: "story") {
+                builder.setStory(story)
             }
             if let token = try params.optionalBase64EncodedData(key: "reportSpamToken") {
                 builder.setSpamReportingToken(token)

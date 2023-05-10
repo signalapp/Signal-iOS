@@ -105,18 +105,6 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var legacyMessage: Data? {
-        guard hasLegacyMessage else {
-            return nil
-        }
-        return proto.legacyMessage
-    }
-    @objc
-    public var hasLegacyMessage: Bool {
-        return proto.hasLegacyMessage
-    }
-
-    @objc
     public var content: Data? {
         guard hasContent else {
             return nil
@@ -318,9 +306,6 @@ extension SSKProtoEnvelope {
         if let _value = destinationUuid {
             builder.setDestinationUuid(_value)
         }
-        if let _value = legacyMessage {
-            builder.setLegacyMessage(_value)
-        }
         if let _value = content {
             builder.setContent(_value)
         }
@@ -388,17 +373,6 @@ public class SSKProtoEnvelopeBuilder: NSObject {
     @objc
     public func setTimestamp(_ valueParam: UInt64) {
         proto.timestamp = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setLegacyMessage(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.legacyMessage = valueParam
-    }
-
-    public func setLegacyMessage(_ valueParam: Data) {
-        proto.legacyMessage = valueParam
     }
 
     @objc

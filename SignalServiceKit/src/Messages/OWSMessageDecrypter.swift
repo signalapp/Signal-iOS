@@ -521,9 +521,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         do {
             let deviceId = identifiedEnvelope.sourceDeviceId
 
-            // DEPRECATED - Remove `legacyMessage` after all clients have been upgraded.
             let envelope = identifiedEnvelope.envelope
-            guard let encryptedData = envelope.content ?? envelope.legacyMessage else {
+            guard let encryptedData = envelope.content else {
                 OWSAnalytics.logEvent(OWSAnalyticsEvents.messageManagerErrorMessageEnvelopeHasNoContent(),
                                       severity: .critical,
                                       parameters: nil,
