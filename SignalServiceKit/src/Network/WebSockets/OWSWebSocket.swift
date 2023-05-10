@@ -56,11 +56,6 @@ public class OWSWebSocket: NSObject {
 
     // TODO: Should we use a higher-priority queue?
     fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.websocket.message-processing")
-    fileprivate var messageProcessingQueue: DispatchQueue { Self.messageProcessingQueue }
-
-    @objc
-    public static var verboseLogging: Bool { false && DebugFlags.internalLogging }
-    fileprivate var verboseLogging: Bool { Self.verboseLogging }
 
     // MARK: -
 
@@ -79,12 +74,6 @@ public class OWSWebSocket: NSObject {
             let oldValue = _currentWebSocket.swap(newValue)
             if oldValue != nil || newValue != nil {
                 owsAssertDebug(oldValue?.id != newValue?.id)
-            }
-
-            if verboseLogging,
-               oldValue != nil || newValue != nil,
-               oldValue?.id != newValue?.id {
-                Logger.info("\(webSocketType) \(String(describing: oldValue?.id)) -> \(String(describing: newValue?.id))")
             }
 
             oldValue?.reset()
@@ -126,10 +115,6 @@ public class OWSWebSocket: NSObject {
     // because UIKit only provides a "will resign active" notification, not a "did resign active"
     // notification.
     private let appIsActive = AtomicBool(false)
-
-    private let lastNewWebsocketDate = AtomicOptional<Date>(nil)
-    private let lastDrainQueueDate = AtomicOptional<Date>(nil)
-    private let lastReceivedPushWithoutWebsocketDate = AtomicOptional<Date>(nil)
 
     private static let unsubmittedRequestTokenCounter = AtomicUInt()
     public typealias UnsubmittedRequestToken = UInt
@@ -219,9 +204,6 @@ public class OWSWebSocket: NSObject {
                 self._backgroundKeepAlive = nil
                 return false
             }
-            if Self.verboseLogging {
-                Logger.info("\(self.logPrefix) requestType: \(backgroundKeepAlive.requestType)")
-            }
             return true
         }
     }
@@ -247,23 +229,17 @@ public class OWSWebSocket: NSObject {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
             guard let self = self else { return }
-            self.observeNotificationsIfNecessary()
+            self.observeNotifications()
             self.applyDesiredSocketState()
         }
     }
 
     // MARK: - Notifications
 
-    private let hasObservedNotifications = AtomicBool(false)
-
     // We want to observe these notifications lazily to avoid accessing
     // the data store in [application: didFinishLaunchingWithOptions:].
-    private func observeNotificationsIfNecessary() {
+    private func observeNotifications() {
         AssertIsOnMainThread()
-
-        guard hasObservedNotifications.tryToSetFlag() else {
-            return
-        }
 
         appIsActive.set(CurrentAppContext().isMainAppAndActive)
 
@@ -539,15 +515,7 @@ public class OWSWebSocket: NSObject {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "handleIncomingMessage")
 
-        if Self.verboseLogging {
-            Logger.info("\(currentWebSocket.logPrefix) 1")
-        }
-
         let ackMessage = { (processingError: Error?, serverTimestamp: UInt64) in
-            if Self.verboseLogging {
-                Logger.info("\(currentWebSocket.logPrefix) 2 \(processingError?.localizedDescription ?? "success!")")
-            }
-
             let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: processingError)
             switch ackBehavior {
             case .shouldAck:
@@ -590,15 +558,9 @@ public class OWSWebSocket: NSObject {
         }()
 
         Self.messageProcessingQueue.async {
-            if Self.verboseLogging {
-                Logger.info("\(currentWebSocket.logPrefix) 2")
-            }
             Self.messageProcessor.processEncryptedEnvelopeData(encryptedEnvelope,
                                                                serverDeliveryTimestamp: serverDeliveryTimestamp,
                                                                envelopeSource: envelopeSource) { error in
-                if Self.verboseLogging {
-                    Logger.info("\(currentWebSocket.logPrefix) 3")
-                }
                 Self.serialQueue.async {
                     ackMessage(error, serverDeliveryTimestamp)
                 }
@@ -614,18 +576,9 @@ public class OWSWebSocket: NSObject {
 
         sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
 
-        self.lastDrainQueueDate.set(Date())
-
-        if Self.verboseLogging {
-            Logger.info("\(currentWebSocket.logPrefix) 1")
-        }
-
         guard !currentWebSocket.hasEmptiedInitialQueue.get() else {
             owsFailDebug("Unexpected emptyQueueMessage \(currentWebSocket.logPrefix)")
             return
-        }
-        if Self.verboseLogging {
-            Logger.info("\(currentWebSocket.logPrefix) 1")
         }
         // We need to flush the message processing and serial queues
         // to ensure that all received messages are enqueued and
@@ -635,19 +588,10 @@ public class OWSWebSocket: NSObject {
         // flushing the queues. Therefore we capture currentWebSocket
         // flushing to ensure that we handle this case correctly.
         Self.messageProcessingQueue.async { [weak self] in
-            if Self.verboseLogging {
-                Logger.info("\(currentWebSocket.logPrefix) 2")
-            }
             Self.serialQueue.async {
                 guard let self = self else { return }
-                if Self.verboseLogging {
-                    Logger.info("\(currentWebSocket.logPrefix) 3")
-                }
                 if currentWebSocket.hasEmptiedInitialQueue.tryToSetFlag() {
                     self.notifyStatusChange()
-                }
-                if Self.verboseLogging {
-                    Logger.info("\(currentWebSocket.logPrefix) 4")
                 }
 
                 // We may have been holding the websocket open, waiting to drain the
@@ -672,10 +616,6 @@ public class OWSWebSocket: NSObject {
 
     // This method is thread-safe.
     public func cycleSocket() {
-        if verboseLogging {
-            Logger.info("\(webSocketType)")
-        }
-
         self.currentWebSocket = nil
 
         applyDesiredSocketState()
@@ -733,14 +673,6 @@ public class OWSWebSocket: NSObject {
 
     // This method is thread-safe.
     private var desiredSocketState: DesiredSocketState {
-
-        #if TESTABLE_BUILD
-        if CurrentAppContext().isRunningTests {
-            Logger.warn("\(logPrefix) Suppressing socket in tests.")
-            return .closed(reason: "Running tests")
-        }
-        #endif
-
         guard AppReadiness.isAppReady else {
             return .closed(reason: "!isAppReady")
         }
@@ -762,8 +694,7 @@ public class OWSWebSocket: NSObject {
             return .closed(reason: "signalProxyIsEnabled")
         }
 
-        if let currentWebSocket = self.currentWebSocket,
-           currentWebSocket.hasPendingRequests {
+        if let currentWebSocket, currentWebSocket.hasPendingRequests {
             return .open(reason: "hasPendingRequests")
         }
 
@@ -776,81 +707,24 @@ public class OWSWebSocket: NSObject {
             return .closed(reason: "couldNotBuildWebSocket")
         }
 
-        let shouldDrainQueue: Bool = {
-            guard Self.holdWebsocketOpenUntilDrained else {
-                return false
-            }
-            guard CurrentAppContext().isMainApp ||
-                    CurrentAppContext().isNSE else {
-                return false
-            }
-            guard webSocketType == .identified,
-                  tsAccountManager.isRegisteredAndReady else {
-                return false
-            }
-            guard let lastDrainQueueDate = self.lastDrainQueueDate.get() else {
-                if verboseLogging {
-                    Logger.info("\(logPrefix) Has not drained identified queue at least once. true")
-                }
-                return true
-            }
-            guard let lastNewWebsocketDate = self.lastNewWebsocketDate.get() else {
-                owsFailDebug("Missing lastNewWebsocketDate.")
-                if verboseLogging {
-                    Logger.info("\(logPrefix) Has never tried to open an identified websocket. true")
-                }
-                return true
-            }
-            if lastNewWebsocketDate > lastDrainQueueDate {
-                if verboseLogging {
-                    Logger.info("\(logPrefix) Hasn't drained most recent identified websocket. true")
-                }
-                return true
-            }
-            guard let lastReceivedPushWithoutWebsocketDate = self.lastReceivedPushWithoutWebsocketDate.get(),
-                  lastReceivedPushWithoutWebsocketDate > lastDrainQueueDate else {
-                return false
-            }
-            if verboseLogging {
-                Logger.info("\(logPrefix) Has not drained queue since last received push. true")
-            }
-            return true
-        }()
-        if shouldDrainQueue {
-            return .open(reason: "shouldDrainQueue")
-        }
-
         if appIsActive.get() {
             // While app is active, keep web socket alive.
             return .open(reason: "appIsActive")
-        } else if DebugFlags.keepWebSocketOpenInBackground {
-            return .open(reason: "keepWebSocketOpenInBackground")
-        } else if hasBackgroundKeepAlive {
+        }
+
+        if hasBackgroundKeepAlive {
             // If app is doing any work in the background, keep web socket alive.
             return .open(reason: "hasBackgroundKeepAlive")
-        } else {
-            return .closed(reason: "default false")
         }
-    }
 
-    private static let holdWebsocketOpenUntilDrained = false
+        return .closed(reason: "default false")
+    }
 
     // This method is thread-safe.
     public func didReceivePush() {
         owsAssertDebug(AppReadiness.isAppReady)
 
         self.ensureBackgroundKeepAlive(.didReceivePush)
-
-        // If we receive a push without an identified websocket,
-        // hold the websocket open in the background until the
-        // websocket drains it queue.
-        if AppReadiness.isAppReady,
-           tsAccountManager.isRegisteredAndReady,
-           webSocketType == .identified,
-           nil == currentWebSocket {
-            lastReceivedPushWithoutWebsocketDate.set(Date())
-            applyDesiredSocketState()
-        }
     }
 
     private let lastDesiredSocketState = AtomicValue<DesiredSocketState>(.closed(reason: "App launched"))
@@ -875,11 +749,7 @@ public class OWSWebSocket: NSObject {
 
             let desiredSocketStateNew = self.desiredSocketState
             let desiredSocketStateOld = self.lastDesiredSocketState.swap(desiredSocketStateNew)
-            if desiredSocketStateNew != desiredSocketStateOld {
-                if Self.verboseLogging {
-                    Logger.info("\(self.logPrefix), desiredSocketState: \(desiredSocketStateOld) -> \(desiredSocketStateNew), appIsActive: \(self.appIsActive.get())")
-                }
-            }
+
             var shouldHaveBackgroundKeepAlive = false
             if desiredSocketStateNew.shouldSocketBeOpen {
                 self.ensureWebsocketExists()
@@ -968,7 +838,6 @@ public class OWSWebSocket: NSObject {
             extraHeaders: StoryManager.buildStoryHeaders()
         )
 
-        self.lastNewWebsocketDate.set(Date())
         guard let webSocket = GlobalDependencies.webSocketFactory.buildSocket(
             request: request,
             callbackQueue: OWSWebSocket.serialQueue
@@ -986,10 +855,7 @@ public class OWSWebSocket: NSObject {
         webSocket.connect()
 
         Self.serialQueue.asyncAfter(deadline: .now() + 30) { [weak self, weak newWebSocket] in
-            guard let self = self,
-                  let newWebSocket = newWebSocket,
-                    let currentWebSocket = self.currentWebSocket,
-                    currentWebSocket.id == newWebSocket.id else {
+            guard let self, let newWebSocket, self.currentWebSocket?.id == newWebSocket.id else {
                 return
             }
 
@@ -1038,10 +904,6 @@ public class OWSWebSocket: NSObject {
     private func applicationDidBecomeActive(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        if Self.verboseLogging {
-            Logger.info("\(self.logPrefix)")
-        }
-
         appIsActive.set(true)
 
         applyDesiredSocketState()
@@ -1050,10 +912,6 @@ public class OWSWebSocket: NSObject {
     @objc
     private func applicationWillResignActive(_ notification: NSNotification) {
         AssertIsOnMainThread()
-
-        if Self.verboseLogging {
-            Logger.info("\(self.logPrefix)")
-        }
 
         appIsActive.set(false)
 
@@ -1064,20 +922,12 @@ public class OWSWebSocket: NSObject {
     private func registrationStateDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        if verboseLogging {
-            Logger.info("\(logPrefix) \(NSStringForOWSRegistrationState(tsAccountManager.registrationState))")
-        }
-
         applyDesiredSocketState()
     }
 
     @objc
     private func localNumberDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
-
-        if verboseLogging {
-            Logger.info("\(logPrefix) \(NSStringForOWSRegistrationState(tsAccountManager.registrationState))")
-        }
 
         cycleSocket()
     }
@@ -1086,10 +936,6 @@ public class OWSWebSocket: NSObject {
     private func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        if Self.verboseLogging {
-            Logger.info("\(self.logPrefix)")
-        }
-
         cycleSocket()
     }
 
@@ -1097,20 +943,12 @@ public class OWSWebSocket: NSObject {
     private func isSignalProxyReadyDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        if Self.verboseLogging {
-            Logger.info("\(self.logPrefix)")
-        }
-
         applyDesiredSocketState()
     }
 
     @objc
     private func deviceListUpdateModifiedDeviceList(_ notification: NSNotification) {
         AssertIsOnMainThread()
-
-        if Self.verboseLogging {
-            Logger.info("\(self.logPrefix)")
-        }
 
         if webSocketType == .identified {
             cycleSocket()
@@ -1120,10 +958,6 @@ public class OWSWebSocket: NSObject {
     @objc
     private func appExpiryDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
-
-        if verboseLogging {
-            Logger.info("\(logPrefix) \(appExpiry.isExpired)")
-        }
 
         cycleSocket()
     }
@@ -1266,26 +1100,14 @@ private class SocketRequestInfo {
 
     // Returns true if the message timed out.
     public func timeoutIfNecessary() -> Bool {
-        if OWSWebSocket.verboseLogging {
-            Logger.warn("\(webSocketType) \(requestUrl)")
-        }
-
         return didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
     public func didFailInvalidRequest() {
-        if OWSWebSocket.verboseLogging {
-            Logger.warn("\(webSocketType) \(requestUrl)")
-        }
-
         didFail(error: OWSHTTPError.invalidRequest(requestUrl: requestUrl))
     }
 
     public func didFailDueToNetwork() {
-        if OWSWebSocket.verboseLogging {
-            Logger.warn("\(webSocketType) \(requestUrl)")
-        }
-
         didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
@@ -1293,10 +1115,6 @@ private class SocketRequestInfo {
                         responseHeaders: OWSHttpHeaders,
                         responseError: Error?,
                         responseData: Data?) {
-        if OWSWebSocket.verboseLogging {
-            Logger.warn("\(webSocketType), responseStatus: \(responseStatus), responseError: \(String(describing: responseError))")
-        }
-
         let error = HTTPUtils.preprocessMainServiceHTTPError(request: request,
                                                              requestUrl: requestUrl,
                                                              responseStatus: responseStatus,
@@ -1475,10 +1293,6 @@ private class WebSocketConnection {
     }
 
     deinit {
-        if OWSWebSocket.verboseLogging {
-            Logger.debug("\(logPrefix)")
-        }
-
         reset()
     }
 

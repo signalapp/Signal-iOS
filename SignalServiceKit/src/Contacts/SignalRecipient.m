@@ -225,9 +225,6 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
         [self.profileManager fetchProfileForAddress:self.address authedAccount:AuthedAccount.implicit];
 
         if (self.address.isLocalAddress) {
-            if (OWSWebSocket.verboseLogging) {
-                OWSLogInfo(@"");
-            }
             [self.socketManager cycleSocket];
         }
     });
