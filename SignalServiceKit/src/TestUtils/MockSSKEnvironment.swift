@@ -57,6 +57,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
         let messageProcessor = MessageProcessor()
         let messageSender = FakeMessageSender()
+        let modelReadCaches = ModelReadCaches(factory: TestableModelReadCacheFactory())
         let networkManager = OWSFakeNetworkManager()
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStore(for: .pni)
@@ -75,6 +76,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
+            modelReadCaches: modelReadCaches,
             networkManager: networkManager,
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniSignalProtocolStore,
@@ -112,7 +114,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let messageFetcherJob = MessageFetcherJob()
         let bulkProfileFetch = BulkProfileFetch()
         let versionedProfiles = MockVersionedProfiles()
-        let modelReadCaches = ModelReadCaches(factory: TestableModelReadCacheFactory())
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor.createStandardSupervisor()
         let paymentsHelper = MockPaymentsHelper()

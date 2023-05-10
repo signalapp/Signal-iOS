@@ -9,6 +9,7 @@ import SignalCoreKit
 
 protocol ThreadAssociatedDataStore {
     func fetch(for threadUniqueId: String, tx: DBReadTransaction) -> ThreadAssociatedData?
+    func remove(for threadUniqueId: String, tx: DBWriteTransaction)
 }
 
 class ThreadAssociatedDataStoreImpl: ThreadAssociatedDataStore {
@@ -19,6 +20,15 @@ class ThreadAssociatedDataStoreImpl: ThreadAssociatedDataStore {
         } catch {
             owsFailDebug("Failed to read thread associated data \(error)")
             return nil
+        }
+    }
+
+    func remove(for threadUniqueId: String, tx: DBWriteTransaction) {
+        let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+        do {
+            try ThreadAssociatedData.filter(Column("threadUniqueId") == threadUniqueId).deleteAll(db)
+        } catch {
+            owsFailDebug("Failed to remove associated data \(error)")
         }
     }
 }
@@ -50,6 +60,7 @@ extension ThreadAssociatedDataStore {
 class MockThreadAssociatedDataStore: ThreadAssociatedDataStore {
     var values = [String: ThreadAssociatedData]()
     func fetch(for threadUniqueId: String, tx: DBReadTransaction) -> ThreadAssociatedData? { values[threadUniqueId] }
+    func remove(for threadUniqueId: String, tx: DBWriteTransaction) { values[threadUniqueId] = nil }
 }
 
 #endif

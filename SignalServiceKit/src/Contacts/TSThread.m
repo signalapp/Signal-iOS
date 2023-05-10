@@ -195,28 +195,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     [PinnedThreadManager handleUpdatedThread:self transaction:transaction];
 }
 
-- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidRemoveWithTransaction:transaction];
-
-    [self.modelReadCaches.threadReadCache didRemoveThread:self transaction:transaction];
-}
-
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [SDSDatabaseStorage.shared updateIdMappingWithThread:self transaction:transaction];
-
     [super anyWillRemoveWithTransaction:transaction];
-
-    [self removeAllThreadInteractionsWithTransaction:transaction];
-
-    // Remove any associated data
-    [ThreadAssociatedData removeForThreadUniqueId:self.uniqueId transaction:transaction];
-
-    // TODO: If we ever use transaction finalizations for more than
-    // de-bouncing thread touches, we should promote this to TSYapDatabaseObject
-    // (or at least include it in the "will remove" hook for any relevant models.
-    [transaction addRemovedFinalizationKey:self.transactionFinalizationKey];
+    OWSFail(@"Not supported.");
 }
 
 - (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction

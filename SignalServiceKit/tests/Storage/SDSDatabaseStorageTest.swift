@@ -64,26 +64,13 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
         XCTAssertEqual(1, TSThread.anyFetchAll(databaseStorage: storage).count)
 
-        var groupThread: TSGroupThread!
         storage.write { transaction in
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
-
-            groupThread = try! GroupManager.createGroupForTests(members: [contactAddress],
-                                                                name: "Test Group",
-                                                                transaction: transaction)
-
+            _ = try! GroupManager.createGroupForTests(members: [contactAddress], name: "Test Group", transaction: transaction)
             XCTAssertEqual(2, TSThread.anyFetchAll(transaction: transaction).count)
         }
 
         XCTAssertEqual(2, TSThread.anyFetchAll(databaseStorage: storage).count)
-
-        storage.write { transaction in
-            XCTAssertEqual(2, TSThread.anyFetchAll(transaction: transaction).count)
-            contactThread.anyRemove(transaction: transaction)
-            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
-        }
-
-        XCTAssertEqual(1, TSThread.anyFetchAll(databaseStorage: storage).count)
 
         // Update
         storage.write { transaction in
@@ -93,10 +80,11 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
                 return
             }
             XCTAssertNil(firstThread.messageDraft)
-            firstThread.update(withDraft: MessageBody(text: "Some draft",
-                                                      ranges: .empty),
-                               replyInfo: nil,
-                               transaction: transaction)
+            firstThread.update(
+                withDraft: MessageBody(text: "Some draft", ranges: .empty),
+                replyInfo: nil,
+                transaction: transaction
+            )
         }
         storage.read { transaction in
             let threads = TSThread.anyFetchAll(transaction: transaction)
@@ -106,16 +94,6 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
             }
             XCTAssertEqual(firstThread.messageDraft, "Some draft")
         }
-
-        XCTAssertEqual(1, TSThread.anyFetchAll(databaseStorage: storage).count)
-
-        storage.write { transaction in
-            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
-            groupThread.anyRemove(transaction: transaction)
-            XCTAssertEqual(0, TSThread.anyFetchAll(transaction: transaction).count)
-        }
-
-        XCTAssertEqual(0, TSThread.anyFetchAll(databaseStorage: storage).count)
     }
 
     func test_interactions() {

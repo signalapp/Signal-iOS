@@ -13,6 +13,7 @@ class InteractionFinderPerformanceTests: PerformanceBaseTest {
             let nThreads = UInt(200)
             let nMessagesPerThread = UInt(10)
 
+            setUpIteration()
             simulateIncomingMessages(inThreads: nThreads, messagesPerThread: nMessagesPerThread)
 
             startMeasuring()
@@ -21,13 +22,6 @@ class InteractionFinderPerformanceTests: PerformanceBaseTest {
                 XCTAssertEqual(unreadCount, nThreads * nMessagesPerThread)
             }
             stopMeasuring()
-
-            // Clear DB for next iteration, otherwise unfair to compare across iterations as DB grows
-            write { transaction in
-                TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-                TSMessage.anyRemoveAllWithInstantation(transaction: transaction)
-                TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            }
         }
     }
 

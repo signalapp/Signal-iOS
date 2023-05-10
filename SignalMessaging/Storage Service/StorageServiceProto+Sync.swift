@@ -1538,7 +1538,11 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoStoryDistributionListRecord
 
-    init() {}
+    private let threadRemover: ThreadRemover
+
+    init(threadRemover: ThreadRemover) {
+        self.threadRemover = threadRemover
+    }
 
     func unknownFields(for record: StorageServiceProtoStoryDistributionListRecord) -> UnknownStorage? { record.unknownFields }
 
@@ -1602,13 +1606,14 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
         // The story has been deleted on another device, record that
         // and ensure we don't try and put it back.
         guard record.deletedAtTimestamp == 0 else {
-            existingStory?.anyRemove(transaction: transaction)
+            if let existingStory {
+                threadRemover.remove(existingStory, tx: transaction.asV2Write)
+            }
             TSPrivateStoryThread.recordDeletedAtTimestamp(
                 record.deletedAtTimestamp,
                 forDistributionListIdentifier: identifier,
                 transaction: transaction
             )
-
             return .merged(needsUpdate: false, identifier)
         }
 

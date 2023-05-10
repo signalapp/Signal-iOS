@@ -89,7 +89,7 @@
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
-        for (int i = 0; i < 10; i++) {
+        for (uint64_t i = 0; i < 10; i++) {
             TSIncomingMessageBuilder *incomingMessageBuilder =
                 [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
             incomingMessageBuilder.timestamp = i + 1;
@@ -113,7 +113,7 @@
                 fetchedMessage.uniqueThreadId, self.thread.uniqueId, @"Isn't stored in the right thread!");
         }
 
-        [self.thread anyRemoveWithTransaction:transaction];
+        [self.thread softDeleteThreadWithTransaction:transaction];
 
         for (TSIncomingMessage *message in messages) {
             TSIncomingMessage *_Nullable fetchedMessage =
@@ -164,7 +164,7 @@
             XCTAssertEqualObjects(fetchedMessage.uniqueThreadId, thread.uniqueId, @"Isn't stored in the right thread!");
         }
 
-        [thread anyRemoveWithTransaction:transaction];
+        [thread softDeleteThreadWithTransaction:transaction];
 
         for (TSIncomingMessage *message in messages) {
             TSIncomingMessage *_Nullable fetchedMessage =

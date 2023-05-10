@@ -13,6 +13,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
 
     func testPerf_insertMessages() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            setUpIteration()
             insertMessages()
         }
     }
@@ -45,17 +46,13 @@ class SDSPerformanceTest: PerformanceBaseTest {
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
             XCTAssertEqual(messageCount, TSInteraction.anyFetchAll(transaction: transaction).count)
         }
-
-        // cleanup for next iteration
-        write { transaction in
-            contactThread.anyRemove(transaction: transaction)
-        }
     }
 
     // MARK: - Fetch Messages
 
     func testPerf_fetchMessages() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            setUpIteration()
             fetchMessages()
         }
     }
@@ -82,24 +79,20 @@ class SDSPerformanceTest: PerformanceBaseTest {
             }
         }
         stopMeasuring()
-
-        // cleanup for next iteration
-        write { transaction in
-            TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-        }
     }
 
     // MARK: - Enumerate Messages
 
     func testPerf_enumerateMessagesUnbatched() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            setUpIteration()
             enumerateMessages(batched: false)
         }
     }
 
     func testPerf_enumerateMessagesBatched() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            setUpIteration()
             enumerateMessages(batched: true)
         }
     }
@@ -129,11 +122,5 @@ class SDSPerformanceTest: PerformanceBaseTest {
             XCTAssertEqual(enumeratedCount, messageCount * enumerationCount)
         }
         stopMeasuring()
-
-        // cleanup for next iteration
-        write { transaction in
-            TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-        }
     }
 }

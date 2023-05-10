@@ -62,22 +62,21 @@ public extension TSPrivateStoryThread {
         deletedAtTimestampKVS.allKeys(transaction: transaction).compactMap { UUID(uuidString: $0)?.data }
     }
 
-    static func cleanupDeletedTimestamps(transaction: SDSAnyWriteTransaction) {
+    static func cleanupDeletedTimestamps(transaction tx: SDSAnyWriteTransaction) {
         var deletedIdentifiers = [Data]()
-        for identifier in deletedAtTimestampKVS.allKeys(transaction: transaction) {
+        for identifier in deletedAtTimestampKVS.allKeys(transaction: tx) {
             guard let timestamp = deletedAtTimestampKVS.getUInt64(
                 identifier,
-                transaction: transaction
+                transaction: tx
             ) else { continue }
             guard Date().timeIntervalSince(Date(millisecondsSince1970: timestamp)) > deletedAtTimestampThreshold else { continue }
-            deletedAtTimestampKVS.removeValue(forKey: identifier, transaction: transaction)
+            deletedAtTimestampKVS.removeValue(forKey: identifier, transaction: tx)
 
             // If we still have a private story thread for this deleted timestamp, it's
             // now safe to purge it from the database.
-            TSPrivateStoryThread.anyFetchPrivateStoryThread(
-                uniqueId: identifier,
-                transaction: transaction
-            )?.anyRemove(transaction: transaction)
+            if let thread = TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: identifier, transaction: tx) {
+                DependenciesBridge.shared.threadRemover.remove(thread, tx: tx.asV2Write)
+            }
 
             UUID(uuidString: identifier).map { deletedIdentifiers.append($0.data) }
         }

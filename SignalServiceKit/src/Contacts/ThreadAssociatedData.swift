@@ -90,15 +90,6 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         }
     }
 
-    @objc(removeForThreadUniqueId:transaction:)
-    public static func remove(for threadUniqueId: String, transaction: SDSAnyWriteTransaction) {
-        do {
-            try Self.filter(Column("threadUniqueId") == threadUniqueId).deleteAll(transaction.unwrapGrdbWrite.database)
-        } catch {
-            owsFailDebug("Failed to remove associated data \(error)")
-        }
-    }
-
     @objc
     public static func create(for threadUniqueId: String, warnIfPresent: Bool, transaction: SDSAnyWriteTransaction) {
         let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore

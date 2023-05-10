@@ -16,8 +16,6 @@ public protocol SDSModel: TSYapDatabaseObject, SDSIndexableModel, SDSIdentifiabl
 
     func anyInsert(transaction: SDSAnyWriteTransaction)
 
-    func anyRemove(transaction: SDSAnyWriteTransaction)
-
     static var table: SDSTableMetadata { get }
 }
 

@@ -52,6 +52,7 @@ public class AppSetup {
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
         let messageProcessor = MessageProcessor()
         let messageSender = MessageSender()
+        let modelReadCaches = ModelReadCaches(factory: ModelReadCacheFactory())
         let networkManager = NetworkManager()
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStore(for: .pni)
@@ -70,6 +71,7 @@ public class AppSetup {
             identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
+            modelReadCaches: modelReadCaches,
             networkManager: networkManager,
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniSignalProtocolStore,
@@ -121,7 +123,6 @@ public class AppSetup {
         let messageFetcherJob = MessageFetcherJob()
         let bulkProfileFetch = BulkProfileFetch()
         let versionedProfiles = VersionedProfilesImpl()
-        let modelReadCaches = ModelReadCaches(factory: ModelReadCacheFactory())
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor.createStandardSupervisor()
         let paymentsHelper = PaymentsHelperImpl()

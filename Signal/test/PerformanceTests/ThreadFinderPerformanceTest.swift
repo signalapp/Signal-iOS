@@ -11,12 +11,14 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
 
     func testPerf_enumerateVisibleThreads() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            setUpIteration()
             enumerateVisibleThreads(isArchived: false)
         }
     }
 
     func testPerf_enumerateVisibleThreads_isArchived() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            setUpIteration()
             enumerateVisibleThreads(isArchived: true)
         }
     }
@@ -77,12 +79,6 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
                 XCTAssertEqual(expectedCount, observedCount)
             }
             self.stopMeasuring()
-        }
-
-        // cleanup for next iteration
-        write { transaction in
-            TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
         }
     }
 

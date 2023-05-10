@@ -194,15 +194,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                                       userInfo:userInfo];
 }
 
-- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (self.isGroupV2Thread) {
-        OWSFailDebug(@"In normal usage we should only soft delete v2 groups.");
-    }
-    [super anyWillRemoveWithTransaction:transaction];
-    [self updateGroupMemberRecordsWithTransaction:transaction];
-}
-
 #pragma mark -
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction

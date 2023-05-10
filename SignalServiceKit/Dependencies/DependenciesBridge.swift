@@ -39,6 +39,7 @@ public class DependenciesBridge {
     public let db: DB
     public let keyValueStoreFactory: KeyValueStoreFactory
     let threadAssociatedDataStore: ThreadAssociatedDataStore
+    public let threadRemover: ThreadRemover
 
     public let appExpiry: AppExpiry
 
@@ -70,6 +71,7 @@ public class DependenciesBridge {
         identityManager: OWSIdentityManager,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
+        modelReadCaches: ModelReadCaches,
         networkManager: NetworkManager,
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
@@ -88,6 +90,7 @@ public class DependenciesBridge {
             identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
+            modelReadCaches: modelReadCaches,
             networkManager: networkManager,
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniProtocolStore,
@@ -111,6 +114,7 @@ public class DependenciesBridge {
         identityManager: OWSIdentityManager,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
+        modelReadCaches: ModelReadCaches,
         networkManager: NetworkManager,
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
@@ -179,6 +183,15 @@ public class DependenciesBridge {
             temporaryShims: GroupMemberUpdaterTemporaryShimsImpl(),
             groupMemberStore: groupMemberStore,
             signalServiceAddressCache: signalServiceAddressCache
+        )
+
+        self.threadRemover = ThreadRemoverImpl(
+            databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
+            fullTextSearchFinder: ThreadRemoverImpl.Wrappers.FullTextSearchFinder(),
+            interactionRemover: ThreadRemoverImpl.Wrappers.InteractionRemover(),
+            threadAssociatedDataStore: self.threadAssociatedDataStore,
+            threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
+            threadStore: threadStore
         )
 
         let recipientStore = RecipientDataStoreImpl()

@@ -16,6 +16,7 @@ class ThreadPerformanceTest: PerformanceBaseTest {
 
     func testPerf_writeThreadAndInteractions() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            setUpIteration()
             writeThreadAndInteractions()
         }
     }
@@ -32,18 +33,13 @@ class ThreadPerformanceTest: PerformanceBaseTest {
 
             self.stopMeasuring()
         }
-
-        // cleanup for next iteration
-        write { transaction in
-            TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-        }
     }
 
     // MARK: - writeAndDeleteThreadAndInteractions
 
     func testPerf_writeAndDeleteThreadAndInteractions() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            setUpIteration()
             writeAndDeleteThreadAndInteractions()
         }
     }
@@ -59,7 +55,7 @@ class ThreadPerformanceTest: PerformanceBaseTest {
             }
 
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            TSThread.anyRemoveAllWithInstantation(transaction: transaction)
+            TSThread.anyFetchAll(transaction: transaction).forEach { $0.softDelete(with: transaction) }
 
             self.stopMeasuring()
         }
@@ -69,6 +65,7 @@ class ThreadPerformanceTest: PerformanceBaseTest {
 
     func testPerf_writeAndUpdateAndDeleteThreadAndInteractions() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+            setUpIteration()
             writeAndUpdateAndDeleteThreadAndInteractions()
         }
     }
@@ -97,7 +94,7 @@ class ThreadPerformanceTest: PerformanceBaseTest {
             }
 
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            TSThread.anyRemoveAllWithInstantation(transaction: transaction)
+            TSThread.anyFetchAll(transaction: transaction).forEach { $0.softDelete(with: transaction) }
 
             self.stopMeasuring()
         }

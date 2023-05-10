@@ -845,6 +845,7 @@ def generate_swift_extensions_for_model(clazz):
         return
 
     has_sds_superclass = clazz.has_sds_superclass()
+    has_remove_methods = clazz.name not in ("TSThread",)
 
     swift_filename = os.path.basename(clazz.filepath)
     swift_filename = swift_filename[:swift_filename.find('.')] + '+SDS.swift'
@@ -1452,11 +1453,16 @@ public extension %(class_name)s {
     func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
+''' % { "class_name": str(clazz.name) }
 
+        if has_remove_methods:
+            swift_body += '''
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }
+'''
 
+        swift_body += '''
     func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
@@ -1473,8 +1479,7 @@ public extension %(class_name)s {
     }
 }
 
-''' % { "class_name": str(clazz.name) }
-
+'''
 
         # ---- Cursor ----
 
@@ -1703,7 +1708,8 @@ public extension %(class_name)s {
 
         # ---- Remove All ----
 
-        swift_body += '''
+        if has_remove_methods:
+            swift_body += '''
     class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
         // To avoid mutationDuringEnumerationException, we need to remove the
         // instances outside the enumeration.
@@ -1723,7 +1729,11 @@ public extension %(class_name)s {
             FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
         }
     }
+'''
 
+        # ---- Exists ----
+
+        swift_body += '''
     class func anyExists(
         uniqueId: String,
         transaction: SDSAnyReadTransaction

@@ -53,9 +53,8 @@
         XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction]);
     }];
 
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [thread anyRemoveWithTransaction:transaction];
-    }];
+    [self writeWithBlock:^(
+        SDSAnyWriteTransaction *transaction) { [thread softDeleteThreadWithTransaction:transaction]; }];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
         XCTAssertEqual(0, [TSInteraction anyCountWithTransaction:transaction]);
@@ -124,9 +123,8 @@
     }];
 
     // Actual Test Follows
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [thread anyRemoveWithTransaction:transaction];
-    }];
+    [self writeWithBlock:^(
+        SDSAnyWriteTransaction *transaction) { [thread softDeleteThreadWithTransaction:transaction]; }];
 
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);

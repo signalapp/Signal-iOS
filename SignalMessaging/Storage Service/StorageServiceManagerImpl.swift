@@ -1521,7 +1521,9 @@ class StorageServiceOperation: OWSOperation {
 
     private func buildStoryDistributionListUpdater() -> MultipleElementStateUpdater<StorageServiceStoryDistributionListRecordUpdater> {
         return MultipleElementStateUpdater(
-            recordUpdater: StorageServiceStoryDistributionListRecordUpdater(),
+            recordUpdater: StorageServiceStoryDistributionListRecordUpdater(
+                threadRemover: DependenciesBridge.shared.threadRemover
+            ),
             changeState: \.storyDistributionListChangeMap,
             storageIdentifier: \.storyDistributionListIdentifierToStorageIdentifierMap,
             recordWithUnknownFields: \.storyDistributionListIdentifierToRecordWithUnknownFields

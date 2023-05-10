@@ -739,6 +739,7 @@
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
+		502D45442A05A34B00B8BCE0 /* ThreadRemover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */; };
 		5033D46129D638FD007FEADA /* ThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46029D638FD007FEADA /* ThreadStore.swift */; };
 		5033D46329D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46229D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift */; };
 		5033D46529D65099007FEADA /* ThreadAssociatedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46429D65098007FEADA /* ThreadAssociatedDataStore.swift */; };
@@ -3226,6 +3227,7 @@
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
+		502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadRemover.swift; sourceTree = "<group>"; };
 		5033D46029D638FD007FEADA /* ThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadStore.swift; sourceTree = "<group>"; };
 		5033D46229D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberChangedMessageInserter.swift; sourceTree = "<group>"; };
 		5033D46429D65098007FEADA /* ThreadAssociatedDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadAssociatedDataStore.swift; sourceTree = "<group>"; };
@@ -8817,6 +8819,7 @@
 		F9C5C9E3289453B100548EEE /* Threads */ = {
 			isa = PBXGroup;
 			children = (
+				502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */,
 				5033D46029D638FD007FEADA /* ThreadStore.swift */,
 				F9C5C9EA289453B100548EEE /* TSContactThread+SDS.swift */,
 				F9C5C9EB289453B100548EEE /* TSContactThread.h */,
@@ -12347,6 +12350,7 @@
 				5033D46529D65099007FEADA /* ThreadAssociatedDataStore.swift in Sources */,
 				F9C5CDE2289453B400548EEE /* ThreadBacked.swift in Sources */,
 				F9C5CD17289453B300548EEE /* ThreadFinder.swift in Sources */,
+				502D45442A05A34B00B8BCE0 /* ThreadRemover.swift in Sources */,
 				45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */,
 				5033D46129D638FD007FEADA /* ThreadStore.swift in Sources */,
 				F9C5CD90289453B300548EEE /* TimeElapsedChallenge.swift in Sources */,

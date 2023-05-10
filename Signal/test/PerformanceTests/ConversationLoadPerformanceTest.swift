@@ -21,6 +21,7 @@ class ConversationLoadPerformanceTest: PerformanceBaseTest {
         // right now. One day!
 
         super.setUp()
+        setUpIteration()
 
         contactThread = ContactThreadFactory().create()
         interactionFinder = InteractionFinder(threadUniqueId: contactThread!.uniqueId)

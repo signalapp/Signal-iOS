@@ -11,12 +11,9 @@ public class PerformanceBaseTest: XCTestCase {
 
     // MARK: Hooks
 
-    public override func setUp() {
-        super.setUp()
-
+    func setUpIteration() {
         SetCurrentAppContext(TestAppContext(), true)
         SDSDatabaseStorage.shouldLogDBQueries = false
-
         MockSSKEnvironment.activate()
     }
 

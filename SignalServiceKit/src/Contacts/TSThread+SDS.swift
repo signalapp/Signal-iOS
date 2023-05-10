@@ -764,10 +764,6 @@ public extension TSThread {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    func anyRemove(transaction: SDSAnyWriteTransaction) {
-        sdsRemove(transaction: transaction)
-    }
-
     func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
@@ -971,26 +967,6 @@ public extension TSThread {
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
             return ThreadRecord.ows_fetchCount(grdbTransaction.database)
-        }
-    }
-
-    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
-        // To avoid mutationDuringEnumerationException, we need to remove the
-        // instances outside the enumeration.
-        let uniqueIds = anyAllUniqueIds(transaction: transaction)
-
-        for uniqueId in uniqueIds {
-            autoreleasepool {
-                guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-                    owsFailDebug("Missing instance.")
-                    return
-                }
-                instance.anyRemove(transaction: transaction)
-            }
-        }
-
-        if ftsIndexMode != .never {
-            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
         }
     }
 
