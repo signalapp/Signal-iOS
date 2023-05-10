@@ -80,6 +80,29 @@ public extension ChatListViewController {
 
     // MARK: -
 
+    func addPullToRefreshIfNeeded() {
+        if tsAccountManager.isPrimaryDevice {
+            return
+        }
+
+        let pullToRefreshView = UIRefreshControl()
+        pullToRefreshView.tintColor = .gray
+        pullToRefreshView.addTarget(self, action: #selector(pullToRefreshPerformed), for: .valueChanged)
+        pullToRefreshView.accessibilityIdentifier = "ChatListViewController.pullToRefreshView"
+        self.tableView.refreshControl = pullToRefreshView
+    }
+
+    private func pullToRefreshPerformed(_ refreshControl: UIRefreshControl) {
+        AssertIsOnMainThread()
+        owsAssert(!tsAccountManager.isPrimaryDevice)
+
+        syncManager.sendAllSyncRequestMessages(timeout: 20).ensure {
+            refreshControl.endRefreshing()
+        }.cauterize()
+    }
+
+    // MARK: -
+
     func showBadgeExpirationSheetIfNeeded() {
         Logger.info("[Donations] Checking whether we should show badge expiration sheet...")
 

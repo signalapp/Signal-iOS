@@ -189,13 +189,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.firstConversationCueView.accessibilityIdentifier = @"ChatListViewController.firstConversationCueView";
     self.firstConversationLabel.accessibilityIdentifier = @"ChatListViewController.firstConversationLabel";
 
-    UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
-    pullToRefreshView.tintColor = [UIColor grayColor];
-    [pullToRefreshView addTarget:self
-                          action:@selector(pullToRefreshPerformed:)
-                forControlEvents:UIControlEventValueChanged];
-    self.tableView.refreshControl = pullToRefreshView;
-    pullToRefreshView.accessibilityIdentifier = @"ChatListViewController.pullToRefreshView";
+    [self addPullToRefreshIfNeeded];
 }
 
 - (UIView *)createEmptyInboxView
@@ -709,27 +703,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     self.lastViewedThread = thread;
     [self ensureSelectedThread:thread animated:animated];
-}
-
-#pragma mark -
-
-- (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
-{
-    OWSAssertIsOnMainThread();
-    OWSLogInfo(@"beginning refreshing.");
-
-    [self.messageFetcherJob runObjc]
-        .then(^(id value) {
-            if (TSAccountManager.shared.isRegisteredPrimaryDevice) {
-                return [AnyPromise promiseWithValue:@1];
-            }
-
-            return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
-        })
-        .ensure(^{
-            OWSLogInfo(@"ending refreshing.");
-            [refreshControl endRefreshing];
-        });
 }
 
 #pragma mark - UISearchBarDelegate
