@@ -75,11 +75,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
     private let textThatFitsCache = LRUCache<String, String>(maxSize: 128)
 
     func truncateVisibleTextIfNecessary() {
-        // When using autolayout, we need to initially set the text
-        // to the full text otherwise the view will never get any width.
-        if !shouldDeactivateConstraints {
-            textView.text = descriptionText
-        }
+        textView.text = descriptionText
 
         guard width > 0 else { return }
 
