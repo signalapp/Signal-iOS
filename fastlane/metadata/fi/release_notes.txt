@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• Lisäsimme uuden (valinnaisen) luettelotilan Kaikki mediat -näkymään. Jos valitset luettelon ruudukon sijaan, voit nähdä yhdellä silmäyksellä enemmän tietoja, mukaan lukien tiedostonimet, tiedostokoot, päivämäärät jne.
+• Tämä julkaisu sisältää myös useita suorituskyvyn tehostuksia ja käynnistyksen nopeuden parannuksia. Jos sinulla on paljon suuria keskusteluja tai paljon viestejä, huomaat toivon mukaan pienen eron.

@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• Új (és opcionális) Lista módot adtunk az „Összes médiafájl” nézethez. Ha úgy döntesz, hogy elhagyod a rácsnézetet, mostantól több információt láthatsz egyszerre, beleértve a fájlneveket, fájlméreteket, dátumokat stb.
+• Ez a kiadás számos teljesítmény- és indítási sebesség-javítást is tartalmaz. Ha sok, hosszú beszélgetést folytatsz, vagy sok üzenetet küldesz, reméljük, hogy észreveszel egy kis különbséget.

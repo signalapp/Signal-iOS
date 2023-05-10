@@ -161,19 +161,19 @@
 "ALL_MEDIA_FILTER_VIDEOS" = "व्हिडिओज";
 
 /* Menu option to show All Media items in a grid of square thumbnails */
-"ALL_MEDIA_GRID_MODE" = "Grid";
+"ALL_MEDIA_GRID_MODE" = "ग्रीड";
 
 /* Menu option to show All Media items in a single-column list */
-"ALL_MEDIA_LIST_MODE" = "List";
+"ALL_MEDIA_LIST_MODE" = "सूची";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
 
 /* Label shown by thumbnails of images in the All Media view */
-"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "Image";
+"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "चित्र";
 
 /* Label shown by thumbnails of videos in the All Media view */
-"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "Video";
+"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "व्हिडिओ";
 
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "सर्व कनेक्शन्स";
@@ -4382,19 +4382,19 @@
 "OPEN_SETTINGS_BUTTON" = "सेटिंग";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal no longer works on this device. To use Signal again, update your device to a newer version of iOS.";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal यापुढे या डिव्हाइसवर काम करणार नाही. Signal पुन्हा वापरण्यास, आपल्या डिव्हाइसला iOS च्या नवीनतम आवृत्तीवर अद्ययावत करा.";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal no longer works on this device. To use Signal again, switch to a newer device.";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal यापुढे या डिव्हाइसवर काम करणार नाही. Signal पुन्हा वापरण्यास, नवीनतम डिव्हाइसवर स्वीच करा.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
-"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Update Now";
+"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "आता अद्यतनित करा";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, update your device to a newer version of iOS by %1$@.";
+"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal लवकरच यापुढे आपल्या डिव्हाइसच्या iOS आवृत्तीला सपोर्ट करणार नाही. Signal वापरणे सुरू ठेवण्यासाठी, %1$@ पर्यंत आपले डिव्हाइस iOS च्या नवीनतम आवृत्तीवर अपडेट करा.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, switch to a newer device by %1$@.";
+"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal लवकरच यापुढे आपल्या डिव्हाइसच्या iOS आवृत्तीला सपोर्ट करणार नाही. Signal वापरणे पुढे सुरू ठेवण्यासाठी, %1$@ पर्यंत नवीन डिव्हाइस वर स्वीच करा.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ याने नाहीसे होणारे संदेश अक्षम केले.";

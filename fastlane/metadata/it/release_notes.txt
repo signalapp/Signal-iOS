@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• Abbiamo aggiunto una nuova (e opzionale) Modalità Elenco per avere tutti i dettagli dei tuoi media sotto mano: il nome del file, le dimensioni, la data e così via.
+• Questo aggiornamento include anche varie ottimizzazioni per le performance e la velocità dell'app. Minima attesa, massima resa!

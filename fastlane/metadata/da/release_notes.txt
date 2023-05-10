@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• Vi har tilføjet en ny (og valgfri) listetilstand i visningen af Alle medier. Hvis du gerne vil prøve noget nyt, kan du nu se mere ved første øjekast, som f.eks. filnavne, filstørrelser, datoer osv.
+• Denne version byder også på diverse forbedringer af appens ydeevne samt opstartshastigheden. Hvis du har mange store snakke eller masser af beskeder, håber vi at du vil kunne mærke en lille forskel.

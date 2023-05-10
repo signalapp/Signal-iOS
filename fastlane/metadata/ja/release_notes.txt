@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• 全メディアビューに新しい (オプションの) リストビューを追加しました。リストビューなら、ファイル名、ファイルサイズ、日付など、より多くの情報を一目で確認できます。
+• 今回のリリースには、いくつかのパフォーマンスの改善と起動速度の向上も含まれています。たくさんの会話やメッセージがあるなら、このリリースによるほんの少しの違いに気づいていただけると思います。

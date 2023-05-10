@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• เราเพิ่มตัวเลือกใหม่อย่าง “มุมมองแบบแถว” ในหน้าแสดงสื่อทั้งหมด การแสดงสื่อในรูปแบบลิสต์รายการนี้เหมาะสำหรับผู้ใช้ที่ไม่อยากถูกจำกัดด้วยมุมมองแบบตาราง ทั้งยังทำให้คุณไล่ดูรายละเอียดต่างๆ ของสื่อได้อย่างสบายตา ไม่ว่าจะเป็นชื่อไฟล์ ขนาด วันที่ส่ง ฯลฯ
+• เวอร์ชันนี้ยังมาพร้อมการพัฒนาประสิทธิภาพการใช้งานอีกหลายรายการ รวมถึงการเพิ่มความเร็วในการเปิดแอปด้วย หากคุณมีแชทหนักๆ หรือสะสมข้อความเอาไว้เยอะ เราหวังว่าการปรับปรุงครั้งนี้จะช่วยประหยัดเวลาให้คุณไม่มากก็น้อย

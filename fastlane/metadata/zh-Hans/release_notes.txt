@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• 我们在“所有媒体”视图中新增了（可选的）列表模式。如果您将网格模式切换为列表模式，您可以轻松浏览更多信息，包括文件名、文件大小和日期等等。
+• 此次更新还优化了一些性能，并加快了启动速度。如果您有很多大型对话或者有很多消息，我们期待您能发现当下与之前的小小区别。

@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• हमने ऑल मीडिया व्यू में एक नया (और वैकल्पिक) लिस्ट मोड जोड़ा है। यदि आप ग्रिड बंद करना चाहते हैं, तो अब आप एक नज़र में अधिक जानकारी देख सकते हैं, जिसमें फाइल नाम, फाइल आकार, तिथि आदि शामिल हैं।
+• इस रिलीज़ में कई प्रदर्शन सुधार और स्टार्टअप स्पीड एनहांसमेंट भी शामिल हैं। यदि आपके पास बहुत अधिक बड़े वार्तालाप हैं, या बहुत सारे संदेश हैं, तो हमें उम्मीद है कि आप थोड़ा अंतर दिखाई देगा।

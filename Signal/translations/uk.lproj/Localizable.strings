@@ -161,19 +161,19 @@
 "ALL_MEDIA_FILTER_VIDEOS" = "Відео";
 
 /* Menu option to show All Media items in a grid of square thumbnails */
-"ALL_MEDIA_GRID_MODE" = "Grid";
+"ALL_MEDIA_GRID_MODE" = "Сітка";
 
 /* Menu option to show All Media items in a single-column list */
-"ALL_MEDIA_LIST_MODE" = "List";
+"ALL_MEDIA_LIST_MODE" = "Список";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
 
 /* Label shown by thumbnails of images in the All Media view */
-"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "Image";
+"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "Зображення";
 
 /* Label shown by thumbnails of videos in the All Media view */
-"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "Video";
+"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "Відео";
 
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "Усі контакти";
@@ -4382,19 +4382,19 @@
 "OPEN_SETTINGS_BUTTON" = "Налаштування";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal no longer works on this device. To use Signal again, update your device to a newer version of iOS.";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal більше не працює на цьому пристрої. Щоб знову користуватися застосунком, оновіть версію iOS вашого пристрою.";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal no longer works on this device. To use Signal again, switch to a newer device.";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal більше не працює на цьому пристрої. Щоб знову користуватися застосунком, перейдіть на новіший пристрій.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
-"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Update Now";
+"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Оновити";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, update your device to a newer version of iOS by %1$@.";
+"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Незабаром Signal припинить підтримувати версію iOS вашого пристрою. Щоб користуватися застосунком і надалі, оновіть версію iOS вашого пристрою до %1$@.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, switch to a newer device by %1$@.";
+"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Незабаром Signal припинить підтримувати версію iOS вашого пристрою. Щоб користуватися застосунком і надалі, перейдіть на новіший пристрій до %1$@.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ вимикає зникаючі повідомлення.";

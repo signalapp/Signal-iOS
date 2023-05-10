@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• Chúng tôi đã thêm chế độ xem Danh sách mới (tùy chọn) trong giao diện xem Tất cả tệp đa phương tiện. Ở chế độ này, bạn có thể nhanh chóng thấy được tên tệp, kích cỡ tệp, thông tin ngày tháng, v.v.
+• Bản cập nhật này cũng mang đến nhiều cải tiến về mặt hiệu suất và tăng tốc độ khởi động. Nếu bạn có nhiều cuộc trò chuyện hay tin nhắn có lượng nội dung lớn, chúng tôi hy vọng bạn sẽ nhận ra được sự khác biệt nhỏ này.

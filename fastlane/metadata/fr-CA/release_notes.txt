@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• Nous avons ajouté un nouveau mode Liste (facultatif) dans la section Tous les médias. Contrairement au mode Grille, le mode Liste affiche plus d’informations, comme le nom, la taille, la date de création des fichiers, etc.
+• Cette version comprend également plusieurs améliorations des performances et de la vitesse de démarrage. Ce sont les petits détails qui font toute la différence ! Alors, si vous faites partie de plusieurs groupes de discussion ou si vous recevez et envoyez beaucoup de messages, nous espérons que vous remarquerez ces petits changements.

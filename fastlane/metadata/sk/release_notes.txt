@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• Pridali sme nový (a voliteľný) režim zoznamu v zobrazení Všetky médiá. Ak nie ste fanúšikom mriežok, teraz si môžete médiá zoradiť pekne do zoznamu a uvidíte tak viac informácií vrátane názvov a veľkostí súborov, dátumov atď.
+• Toto vydanie tiež zahŕňa niekoľko vylepšení výkonu a rýchlosti spustenia. Ak disponujete veľkým množstvom konverzácií či správ, určite vám tento malý rozdiel neujde.

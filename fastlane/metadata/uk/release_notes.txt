@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+• У перегляді всіх медіа з'явився новий режим «Список», який можна ввімкнути за бажанням. Із цим режимом ви одразу бачитимете більше інформації, як-от назви файлів, їхні розміри, дати тощо.
+• Оновлення також містить кілька покращень продуктивності та скорості запуску. Якщо ви маєте багато розмов або багато повідомлень, сподіваємось, ви помітите невеличку різницю.

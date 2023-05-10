@@ -161,19 +161,19 @@
 "ALL_MEDIA_FILTER_VIDEOS" = "동영상";
 
 /* Menu option to show All Media items in a grid of square thumbnails */
-"ALL_MEDIA_GRID_MODE" = "Grid";
+"ALL_MEDIA_GRID_MODE" = "그리드";
 
 /* Menu option to show All Media items in a single-column list */
-"ALL_MEDIA_LIST_MODE" = "List";
+"ALL_MEDIA_LIST_MODE" = "목록";
 
 /* Label shown over thumbnails of GIFs in the All Media view */
 "ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
 
 /* Label shown by thumbnails of images in the All Media view */
-"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "Image";
+"ALL_MEDIA_THUMBNAIL_LABEL_IMAGE" = "이미지";
 
 /* Label shown by thumbnails of videos in the All Media view */
-"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "Video";
+"ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "동영상";
 
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "모든 커넥션";
@@ -4382,19 +4382,19 @@
 "OPEN_SETTINGS_BUTTON" = "설정";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal no longer works on this device. To use Signal again, update your device to a newer version of iOS.";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "이 기기에서 Signal이 더 이상 작동하지 않습니다. Signal을 다시 시작하려면 기기를 최신 iOS 버전으로 업데이트하세요.";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal no longer works on this device. To use Signal again, switch to a newer device.";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "이 기기에서 Signal이 더 이상 작동하지 않습니다. Signal을 다시 시용하려면 최신 기기로 전환하세요.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
-"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Update Now";
+"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "지금 업데이트";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, update your device to a newer version of iOS by %1$@.";
+"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal이 곧 귀하의 기기에서 사용하는 iOS 버전에 대한 지원을 중단합니다. Signal을 계속 사용하려면 %1$@까지 기기를 최신 iOS 버전으로 업데이트하세요.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal will no longer support your device's version of iOS soon. To keep using Signal, switch to a newer device by %1$@.";
+"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal이 곧 귀하의 기기에서 사용하는 iOS 버전에 대한 지원을 중단합니다. Signal을 계속 사용하려면 %1$@까지 최신 기기로 전환하세요.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ 님이 사라지는 메시지 기능을 껐습니다.";

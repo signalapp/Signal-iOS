@@ -1,2 +1,2 @@
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
-• This release also includes several performance improvements and startup speed enhancements. If you have a lot of large conversations, or a lot of messages, we hope that you’ll notice a little difference.
+•لقد أضفنا وضع قائمة جديد (واختياري) في عرض جميع الوسائط. إذا قرّرت تغيير الرؤية، يُمكنك الآن رؤية المزيد من المعلومات في لمحة، بما في ذلك أسماء المِلفات وأحجامها والتواريخ وما إلى ذلك.
+• يتضمّن هذا الإصدار أيضًا عدة تحسينات للأداء وتحسينات سُرعة بدء التشغيل. إذا كانت لديك عدة مُحادثات كبيرة، أو عدة رسائل، نتمنّى أن تُلاحظ بعض التطوّر في الأداء.
