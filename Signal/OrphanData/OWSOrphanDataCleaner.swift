@@ -80,9 +80,9 @@ extension OWSOrphanDataCleaner {
             jobRecordAttachmentIds: (JobRecordType) -> some Sequence<String>
         ) {
             do {
-                try AnyJobRecordFinder<JobRecordType>().enumerateJobRecords(
+                try JobRecordFinderImpl<JobRecordType>().enumerateJobRecords(
                     label: label,
-                    transaction: transaction,
+                    transaction: transaction.asV2Read,
                     block: { jobRecord, stop in
                         guard isMainAppAndActive() else {
                             shouldAbort = true

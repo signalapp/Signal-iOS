@@ -189,10 +189,10 @@ public class MessageProcessor: NSObject {
                 // We may have legacy decrypt jobs queued. We want to schedule them for
                 // processing immediately when we launch, so that we can drain the old queue.
                 do {
-                    let legacyDecryptJobRecords = try AnyJobRecordFinder<LegacyMessageDecryptJobRecord>().allRecords(
-                        label: "SSKMessageDecrypt",
+                    let legacyDecryptJobRecords = try JobRecordFinderImpl<LegacyMessageDecryptJobRecord>().allRecords(
+                        label: LegacyMessageDecryptJobRecord.defaultLabel,
                         status: .ready,
-                        transaction: transaction
+                        transaction: transaction.asV2Read
                     )
                     for jobRecord in legacyDecryptJobRecords {
                         guard let envelopeData = jobRecord.envelopeData else {

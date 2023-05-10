@@ -7,6 +7,8 @@ import Foundation
 import GRDB
 
 final class LegacyMessageDecryptJobRecord: JobRecord, FactoryInitializableFromRecordType {
+    static let defaultLabel: String = "SSKMessageDecrypt"
+
     override class var jobRecordType: JobRecordType { .legacyMessageDecrypt }
 
     public let envelopeData: Data?
