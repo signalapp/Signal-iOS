@@ -243,7 +243,10 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
             isEditable = false
             isSelectable = false
             self.textContainer.lineBreakMode = .byTruncatingTail
-            self.layoutManager.delegate = self
+            // TODO[TextFormatting]: This code is causing emoji to
+            // be cleared out of the caption.  Disable until the
+            // underlying issue can be resolved.
+            // self.layoutManager.delegate = self
             updateIsScrollEnabled()
         }
 
