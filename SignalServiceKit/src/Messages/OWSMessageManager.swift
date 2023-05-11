@@ -407,12 +407,66 @@ extension OWSMessageManager {
         }
     }
 
+    // Handle the sync setup here
+    @objc
+    func handleIncomingEnvelope(
+        _ envelope: SSKProtoEnvelope,
+        syncMessage: SSKProtoSyncMessage,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        guard FeatureFlags.editMessageReceive else {
+            return
+        }
+
+        guard let sentMessage = syncMessage.sent else {
+            return
+        }
+
+        guard let transcript = OWSIncomingSentMessageTranscript(
+            proto: sentMessage,
+            serverTimestamp: envelope.serverTimestamp,
+            transaction: tx
+        ) else {
+            Logger.warn("Missing edit transcript.")
+            return
+        }
+
+        guard let thread = transcript.thread else {
+            Logger.warn("Missing edit message thread.")
+            return
+        }
+
+        guard let editMessage = syncMessage.sent?.editMessage else {
+            Logger.warn("Missing edit message.")
+            return
+        }
+
+        guard let message = handleMessageEdit(
+            envelope: envelope,
+            thread: thread,
+            editMessage: editMessage,
+            transaction: tx
+        ) else {
+            Logger.info("Failed to insert edit sync message")
+            return
+        }
+
+        if let msg = message as? TSOutgoingMessage {
+            msg.updateWithWasSentFromLinkedDevice(
+                withUDRecipientAddresses: transcript.udRecipientAddresses,
+                nonUdRecipientAddresses: transcript.nonUdRecipientAddresses,
+                isSentUpdate: false,
+                transaction: tx
+            )
+        }
+    }
+
     @objc
     func handleIncomingEnvelope(
         _ envelope: SSKProtoEnvelope,
         withEditMessage editMessage: SSKProtoEditMessage,
         wasReceivedByUD: Bool,
-        transaction writeTx: SDSAnyWriteTransaction
+        transaction tx: SDSAnyWriteTransaction
     ) {
         guard FeatureFlags.editMessageReceive else {
             return
@@ -426,15 +480,46 @@ extension OWSMessageManager {
         guard let thread = preprocessDataMessage(
             dataMessage,
             envelope: envelope,
-            transaction: writeTx
+            transaction: tx
         ) else {
             Logger.warn("Missing edit message thread.")
             return
         }
 
+        guard let message = handleMessageEdit(
+            envelope: envelope,
+            thread: thread,
+            editMessage: editMessage,
+            transaction: tx
+        ) else {
+            Logger.info("Failed to insert edit message")
+            return
+        }
+
+        if wasReceivedByUD {
+            self.outgoingReceiptManager.enqueueDeliveryReceipt(
+                for: envelope,
+                messageUniqueId: message.uniqueId,
+                transaction: tx
+            )
+        }
+    }
+
+    private func handleMessageEdit(
+        envelope: SSKProtoEnvelope,
+        thread: TSThread,
+        editMessage: SSKProtoEditMessage,
+        transaction tx: SDSAnyWriteTransaction
+    ) -> TSMessage? {
+
+        guard let dataMessage = editMessage.dataMessage else {
+            owsFailDebug("Missing dataMessage in edit")
+            return nil
+        }
+
         guard let sourceAddress = envelope.sourceAddress else {
             Logger.warn("Missing edit source address.")
-            return
+            return nil
         }
 
         let editManager = EditManager(
@@ -451,25 +536,17 @@ extension OWSMessageManager {
             serverTimestamp: envelope.serverTimestamp,
             targetTimestamp: editMessage.targetSentTimestamp,
             author: sourceAddress,
-            tx: writeTx.asV2Write
+            tx: tx.asV2Write
         )
 
         guard let message else {
-            Logger.info("Failed to insert edit message")
-            return
+            return nil
         }
 
-        if wasReceivedByUD {
-            self.outgoingReceiptManager.enqueueDeliveryReceipt(
-                for: envelope,
-                messageUniqueId: message.uniqueId,
-                transaction: writeTx
-            )
-        }
-
+        // Start downloading any new attachments
         self.attachmentDownloads.enqueueDownloadOfAttachmentsForNewMessage(
             message,
-            transaction: writeTx
+            transaction: tx
         )
 
         DispatchQueue.main.async {
@@ -479,6 +556,8 @@ extension OWSMessageManager {
                 deviceId: UInt(envelope.sourceDevice)
             )
         }
+
+        return message
     }
 
     @objc

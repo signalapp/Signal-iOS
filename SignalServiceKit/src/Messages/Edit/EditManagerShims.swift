@@ -29,6 +29,17 @@ public protocol _EditManager_DataStore {
         tx: DBReadTransaction
     ) -> TSInteraction?
 
+    func createOutgoingMessage(
+        with builder: TSOutgoingMessageBuilder,
+        tx: DBReadTransaction
+    ) -> TSOutgoingMessage
+
+    func copyRecipients(
+        from source: TSOutgoingMessage,
+        to target: TSOutgoingMessage,
+        tx: DBWriteTransaction
+    )
+
     func getMediaAttachments(
         message: TSMessage,
         tx: DBReadTransaction
@@ -71,6 +82,24 @@ internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
             timestamp: timestamp,
             author: author,
             tx: tx
+        )
+    }
+
+    func createOutgoingMessage(
+        with builder: TSOutgoingMessageBuilder,
+        tx: DBReadTransaction
+    ) -> TSOutgoingMessage {
+        return builder.build(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    func copyRecipients(
+        from source: TSOutgoingMessage,
+        to target: TSOutgoingMessage,
+        tx: DBWriteTransaction
+    ) {
+        target.updateWith(
+            recipientAddressStates: source.recipientAddressStates,
+            transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
 

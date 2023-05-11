@@ -13,7 +13,16 @@ public class EditMessageFinder {
         tx: DBReadTransaction
     ) -> TSInteraction? {
 
-        guard let authorUuid = author.uuid?.uuidString else {
+        let arguments: StatementArguments
+        let authorClause: String
+
+        if author.isLocalAddress {
+            authorClause = "AND \(interactionColumn: .authorUUID) IS NULL"
+            arguments = [timestamp]
+        } else if let authorUuid = author.uuid?.uuidString {
+            authorClause = "AND \(interactionColumn: .authorUUID) = ?"
+            arguments = [timestamp, authorUuid]
+        } else {
             return nil
         }
 
@@ -21,11 +30,9 @@ public class EditMessageFinder {
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .timestamp) = ?
-            AND \(interactionColumn: .authorUUID) = ?
+            \(authorClause)
             LIMIT 1
         """
-
-        let arguments: StatementArguments = [timestamp, authorUuid]
 
         let val = TSInteraction.grdbFetchOne(
             sql: sql,

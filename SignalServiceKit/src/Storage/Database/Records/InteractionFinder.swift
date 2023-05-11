@@ -12,6 +12,11 @@ public enum StoryReplyQueryMode {
     case onlyGroupReplies(storyTimestamp: UInt64)
 }
 
+public enum EditMessageQueryMode {
+    case includeLatestVersion
+    case excludeAllEdits
+}
+
 protocol InteractionFinderAdapter {
     associatedtype ReadTransaction
 
@@ -568,7 +573,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(sqlClauseForAllUnreadInteractions(for: storyReplyQueryMode))
+            AND \(sqlClauseForAllUnreadInteractions(for: storyReplyQueryMode, editMessageQueryMode: .excludeAllEdits))
             ORDER BY \(interactionColumn: .id)
         """
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [threadUniqueId], transaction: transaction)
@@ -618,7 +623,10 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     // MARK: - Unread
 
-    private func sqlClauseForAllUnreadInteractions(for storyReplyQueryMode: StoryReplyQueryMode = .excludeGroupReplies) -> String {
+    private func sqlClauseForAllUnreadInteractions(
+        for storyReplyQueryMode: StoryReplyQueryMode = .excludeGroupReplies,
+        editMessageQueryMode: EditMessageQueryMode = .includeLatestVersion
+    ) -> String {
         let recordTypes: [SDSRecordType] = [
             .disappearingConfigurationUpdateInfoMessage,
             .unknownProtocolVersionMessage,
@@ -639,7 +647,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         (
             \(interactionColumn: .read) IS 0
             \(GRDBInteractionFinder.filterStoryRepliesClause(for: storyReplyQueryMode))
-            \(GRDBInteractionFinder.filterEditHistoryClause())
+            \(GRDBInteractionFinder.filterEditHistoryClause(for: editMessageQueryMode))
             AND \(interactionColumn: .recordType) IN (\(recordTypesSql))
         )
         """
@@ -656,7 +664,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         return """
         \(columnPrefix)\(interactionColumn: .read) IS 0
         \(GRDBInteractionFinder.filterStoryRepliesClause(for: .excludeGroupReplies, interactionsAlias: interactionsAlias))
-        \(GRDBInteractionFinder.filterEditHistoryClause(interactionsAlias: interactionsAlias))
+        \(GRDBInteractionFinder.filterEditHistoryClause(for: .excludeAllEdits, interactionsAlias: interactionsAlias))
         AND (
             \(columnPrefix)\(interactionColumn: .recordType) IN (\(SDSRecordType.incomingMessage.rawValue), \(SDSRecordType.call.rawValue))
             OR (
@@ -1229,7 +1237,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    fileprivate static func filterEditHistoryClause(interactionsAlias: String? = nil) -> String {
+    fileprivate static func filterEditHistoryClause(
+        for queryMode: EditMessageQueryMode = .includeLatestVersion,
+        interactionsAlias: String? = nil
+    ) -> String {
         guard FeatureFlags.editMessageReceive else { return "" }
 
         let columnPrefix: String
@@ -1239,10 +1250,12 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             columnPrefix = ""
         }
 
-        return """
-            AND \(columnPrefix)\(interactionColumn: .editState)
-                IS NOT \(TSEditState.pastRevision.rawValue)
-        """
+        switch queryMode {
+        case .excludeAllEdits:
+            return "AND \(columnPrefix)\(interactionColumn: .editState) IS \(TSEditState.none.rawValue)"
+        case .includeLatestVersion:
+            return "AND \(columnPrefix)\(interactionColumn: .editState) IS NOT \(TSEditState.pastRevision.rawValue)"
+        }
     }
 
     func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool = true, storyReplyQueryMode: StoryReplyQueryMode = .excludeGroupReplies, transaction: GRDBReadTransaction) throws -> UInt? {

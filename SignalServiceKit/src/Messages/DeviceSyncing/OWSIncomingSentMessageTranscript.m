@@ -35,11 +35,14 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    if (sentProto.message == nil) {
+    if (sentProto.message != nil) {
+        _dataMessage = sentProto.message;
+    } else if (sentProto.editMessage.dataMessage != nil) {
+        _dataMessage = sentProto.editMessage.dataMessage;
+    } else {
         OWSFailDebug(@"Missing message.");
         return nil;
     }
-    _dataMessage = sentProto.message;
 
     if (sentProto.timestamp < 1) {
         OWSFailDebug(@"Sent missing timestamp.");

@@ -258,6 +258,17 @@ class EditManagerTests: SSKBaseTestSwift {
     // MARK: - Test Mocks
 
     private class EditManagerDataStoreMock: EditManager.Shims.DataStore {
+        func createOutgoingMessage(
+            with builder: TSOutgoingMessageBuilder,
+            tx: DBReadTransaction) -> TSOutgoingMessage {
+                return builder.build(transaction: SDSDB.shimOnlyBridge(tx))
+        }
+
+        func copyRecipients(
+            from source: TSOutgoingMessage,
+            to target: TSOutgoingMessage,
+            tx: DBWriteTransaction) {
+        }
 
         let targetMessage: TSMessage?
         var editMessageCopy: TSMessage?
@@ -269,7 +280,11 @@ class EditManagerTests: SSKBaseTestSwift {
             self.targetMessage = targetMessage
         }
 
-        func findTargetMessage(timestamp: UInt64, author: SignalServiceAddress, tx: DBReadTransaction) -> TSInteraction? {
+        func findTargetMessage(
+            timestamp: UInt64,
+            author: SignalServiceAddress,
+            tx: DBReadTransaction
+        ) -> TSInteraction? {
             return targetMessage
         }
 

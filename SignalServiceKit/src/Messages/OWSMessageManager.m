@@ -1434,6 +1434,10 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Failed to process story message transcript %@", error.localizedDescription);
                 return;
             }
+        } else if (syncMessage.sent.editMessage) {
+            if (SSKFeatureFlags.editMessageReceive) {
+                [self handleIncomingEnvelope:envelope syncMessage:syncMessage transaction:transaction];
+            }
         }
     } else if (syncMessage.request) {
         [self handleIncomingSyncRequest:syncMessage.request transaction:transaction];
