@@ -617,8 +617,10 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         } else {
             checkpointDelay = 0
         }
+        let backgroundTask = OWSBackgroundTask(label: #function)
         checkpointQueue.asyncAfter(deadline: .init(uptimeNanoseconds: checkpointDelay)) { [weak self] in
             self?.tryToCheckpoint()
+            backgroundTask.end()
         }
     }
 
