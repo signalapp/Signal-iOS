@@ -53,17 +53,21 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
     }
 
     var content: Content? {
-        didSet {
-            guard content != oldValue else {
+        get {
+            return captionTextView.content
+        }
+        set {
+            let oldValue = captionTextView.content
+            guard oldValue != newValue else {
                 return
             }
-            captionTextView.attributedText = content?.attributedString(spoilerReveal: spoilerReveal)
+            captionTextView.content = newValue
 
-            if oldValue?.interactionIdentifier != content?.interactionIdentifier {
+            if oldValue?.interactionIdentifier != newValue?.interactionIdentifier {
                 oldValue?.interactionIdentifier.map {
                     spoilerReveal.removeObserver(for: $0, observer: self)
                 }
-                content?.interactionIdentifier.map {
+                newValue?.interactionIdentifier.map {
                     spoilerReveal.observeChanges(for: $0, observer: self)
                 }
             }
@@ -97,7 +101,7 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
         isTransitionInProgress = true
         heightConstraint.isActive = true
-        pendingCaptionTextView.attributedText = content?.attributedString(spoilerReveal: spoilerReveal)
+        pendingCaptionTextView.content = content
         updateTransitionProgress(0)
     }
 
@@ -126,11 +130,11 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
         captionTextView.alpha = 1
         if isTransitionComplete {
             captionTextView.isExpanded = false
-            captionTextView.text = pendingCaptionTextView.text
+            captionTextView.content = pendingCaptionTextView.content
         }
 
         pendingCaptionTextView.alpha = 0
-        pendingCaptionTextView.text = nil
+        pendingCaptionTextView.content = nil
 
         heightConstraint.isActive = false
 
@@ -217,36 +221,33 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
     }
 
     func didUpdateRevealedSpoilers() {
-        captionTextView.attributedText = content?.attributedString(spoilerReveal: spoilerReveal)
+        captionTextView.didUpdateRevealedSpoilers()
     }
 
     // MARK: Subviews
 
     private static let captionTextContainerInsets = UIEdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0)
 
-    private class func buildCaptionTextView() -> CaptionTextView {
-        let textView = CaptionTextView()
+    private class func buildCaptionTextView(spoilerReveal: SpoilerRevealState) -> CaptionTextView {
+        let textView = CaptionTextView(spoilerReveal: spoilerReveal)
         textView.font = MentionDisplayConfiguration.mediaCaption.font
         textView.textColor = MentionDisplayConfiguration.mediaCaption.foregroundColor.forCurrentTheme
         textView.backgroundColor = .clear
         textView.textContainerInset = Self.captionTextContainerInsets
         return textView
     }
-    private var captionTextView = MediaCaptionView.buildCaptionTextView()
-    private var pendingCaptionTextView = MediaCaptionView.buildCaptionTextView()
+    private lazy var captionTextView = MediaCaptionView.buildCaptionTextView(spoilerReveal: spoilerReveal)
+    private lazy var pendingCaptionTextView = MediaCaptionView.buildCaptionTextView(spoilerReveal: spoilerReveal)
 
     private class CaptionTextView: UITextView, NSLayoutManagerDelegate {
 
-        override init(frame: CGRect, textContainer: NSTextContainer?) {
-            super.init(frame: frame, textContainer: textContainer)
+        init(spoilerReveal: SpoilerRevealState) {
+            self.spoilerReveal = spoilerReveal
+            super.init(frame: .zero, textContainer: nil)
 
             isEditable = false
             isSelectable = false
             self.textContainer.lineBreakMode = .byTruncatingTail
-            // TODO[TextFormatting]: This code is causing emoji to
-            // be cleared out of the caption.  Disable until the
-            // underlying issue can be resolved.
-            // self.layoutManager.delegate = self
             updateIsScrollEnabled()
         }
 
@@ -254,23 +255,28 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
             fatalError("init(coder:) has not been implemented")
         }
 
-        private var originalAttributedText: NSAttributedString?
+        private let spoilerReveal: SpoilerRevealState
 
-        override var attributedText: NSAttributedString! {
-            get {
-                return super.attributedText
-            }
-            set {
-                self.originalAttributedText = newValue
-                super.attributedText = newValue
+        public var content: MediaCaptionView.Content? {
+            didSet {
+                super.attributedText = content?.attributedString(spoilerReveal: spoilerReveal)
                 invalidateCachedSizes()
             }
         }
 
+        public func didUpdateRevealedSpoilers() {
+            // No need to recompute cached sizes; spoilers have no effect on size.
+            super.attributedText = content?.attributedString(spoilerReveal: spoilerReveal)
+        }
+
+        @available(*, unavailable)
+        override var attributedText: NSAttributedString! {
+            didSet {}
+        }
+
+        @available(*, unavailable)
         override var text: String! {
-            didSet {
-                invalidateCachedSizes()
-            }
+            didSet {}
         }
 
         override var font: UIFont? {
@@ -311,7 +317,6 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
                 guard _isExpanded != newValue else { return }
                 _isExpanded = canBeExpanded ? newValue : false
                 invalidateIntrinsicContentSize()
-                needsTruncationComputation = true
                 updateIsScrollEnabled()
             }
         }
@@ -330,7 +335,7 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
         private var fullSize: CGSize = .zero
 
         override var intrinsicContentSize: CGSize {
-            guard !text.isEmptyOrNil else {
+            guard content?.nilIfEmpty != nil else {
                 return CGSize(width: UIView.noIntrinsicMetric, height: 0)
             }
 
@@ -347,14 +352,13 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
             collapsedSize = .zero
             expandedSize = .zero
             fullSize = .zero
-            needsTruncationComputation = true
 
             invalidateIntrinsicContentSize()
         }
 
         private func calculateSizesIfNecessary() {
             guard !collapsedSize.isNonEmpty else { return }
-            guard !text.isEmptyOrNil else { return }
+            guard let content = content?.nilIfEmpty else { return }
 
             let maxWidth: CGFloat
             if frame.width > 0 {
@@ -362,6 +366,8 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
             } else {
                 maxWidth = .greatestFiniteMagnitude
             }
+
+            let attributedText = content.attributedString(spoilerReveal: spoilerReveal)
 
             // 3 lines of text.
             let collapsedTextConfig = CVTextLabel.Config(
@@ -402,68 +408,6 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
                 items: []
             )
             fullSize = CVTextLabel.measureSize(config: fullTextConfig, maxWidth: maxWidth).size
-        }
-
-        func layoutManager(
-            _ layoutManager: NSLayoutManager,
-            didCompleteLayoutFor textContainer: NSTextContainer?,
-            atEnd layoutFinishedFlag: Bool
-        ) {
-            reapplyTruncationIndexIfNecessary()
-        }
-
-        private var needsTruncationComputation = true
-
-        /// This madness is necessary because of a bug in UITextView; any .backgroundColor attributes
-        /// on a UITextView's attributedText property misbehave when truncated. They get applied to
-        /// the truncation character (an ellipses) when the range containing them is cut off.
-        /// To remedy this, we find the truncation point, and reset our attributed string past that
-        /// point, removing all its attributes except font size (for sizing) and foreground color
-        /// (so the ellipses is the right color).
-        /// We have to then watch for when we do this computation again, basically whenever
-        /// the bounds or contents change.
-        private func reapplyTruncationIndexIfNecessary() {
-            guard
-                needsTruncationComputation,
-                let attributedText = originalAttributedText
-            else {
-                return
-            }
-            let entireGlyphRange = layoutManager.glyphRange(for: textContainer)
-            var lastLineLocation = -1
-            layoutManager.enumerateLineFragments(
-                forGlyphRange: entireGlyphRange,
-                using: { _, _, _, range, _ in
-                    lastLineLocation = range.location
-                }
-            )
-            guard lastLineLocation != -1 else {
-                return
-            }
-            let truncationGlyphIndex = layoutManager.truncatedGlyphRange(inLineFragmentForGlyphAt: lastLineLocation).location
-            guard truncationGlyphIndex > 0, truncationGlyphIndex < entireGlyphRange.upperBound - 1 else {
-                super.attributedText = attributedText
-                return
-            }
-            let truncationIndex = layoutManager.characterIndexForGlyph(at: truncationGlyphIndex)
-            guard truncationIndex > 0, truncationIndex < attributedText.length - 1 else {
-                super.attributedText = attributedText
-                return
-            }
-            needsTruncationComputation = false
-            super.attributedText = attributedText.attributedSubstring(
-                from: NSRange(
-                    location: 0,
-                    length: truncationIndex
-                )
-            ) + NSAttributedString(
-                string: attributedText.string.substring(from: truncationIndex),
-                attributes: [
-                    .font: MentionDisplayConfiguration.mediaCaption.font,
-                    .foregroundColor: MentionDisplayConfiguration.mediaCaption.foregroundColor.forCurrentTheme
-                ]
-            )
-            calculateSizesIfNecessary()
         }
     }
 }

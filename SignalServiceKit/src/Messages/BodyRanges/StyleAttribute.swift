@@ -101,7 +101,7 @@ internal struct StyleAttribute: Equatable, Hashable {
         if style.contains(.spoiler) {
             isSpoilerRevealed = config.revealAllIds || config.revealedIds.contains(self.id)
             if !isSpoilerRevealed {
-                attributes[.foregroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+                attributes[.foregroundColor] = UIColor.clear
                 attributes[.backgroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
             }
         }
@@ -124,7 +124,7 @@ internal struct StyleAttribute: Equatable, Hashable {
                 string.addAttributes(
                     [
                         .backgroundColor: searchRanges.matchingBackgroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
-                        .foregroundColor: searchRanges.matchingBackgroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
+                        .foregroundColor: UIColor.clear,
                         Self.key: self
                     ],
                     range: intersection
