@@ -762,11 +762,22 @@ extension StoryContextMenuGenerator {
                             self?.isDisplayingFollowup = false
                             completion(true)
                         }
-                    } else if let text = attachment.text {
-                        self?.isDisplayingFollowup = true
-                        AttachmentSharing.showShareUI(forText: text, sender: sourceView) { [weak self] in
-                            self?.isDisplayingFollowup = false
-                            completion(true)
+                    } else {
+                        let text: String?
+                        switch attachment.textContent {
+                        case .empty:
+                            text = nil
+                        case .styled(let body, _):
+                            text = body
+                        case .styledRanges(let body):
+                            text = body.text
+                        }
+                        if let text {
+                            self?.isDisplayingFollowup = true
+                            AttachmentSharing.showShareUI(forText: text, sender: sourceView) { [weak self] in
+                                self?.isDisplayingFollowup = false
+                                completion(true)
+                            }
                         }
                     }
                 case .missing:

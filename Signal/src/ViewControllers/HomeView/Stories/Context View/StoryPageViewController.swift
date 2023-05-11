@@ -541,8 +541,8 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
 
     private func storyThumbnailSize(for presentingMessage: StoryMessage) throws -> CGSize? {
         switch presentingMessage.attachment {
-        case .file(let attachmentId):
-            guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: attachmentId, transaction: $0) }) else {
+        case .file(let file):
+            guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: $0) }) else {
                 throw OWSAssertionError("Unexpectedly missing attachment for story message")
             }
 
@@ -559,8 +559,8 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
     private func storyView(for presentingMessage: StoryMessage) -> UIView? {
         let storyView: UIView
         switch presentingMessage.attachment {
-        case .file(let attachmentId):
-            guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: attachmentId, transaction: $0) }) else {
+        case .file(let file):
+            guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: $0) }) else {
                 // Can happen if the story was deleted by the sender while in the viewer.
                 return nil
             }

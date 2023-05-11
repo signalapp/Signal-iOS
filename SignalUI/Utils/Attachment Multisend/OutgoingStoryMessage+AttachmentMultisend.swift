@@ -18,10 +18,10 @@ extension OutgoingStoryMessage {
             case .media(let attachments):
                 for identifiedAttachment in attachments {
                     let attachment = identifiedAttachment.value
-                    // TODO[TextFormatting]: preserve styles on the story message proto but hydrate mentions
-                    attachment.captionText = state.approvalMessageBody?
+                    let captionBody = state.approvalMessageBody?
                         .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read))
-                        .asPlaintext()
+                        .asStyleOnlyBody()
+                    attachment.captionText = captionBody?.text
                     let attachmentStream = try attachment
                         .buildOutgoingAttachmentInfo()
                         .asStreamConsumingDataSource(withIsVoiceMessage: attachment.isVoiceMessage)
@@ -40,7 +40,10 @@ extension OutgoingStoryMessage {
                         )
                     } else {
                         message = try OutgoingStoryMessage.createUnsentMessage(
-                            attachment: .file(attachmentId: attachmentStream.uniqueId),
+                            attachment: .file(StoryMessageFileAttachment(
+                                attachmentId: attachmentStream.uniqueId,
+                                captionStyles: captionBody?.styles ?? []
+                            )),
                             thread: destination.thread,
                             transaction: transaction
                         )
@@ -73,7 +76,7 @@ extension OutgoingStoryMessage {
                     )
                 } else {
                     message = try OutgoingStoryMessage.createUnsentMessage(
-                        attachment: .text(attachment: finalTextAttachment),
+                        attachment: .text(finalTextAttachment),
                         thread: destination.thread,
                         transaction: transaction
                     )

@@ -130,9 +130,9 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     ) {
         let builder = Item.Builder()
         switch storyMessage.attachment {
-        case .file(let attachmentId):
+        case .file(let file):
             guard let attachmentStream = databaseStorage.read(block: {
-                TSAttachmentStream.anyFetchAttachmentStream(uniqueId: attachmentId, transaction: $0)
+                TSAttachmentStream.anyFetchAttachmentStream(uniqueId: file.attachmentId, transaction: $0)
             }) else {
                 ForwardMessageViewController.showAlertForForwardError(
                     error: OWSAssertionError("Missing attachment stream for forwarded story message"),

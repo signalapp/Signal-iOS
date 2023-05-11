@@ -320,8 +320,8 @@ class StoryContextViewController: OWSViewController {
         let replyCount = message.replyCount
 
         switch message.attachment {
-        case .file(let attachmentId):
-            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
+        case .file(let file):
+            guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
                 owsFailDebug("Missing attachment for StoryMessage with timestamp \(message.timestamp)")
                 return nil
             }

@@ -101,8 +101,8 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
         switch storyMessage.attachment {
         case .text: break
-        case .file(let attachmentId):
-            guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: attachmentId, transaction: $0) }) else {
+        case .file(let file):
+            guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: $0) }) else {
                 owsFailDebug("Missing attachment for story message")
                 break
             }

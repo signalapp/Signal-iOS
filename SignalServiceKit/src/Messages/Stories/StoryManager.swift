@@ -208,14 +208,14 @@ public class StoryManager: NSObject {
     /// * The context has been recently interacted with (sent message to group, 1:1, viewed story, etc), is associated with a pinned thread, or has been recently viewed
     /// * We have not already exceeded the limit for how many unviewed stories we should download for this context
     private class func startAutomaticDownloadIfNecessary(for message: StoryMessage, transaction: SDSAnyWriteTransaction) {
-        guard case .file(let attachmentId) = message.attachment else {
+        guard case .file(let file) = message.attachment else {
             // We always auto-download non-file story attachments, this will generally only be link preview thumbnails.
             Logger.info("Automatically enqueueing download of non-file based story with timestamp \(message.timestamp)")
             attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
             return
         }
 
-        guard let attachmentPointer = TSAttachmentPointer.anyFetchAttachmentPointer(uniqueId: attachmentId, transaction: transaction) else {
+        guard let attachmentPointer = TSAttachmentPointer.anyFetchAttachmentPointer(uniqueId: file.attachmentId, transaction: transaction) else {
             // Already downloaded, nothing to do.
             return
         }
@@ -226,9 +226,9 @@ public class StoryManager: NSObject {
             switch otherMessage.attachment {
             case .text:
                 unviewedDownloadedStoriesForContext += 1
-            case .file(let attachmentId):
-                guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
-                    owsFailDebug("Missing attachment for attachmentId \(attachmentId)")
+            case .file(let file):
+                guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
+                    owsFailDebug("Missing attachment for attachmentId \(file.attachmentId)")
                     return
                 }
                 if let pointer = attachment as? TSAttachmentPointer, [.downloading, .enqueued].contains(pointer.state) {

@@ -215,7 +215,14 @@ class StoryItemMediaView: UIView {
                 }
             }
         case .text(let attachment):
-            glyphCount = attachment.text?.glyphCount
+            switch attachment.textContent {
+            case .empty:
+                glyphCount = nil
+            case .styled(let text, _):
+                glyphCount = text.glyphCount
+            case .styledRanges(let body):
+                glyphCount = body.text.glyphCount
+            }
 
             // As a base, all text attachments play for at least 5s,
             // even if they have no text.

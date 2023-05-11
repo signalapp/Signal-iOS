@@ -835,6 +835,9 @@
 		6645F30829BF8D2000B58EBD /* AccountAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30729BF8D2000B58EBD /* AccountAttributes.swift */; };
 		6645F30A29BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30929BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift */; };
 		6645F30C29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */; };
+		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
+		6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */; };
+		6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */; };
 		66533E3729B7B56000E8D928 /* WhoAmIRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3629B7B56000E8D928 /* WhoAmIRequestFactory.swift */; };
 		66533E3A29B9502100E8D928 /* RegistrationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3929B9502100E8D928 /* RegistrationMode.swift */; };
 		66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3B29BA8BB200E8D928 /* AuthedAccount.swift */; };
@@ -3330,6 +3333,9 @@
 		6645F30729BF8D2000B58EBD /* AccountAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributes.swift; sourceTree = "<group>"; };
 		6645F30929BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesRequestFactory.swift; sourceTree = "<group>"; };
 		6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountAttributes+Dependencies.swift"; sourceTree = "<group>"; };
+		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
+		6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBodyTests.swift; sourceTree = "<group>"; };
+		6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageAttachment.swift; sourceTree = "<group>"; };
 		66533E3629B7B56000E8D928 /* WhoAmIRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoAmIRequestFactory.swift; sourceTree = "<group>"; };
 		66533E3929B9502100E8D928 /* RegistrationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationMode.swift; sourceTree = "<group>"; };
 		66533E3B29BA8BB200E8D928 /* AuthedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedAccount.swift; sourceTree = "<group>"; };
@@ -6752,6 +6758,7 @@
 				66FC638529E4B9AF00F00DAC /* RecoveredHydratedMessageBody.swift */,
 				665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */,
 				66FC637729DF8BEF00F00DAC /* StyleAttribute.swift */,
+				6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */,
 				66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */,
 			);
 			path = BodyRanges;
@@ -6762,6 +6769,7 @@
 			children = (
 				66FC637029DF79F400F00DAC /* MessageBodyRangesTests.swift */,
 				66883A3829D7630300E898CF /* MessageBodyTests.swift */,
+				6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */,
 			);
 			path = BodyRanges;
 			sourceTree = "<group>";
@@ -8657,6 +8665,7 @@
 				F9C5C96B289453B100548EEE /* StoryFinder.swift */,
 				F9C5C969289453B100548EEE /* StoryManager.swift */,
 				F9C5C96A289453B100548EEE /* StoryMessage.swift */,
+				6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */,
 				669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */,
 				669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */,
 				669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */,
@@ -12330,8 +12339,10 @@
 				F9C5CC59289453B300548EEE /* StoryFinder.swift in Sources */,
 				F9C5CC57289453B300548EEE /* StoryManager.swift in Sources */,
 				F9C5CC58289453B300548EEE /* StoryMessage.swift in Sources */,
+				6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */,
 				F9C5CDDB289453B400548EEE /* String+SSK.swift in Sources */,
 				66FC637829DF8BEF00F00DAC /* StyleAttribute.swift in Sources */,
+				6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */,
 				F9C5CCE8289453B300548EEE /* SubscriptionManager.swift in Sources */,
 				F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */,
 				F9C5CE04289453B400548EEE /* SyncManagerProtocol.swift in Sources */,
@@ -12582,6 +12593,7 @@
 				F942628E289B1B5600460798 /* StickerPackInfoTest.swift in Sources */,
 				884BF73E28D37D5F00D94636 /* StoryManagerTest.swift in Sources */,
 				F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */,
+				6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */,
 				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
 				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,

@@ -717,6 +717,9 @@ public class SSKProtoStoryMessage: NSObject, Codable, NSSecureCoding {
     public let textAttachment: SSKProtoTextAttachment?
 
     @objc
+    public let bodyRanges: [SSKProtoBodyRange]
+
+    @objc
     public var profileKey: Data? {
         guard hasProfileKey else {
             return nil
@@ -748,11 +751,13 @@ public class SSKProtoStoryMessage: NSObject, Codable, NSSecureCoding {
     private init(proto: SignalServiceProtos_StoryMessage,
                  group: SSKProtoGroupContextV2?,
                  fileAttachment: SSKProtoAttachmentPointer?,
-                 textAttachment: SSKProtoTextAttachment?) {
+                 textAttachment: SSKProtoTextAttachment?,
+                 bodyRanges: [SSKProtoBodyRange]) {
         self.proto = proto
         self.group = group
         self.fileAttachment = fileAttachment
         self.textAttachment = textAttachment
+        self.bodyRanges = bodyRanges
     }
 
     @objc
@@ -782,10 +787,14 @@ public class SSKProtoStoryMessage: NSObject, Codable, NSSecureCoding {
             textAttachment = try SSKProtoTextAttachment(proto.textAttachment)
         }
 
+        var bodyRanges: [SSKProtoBodyRange] = []
+        bodyRanges = proto.bodyRanges.map { SSKProtoBodyRange($0) }
+
         self.init(proto: proto,
                   group: group,
                   fileAttachment: fileAttachment,
-                  textAttachment: textAttachment)
+                  textAttachment: textAttachment,
+                  bodyRanges: bodyRanges)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -849,6 +858,7 @@ extension SSKProtoStoryMessage {
         if hasAllowsReplies {
             builder.setAllowsReplies(allowsReplies)
         }
+        builder.setBodyRanges(bodyRanges)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -911,6 +921,16 @@ public class SSKProtoStoryMessageBuilder: NSObject {
     @objc
     public func setAllowsReplies(_ valueParam: Bool) {
         proto.allowsReplies = valueParam
+    }
+
+    @objc
+    public func addBodyRanges(_ valueParam: SSKProtoBodyRange) {
+        proto.bodyRanges.append(valueParam.proto)
+    }
+
+    @objc
+    public func setBodyRanges(_ wrappedItems: [SSKProtoBodyRange]) {
+        proto.bodyRanges = wrappedItems.map { $0.proto }
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

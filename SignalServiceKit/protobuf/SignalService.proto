@@ -67,6 +67,7 @@ message StoryMessage {
     optional TextAttachment textAttachment = 4;
   // }
   optional bool allowsReplies = 5;
+  repeated BodyRange bodyRanges = 6;
 }
 
 message Preview {

@@ -27,7 +27,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     /// Sorted from lowest location to highest location
     public let orderedMentions: [NSRangedValue<UUID>]
 
-    public struct Style: OptionSet, Equatable, Hashable {
+    public struct Style: OptionSet, Equatable, Hashable, Codable {
         public let rawValue: Int
 
         public init(rawValue: Int) {
@@ -40,7 +40,50 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         public static let strikethrough = Style(rawValue: 1 << 3)
         public static let monospace = Style(rawValue: 1 << 4)
 
+        public static let all: [Style] = [.bold, .italic, .spoiler, .strikethrough, .monospace]
+
         static let attributedStringKey = NSAttributedString.Key("OWSStyle")
+
+        public static func from(_ protoStyle: SSKProtoBodyRangeStyle) -> Style? {
+            switch protoStyle {
+            case .none:
+                return nil
+            case .bold:
+                return .bold
+            case .italic:
+                return .italic
+            case .spoiler:
+                return .spoiler
+            case .strikethrough:
+                return .strikethrough
+            case .monospace:
+                return .monospace
+            }
+        }
+
+        /// Note it is one to many; we collapse styles into this option set
+        /// in swift but in proto-land we fan out to one style per instance.
+        public func asProtoStyles() -> [SSKProtoBodyRangeStyle] {
+            return Self.all.compactMap {
+                guard self.contains($0) else {
+                    return nil
+                }
+                switch $0 {
+                case .bold:
+                    return .bold
+                case .italic:
+                    return .italic
+                case .spoiler:
+                    return .spoiler
+                case .strikethrough:
+                    return .strikethrough
+                case .monospace:
+                    return .monospace
+                default:
+                    return nil
+                }
+            }
+        }
     }
 
     /// Sorted from lowest location to highest location.
@@ -74,22 +117,10 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                 let mentionUuid = UUID(uuidString: mentionUuidString)
             {
                 mentions[range] = mentionUuid
-            } else if let protoStyle = proto.style {
-                let style: Style
-                switch protoStyle {
-                case .none:
-                    continue
-                case .bold:
-                    style = .bold
-                case .italic:
-                    style = .italic
-                case .spoiler:
-                    style = .spoiler
-                case .strikethrough:
-                    style = .strikethrough
-                case .monospace:
-                    style = .monospace
-                }
+            } else if
+                let protoStyle = proto.style,
+                let style = Style.from(protoStyle)
+            {
                 styles.append(.init(style, range: range))
             }
         }
@@ -338,5 +369,86 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             }
         }
         return true
+    }
+
+    // MARK: Proto conversion
+
+    /// If bodyLength is provided (is nonnegative), drops any ranges that exceed the length.
+    func toProtoBodyRanges(bodyLength: Int = -1) -> [SSKProtoBodyRange] {
+        let maxBodyLength = bodyLength < 0 ? nil : bodyLength
+        var protos = [SSKProtoBodyRange]()
+
+        var mentionIndex = 0
+        var styleIndex = 0
+
+        func appendMention(_ mention: NSRangedValue<UUID>) {
+            guard let builder = self.protoBuilder(mention.range, maxBodyLength: maxBodyLength) else {
+                return
+            }
+            builder.setMentionUuid(mention.value.uuidString)
+            do {
+                try protos.append(builder.build())
+            } catch {
+                owsFailDebug("Failed to build body range proto: \(error)")
+            }
+        }
+
+        func appendStyle(_ style: NSRangedValue<Style>) {
+            for protoStyle in style.value.asProtoStyles() {
+                guard let builder = self.protoBuilder(style.range, maxBodyLength: maxBodyLength) else {
+                    continue
+                }
+                builder.setStyle(protoStyle)
+                do {
+                    try protos.append(builder.build())
+                } catch {
+                    owsFailDebug("Failed to build body range proto: \(error)")
+                }
+            }
+        }
+
+        while mentionIndex < orderedMentions.count || styleIndex < styles.count {
+            if mentionIndex >= orderedMentions.count {
+                appendStyle(styles[styleIndex])
+                styleIndex += 1
+                continue
+            }
+            if styleIndex >= styles.count {
+                appendMention(orderedMentions[mentionIndex])
+                mentionIndex += 1
+                continue
+            }
+            // Insert whichever is earlier.
+            let mention = orderedMentions[mentionIndex]
+            let style = styles[styleIndex]
+            if mention.range.location <= style.range.location {
+                appendMention(orderedMentions[mentionIndex])
+                mentionIndex += 1
+            } else {
+                appendStyle(styles[styleIndex])
+                styleIndex += 1
+            }
+        }
+        return protos
+    }
+
+    private func protoBuilder(
+        _ range: NSRange,
+        maxBodyLength: Int?
+    ) -> SSKProtoBodyRangeBuilder? {
+        var range = range
+        if let maxBodyLength {
+            if range.location >= maxBodyLength {
+                return nil
+            }
+            if range.upperBound > maxBodyLength {
+                range = NSRange(location: range.location, length: maxBodyLength - range.location)
+            }
+        }
+
+        let builder = SSKProtoBodyRange.builder()
+        builder.setStart(UInt32(truncatingIfNeeded: range.location))
+        builder.setLength(UInt32(truncatingIfNeeded: range.length))
+        return builder
     }
 }

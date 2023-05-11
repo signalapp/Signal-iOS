@@ -8,43 +8,69 @@ import Foundation
 extension StoryMessage {
 
     @objc
-    func quotedBody(transaction: SDSAnyReadTransaction) -> String? {
+    func quotedBody(transaction: SDSAnyReadTransaction) -> MessageBody? {
         switch attachment {
-        case .file(let attachmentId):
-            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
+        case .file(let file):
+            guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
                 owsFailDebug("Missing attachment for story message \(timestamp)")
                 return nil
             }
-            return attachment.caption
+            guard let caption = attachment.caption else {
+                return nil
+            }
+            // Note: stripping any over-extended styles to the caption
+            // length will happen at hydration time, which is required
+            // to turn a MessageBody into something we can display.
+            return MessageBody(
+                text: caption,
+                ranges: MessageBodyRanges(mentions: [:], styles: file.captionStyles)
+            )
         case .text(let attachment):
-            return attachment.text ?? attachment.preview?.urlString
+            switch attachment.textContent {
+            case .styledRanges(let body):
+                return body.asMessageBody()
+            case .styled(let body, _):
+                return MessageBody(text: body, ranges: .empty)
+            case .empty:
+                guard let urlString = attachment.preview?.urlString else {
+                    return nil
+                }
+                return MessageBody(text: urlString, ranges: .empty)
+            }
         }
     }
 
     @objc
     func quotedAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
-        guard case .file(let attachmentId) = attachment else { return nil }
-        guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
-            owsFailDebug("Missing attachment for story message \(timestamp)")
+        switch attachment {
+        case .file(let file):
+            guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
+                owsFailDebug("Missing attachment for story message \(timestamp)")
+                return nil
+            }
+            return attachment
+        case .text:
             return nil
         }
-        return attachment
     }
 
     @objc
     func thumbnailImage(transaction: SDSAnyReadTransaction) -> UIImage? {
-        guard case .file(let attachmentId) = attachment else { return nil }
-
-        guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
-            owsFailDebug("Missing attachment for story message \(timestamp)")
+        switch attachment {
+        case .text:
             return nil
-        }
-        if let stream = attachment as? TSAttachmentStream {
-            return stream.thumbnailImageSmallSync()
-        } else if let blurHash = attachment.blurHash {
-            return BlurHash.image(for: blurHash)
-        } else {
-            return nil
+        case .file(let file):
+            guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
+                owsFailDebug("Missing attachment for story message \(timestamp)")
+                return nil
+            }
+            if let stream = attachment as? TSAttachmentStream {
+                return stream.thumbnailImageSmallSync()
+            } else if let blurHash = attachment.blurHash {
+                return BlurHash.image(for: blurHash)
+            } else {
+                return nil
+            }
         }
     }
 

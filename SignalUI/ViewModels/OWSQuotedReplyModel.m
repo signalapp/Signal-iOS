@@ -181,10 +181,11 @@ NS_ASSUME_NONNULL_BEGIN
         failedAttachmentPointer = (TSAttachmentPointer *)quotedAttachment;
     }
 
+    MessageBody *body = [storyMessage quotedBodyWithTransaction:transaction];
     return [[self alloc] initWithTimestamp:storyMessage.timestamp
                              authorAddress:storyMessage.authorAddress
-                                      body:[storyMessage quotedBodyWithTransaction:transaction]
-                                bodyRanges:MessageBodyRanges.empty
+                                      body:body.text
+                                bodyRanges:body.ranges
                                 bodySource:TSQuotedMessageContentSourceStory
                             thumbnailImage:thumbnailImage
                       thumbnailViewFactory:thumbnailImage == nil ? ^{ return [storyMessage thumbnailView]; } : nil

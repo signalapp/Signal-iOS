@@ -13,8 +13,8 @@ class StoryThumbnailView: UIView {
 
         static func from(_ attachment: StoryMessageAttachment, transaction: SDSAnyReadTransaction) -> Self {
             switch attachment {
-            case .file(let attachmentId):
-                guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
+            case .file(let file):
+                guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
                     owsFailDebug("Unexpectedly missing attachment for story")
                     return .missing
                 }

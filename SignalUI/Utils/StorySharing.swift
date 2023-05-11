@@ -47,7 +47,7 @@ public enum StorySharing: Dependencies {
         // Send the text message to any selected story recipients
         // as a text story with default styling.
         return UnsentTextAttachment(
-            text: text(for: messageBody, with: linkPreviewDraft),
+            body: text(for: messageBody, with: linkPreviewDraft),
             textStyle: .regular,
             textForegroundColor: .white,
             textBackgroundColor: nil,
@@ -56,52 +56,51 @@ public enum StorySharing: Dependencies {
         )
     }
 
-    internal static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreviewDraft?) -> String? {
-        // Turn any mentions in the message body to plaintext
-        // TODO[TextFormatting]: preserve styles on the story message proto but hydrate mentions
-        let plaintextMessageBody = databaseStorage.read {
+    internal static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreviewDraft?) -> StyleOnlyMessageBody? {
+        // Hydrate any mentions in the message body but preserve styles.
+        let hydratedBody = databaseStorage.read {
             return messageBody
                 .hydrating(
                     mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: $0.asV2Read)
                 )
-                .asPlaintext()
+                .asStyleOnlyBody()
         }
 
-        let text: String?
-        if linkPreview != nil, let linkPreviewUrlString = linkPreview?.urlString, plaintextMessageBody.contains(linkPreviewUrlString) {
-            if plaintextMessageBody == linkPreviewUrlString {
+        let finalBody: StyleOnlyMessageBody?
+        if let linkPreviewUrlString = linkPreview?.urlString, hydratedBody.text.contains(linkPreviewUrlString) {
+            if hydratedBody.text == linkPreviewUrlString {
                 // If the only message text is the URL of the link preview, omit the message text
-                text = nil
+                finalBody = nil
             } else if
-                plaintextMessageBody.hasPrefix(linkPreviewUrlString),
+                hydratedBody.text.hasPrefix(linkPreviewUrlString),
                 CharacterSet.whitespacesAndNewlines.contains(
-                    plaintextMessageBody[plaintextMessageBody.index(
-                        plaintextMessageBody.startIndex,
+                    hydratedBody.text[hydratedBody.text.index(
+                        hydratedBody.text.startIndex,
                         offsetBy: linkPreviewUrlString.count
                     )]
                 )
             {
                 // If the URL is at the start of the message, strip it off
-                text = String(plaintextMessageBody.dropFirst(linkPreviewUrlString.count)).stripped
+                finalBody = hydratedBody.stripAndDropFirst((linkPreviewUrlString as NSString).length)
             } else if
-                plaintextMessageBody.hasSuffix(linkPreviewUrlString),
+                hydratedBody.text.hasSuffix(linkPreviewUrlString),
                 CharacterSet.whitespacesAndNewlines.contains(
-                    plaintextMessageBody[plaintextMessageBody.index(
-                        plaintextMessageBody.endIndex,
+                    hydratedBody.text[hydratedBody.text.index(
+                        hydratedBody.text.endIndex,
                         offsetBy: -(linkPreviewUrlString.count + 1)
                     )]
                 )
             {
                 // If the URL is at the end of the message, strip it off
-                text = String(plaintextMessageBody.dropLast(linkPreviewUrlString.count)).stripped
+                finalBody = hydratedBody.stripAndDropLast((linkPreviewUrlString as NSString).length)
             } else {
                 // If the URL is in the middle of the message, send the message as is
-                text = plaintextMessageBody
+                finalBody = hydratedBody
             }
         } else {
-            text = plaintextMessageBody
+            finalBody = hydratedBody
         }
-        return text
+        return finalBody
     }
 }
 

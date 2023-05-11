@@ -103,14 +103,18 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         let builder = SSKProtoStoryMessage.builder()
 
         switch storyMessage.attachment {
-        case .file(let attachmentId):
-            guard let attachmentProto = TSAttachmentStream.buildProto(forAttachmentId: attachmentId, transaction: transaction) else {
+        case .file(let file):
+            guard let attachmentProto = TSAttachmentStream.buildProto(forAttachmentId: file.attachmentId, transaction: transaction) else {
                 owsFailDebug("Missing attachment for outgoing story message")
                 return nil
             }
             builder.setFileAttachment(attachmentProto)
+            builder.setBodyRanges(file.captionProtoBodyRanges())
         case .text(let attachment):
-            guard let attachmentProto = try? attachment.buildProto(transaction: transaction) else {
+            guard let attachmentProto = try? attachment.buildProto(
+                bodyRangeHandler: builder.setBodyRanges(_:),
+                transaction: transaction
+            ) else {
                 owsFailDebug("Missing attachment for outgoing story message")
                 return nil
             }

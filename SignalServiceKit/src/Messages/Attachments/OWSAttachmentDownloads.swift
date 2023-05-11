@@ -1280,10 +1280,10 @@ public extension OWSAttachmentDownloads {
         }
 
         switch storyMessage.attachment {
-        case .file(let attachmentId):
-            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
+        case .file(let file):
+            guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId,
                                                          transaction: transaction) else {
-                owsFailDebug("Missing attachment: \(attachmentId)")
+                owsFailDebug("Missing attachment: \(file.attachmentId)")
                 break
             }
             addJobRequest(attachment: attachment, category: attachment.downloadCategory)

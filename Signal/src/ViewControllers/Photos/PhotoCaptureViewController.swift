@@ -940,14 +940,26 @@ extension PhotoCaptureViewController {
     private func didTapTextStoryProceedButton() {
         Logger.verbose("")
 
-        let text = textStoryComposerView.text ?? ""
+        let body: StyleOnlyMessageBody
+        let textStyle: TextAttachment.TextStyle
+        switch textStoryComposerView.textContent {
+        case .empty:
+            body = StyleOnlyMessageBody(plaintext: "")
+            textStyle = .regular
+        case .styledRanges(let contentBody):
+            body = contentBody
+            textStyle = .regular
+        case .styled(let text, let style):
+            body = StyleOnlyMessageBody(plaintext: text)
+            textStyle = style
+        }
         let textForegroundColor = textStoryComposerView.textForegroundColor
         let textBackgroundColor = textStoryComposerView.textBackgroundColor
-        let textStyle = textStoryComposerView.textStyle
         let background = textStoryComposerView.background
 
+        // Styles are used only when forwading; we only get plaintext here.
         let unsentTextAttachment = UnsentTextAttachment(
-            text: text,
+            body: body,
             textStyle: textStyle,
             textForegroundColor: textForegroundColor,
             textBackgroundColor: textBackgroundColor,
@@ -1378,8 +1390,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     init(text: String) {
         super.init(
-            text: text,
-            textStyle: .regular,
+            textContent: .styled(body: text, style: .regular),
             textForegroundColor: .white,
             textBackgroundColor: nil,
             background: TextStoryComposerView.defaultBackground,
@@ -1498,6 +1509,32 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     // MARK: -
 
     override var isEditing: Bool { textView.isFirstResponder }
+
+    private var text: String? {
+        get {
+            switch super.textContent {
+            case .empty:
+                return nil
+            case .styledRanges(let body):
+                owsFailDebug("Should not have styled ranges in story text composer")
+                return body.text
+            case .styled(let body, _):
+                return body
+            }
+        }
+        set {
+            super.textContent = .styled(body: newValue ?? "", style: textStyle)
+        }
+    }
+
+    private var textStyle: TextAttachment.TextStyle = .regular {
+        didSet {
+            guard let text = text else {
+                return
+            }
+            super.textContent = .styled(body: text, style: self.textStyle)
+        }
+    }
 
     var isEmpty: Bool {
         guard let text = text else { return true }

@@ -339,6 +339,11 @@ struct SignalServiceProtos_StoryMessage {
   /// Clears the value of `allowsReplies`. Subsequent reads from it will return its default value.
   mutating func clearAllowsReplies() {_uniqueStorage()._allowsReplies = nil}
 
+  var bodyRanges: [SignalServiceProtos_BodyRange] {
+    get {return _storage._bodyRanges}
+    set {_uniqueStorage()._bodyRanges = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -5183,6 +5188,7 @@ extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf
     3: .same(proto: "fileAttachment"),
     4: .same(proto: "textAttachment"),
     5: .same(proto: "allowsReplies"),
+    6: .same(proto: "bodyRanges"),
   ]
 
   fileprivate class _StorageClass {
@@ -5191,6 +5197,7 @@ extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf
     var _fileAttachment: SignalServiceProtos_AttachmentPointer? = nil
     var _textAttachment: SignalServiceProtos_TextAttachment? = nil
     var _allowsReplies: Bool? = nil
+    var _bodyRanges: [SignalServiceProtos_BodyRange] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -5202,6 +5209,7 @@ extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf
       _fileAttachment = source._fileAttachment
       _textAttachment = source._textAttachment
       _allowsReplies = source._allowsReplies
+      _bodyRanges = source._bodyRanges
     }
   }
 
@@ -5225,6 +5233,7 @@ extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._fileAttachment) }()
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._textAttachment) }()
         case 5: try { try decoder.decodeSingularBoolField(value: &_storage._allowsReplies) }()
+        case 6: try { try decoder.decodeRepeatedMessageField(value: &_storage._bodyRanges) }()
         default: break
         }
       }
@@ -5252,6 +5261,9 @@ extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf
       try { if let v = _storage._allowsReplies {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 5)
       } }()
+      if !_storage._bodyRanges.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._bodyRanges, fieldNumber: 6)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5266,6 +5278,7 @@ extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._fileAttachment != rhs_storage._fileAttachment {return false}
         if _storage._textAttachment != rhs_storage._textAttachment {return false}
         if _storage._allowsReplies != rhs_storage._allowsReplies {return false}
+        if _storage._bodyRanges != rhs_storage._bodyRanges {return false}
         return true
       }
       if !storagesAreEqual {return false}

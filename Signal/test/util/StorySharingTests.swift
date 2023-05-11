@@ -30,12 +30,11 @@ class StorySharingTests: SignalBaseTest {
                     url: URL(string: "https://signal.org")!,
                     title: nil
                 )
-            )
+            )?.text
             XCTAssertEqual(output, expectedOutput)
         }
     }
 
-    // TODO[TextFormatting]: test style application as well.
     func testMentionFlattening() {
         let mentionUuid = UUID()
         let range = NSRange(location: 0, length: MessageBody.mentionPlaceholder.utf16.count)
@@ -45,7 +44,7 @@ class StorySharingTests: SignalBaseTest {
                 ranges: .init(mentions: [range: mentionUuid], styles: [])
             ),
             with: nil
-        )
+        )?.text
 
         XCTAssertEqual(output, "@Fake name Some text")
     }

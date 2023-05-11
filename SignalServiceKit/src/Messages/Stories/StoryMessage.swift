@@ -44,7 +44,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     public let direction: Direction
 
     public private(set) var manifest: StoryManifest
-    public let attachment: StoryMessageAttachment
+    private let _attachment: SerializedStoryMessageAttachment
+    public var attachment: StoryMessageAttachment {
+        return _attachment.asPublicAttachment
+    }
 
     public var sendingState: TSOutgoingMessageState {
         switch manifest {
@@ -121,8 +124,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     @objc
     public var allAttachmentIds: [String] {
         switch attachment {
-        case .file(let attachmentId):
-            return [attachmentId]
+        case .file(let file):
+            return [file.attachmentId]
         case .text(let attachment):
             if let preview = attachment.preview, let imageAttachmentId = preview.imageAttachmentId {
                 return [imageAttachmentId]
@@ -157,7 +160,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             self.direction = .outgoing
         }
         self.manifest = manifest
-        self.attachment = attachment
+        self._attachment = attachment.asSerializable
         self.replyCount = replyCount
     }
 
@@ -202,9 +205,16 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 throw OWSAssertionError("Invalid file attachment for StoryMessage.")
             }
             attachmentPointer.anyInsert(transaction: transaction)
-            attachment = .file(attachmentId: attachmentPointer.uniqueId)
+            attachment = .file(StoryMessageFileAttachment(
+                attachmentId: attachmentPointer.uniqueId,
+                storyBodyRangeProtos: storyMessage.bodyRanges
+            ))
         } else if let textAttachmentProto = storyMessage.textAttachment {
-            attachment = .text(attachment: try TextAttachment(from: textAttachmentProto, transaction: transaction))
+            attachment = .text(try TextAttachment(
+                from: textAttachmentProto,
+                bodyRanges: storyMessage.bodyRanges,
+                transaction: transaction
+            ))
         } else {
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
@@ -275,9 +285,16 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 throw OWSAssertionError("Invalid file attachment for StoryMessage.")
             }
             attachmentPointer.anyInsert(transaction: transaction)
-            attachment = .file(attachmentId: attachmentPointer.uniqueId)
+            attachment = .file(StoryMessageFileAttachment(
+                attachmentId: attachmentPointer.uniqueId,
+                storyBodyRangeProtos: storyMessage.bodyRanges
+            ))
         } else if let textAttachmentProto = storyMessage.textAttachment {
-            attachment = .text(attachment: try TextAttachment(from: textAttachmentProto, transaction: transaction))
+            attachment = .text(try TextAttachment(
+                from: textAttachmentProto,
+                bodyRanges: storyMessage.bodyRanges,
+                transaction: transaction
+            ))
         } else {
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
@@ -337,7 +354,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         )
 
         attachment.anyInsert(transaction: transaction)
-        let attachment: StoryMessageAttachment = .file(attachmentId: attachment.uniqueId)
+        let attachment: StoryMessageAttachment = .file(StoryMessageFileAttachment(
+            attachmentId: attachment.uniqueId,
+            captionStyles: [] /* If someday a system story caption has styles, they'd go here. */
+        ))
 
         let record = StoryMessage(
             // NOTE: As of now these only get created for the onboarding story, and that happens
@@ -617,13 +637,21 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     }
 
     public func downloadIfNecessary(transaction: SDSAnyWriteTransaction) {
-        guard
-            case .file(let attachmentId) = attachment,
-            let pointer = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) as? TSAttachmentPointer,
-            ![.enqueued, .downloading].contains(pointer.state)
-        else { return }
-
-        attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(self, transaction: transaction)
+        switch attachment {
+        case .file(let file):
+            guard
+                let pointer = TSAttachment.anyFetch(
+                    uniqueId: file.attachmentId,
+                    transaction: transaction
+                ) as? TSAttachmentPointer,
+                ![.enqueued, .downloading].contains(pointer.state)
+            else {
+                return
+            }
+            attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(self, transaction: transaction)
+        case .text:
+            return
+        }
     }
 
     public func remotelyDeleteForAllRecipients(transaction: SDSAnyWriteTransaction) {
@@ -796,7 +824,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         groupId = try container.decodeIfPresent(Data.self, forKey: .groupId)
         direction = try container.decode(Direction.self, forKey: .direction)
         manifest = try container.decode(StoryManifest.self, forKey: .manifest)
-        attachment = try container.decode(StoryMessageAttachment.self, forKey: .attachment)
+        _attachment = try container.decode(SerializedStoryMessageAttachment.self, forKey: .attachment)
         replyCount = try container.decode(UInt64.self, forKey: .replyCount)
     }
 
@@ -811,7 +839,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         if let groupId = groupId { try container.encode(groupId, forKey: .groupId) }
         try container.encode(direction, forKey: .direction)
         try container.encode(manifest, forKey: .manifest)
-        try container.encode(attachment, forKey: .attachment)
+        try container.encode(_attachment, forKey: .attachment)
         try container.encode(replyCount, forKey: .replyCount)
     }
 }
@@ -894,11 +922,6 @@ extension StoryRecipientState {
 }
 
 extension OWSOutgoingMessageRecipientState: Codable {}
-
-public enum StoryMessageAttachment: Codable {
-    case file(attachmentId: String)
-    case text(attachment: TextAttachment)
-}
 
 extension SignalServiceAddress {
 

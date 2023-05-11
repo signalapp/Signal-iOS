@@ -15,8 +15,7 @@ open class TextAttachmentView: UIView {
 
     convenience public init(attachment: TextAttachment) {
         self.init(
-            text: attachment.text,
-            textStyle: attachment.textStyle,
+            textContent: attachment.textContent,
             textForegroundColor: attachment.textForegroundColor,
             textBackgroundColor: attachment.textBackgroundColor,
             background: attachment.background,
@@ -26,8 +25,7 @@ open class TextAttachmentView: UIView {
 
     convenience public init(attachment: UnsentTextAttachment) {
         self.init(
-            text: attachment.text,
-            textStyle: attachment.textStyle,
+            textContent: attachment.textContent,
             textForegroundColor: attachment.textForegroundColor,
             textBackgroundColor: attachment.textBackgroundColor,
             background: attachment.background,
@@ -37,16 +35,14 @@ open class TextAttachmentView: UIView {
     }
 
     public init(
-        text: String?,
-        textStyle: TextAttachment.TextStyle,
+        textContent: TextAttachment.TextContent,
         textForegroundColor: UIColor?,
         textBackgroundColor: UIColor?,
         background: TextAttachment.Background,
         linkPreview: OWSLinkPreview?,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil
     ) {
-        self.text = text
-        self.textStyle = textStyle
+        self.textContent = textContent
         self.textForegroundColor = textForegroundColor ?? Theme.darkThemePrimaryColor
         self.textBackgroundColor = textBackgroundColor
         self.background = background
@@ -227,11 +223,7 @@ open class TextAttachmentView: UIView {
 
     // MARK: - Attributes
 
-    public var text: String? {
-        didSet { updateTextAttributes() }
-    }
-
-    public var textStyle: TextAttachment.TextStyle = .regular {
+    public var textContent: TextAttachment.TextContent {
         didSet { updateTextAttributes() }
     }
 
@@ -258,27 +250,53 @@ open class TextAttachmentView: UIView {
     public func updateTextAttributes() {
         defer { updateVisibilityOfComponents(animated: false) }
 
-        guard let text = text else { return }
-
-        var textLabel: UILabel
-        if let existingLabel = self.textLabel {
-            textLabel = existingLabel
-        } else {
-            textLabel = UILabel()
-            textLabel.adjustsFontSizeToFitWidth = true
-            textLabel.allowsDefaultTighteningForTruncation = true
-            textLabel.lineBreakMode = .byWordWrapping
-            textLabel.minimumScaleFactor = 0.2
-            textLabel.numberOfLines = 0
-            addSubview(textLabel)
-            self.textLabel = textLabel
+        func loadTextLabel() -> UILabel {
+            if let existingLabel = self.textLabel {
+                return existingLabel
+            } else {
+                let textLabel = UILabel()
+                textLabel.adjustsFontSizeToFitWidth = true
+                textLabel.allowsDefaultTighteningForTruncation = true
+                textLabel.lineBreakMode = .byWordWrapping
+                textLabel.minimumScaleFactor = 0.2
+                textLabel.numberOfLines = 0
+                addSubview(textLabel)
+                self.textLabel = textLabel
+                return textLabel
+            }
         }
 
-        let (fontPointSize, textAlignment) = sizeAndAlignment(forText: text)
-        textLabel.text = transformedText(text, for: textStyle)
-        textLabel.textAlignment = textAlignment
-        textLabel.font = .font(for: textStyle, withPointSize: fontPointSize)
-        textLabel.textColor = textForegroundColor
+        let textLabel: UILabel
+        switch textContent {
+        case .empty:
+            return
+        case .styled(let text, let textStyle):
+            textLabel = loadTextLabel()
+            let (fontPointSize, textAlignment) = sizeAndAlignment(forText: text)
+            textLabel.text = transformedText(text, for: textStyle)
+            textLabel.textAlignment = textAlignment
+            textLabel.font = .font(for: textStyle, withPointSize: fontPointSize)
+            textLabel.textColor = textForegroundColor
+        case .styledRanges(let body):
+            textLabel = loadTextLabel()
+            let (fontPointSize, textAlignment) = sizeAndAlignment(forText: body.text)
+            let font = UIFont.font(for: .regular, withPointSize: fontPointSize)
+
+            // TODO[TextFormatting]: allow revealing spoilers
+            let attrText = body.asAttributedStringForDisplay(
+                config: StyleDisplayConfiguration(
+                    baseFont: font,
+                    textColor: .fixed(textForegroundColor),
+                    revealAllIds: false,
+                    revealedIds: Set()
+                ),
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+            )
+            textLabel.font = font
+            textLabel.attributedText = attrText
+            textLabel.textAlignment = textAlignment
+            textLabel.textColor = textForegroundColor
+        }
 
         if let textBackgroundColor = textBackgroundColor {
             var textBackgroundView: UIView
@@ -303,10 +321,11 @@ open class TextAttachmentView: UIView {
 
     open func updateVisibilityOfComponents(animated: Bool) {
         let isEditing = isEditing
-        if text != nil {
+        switch textContent {
+        case .styledRanges, .styled:
             textLabel?.setIsHidden(isEditing, animated: animated)
             textBackgroundView?.setIsHidden(isEditing || textBackgroundColor == nil, animated: animated)
-        } else {
+        case .empty:
             textLabel?.setIsHidden(true, animated: animated)
             textBackgroundView?.setIsHidden(true, animated: animated)
         }
@@ -365,7 +384,16 @@ open class TextAttachmentView: UIView {
     private var forceCompactLayoutForLinkPreview = false
 
     private func shouldUseCompactLayoutForLinkPreview() -> Bool {
-        if let text = text, text.count >= 50 { return true }
+        let text: String
+        switch textContent {
+        case .empty:
+            return forceCompactLayoutForLinkPreview
+        case .styledRanges(let body):
+            text = body.text
+        case .styled(let body, _):
+            text = body
+        }
+        if text.count >= 50 { return true }
         return forceCompactLayoutForLinkPreview
     }
 

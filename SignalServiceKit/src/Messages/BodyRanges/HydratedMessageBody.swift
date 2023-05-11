@@ -19,6 +19,8 @@ extension NSRangedValue: Equatable where T: Equatable {}
 
 extension NSRangedValue: Hashable where T: Hashable {}
 
+extension NSRangedValue: Codable where T: Codable {}
+
 /// The result of stripping, filtering, and hydrating mentions in a `MessageBody`.
 /// This object can be held durably in memory as a way to cache mention hydrations
 /// and other expensive string operations, and can subsequently be transformed
@@ -389,6 +391,14 @@ public class HydratedMessageBody: Equatable, Hashable {
             $0.value.applyPlaintextSpoiler(to: mutableString, at: $0.range)
         }
         return mutableString as String
+    }
+
+    // MARK: - Style-only (for stories)
+
+    public func asStyleOnlyBody() -> StyleOnlyMessageBody {
+        return StyleOnlyMessageBody(text: self.hydratedText, styles: self.styleAttributes.map {
+            return .init($0.value.style, range: $0.range)
+        })
     }
 
     // MARK: - Forwarding

@@ -6,23 +6,27 @@
 import Foundation
 
 public struct UnsentTextAttachment {
-    public let text: String?
-    public let textStyle: TextAttachment.TextStyle
+    private let body: StyleOnlyMessageBody?
+    private let textStyle: TextAttachment.TextStyle
     public let textForegroundColor: UIColor
     public let textBackgroundColor: UIColor?
     public let background: TextAttachment.Background
 
     public let linkPreviewDraft: OWSLinkPreviewDraft?
 
+    public var textContent: TextAttachment.TextContent {
+        return TextAttachment.textContent(body: body, textStyle: textStyle)
+    }
+
     public init(
-        text: String?,
+        body: StyleOnlyMessageBody?,
         textStyle: TextAttachment.TextStyle,
         textForegroundColor: UIColor,
         textBackgroundColor: UIColor?,
         background: TextAttachment.Background,
         linkPreviewDraft: OWSLinkPreviewDraft?
     ) {
-        self.text = text
+        self.body = body
         self.textStyle = textStyle
         self.textForegroundColor = textForegroundColor
         self.textBackgroundColor = textBackgroundColor
@@ -42,12 +46,12 @@ public struct UnsentTextAttachment {
             }
         }
 
-        guard validatedLinkPreview != nil || !(text?.isEmpty ?? true) else {
+        guard validatedLinkPreview != nil || !(body?.isEmpty ?? true) else {
             owsFailDebug("Empty content")
             return nil
         }
         return TextAttachment(
-            text: text,
+            body: body,
             textStyle: textStyle,
             textForegroundColor: textForegroundColor,
             textBackgroundColor: textBackgroundColor,
@@ -58,7 +62,7 @@ public struct UnsentTextAttachment {
 }
 
 public struct TextAttachment: Codable, Equatable {
-    public let text: String?
+    private let body: StyleOnlyMessageBody?
 
     public enum TextStyle: Int, Codable, Equatable {
         case regular = 0
@@ -67,7 +71,38 @@ public struct TextAttachment: Codable, Equatable {
         case script = 3
         case condensed = 4
     }
-    public let textStyle: TextStyle
+    private let textStyle: TextStyle
+
+    public enum TextContent {
+        case empty
+        case styled(body: String, style: TextStyle)
+        case styledRanges(StyleOnlyMessageBody)
+    }
+
+    public private(set) var preview: OWSLinkPreview?
+
+    public var textContent: TextContent {
+        return Self.textContent(body: body, textStyle: textStyle)
+    }
+
+    fileprivate static func textContent(
+        body: StyleOnlyMessageBody?,
+        textStyle: TextStyle
+    ) -> TextContent {
+        guard let body, body.isEmpty.negated else {
+            return .empty
+        }
+        switch textStyle {
+        case .regular:
+            if body.hasStyles {
+                return .styledRanges(body)
+            } else {
+                return .styled(body: body.text, style: .regular)
+            }
+        case .bold, .serif, .script, .condensed:
+            return .styled(body: body.text, style: textStyle)
+        }
+    }
 
     private let textForegroundColorHex: UInt32?
     public var textForegroundColor: UIColor? { textForegroundColorHex.map { UIColor(argbHex: $0) } }
@@ -146,10 +181,12 @@ public struct TextAttachment: Codable, Equatable {
         }
     }
 
-    public private(set) var preview: OWSLinkPreview?
-
-    init(from proto: SSKProtoTextAttachment, transaction: SDSAnyWriteTransaction) throws {
-        self.text = proto.text?.nilIfEmpty
+    init(
+        from proto: SSKProtoTextAttachment,
+        bodyRanges: [SSKProtoBodyRange],
+        transaction: SDSAnyWriteTransaction
+    ) throws {
+        self.body = proto.text?.nilIfEmpty.map { StyleOnlyMessageBody(text: $0, protos: bodyRanges) }
 
         guard let style = proto.textStyle else {
             throw OWSAssertionError("Missing style for attachment.")
@@ -206,11 +243,15 @@ public struct TextAttachment: Codable, Equatable {
         }
     }
 
-    public func buildProto(transaction: SDSAnyReadTransaction) throws -> SSKProtoTextAttachment {
+    public func buildProto(
+        bodyRangeHandler: ([SSKProtoBodyRange]) -> Void,
+        transaction: SDSAnyReadTransaction
+    ) throws -> SSKProtoTextAttachment {
         let builder = SSKProtoTextAttachment.builder()
 
-        if let text = text {
-            builder.setText(text)
+        if let body {
+            builder.setText(body.text)
+            bodyRangeHandler(body.toProtoBodyRanges())
         }
 
         let textStyle: SSKProtoTextAttachmentStyle = {
@@ -247,14 +288,14 @@ public struct TextAttachment: Codable, Equatable {
     }
 
     public init(
-        text: String?,
+        body: StyleOnlyMessageBody?,
         textStyle: TextStyle,
         textForegroundColor: UIColor,
         textBackgroundColor: UIColor?,
         background: Background,
         linkPreview: OWSLinkPreview?
     ) {
-        self.text = text
+        self.body = body
         self.textStyle = textStyle
         self.textForegroundColorHex = textForegroundColor.argbHex
         self.textBackgroundColorHex = textBackgroundColor?.argbHex
@@ -284,12 +325,44 @@ public struct TextAttachment: Codable, Equatable {
             linkPreviewDraft = OWSLinkPreviewDraft(url: url, title: preview.title)
         }
         return UnsentTextAttachment(
-            text: text,
+            body: body,
             textStyle: textStyle,
             textForegroundColor: textForegroundColor ?? .white,
             textBackgroundColor: textBackgroundColor,
             background: background,
             linkPreviewDraft: linkPreviewDraft
         )
+    }
+
+    public enum CodingKeys: String, CodingKey {
+        // Backwards compatibility; originally this held a vanilla string.
+        case body = "text"
+        case textStyle
+        case textForegroundColorHex
+        case textBackgroundColorHex
+        case rawBackground
+        case preview
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        do {
+            // Backwards compability; this used to contain just a raw string,
+            // which we now interpret as a style-less string.
+            if let rawText = try container.decodeIfPresent(String.self, forKey: .body) {
+                self.body = StyleOnlyMessageBody(plaintext: rawText)
+            } else {
+                self.body = nil
+            }
+        } catch {
+            self.body = try container.decodeIfPresent(StyleOnlyMessageBody.self, forKey: .body)
+        }
+
+        self.textStyle = try container.decode(TextStyle.self, forKey: .textStyle)
+        self.textForegroundColorHex = try container.decodeIfPresent(UInt32.self, forKey: .textForegroundColorHex)
+        self.textBackgroundColorHex = try container.decodeIfPresent(UInt32.self, forKey: .textBackgroundColorHex)
+        self.rawBackground = try container.decode(RawBackground.self, forKey: .rawBackground)
+        self.preview = try container.decodeIfPresent(OWSLinkPreview.self, forKey: .preview)
     }
 }

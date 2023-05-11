@@ -1052,8 +1052,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [builder setBody:truncatedBody];
     }
 
-    NSArray<SSKProtoBodyRange *> *bodyRanges = [self bodyRangeProtosWithBodyText:self.body
-                                                                   andBodyRanges:self.bodyRanges];
+    NSArray<SSKProtoBodyRange *> *bodyRanges =
+        [self.bodyRanges toProtoBodyRangesWithBodyLength:(NSInteger)self.body.length];
     if (bodyRanges.count > 0) {
         [builder setBodyRanges:bodyRanges];
 
@@ -1356,40 +1356,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return OutgoingGroupProtoResult_AddedWithoutGroupAvatar;
 }
 
-- (NSArray<SSKProtoBodyRange *> *)bodyRangeProtosWithBodyText:(NSString *)bodyText
-                                                andBodyRanges:(nullable MessageBodyRanges *)bodyRanges
-{
-    if (bodyText.length == 0 || bodyRanges == nil) {
-        return @[];
-    }
-
-    NSMutableArray<SSKProtoBodyRange *> *bodyRangeProtos = [NSMutableArray new];
-    for (NSValue *rangeValue in bodyRanges.mentions) {
-        NSRange range = [rangeValue rangeValue];
-        NSUUID *uuid = bodyRanges.mentions[rangeValue];
-
-        if (range.location + range.length > bodyText.length) {
-            OWSFailDebug(@"Skipping invalid range in body ranges.");
-            continue;
-        }
-
-        SSKProtoBodyRangeBuilder *bodyRangeBuilder = [SSKProtoBodyRange builder];
-        [bodyRangeBuilder setStart:(uint32_t)range.location];
-        [bodyRangeBuilder setLength:(uint32_t)range.length];
-        [bodyRangeBuilder setMentionUuid:uuid.UUIDString];
-
-        NSError *error;
-        SSKProtoBodyRange *_Nullable bodyRange = [bodyRangeBuilder buildAndReturnError:&error];
-        if (!bodyRange || error) {
-            OWSFailDebug(@"could not build protobuf: %@", error);
-            return nil;
-        }
-
-        [bodyRangeProtos addObject:bodyRange];
-    }
-    return [bodyRangeProtos copy];
-}
-
 - (nullable SSKProtoDataMessageQuoteBuilder *)quotedMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (!self.quotedMessage) {
@@ -1414,8 +1380,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         hasQuotedText = YES;
         [quoteBuilder setText:quotedMessage.body];
 
-        NSArray<SSKProtoBodyRange *> *bodyRanges = [self bodyRangeProtosWithBodyText:self.quotedMessage.body
-                                                                       andBodyRanges:self.quotedMessage.bodyRanges];
+        NSArray<SSKProtoBodyRange *> *bodyRanges =
+            [self.bodyRanges toProtoBodyRangesWithBodyLength:(NSInteger)self.quotedMessage.body.length];
         if (bodyRanges.count > 0) {
             [quoteBuilder setBodyRanges:bodyRanges];
         }
