@@ -26,6 +26,8 @@ class StoryItemMediaView: UIView {
     weak var delegate: StoryItemMediaViewDelegate?
     public private(set) var item: StoryItem
 
+    private var revealedSpoilerIds = Set<StyleIdType>()
+
     private lazy var gradientProtectionView = GradientView(colors: [])
     private var gradientProtectionViewHeightConstraint: NSLayoutConstraint?
 
@@ -114,6 +116,7 @@ class StoryItemMediaView: UIView {
 
     func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
         if startAttachmentDownloadIfNecessary(gesture) { return true }
+        if revealSpoilerIfNecessary(gesture) { return true }
         if toggleCaptionExpansionIfNecessary(gesture) { return true }
 
         if let textAttachmentView = mediaView as? TextAttachmentView {
@@ -182,7 +185,7 @@ class StoryItemMediaView: UIView {
         case .pointer:
             owsFailDebug("Undownloaded attachments should not progress.")
             return 0
-        case .stream(let stream):
+        case .stream(let stream, _):
             glyphCount = stream.caption?.glyphCount
 
             if let asset = videoPlayer?.avPlayer.currentItem?.asset {
@@ -454,24 +457,80 @@ class StoryItemMediaView: UIView {
         return label
     }()
 
-    private var fullCaptionText: String?
+    private var fullCaptionText: NSAttributedString?
     private var truncatedCaptionText: NSAttributedString?
     private var isCaptionTruncated: Bool { truncatedCaptionText != nil }
     private var hasCaption: Bool { fullCaptionText != nil }
+    private var tappableCaptionItems: [HydratedMessageBody.TappableItem]?
 
     private var maxCaptionLines = 5
     private func updateCaption() {
-        let captionText: String? = {
+        let captionText: NSAttributedString? = { () -> NSAttributedString? in
+            let body: StyleOnlyMessageBody
             switch item.attachment {
-            case .stream(let attachment): return attachment.caption?.nilIfEmpty
-            case .pointer(let attachment): return attachment.caption?.nilIfEmpty
-            case .text: return nil
+            case let .stream(attachment, captionStyles):
+                guard let text = attachment.caption?.nilIfEmpty else {
+                    return nil
+                }
+                body = StyleOnlyMessageBody(text: text, styles: captionStyles)
+            case let .pointer(attachment, captionStyles):
+                guard let text = attachment.caption?.nilIfEmpty else {
+                    return nil
+                }
+                body = StyleOnlyMessageBody(text: text, styles: captionStyles)
+            case .text:
+                return nil
             }
+            self.tappableCaptionItems = body.asHydratedMessageBody().tappableItems(
+                revealedSpoilerIds: self.revealedSpoilerIds,
+                dataDetector: nil
+            )
+            return body.asAttributedStringForDisplay(
+                config: StyleDisplayConfiguration(
+                    baseFont: captionLabel.font,
+                    textColor: .fixed(captionLabel.textColor),
+                    revealAllIds: false,
+                    revealedIds: self.revealedSpoilerIds
+                ),
+                baseAttributes: [
+                    .font: captionLabel.font as Any,
+                    .foregroundColor: captionLabel.textColor as Any
+                ],
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+            )
         }()
 
         fullCaptionText = captionText
-        captionLabel.text = captionText
+        captionLabel.attributedText = captionText
         updateCaptionTruncation()
+    }
+
+    private func revealSpoilerIfNecessary(_ gesture: UIGestureRecognizer) -> Bool {
+        let labelLocation = gesture.location(in: captionLabel)
+        guard
+            captionLabel.bounds.contains(labelLocation),
+            let tapIndex = captionLabel.characterIndex(of: labelLocation)
+        else {
+            return false
+        }
+        let spoilerItem = tappableCaptionItems?.lazy
+            .compactMap {
+                switch $0 {
+                case .unrevealedSpoiler(let unrevealedSpoiler):
+                    return unrevealedSpoiler
+                case .data, .mention:
+                    return nil
+                }
+            }
+            .first(where: {
+                $0.range.contains(tapIndex)
+            })
+        if let spoilerItem {
+            revealedSpoilerIds.insert(spoilerItem.id)
+            updateCaption()
+            return true
+        }
+        return false
     }
 
     private var isCaptionExpanded = false
@@ -500,7 +559,7 @@ class StoryItemMediaView: UIView {
             captionBackdrop.autoPinEdgesToSuperviewEdges()
 
             captionLabel.numberOfLines = 0
-            captionLabel.text = fullCaptionText
+            captionLabel.attributedText = fullCaptionText
             delegate?.storyItemMediaViewWantsToPause(self)
         } else {
             captionLabel.numberOfLines = maxCaptionLines
@@ -531,7 +590,7 @@ class StoryItemMediaView: UIView {
         lastTruncationWidth = width
 
         captionLabel.numberOfLines = maxCaptionLines
-        captionLabel.text = fullCaptionText
+        captionLabel.attributedText = fullCaptionText
         bottomContentVStack.layoutIfNeeded()
 
         let labelMinimumScaledFont = captionLabel.font
@@ -556,7 +615,7 @@ class StoryItemMediaView: UIView {
         var visibleCharacterRangeUpperBound = visibleCaptionRange().upperBound
 
         // Check if we're displaying less than the full length of the caption text.
-        guard visibleCharacterRangeUpperBound < fullCaptionText.utf16.count else {
+        guard visibleCharacterRangeUpperBound < fullCaptionText.string.utf16.count else {
             truncatedCaptionText = nil
             return
         }
@@ -568,13 +627,13 @@ class StoryItemMediaView: UIView {
 
         var potentialTruncatedCaptionText = fullCaptionText
         func truncatePotentialCaptionText(to index: Int) {
-            potentialTruncatedCaptionText = (potentialTruncatedCaptionText as NSString).substring(to: index)
+            potentialTruncatedCaptionText = potentialTruncatedCaptionText.attributedSubstring(from: NSRange(location: 0, length: index))
             textStorage.setAttributedString(buildTruncatedCaptionText().styled(with: .font(labelMinimumScaledFont)))
         }
 
         func buildTruncatedCaptionText() -> NSAttributedString {
             .composed(of: [
-                potentialTruncatedCaptionText.stripped, "…", " ", readMoreText
+                potentialTruncatedCaptionText.ows_stripped(), "…", " ", readMoreText
             ])
         }
 
@@ -593,7 +652,7 @@ class StoryItemMediaView: UIView {
         // we have space to fit the read more text without truncation.
         // This should only take a few iterations.
         var iterationCount = 0
-        while visibleCharacterRangeUpperBound < potentialTruncatedCaptionText.utf16.count {
+        while visibleCharacterRangeUpperBound < potentialTruncatedCaptionText.string.utf16.count {
             let truncateToIndex = max(0, visibleCharacterRangeUpperBound)
             guard truncateToIndex > 0 else { break }
 
@@ -649,7 +708,7 @@ class StoryItemMediaView: UIView {
 
     private func buildMediaView() -> UIView {
         switch item.attachment {
-        case .stream(let stream):
+        case .stream(let stream, _):
             let container = UIView()
 
             guard let originalMediaUrl = stream.originalMediaURL else {
@@ -684,7 +743,7 @@ class StoryItemMediaView: UIView {
             }
 
             return container
-        case .pointer(let pointer):
+        case .pointer(let pointer, _):
             let container = UIView()
 
             if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer) {
@@ -819,8 +878,8 @@ class StoryItem: NSObject {
     let message: StoryMessage
     let numberOfReplies: UInt64
     enum Attachment: Equatable {
-        case pointer(TSAttachmentPointer)
-        case stream(TSAttachmentStream)
+        case pointer(TSAttachmentPointer, captionStyles: [NSRangedValue<MessageBodyRanges.Style>])
+        case stream(TSAttachmentStream, captionStyles: [NSRangedValue<MessageBodyRanges.Style>])
         case text(TextAttachment)
     }
     var attachment: Attachment
@@ -837,7 +896,7 @@ extension StoryItem {
 
     @discardableResult
     func startAttachmentDownloadIfNecessary(completion: (() -> Void)? = nil) -> Bool {
-        guard case .pointer(let pointer) = attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
+        guard case .pointer(let pointer, _) = attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
 
         attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: message.uniqueId,

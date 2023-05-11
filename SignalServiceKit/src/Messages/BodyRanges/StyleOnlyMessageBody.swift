@@ -49,6 +49,17 @@ public class StyleOnlyMessageBody: NSObject, Codable {
         )
     }
 
+    // No mentions, so "hydration" is a no-op step.
+    public func asHydratedMessageBody() -> HydratedMessageBody {
+        return HydratedMessageBody(
+            hydratedText: text,
+            mentionAttributes: [],
+            styleAttributes: styles.map {
+                return .init(.fromOriginalRange($0.range, style: $0.value), range: $0.range)
+            }
+        )
+    }
+
     public func asAttributedStringForDisplay(
         config: StyleDisplayConfiguration,
         baseAttributes: [NSAttributedString.Key: Any]? = nil,

@@ -227,6 +227,12 @@ open class TextAttachmentView: UIView {
         didSet { updateTextAttributes() }
     }
 
+    private var revealedSpoilerIds = Set<StyleIdType>() {
+        didSet { updateTextAttributes() }
+    }
+
+    private var tappableItems: [HydratedMessageBody.TappableItem]?
+
     public private(set) var textForegroundColor: UIColor = Theme.darkThemePrimaryColor
 
     public private(set) var textBackgroundColor: UIColor?
@@ -269,6 +275,7 @@ open class TextAttachmentView: UIView {
         let textLabel: UILabel
         switch textContent {
         case .empty:
+            tappableItems = nil
             return
         case .styled(let text, let textStyle):
             textLabel = loadTextLabel()
@@ -277,18 +284,23 @@ open class TextAttachmentView: UIView {
             textLabel.textAlignment = textAlignment
             textLabel.font = .font(for: textStyle, withPointSize: fontPointSize)
             textLabel.textColor = textForegroundColor
+            tappableItems = nil
         case .styledRanges(let body):
             textLabel = loadTextLabel()
             let (fontPointSize, textAlignment) = sizeAndAlignment(forText: body.text)
             let font = UIFont.font(for: .regular, withPointSize: fontPointSize)
 
-            // TODO[TextFormatting]: allow revealing spoilers
+            self.tappableItems = body.asHydratedMessageBody().tappableItems(
+                revealedSpoilerIds: revealedSpoilerIds,
+                dataDetector: nil
+            )
+
             let attrText = body.asAttributedStringForDisplay(
                 config: StyleDisplayConfiguration(
                     baseFont: font,
                     textColor: .fixed(textForegroundColor),
                     revealAllIds: false,
-                    revealedIds: Set()
+                    revealedIds: self.revealedSpoilerIds
                 ),
                 isDarkThemeEnabled: Theme.isDarkThemeEnabled
             )
@@ -452,6 +464,33 @@ open class TextAttachmentView: UIView {
             self.linkPreviewTooltipView = tooltipView
 
             return true
+        }
+
+        // Note: the tap targeting here is not perfect.
+        // Eventually, move this to a better system than UILabel
+        // indexing, once we do custom spoiler animations.
+        let labelLocation = gesture.location(in: textLabel)
+        if
+            let textLabel,
+            textLabel.bounds.contains(labelLocation),
+            let tapIndex = textLabel.characterIndex(of: labelLocation)
+        {
+            let spoilerItem = tappableItems?.lazy
+                .compactMap {
+                    switch $0 {
+                    case .unrevealedSpoiler(let unrevealedSpoiler):
+                        return unrevealedSpoiler
+                    case .data, .mention:
+                        return nil
+                    }
+                }
+                .first(where: {
+                    $0.range.contains(tapIndex)
+                })
+            if let spoilerItem {
+                revealedSpoilerIds.insert(spoilerItem.id)
+                return true
+            }
         }
 
         return false

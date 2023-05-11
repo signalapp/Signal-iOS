@@ -326,9 +326,17 @@ class StoryContextViewController: OWSViewController {
                 return nil
             }
             if let attachment = attachment as? TSAttachmentPointer {
-                return .init(message: message, numberOfReplies: replyCount, attachment: .pointer(attachment))
+                return StoryItem(
+                    message: message,
+                    numberOfReplies: replyCount,
+                    attachment: .pointer(attachment, captionStyles: file.captionStyles)
+                )
             } else if let attachment = attachment as? TSAttachmentStream {
-                return .init(message: message, numberOfReplies: replyCount, attachment: .stream(attachment))
+                return StoryItem(
+                    message: message,
+                    numberOfReplies: replyCount,
+                    attachment: .stream(attachment, captionStyles: file.captionStyles)
+                )
             } else {
                 owsFailDebug("Unexpected attachment type \(type(of: attachment))")
                 return nil
@@ -1007,9 +1015,9 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
         }
         let attachment: StoryThumbnailView.Attachment
         switch item.attachment {
-        case .pointer(let pointer):
+        case .pointer(let pointer, _):
             attachment = .file(pointer)
-        case .stream(let stream):
+        case .stream(let stream, _):
             attachment = .file(stream)
         case .text(let textAttachment):
             attachment = .text(textAttachment)

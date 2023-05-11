@@ -654,6 +654,34 @@ extension UITextView {
     }
 }
 
+extension UILabel {
+
+    // This is somewhat inconsistent; labels with text alignments and who knows what
+    // other attributes applied may not do a great job at identifying the index.
+    // Eventually this should be removed in favor of using UITextView everywhere.
+    public func characterIndex(of location: CGPoint) -> Int? {
+        let attrString: NSAttributedString
+        if let attributedText {
+            attrString = attributedText
+        } else if let text {
+            attrString = NSAttributedString(string: text, attributes: [.font: self.font as Any])
+        } else {
+            return nil
+        }
+        let textStorage = NSTextStorage(attributedString: attrString)
+        let layoutManager = NSLayoutManager()
+        textStorage.addLayoutManager(layoutManager)
+
+        let textContainer = NSTextContainer(size: self.bounds.size)
+        textContainer.lineFragmentPadding = 0
+        textContainer.maximumNumberOfLines = self.numberOfLines
+        textContainer.lineBreakMode = self.lineBreakMode
+        layoutManager.addTextContainer(textContainer)
+
+        return textContainer.characterIndex(of: location, textStorage: textStorage, layoutManager: layoutManager)
+    }
+}
+
 extension NSTextContainer {
     public func characterIndex(
         of location: CGPoint,
