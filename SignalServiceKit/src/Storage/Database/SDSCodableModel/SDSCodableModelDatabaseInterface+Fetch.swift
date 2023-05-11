@@ -23,11 +23,13 @@ extension SDSCodableModelDatabaseInterfaceImpl {
                 WHERE uniqueId = ?
             """
 
-            return try modelType.fetchOne(
+            let model = try modelType.fetchOne(
                 grdbTransaction.database,
                 sql: sql,
                 arguments: [uniqueId]
             )
+            model?.anyDidFetchOne(transaction: transaction)
+            return model
         } catch let error {
             owsFailDebug("Failed to fetch model \(modelType) by uniqueId: \(error)")
             return nil

@@ -50,20 +50,35 @@ class GRDBSignalAccountFinder: NSObject {
             return []
         }
         let qms = Array(repeating: "?", count: values.count).joined(separator: ", ")
-        let sql = "SELECT * FROM \(SignalAccountRecord.databaseTableName) WHERE \(column) in (\(qms))"
-        let cursor = SignalAccount.grdbFetchCursor(sql: sql,
-                                                   arguments: StatementArguments(values),
-                                                   transaction: transaction)
+        let sql = "SELECT * FROM \(SignalAccount.databaseTableName) WHERE \(column) in (\(qms))"
         do {
-            return try cursor.all()
+            let cursor = try SignalAccount.fetchCursor(
+                transaction.database,
+                sql: sql,
+                arguments: StatementArguments(values)
+            )
+            /// Why did we use `allSignalAccounts` instead of `SignalAccount.anyFetchAll`?
+            /// The reason is that the `SignalAccountReadCache` needs to have
+            /// `didReadSignalAccount` called on it for each record we enumerate, and
+            /// `SignalAccount.anyEnumerate` has this built in.
+            return allSignalAccounts(cursor: cursor, transaction: transaction)
         } catch {
             owsAssertDebug(false, "Database error while fetching \(column) for \(values.count) values: \(error.localizedDescription)")
             return Array(repeating: nil, count: values.count)
         }
     }
 
+    private func allSignalAccounts(cursor: RecordCursor<SignalAccount>,
+                                   transaction: GRDBReadTransaction) -> [SignalAccount] {
+        var result = [SignalAccount]()
+        SignalAccount.anyEnumerate(transaction: transaction.asAnyRead) { account, _ in
+            result.append(account)
+        }
+        return result
+    }
+
     private func signalAccountsForUUIDs(_ uuids: [UUID?], transaction: GRDBReadTransaction) -> [SignalAccount?] {
-        let accounts = signalAccountsWhere(column: "\(signalAccountColumn: .recipientUUID)",
+        let accounts = signalAccountsWhere(column: SignalAccount.columnName(.recipientUUID),
                                            anyValueIn: uuids.lazy.compactMap { $0?.uuidString },
                                            transaction: transaction)
         let index: [String?: [SignalAccount?]] = Dictionary(grouping: accounts) { $0?.recipientUUID }
@@ -77,7 +92,7 @@ class GRDBSignalAccountFinder: NSObject {
 
     private func signalAccountsForPhoneNumbers(_ phoneNumbers: [String?], transaction: GRDBReadTransaction) -> [SignalAccount?] {
         return Refinery<String?, SignalAccount>(phoneNumbers).refineNonnilKeys { phoneNumbers -> [SignalAccount?] in
-            let accounts = signalAccountsWhere(column: "\(signalAccountColumn: .recipientPhoneNumber)",
+            let accounts = signalAccountsWhere(column: SignalAccount.columnName(.recipientPhoneNumber),
                                                anyValueIn: Array(phoneNumbers),
                                                transaction: transaction)
             let index = Dictionary(grouping: accounts) { $0?.recipientPhoneNumber }

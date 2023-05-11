@@ -34,7 +34,7 @@ public extension DebugUIMisc {
 
     static func logSignalAccounts() {
         Self.databaseStorage.read { transaction in
-            SignalAccount.anyEnumerate(transaction: transaction, batchSize: 32) { (signalAccount, _) in
+            SignalAccount.anyEnumerate(transaction: transaction, batchingPreference: .batched(32)) { (signalAccount, _) in
                 Logger.verbose("SignalAccount: \(signalAccount.addressComponentsDescription)")
             }
         }

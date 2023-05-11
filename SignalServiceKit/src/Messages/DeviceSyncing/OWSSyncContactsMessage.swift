@@ -40,9 +40,13 @@ extension OWSSyncContactsMessage {
         if !hasLocalAddress {
             // OWSContactsOutputStream requires all signalAccount to have a contact.
             let localContact = Contact(systemContact: CNContact())
-            let localSignalAccount = SignalAccount(signalServiceAddress: localAddress,
-                                                   contact: localContact,
-                                                   multipleAccountLabelText: nil)
+            let localSignalAccount = SignalAccount(
+                contact: localContact,
+                contactAvatarHash: nil,
+                multipleAccountLabelText: nil,
+                recipientPhoneNumber: localAddress.phoneNumber,
+                recipientUUID: localAddress.uuidString
+            )
             signalAccounts.append(localSignalAccount)
         }
 

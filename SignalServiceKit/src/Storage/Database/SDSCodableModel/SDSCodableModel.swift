@@ -101,6 +101,8 @@ public protocol SDSCodableModel: Encodable, FetchableRecord, PersistableRecord, 
     func anyDidUpdate(transaction: SDSAnyWriteTransaction)
     func anyWillRemove(transaction: SDSAnyWriteTransaction)
     func anyDidRemove(transaction: SDSAnyWriteTransaction)
+    func anyDidFetchOne(transaction: SDSAnyReadTransaction)
+    func anyDidEnumerateOne(transaction: SDSAnyReadTransaction)
 }
 
 public extension SDSCodableModel {
@@ -122,6 +124,8 @@ public extension SDSCodableModel {
     func anyDidUpdate(transaction: SDSAnyWriteTransaction) {}
     func anyWillRemove(transaction: SDSAnyWriteTransaction) {}
     func anyDidRemove(transaction: SDSAnyWriteTransaction) {}
+    func anyDidFetchOne(transaction: SDSAnyReadTransaction) {}
+    func anyDidEnumerateOne(transaction: SDSAnyReadTransaction) {}
 
     static var databaseUUIDEncodingStrategy: DatabaseUUIDEncodingStrategy { .uppercaseString }
     static var databaseDateEncodingStrategy: DatabaseDateEncodingStrategy { .timeIntervalSince1970 }
@@ -216,7 +220,7 @@ public extension SDSCodableModel {
         transaction: SDSAnyReadTransaction,
         block: @escaping (SDSIndexableModel) -> Void
     ) {
-        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+        anyEnumerate(transaction: transaction, batchingPreference: .unbatched) { model, _ in
             block(model)
         }
     }
@@ -225,13 +229,13 @@ public extension SDSCodableModel {
     /// See that class for details.
     static func anyEnumerate(
         transaction: SDSAnyReadTransaction,
-        batched: Bool = false,
+        batchingPreference: BatchingPreference = .unbatched,
         block: @escaping (Self, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModels(
             modelType: Self.self,
             transaction: transaction.asV2Read,
-            batched: batched,
+            batchingPreference: batchingPreference,
             block: block
         )
     }

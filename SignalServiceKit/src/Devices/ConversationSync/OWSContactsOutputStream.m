@@ -11,7 +11,6 @@
 #import "NSData+keyVersionByte.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSRecipientIdentity.h"
-#import "SignalAccount.h"
 #import "TSContactThread.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>

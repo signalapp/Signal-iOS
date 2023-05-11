@@ -79,7 +79,7 @@ protocol SDSCodableModelDatabaseInterface {
     func enumerateModels<Model: SDSCodableModel>(
         modelType: Model.Type,
         transaction: DBReadTransaction,
-        batched: Bool,
+        batchingPreference: BatchingPreference,
         block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void
     )
 

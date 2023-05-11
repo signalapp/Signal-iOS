@@ -23,7 +23,6 @@
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/OWSSyncKeysMessage.h>
 #import <SignalServiceKit/OWSSyncRequestMessage.h>
-#import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
@@ -532,9 +531,11 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
 {
     // OWSContactsOutputStream requires all signalAccount to have a contact.
     Contact *contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
-    return [[SignalAccount alloc] initWithSignalServiceAddress:localAddress
-                                                       contact:contact
-                                      multipleAccountLabelText:nil];
+    return [[SignalAccount alloc] initWithContact:contact
+                                contactAvatarHash:nil
+                         multipleAccountLabelText:nil
+                             recipientPhoneNumber:localAddress.phoneNumber
+                                    recipientUUID:localAddress.uuidString];
 }
 
 - (void)clearFullSyncRequestIdIfMatches:(nullable NSString *)requestId transaction:(SDSAnyWriteTransaction *)transaction

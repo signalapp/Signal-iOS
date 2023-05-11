@@ -73,7 +73,8 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         batched: Bool,
         block: @escaping (OWSReaction, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        anyEnumerate(transaction: transaction, batched: batched, block: block)
+        let batchingPreference: BatchingPreference = batched ? .batched() : .unbatched
+        anyEnumerate(transaction: transaction, batchingPreference: batchingPreference, block: block)
     }
 
     // MARK: - Codable

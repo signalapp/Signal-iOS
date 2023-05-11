@@ -806,7 +806,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         batched: Bool,
         block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        anyEnumerate(transaction: transaction, batched: batched, block: block)
+        let batchingPreference: BatchingPreference = batched ? .batched() : .unbatched
+        anyEnumerate(transaction: transaction, batchingPreference: batchingPreference, block: block)
     }
 
     // MARK: - Codable

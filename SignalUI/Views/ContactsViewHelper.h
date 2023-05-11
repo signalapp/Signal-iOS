@@ -34,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSArray<SignalAccount *> *allSignalAccounts;
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
-- (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 
 - (SignalServiceAddress *)localAddress;
 

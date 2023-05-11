@@ -9,7 +9,6 @@
 #import "OWSContactsOutputStream.h"
 #import "OWSIdentityManager.h"
 #import "ProfileManagerProtocol.h"
-#import "SignalAccount.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"

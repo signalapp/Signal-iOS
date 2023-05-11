@@ -137,7 +137,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/SSKAsserts.h>
 #import <SignalServiceKit/SSKPreKeyStore.h>
 #import <SignalServiceKit/SSKSignedPreKeyStore.h>
-#import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignedPrekeyRecord.h>
 #import <SignalServiceKit/StickerInfo.h>

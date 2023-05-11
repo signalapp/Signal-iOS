@@ -5,17 +5,29 @@
 
 import GRDB
 
+public enum BatchingPreference {
+    case batched(UInt = Batching.kDefaultBatchSize)
+    case unbatched
+}
+
 extension SDSCodableModelDatabaseInterfaceImpl {
     /// Traverse all records, in no particular order.
     func enumerateModels<Model: SDSCodableModel>(
         modelType: Model.Type,
         transaction: DBReadTransaction,
-        batched: Bool,
+        batchingPreference: BatchingPreference,
         block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         let transaction = SDSDB.shimOnlyBridge(transaction)
 
-        let batchSize = batched ? Batching.kDefaultBatchSize : 0
+        var batchSize: UInt
+        switch batchingPreference {
+        case .batched(let size):
+            batchSize = size
+        case .unbatched:
+            batchSize = 0
+        }
+
         enumerateModels(
             modelType: modelType,
             transaction: transaction,
@@ -59,7 +71,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
                     stop.pointee = true
                     return
                 }
-
+                value.anyDidEnumerateOne(transaction: transaction)
                 block(value, stop)
             }
         } catch let error {

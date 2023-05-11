@@ -1347,6 +1347,7 @@
 		D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* FactoryInitialization.swift */; };
 		D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
+		E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
 		E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */; };
@@ -1842,7 +1843,6 @@
 		F9C5CCB5289453B300548EEE /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CD289453B100548EEE /* Contact.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB6289453B300548EEE /* SignalRecipient.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CE289453B100548EEE /* SignalRecipient.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB7289453B300548EEE /* SignalRecipient+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CF289453B100548EEE /* SignalRecipient+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCB8289453B300548EEE /* SignalAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D0289453B100548EEE /* SignalAccount.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCB9289453B300548EEE /* OWSDisappearingMessagesConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCBA289453B300548EEE /* TSThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D2289453B100548EEE /* TSThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCBB289453B300548EEE /* PhoneNumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D3289453B100548EEE /* PhoneNumberUtil.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1852,7 +1852,6 @@
 		F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC4289453B300548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DE289453B100548EEE /* SignalAccount.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCC6289453B300548EEE /* SignalAccount+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DF289453B100548EEE /* SignalAccount+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC7289453B300548EEE /* SignalRecipient.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9E0289453B100548EEE /* SignalRecipient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCC8289453B300548EEE /* SignalRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E1289453B100548EEE /* SignalRecipient.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC9289453B300548EEE /* Contact.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9E2289453B100548EEE /* Contact.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1871,7 +1870,6 @@
 		F9C5CCD6289453B300548EEE /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F0289453B100548EEE /* PhoneNumberUtil.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCD7289453B300548EEE /* OWSDisappearingMessagesConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F1289453B100548EEE /* OWSDisappearingMessagesConfiguration.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCD8289453B300548EEE /* ThreadAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F2289453B100548EEE /* ThreadAssociatedData.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCD9289453B300548EEE /* SignalAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F3289453B100548EEE /* SignalAccount.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCDA289453B300548EEE /* OWSDisappearingMessagesConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F4289453B100548EEE /* OWSDisappearingMessagesConfiguration.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCDB289453B300548EEE /* PhoneNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9F5289453B100548EEE /* PhoneNumber.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCDC289453B300548EEE /* PhoneNumberUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9F6289453B100548EEE /* PhoneNumberUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3925,6 +3923,7 @@
 		DDBCB034D1DFAF85ADFD5E76 /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
+		E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountTest.swift; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E27EBB962FA58BAC64DD64A3 /* Pods-SignalUITests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.app store release.xcconfig"; sourceTree = "<group>"; };
 		E434E65F6E6E989A106307BA /* Pods-SignalTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.profiling.xcconfig"; sourceTree = "<group>"; };
@@ -4426,7 +4425,6 @@
 		F9C5C9CD289453B100548EEE /* Contact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
 		F9C5C9CE289453B100548EEE /* SignalRecipient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalRecipient.m; sourceTree = "<group>"; };
 		F9C5C9CF289453B100548EEE /* SignalRecipient+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SignalRecipient+SDS.swift"; sourceTree = "<group>"; };
-		F9C5C9D0289453B100548EEE /* SignalAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalAccount.h; sourceTree = "<group>"; };
 		F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingMessagesConfiguration.h; sourceTree = "<group>"; };
 		F9C5C9D2289453B100548EEE /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSThread.h; sourceTree = "<group>"; };
 		F9C5C9D3289453B100548EEE /* PhoneNumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberUtil.m; sourceTree = "<group>"; };
@@ -4436,7 +4434,6 @@
 		F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryOperation.swift; sourceTree = "<group>"; };
 		F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSDisappearingMessagesConfiguration+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9DE289453B100548EEE /* SignalAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccount.swift; sourceTree = "<group>"; };
-		F9C5C9DF289453B100548EEE /* SignalAccount+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SignalAccount+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9E0289453B100548EEE /* SignalRecipient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalRecipient.h; sourceTree = "<group>"; };
 		F9C5C9E1289453B100548EEE /* SignalRecipient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipient.swift; sourceTree = "<group>"; };
 		F9C5C9E2289453B100548EEE /* Contact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contact.h; sourceTree = "<group>"; };
@@ -4455,7 +4452,6 @@
 		F9C5C9F0289453B100548EEE /* PhoneNumberUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneNumberUtil.swift; sourceTree = "<group>"; };
 		F9C5C9F1289453B100548EEE /* OWSDisappearingMessagesConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisappearingMessagesConfiguration.m; sourceTree = "<group>"; };
 		F9C5C9F2289453B100548EEE /* ThreadAssociatedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadAssociatedData.swift; sourceTree = "<group>"; };
-		F9C5C9F3289453B100548EEE /* SignalAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalAccount.m; sourceTree = "<group>"; };
 		F9C5C9F4289453B100548EEE /* OWSDisappearingMessagesConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDisappearingMessagesConfiguration.swift; sourceTree = "<group>"; };
 		F9C5C9F5289453B100548EEE /* PhoneNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneNumber.h; sourceTree = "<group>"; };
 		F9C5C9F6289453B100548EEE /* PhoneNumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneNumberUtil.h; sourceTree = "<group>"; };
@@ -8099,6 +8095,7 @@
 				D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */,
 				5003BB44299F650E0037159B /* ServiceIdTest.swift */,
 				F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */,
+				E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */,
 				F9426201289B1B5400460798 /* SignedPreKeyDeletionTests.m */,
 				F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */,
 			);
@@ -8791,9 +8788,6 @@
 				506695E429C29C2F00B6D8D0 /* RecipientDataStore.swift */,
 				50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */,
 				506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */,
-				F9C5C9DF289453B100548EEE /* SignalAccount+SDS.swift */,
-				F9C5C9D0289453B100548EEE /* SignalAccount.h */,
-				F9C5C9F3289453B100548EEE /* SignalAccount.m */,
 				F9C5C9DE289453B100548EEE /* SignalAccount.swift */,
 				F9C5C9F7289453B100548EEE /* SignalAccountFinder.swift */,
 				F9C5C9CF289453B100548EEE /* SignalRecipient+SDS.swift */,
@@ -9638,7 +9632,6 @@
 				F9C5CD24289453B300548EEE /* SDSCrossProcess.h in Headers */,
 				F9C5CD20289453B300548EEE /* SDSDatabaseStorage+Objc.h in Headers */,
 				F9C5CD28289453B300548EEE /* SDSKeyValueStore+ObjC.h in Headers */,
-				F9C5CCB8289453B300548EEE /* SignalAccount.h in Headers */,
 				F9C5CCC7289453B300548EEE /* SignalRecipient.h in Headers */,
 				F9262C46289462F600063502 /* SignalServiceKit-Prefix.pch in Headers */,
 				F9C5C8A7289451B900548EEE /* SignalServiceKit.h in Headers */,
@@ -12280,8 +12273,6 @@
 				F9C5CD35289453B300548EEE /* SessionRecordMigration.swift in Sources */,
 				D9AE0AD729187A700063488B /* SessionResetJobRecord.swift in Sources */,
 				1700E34128BD41150073D949 /* SetAlgebra+SSK.swift in Sources */,
-				F9C5CCC6289453B300548EEE /* SignalAccount+SDS.swift in Sources */,
-				F9C5CCD9289453B300548EEE /* SignalAccount.m in Sources */,
 				F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */,
 				F9C5CCDD289453B300548EEE /* SignalAccountFinder.swift in Sources */,
 				F9C5CC8F289453B300548EEE /* SignalIOS.pb.swift in Sources */,
@@ -12574,6 +12565,7 @@
 				F942624A289B1B5500460798 /* SDSKeyValueStoreTest.swift in Sources */,
 				5003BB45299F650E0037159B /* ServiceIdTest.swift in Sources */,
 				F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */,
+				E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */,
 				F9B93CDC28E1FE3500B3F8A0 /* SignalProxyTest.swift in Sources */,
 				F942627E289B1B5600460798 /* SignalRecipientTest.swift in Sources */,
 				F94262A1289B1B5600460798 /* SignalServiceAddressTest.swift in Sources */,

@@ -12,7 +12,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -475,18 +474,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         nameComponents.nickname = nonSignalContact.nickname;
         return nameComponents;
     }
-    
-    return signalAccount.contactPersonNameComponents;
-}
 
-- (nullable NSString *)phoneNumberForAddress:(SignalServiceAddress *)address
-{
-    if (address.phoneNumber != nil) {
-        return address.phoneNumber;
-    }
-    
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address];
-    return signalAccount.recipientPhoneNumber;
+    return [signalAccount contactPersonNameComponentsWithUserDefaults:NSUserDefaults.standardUserDefaults];
 }
 
 - (nullable NSString *)phoneNumberForAddress:(SignalServiceAddress *)address
@@ -651,7 +640,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
     if (signalAccount != nil) {
-        NSString *_Nullable nickname = signalAccount.contactNicknameIfAvailable;
+        NSString *_Nullable nickname =
+            [signalAccount contactNicknameIfAvailableWithUserDefaults:NSUserDefaults.standardUserDefaults];
         if (nickname.length > 0) {
             return nickname;
         }
@@ -701,14 +691,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self.modelReadCaches.signalAccountReadCache getSignalAccountWithAddress:address transaction:transaction];
 }
 
-- (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address);
-    
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address];
-    return (signalAccount ?: [[SignalAccount alloc] initWithSignalServiceAddress:address]);
-}
-
 - (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address
 {
     return [self fetchSignalAccountForAddress:address] != nil;
@@ -743,7 +725,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
     if (!signalAccount) {
-        signalAccount = [[SignalAccount alloc] initWithSignalServiceAddress:address];
+        signalAccount = [[SignalAccount alloc] initWithAddress:address];
     }
     
     return [self comparableNameForSignalAccount:signalAccount transaction:transaction];

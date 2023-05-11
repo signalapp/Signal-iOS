@@ -45,8 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
                                        actionBlock:^{ [DebugUIContacts createUnregisteredContactThread]; }],
                        [OWSTableItem itemWithTitle:@"New Unregistered Group Thread"
                                        actionBlock:^{ [DebugUIContacts createUnregisteredGroupThread]; }],
-                       [OWSTableItem itemWithTitle:@"Re-index All Contacts"
-                                       actionBlock:^{ [DebugContactsUtils reindexAllContacts]; }],
                        [OWSTableItem itemWithTitle:@"Log SignalAccounts"
                                        actionBlock:^{ [DebugContactsUtils logSignalAccounts]; }],
                    ]];

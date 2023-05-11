@@ -87,6 +87,7 @@ public final class TSMention: NSObject, SDSCodableModel, Decodable {
         batched: Bool,
         block: @escaping (TSMention, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        anyEnumerate(transaction: transaction, batched: batched, block: block)
+        let batchingPreference: BatchingPreference = batched ? .batched() : .unbatched
+        anyEnumerate(transaction: transaction, batchingPreference: batchingPreference, block: block)
     }
 }

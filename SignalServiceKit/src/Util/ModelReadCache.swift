@@ -41,7 +41,7 @@ struct ModelReadCacheStats {
 
 // MARK: -
 
-class ModelCacheValueBox<ValueType: BaseModel> {
+class ModelCacheValueBox<ValueType> {
     let value: ValueType?
 
     init(value: ValueType?) {
@@ -57,7 +57,7 @@ struct ModelCacheKey<KeyType: Hashable & Equatable> {
 
 // MARK: -
 
-class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType: BaseModel> {
+class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType> {
     func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
         fatalError("Unimplemented")
     }
@@ -98,7 +98,7 @@ class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType: BaseModel> {
 
 // MARK: -
 
-class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel>: Dependencies, CacheSizeLeasing {
+class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, CacheSizeLeasing {
 
     enum Mode {
         // * .read caches can be accessed from any thread.
@@ -281,11 +281,6 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel>: Depen
                 return
             }
             let databaseValue = self.readValue(for: cacheKey, transaction: transaction)
-            if cachedValue != databaseValue {
-                Logger.verbose("cachedValue: \(cachedValue?.description() ?? "nil")")
-                Logger.verbose("databaseValue: \(databaseValue?.description() ?? "nil")")
-                owsFailDebug("cachedValue != databaseValue")
-            }
         }
         #endif
 
@@ -1147,7 +1142,7 @@ public class ModelReadCaches: NSObject {
     }
 }
 
-class TestableModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel>: ModelReadCache<KeyType, ValueType> {
+class TestableModelReadCache<KeyType: Hashable & Equatable, ValueType>: ModelReadCache<KeyType, ValueType> {
     override var isAppReady: Bool {
         return true
     }
@@ -1155,16 +1150,20 @@ class TestableModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel
 
 @objc
 public class ModelReadCacheFactory: NSObject {
-    func create<KeyType: Hashable & Equatable, ValueType: BaseModel>(mode: ModelReadCache<KeyType, ValueType>.Mode,
-                                                                     adapter: ModelCacheAdapter<KeyType, ValueType>) -> ModelReadCache<KeyType, ValueType> {
+    func create<KeyType: Hashable & Equatable, ValueType>(
+        mode: ModelReadCache<KeyType, ValueType>.Mode,
+        adapter: ModelCacheAdapter<KeyType, ValueType>
+    ) -> ModelReadCache<KeyType, ValueType> {
         return ModelReadCache(mode: mode, adapter: adapter)
     }
 }
 
 @objc
 class TestableModelReadCacheFactory: ModelReadCacheFactory {
-    override func create<KeyType: Hashable & Equatable, ValueType: BaseModel>(mode: ModelReadCache<KeyType, ValueType>.Mode,
-                                                                              adapter: ModelCacheAdapter<KeyType, ValueType>) -> ModelReadCache<KeyType, ValueType> {
+    override func create<KeyType: Hashable & Equatable, ValueType>(
+        mode: ModelReadCache<KeyType, ValueType>.Mode,
+        adapter: ModelCacheAdapter<KeyType, ValueType>
+    ) -> ModelReadCache<KeyType, ValueType> {
         return TestableModelReadCache(mode: mode, adapter: adapter)
     }
 }

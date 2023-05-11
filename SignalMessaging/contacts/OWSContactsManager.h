@@ -70,9 +70,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 - (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
                                             transaction:(SDSAnyReadTransaction *)transaction;
 
-// This will always return an instance of SignalAccount.
-- (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
-
 #pragma mark - System Contact Fetching
 
 @property (nonatomic, readonly) BOOL isEditingAllowed;

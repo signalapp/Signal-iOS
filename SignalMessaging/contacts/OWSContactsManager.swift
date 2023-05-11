@@ -693,11 +693,11 @@ extension OWSContactsManager {
                 )
                 let contactAvatarHash = Self.buildContactAvatarHash(contact: contact)
                 let signalAccount = SignalAccount(
-                    signalRecipient: signalRecipient,
                     contact: contact,
                     contactAvatarHash: contactAvatarHash,
-                    multipleAccountLabelText: multipleAccountLabelText
-                )
+                    multipleAccountLabelText: multipleAccountLabelText,
+                    recipientPhoneNumber: signalRecipient.address.phoneNumber,
+                    recipientUUID: signalRecipient.address.uuidString)
                 signalAccounts.append(signalAccount)
             }
         }
@@ -1242,7 +1242,7 @@ extension OWSContactsManager {
 private extension SignalAccount {
     var fullName: String? {
         // Name may be either the nickname or the full name of the contact
-        guard let fullName = contactPreferredDisplayName()?.nilIfEmpty else {
+        guard let fullName = contactPreferredDisplayName() else {
             return nil
         }
         guard let label = multipleAccountLabelText.nilIfEmpty else {

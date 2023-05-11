@@ -329,7 +329,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             // This operation can run in the memory-constrainted NSE, so trade off a
             // bit of speed to save memory.
             var uniqueIdsToRemove = [String]()
-            SignalAccount.anyEnumerate(transaction: transaction, batchSize: 8) { signalAccount, _ in
+            SignalAccount.anyEnumerate(transaction: transaction, batchingPreference: .batched(8)) { signalAccount, _ in
                 guard !setOfAddresses.contains(signalAccount.recipientAddress) else {
                     // This contact was received in this batch, so don't remove it.
                     return

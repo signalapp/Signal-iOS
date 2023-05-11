@@ -1089,9 +1089,6 @@ public class FullTextSearcher: NSObject {
 
 extension SignalAccount {
     public static func transientSignalAccount(forSignalRecipient signalRecipient: SignalRecipient) -> SignalAccount {
-        SignalAccount(signalRecipient: signalRecipient,
-                      contact: nil,
-                      contactAvatarHash: nil,
-                      multipleAccountLabelText: nil)
+        SignalAccount(address: signalRecipient.address)
     }
 }
