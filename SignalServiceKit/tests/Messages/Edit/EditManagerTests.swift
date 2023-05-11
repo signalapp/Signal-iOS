@@ -22,6 +22,7 @@ class EditManagerTests: SSKBaseTestSwift {
         let targetMessage = createIncomingMessage(with: thread) { builder in
             builder.messageBody = "BAR"
             builder.authorAddress = author
+            builder.expireStartedAt = 3
         }
 
         let editMessage = createEditDataMessage { $0.setBody("FOO") }
@@ -44,12 +45,18 @@ class EditManagerTests: SSKBaseTestSwift {
                 tx: tx
             )
 
-            XCTAssertTrue(result)
+            XCTAssertNotNil(result)
 
             compare(
                 dataStoreMock.editMessageCopy,
+                targetMessage,
+                propertyList: editPropertyList
+            )
+
+            compare(
                 dataStoreMock.oldMessageCopy,
-                propertyList: propertyList
+                targetMessage,
+                propertyList: originalPropetyList
             )
         }
     }
@@ -78,7 +85,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 author: author,
                 tx: tx
             )
-            XCTAssertFalse(result)
+            XCTAssertNil(result)
         }
     }
 
@@ -107,7 +114,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 author: author,
                 tx: tx
             )
-            XCTAssertFalse(result)
+            XCTAssertNil(result)
         }
     }
 
@@ -131,7 +138,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 author: author,
                 tx: tx
             )
-            XCTAssertFalse(result)
+            XCTAssertNil(result)
         }
     }
 
@@ -161,7 +168,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 author: author,
                 tx: tx
             )
-            XCTAssertFalse(result)
+            XCTAssertNil(result)
         }
     }
 
@@ -256,6 +263,7 @@ class EditManagerTests: SSKBaseTestSwift {
         var editMessageCopy: TSMessage?
         var oldMessageCopy: TSMessage?
         var editRecord: EditRecord?
+        var attachment: TSAttachment?
 
         init(targetMessage: TSMessage?) {
             self.targetMessage = targetMessage
@@ -265,8 +273,18 @@ class EditManagerTests: SSKBaseTestSwift {
             return targetMessage
         }
 
-        func getAttachments(message: TSMessage, tx: DBReadTransaction) -> [TSAttachment] {
+        func getMediaAttachments(
+            message: TSMessage,
+            tx: DBReadTransaction
+        ) -> [TSAttachment] {
             return []
+        }
+
+        func getOversizedTextAttachments(
+            message: TSMessage,
+            tx: DBReadTransaction
+        ) -> TSAttachment? {
+            return nil
         }
 
         func insertMessageCopy(message: TSMessage, tx: DBWriteTransaction) {
@@ -280,6 +298,13 @@ class EditManagerTests: SSKBaseTestSwift {
 
         func insertEditRecord(record: EditRecord, tx: DBWriteTransaction) {
             editRecord = record
+        }
+
+        func insertAttachment(
+            attachment: TSAttachmentPointer,
+            tx: DBWriteTransaction
+        ) {
+            self.attachment = attachment
         }
     }
 
@@ -310,7 +335,7 @@ class EditManagerTests: SSKBaseTestSwift {
         case ignore
     }
 
-    let propertyList: [String: EditedMessageValidationType] = [
+    let editPropertyList: [String: EditedMessageValidationType] = [
         "isSyncMessage": .unchanged,
         "canSendToLocalAddress": .unchanged,
         "isIncoming": .unchanged,
@@ -318,6 +343,42 @@ class EditManagerTests: SSKBaseTestSwift {
         "editState": .changed,
         "body": .changed,
         "bodyRanges": .changed,
+        "expiresInSeconds": .unchanged,
+        "expireStartedAt": .unchanged,
+        "schemaVersion": .unchanged,
+        "quotedMessage": .unchanged,
+        "contactShare": .unchanged,
+        "linkPreview": .unchanged,
+        "messageSticker": .unchanged,
+        "isViewOnceMessage": .unchanged,
+        "isViewOnceComplete": .unchanged,
+        "wasRemotelyDeleted": .unchanged,
+        "storyReactionEmoji": .unchanged,
+        "storedShouldStartExpireTimer": .unchanged,
+        "attachmentIds": .unchanged,
+        "expiresAt": .unchanged,
+        "hasPerConversationExpiration": .unchanged,
+        "hasPerConversationExpirationStarted": .unchanged,
+        "giftBadge": .unchanged,
+        "storyTimestamp": .unchanged,
+        "storyAuthorAddress": .unchanged,
+        "storyAuthorUuidString": .unchanged,
+        "isGroupStoryReply": .unchanged,
+        "isStoryReply": .unchanged,
+        "hash": .ignore,
+        "superclass": .ignore,
+        "description": .ignore,
+        "debugDescription": .ignore
+    ]
+
+    let originalPropetyList: [String: EditedMessageValidationType] = [
+        "isSyncMessage": .unchanged,
+        "canSendToLocalAddress": .unchanged,
+        "isIncoming": .unchanged,
+        "isOutgoing": .unchanged,
+        "editState": .changed,
+        "body": .unchanged,
+        "bodyRanges": .unchanged,
         "expiresInSeconds": .unchanged,
         "expireStartedAt": .unchanged,
         "schemaVersion": .unchanged,

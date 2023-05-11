@@ -265,7 +265,6 @@ NS_ASSUME_NONNULL_BEGIN
                 [self handleIncomingEnvelope:request.envelope
                              withEditMessage:contentProto.editMessage
                              wasReceivedByUD:request.wasReceivedByUD
-                     serverDeliveryTimestamp:request.serverDeliveryTimestamp
                                  transaction:transaction];
             }
         case OWSMessageManagerMessageTypeUnknown:

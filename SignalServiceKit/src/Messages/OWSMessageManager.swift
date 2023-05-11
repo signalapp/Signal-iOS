@@ -412,7 +412,6 @@ extension OWSMessageManager {
         _ envelope: SSKProtoEnvelope,
         withEditMessage editMessage: SSKProtoEditMessage,
         wasReceivedByUD: Bool,
-        serverDeliveryTimestamp: UInt64,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
         guard FeatureFlags.editMessageReceive else {
@@ -446,7 +445,7 @@ extension OWSMessageManager {
             )
         )
 
-        let result = editManager.processIncomingEditMessage(
+        let message = editManager.processIncomingEditMessage(
             dataMessage,
             thread: thread,
             serverTimestamp: envelope.serverTimestamp,
@@ -455,9 +454,23 @@ extension OWSMessageManager {
             tx: writeTx.asV2Write
         )
 
-        if !result {
+        guard let message else {
             Logger.info("Failed to insert edit message")
+            return
         }
+
+        if wasReceivedByUD {
+            self.outgoingReceiptManager.enqueueDeliveryReceipt(
+                for: envelope,
+                messageUniqueId: message.uniqueId,
+                transaction: writeTx
+            )
+        }
+
+        self.attachmentDownloads.enqueueDownloadOfAttachmentsForNewMessage(
+            message,
+            transaction: writeTx
+        )
 
         DispatchQueue.main.async {
             self.typingIndicatorsImpl.didReceiveIncomingMessage(

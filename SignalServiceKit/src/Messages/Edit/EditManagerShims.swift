@@ -29,10 +29,15 @@ public protocol _EditManager_DataStore {
         tx: DBReadTransaction
     ) -> TSInteraction?
 
-    func getAttachments(
+    func getMediaAttachments(
         message: TSMessage,
         tx: DBReadTransaction
     ) -> [TSAttachment]
+
+    func getOversizedTextAttachments(
+        message: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSAttachment?
 
     func insertMessageCopy(
         message: TSMessage,
@@ -46,6 +51,11 @@ public protocol _EditManager_DataStore {
 
     func insertEditRecord(
         record: EditRecord,
+        tx: DBWriteTransaction
+    )
+
+    func insertAttachment(
+        attachment: TSAttachmentPointer,
         tx: DBWriteTransaction
     )
 }
@@ -64,11 +74,18 @@ internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
         )
     }
 
-    func getAttachments(
+    func getMediaAttachments(
         message: TSMessage,
         tx: DBReadTransaction
     ) -> [TSAttachment] {
         message.mediaAttachments(with: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
+    }
+
+    func getOversizedTextAttachments(
+        message: TSMessage,
+        tx: DBReadTransaction
+    ) -> TSAttachment? {
+        message.oversizeTextAttachment(with: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
     }
 
     func insertMessageCopy(
@@ -94,6 +111,13 @@ internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
         } catch {
             owsFailDebug("Unexpected edit record insertion error \(error)")
         }
+    }
+
+    func insertAttachment(
+        attachment: TSAttachmentPointer,
+        tx: DBWriteTransaction
+    ) {
+        attachment.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

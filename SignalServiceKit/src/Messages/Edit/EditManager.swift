@@ -40,7 +40,7 @@ public class EditManager {
         targetTimestamp: UInt64,
         author: SignalServiceAddress,
         tx: DBWriteTransaction
-    ) -> Bool {
+    ) -> TSMessage? {
 
         // Find the target message to edit.
         // This will implicily validate that the sender of the
@@ -53,7 +53,7 @@ public class EditManager {
             // TODO[EditMessage]: if orig message doesn't exist, put in
             // early receipt cache
             Logger.warn("Edit cannot find the target message")
-            return false
+            return nil
         }
 
         guard checkForValidEdit(
@@ -62,9 +62,9 @@ public class EditManager {
             editMessage: newDataMessage,
             serverTimestamp: serverTimestamp,
             tx: tx)
-        else { return false }
+        else { return nil }
 
-        // Create an update the existing message
+        // Create a copy of the existing message and update with the edit
         let editedMessage = createEditedMessage(
             thread: thread,
             targetMessage: targetMessage,
@@ -95,7 +95,7 @@ public class EditManager {
             owsFailDebug("Missing EditRecord IDs")
         }
 
-       return true
+        return editedMessage
     }
 
     /// Creates a new message with the following steps:
@@ -119,18 +119,15 @@ public class EditManager {
         }
 
         var linkPreview: OWSLinkPreview?
-        // TODO[Edit Message]: For the time being, only generate a link
-        // preview if one exists in the original message.  This will
-        // change in the future when attachments are handled better, but
-        // this should be fine for now.
-        if targetMessage.linkPreview != nil {
+        if editMessage.preview.isEmpty.negated {
             do {
+                // NOTE: Currently makes no attempt to reuse existing link previews
                 linkPreview = try context.linkPreviewShim.buildPreview(
                     dataMessage: editMessage,
                     tx: tx
                 )
             } catch {
-                // TODO[Edit Message]: Report this error properly
+                owsFailDebug("Failed to build link preview")
             }
         }
 
@@ -142,6 +139,27 @@ public class EditManager {
         builder.bodyRanges = bodyRanges
         builder.linkPreview = linkPreview
         builder.timestamp = editMessage.timestamp
+
+        // If the editMessage quote field is present, preserve the exisiting
+        // quote. If the field is nil, remove any quote on the current message.
+        // TODO: [Edit] Wrap editMessage proto in an object that can clarify
+        // things like quote logic (change quote to a preserveQuote boolean)
+        let preserveExistingQuote = (editMessage.quote != nil)
+        if
+            targetMessage.quotedMessage != nil,
+            !preserveExistingQuote
+        {
+            builder.quotedMessage = nil
+        }
+
+        // Reconcile the new and old attachments
+        // This currenly only affects the long text attachment
+        // but could expand out to removing/adding attachments in the future.
+        builder.attachmentIds = updateAttachments(
+            targetMessage: targetMessage,
+            editMessage: editMessage,
+            tx: tx
+        )
 
         // Swap out the newly created grdbId/uniqueId with the
         // one from the original message
@@ -202,13 +220,11 @@ public class EditManager {
 
         // TODO[Edit Message]: skip expired messages
 
-        // get all attachments for the current message
-        let currentAttachments = context.dataStore.getAttachments(
+        let currentAttachments = context.dataStore.getMediaAttachments(
             message: targetMessage,
             tx: tx
         )
 
-        // Ignore voice note, contact share
         if currentAttachments.filter({ $0.isVoiceMessage }).isEmpty.negated {
             // This will bail if it finds a voice memo
             // Might be able to handle image attachemnts, but fail for now.
@@ -224,6 +240,36 @@ public class EditManager {
         }
 
         return true
+    }
+
+    internal func updateAttachments(
+        targetMessage: TSMessage,
+        editMessage: SSKProtoDataMessage,
+        tx: DBWriteTransaction
+    ) -> [String] {
+
+        let newAttachments = TSAttachmentPointer.attachmentPointers(
+            fromProtos: editMessage.attachments,
+            albumMessage: targetMessage
+        )
+
+        // check for any oversized text in the edit
+        let oversizeText = newAttachments.filter({ $0.isOversizeText }).first
+
+        // check for existing oversized text
+        let existingText = context.dataStore.getOversizedTextAttachments(
+            message: targetMessage,
+            tx: tx
+        )
+
+        var newAttachmentIds = targetMessage.attachmentIds.filter { $0 != existingText?.uniqueId }
+        if let oversizeText {
+            // insert the new oversized text attachment
+            context.dataStore.insertAttachment(attachment: oversizeText, tx: tx)
+            newAttachmentIds.append(oversizeText.uniqueId)
+        }
+
+        return newAttachmentIds
     }
 }
 
@@ -242,6 +288,7 @@ extension TSIncomingMessage {
             attachmentIds: self.attachmentIds,
             editState: isLatestRevision ? .latestRevision : .pastRevision,
             expiresInSeconds: self.expiresInSeconds,
+            expireStartedAt: self.expireStartedAt,
             quotedMessage: self.quotedMessage,
             contactShare: self.contactShare,
             linkPreview: self.linkPreview,

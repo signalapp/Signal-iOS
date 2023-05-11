@@ -33,6 +33,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                          attachmentIds: [String]? = nil,
                          editState: TSEditState = .none,
                          expiresInSeconds: UInt32 = 0,
+                         // expireStartedAt should always initialized to zero for new incoming messages.
+                         expireStartedAt: UInt64 = 0,
                          quotedMessage: TSQuotedMessage? = nil,
                          contactShare: OWSContact? = nil,
                          linkPreview: OWSLinkPreview? = nil,
@@ -54,8 +56,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    attachmentIds: attachmentIds,
                    editState: editState,
                    expiresInSeconds: expiresInSeconds,
-                   // expireStartedAt is always initialized to zero for incoming messages.
-                   expireStartedAt: 0,
+                   expireStartedAt: expireStartedAt,
                    quotedMessage: quotedMessage,
                    contactShare: contactShare,
                    linkPreview: linkPreview,

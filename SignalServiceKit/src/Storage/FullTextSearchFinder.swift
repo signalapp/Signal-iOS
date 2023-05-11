@@ -265,7 +265,10 @@ enum GRDBFullTextSearchFinder {
             // different address.
             return false
         }
-        if let message = model as? TSMessage, message.isGroupStoryReply {
+        if
+            let message = model as? TSMessage,
+            (message.isGroupStoryReply || message.editState == .pastRevision)
+        {
             return false
         }
         return true
