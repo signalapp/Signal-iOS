@@ -377,7 +377,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         scrollFlag.stringValue = date.localizedString
         scrollFlag.sizeToFit()
 
-        scrollFlag.center = guessCenterOfFlag()
+        let center = guessCenterOfFlag()
+        if center.x.isFinite && center.y.isFinite {
+            scrollFlag.center = guessCenterOfFlag()
+        }
     }
 
     private func guessCenterOfFlag() -> CGPoint {
