@@ -1854,22 +1854,21 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                              authedAccount:(AuthedAccount *)authedAccount
                                transaction:(SDSAnyWriteTransaction *)transaction
 {
-    SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
-    OWSAssertDebug(address.isValid);
-
-    if (address.isLocalAddress) {
+    if (addressParam.isLocalAddress || [authedAccount isAddressForLocalUser:addressParam]) {
         return;
     }
+
+    SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
+    OWSAssertDebug(address.isValid);
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address
                                                                     authedAccount:authedAccount
                                                                       transaction:transaction];
 
     if (userProfile.lastMessagingDate != nil) {
-        // lastMessagingDate is coarse; we don't need to track
-        // every single message sent or received.  It is sufficient
-        // to update it only when the value changes by more than
-        // an hour.
+        // lastMessagingDate is coarse; we don't need to track every single message
+        // sent or received. It is sufficient to update it only when the value
+        // changes by more than an hour.
         NSTimeInterval lastMessagingInterval = fabs(userProfile.lastMessagingDate.timeIntervalSinceNow);
         const NSTimeInterval lastMessagingResolution = 1 * kHourInterval;
         if (lastMessagingInterval < lastMessagingResolution) {
