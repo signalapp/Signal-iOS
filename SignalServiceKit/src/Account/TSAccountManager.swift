@@ -747,7 +747,7 @@ public extension TSAccountManager {
 
     @objc(clearKBSKeysWithTransaction:)
     func clearKBSKeys(with transaction: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.keyBackupService.clearKeys(transaction: transaction.asV2Write)
+        DependenciesBridge.shared.svr.clearKeys(transaction: transaction.asV2Write)
     }
 }
 

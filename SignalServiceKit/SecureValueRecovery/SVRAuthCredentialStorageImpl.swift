@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class KBSAuthCredentialStorageImpl: KBSAuthCredentialStorage {
+public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
 
     private let keyValueStoreFactory: KeyValueStoreFactory
 
@@ -166,7 +166,7 @@ public class KBSAuthCredentialStorageImpl: KBSAuthCredentialStorage {
         // clock shenanigans, but this is all best effort anyway.
         .sorted(by: sort)
         // Take the first N up to the limit
-        .prefix(KBS.maxKBSAuthCredentialsBackedUp)
+        .prefix(SVR.maxKBSAuthCredentialsBackedUp)
         return Array(consolidated)
     }
 

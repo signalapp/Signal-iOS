@@ -2303,7 +2303,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_enableV2RegistrationLockIfNecessary) { transaction in
-            guard DependenciesBridge.shared.keyBackupService.hasMasterKey(transaction: transaction.asAnyWrite.asV2Write) else {
+            guard DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction.asAnyWrite.asV2Write) else {
                 return .success(())
             }
 
@@ -2348,8 +2348,8 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_kbsStateCleanup) { transaction in
-            if DependenciesBridge.shared.keyBackupService.hasMasterKey(transaction: transaction.asAnyRead.asV2Read) {
-                DependenciesBridge.shared.keyBackupService.setMasterKeyBackedUp(true, transaction: transaction.asAnyWrite.asV2Write)
+            if DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction.asAnyRead.asV2Read) {
+                DependenciesBridge.shared.svr.setMasterKeyBackedUp(true, transaction: transaction.asAnyWrite.asV2Write)
             }
 
             guard let isUsingRandomPinKey = OWS2FAManager.keyValueStore().getBool(
@@ -2360,7 +2360,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
 
             OWS2FAManager.keyValueStore().removeValue(forKey: "isUsingRandomPinKey", transaction: transaction.asAnyWrite)
-            DependenciesBridge.shared.keyBackupService.useDeviceLocalMasterKey(
+            DependenciesBridge.shared.svr.useDeviceLocalMasterKey(
                 authedAccount: .implicit(),
                 transaction: transaction.asAnyWrite.asV2Write
             )

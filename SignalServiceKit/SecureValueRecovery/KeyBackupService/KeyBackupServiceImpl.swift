@@ -8,36 +8,36 @@ import LibSignalClient
 import SignalArgon2
 import SignalCoreKit
 
-public class KeyBackupServiceImpl: KeyBackupService {
+public class KeyBackupServiceImpl: SecureValueRecovery {
 
     // MARK: - Init
 
     private let appContext: AppContext
-    private let accountManager: KBS.Shims.TSAccountManager
-    private let credentialStorage: KBSAuthCredentialStorage
+    private let accountManager: SVR.Shims.TSAccountManager
+    private let credentialStorage: SVRAuthCredentialStorage
     private let db: DB
     private let keyValueStoreFactory: KeyValueStoreFactory
-    private let remoteAttestation: KBS.Shims.RemoteAttestation
+    private let remoteAttestation: SVR.Shims.RemoteAttestation
     private let schedulers: Schedulers
     private let signalService: OWSSignalServiceProtocol
-    private let storageServiceManager: KBS.Shims.StorageServiceManager
+    private let storageServiceManager: SVR.Shims.StorageServiceManager
     private let syncManager: SyncManagerProtocolSwift
     private let tsConstants: TSConstantsProtocol
-    private let twoFAManager: KBS.Shims.OWS2FAManager
+    private let twoFAManager: SVR.Shims.OWS2FAManager
 
     public init(
-        accountManager: KBS.Shims.TSAccountManager,
+        accountManager: SVR.Shims.TSAccountManager,
         appContext: AppContext,
-        credentialStorage: KBSAuthCredentialStorage,
+        credentialStorage: SVRAuthCredentialStorage,
         databaseStorage: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
-        remoteAttestation: KBS.Shims.RemoteAttestation,
+        remoteAttestation: SVR.Shims.RemoteAttestation,
         schedulers: Schedulers,
         signalService: OWSSignalServiceProtocol,
-        storageServiceManager: KBS.Shims.StorageServiceManager,
+        storageServiceManager: SVR.Shims.StorageServiceManager,
         syncManager: SyncManagerProtocolSwift,
         tsConstants: TSConstantsProtocol,
-        twoFAManager: KBS.Shims.OWS2FAManager
+        twoFAManager: SVR.Shims.OWS2FAManager
     ) {
         self.accountManager = accountManager
         self.appContext = appContext
@@ -77,7 +77,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
         return getOrLoadState(transaction: transaction).masterKey != nil
     }
 
-    public var currentPinType: KBS.PinType? {
+    public var currentPinType: SVR.PinType? {
         return getOrLoadStateWithSneakyTransaction().pinType
     }
 
@@ -95,7 +95,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 return
             }
 
-            guard let pinData = KeyBackupServiceImpl.normalizePin(pin).data(using: .utf8) else {
+            guard let pinData = SVRUtil.normalizePin(pin).data(using: .utf8) else {
                 owsFailDebug("failed to determine pin data")
                 return
             }
@@ -128,14 +128,14 @@ public class KeyBackupServiceImpl: KeyBackupService {
     ) -> Promise<String> {
         guard let enclave = enclavesToCheck.first else {
             owsFailDebug("Unexpectedly tried to acquire registration lock with no specified enclaves")
-            return Promise(error: KBS.KBSError.assertion)
+            return Promise(error: SVR.SVRError.assertion)
         }
         return acquireRegistrationLockForNewNumber(
             pin: pin,
             auth: auth,
             enclave: enclave
         ).recover { error -> Promise<String> in
-            if case KBS.KBSError.backupMissing = error, enclavesToCheck.count > 1 {
+            if case SVR.SVRError.backupMissing = error, enclavesToCheck.count > 1 {
                 // There's no backup on this enclave, but we have more enclaves we can try.
                 return self.acquireRegistrationLockForNewNumber(pin: pin, auth: auth, enclavesToCheck: Array(enclavesToCheck.dropFirst()))
             }
@@ -153,32 +153,32 @@ public class KeyBackupServiceImpl: KeyBackupService {
 
         return restoreKeys(
             pin: pin,
-            auth: .kbsAuth(auth, backup: nil),
+            auth: .svrAuth(auth, backup: nil),
             enclave: enclave,
             ignoreCachedToken: true
         ).map(on: schedulers.global()) { restoredKeys -> String in
-            guard let registrationLockToken = KBS.DerivedKey.registrationLock.derivedData(from: restoredKeys.masterKey)?.hexadecimalString else {
+            guard let registrationLockToken = SVR.DerivedKey.registrationLock.derivedData(from: restoredKeys.masterKey)?.hexadecimalString else {
                 owsFailDebug("Failed to derive registration lock token")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
             return registrationLockToken
         }.recover(on: schedulers.global()) { error -> Promise<String> in
-            owsAssertDebug(error is KBS.KBSError, "Unexpectedly surfacing a non KBS error \(error)")
+            owsAssertDebug(error is SVR.SVRError, "Unexpectedly surfacing a non KBS error \(error)")
             throw error
         }
     }
 
     /// Loads the users key, if any, from the KBS into the database.
     public func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential?) -> Promise<Void> {
-        return restoreKeysAndBackup(pin: pin, authMethod: auth.map { KBS.AuthMethod.kbsAuth($0, backup: nil) } ?? KBS.AuthMethod.implicit)
+        return restoreKeysAndBackup(pin: pin, authMethod: auth.map { SVR.AuthMethod.svrAuth($0, backup: nil) } ?? SVR.AuthMethod.implicit)
             .then(on: schedulers.sync) { result -> Promise<Void> in
                 switch result {
                 case .success:
                     return .value(())
                 case .invalidPin(remainingAttempts: let remainingAttempts):
-                    throw KBS.KBSError.invalidPin(remainingAttempts: remainingAttempts)
+                    throw SVR.SVRError.invalidPin(remainingAttempts: remainingAttempts)
                 case .backupMissing:
-                    throw KBS.KBSError.backupMissing
+                    throw SVR.SVRError.backupMissing
                 case .networkError(let error):
                     throw error
                 case .genericError(let error):
@@ -187,7 +187,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
             }
     }
 
-    public func restoreKeysAndBackup(pin: String, authMethod: KBS.AuthMethod) -> Guarantee<KBS.RestoreKeysResult> {
+    public func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
         // record of you. It's important that these are ordered from neweset enclave
@@ -199,18 +199,18 @@ public class KeyBackupServiceImpl: KeyBackupService {
 
     private func restoreKeysAndBackup(
         pin: String,
-        auth: KBS.AuthMethod,
+        auth: SVR.AuthMethod,
         enclavesToCheck: [KeyBackupEnclave]
-    ) -> Guarantee<KBS.RestoreKeysResult> {
+    ) -> Guarantee<SVR.RestoreKeysResult> {
         guard let enclave = enclavesToCheck.first else {
             owsFailDebug("Unexpectedly tried to restore keys with no specified enclaves")
-            return .value(.genericError(KBS.KBSError.assertion))
+            return .value(.genericError(SVR.SVRError.assertion))
         }
         return restoreKeysAndBackup(
             pin: pin,
             auth: auth,
             enclave: enclave
-        ).then(on: schedulers.sync) { result -> Guarantee<KBS.RestoreKeysResult> in
+        ).then(on: schedulers.sync) { result -> Guarantee<SVR.RestoreKeysResult> in
             switch result {
             case .success, .invalidPin, .networkError, .genericError:
                 return .value(result)
@@ -227,9 +227,9 @@ public class KeyBackupServiceImpl: KeyBackupService {
 
     private func restoreKeysAndBackup(
         pin: String,
-        auth: KBS.AuthMethod,
+        auth: SVR.AuthMethod,
         enclave: KeyBackupEnclave
-    ) -> Guarantee<KBS.RestoreKeysResult> {
+    ) -> Guarantee<SVR.RestoreKeysResult> {
         Logger.info("Attempting KBS restore from enclave \(enclave.name)")
 
         return restoreKeys(
@@ -250,12 +250,12 @@ public class KeyBackupServiceImpl: KeyBackupService {
         }.done(on: schedulers.global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
 
             guard let tokenData = response.token else {
                 owsFailDebug("KBS restore is missing token")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
 
             // We should always receive a new token to use on our next request.
@@ -271,10 +271,10 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 // If we receive already exists, this means our backup has expired and
                 // been replaced. In normal circumstances this should never happen.
                 owsFailDebug("Received ALREADY_EXISTS response from KBS")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             case .notYetValid:
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             case .ok:
                 let encodedVerificationString = try self.deriveEncodedVerificationString(pin: pin)
 
@@ -285,7 +285,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
                     self.store(
                         masterKey: masterKey,
                         isMasterKeyBackedUp: true,
-                        pinType: KBS.PinType(forPin: pin),
+                        pinType: SVR.PinType(forPin: pin),
                         encodedVerificationString: encodedVerificationString,
                         enclaveName: self.currentEnclave.name,
                         authedAccount: auth.authedAccount,
@@ -310,11 +310,11 @@ public class KeyBackupServiceImpl: KeyBackupService {
         }.map(on: schedulers.sync) {
             return .success
         }
-        .recover(on: schedulers.global()) { error -> Guarantee<KBS.RestoreKeysResult> in
+        .recover(on: schedulers.global()) { error -> Guarantee<SVR.RestoreKeysResult> in
             if error.isNetworkConnectivityFailure {
                 return .value(.networkError(error))
             }
-            guard let kbsError = error as? KBS.KBSError else {
+            guard let kbsError = error as? SVR.SVRError else {
                 owsFailDebug("Unexpectedly surfacing a non KBS error \(error)")
                 return .value(.genericError(error))
             }
@@ -338,7 +338,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
 
     private func restoreKeys(
         pin: String,
-        auth: KBS.AuthMethod,
+        auth: SVR.AuthMethod,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false
     ) -> Promise<RestoredKeys> {
@@ -358,7 +358,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
         }.map(on: schedulers.global()) { response, encryptionKey, accessKey -> RestoredKeys in
             guard let status = response.status else {
                 owsFailDebug("KBS restore is missing status")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
 
             // As long as the backup exists we should always receive a
@@ -366,7 +366,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
             if !ignoreCachedToken, status != .missing {
                 guard let tokenData = response.token else {
                     owsFailDebug("KBS restore is missing token")
-                    throw KBS.KBSError.assertion
+                    throw SVR.SVRError.assertion
                 }
 
                 try self.updateNextToken(
@@ -381,18 +381,18 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 // the given token has already been spent. we'll use the new token
                 // on the next attempt.
                 owsFailDebug("attempted restore with spent token")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             case .pinMismatch:
-                throw KBS.KBSError.invalidPin(remainingAttempts: response.tries)
+                throw SVR.SVRError.invalidPin(remainingAttempts: response.tries)
             case .missing:
-                throw KBS.KBSError.backupMissing
+                throw SVR.SVRError.backupMissing
             case .notYetValid:
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             case .ok:
                 guard let encryptedMasterKey = response.data else {
                     owsFailDebug("Failed to extract encryptedMasterKey from successful KBS restore response")
-                    throw KBS.KBSError.assertion
+                    throw SVR.SVRError.assertion
                 }
 
                 let masterKey = try self.decryptMasterKey(encryptedMasterKey, encryptionKey: encryptionKey)
@@ -418,7 +418,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
 
     public func generateAndBackupKeys(
         pin: String,
-        authMethod: KBS.AuthMethod,
+        authMethod: SVR.AuthMethod,
         rotateMasterKey: Bool
     ) -> Promise<Void> {
         return fetchBackupId(
@@ -443,12 +443,12 @@ public class KeyBackupServiceImpl: KeyBackupService {
         }.done(on: schedulers.global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
 
             guard let tokenData = response.token else {
                 owsFailDebug("KBS restore is missing token")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
 
             // We should always receive a new token to use on our next request. Store it now.
@@ -462,10 +462,10 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 // the given token has already been spent. we'll use the new token
                 // on the next attempt.
                 owsFailDebug("attempted restore with spent token")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             case .notYetValid:
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             case .ok:
                 let encodedVerificationString = try self.deriveEncodedVerificationString(pin: pin)
 
@@ -474,7 +474,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
                     self.store(
                         masterKey: masterKey,
                         isMasterKeyBackedUp: true,
-                        pinType: KBS.PinType(forPin: pin),
+                        pinType: SVR.PinType(forPin: pin),
                         encodedVerificationString: encodedVerificationString,
                         enclaveName: self.currentEnclave.name,
                         authedAccount: authMethod.authedAccount,
@@ -491,7 +491,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 self.reloadState(transaction: transaction)
             }
 
-            guard let kbsError = error as? KBS.KBSError else {
+            guard let kbsError = error as? SVR.SVRError else {
                 Logger.error("Surfacing a non KBS error: \(error)")
                 throw error
             }
@@ -516,7 +516,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
 
     // MARK: - Master Key Encryption
 
-    private func dataToDeriveFrom(for key: KBS.DerivedKey, transaction: DBReadTransaction) -> Data? {
+    private func dataToDeriveFrom(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> Data? {
         switch key {
         case .storageServiceManifest, .storageServiceRecord:
             return self.data(for: .storageService, transaction: transaction)
@@ -528,7 +528,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
         }
     }
 
-    public func data(for key: KBS.DerivedKey, transaction: DBReadTransaction) -> Data? {
+    public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> Data? {
         // If we have this derived key stored in the database, use it.
         // This should only happen if we're a linked device and received
         // the derived key via a sync message, since we won't know about
@@ -546,24 +546,24 @@ public class KeyBackupServiceImpl: KeyBackupService {
         return key.derivedData(from: dataToDeriveFrom)
     }
 
-    public func isKeyAvailable(_ key: KBS.DerivedKey) -> Bool {
+    public func isKeyAvailable(_ key: SVR.DerivedKey) -> Bool {
         return db.read {
             return data(for: key, transaction: $0) != nil
         }
     }
 
-    public func encrypt(keyType: KBS.DerivedKey, data: Data) throws -> Data {
+    public func encrypt(keyType: SVR.DerivedKey, data: Data) throws -> Data {
         guard let keyData = db.read(block: { self.data(for: keyType, transaction: $0) }) else {
             owsFailDebug("missing derived key \(keyType)")
-            throw KBS.KBSError.assertion
+            throw SVR.SVRError.assertion
         }
         return try Aes256GcmEncryptedData.encrypt(data, key: keyData).concatenate()
     }
 
-    public func decrypt(keyType: KBS.DerivedKey, encryptedData: Data) throws -> Data {
+    public func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) throws -> Data {
         guard let keyData = db.read(block: { self.data(for: keyType, transaction: $0) }) else {
             owsFailDebug("missing derived key \(keyType)")
-            throw KBS.KBSError.assertion
+            throw SVR.SVRError.assertion
         }
         return try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData)
     }
@@ -586,8 +586,8 @@ public class KeyBackupServiceImpl: KeyBackupService {
     func deriveEncryptionKeyAndAccessKey(pin: String, backupId: Data) throws -> (encryptionKey: Data, accessKey: Data) {
         assertIsOnBackgroundQueue()
 
-        guard let pinData = KeyBackupServiceImpl.normalizePin(pin).data(using: .utf8) else { throw KBS.KBSError.assertion }
-        guard backupId.count == 32 else { throw KBS.KBSError.assertion }
+        guard let pinData = SVRUtil.normalizePin(pin).data(using: .utf8) else { throw SVR.SVRError.assertion }
+        guard backupId.count == 32 else { throw SVR.SVRError.assertion }
 
         let (rawHash, _) = try Argon2.hash(
             iterations: 32,
@@ -606,8 +606,8 @@ public class KeyBackupServiceImpl: KeyBackupService {
     func deriveEncodedVerificationString(pin: String, salt: Data = Cryptography.generateRandomBytes(16)) throws -> String {
         assertIsOnBackgroundQueue()
 
-        guard let pinData = KeyBackupServiceImpl.normalizePin(pin).data(using: .utf8) else { throw KBS.KBSError.assertion }
-        guard salt.count == 16 else { throw KBS.KBSError.assertion }
+        guard let pinData = SVRUtil.normalizePin(pin).data(using: .utf8) else { throw SVR.SVRError.assertion }
+        guard salt.count == 16 else { throw SVR.SVRError.assertion }
 
         let (_, encodedString) = try Argon2.hash(
             iterations: 64,
@@ -623,17 +623,6 @@ public class KeyBackupServiceImpl: KeyBackupService {
         return encodedString
     }
 
-    public static func normalizePin(_ pin: String) -> String {
-        // Trim leading and trailing whitespace
-        var normalizedPin = pin.ows_stripped()
-
-        // If this pin contains only numerals, ensure they are arabic numerals.
-        if pin.digitsOnly() == normalizedPin { normalizedPin = normalizedPin.ensureArabicNumerals }
-
-        // NFKD unicode normalization.
-        return normalizedPin.decomposedStringWithCompatibilityMapping
-    }
-
     func generateMasterKey() -> Data {
         assertIsOnBackgroundQueue()
 
@@ -643,13 +632,13 @@ public class KeyBackupServiceImpl: KeyBackupService {
     func encryptMasterKey(_ masterKey: Data, encryptionKey: Data) throws -> Data {
         assertIsOnBackgroundQueue()
 
-        guard masterKey.count == 32 else { throw KBS.KBSError.assertion }
-        guard encryptionKey.count == 32 else { throw KBS.KBSError.assertion }
+        guard masterKey.count == 32 else { throw SVR.SVRError.assertion }
+        guard encryptionKey.count == 32 else { throw SVR.SVRError.assertion }
 
         let (iv, cipherText) = try Cryptography.encryptSHA256HMACSIV(data: masterKey, key: encryptionKey)
 
-        guard iv.count == 16 else { throw KBS.KBSError.assertion }
-        guard cipherText.count == 32 else { throw KBS.KBSError.assertion }
+        guard iv.count == 16 else { throw SVR.SVRError.assertion }
+        guard cipherText.count == 32 else { throw SVR.SVRError.assertion }
 
         return iv + cipherText
     }
@@ -657,7 +646,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
     func decryptMasterKey(_ ivAndCipher: Data, encryptionKey: Data) throws -> Data {
         assertIsOnBackgroundQueue()
 
-        guard ivAndCipher.count == 48 else { throw KBS.KBSError.assertion }
+        guard ivAndCipher.count == 48 else { throw SVR.SVRError.assertion }
 
         let masterKey = try Cryptography.decryptSHA256HMACSIV(
             iv: ivAndCipher[0...15],
@@ -665,7 +654,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
             key: encryptionKey
         )
 
-        guard masterKey.count == 32 else { throw KBS.KBSError.assertion }
+        guard masterKey.count == 32 else { throw SVR.SVRError.assertion }
 
         return masterKey
     }
@@ -688,19 +677,19 @@ public class KeyBackupServiceImpl: KeyBackupService {
     private var cachedState: State?
     private struct State {
         let masterKey: Data?
-        let pinType: KBS.PinType?
+        let pinType: SVR.PinType?
         let encodedVerificationString: String?
         let hasBackupKeyRequestFailed: Bool
         let hasPendingRestoration: Bool
         let isMasterKeyBackedUp: Bool
-        let syncedDerivedKeys: [KBS.DerivedKey: Data]
+        let syncedDerivedKeys: [SVR.DerivedKey: Data]
         let enclaveName: String?
 
         init(keyValueStore: KeyValueStore, transaction: DBReadTransaction) {
             masterKey = keyValueStore.getData(masterKeyIdentifier, transaction: transaction)
 
             if let rawPinType = keyValueStore.getInt(pinTypeIdentifier, transaction: transaction) {
-                pinType = KBS.PinType(rawValue: rawPinType)
+                pinType = SVR.PinType(rawValue: rawPinType)
             } else {
                 pinType = nil
             }
@@ -728,8 +717,8 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 transaction: transaction
             )
 
-            var syncedDerivedKeys = [KBS.DerivedKey: Data]()
-            for type in KBS.DerivedKey.syncableKeys {
+            var syncedDerivedKeys = [SVR.DerivedKey: Data]()
+            for type in SVR.DerivedKey.syncableKeys {
                 syncedDerivedKeys[type] = keyValueStore.getData(type.rawValue, transaction: transaction)
             }
             self.syncedDerivedKeys = syncedDerivedKeys
@@ -828,7 +817,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
             Self.encodedVerificationStringIdentifier
         ], transaction: transaction)
 
-        for type in KBS.DerivedKey.syncableKeys {
+        for type in SVR.DerivedKey.syncableKeys {
             keyValueStore.removeValue(forKey: type.rawValue, transaction: transaction)
         }
 
@@ -838,7 +827,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
     func store(
         masterKey: Data,
         isMasterKeyBackedUp: Bool,
-        pinType: KBS.PinType,
+        pinType: SVR.PinType,
         encodedVerificationString: String,
         enclaveName: String,
         authedAccount: AuthedAccount,
@@ -908,7 +897,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
     }
 
     public func storeSyncedKey(
-        type: KBS.DerivedKey,
+        type: SVR.DerivedKey,
         data: Data?,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
@@ -917,7 +906,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
             return owsFailDebug("primary device should never store synced keys")
         }
 
-        guard KBS.DerivedKey.syncableKeys.contains(type) else {
+        guard SVR.DerivedKey.syncableKeys.contains(type) else {
             return owsFailDebug("tried to store a non-syncable key")
         }
 
@@ -977,7 +966,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
     // MARK: - Requests
 
     private func enclaveRequest<RequestType: KBSRequestOption>(
-        auth: KBS.AuthMethod,
+        auth: SVR.AuthMethod,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false,
         requestOptionBuilder: @escaping (Token) throws -> RequestType
@@ -1030,17 +1019,17 @@ public class KeyBackupServiceImpl: KeyBackupService {
             }.map(on: schedulers.global()) { (response: HTTPResponse) in
                 guard let json = response.responseBodyJson else {
                     owsFailDebug("Missing or invalid JSON.")
-                    throw KBS.KBSError.assertion
+                    throw SVR.SVRError.assertion
                 }
                 guard let parser = ParamParser(responseObject: json) else {
                     owsFailDebug("Failed to parse response object")
-                    throw KBS.KBSError.assertion
+                    throw SVR.SVRError.assertion
                 }
 
                 let data = try parser.requiredBase64EncodedData(key: "data")
                 guard data.count > 0 else {
                     owsFailDebug("data is invalid")
-                    throw KBS.KBSError.assertion
+                    throw SVR.SVRError.assertion
                 }
 
                 let iv = try parser.requiredBase64EncodedData(key: "iv")
@@ -1052,14 +1041,14 @@ public class KeyBackupServiceImpl: KeyBackupService {
                     encryptionResult = try encryptedData.decrypt(key: remoteAttestation.keys.serverKey.keyData)
                 } catch {
                     owsFailDebug("failed to decrypt KBS response \(error)")
-                    throw KBS.KBSError.assertion
+                    throw SVR.SVRError.assertion
                 }
 
                 let kbResponse = try KeyBackupProtoResponse(serializedData: encryptionResult)
 
                 guard let typedResponse = RequestType.responseOption(from: kbResponse) else {
                     owsFailDebug("missing KBS response object")
-                    throw KBS.KBSError.assertion
+                    throw SVR.SVRError.assertion
                 }
 
                 return typedResponse
@@ -1071,12 +1060,12 @@ public class KeyBackupServiceImpl: KeyBackupService {
         accessKey: Data,
         encryptedMasterKey: Data,
         enclave: KeyBackupEnclave,
-        auth: KBS.AuthMethod
+        auth: SVR.AuthMethod
     ) -> Promise<KeyBackupProtoBackupResponse> {
         return enclaveRequest(auth: auth, enclave: enclave) { token -> KeyBackupProtoBackupRequest in
             guard let serviceId = Data.data(fromHex: enclave.serviceId) else {
                 owsFailDebug("failed to encode service id")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
 
             let backupRequestBuilder = KeyBackupProtoBackupRequest.builder()
@@ -1095,7 +1084,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 return try backupRequestBuilder.build()
             } catch {
                 owsFailDebug("failed to build backup request")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
         }
     }
@@ -1103,13 +1092,13 @@ public class KeyBackupServiceImpl: KeyBackupService {
     private func restoreKeyRequest(
         accessKey: Data,
         enclave: KeyBackupEnclave,
-        auth: KBS.AuthMethod,
+        auth: SVR.AuthMethod,
         ignoreCachedToken: Bool = false
     ) -> Promise<KeyBackupProtoRestoreResponse> {
         return enclaveRequest(auth: auth, enclave: enclave, ignoreCachedToken: ignoreCachedToken) { token -> KeyBackupProtoRestoreRequest in
             guard let serviceId = Data.data(fromHex: enclave.serviceId) else {
                 owsFailDebug("failed to encode service id")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
 
             let restoreRequestBuilder = KeyBackupProtoRestoreRequest.builder()
@@ -1126,19 +1115,19 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 return try restoreRequestBuilder.build()
             } catch {
                 owsFailDebug("failed to build restore request")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
         }
     }
 
     private func deleteKeyRequest(
-        auth: KBS.AuthMethod,
+        auth: SVR.AuthMethod,
         enclave: KeyBackupEnclave
     ) -> Promise<KeyBackupProtoDeleteResponse> {
         return enclaveRequest(auth: auth, enclave: enclave) { token -> KeyBackupProtoDeleteRequest in
             guard let serviceId = Data.data(fromHex: enclave.serviceId) else {
                 owsFailDebug("failed to encode service id")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
 
             let deleteRequestBuilder = KeyBackupProtoDeleteRequest.builder()
@@ -1149,7 +1138,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
                 return try deleteRequestBuilder.build()
             } catch {
                 owsFailDebug("failed to build delete request")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
         }
     }
@@ -1175,13 +1164,13 @@ public class KeyBackupServiceImpl: KeyBackupService {
         init(backupId: Data, data: Data, tries: UInt32, enclaveName: String) throws {
             guard backupId.count == 32 else {
                 owsFailDebug("invalid backupId")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
             self.backupId = backupId
 
             guard data.count == 32 else {
                 owsFailDebug("invalid token data")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
             self.data = data
 
@@ -1192,7 +1181,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
         init(responseObject: Any?, enclaveName: String) throws {
             guard let paramParser = ParamParser(responseObject: responseObject) else {
                 owsFailDebug("Unexpectedly missing response object")
-                throw KBS.KBSError.assertion
+                throw SVR.SVRError.assertion
             }
 
             let backupId = try paramParser.requiredBase64EncodedData(key: "backupId")
@@ -1212,14 +1201,14 @@ public class KeyBackupServiceImpl: KeyBackupService {
             tokenStore.getData(Token.backupIdKey, transaction: transaction)
         }) else {
             owsFailDebug("missing backupId")
-            throw KBS.KBSError.assertion
+            throw SVR.SVRError.assertion
         }
 
         guard let tries = tries ?? db.read(block: { transaction in
             tokenStore.getUInt32(Token.triesKey, transaction: transaction)
         }) else {
             owsFailDebug("missing tries")
-            throw KBS.KBSError.assertion
+            throw SVR.SVRError.assertion
         }
 
         let token = try Token(backupId: backupId, data: data, tries: tries, enclaveName: enclaveName)
@@ -1280,7 +1269,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
         }
     }
 
-    private func fetchBackupId(auth: KBS.AuthMethod, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
+    private func fetchBackupId(auth: SVR.AuthMethod, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
         if !ignoreCachedToken, let currentToken = nextToken(
             enclaveName: enclave.name
         ) { return Promise.value(currentToken.backupId) }
@@ -1342,7 +1331,7 @@ public class KeyBackupServiceImpl: KeyBackupService {
     /// Calls `RemoteAttestation.performForKeyBackup(auth: enclave:)` with either the provided credential,
     /// or any we have stored locally.
     /// Stores the resulting credential to disk for reuse in the future.
-    internal func performRemoteAttestation(auth: KBS.AuthMethod, enclave: KeyBackupEnclave) -> Promise<RemoteAttestation> {
+    internal func performRemoteAttestation(auth: SVR.AuthMethod, enclave: KeyBackupEnclave) -> Promise<RemoteAttestation> {
         let authMethod: RemoteAttestation.KeyBackupAuthMethod
         var backupAuthMethod: RemoteAttestation.KeyBackupAuthMethod?
         let implicitAuthMethod: RemoteAttestation.KeyBackupAuthMethod
@@ -1359,11 +1348,11 @@ public class KeyBackupServiceImpl: KeyBackupService {
         }
 
         switch auth {
-        case let .kbsAuth(kBSAuthCredential, backup):
+        case let .svrAuth(kBSAuthCredential, backup):
             authMethod = .kbsAuth(kBSAuthCredential.credential)
             kbsAuth = kBSAuthCredential
             switch backup {
-            case .kbsAuth(let backupCredential, _):
+            case .svrAuth(let backupCredential, _):
                 backupAuthMethod = .kbsAuth(backupCredential.credential)
             case let .chatServerAuth(authedAccount):
                 backupAuthMethod = .chatServer(authedAccount.chatServiceAuth)
@@ -1448,11 +1437,11 @@ extension KeyBackupProtoDeleteRequest: KBSRequestOption {
     static var stringRepresentation: String { "delete" }
 }
 
-extension KBS.AuthMethod {
+extension SVR.AuthMethod {
 
     var authedAccount: AuthedAccount {
         switch self {
-        case .kbsAuth(_, let backup):
+        case .svrAuth(_, let backup):
             return backup?.authedAccount ?? .implicit()
         case .chatServerAuth(let chatServiceAuth):
             return chatServiceAuth

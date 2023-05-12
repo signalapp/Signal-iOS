@@ -490,7 +490,7 @@ class StorageServiceOperation: OWSOperation {
 
         // We don't have backup keys, do nothing. We'll try a
         // fresh restore once the keys are set.
-        guard DependenciesBridge.shared.keyBackupService.isKeyAvailable(.storageService) else {
+        guard DependenciesBridge.shared.svr.isKeyAvailable(.storageService) else {
             return reportSuccess()
         }
 
@@ -796,7 +796,7 @@ class StorageServiceOperation: OWSOperation {
                     self.databaseStorage.write { transaction in
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
-                        DependenciesBridge.shared.keyBackupService.storeSyncedKey(
+                        DependenciesBridge.shared.svr.storeSyncedKey(
                             type: .storageService,
                             data: nil,
                             authedAccount: self.authedAccount,
@@ -1180,7 +1180,7 @@ class StorageServiceOperation: OWSOperation {
                     self.databaseStorage.write { transaction in
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
-                        DependenciesBridge.shared.keyBackupService.storeSyncedKey(
+                        DependenciesBridge.shared.svr.storeSyncedKey(
                             type: .storageService,
                             data: nil,
                             authedAccount: self.authedAccount,

@@ -5,11 +5,11 @@
 
 import Foundation
 
-extension KBS {
+extension SVR {
     static let maxKBSAuthCredentialsBackedUp: Int = 10
 }
 
-public protocol KBSAuthCredentialStorage {
+public protocol SVRAuthCredentialStorage {
 
     /// Stores an `KBSAuthCredential` to both local storage and iCloud storage, overwriting
     /// any existing credentials for the same username.

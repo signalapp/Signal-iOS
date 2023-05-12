@@ -306,7 +306,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         case .changingNumber:
                             break
                         case .registering, .reRegistering:
-                            deps.kbs.clearKeys(transaction: tx)
+                            deps.svr.clearKeys(transaction: tx)
                             deps.ows2FAManager.clearLocalPinCode(tx)
                         }
                     }
@@ -367,7 +367,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .registering, .reRegistering:
                 // Whenever we do this, wipe the keys we've got.
                 // We don't want to have them and use then implicitly later.
-                deps.kbs.clearKeys(transaction: tx)
+                deps.svr.clearKeys(transaction: tx)
                 deps.ows2FAManager.clearLocalPinCode(tx)
             }
         }
@@ -772,7 +772,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             inMemoryState.pinFromDisk = deps.ows2FAManager.pinCode(tx)
             if
                 inMemoryState.pinFromDisk != nil,
-                deps.kbs.hasBackedUpMasterKey(transaction: tx).negated
+                deps.svr.hasBackedUpMasterKey(transaction: tx).negated
             {
                 // If we had a pin but no kbs backups, we must be a v1 2fa user.
                 inMemoryState.isV12faUser = true
@@ -1204,11 +1204,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     db.write { tx in
                         // Store it and wipe it so we also overwrite any existing credential for the same user.
                         // We want to wipe the credential on disk too; we don't want to retry it on next app launch.
-                        deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
-                        deps.kbsAuthCredentialStore.deleteInvalidCredentials([reglockFailure.kbsAuthCredential], tx)
+                        deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                        deps.svrAuthCredentialStore.deleteInvalidCredentials([reglockFailure.kbsAuthCredential], tx)
                         // Clear the KBS master key locally; we failed reglock so we know its wrong
                         // and useless anyway.
-                        deps.kbs.clearKeys(transaction: tx)
+                        deps.svr.clearKeys(transaction: tx)
                         deps.ows2FAManager.clearLocalPinCode(tx)
                         self.updatePersistedState(tx) {
                             $0.e164WithKnownReglockEnabled = e164
@@ -1246,7 +1246,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             db.write { tx in
                 // We do want to clear out any credentials permanently; we know we
                 // have to use the session path so credentials aren't helpful.
-                deps.kbsAuthCredentialStore.deleteInvalidCredentials([inMemoryState.kbsAuthCredential].compacted(), tx)
+                deps.svrAuthCredentialStore.deleteInvalidCredentials([inMemoryState.kbsAuthCredential].compacted(), tx)
             }
             // Wipe our in memory KBS state; its now useless.
             wipeInMemoryStateToPreventKBSPathAttempts()
@@ -1299,7 +1299,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func loadkbsAuthCredentialCandidates(_ tx: DBReadTransaction) {
-        let kbsAuthCredentialCandidates = deps.kbsAuthCredentialStore.getAuthCredentials(tx)
+        let kbsAuthCredentialCandidates = deps.svrAuthCredentialStore.getAuthCredentials(tx)
         if kbsAuthCredentialCandidates.isEmpty.negated {
             inMemoryState.kbsAuthCredentialCandidates = kbsAuthCredentialCandidates
         }
@@ -1345,7 +1345,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         credential: KBSAuthCredential,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        deps.kbs.restoreKeysAndBackup(pin: pin, authMethod: .kbsAuth(credential, backup: nil))
+        deps.svr.restoreKeysAndBackup(pin: pin, authMethod: .svrAuth(credential, backup: nil))
             .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
                 guard let self = self else {
                     return unretainedSelfError()
@@ -1396,16 +1396,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func loadLocalMasterKeyAndUpdateState(_ tx: DBWriteTransaction) {
         // The hex vs base64 different here is intentional.
-        let regRecoveryPw = deps.kbs.data(for: .registrationRecoveryPassword, transaction: tx)?.base64EncodedString()
+        let regRecoveryPw = deps.svr.data(for: .registrationRecoveryPassword, transaction: tx)?.base64EncodedString()
         inMemoryState.regRecoveryPw = regRecoveryPw
         if regRecoveryPw != nil {
             updatePersistedState(tx) { $0.shouldSkipRegistrationSplash = true }
         }
-        inMemoryState.reglockToken = deps.kbs.data(for: .registrationLock, transaction: tx)?.hexadecimalString
+        inMemoryState.reglockToken = deps.svr.data(for: .registrationLock, transaction: tx)?.hexadecimalString
         // If we have a local master key, theres no need to restore after registration.
         // (we will still back up though)
-        inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = !deps.kbs.hasMasterKey(transaction: tx)
-        inMemoryState.didHaveKbsBackupsPriorToReg = deps.kbs.hasBackedUpMasterKey(transaction: tx)
+        inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = !deps.svr.hasMasterKey(transaction: tx)
+        inMemoryState.didHaveKbsBackupsPriorToReg = deps.svr.hasBackedUpMasterKey(transaction: tx)
     }
 
     // MARK: - KBS Auth Credential Candidates Pathway
@@ -1492,7 +1492,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // will just return an empty promise.
         self.inMemoryState.kbsAuthCredential = matchedCredential
         self.db.write { tx in
-            self.deps.kbsAuthCredentialStore.deleteInvalidCredentials(credentialsToDelete, tx)
+            self.deps.svrAuthCredentialStore.deleteInvalidCredentials(credentialsToDelete, tx)
         }
         return self.nextStep()
     }
@@ -1764,7 +1764,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // If we have already exhausted our kbs backup attempts, we are stuck.
                 db.write { tx in
                     // May as well store credentials, anyway.
-                    deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                    deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                     }
@@ -1783,7 +1783,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // that means the whole thing is stuck. wait out the reglock.
                 db.write { tx in
                     // May as well store credentials, anyway.
-                    deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                    deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                     }
@@ -1795,7 +1795,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             case .none, .v1:
                 db.write { tx in
-                    deps.kbsAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                    deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .reglocked(credential: reglockFailure.kbsAuthCredential, expirationDate: reglockExpirationDate)
                     }
@@ -2408,9 +2408,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         Logger.info("")
 
-        return deps.kbs.restoreKeysAndBackup(
+        return deps.svr.restoreKeysAndBackup(
             pin: pin,
-            authMethod: .kbsAuth(kbsAuthCredential, backup: nil)
+            authMethod: .svrAuth(kbsAuthCredential, backup: nil)
         )
             .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
                 guard let self else {
@@ -2748,14 +2748,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         Logger.info("")
 
-        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
-        let authMethod: KBS.AuthMethod
+        let backupAuthMethod = SVR.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
+        let authMethod: SVR.AuthMethod
         if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
-            authMethod = .kbsAuth(kbsAuthCredential, backup: backupAuthMethod)
+            authMethod = .svrAuth(kbsAuthCredential, backup: backupAuthMethod)
         } else {
             authMethod = backupAuthMethod
         }
-        return deps.kbs
+        return deps.svr
             .restoreKeysAndBackup(
                 pin: pin,
                 authMethod: authMethod
@@ -2816,14 +2816,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         Logger.info("")
 
-        let authMethod: KBS.AuthMethod
-        let backupAuthMethod = KBS.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
+        let authMethod: SVR.AuthMethod
+        let backupAuthMethod = SVR.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
         if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
-            authMethod = .kbsAuth(kbsAuthCredential, backup: backupAuthMethod)
+            authMethod = .svrAuth(kbsAuthCredential, backup: backupAuthMethod)
         } else {
             authMethod = backupAuthMethod
         }
-        return deps.kbs
+        return deps.svr
             .generateAndBackupKeys(
                 pin: pin,
                 authMethod: authMethod,

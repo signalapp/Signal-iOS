@@ -20,7 +20,7 @@ import Foundation
 
 // MARK: - Namespace
 
-extension KBS {
+extension SVR {
     public enum Shims {
         public typealias TSAccountManager = _KeyBackupServiceImpl_TSAccountManagerShim
         public typealias StorageServiceManager = _KeyBackupServiceImpl_StorageServiceManagerShim
@@ -44,7 +44,7 @@ public protocol _KeyBackupServiceImpl_TSAccountManagerShim {
     func isRegisteredAndReady(transaction: DBReadTransaction) -> Bool
 }
 
-public class _KeyBackupServiceImpl_TSAccountManagerWrapper: KBS.Shims.TSAccountManager {
+public class _KeyBackupServiceImpl_TSAccountManagerWrapper: SVR.Shims.TSAccountManager {
     private let accountManager: TSAccountManager
     public init(_ accountManager: TSAccountManager) { self.accountManager = accountManager }
 
@@ -66,7 +66,7 @@ public protocol _KeyBackupServiceImpl_StorageServiceManagerShim {
     )
 }
 
-public class _KeyBackupServiceImpl_StorageServiceManagerWrapper: KBS.Shims.StorageServiceManager {
+public class _KeyBackupServiceImpl_StorageServiceManagerWrapper: SVR.Shims.StorageServiceManager {
     private let manager: StorageServiceManager
     public init(_ manager: StorageServiceManager) { self.manager = manager }
 
@@ -90,7 +90,7 @@ public protocol _KeyBackupServiceImpl_OWS2FAManagerShim {
     func markDisabled(transaction: DBWriteTransaction)
 }
 
-public class _KeyBackupServiceImpl_OWS2FAManagerWrapper: KBS.Shims.OWS2FAManager {
+public class _KeyBackupServiceImpl_OWS2FAManagerWrapper: SVR.Shims.OWS2FAManager {
     private let manager: OWS2FAManager
     public init(_ manager: OWS2FAManager) { self.manager = manager }
 

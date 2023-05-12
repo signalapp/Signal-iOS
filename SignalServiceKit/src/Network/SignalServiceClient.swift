@@ -144,7 +144,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         let attributes = self.databaseStorage.write { transaction in
             return AccountAttributes.generateForPrimaryDevice(
                 fromDependencies: self,
-                keyBackupService: DependenciesBridge.shared.keyBackupService,
+                svr: DependenciesBridge.shared.svr,
                 transaction: transaction
             )
         }
@@ -195,7 +195,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         let accountAttributes = self.databaseStorage.write { transaction in
             return AccountAttributes.generateForSecondaryDevice(
                 fromDependencies: self,
-                keyBackupService: DependenciesBridge.shared.keyBackupService,
+                svr: DependenciesBridge.shared.svr,
                 encryptedDeviceName: encryptedDeviceName,
                 transaction: transaction
             )

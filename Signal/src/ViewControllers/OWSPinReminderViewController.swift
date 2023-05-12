@@ -127,7 +127,7 @@ public class PinReminderViewController: OWSViewController {
         // Pin text field
 
         pinTextField.delegate = self
-        pinTextField.keyboardType = context.keyBackupService.currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
+        pinTextField.keyboardType = context.svr.currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .dynamicTypeBodyClamped
         pinTextField.textAlignment = .center
@@ -391,7 +391,7 @@ extension PinReminderViewController: UIViewControllerTransitioningDelegate {
 extension PinReminderViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let hasPendingChanges: Bool
-        if context.keyBackupService.currentPinType == .alphanumeric {
+        if context.svr.currentPinType == .alphanumeric {
             hasPendingChanges = true
         } else {
             ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)

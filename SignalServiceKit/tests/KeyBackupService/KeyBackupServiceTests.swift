@@ -13,23 +13,23 @@ class KeyBackupServiceTests: XCTestCase {
     private var db: MockDB!
     private var keyBackupService: KeyBackupServiceImpl!
 
-    private var credentialStorage: KBSAuthCredentialStorageMock!
-    private var remoteAttestation: KBS.TestMocks.RemoteAttestation!
+    private var credentialStorage: SVRAuthCredentialStorageMock!
+    private var remoteAttestation: SVR.TestMocks.RemoteAttestation!
     private var mockSignalService: OWSSignalServiceMock!
     private var tsConstants: TSConstantsProtocol!
     private var scheduler: TestScheduler!
 
     override func setUp() {
         self.db = MockDB()
-        self.credentialStorage = KBSAuthCredentialStorageMock()
-        self.remoteAttestation = KBS.TestMocks.RemoteAttestation()
+        self.credentialStorage = SVRAuthCredentialStorageMock()
+        self.remoteAttestation = SVR.TestMocks.RemoteAttestation()
         self.mockSignalService = OWSSignalServiceMock()
         self.tsConstants = TSConstants.shared
         self.scheduler = TestScheduler()
         // Start the scheduler so everything executes synchronously.
         self.scheduler.start()
         self.keyBackupService = KeyBackupServiceImpl(
-            accountManager: KBS.TestMocks.TSAccountManager(),
+            accountManager: SVR.TestMocks.TSAccountManager(),
             appContext: TestAppContext(),
             credentialStorage: credentialStorage,
             databaseStorage: db,
@@ -37,10 +37,10 @@ class KeyBackupServiceTests: XCTestCase {
             remoteAttestation: remoteAttestation,
             schedulers: TestSchedulers(scheduler: scheduler),
             signalService: mockSignalService,
-            storageServiceManager: KBS.TestMocks.StorageServiceManager(),
+            storageServiceManager: SVR.TestMocks.StorageServiceManager(),
             syncManager: OWSMockSyncManager(),
             tsConstants: tsConstants,
-            twoFAManager: KBS.TestMocks.OWS2FAManager()
+            twoFAManager: SVR.TestMocks.OWS2FAManager()
         )
     }
 
@@ -115,7 +115,7 @@ class KeyBackupServiceTests: XCTestCase {
         let vectors = try decoder.decode([Vector].self, from: jsonData)
 
         for vector in vectors {
-            let normalizedPin = KeyBackupServiceImpl.normalizePin(vector.pin)
+            let normalizedPin = SVRUtil.normalizePin(vector.pin)
             XCTAssertEqual(vector.bytes, normalizedPin.data(using: .utf8)!, vector.name)
         }
     }
@@ -171,7 +171,7 @@ class KeyBackupServiceTests: XCTestCase {
             let rawData: Data
             let encryptedData: Data
 
-            var derivedKey: KBS.DerivedKey {
+            var derivedKey: SVR.DerivedKey {
                 switch type {
                 case .storageServiceRecord:
                     return .storageServiceRecord(identifier: StorageService.StorageIdentifier(data: associatedValueData, type: .contact))

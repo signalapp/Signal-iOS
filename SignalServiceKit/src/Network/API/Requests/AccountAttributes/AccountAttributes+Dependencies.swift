@@ -9,13 +9,13 @@ extension AccountAttributes {
 
     public static func generateForPrimaryDevice(
         fromDependencies dependencies: Dependencies,
-        keyBackupService: KeyBackupService,
+        svr: SecureValueRecovery,
         transaction: SDSAnyWriteTransaction
     ) -> AccountAttributes {
         owsAssertDebug(dependencies.tsAccountManager.isPrimaryDevice)
         return generate(
             fromDependencies: dependencies,
-            keyBackupService: keyBackupService,
+            svr: svr,
             encryptedDeviceName: nil,
             isSecondaryDeviceRegistration: false,
             transaction: transaction
@@ -24,13 +24,13 @@ extension AccountAttributes {
 
     public static func deprecated_generateForInitialRegistration(
         fromDependencies dependencies: Dependencies,
-        keyBackupService: KeyBackupService,
+        svr: SecureValueRecovery,
         transaction: SDSAnyWriteTransaction
     ) -> AccountAttributes {
         owsAssertDebug(dependencies.tsAccountManager.isPrimaryDevice)
         return generate(
             fromDependencies: dependencies,
-            keyBackupService: keyBackupService,
+            svr: svr,
             encryptedDeviceName: nil,
             isSecondaryDeviceRegistration: false,
             transaction: transaction
@@ -39,13 +39,13 @@ extension AccountAttributes {
 
     public static func generateForSecondaryDevice(
         fromDependencies dependencies: Dependencies,
-        keyBackupService: KeyBackupService,
+        svr: SecureValueRecovery,
         encryptedDeviceName: Data,
         transaction: SDSAnyWriteTransaction
     ) -> AccountAttributes {
         return generate(
             fromDependencies: dependencies,
-            keyBackupService: keyBackupService,
+            svr: svr,
             encryptedDeviceName: encryptedDeviceName,
             isSecondaryDeviceRegistration: true,
             transaction: transaction
@@ -54,7 +54,7 @@ extension AccountAttributes {
 
     private static func generate(
         fromDependencies dependencies: Dependencies,
-        keyBackupService: KeyBackupService,
+        svr: SecureValueRecovery,
         encryptedDeviceName encryptedDeviceNameRaw: Data?,
         isSecondaryDeviceRegistration: Bool,
         transaction: SDSAnyWriteTransaction
@@ -96,7 +96,7 @@ extension AccountAttributes {
             twoFaMode = .none
         } else {
             if
-                let reglockToken = keyBackupService.deriveRegistrationLockToken(transaction: transaction.asV2Read),
+                let reglockToken = svr.deriveRegistrationLockToken(transaction: transaction.asV2Read),
                 reglockToken.isEmpty.negated,
                 dependencies.ows2FAManager.isRegistrationLockV2Enabled(transaction: transaction)
             {
@@ -104,7 +104,7 @@ extension AccountAttributes {
             } else if
                 let pinCode = dependencies.ows2FAManager.pinCode(with: transaction),
                 pinCode.isEmpty.negated,
-                keyBackupService.hasBackedUpMasterKey(transaction: transaction.asV2Read).negated
+                svr.hasBackedUpMasterKey(transaction: transaction.asV2Read).negated
             {
                 twoFaMode = .v1(pinCode: pinCode)
             } else {
@@ -112,7 +112,7 @@ extension AccountAttributes {
             }
         }
 
-        let registrationRecoveryPassword = keyBackupService.data(
+        let registrationRecoveryPassword = svr.data(
             for: .registrationRecoveryPassword,
             transaction: transaction.asV2Read
         )?.base64EncodedString()
@@ -123,7 +123,7 @@ extension AccountAttributes {
             ? dependencies.tsAccountManager.isDiscoverableByPhoneNumber(with: transaction)
             : nil
 
-        let hasKBSBackups = keyBackupService.hasBackedUpMasterKey(transaction: transaction.asV2Read)
+        let hasKBSBackups = svr.hasBackedUpMasterKey(transaction: transaction.asV2Read)
 
         return AccountAttributes(
             isManualMessageFetchEnabled: isManualMessageFetchEnabled,

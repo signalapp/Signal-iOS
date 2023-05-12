@@ -45,14 +45,14 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
         }
     }
 
-    private var pinType: KBS.PinType = .numeric {
+    private var pinType: SVR.PinType = .numeric {
         didSet {
             updatePinType()
         }
     }
 
     private var hasPendingRestoration: Bool {
-        context.db.read { context.keyBackupService.hasPendingRestoration(transaction: $0) }
+        context.db.read { context.svr.hasPendingRestoration(transaction: $0) }
     }
 
     private let context: ViewControllerContext
@@ -337,7 +337,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
             }
             return promise
         }.recover { error -> Promise<VerificationOutcome> in
-            guard let error = error as? KBS.KBSError else {
+            guard let error = error as? SVR.SVRError else {
                 owsFailDebug("unexpected response from KBS")
                 return Promise.value(.invalid2FAPin)
             }
@@ -365,7 +365,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
         }
 
         return firstly {
-            self.context.keyBackupService.acquireRegistrationLockForNewNumber(with: pin, and: kbsAuth)
+            self.context.svr.acquireRegistrationLockForNewNumber(with: pin, and: kbsAuth)
         }.map(on: DispatchQueue.global()) { registrationLockToken -> String in
             self.changePhoneNumberController.registrationLockToken = registrationLockToken
             return registrationLockToken

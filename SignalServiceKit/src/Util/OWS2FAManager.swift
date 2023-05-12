@@ -59,7 +59,7 @@ extension OWS2FAManager {
 
     public func enableRegistrationLockV2() -> Promise<Void> {
         return DispatchQueue.global().async(.promise) { () -> String in
-            guard let token = DependenciesBridge.shared.keyBackupService.deriveRegistrationLockToken() else {
+            guard let token = DependenciesBridge.shared.svr.deriveRegistrationLockToken() else {
                 throw OWSAssertionError("Cannot enable registration lock without an existing PIN")
             }
             return token
@@ -186,7 +186,7 @@ extension OWS2FAManager {
     }
 
     public static func isWeakPin(_ pin: String) -> Bool {
-        let normalizedPin = KeyBackupServiceImpl.normalizePin(pin)
+        let normalizedPin = SVRUtil.normalizePin(pin)
 
         guard pin.count >= kMin2FAv2PinLength else { return true }
 
@@ -226,22 +226,22 @@ extension OWS2FAManager {
 
     @objc
     public var hasBackedUpMasterKey: Bool {
-        DependenciesBridge.shared.keyBackupService.hasBackedUpMasterKey
+        DependenciesBridge.shared.svr.hasBackedUpMasterKey
     }
 
     @objc(generateAndBackupKeysWithPin:rotateMasterKey:)
     @available(swift, obsoleted: 1.0)
     public func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise {
-        return DependenciesBridge.shared.keyBackupService.generateAndBackupKeys(with: pin, rotateMasterKey: rotateMasterKey)
+        return DependenciesBridge.shared.svr.generateAndBackupKeys(with: pin, rotateMasterKey: rotateMasterKey)
     }
 
     @objc
     public func verifyKBSPin(_ pin: String, resultHandler: @escaping (Bool) -> Void) {
-        DependenciesBridge.shared.keyBackupService.verifyPin(pin, resultHandler: resultHandler)
+        DependenciesBridge.shared.svr.verifyPin(pin, resultHandler: resultHandler)
     }
 
     @objc(deleteKeys)
     public func deleteKBSKeys() -> AnyPromise {
-        return AnyPromise(DependenciesBridge.shared.keyBackupService.deleteKeys())
+        return AnyPromise(DependenciesBridge.shared.svr.deleteKeys())
     }
 }

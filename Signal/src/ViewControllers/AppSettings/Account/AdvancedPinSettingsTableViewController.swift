@@ -29,7 +29,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
         let pinsSection = OWSTableSection()
 
         pinsSection.add(OWSTableItem.actionItem(
-            withText: (context.keyBackupService.hasMasterKey && !context.keyBackupService.hasBackedUpMasterKey)
+            withText: (context.svr.hasMasterKey && !context.svr.hasBackedUpMasterKey)
                 ? OWSLocalizedString("SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION",
                                     comment: "")
                 : OWSLocalizedString("SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION",
@@ -45,7 +45,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
     }
 
     private func enableOrDisablePin() {
-        if context.keyBackupService.hasMasterKey && !context.keyBackupService.hasBackedUpMasterKey {
+        if context.svr.hasMasterKey && !context.svr.hasBackedUpMasterKey {
             enablePin()
         } else {
             if self.paymentsHelper.arePaymentsEnabled,

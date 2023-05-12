@@ -90,7 +90,7 @@ public class Deprecated_OnboardingController: NSObject {
             var milestones: [OnboardingMilestone] = [.verifiedPhoneNumber, .phoneNumberDiscoverability, .setupProfile]
 
             let hasPendingPinRestoration = context.db.read {
-                context.keyBackupService.hasPendingRestoration(transaction: $0)
+                context.svr.hasPendingRestoration(transaction: $0)
             }
 
             if hasPendingPinRestoration {
@@ -99,7 +99,7 @@ public class Deprecated_OnboardingController: NSObject {
 
             if FeatureFlags.pinsForNewUsers || hasPendingPinRestoration {
                 let hasBackupKeyRequestFailed = context.db.read {
-                    context.keyBackupService.hasBackupKeyRequestFailed(transaction: $0)
+                    context.svr.hasBackupKeyRequestFailed(transaction: $0)
                 }
 
                 if hasBackupKeyRequestFailed {
@@ -150,7 +150,7 @@ public class Deprecated_OnboardingController: NSObject {
             milestones.append(.setupProfile)
         }
 
-        if context.keyBackupService.hasMasterKey {
+        if context.svr.hasMasterKey {
             milestones.append(.restorePin)
             milestones.append(.setupPin)
         }
@@ -600,7 +600,7 @@ public class Deprecated_OnboardingController: NSObject {
     }
 
     internal var hasPendingRestoration: Bool {
-        context.db.read { context.keyBackupService.hasPendingRestoration(transaction: $0) }
+        context.db.read { context.svr.hasPendingRestoration(transaction: $0) }
     }
 
     public func submitVerification(fromViewController: UIViewController,
@@ -619,9 +619,9 @@ public class Deprecated_OnboardingController: NSObject {
 
             // Clear all cached values before doing restores during onboarding,
             // they could be stale from previous registrations.
-            context.db.write { context.keyBackupService.clearKeys(transaction: $0) }
+            context.db.write { context.svr.clearKeys(transaction: $0) }
 
-            context.keyBackupService.restoreKeysAndBackup(with: twoFAPin, and: self.kbsAuth).done {
+            context.svr.restoreKeysAndBackup(with: twoFAPin, and: self.kbsAuth).done {
                 // If we restored successfully clear out KBS auth, the server will give it
                 // to us again if we still need to do KBS operations.
                 self.kbsAuth = nil
@@ -646,7 +646,7 @@ public class Deprecated_OnboardingController: NSObject {
                     self.submitVerification(fromViewController: fromViewController, completion: completion)
                 }
             }.catch { error in
-                guard let error = error as? KBS.KBSError else {
+                guard let error = error as? SVR.SVRError else {
                     owsFailDebug("unexpected response from KBS")
                     return completion(.invalid2FAPin)
                 }
@@ -721,7 +721,7 @@ public class Deprecated_OnboardingController: NSObject {
             guard let self = self, !self.hasBackedUpKBS, let twoFAPin = self.twoFAPin else {
                 return Promise.value(())
             }
-            return self.context.keyBackupService.restoreKeysAndBackup(with: twoFAPin)
+            return self.context.svr.restoreKeysAndBackup(with: twoFAPin)
         }
 
         if showModal {
@@ -771,7 +771,7 @@ public class Deprecated_OnboardingController: NSObject {
             // Since we were told we need 2fa, clear out any stored KBS keys so we can
             // do a fresh verification.
             SDSDatabaseStorage.shared.write { transaction in
-                context.keyBackupService.clearKeys(transaction: transaction.asV2Write)
+                context.svr.clearKeys(transaction: transaction.asV2Write)
                 self.ows2FAManager.markRegistrationLockV2Disabled(transaction: transaction)
                 self.ows2FAManager.clearLocalPinCode(transaction: transaction)
             }
@@ -846,7 +846,7 @@ extension Deprecated_OnboardingController: Deprecated_RegistrationPinAttemptsExh
 
         if hasPendingRestoration {
             context.db.write { transaction in
-                context.keyBackupService.clearPendingRestoration(transaction: transaction)
+                context.svr.clearPendingRestoration(transaction: transaction)
             }
             showNextMilestone(navigationController: navigationController)
         } else {

@@ -47,14 +47,14 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
     }
 
     private let isUsingKBS: Bool
-    private var pinType: KBS.PinType = .numeric {
+    private var pinType: SVR.PinType = .numeric {
         didSet {
             updatePinType()
         }
     }
 
     private var hasPendingRestoration: Bool {
-        context.db.read { context.keyBackupService.hasPendingRestoration(transaction: $0) }
+        context.db.read { context.svr.hasPendingRestoration(transaction: $0) }
     }
 
     private let context: ViewControllerContext
@@ -372,7 +372,7 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
         databaseStorage.write { transaction in
             // Clear any pending restoration before moving on. At this point we've either
             // successfully restored the user's PIN or the user chose to re-create their PIN.
-            self.context.keyBackupService.clearPendingRestoration(transaction: transaction.asV2Write)
+            self.context.svr.clearPendingRestoration(transaction: transaction.asV2Write)
 
             // If we were successful, also mark the user as having a PIN
             // They're a returning user, so we can skip the welcome banner

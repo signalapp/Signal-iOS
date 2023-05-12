@@ -93,7 +93,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     }
 
     if (self.hasBackedUpMasterKey) {
-        pin = [KeyBackupServiceObjcBridge normalizePin:pin];
+        pin = [SVRUtil normalizePin:pin];
     } else {
         // Convert the pin to arabic numerals, we never want to
         // operate with pins in other numbering systems.
@@ -324,7 +324,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     switch (self.mode) {
     case OWS2FAMode_V2:
         if (pinToMatch.length > 0) {
-            result([pinToMatch isEqualToString:[KeyBackupServiceObjcBridge normalizePin:pin]]);
+            result([pinToMatch isEqualToString:[SVRUtil normalizePin:pin]]);
         } else {
             [self verifyKBSPin:pin
                  resultHandler:^(BOOL isValid) {

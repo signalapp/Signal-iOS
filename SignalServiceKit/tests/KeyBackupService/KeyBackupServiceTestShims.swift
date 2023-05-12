@@ -8,7 +8,7 @@ import Foundation
 
 // MARK: - Namespace
 
-extension KBS {
+extension SVR {
     public enum TestMocks {
         public typealias TSAccountManager = _KeyBackupServiceImpl_TSAccountManagerTestMock
         public typealias StorageServiceManager = _KeyBackupServiceImpl_StorageServiceManagerTestMock
@@ -20,7 +20,7 @@ extension KBS {
 
 // MARK: - TSAccountManager
 
-public class _KeyBackupServiceImpl_TSAccountManagerTestMock: KBS.Shims.TSAccountManager {
+public class _KeyBackupServiceImpl_TSAccountManagerTestMock: SVR.Shims.TSAccountManager {
 
     public init() {}
 
@@ -39,7 +39,7 @@ public class _KeyBackupServiceImpl_TSAccountManagerTestMock: KBS.Shims.TSAccount
 
 // MARK: - StorageServiceManager
 
-public class _KeyBackupServiceImpl_StorageServiceManagerTestMock: KBS.Shims.StorageServiceManager {
+public class _KeyBackupServiceImpl_StorageServiceManagerTestMock: SVR.Shims.StorageServiceManager {
 
     public init() {}
 
@@ -50,7 +50,7 @@ public class _KeyBackupServiceImpl_StorageServiceManagerTestMock: KBS.Shims.Stor
 
 // MARK: - OWS2FAManager
 
-public class _KeyBackupServiceImpl_OWS2FAManagerTestMock: KBS.Shims.OWS2FAManager {
+public class _KeyBackupServiceImpl_OWS2FAManagerTestMock: SVR.Shims.OWS2FAManager {
     public init() {}
 
     public var pinCode: String!
@@ -64,7 +64,7 @@ public class _KeyBackupServiceImpl_OWS2FAManagerTestMock: KBS.Shims.OWS2FAManage
 
 // MARK: - RemoteAttestation
 
-public class _KeyBackupServiceImpl_RemoteAttestationMock: KBS.Shims.RemoteAttestation {
+public class _KeyBackupServiceImpl_RemoteAttestationMock: SVR.Shims.RemoteAttestation {
     public init() {}
 
     var authMethodInputs = [RemoteAttestation.KeyBackupAuthMethod]()

@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class KBSAuthCredentialStorageMock: KBSAuthCredentialStorage {
+public class SVRAuthCredentialStorageMock: SVRAuthCredentialStorage {
 
     public var currentUsername: String?
     public var dict = [String: KBSAuthCredential]()

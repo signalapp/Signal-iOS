@@ -299,7 +299,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     // to have a capability in order to be linked, we might need to always
     // set that capability here if isSecondaryDevice is true.
 
-    if (KeyBackupServiceObjcBridge.hasBackedUpMasterKey) {
+    if (SecureValueRecoveryObjcBridge.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
     }
 

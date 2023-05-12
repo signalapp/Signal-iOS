@@ -82,7 +82,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 return owsFailDebug("Missing thread")
             }
 
-            let storageServiceKey = DependenciesBridge.shared.keyBackupService.data(for: .storageService, transaction: transaction.asV2Read)
+            let storageServiceKey = DependenciesBridge.shared.svr.data(for: .storageService, transaction: transaction.asV2Read)
             let syncKeysMessage = OWSSyncKeysMessage(thread: thread, storageServiceKey: storageServiceKey, transaction: transaction)
             self.sskJobQueues.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: transaction)
         }
@@ -94,7 +94,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Key sync messages should only be processed on linked devices")
         }
 
-        DependenciesBridge.shared.keyBackupService.storeSyncedKey(
+        DependenciesBridge.shared.svr.storeSyncedKey(
             type: .storageService,
             data: syncMessage.storageService,
             authedAccount: .implicit(),

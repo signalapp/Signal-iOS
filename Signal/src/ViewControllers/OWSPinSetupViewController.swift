@@ -203,7 +203,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         }
     }
 
-    private var pinType: KBS.PinType {
+    private var pinType: SVR.PinType {
         didSet {
             updatePinType()
         }
@@ -245,7 +245,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     private init(
         mode: Mode,
         initialMode: Mode,
-        pinType: KBS.PinType,
+        pinType: SVR.PinType,
         hideNavigationBar: Bool,
         showCancelButton: Bool,
         showDisablePinButton: Bool,
@@ -837,7 +837,7 @@ extension PinSetupViewController {
             ) { modal in
                 SDSDatabaseStorage.shared.asyncWrite { transaction in
                     // TODO[ViewContextPiping]
-                    ViewControllerContext.shared.keyBackupService.useDeviceLocalMasterKey(
+                    ViewControllerContext.shared.svr.useDeviceLocalMasterKey(
                         authedAccount: .implicit(),
                         transaction: transaction.asV2Write
                     )

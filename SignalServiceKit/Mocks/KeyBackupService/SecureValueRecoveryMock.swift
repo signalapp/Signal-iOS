@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class KeyBackupServiceMock: KeyBackupService {
+public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public init() {}
 
@@ -29,7 +29,7 @@ public class KeyBackupServiceMock: KeyBackupService {
         return hasMasterKey
     }
 
-    public var currentPinType: KBS.PinType?
+    public var currentPinType: SVR.PinType?
 
     public var verifyPinHandler: (String) -> Bool = { _ in return true }
 
@@ -47,13 +47,13 @@ public class KeyBackupServiceMock: KeyBackupService {
         return AnyPromise(Promise<Void>.value(()))
     }
 
-    public var generateAndBackupKeysMock: ((_ pin: String, _ authMethod: KBS.AuthMethod, _ rotateMasterKey: Bool) -> Promise<Void>)?
+    public var generateAndBackupKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod, _ rotateMasterKey: Bool) -> Promise<Void>)?
 
     public func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> Promise<Void> {
         return generateAndBackupKeysMock!(pin, .implicit, rotateMasterKey)
     }
 
-    public func generateAndBackupKeys(pin: String, authMethod: KBS.AuthMethod, rotateMasterKey: Bool) -> Promise<Void> {
+    public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) -> Promise<Void> {
         return generateAndBackupKeysMock!(pin, authMethod, rotateMasterKey)
     }
 
@@ -61,9 +61,9 @@ public class KeyBackupServiceMock: KeyBackupService {
         fatalError("Unimplemented")
     }
 
-    public var restoreKeysAndBackupMock: ((_ pin: String, _ authMethod: KBS.AuthMethod) -> Guarantee<KBS.RestoreKeysResult>)?
+    public var restoreKeysAndBackupMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>)?
 
-    public func restoreKeysAndBackup(pin: String, authMethod: KBS.AuthMethod) -> Guarantee<KBS.RestoreKeysResult> {
+    public func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
         return restoreKeysAndBackupMock!(pin, authMethod)
     }
 
@@ -71,11 +71,11 @@ public class KeyBackupServiceMock: KeyBackupService {
         return .value(())
     }
 
-    public func encrypt(keyType: KBS.DerivedKey, data: Data) throws -> Data {
+    public func encrypt(keyType: SVR.DerivedKey, data: Data) throws -> Data {
         return data
     }
 
-    public func decrypt(keyType: KBS.DerivedKey, encryptedData: Data) throws -> Data {
+    public func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) throws -> Data {
         return encryptedData
     }
 
@@ -87,10 +87,6 @@ public class KeyBackupServiceMock: KeyBackupService {
         return reglockToken
     }
 
-    public static func normalizePin(_ pin: String) -> String {
-        return pin
-    }
-
     public func warmCaches() {
         // Do nothing
     }
@@ -100,7 +96,7 @@ public class KeyBackupServiceMock: KeyBackupService {
     }
 
     public func storeSyncedKey(
-        type: KBS.DerivedKey,
+        type: SVR.DerivedKey,
         data: Data?,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
@@ -139,17 +135,17 @@ public class KeyBackupServiceMock: KeyBackupService {
         // Do nothing
     }
 
-    public var dataGenerator: (KBS.DerivedKey) -> Data? = { _ in return nil }
+    public var dataGenerator: (SVR.DerivedKey) -> Data? = { _ in return nil }
 
-    public func data(for key: KBS.DerivedKey) -> Data? {
+    public func data(for key: SVR.DerivedKey) -> Data? {
         return dataGenerator(key)
     }
 
-    public func data(for key: KBS.DerivedKey, transaction: DBReadTransaction) -> Data? {
+    public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> Data? {
         return dataGenerator(key)
     }
 
-    public func isKeyAvailable(_ key: KBS.DerivedKey) -> Bool {
+    public func isKeyAvailable(_ key: SVR.DerivedKey) -> Bool {
         return true
     }
 }

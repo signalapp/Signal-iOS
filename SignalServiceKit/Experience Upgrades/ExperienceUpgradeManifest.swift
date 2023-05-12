@@ -483,7 +483,7 @@ extension ExperienceUpgradeManifest {
         // The PIN setup flow requires an internet connection and you to not already have a PIN
         if
             reachabilityManager.isReachable,
-            !DependenciesBridge.shared.keyBackupService.hasMasterKey(transaction: transaction.asV2Read)
+            !DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction.asV2Read)
         {
             return true
         }

@@ -239,7 +239,7 @@ public class SSKEnvironment: NSObject {
         warmCachesForObject("blockingManager", blockingManager.warmCaches)
         warmCachesForObject("profileManager", profileManager.warmCaches)
         warmCachesForObject("receiptManager", receiptManager.prepareCachedValues)
-        warmCachesForObject("OWSKeyBackupService", DependenciesBridge.shared.keyBackupService.warmCaches)
+        warmCachesForObject("OWSKeyBackupService", DependenciesBridge.shared.svr.warmCaches)
         warmCachesForObject("PinnedThreadManager", PinnedThreadManager.warmCaches)
         warmCachesForObject("typingIndicatorsImpl", typingIndicatorsImpl.warmCaches)
         warmCachesForObject("paymentsHelper", paymentsHelper.warmCaches)

@@ -15,8 +15,6 @@ public struct RegistrationCoordinatorDependencies {
     public let dateProvider: DateProvider
     public let db: DB
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
-    public let kbs: KeyBackupService
-    public let kbsAuthCredentialStore: KBSAuthCredentialStorage
     public let keyValueStoreFactory: KeyValueStoreFactory
     public let messagePipelineSupervisor: RegistrationCoordinatorImpl.Shims.MessagePipelineSupervisor
     public let messageProcessor: RegistrationCoordinatorImpl.Shims.MessageProcessor
@@ -29,6 +27,8 @@ public struct RegistrationCoordinatorDependencies {
     public let sessionManager: RegistrationSessionManager
     public let signalService: OWSSignalServiceProtocol
     public let storageServiceManager: StorageServiceManager
+    public let svr: SecureValueRecovery
+    public let svrAuthCredentialStore: SVRAuthCredentialStorage
     public let tsAccountManager: RegistrationCoordinatorImpl.Shims.TSAccountManager
     public let udManager: RegistrationCoordinatorImpl.Shims.UDManager
 
@@ -42,8 +42,6 @@ public struct RegistrationCoordinatorDependencies {
             dateProvider: { Date() },
             db: DependenciesBridge.shared.db,
             experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
-            kbs: DependenciesBridge.shared.keyBackupService,
-            kbsAuthCredentialStore: DependenciesBridge.shared.kbsCredentialStorage,
             keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
             messagePipelineSupervisor: RegistrationCoordinatorImpl.Wrappers.MessagePipelineSupervisor(object.messagePipelineSupervisor),
             messageProcessor: RegistrationCoordinatorImpl.Wrappers.MessageProcessor(object.messageProcessor),
@@ -56,6 +54,8 @@ public struct RegistrationCoordinatorDependencies {
             sessionManager: DependenciesBridge.shared.registrationSessionManager,
             signalService: object.signalService,
             storageServiceManager: object.storageServiceManager,
+            svr: DependenciesBridge.shared.svr,
+            svrAuthCredentialStore: DependenciesBridge.shared.svrCredentialStorage,
             tsAccountManager: RegistrationCoordinatorImpl.Wrappers.TSAccountManager(object.tsAccountManager),
             udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(object.udManager)
         )

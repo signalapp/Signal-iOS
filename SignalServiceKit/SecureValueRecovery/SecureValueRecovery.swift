@@ -5,9 +5,9 @@
 
 import Foundation
 
-public enum KBS {
+public enum SVR {
 
-    public enum KBSError: Error, Equatable {
+    public enum SVRError: Error, Equatable {
         case assertion
         case invalidPin(remainingAttempts: UInt32)
         case backupMissing
@@ -18,7 +18,7 @@ public enum KBS {
         case alphanumeric = 2
 
         public init(forPin pin: String) {
-            let normalizedPin = KeyBackupServiceImpl.normalizePin(pin)
+            let normalizedPin = SVRUtil.normalizePin(pin)
             self = normalizedPin.digitsOnly() == normalizedPin ? .numeric : .alphanumeric
         }
     }
@@ -67,17 +67,17 @@ public enum KBS {
         }
     }
 
-    /// An auth credential is needed to talk to the KBS server.
+    /// An auth credential is needed to talk to the SVR server.
     /// This defines how we should get that auth credential
     public indirect enum AuthMethod: Equatable {
-        /// Explicitly provide an auth credential to use directly with kbs.
+        /// Explicitly provide an auth credential to use directly with SVR.
         /// note: if it fails, will fall back to the backup or implicit if unset.
-        case kbsAuth(KBSAuthCredential, backup: AuthMethod?)
-        /// Get a KBS auth credential from the chat server first with the
-        /// provided credentials, then user it to talk to the KBS server.
+        case svrAuth(KBSAuthCredential, backup: AuthMethod?)
+        /// Get an SVR auth credential from the chat server first with the
+        /// provided credentials, then use it to talk to the SVR server.
         case chatServerAuth(AuthedAccount)
-        /// Use whatever KBS auth credential we have cached; if unavailable or
-        /// if invalid, falls back to getting a KBS auth credential from the chat server
+        /// Use whatever SVR auth credential we have cached; if unavailable or
+        /// if invalid, falls back to getting a SVR auth credential from the chat server
         /// with the chat server auth credentials we have cached.
         case implicit
     }
@@ -94,70 +94,68 @@ public enum KBS {
     }
 }
 
-public protocol KeyBackupService {
+public protocol SecureValueRecovery {
 
     /// Indicates whether or not we have a master key locally
     var hasMasterKey: Bool { get }
 
     var currentEnclave: KeyBackupEnclave { get }
 
-    /// Indicates whether or not we have a master key stored in KBS
+    /// Indicates whether or not we have a master key stored in SVR
     var hasBackedUpMasterKey: Bool { get }
 
     func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool
 
     func hasMasterKey(transaction: DBReadTransaction) -> Bool
 
-    var currentPinType: KBS.PinType? { get }
+    var currentPinType: SVR.PinType? { get }
 
     /// Indicates whether your pin is valid when compared to your stored keys.
-    /// This is a local verification and does not make any requests to the KBS.
+    /// This is a local verification and does not make any requests to the SVR.
     func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void)
 
-    // When changing number, we need to verify the PIN against the new number's KBS
+    // When changing number, we need to verify the PIN against the new number's SVR
     // record in order to generate a registration lock token. It's important that this
     // happens without touching any of the state we maintain around our account.
     func acquireRegistrationLockForNewNumber(with pin: String, and auth: KBSAuthCredential) -> Promise<String>
 
-    /// Loads the users key, if any, from the KBS into the database.
+    /// Loads the users key, if any, from the SVR into the database.
     func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential?) -> Promise<Void>
 
-    /// Loads the users key, if any, from the KBS into the database.
-    func restoreKeysAndBackup(pin: String, authMethod: KBS.AuthMethod) -> Guarantee<KBS.RestoreKeysResult>
+    /// Loads the users key, if any, from the SVR into the database.
+    func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
 
     func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise
 
-    /// Backs up the user's master key to KBS and stores it locally in the database.
+    /// Backs up the user's master key to SVR and stores it locally in the database.
     /// If the user doesn't have a master key already a new one is generated.
     func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> Promise<Void>
 
-    /// Backs up the user's master key to KBS and stores it locally in the database.
+    /// Backs up the user's master key to SVR and stores it locally in the database.
     /// If the user doesn't have a master key already a new one is generated.
-    func generateAndBackupKeys(pin: String, authMethod: KBS.AuthMethod, rotateMasterKey: Bool) -> Promise<Void>
+    func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) -> Promise<Void>
 
-    /// Remove the keys locally from the device and from the KBS,
+    /// Remove the keys locally from the device and from the SVR,
     /// they will not be able to be restored.
     func deleteKeys() -> Promise<Void>
 
     // MARK: - Master Key Encryption
 
-    func encrypt(keyType: KBS.DerivedKey, data: Data) throws -> Data
+    func encrypt(keyType: SVR.DerivedKey, data: Data) throws -> Data
 
-    func decrypt(keyType: KBS.DerivedKey, encryptedData: Data) throws -> Data
+    func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) throws -> Data
 
     func deriveRegistrationLockToken() -> String?
     func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String?
 
-    static func normalizePin(_ pin: String) -> String
-
     func warmCaches()
 
-    /// Removes the KBS keys locally from the device, they can still be
+    /// Removes the SVR keys locally from the device, they can still be
     /// restored from the server if you know the pin.
     func clearKeys(transaction: DBWriteTransaction)
 
     func storeSyncedKey(
-        type: KBS.DerivedKey,
+        type: SVR.DerivedKey,
         data: Data?,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
@@ -175,12 +173,12 @@ public protocol KeyBackupService {
 
     func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction)
 
-    func data(for key: KBS.DerivedKey, transaction: DBReadTransaction) -> Data?
+    func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> Data?
 
-    func isKeyAvailable(_ key: KBS.DerivedKey) -> Bool
+    func isKeyAvailable(_ key: SVR.DerivedKey) -> Bool
 }
 
-extension KeyBackupService {
+extension SecureValueRecovery {
 
     public func restoreKeysAndBackup(with pin: String) -> Promise<Void> {
         restoreKeysAndBackup(with: pin, and: nil)

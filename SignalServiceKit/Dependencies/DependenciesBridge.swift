@@ -47,8 +47,8 @@ public class DependenciesBridge {
 
     public let deviceManager: OWSDeviceManager
 
-    public let kbsCredentialStorage: KBSAuthCredentialStorage
-    public let keyBackupService: KeyBackupService
+    public let svrCredentialStorage: SVRAuthCredentialStorage
+    public let svr: SecureValueRecovery
 
     public let learnMyOwnPniManager: LearnMyOwnPniManager
 
@@ -152,20 +152,20 @@ public class DependenciesBridge {
             keyValueStoreFactory: keyValueStoreFactory
         )
 
-        self.kbsCredentialStorage = KBSAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
-        self.keyBackupService = KeyBackupServiceImpl(
-            accountManager: KBS.Wrappers.TSAccountManager(tsAccountManager),
+        self.svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
+        self.svr = KeyBackupServiceImpl(
+            accountManager: SVR.Wrappers.TSAccountManager(tsAccountManager),
             appContext: CurrentAppContext(),
-            credentialStorage: kbsCredentialStorage,
+            credentialStorage: svrCredentialStorage,
             databaseStorage: db,
             keyValueStoreFactory: keyValueStoreFactory,
-            remoteAttestation: KBS.Wrappers.RemoteAttestation(),
+            remoteAttestation: SVR.Wrappers.RemoteAttestation(),
             schedulers: schedulers,
             signalService: signalService,
-            storageServiceManager: KBS.Wrappers.StorageServiceManager(storageServiceManager),
+            storageServiceManager: SVR.Wrappers.StorageServiceManager(storageServiceManager),
             syncManager: syncManager,
             tsConstants: tsConstants,
-            twoFAManager: KBS.Wrappers.OWS2FAManager(ows2FAManager)
+            twoFAManager: SVR.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
         self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
