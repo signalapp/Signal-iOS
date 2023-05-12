@@ -540,6 +540,19 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             Logger.warn("Unable to parse registration session from response")
             return nil
         }
+        let reasonString: String = {
+            switch failure.reason {
+            case .none, .unknown:
+                return "unknown"
+            case .providerRejected:
+                return "provider rejected"
+            case .providerUnavailable:
+                return "provider unavailable"
+            case .illegalArgument:
+                return "illegal argument (rejected number)"
+            }
+        }()
+        Logger.error("Sending verification code failure from service provider. Permanent:\(failure.permanentFailure) Reason:\(reasonString)")
         let localReason: Registration.ServerFailureResponse.Reason?
         switch failure.reason {
         case .unknown, .none:

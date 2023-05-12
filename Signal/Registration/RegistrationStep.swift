@@ -83,6 +83,11 @@ public enum RegistrationStep: Equatable {
         /// checking their internet connection.
         case networkError
 
+        /// A third party provider failed to send an sms or call to the session's number.
+        /// May be permanent (the user should probably use a different number)
+        /// or transient (the user should try again later).
+        case providerFailure(isPermanent: Bool)
+
         /// A generic error occurred. Prefer to use other error types.
         case genericError
     }

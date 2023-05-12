@@ -334,6 +334,19 @@ public class RegistrationNavigationController: OWSNavigationController {
                 title = nil
                 message = CommonStrings.somethingWentWrongTryAgainLaterError
 
+            case .providerFailure(let isPermanent):
+                title = nil
+                if isPermanent {
+                    message = OWSLocalizedString(
+                        "REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT",
+                        comment: "Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number."
+                    )
+                } else {
+                    message = OWSLocalizedString(
+                        "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT",
+                        comment: "Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number."
+                    )
+                }
             }
             let actionSheet = ActionSheetController(title: title, message: message)
             actionSheet.addAction(.init(title: CommonStrings.okButton, style: .default, handler: { [weak self] _ in

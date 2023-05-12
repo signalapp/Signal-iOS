@@ -1966,7 +1966,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 } else {
                     self.db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
                 }
-                return .value(.showErrorSheet(.genericError))
+                return .value(.showErrorSheet(.providerFailure(isPermanent: failureResponse.isPermanent)))
             case .retryAfterTimeout(let session):
                 let timeInterval: TimeInterval?
                 switch transport {
