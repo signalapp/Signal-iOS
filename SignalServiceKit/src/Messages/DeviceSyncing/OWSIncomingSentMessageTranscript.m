@@ -243,10 +243,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (sentProto.unidentifiedStatus.count > 0) {
-        NSMutableArray<SignalServiceAddress *> *nonUdRecipientAddresses = [NSMutableArray new];
-        NSMutableArray<SignalServiceAddress *> *udRecipientAddresses = [NSMutableArray new];
+        NSMutableArray<ServiceIdObjC *> *nonUdRecipients = [NSMutableArray new];
+        NSMutableArray<ServiceIdObjC *> *udRecipients = [NSMutableArray new];
         for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
-            if (!statusProto.hasValidDestination) {
+            ServiceIdObjC *serviceId = [[ServiceIdObjC alloc] initWithUuidString:statusProto.destinationUuid];
+            if (serviceId == nil) {
                 OWSFailDebug(@"Delivery status proto is missing destination.");
                 continue;
             }
@@ -254,15 +255,14 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Delivery status proto is missing value.");
                 continue;
             }
-            SignalServiceAddress *recipientAddress = statusProto.destinationAddress;
             if (statusProto.unidentified) {
-                [udRecipientAddresses addObject:recipientAddress];
+                [udRecipients addObject:serviceId];
             } else {
-                [nonUdRecipientAddresses addObject:recipientAddress];
+                [nonUdRecipients addObject:serviceId];
             }
         }
-        _nonUdRecipientAddresses = [nonUdRecipientAddresses copy];
-        _udRecipientAddresses = [udRecipientAddresses copy];
+        _nonUdRecipients = [nonUdRecipients copy];
+        _udRecipients = [udRecipients copy];
     }
 
     return self;

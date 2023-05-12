@@ -106,11 +106,12 @@ extension OWSIdentityManager {
 extension OWSIdentityManager {
     @objc
     public func processIncomingVerifiedProto(_ verified: SSKProtoVerified, transaction: SDSAnyWriteTransaction) throws {
-        guard let address = verified.destinationAddress, address.isValid else {
-            return owsFailDebug("Verification state sync message missing address.")
+        guard let serviceId = ServiceId(uuidString: verified.destinationUuid) else {
+            return owsFailDebug("Verification state sync message missing destination.")
         }
+        Logger.info("Received verification state message for \(serviceId)")
         guard let rawIdentityKey = verified.identityKey, rawIdentityKey.count == kIdentityKeyLength else {
-            return owsFailDebug("Verification state sync message for \(address) with malformed identityKey")
+            return owsFailDebug("Verification state sync message for \(serviceId) with malformed identityKey")
         }
         let identityKey = try rawIdentityKey.removeKeyType()
 
@@ -118,7 +119,7 @@ extension OWSIdentityManager {
         case .default:
             applyVerificationState(
                 .default,
-                address: address,
+                serviceId: serviceId,
                 identityKey: identityKey,
                 overwriteOnConflict: false,
                 transaction: transaction
@@ -126,26 +127,27 @@ extension OWSIdentityManager {
         case .verified:
             applyVerificationState(
                 .verified,
-                address: address,
+                serviceId: serviceId,
                 identityKey: identityKey,
                 overwriteOnConflict: true,
                 transaction: transaction
             )
         case .unverified:
-            return owsFailDebug("Verification state sync message for \(address) has unverified state")
+            return owsFailDebug("Verification state sync message for \(serviceId) has unverified state")
         case .none:
-            return owsFailDebug("Verification state sync message for \(address) has no state")
+            return owsFailDebug("Verification state sync message for \(serviceId) has no state")
         }
     }
 
     private func applyVerificationState(
         _ verificationState: OWSVerificationState,
-        address: SignalServiceAddress,
+        serviceId: ServiceId,
         identityKey: Data,
         overwriteOnConflict: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
-        let recipientId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipientId = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write).uniqueId
         var recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: transaction)
 
         let shouldSaveIdentityKey: Bool
@@ -153,13 +155,13 @@ extension OWSIdentityManager {
 
         if let recipientIdentity {
             if recipientIdentity.accountId != recipientId {
-                return owsFailDebug("Unexpected accountId for \(address)")
+                return owsFailDebug("Unexpected recipientId for \(serviceId)")
             }
             let didChangeIdentityKey = recipientIdentity.identityKey != identityKey
             if didChangeIdentityKey, !overwriteOnConflict {
                 // The conflict case where we receive a verification sync message whose
                 // identity key disagrees with the local identity key for this recipient.
-                Logger.warn("Non-matching identityKey for \(address)")
+                Logger.warn("Non-matching identityKey for \(serviceId)")
                 return
             }
             shouldSaveIdentityKey = didChangeIdentityKey
@@ -177,18 +179,18 @@ extension OWSIdentityManager {
         if shouldSaveIdentityKey {
             // Ensure a remote identity exists for this key. We may be learning about
             // it for the first time.
-            saveRemoteIdentity(identityKey, address: address, transaction: transaction)
+            saveRemoteIdentity(identityKey, address: SignalServiceAddress(serviceId), transaction: transaction)
             recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: transaction)
         }
 
         guard let recipientIdentity else {
-            return owsFailDebug("Missing expected identity for \(address)")
+            return owsFailDebug("Missing expected identity for \(serviceId)")
         }
         guard recipientIdentity.accountId == recipientId else {
-            return owsFailDebug("Unexpected accountId for \(address)")
+            return owsFailDebug("Unexpected recipientId for \(serviceId)")
         }
         guard recipientIdentity.identityKey == identityKey else {
-            return owsFailDebug("Unexpected identityKey for \(address)")
+            return owsFailDebug("Unexpected identityKey for \(serviceId)")
         }
 
         if recipientIdentity.verificationState == verificationState {
@@ -197,13 +199,13 @@ extension OWSIdentityManager {
 
         let oldVerificationState = OWSVerificationStateToString(recipientIdentity.verificationState)
         let newVerificationState = OWSVerificationStateToString(verificationState)
-        Logger.info("for \(address): \(oldVerificationState) -> \(newVerificationState)")
+        Logger.info("for \(serviceId): \(oldVerificationState) -> \(newVerificationState)")
 
         recipientIdentity.update(with: verificationState, transaction: transaction)
 
         if shouldInsertChangeMessages {
             saveChangeMessages(
-                address: address,
+                address: SignalServiceAddress(serviceId),
                 verificationState: verificationState,
                 isLocalChange: false,
                 transaction: transaction

@@ -451,7 +451,7 @@ message Verified {
     UNVERIFIED = 2;
   }
 
-  optional string destinationE164 = 1;
+  reserved /*destinationE164*/      1;
   optional string destinationUuid = 5;
   optional bytes  identityKey     = 2;
   optional State  state           = 3;
@@ -461,7 +461,7 @@ message Verified {
 message SyncMessage {
   message Sent {
     message UnidentifiedDeliveryStatus {
-      optional string destinationE164 = 1;
+      reserved /*destinationE164*/      1;
       optional string destinationUuid = 3;
       optional bool   unidentified    = 2;
     }
@@ -516,14 +516,14 @@ message SyncMessage {
   }
 
   message Read {
-    optional string senderE164 = 1;
+    reserved /*senderE164*/      1;
     optional string senderUuid = 3;
     // @required
-    optional uint64 timestamp = 2;
+    optional uint64 timestamp  = 2;
   }
 
   message Viewed {
-    optional string senderE164 = 1;
+    reserved /*senderE164*/      1;
     optional string senderUuid = 3;
     // @required
     optional uint64 timestamp  = 2;
@@ -551,7 +551,7 @@ message SyncMessage {
   }
 
   message ViewOnceOpen {
-      optional string senderE164 = 1;
+      reserved /*senderE164*/      1;
       optional string senderUuid = 3;
       // @required
       optional uint64 timestamp  = 2;
@@ -581,7 +581,7 @@ message SyncMessage {
       BLOCK_AND_DELETE = 4;
     }
 
-    optional string threadE164 = 1;
+    reserved /*threadE164*/      1;
     optional string threadUuid = 2;
     optional bytes  groupId    = 3;
     optional Type   type       = 4;

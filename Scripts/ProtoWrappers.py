@@ -28,6 +28,18 @@ validation_start_regex = re.compile(r'// MARK: - Begin Validation Logic for ([^ 
 skip_signal_service_address_types = [
     "StorageServiceProtoContactRecord",
     "SSKProtoContactDetails",
+    "SSKProtoBodyRange",
+    "SSKProtoDataMessageQuote",
+    "SSKProtoVerified",
+    "SSKProtoSyncMessageSentUnidentifiedDeliveryStatus",
+    "SSKProtoSyncMessageRead",
+    "SSKProtoSyncMessageViewed",
+    "SSKProtoSyncMessageViewOnceOpen",
+    "SSKProtoSyncMessageMessageRequestResponse",
+    "SSKProtoDataMessageReaction",
+    "SSKProtoSyncMessageOutgoingPayment",
+    "SSKProtoDataMessageStoryContext",
+    "SSKProtoSyncMessageSentStoryMessageRecipient",
 ]
 
 proto_syntax = None

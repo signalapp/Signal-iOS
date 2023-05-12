@@ -4094,13 +4094,6 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
         return proto.hasType
     }
 
-    @objc
-    public var hasValidAuthor: Bool {
-        return authorAddress != nil
-    }
-    @objc
-    public let authorAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -4117,33 +4110,6 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
         self.id = id
         self.attachments = attachments
         self.bodyRanges = bodyRanges
-
-        let hasAuthorUuid = proto.hasAuthorUuid && !proto.authorUuid.isEmpty
-        let authorUuid: String? = proto.authorUuid
-        self.authorAddress = {
-            guard hasAuthorUuid else { return nil }
-
-            let uuidString: String? = {
-                guard hasAuthorUuid else { return nil }
-
-                guard let authorUuid = authorUuid else {
-                    owsFailDebug("authorUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return authorUuid
-            }()
-
-            guard let uuidString = uuidString else { return nil }
-
-            let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -6228,13 +6194,6 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
         return proto.hasAuthorUuid && !proto.authorUuid.isEmpty
     }
 
-    @objc
-    public var hasValidAuthor: Bool {
-        return authorAddress != nil
-    }
-    @objc
-    public let authorAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -6249,33 +6208,6 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
         self.proto = proto
         self.emoji = emoji
         self.timestamp = timestamp
-
-        let hasAuthorUuid = proto.hasAuthorUuid && !proto.authorUuid.isEmpty
-        let authorUuid: String? = proto.authorUuid
-        self.authorAddress = {
-            guard hasAuthorUuid else { return nil }
-
-            let uuidString: String? = {
-                guard hasAuthorUuid else { return nil }
-
-                guard let authorUuid = authorUuid else {
-                    owsFailDebug("authorUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return authorUuid
-            }()
-
-            guard let uuidString = uuidString else { return nil }
-
-            let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -8171,13 +8103,6 @@ public class SSKProtoDataMessageStoryContext: NSObject, Codable, NSSecureCoding 
         return proto.hasSentTimestamp
     }
 
-    @objc
-    public var hasValidAuthor: Bool {
-        return authorAddress != nil
-    }
-    @objc
-    public let authorAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -8188,33 +8113,6 @@ public class SSKProtoDataMessageStoryContext: NSObject, Codable, NSSecureCoding 
 
     private init(proto: SignalServiceProtos_DataMessage.StoryContext) {
         self.proto = proto
-
-        let hasAuthorUuid = proto.hasAuthorUuid && !proto.authorUuid.isEmpty
-        let authorUuid: String? = proto.authorUuid
-        self.authorAddress = {
-            guard hasAuthorUuid else { return nil }
-
-            let uuidString: String? = {
-                guard hasAuthorUuid else { return nil }
-
-                guard let authorUuid = authorUuid else {
-                    owsFailDebug("authorUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return authorUuid
-            }()
-
-            guard let uuidString = uuidString else { return nil }
-
-            let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -9566,18 +9464,6 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: SignalServiceProtos_Verified
 
     @objc
-    public var destinationE164: String? {
-        guard hasDestinationE164 else {
-            return nil
-        }
-        return proto.destinationE164
-    }
-    @objc
-    public var hasDestinationE164: Bool {
-        return proto.hasDestinationE164 && !proto.destinationE164.isEmpty
-    }
-
-    @objc
     public var destinationUuid: String? {
         guard hasDestinationUuid else {
             return nil
@@ -9633,13 +9519,6 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
         return proto.hasNullMessage
     }
 
-    @objc
-    public var hasValidDestination: Bool {
-        return destinationAddress != nil
-    }
-    @objc
-    public let destinationAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -9650,44 +9529,6 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
 
     private init(proto: SignalServiceProtos_Verified) {
         self.proto = proto
-
-        let hasDestinationUuid = proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
-        let hasDestinationE164 = proto.hasDestinationE164 && !proto.destinationE164.isEmpty
-        let destinationUuid: String? = proto.destinationUuid
-        let destinationE164: String? = proto.destinationE164
-        self.destinationAddress = {
-            guard hasDestinationUuid || hasDestinationE164 else { return nil }
-
-            let uuidString: String? = {
-                guard hasDestinationUuid else { return nil }
-
-                guard let destinationUuid = destinationUuid else {
-                    owsFailDebug("destinationUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return destinationUuid
-            }()
-
-            let phoneNumber: String? = {
-                guard hasDestinationE164 else {
-                    return nil
-                }
-
-                return ProtoUtils.parseProtoE164(destinationE164, name: "SignalServiceProtos_Verified.destinationE164")
-            }()
-
-            let address = SignalServiceAddress(
-                uuidString: uuidString,
-                phoneNumber: phoneNumber
-            )
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -9751,9 +9592,6 @@ extension SSKProtoVerified {
     @objc
     public func asBuilder() -> SSKProtoVerifiedBuilder {
         let builder = SSKProtoVerifiedBuilder()
-        if let _value = destinationE164 {
-            builder.setDestinationE164(_value)
-        }
         if let _value = destinationUuid {
             builder.setDestinationUuid(_value)
         }
@@ -9780,25 +9618,6 @@ public class SSKProtoVerifiedBuilder: NSObject {
 
     @objc
     fileprivate override init() {}
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setDestinationE164(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.destinationE164 = valueParam
-    }
-
-    public func setDestinationE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.destinationE164 = valueParam
-    }
 
     @objc
     @available(swift, obsoleted: 1.0)
@@ -9884,18 +9703,6 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
     fileprivate let proto: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus
 
     @objc
-    public var destinationE164: String? {
-        guard hasDestinationE164 else {
-            return nil
-        }
-        return proto.destinationE164
-    }
-    @objc
-    public var hasDestinationE164: Bool {
-        return proto.hasDestinationE164 && !proto.destinationE164.isEmpty
-    }
-
-    @objc
     public var destinationUuid: String? {
         guard hasDestinationUuid else {
             return nil
@@ -9916,13 +9723,6 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
         return proto.hasUnidentified
     }
 
-    @objc
-    public var hasValidDestination: Bool {
-        return destinationAddress != nil
-    }
-    @objc
-    public let destinationAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -9933,44 +9733,6 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
 
     private init(proto: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus) {
         self.proto = proto
-
-        let hasDestinationUuid = proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
-        let hasDestinationE164 = proto.hasDestinationE164 && !proto.destinationE164.isEmpty
-        let destinationUuid: String? = proto.destinationUuid
-        let destinationE164: String? = proto.destinationE164
-        self.destinationAddress = {
-            guard hasDestinationUuid || hasDestinationE164 else { return nil }
-
-            let uuidString: String? = {
-                guard hasDestinationUuid else { return nil }
-
-                guard let destinationUuid = destinationUuid else {
-                    owsFailDebug("destinationUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return destinationUuid
-            }()
-
-            let phoneNumber: String? = {
-                guard hasDestinationE164 else {
-                    return nil
-                }
-
-                return ProtoUtils.parseProtoE164(destinationE164, name: "SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus.destinationE164")
-            }()
-
-            let address = SignalServiceAddress(
-                uuidString: uuidString,
-                phoneNumber: phoneNumber
-            )
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -10034,9 +9796,6 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder {
         let builder = SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder()
-        if let _value = destinationE164 {
-            builder.setDestinationE164(_value)
-        }
         if let _value = destinationUuid {
             builder.setDestinationUuid(_value)
         }
@@ -10057,25 +9816,6 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder: NSObject 
 
     @objc
     fileprivate override init() {}
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setDestinationE164(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.destinationE164 = valueParam
-    }
-
-    public func setDestinationE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.destinationE164 = valueParam
-    }
 
     @objc
     @available(swift, obsoleted: 1.0)
@@ -10164,13 +9904,6 @@ public class SSKProtoSyncMessageSentStoryMessageRecipient: NSObject, Codable, NS
         return proto.hasIsAllowedToReply
     }
 
-    @objc
-    public var hasValidDestination: Bool {
-        return destinationAddress != nil
-    }
-    @objc
-    public let destinationAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -10181,33 +9914,6 @@ public class SSKProtoSyncMessageSentStoryMessageRecipient: NSObject, Codable, NS
 
     private init(proto: SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient) {
         self.proto = proto
-
-        let hasDestinationUuid = proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
-        let destinationUuid: String? = proto.destinationUuid
-        self.destinationAddress = {
-            guard hasDestinationUuid else { return nil }
-
-            let uuidString: String? = {
-                guard hasDestinationUuid else { return nil }
-
-                guard let destinationUuid = destinationUuid else {
-                    owsFailDebug("destinationUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return destinationUuid
-            }()
-
-            guard let uuidString = uuidString else { return nil }
-
-            let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -11475,18 +11181,6 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
     public let timestamp: UInt64
 
     @objc
-    public var senderE164: String? {
-        guard hasSenderE164 else {
-            return nil
-        }
-        return proto.senderE164
-    }
-    @objc
-    public var hasSenderE164: Bool {
-        return proto.hasSenderE164 && !proto.senderE164.isEmpty
-    }
-
-    @objc
     public var senderUuid: String? {
         guard hasSenderUuid else {
             return nil
@@ -11497,13 +11191,6 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
     public var hasSenderUuid: Bool {
         return proto.hasSenderUuid && !proto.senderUuid.isEmpty
     }
-
-    @objc
-    public var hasValidSender: Bool {
-        return senderAddress != nil
-    }
-    @objc
-    public let senderAddress: SignalServiceAddress?
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -11517,44 +11204,6 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
                  timestamp: UInt64) {
         self.proto = proto
         self.timestamp = timestamp
-
-        let hasSenderUuid = proto.hasSenderUuid && !proto.senderUuid.isEmpty
-        let hasSenderE164 = proto.hasSenderE164 && !proto.senderE164.isEmpty
-        let senderUuid: String? = proto.senderUuid
-        let senderE164: String? = proto.senderE164
-        self.senderAddress = {
-            guard hasSenderUuid || hasSenderE164 else { return nil }
-
-            let uuidString: String? = {
-                guard hasSenderUuid else { return nil }
-
-                guard let senderUuid = senderUuid else {
-                    owsFailDebug("senderUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return senderUuid
-            }()
-
-            let phoneNumber: String? = {
-                guard hasSenderE164 else {
-                    return nil
-                }
-
-                return ProtoUtils.parseProtoE164(senderE164, name: "SignalServiceProtos_SyncMessage.Read.senderE164")
-            }()
-
-            let address = SignalServiceAddress(
-                uuidString: uuidString,
-                phoneNumber: phoneNumber
-            )
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -11624,9 +11273,6 @@ extension SSKProtoSyncMessageRead {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageReadBuilder {
         let builder = SSKProtoSyncMessageReadBuilder(timestamp: timestamp)
-        if let _value = senderE164 {
-            builder.setSenderE164(_value)
-        }
         if let _value = senderUuid {
             builder.setSenderUuid(_value)
         }
@@ -11650,25 +11296,6 @@ public class SSKProtoSyncMessageReadBuilder: NSObject {
         super.init()
 
         setTimestamp(timestamp)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setSenderE164(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.senderE164 = valueParam
-    }
-
-    public func setSenderE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.senderE164 = valueParam
     }
 
     @objc
@@ -11731,18 +11358,6 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
     public let timestamp: UInt64
 
     @objc
-    public var senderE164: String? {
-        guard hasSenderE164 else {
-            return nil
-        }
-        return proto.senderE164
-    }
-    @objc
-    public var hasSenderE164: Bool {
-        return proto.hasSenderE164 && !proto.senderE164.isEmpty
-    }
-
-    @objc
     public var senderUuid: String? {
         guard hasSenderUuid else {
             return nil
@@ -11753,13 +11368,6 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
     public var hasSenderUuid: Bool {
         return proto.hasSenderUuid && !proto.senderUuid.isEmpty
     }
-
-    @objc
-    public var hasValidSender: Bool {
-        return senderAddress != nil
-    }
-    @objc
-    public let senderAddress: SignalServiceAddress?
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -11773,44 +11381,6 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
                  timestamp: UInt64) {
         self.proto = proto
         self.timestamp = timestamp
-
-        let hasSenderUuid = proto.hasSenderUuid && !proto.senderUuid.isEmpty
-        let hasSenderE164 = proto.hasSenderE164 && !proto.senderE164.isEmpty
-        let senderUuid: String? = proto.senderUuid
-        let senderE164: String? = proto.senderE164
-        self.senderAddress = {
-            guard hasSenderUuid || hasSenderE164 else { return nil }
-
-            let uuidString: String? = {
-                guard hasSenderUuid else { return nil }
-
-                guard let senderUuid = senderUuid else {
-                    owsFailDebug("senderUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return senderUuid
-            }()
-
-            let phoneNumber: String? = {
-                guard hasSenderE164 else {
-                    return nil
-                }
-
-                return ProtoUtils.parseProtoE164(senderE164, name: "SignalServiceProtos_SyncMessage.Viewed.senderE164")
-            }()
-
-            let address = SignalServiceAddress(
-                uuidString: uuidString,
-                phoneNumber: phoneNumber
-            )
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -11880,9 +11450,6 @@ extension SSKProtoSyncMessageViewed {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageViewedBuilder {
         let builder = SSKProtoSyncMessageViewedBuilder(timestamp: timestamp)
-        if let _value = senderE164 {
-            builder.setSenderE164(_value)
-        }
         if let _value = senderUuid {
             builder.setSenderUuid(_value)
         }
@@ -11906,25 +11473,6 @@ public class SSKProtoSyncMessageViewedBuilder: NSObject {
         super.init()
 
         setTimestamp(timestamp)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setSenderE164(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.senderE164 = valueParam
-    }
-
-    public func setSenderE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.senderE164 = valueParam
     }
 
     @objc
@@ -12435,18 +11983,6 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
     public let timestamp: UInt64
 
     @objc
-    public var senderE164: String? {
-        guard hasSenderE164 else {
-            return nil
-        }
-        return proto.senderE164
-    }
-    @objc
-    public var hasSenderE164: Bool {
-        return proto.hasSenderE164 && !proto.senderE164.isEmpty
-    }
-
-    @objc
     public var senderUuid: String? {
         guard hasSenderUuid else {
             return nil
@@ -12457,13 +11993,6 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
     public var hasSenderUuid: Bool {
         return proto.hasSenderUuid && !proto.senderUuid.isEmpty
     }
-
-    @objc
-    public var hasValidSender: Bool {
-        return senderAddress != nil
-    }
-    @objc
-    public let senderAddress: SignalServiceAddress?
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -12477,44 +12006,6 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
                  timestamp: UInt64) {
         self.proto = proto
         self.timestamp = timestamp
-
-        let hasSenderUuid = proto.hasSenderUuid && !proto.senderUuid.isEmpty
-        let hasSenderE164 = proto.hasSenderE164 && !proto.senderE164.isEmpty
-        let senderUuid: String? = proto.senderUuid
-        let senderE164: String? = proto.senderE164
-        self.senderAddress = {
-            guard hasSenderUuid || hasSenderE164 else { return nil }
-
-            let uuidString: String? = {
-                guard hasSenderUuid else { return nil }
-
-                guard let senderUuid = senderUuid else {
-                    owsFailDebug("senderUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return senderUuid
-            }()
-
-            let phoneNumber: String? = {
-                guard hasSenderE164 else {
-                    return nil
-                }
-
-                return ProtoUtils.parseProtoE164(senderE164, name: "SignalServiceProtos_SyncMessage.ViewOnceOpen.senderE164")
-            }()
-
-            let address = SignalServiceAddress(
-                uuidString: uuidString,
-                phoneNumber: phoneNumber
-            )
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -12584,9 +12075,6 @@ extension SSKProtoSyncMessageViewOnceOpen {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageViewOnceOpenBuilder {
         let builder = SSKProtoSyncMessageViewOnceOpenBuilder(timestamp: timestamp)
-        if let _value = senderE164 {
-            builder.setSenderE164(_value)
-        }
         if let _value = senderUuid {
             builder.setSenderUuid(_value)
         }
@@ -12610,25 +12098,6 @@ public class SSKProtoSyncMessageViewOnceOpenBuilder: NSObject {
         super.init()
 
         setTimestamp(timestamp)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setSenderE164(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.senderE164 = valueParam
-    }
-
-    public func setSenderE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.senderE164 = valueParam
     }
 
     @objc
@@ -13067,18 +12536,6 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
     fileprivate let proto: SignalServiceProtos_SyncMessage.MessageRequestResponse
 
     @objc
-    public var threadE164: String? {
-        guard hasThreadE164 else {
-            return nil
-        }
-        return proto.threadE164
-    }
-    @objc
-    public var hasThreadE164: Bool {
-        return proto.hasThreadE164 && !proto.threadE164.isEmpty
-    }
-
-    @objc
     public var threadUuid: String? {
         guard hasThreadUuid else {
             return nil
@@ -13122,13 +12579,6 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
         return proto.hasType
     }
 
-    @objc
-    public var hasValidThread: Bool {
-        return threadAddress != nil
-    }
-    @objc
-    public let threadAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -13139,44 +12589,6 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
 
     private init(proto: SignalServiceProtos_SyncMessage.MessageRequestResponse) {
         self.proto = proto
-
-        let hasThreadUuid = proto.hasThreadUuid && !proto.threadUuid.isEmpty
-        let hasThreadE164 = proto.hasThreadE164 && !proto.threadE164.isEmpty
-        let threadUuid: String? = proto.threadUuid
-        let threadE164: String? = proto.threadE164
-        self.threadAddress = {
-            guard hasThreadUuid || hasThreadE164 else { return nil }
-
-            let uuidString: String? = {
-                guard hasThreadUuid else { return nil }
-
-                guard let threadUuid = threadUuid else {
-                    owsFailDebug("threadUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return threadUuid
-            }()
-
-            let phoneNumber: String? = {
-                guard hasThreadE164 else {
-                    return nil
-                }
-
-                return ProtoUtils.parseProtoE164(threadE164, name: "SignalServiceProtos_SyncMessage.MessageRequestResponse.threadE164")
-            }()
-
-            let address = SignalServiceAddress(
-                uuidString: uuidString,
-                phoneNumber: phoneNumber
-            )
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -13240,9 +12652,6 @@ extension SSKProtoSyncMessageMessageRequestResponse {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageMessageRequestResponseBuilder {
         let builder = SSKProtoSyncMessageMessageRequestResponseBuilder()
-        if let _value = threadE164 {
-            builder.setThreadE164(_value)
-        }
         if let _value = threadUuid {
             builder.setThreadUuid(_value)
         }
@@ -13266,25 +12675,6 @@ public class SSKProtoSyncMessageMessageRequestResponseBuilder: NSObject {
 
     @objc
     fileprivate override init() {}
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setThreadE164(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.threadE164 = valueParam
-    }
-
-    public func setThreadE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.threadE164 = valueParam
-    }
 
     @objc
     @available(swift, obsoleted: 1.0)
@@ -13671,13 +13061,6 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCodi
         return proto.hasNote
     }
 
-    @objc
-    public var hasValidRecipient: Bool {
-        return recipientAddress != nil
-    }
-    @objc
-    public let recipientAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -13690,33 +13073,6 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCodi
                  mobileCoin: SSKProtoSyncMessageOutgoingPaymentMobileCoin?) {
         self.proto = proto
         self.mobileCoin = mobileCoin
-
-        let hasRecipientUuid = proto.hasRecipientUuid && !proto.recipientUuid.isEmpty
-        let recipientUuid: String? = proto.recipientUuid
-        self.recipientAddress = {
-            guard hasRecipientUuid else { return nil }
-
-            let uuidString: String? = {
-                guard hasRecipientUuid else { return nil }
-
-                guard let recipientUuid = recipientUuid else {
-                    owsFailDebug("recipientUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return recipientUuid
-            }()
-
-            guard let uuidString = uuidString else { return nil }
-
-            let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -18662,13 +18018,6 @@ public class SSKProtoBodyRange: NSObject, Codable, NSSecureCoding {
         return proto.hasStyle
     }
 
-    @objc
-    public var hasValidMention: Bool {
-        return mentionAddress != nil
-    }
-    @objc
-    public let mentionAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -18679,33 +18028,6 @@ public class SSKProtoBodyRange: NSObject, Codable, NSSecureCoding {
 
     private init(proto: SignalServiceProtos_BodyRange) {
         self.proto = proto
-
-        let hasMentionUuid = proto.hasMentionUuid && !proto.mentionUuid.isEmpty
-        let mentionUuid: String? = proto.mentionUuid
-        self.mentionAddress = {
-            guard hasMentionUuid else { return nil }
-
-            let uuidString: String? = {
-                guard hasMentionUuid else { return nil }
-
-                guard let mentionUuid = mentionUuid else {
-                    owsFailDebug("mentionUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return mentionUuid
-            }()
-
-            guard let uuidString = uuidString else { return nil }
-
-            let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc

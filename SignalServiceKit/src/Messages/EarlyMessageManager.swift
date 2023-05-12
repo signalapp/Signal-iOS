@@ -185,18 +185,21 @@ public class EarlyMessageManager: NSObject {
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: SignalServiceAddress?,
+        associatedMessageAuthor: ServiceIdObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
         guard plainTextData?.count ?? 0 <= Self.maxEarlyEnvelopeSize else {
             return owsFailDebug("unexpectedly tried to record an excessively large early envelope")
         }
 
-        guard let associatedMessageAuthor = associatedMessageAuthor else {
+        guard let associatedMessageAuthor else {
             return owsFailDebug("unexpectedly missing associatedMessageAuthor for early envelope \(OWSMessageManager.description(for: envelope))")
         }
 
-        let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: associatedMessageAuthor)
+        let identifier = MessageIdentifier(
+            timestamp: associatedMessageTimestamp,
+            author: SignalServiceAddress(associatedMessageAuthor.wrappedValue)
+        )
 
         Logger.info("Recording early envelope \(OWSMessageManager.description(for: envelope)) for message \(identifier)")
 
@@ -260,14 +263,17 @@ public class EarlyMessageManager: NSObject {
     public func recordEarlyReadReceiptFromLinkedDevice(
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: SignalServiceAddress?,
+        associatedMessageAuthor: ServiceIdObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard let associatedMessageAuthor = associatedMessageAuthor else {
+        guard let associatedMessageAuthor else {
             return owsFailDebug("unexpectedly missing associatedMessageAuthor for early read receipt with timestamp \(timestamp)")
         }
 
-        let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: associatedMessageAuthor)
+        let identifier = MessageIdentifier(
+            timestamp: associatedMessageTimestamp,
+            author: SignalServiceAddress(associatedMessageAuthor.wrappedValue)
+        )
 
         Logger.info("Recording early read receipt from linked device for message \(identifier)")
 
@@ -282,14 +288,17 @@ public class EarlyMessageManager: NSObject {
     public func recordEarlyViewedReceiptFromLinkedDevice(
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: SignalServiceAddress?,
+        associatedMessageAuthor: ServiceIdObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard let associatedMessageAuthor = associatedMessageAuthor else {
+        guard let associatedMessageAuthor else {
             return owsFailDebug("unexpectedly missing associatedMessageAuthor for early viewed receipt with timestamp \(timestamp)")
         }
 
-        let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: associatedMessageAuthor)
+        let identifier = MessageIdentifier(
+            timestamp: associatedMessageTimestamp,
+            author: SignalServiceAddress(associatedMessageAuthor.wrappedValue)
+        )
 
         Logger.info("Recording early viewed receipt from linked device for message \(identifier)")
 

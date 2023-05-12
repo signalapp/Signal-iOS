@@ -453,8 +453,8 @@ extension OWSMessageManager {
 
         if let msg = message as? TSOutgoingMessage {
             msg.updateWithWasSentFromLinkedDevice(
-                withUDRecipientAddresses: transcript.udRecipientAddresses,
-                nonUdRecipientAddresses: transcript.nonUdRecipientAddresses,
+                withUDRecipients: transcript.udRecipients,
+                nonUdRecipients: transcript.nonUdRecipients,
                 isSentUpdate: false,
                 transaction: tx
             )
@@ -814,7 +814,7 @@ extension SSKProtoSyncMessage {
             return "Blocked"
         }
         if let verified = verified {
-            return "Verification for: \(String(describing: verified.destinationAddress))"
+            return "Verification"
         }
         if configuration != nil {
             return "Configuration"

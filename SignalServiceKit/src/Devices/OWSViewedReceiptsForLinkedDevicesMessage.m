@@ -48,7 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
         SSKProtoSyncMessageViewedBuilder *viewedProtoBuilder =
             [SSKProtoSyncMessageViewed builderWithTimestamp:viewedReceipt.messageIdTimestamp];
 
-        [viewedProtoBuilder setSenderE164:viewedReceipt.senderAddress.phoneNumber];
         [viewedProtoBuilder setSenderUuid:viewedReceipt.senderAddress.uuidString];
 
         NSError *error;

@@ -326,12 +326,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                              context:(id<DeliveryReceiptContext>)deliveryReceiptContext
                          transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:
-            (nullable NSArray<SignalServiceAddress *> *)udRecipientAddresses
-                                          nonUdRecipientAddresses:
-                                              (nullable NSArray<SignalServiceAddress *> *)nonUdRecipientAddresses
-                                                     isSentUpdate:(BOOL)isSentUpdate
-                                                      transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<ServiceIdObjC *> *)udRecipients
+                                          nonUdRecipients:(nullable NSArray<ServiceIdObjC *> *)nonUdRecipients
+                                             isSentUpdate:(BOOL)isSentUpdate
+                                              transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to rewrite the recipient list with a single recipient.
 // It is used to reply to a "group info request", which should only be

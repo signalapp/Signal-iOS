@@ -114,7 +114,6 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder *statusBuilder =
             [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus builder];
-        [statusBuilder setDestinationE164:recipientAddress.phoneNumber];
         [statusBuilder setDestinationUuid:recipientAddress.uuidString];
         [statusBuilder setUnidentified:recipientState.wasSentByUD];
         SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *_Nullable status =

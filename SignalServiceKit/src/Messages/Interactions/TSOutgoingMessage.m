@@ -852,29 +852,26 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                             }];
 }
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:
-            (nullable NSArray<SignalServiceAddress *> *)udRecipientAddresses
-                                          nonUdRecipientAddresses:
-                                              (nullable NSArray<SignalServiceAddress *> *)nonUdRecipientAddresses
-                                                     isSentUpdate:(BOOL)isSentUpdate
-                                                      transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<ServiceIdObjC *> *)udRecipients
+                                          nonUdRecipients:(nullable NSArray<ServiceIdObjC *> *)nonUdRecipients
+                                             isSentUpdate:(BOOL)isSentUpdate
+                                              transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
     [self
         anyUpdateOutgoingMessageWithTransaction:transaction
                                           block:^(TSOutgoingMessage *message) {
-                                              if (udRecipientAddresses.count > 0 || nonUdRecipientAddresses.count > 0) {
+                                              if (udRecipients.count > 0 || nonUdRecipients.count > 0) {
                                                   // If we have specific recipient info from the transcript,
                                                   // build a new recipient state map.
                                                   NSMutableDictionary<SignalServiceAddress *,
                                                       TSOutgoingMessageRecipientState *> *recipientAddressStates
                                                       = [NSMutableDictionary new];
-                                                  for (SignalServiceAddress *recipientAddress in udRecipientAddresses) {
-                                                      if (!recipientAddress.isValid) {
-                                                          OWSFailDebug(@"Ignoring invalid address.");
-                                                          continue;
-                                                      }
+                                                  for (ServiceIdObjC *serviceId in udRecipients) {
+                                                      SignalServiceAddress *recipientAddress =
+                                                          [[SignalServiceAddress alloc]
+                                                              initWithServiceIdObjC:serviceId];
                                                       if (recipientAddressStates[recipientAddress]) {
                                                           OWSFailDebug(@"recipient appears more than once in recipient "
                                                                        @"lists: %@",
@@ -887,12 +884,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                       recipientState.wasSentByUD = YES;
                                                       recipientAddressStates[recipientAddress] = recipientState;
                                                   }
-                                                  for (SignalServiceAddress
-                                                           *recipientAddress in nonUdRecipientAddresses) {
-                                                      if (!recipientAddress.isValid) {
-                                                          OWSFailDebug(@"Ignoring invalid address.");
-                                                          continue;
-                                                      }
+                                                  for (ServiceIdObjC *serviceId in nonUdRecipients) {
+                                                      SignalServiceAddress *recipientAddress =
+                                                          [[SignalServiceAddress alloc]
+                                                              initWithServiceIdObjC:serviceId];
                                                       if (recipientAddressStates[recipientAddress]) {
                                                           OWSFailDebug(@"recipient appears more than once in recipient "
                                                                        @"lists: %@",

@@ -1375,15 +1375,18 @@ NS_ASSUME_NONNULL_BEGIN
                     case OWSReactionProcessingResultSuccess:
                     case OWSReactionProcessingResultInvalidReaction:
                         break;
-                    case OWSReactionProcessingResultAssociatedMessageMissing:
+                    case OWSReactionProcessingResultAssociatedMessageMissing: {
+                        ServiceIdObjC *messageAuthor =
+                            [[ServiceIdObjC alloc] initWithUuidString:dataMessage.reaction.authorUuid];
                         [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                         plainTextData:plaintextData
                                                       wasReceivedByUD:wasReceivedByUD
                                               serverDeliveryTimestamp:serverDeliveryTimestamp
                                            associatedMessageTimestamp:dataMessage.reaction.timestamp
-                                              associatedMessageAuthor:dataMessage.reaction.authorAddress
+                                              associatedMessageAuthor:messageAuthor
                                                           transaction:transaction];
                         break;
+                    }
                 }
             } else if (dataMessage.delete != nil) {
                 OWSRemoteDeleteProcessingResult result =
@@ -1399,15 +1402,16 @@ NS_ASSUME_NONNULL_BEGIN
                     case OWSRemoteDeleteProcessingResultInvalidDelete:
                         OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
                         break;
-                    case OWSRemoteDeleteProcessingResultDeletedMessageMissing:
+                    case OWSRemoteDeleteProcessingResultDeletedMessageMissing: {
                         [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                         plainTextData:plaintextData
                                                       wasReceivedByUD:wasReceivedByUD
                                               serverDeliveryTimestamp:serverDeliveryTimestamp
                                            associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
-                                              associatedMessageAuthor:envelope.sourceAddress
+                                              associatedMessageAuthor:envelope.sourceServiceIdObjC
                                                           transaction:transaction];
                         break;
+                    }
                 }
             } else if (dataMessage.groupCallUpdate != nil) {
                 TSGroupThread *_Nullable groupThread = nil;
@@ -1451,9 +1455,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                        readTimestamp:envelope.timestamp
                                                                   tx:transaction];
         for (SSKProtoSyncMessageRead *readReceiptProto in earlyReceipts) {
+            ServiceIdObjC *messageAuthor = [[ServiceIdObjC alloc] initWithUuidString:readReceiptProto.senderUuid];
             [self.earlyMessageManager recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
                                                                associatedMessageTimestamp:readReceiptProto.timestamp
-                                                                  associatedMessageAuthor:readReceiptProto.senderAddress
+                                                                  associatedMessageAuthor:messageAuthor
                                                                               transaction:transaction];
         }
     } else if (syncMessage.viewed.count > 0) {
@@ -1463,14 +1468,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                        viewedTimestamp:envelope.timestamp
                                                                     tx:transaction];
         for (SSKProtoSyncMessageViewed *viewedReceiptProto in earlyReceipts) {
-            [self.earlyMessageManager
-                recordEarlyViewedReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
-                                           associatedMessageTimestamp:viewedReceiptProto.timestamp
-                                              associatedMessageAuthor:viewedReceiptProto.senderAddress
-                                                          transaction:transaction];
+            ServiceIdObjC *messageAuthor = [[ServiceIdObjC alloc] initWithUuidString:viewedReceiptProto.senderUuid];
+            [self.earlyMessageManager recordEarlyViewedReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
+                                                                 associatedMessageTimestamp:viewedReceiptProto.timestamp
+                                                                    associatedMessageAuthor:messageAuthor
+                                                                                transaction:transaction];
         }
     } else if (syncMessage.verified) {
-        OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destinationAddress);
         NSError *error;
         if (![self.identityManager processIncomingVerifiedProto:syncMessage.verified
                                                     transaction:transaction
@@ -1496,15 +1500,18 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSViewOnceSyncMessageProcessingResultSuccess:
             case OWSViewOnceSyncMessageProcessingResultInvalidSyncMessage:
                 break;
-            case OWSViewOnceSyncMessageProcessingResultAssociatedMessageMissing:
+            case OWSViewOnceSyncMessageProcessingResultAssociatedMessageMissing: {
+                ServiceIdObjC *messageAuthor =
+                    [[ServiceIdObjC alloc] initWithUuidString:syncMessage.viewOnceOpen.senderUuid];
                 [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                 plainTextData:plaintextData
                                               wasReceivedByUD:wasReceivedByUD
                                       serverDeliveryTimestamp:serverDeliveryTimestamp
                                    associatedMessageTimestamp:syncMessage.viewOnceOpen.timestamp
-                                      associatedMessageAuthor:syncMessage.viewOnceOpen.senderAddress
+                                      associatedMessageAuthor:messageAuthor
                                                   transaction:transaction];
                 break;
+            }
         }
     } else if (syncMessage.configuration) {
         OWSLogInfo(@"Received configuration sync message.");
@@ -1688,15 +1695,18 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSReactionProcessingResultSuccess:
             case OWSReactionProcessingResultInvalidReaction:
                 break;
-            case OWSReactionProcessingResultAssociatedMessageMissing:
+            case OWSReactionProcessingResultAssociatedMessageMissing: {
+                ServiceIdObjC *messageAuthor =
+                    [[ServiceIdObjC alloc] initWithUuidString:dataMessage.reaction.authorUuid];
                 [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                 plainTextData:plaintextData
                                               wasReceivedByUD:wasReceivedByUD
                                       serverDeliveryTimestamp:serverDeliveryTimestamp
                                    associatedMessageTimestamp:dataMessage.reaction.timestamp
-                                      associatedMessageAuthor:dataMessage.reaction.authorAddress
+                                      associatedMessageAuthor:messageAuthor
                                                   transaction:transaction];
                 break;
+            }
         }
 
         return nil;
@@ -1722,7 +1732,7 @@ NS_ASSUME_NONNULL_BEGIN
                                               wasReceivedByUD:wasReceivedByUD
                                       serverDeliveryTimestamp:serverDeliveryTimestamp
                                    associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
-                                      associatedMessageAuthor:envelope.sourceAddress
+                                      associatedMessageAuthor:envelope.sourceServiceIdObjC
                                                   transaction:transaction];
                 break;
         }

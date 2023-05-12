@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
     // Exposed to ObjC and made optional for MTLModel serialization
@@ -58,13 +59,13 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
                 return nil
             }
 
-            guard applyRecipientStates(recipientStates, sentBuilder: sentBuilder) else { return nil }
+            applyRecipientStates(recipientStates, sentBuilder: sentBuilder)
         } else if let storyEncodedRecipientStates = storyEncodedRecipientStates,
                   let recipientStates = try? JSONDecoder().decode(
                     [UUID: StoryRecipientState].self,
                     from: storyEncodedRecipientStates
                   ) {
-            guard applyRecipientStates(recipientStates, sentBuilder: sentBuilder) else { return nil }
+            applyRecipientStates(recipientStates, sentBuilder: sentBuilder)
         } else {
             owsFailDebug("Missing recipient states")
             return nil
@@ -82,21 +83,14 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         }
     }
 
-    private func applyRecipientStates(_ recipientStates: [UUID: StoryRecipientState], sentBuilder: SSKProtoSyncMessageSentBuilder) -> Bool {
+    private func applyRecipientStates(_ recipientStates: [UUID: StoryRecipientState], sentBuilder: SSKProtoSyncMessageSentBuilder) {
         for (uuid, state) in recipientStates {
             let builder = SSKProtoSyncMessageSentStoryMessageRecipient.builder()
             builder.setDestinationUuid(uuid.uuidString)
             builder.setDistributionListIds(state.contexts.map { $0.uuidString })
             builder.setIsAllowedToReply(state.allowsReplies)
-            do {
-                sentBuilder.addStoryMessageRecipients(try builder.build())
-            } catch {
-                owsFailDebug("Failed to prepare proto for story recipient \(uuid.uuidString) \(error)")
-                return false
-            }
+            sentBuilder.addStoryMessageRecipients(builder.buildInfallibly())
         }
-
-        return true
     }
 
     private func storyMessageProto(for storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> SSKProtoStoryMessage? {

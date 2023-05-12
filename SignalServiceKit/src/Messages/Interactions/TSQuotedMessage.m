@@ -242,25 +242,30 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         return nil;
     }
 
-    if (!quoteProto.hasValidAuthor) {
+    ServiceIdObjC *quoteAuthor = [[ServiceIdObjC alloc] initWithUuidString:quoteProto.authorUuid];
+    if (quoteAuthor == nil) {
         OWSFailDebug(@"quoted message missing author");
         return nil;
     }
+    SignalServiceAddress *quoteAuthorAddress = [[SignalServiceAddress alloc] initWithServiceIdObjC:quoteAuthor];
 
     TSQuotedMessage *_Nullable quotedMessage = nil;
     TSMessage *_Nullable originalMessage = [InteractionFinder findMessageWithTimestamp:timestamp
                                                                               threadId:thread.uniqueId
-                                                                                author:quoteProto.authorAddress
+                                                                                author:quoteAuthorAddress
                                                                            transaction:transaction];
     if (originalMessage) {
         // Prefer to generate the quoted content locally if available.
         quotedMessage = [self localQuotedMessageFromSourceMessage:originalMessage
                                                        quoteProto:quoteProto
+                                                 quoteProtoAuthor:quoteAuthor
                                                       transaction:transaction];
     }
     if (!quotedMessage) {
         // If we couldn't generate the quoted content from locally available info, we can generate it from the proto.
-        quotedMessage = [self remoteQuotedMessageFromQuoteProto:quoteProto transaction:transaction];
+        quotedMessage = [self remoteQuotedMessageFromQuoteProto:quoteProto
+                                                    quoteAuthor:quoteAuthor
+                                                    transaction:transaction];
     }
 
     OWSAssertDebug(quotedMessage);
@@ -286,19 +291,21 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 /// Builds a quoted message from the original source message
 + (nullable TSQuotedMessage *)localQuotedMessageFromSourceMessage:(TSMessage *)quotedMessage
                                                        quoteProto:(SSKProtoDataMessageQuote *)proto
+                                                 quoteProtoAuthor:(ServiceIdObjC *)quoteProtoAuthor
                                                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (quotedMessage.isViewOnceMessage) {
         // We construct a quote that does not include any of the quoted message's renderable content.
         NSString *body = OWSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
             @"inbox cell and notification text for an already viewed view-once media message.");
-        return [[TSQuotedMessage alloc] initWithTimestamp:quotedMessage.timestamp
-                                            authorAddress:proto.authorAddress
-                                                     body:body
-                                               bodyRanges:nil
-                                               bodySource:TSQuotedMessageContentSourceLocal
-                             receivedQuotedAttachmentInfo:nil
-                                              isGiftBadge:NO];
+        return [[TSQuotedMessage alloc]
+                       initWithTimestamp:quotedMessage.timestamp
+                           authorAddress:[[SignalServiceAddress alloc] initWithServiceIdObjC:quoteProtoAuthor]
+                                    body:body
+                              bodyRanges:nil
+                              bodySource:TSQuotedMessageContentSourceLocal
+            receivedQuotedAttachmentInfo:nil
+                             isGiftBadge:NO];
     }
 
     NSString *_Nullable body = nil;
@@ -383,14 +390,17 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 /// @note Quoted messages constructed from proto material may not be representative of the original source content. This
 /// should be flagged to the user. (See: -[OWSQuotedReplyModel isRemotelySourced])
 + (nullable TSQuotedMessage *)remoteQuotedMessageFromQuoteProto:(SSKProtoDataMessageQuote *)proto
+                                                    quoteAuthor:(ServiceIdObjC *)quoteAuthor
                                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
+    SignalServiceAddress *quoteAuthorAddress = [[SignalServiceAddress alloc] initWithServiceIdObjC:quoteAuthor];
+
     // This is untrusted content from other users that may not be well-formed.
     // The GiftBadge type has no content/attachments, so don't read those
     // fields if the type is GiftBadge.
     if (proto.hasType && (proto.unwrappedType == SSKProtoDataMessageQuoteTypeGiftBadge)) {
         return [[TSQuotedMessage alloc] initWithTimestamp:proto.id
-                                            authorAddress:proto.authorAddress
+                                            authorAddress:quoteAuthorAddress
                                                      body:nil
                                                bodyRanges:nil
                                                bodySource:TSQuotedMessageContentSourceRemote
@@ -430,7 +440,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
     if (body.length > 0 || attachmentInfo) {
         return [[TSQuotedMessage alloc] initWithTimestamp:proto.id
-                                            authorAddress:proto.authorAddress
+                                            authorAddress:quoteAuthorAddress
                                                      body:body
                                                bodyRanges:bodyRanges
                                                bodySource:TSQuotedMessageContentSourceRemote

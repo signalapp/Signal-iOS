@@ -180,10 +180,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(outgoingMessage.hasRenderableContent);
 
-    [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:transcript.udRecipientAddresses
-                                                       nonUdRecipientAddresses:transcript.nonUdRecipientAddresses
-                                                                  isSentUpdate:NO
-                                                                   transaction:transaction];
+    [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipients:transcript.udRecipients
+                                                       nonUdRecipients:transcript.nonUdRecipients
+                                                          isSentUpdate:NO
+                                                           transaction:transaction];
     // The insert and update methods above may start expiration for this message, but
     // transcript.expirationStartedAt may be earlier, so we need to pass that to
     // the OWSDisappearingMessagesJob in case it needs to back-date the expiration.
@@ -231,7 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
 
-    if (transcript.udRecipientAddresses.count < 1 && transcript.nonUdRecipientAddresses.count < 1) {
+    if (transcript.udRecipients.count < 1 && transcript.nonUdRecipients.count < 1) {
         OWSFailDebug(@"Ignoring empty 'recipient update' transcript.");
         return;
     }
@@ -302,13 +302,13 @@ NS_ASSUME_NONNULL_BEGIN
                    @"udRecipientIds: %d.",
             thread.uniqueId,
             timestamp,
-            (int)transcript.nonUdRecipientAddresses.count,
-            (int)transcript.udRecipientAddresses.count);
+            (int)transcript.nonUdRecipients.count,
+            (int)transcript.udRecipients.count);
 
-        [message updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:transcript.udRecipientAddresses
-                                                   nonUdRecipientAddresses:transcript.nonUdRecipientAddresses
-                                                              isSentUpdate:YES
-                                                               transaction:transaction];
+        [message updateWithWasSentFromLinkedDeviceWithUDRecipients:transcript.udRecipients
+                                                   nonUdRecipients:transcript.nonUdRecipients
+                                                      isSentUpdate:YES
+                                                       transaction:transaction];
 
         messageFound = YES;
     }

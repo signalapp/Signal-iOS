@@ -2549,15 +2549,6 @@ struct SignalServiceProtos_Verified {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var destinationE164: String {
-    get {return _destinationE164 ?? String()}
-    set {_destinationE164 = newValue}
-  }
-  /// Returns true if `destinationE164` has been explicitly set.
-  var hasDestinationE164: Bool {return self._destinationE164 != nil}
-  /// Clears the value of `destinationE164`. Subsequent reads from it will return its default value.
-  mutating func clearDestinationE164() {self._destinationE164 = nil}
-
   var destinationUuid: String {
     get {return _destinationUuid ?? String()}
     set {_destinationUuid = newValue}
@@ -2627,7 +2618,6 @@ struct SignalServiceProtos_Verified {
 
   init() {}
 
-  fileprivate var _destinationE164: String? = nil
   fileprivate var _destinationUuid: String? = nil
   fileprivate var _identityKey: Data? = nil
   fileprivate var _state: SignalServiceProtos_Verified.State? = nil
@@ -2887,15 +2877,6 @@ struct SignalServiceProtos_SyncMessage {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var destinationE164: String {
-        get {return _destinationE164 ?? String()}
-        set {_destinationE164 = newValue}
-      }
-      /// Returns true if `destinationE164` has been explicitly set.
-      var hasDestinationE164: Bool {return self._destinationE164 != nil}
-      /// Clears the value of `destinationE164`. Subsequent reads from it will return its default value.
-      mutating func clearDestinationE164() {self._destinationE164 = nil}
-
       var destinationUuid: String {
         get {return _destinationUuid ?? String()}
         set {_destinationUuid = newValue}
@@ -2918,7 +2899,6 @@ struct SignalServiceProtos_SyncMessage {
 
       init() {}
 
-      fileprivate var _destinationE164: String? = nil
       fileprivate var _destinationUuid: String? = nil
       fileprivate var _unidentified: Bool? = nil
     }
@@ -3102,15 +3082,6 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var senderE164: String {
-      get {return _senderE164 ?? String()}
-      set {_senderE164 = newValue}
-    }
-    /// Returns true if `senderE164` has been explicitly set.
-    var hasSenderE164: Bool {return self._senderE164 != nil}
-    /// Clears the value of `senderE164`. Subsequent reads from it will return its default value.
-    mutating func clearSenderE164() {self._senderE164 = nil}
-
     var senderUuid: String {
       get {return _senderUuid ?? String()}
       set {_senderUuid = newValue}
@@ -3134,7 +3105,6 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _senderE164: String? = nil
     fileprivate var _senderUuid: String? = nil
     fileprivate var _timestamp: UInt64? = nil
   }
@@ -3144,15 +3114,6 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var senderE164: String {
-      get {return _senderE164 ?? String()}
-      set {_senderE164 = newValue}
-    }
-    /// Returns true if `senderE164` has been explicitly set.
-    var hasSenderE164: Bool {return self._senderE164 != nil}
-    /// Clears the value of `senderE164`. Subsequent reads from it will return its default value.
-    mutating func clearSenderE164() {self._senderE164 = nil}
-
     var senderUuid: String {
       get {return _senderUuid ?? String()}
       set {_senderUuid = newValue}
@@ -3176,7 +3137,6 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _senderE164: String? = nil
     fileprivate var _senderUuid: String? = nil
     fileprivate var _timestamp: UInt64? = nil
   }
@@ -3316,15 +3276,6 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var senderE164: String {
-      get {return _senderE164 ?? String()}
-      set {_senderE164 = newValue}
-    }
-    /// Returns true if `senderE164` has been explicitly set.
-    var hasSenderE164: Bool {return self._senderE164 != nil}
-    /// Clears the value of `senderE164`. Subsequent reads from it will return its default value.
-    mutating func clearSenderE164() {self._senderE164 = nil}
-
     var senderUuid: String {
       get {return _senderUuid ?? String()}
       set {_senderUuid = newValue}
@@ -3348,7 +3299,6 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _senderE164: String? = nil
     fileprivate var _senderUuid: String? = nil
     fileprivate var _timestamp: UInt64? = nil
   }
@@ -3432,15 +3382,6 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var threadE164: String {
-      get {return _threadE164 ?? String()}
-      set {_threadE164 = newValue}
-    }
-    /// Returns true if `threadE164` has been explicitly set.
-    var hasThreadE164: Bool {return self._threadE164 != nil}
-    /// Clears the value of `threadE164`. Subsequent reads from it will return its default value.
-    mutating func clearThreadE164() {self._threadE164 = nil}
-
     var threadUuid: String {
       get {return _threadUuid ?? String()}
       set {_threadUuid = newValue}
@@ -3507,7 +3448,6 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _threadE164: String? = nil
     fileprivate var _threadUuid: String? = nil
     fileprivate var _groupID: Data? = nil
     fileprivate var _type: SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum? = nil
@@ -7624,7 +7564,6 @@ extension SignalServiceProtos_ReceiptMessage.TypeEnum: SwiftProtobuf._ProtoNameP
 extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Verified"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "destinationE164"),
     5: .same(proto: "destinationUuid"),
     2: .same(proto: "identityKey"),
     3: .same(proto: "state"),
@@ -7637,7 +7576,6 @@ extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._Me
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._destinationE164) }()
       case 2: try { try decoder.decodeSingularBytesField(value: &self._identityKey) }()
       case 3: try { try decoder.decodeSingularEnumField(value: &self._state) }()
       case 4: try { try decoder.decodeSingularBytesField(value: &self._nullMessage) }()
@@ -7652,9 +7590,6 @@ extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._Me
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._destinationE164 {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    } }()
     try { if let v = self._identityKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     } }()
@@ -7671,7 +7606,6 @@ extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 
   static func ==(lhs: SignalServiceProtos_Verified, rhs: SignalServiceProtos_Verified) -> Bool {
-    if lhs._destinationE164 != rhs._destinationE164 {return false}
     if lhs._destinationUuid != rhs._destinationUuid {return false}
     if lhs._identityKey != rhs._identityKey {return false}
     if lhs._state != rhs._state {return false}
@@ -7986,7 +7920,6 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
 extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.Sent.protoMessageName + ".UnidentifiedDeliveryStatus"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "destinationE164"),
     3: .same(proto: "destinationUuid"),
     2: .same(proto: "unidentified"),
   ]
@@ -7997,7 +7930,6 @@ extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: Swift
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._destinationE164) }()
       case 2: try { try decoder.decodeSingularBoolField(value: &self._unidentified) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._destinationUuid) }()
       default: break
@@ -8010,9 +7942,6 @@ extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: Swift
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._destinationE164 {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    } }()
     try { if let v = self._unidentified {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
     } }()
@@ -8023,7 +7952,6 @@ extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: Swift
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus, rhs: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus) -> Bool {
-    if lhs._destinationE164 != rhs._destinationE164 {return false}
     if lhs._destinationUuid != rhs._destinationUuid {return false}
     if lhs._unidentified != rhs._unidentified {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -8251,7 +8179,6 @@ extension SignalServiceProtos_SyncMessage.Request.TypeEnum: SwiftProtobuf._Proto
 extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Read"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "senderE164"),
     3: .same(proto: "senderUuid"),
     2: .same(proto: "timestamp"),
   ]
@@ -8262,7 +8189,6 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._senderE164) }()
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._senderUuid) }()
       default: break
@@ -8275,9 +8201,6 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._senderE164 {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    } }()
     try { if let v = self._timestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
     } }()
@@ -8288,7 +8211,6 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Read, rhs: SignalServiceProtos_SyncMessage.Read) -> Bool {
-    if lhs._senderE164 != rhs._senderE164 {return false}
     if lhs._senderUuid != rhs._senderUuid {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -8299,7 +8221,6 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
 extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Viewed"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "senderE164"),
     3: .same(proto: "senderUuid"),
     2: .same(proto: "timestamp"),
   ]
@@ -8310,7 +8231,6 @@ extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftPr
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._senderE164) }()
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._senderUuid) }()
       default: break
@@ -8323,9 +8243,6 @@ extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftPr
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._senderE164 {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    } }()
     try { if let v = self._timestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
     } }()
@@ -8336,7 +8253,6 @@ extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftPr
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Viewed, rhs: SignalServiceProtos_SyncMessage.Viewed) -> Bool {
-    if lhs._senderE164 != rhs._senderE164 {return false}
     if lhs._senderUuid != rhs._senderUuid {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -8462,7 +8378,6 @@ extension SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum: SwiftPr
 extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".ViewOnceOpen"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "senderE164"),
     3: .same(proto: "senderUuid"),
     2: .same(proto: "timestamp"),
   ]
@@ -8473,7 +8388,6 @@ extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, S
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._senderE164) }()
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._senderUuid) }()
       default: break
@@ -8486,9 +8400,6 @@ extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, S
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._senderE164 {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    } }()
     try { if let v = self._timestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
     } }()
@@ -8499,7 +8410,6 @@ extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, S
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.ViewOnceOpen, rhs: SignalServiceProtos_SyncMessage.ViewOnceOpen) -> Bool {
-    if lhs._senderE164 != rhs._senderE164 {return false}
     if lhs._senderUuid != rhs._senderUuid {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -8591,7 +8501,6 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
 extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".MessageRequestResponse"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "threadE164"),
     2: .same(proto: "threadUuid"),
     3: .same(proto: "groupId"),
     4: .same(proto: "type"),
@@ -8603,7 +8512,6 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._threadE164) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self._threadUuid) }()
       case 3: try { try decoder.decodeSingularBytesField(value: &self._groupID) }()
       case 4: try { try decoder.decodeSingularEnumField(value: &self._type) }()
@@ -8617,9 +8525,6 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._threadE164 {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    } }()
     try { if let v = self._threadUuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     } }()
@@ -8633,7 +8538,6 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.MessageRequestResponse, rhs: SignalServiceProtos_SyncMessage.MessageRequestResponse) -> Bool {
-    if lhs._threadE164 != rhs._threadE164 {return false}
     if lhs._threadUuid != rhs._threadUuid {return false}
     if lhs._groupID != rhs._groupID {return false}
     if lhs._type != rhs._type {return false}

@@ -61,7 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoSyncMessageViewOnceOpenBuilder *readProtoBuilder =
         [SSKProtoSyncMessageViewOnceOpen builderWithTimestamp:self.messageIdTimestamp];
-    readProtoBuilder.senderE164 = self.senderAddress.phoneNumber;
     readProtoBuilder.senderUuid = self.senderAddress.uuidString;
     NSError *error;
     SSKProtoSyncMessageViewOnceOpen *_Nullable readProto = [readProtoBuilder buildAndReturnError:&error];

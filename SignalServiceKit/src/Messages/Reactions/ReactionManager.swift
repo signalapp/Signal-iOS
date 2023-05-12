@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc(OWSReactionManager)
 public class ReactionManager: NSObject {
@@ -141,16 +142,15 @@ public class ReactionManager: NSObject {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction
         }
-
-        guard let messageAuthor = reaction.authorAddress else {
-            owsFailDebug("reaction missing author address")
+        guard let messageAuthor = ServiceId(uuidString: reaction.authorUuid) else {
+            owsFailDebug("reaction missing message author")
             return .invalidReaction
         }
 
         if let message = InteractionFinder.findMessage(
             withTimestamp: reaction.timestamp,
             threadId: thread.uniqueId,
-            author: messageAuthor,
+            author: SignalServiceAddress(messageAuthor),
             transaction: transaction
         ) {
             guard !message.wasRemotelyDeleted else {
@@ -183,7 +183,7 @@ public class ReactionManager: NSObject {
             return .success
         } else if let storyMessage = StoryFinder.story(
             timestamp: reaction.timestamp,
-            author: messageAuthor,
+            author: SignalServiceAddress(messageAuthor),
             transaction: transaction
         ) {
             // Reaction to stories show up as normal messages, they
@@ -226,8 +226,8 @@ public class ReactionManager: NSObject {
                 notificationsManager?.notifyUser(forIncomingMessage: incomingMessage, thread: thread, transaction: transaction)
             } else if let outgoingMessage = message as? TSOutgoingMessage {
                 outgoingMessage.updateWithWasSentFromLinkedDevice(
-                    withUDRecipientAddresses: sentTranscript?.udRecipientAddresses,
-                    nonUdRecipientAddresses: sentTranscript?.nonUdRecipientAddresses,
+                    withUDRecipients: sentTranscript?.udRecipients,
+                    nonUdRecipients: sentTranscript?.nonUdRecipients,
                     isSentUpdate: false,
                     transaction: transaction
                 )

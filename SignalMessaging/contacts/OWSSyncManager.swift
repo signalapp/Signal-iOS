@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
@@ -115,26 +116,20 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,
         transaction: SDSAnyWriteTransaction
     ) {
-        let thread: TSThread
-        if let groupId = syncMessage.groupID {
-            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId,
-                                                        transaction: transaction) else {
-                return owsFailDebug("message request response for missing group thread")
+        guard let thread: TSThread = {
+            if let groupId = syncMessage.groupID {
+                TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
+                return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
             }
-            thread = groupThread
-        } else if let threadAddress = syncMessage.threadAddress {
-            guard let contactThread = TSContactThread.getWithContactAddress(threadAddress, transaction: transaction) else {
-                return owsFailDebug("message request response for missing thread")
+            if let serviceId = ServiceId(uuidString: syncMessage.threadUuid) {
+                return TSContactThread.getWithContactAddress(SignalServiceAddress(serviceId), transaction: transaction)
             }
-            thread = contactThread
-        } else {
-            return owsFailDebug("message request response missing group or contact thread information")
+            return nil
+        }() else {
+            return owsFailDebug("message request response couldn't find thread")
         }
 
-        guard let type = syncMessage.type else { return owsFailDebug("messasge request response missing type") }
-
-        switch type {
+        switch syncMessage.type {
         case .accept:
             blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
             profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
@@ -145,7 +140,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         case .blockAndDelete:
             thread.softDelete(with: transaction)
             blockingManager.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
-        case .unknown:
+        case .unknown, .none:
             owsFailDebug("unexpected message request response type")
         }
     }
