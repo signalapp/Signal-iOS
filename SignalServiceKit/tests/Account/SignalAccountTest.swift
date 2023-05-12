@@ -79,6 +79,68 @@ class SignalAccountTest: XCTestCase {
         }
     }
 
+    func testKeyedArchiverRoundTrip() throws {
+        let aliceAci = "00000000-0000-4000-8000-000000000000"
+        let alicePhoneNumber = "+16505550100"
+        let aliceAddress = SignalServiceAddress(
+            uuid: ServiceId(uuidString: aliceAci)!.uuidValue,
+            phoneNumber: nil,
+            cache: SignalServiceAddressCache(),
+            cachePolicy: .ignoreCache
+        )
+        let aliceContact = Contact(
+            address: aliceAddress,
+            phoneNumberLabel: "Mobile",
+            givenName: "Alice",
+            familyName: "Aliceson",
+            nickname: nil,
+            fullName: "Alice Aliceson"
+        )
+        let aliceAccount = SignalAccount(
+            contact: aliceContact,
+            contactAvatarHash: nil,
+            multipleAccountLabelText: "Mobile",
+            recipientPhoneNumber: alicePhoneNumber,
+            recipientUUID: aliceAci
+        )
+
+        let encodedData = try NSKeyedArchiver.archivedData(withRootObject: aliceAccount, requiringSecureCoding: false)
+        let decodedAccount = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(
+            ofClass: SignalAccount.self, from: encodedData, requiringSecureCoding: false
+        ))
+
+        XCTAssertEqual(decodedAccount.uniqueId, aliceAccount.uniqueId)
+        XCTAssertEqual(decodedAccount.recipientUUID, aliceAccount.recipientUUID)
+        XCTAssertEqual(decodedAccount.recipientPhoneNumber, aliceAccount.recipientPhoneNumber)
+        XCTAssertEqual(decodedAccount.multipleAccountLabelText, aliceAccount.multipleAccountLabelText)
+        XCTAssertEqual(decodedAccount.contact?.fullName, aliceAccount.contact?.fullName)
+    }
+
+    /// Taken from cc83e60eda, just prior to `accountSchemaVersion` == 1.
+    func testHardcodedKeyedArchiverLegacyDataVersion0() throws {
+        let encodedData = try XCTUnwrap(Data(base64Encoded: "YnBsaXN0MDDUAQIDBAUGISJYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKcHCBUWFxgZVSRudWxs1gkKCwwNDg8QERITFFtyZWNpcGllbnRJZFYkY2xhc3NfEBloYXNNdWx0aXBsZUFjY291bnRDb250YWN0WHVuaXF1ZUlkXxAPTVRMTW9kZWxWZXJzaW9uXxAYbXVsdGlwbGVBY2NvdW50TGFiZWxUZXh0gAOABoAEgAOAAoAFEABcKzE2NTA1NTUwMTAwCVZNb2JpbGXSGhscHVgkY2xhc3Nlc1okY2xhc3NuYW1lpB0eHyBdU2lnbmFsQWNjb3VudF8QE1RTWWFwRGF0YWJhc2VPYmplY3RYTVRMTW9kZWxYTlNPYmplY3RfEA9OU0tleWVkQXJjaGl2ZXLRIyRUcm9vdIABAAgAEQAaACMALQAyADcAPwBFAFIAXgBlAIEAigCcALcAuQC7AL0AvwDBAMMAxQDSANMA2gDfAOgA8wD4AQYBHAElAS4BQAFDAUgAAAAAAAACAQAAAAAAAAAlAAAAAAAAAAAAAAAAAAABSg=="))
+        let signalAccount = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(
+            ofClass: SignalAccount.self, from: encodedData, requiringSecureCoding: false
+        ))
+        XCTAssertEqual(signalAccount.uniqueId, "+16505550100")
+        XCTAssertEqual(signalAccount.recipientPhoneNumber, "+16505550100")
+        XCTAssertEqual(signalAccount.multipleAccountLabelText, "Mobile")
+    }
+
+    /// Taken from 50b410ca57, just prior to the `SDSCodableModel` migration.
+    func testHardcodedKeyedArchiverLegacyDataVersion1() throws {
+        let encodedData = try XCTUnwrap(Data(base64Encoded: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGvECELDB8gISIjJDs8PT4/R0hJUFRabG1ub3N3en5/gIOEiIlVJG51bGzZDQ4PEBESExQVFhcYGRobHB0eVmdyZGJJZF8QFHJlY2lwaWVudFBob25lTnVtYmVyXxAPTVRMTW9kZWxWZXJzaW9uViRjbGFzc11yZWNpcGllbnRVVUlEXxAUYWNjb3VudFNjaGVtYVZlcnNpb25XY29udGFjdF8QGG11bHRpcGxlQWNjb3VudExhYmVsVGV4dFh1bmlxdWVJZIADgASAAoAggAWABoAHgA6AHxAAEHtcKzE2NTA1NTUwMTAwXxAkMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwQUFBEAHcDyUmJygpECorLC0uGDAxMjM0NTY3ODk6WWZpcnN0TmFtZVhsYXN0TmFtZV8QF2NvbXBhcmFibGVOYW1lTGFzdEZpcnN0WHVuaXF1ZUlkXxAScGhvbmVOdW1iZXJOYW1lTWFwXxAScGFyc2VkUGhvbmVOdW1iZXJzXxAUdXNlclRleHRQaG9uZU51bWJlcnNYZnVsbE5hbWVWZW1haWxzXxAXY29tcGFyYWJsZU5hbWVGaXJzdExhc3SAAoAJgAiACoALgAyAHoAQgBmAG4AcgB1YQWxpY2Vzb25VQWxpY2VeQWxpY2Vzb24JQWxpY2VfECQwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDBCQkLTQEEQQkRGV05TLmtleXNaTlMub2JqZWN0c6FDgA2hHYAOgA9cKzE2NTA1NTUwMTAwVk1vYmlsZdJKS0xNWiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ok5PXE5TRGljdGlvbmFyeVhOU09iamVjdNJBEFFToVKAEYAY01UQVkNYWV8QIVJQRGVmYXVsdHNLZXlQaG9uZU51bWJlckNhbm9uaWNhbF8QHlJQRGVmYXVsdHNLZXlQaG9uZU51bWJlclN0cmluZ4ANgBeAEtkQW1xdXl9gYWJjZGVmZBtkamRfEBFjb3VudHJ5Q29kZVNvdXJjZV8QEml0YWxpYW5MZWFkaW5nWmVyb15uYXRpb25hbE51bWJlcl8QHHByZWZlcnJlZERvbWVzdGljQ2FycmllckNvZGVbY291bnRyeUNvZGVZZXh0ZW5zaW9uXxAUbnVtYmVyT2ZMZWFkaW5nWmVyb3NYcmF3SW5wdXSAFoAAgBSAE4AAgAaAAIAVgAATAAAAAYPC0RQIEAHSSktwcV1OQlBob25lTnVtYmVyonJPXU5CUGhvbmVOdW1iZXLSSkt0dVtQaG9uZU51bWJlcqJ2T1tQaG9uZU51bWJlctJKS3h5V05TQXJyYXmieE/SQRB7U6F8gBqAGFwrMTY1MDU1NTAxMDBeQWxpY2UgQWxpY2Vzb27SQRCBU6CAGF5BbGljZQlBbGljZXNvbtJKS4WGV0NvbnRhY3SjhYdPWE1UTE1vZGVsXxAkMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwQ0ND0kpLiotdU2lnbmFsQWNjb3VudKWMjY6HT11TaWduYWxBY2NvdW50WUJhc2VNb2RlbF8QE1RTWWFwRGF0YWJhc2VPYmplY3QACAARABoAJAApADIANwBJAEwAUQBTAHcAfQCQAJcArgDAAMcA1QDsAPQBDwEYARoBHAEeASABIgEkASYBKAEqASwBLgE7AWIBZAF9AYcBkAGqAbMByAHdAfQB/QIEAh4CIAIiAiQCJgIoAioCLAIuAjACMgI0AjYCPwJFAlQCewKCAooClQKXApkCmwKdAp8CrAKzArgCwwLMAtkC3ALpAvIC9wL5AvsC/QMEAygDSQNLA00DTwNiA3YDiwOaA7kDxQPPA+YD7wPxA/MD9QP3A/kD+wP9A/8EAQQKBAsEDQQSBCAEIwQxBDYEQgRFBFEEVgReBGEEZgRoBGoEbAR5BIgEjQSOBJAEnwSkBKwEsAS5BOAE5QTzBPkFBwURAAAAAAAAAgEAAAAAAAAAjwAAAAAAAAAAAAAAAAAABSc="))
+        let signalAccount = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(
+            ofClass: SignalAccount.self, from: encodedData, requiringSecureCoding: false
+        ))
+        XCTAssertEqual(signalAccount.grdbId, 123)
+        XCTAssertEqual(signalAccount.uniqueId, "00000000-0000-4000-8000-000000000CCC")
+        XCTAssertEqual(signalAccount.recipientUUID, "00000000-0000-4000-8000-000000000AAA")
+        XCTAssertEqual(signalAccount.recipientPhoneNumber, "+16505550100")
+        XCTAssertEqual(signalAccount.multipleAccountLabelText, "Mobile")
+        XCTAssertNotNil(signalAccount.contact?.uniqueId, "00000000-0000-4000-8000-000000000BBB")
+    }
+
     // MARK: - Display Name Tests
 
     private var userDefaults = TestUtils.userDefaults()

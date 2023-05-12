@@ -16,9 +16,11 @@ class SessionMigrationPerfTest: PerformanceBaseTest {
     }()
 
     static func makeNewlyInitializedSessionState() -> LegacySessionState {
-        let coder = try! NSKeyedUnarchiver(forReadingFrom: newlyInitializedSessionStateData)
-        coder.requiresSecureCoding = false
-        return try! coder.decodeTopLevelObject(of: LegacySessionState.self, forKey: NSKeyedArchiveRootObjectKey)!
+        try! NSKeyedUnarchiver.unarchivedObject(
+            ofClass: LegacySessionState.self,
+            from: newlyInitializedSessionStateData,
+            requiringSecureCoding: false
+        )!
     }
 
     func makeDeepSession(depth: Int = 2000) -> LegacySessionRecord {

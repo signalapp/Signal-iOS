@@ -49,8 +49,6 @@ class GroupsPerfTest: PerformanceBaseTest {
     }
 
     static func deserialize(data: Data) throws -> GroupMembership {
-        let coder = try NSKeyedUnarchiver(forReadingFrom: data)
-        coder.requiresSecureCoding = false
-        return try coder.decodeTopLevelObject(of: GroupMembership.self, forKey: NSKeyedArchiveRootObjectKey)!
+        try NSKeyedUnarchiver.unarchivedObject(ofClass: GroupMembership.self, from: data, requiringSecureCoding: false)!
     }
 }

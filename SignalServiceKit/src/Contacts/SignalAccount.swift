@@ -18,8 +18,8 @@ import SignalCoreKit
 /// in the conversation list.
 private let kSignalPreferNicknamesPreference = "NSPersonNameDefaultShouldPreferNicknamesPreference"
 
-@objc
-public final class SignalAccount: NSObject, SDSCodableModel, Decodable {
+@objc(SignalAccount)
+public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding {
 
     public static let databaseTableName = "model_SignalAccount"
     public static var recordType: UInt { SDSRecordType.signalAccount.rawValue }
@@ -105,6 +105,60 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable {
         try container.encode(multipleAccountLabelText, forKey: .multipleAccountLabelText)
         try container.encodeIfPresent(recipientPhoneNumber, forKey: .recipientPhoneNumber)
         try container.encodeIfPresent(recipientUUID, forKey: .recipientUUID)
+    }
+
+    private enum NSCoderKeys: String {
+        case grdbId
+        case uniqueId
+        case accountSchemaVersion
+        case contact
+        case contactAvatarHash
+        case multipleAccountLabelText
+        case recipientId
+        case recipientPhoneNumber
+        case recipientUUID
+    }
+
+    public init?(coder: NSCoder) {
+        func decodeObject<DecodedObjectType>(
+            of objectType: DecodedObjectType.Type,
+            forKey key: NSCoderKeys
+        ) -> DecodedObjectType? where DecodedObjectType: NSObject, DecodedObjectType: NSCoding {
+            return coder.decodeObject(of: objectType, forKey: key.rawValue)
+        }
+        let accountSchemaVersion = decodeObject(of: NSNumber.self, forKey: .accountSchemaVersion)?.intValue ?? 0
+        self.id = decodeObject(of: NSNumber.self, forKey: .grdbId)?.int64Value
+        guard let uniqueId = decodeObject(of: NSString.self, forKey: .uniqueId) else {
+            return nil
+        }
+        self.uniqueId = uniqueId as String
+        self.contact = decodeObject(of: Contact.self, forKey: .contact)
+        self.contactAvatarHash = decodeObject(of: NSData.self, forKey: .contactAvatarHash) as Data?
+        guard let multipleAccountLabelText = decodeObject(of: NSString.self, forKey: .multipleAccountLabelText) else {
+            return nil
+        }
+        self.multipleAccountLabelText = multipleAccountLabelText as String
+        if accountSchemaVersion == 0 {
+            self.recipientPhoneNumber = decodeObject(of: NSString.self, forKey: .recipientId) as String?
+            owsAssert(self.recipientPhoneNumber != nil)
+        } else {
+            self.recipientPhoneNumber = decodeObject(of: NSString.self, forKey: .recipientPhoneNumber) as String?
+        }
+        self.recipientUUID = decodeObject(of: NSString.self, forKey: .recipientUUID) as String?
+    }
+
+    public func encode(with coder: NSCoder) {
+        func encodeObject(_ value: Any?, forKey key: NSCoderKeys) {
+            if let value { coder.encode(value, forKey: key.rawValue) }
+        }
+        encodeObject(NSNumber(value: 1), forKey: .accountSchemaVersion)
+        encodeObject(grdbId, forKey: .grdbId)
+        encodeObject(uniqueId, forKey: .uniqueId)
+        encodeObject(contact, forKey: .contact)
+        encodeObject(contactAvatarHash, forKey: .contactAvatarHash)
+        encodeObject(multipleAccountLabelText, forKey: .multipleAccountLabelText)
+        encodeObject(recipientPhoneNumber, forKey: .recipientPhoneNumber)
+        encodeObject(recipientUUID, forKey: .recipientUUID)
     }
 }
 
