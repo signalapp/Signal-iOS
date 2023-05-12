@@ -254,4 +254,22 @@ public extension SDSCodableModel {
             block: block
         )
     }
+
+    /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
+    /// See that class for details.
+    static func anyEnumerate(
+        transaction: SDSAnyReadTransaction,
+        sql: String,
+        arguments: StatementArguments,
+        block: @escaping (Self, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        SDSCodableModelDatabaseInterfaceImpl().enumerateModels(
+            modelType: Self.self,
+            transaction: transaction.asV2Read,
+            sql: sql,
+            arguments: arguments,
+            batchingPreference: .unbatched,
+            block: block
+        )
+    }
 }

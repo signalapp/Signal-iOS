@@ -83,6 +83,16 @@ protocol SDSCodableModelDatabaseInterface {
         block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void
     )
 
+    /// Traverse all records, in no particular order.
+    func enumerateModels<Model: SDSCodableModel>(
+        modelType: Model.Type,
+        transaction: DBReadTransaction,
+        sql: String,
+        arguments: StatementArguments,
+        batchingPreference: BatchingPreference,
+        block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void
+    )
+
     /// Traverse all records' unique IDs, in no particular order.
     func enumerateModelUniqueIds<Model: SDSCodableModel>(
         modelType: Model.Type,

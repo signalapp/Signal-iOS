@@ -51,27 +51,21 @@ class GRDBSignalAccountFinder: NSObject {
         }
         let qms = Array(repeating: "?", count: values.count).joined(separator: ", ")
         let sql = "SELECT * FROM \(SignalAccount.databaseTableName) WHERE \(column) in (\(qms))"
-        do {
-            let cursor = try SignalAccount.fetchCursor(
-                transaction.database,
-                sql: sql,
-                arguments: StatementArguments(values)
-            )
-            /// Why did we use `allSignalAccounts` instead of `SignalAccount.anyFetchAll`?
-            /// The reason is that the `SignalAccountReadCache` needs to have
-            /// `didReadSignalAccount` called on it for each record we enumerate, and
-            /// `SignalAccount.anyEnumerate` has this built in.
-            return allSignalAccounts(cursor: cursor, transaction: transaction)
-        } catch {
-            owsAssertDebug(false, "Database error while fetching \(column) for \(values.count) values: \(error.localizedDescription)")
-            return Array(repeating: nil, count: values.count)
-        }
+
+        /// Why did we use `allSignalAccounts` instead of `SignalAccount.anyFetchAll`?
+        /// The reason is that the `SignalAccountReadCache` needs to have
+        /// `didReadSignalAccount` called on it for each record we enumerate, and
+        /// `SignalAccount.anyEnumerate` has this built in.
+        return allSignalAccounts(transaction: transaction, sql: sql, arguments: StatementArguments(values))
     }
 
-    private func allSignalAccounts(cursor: RecordCursor<SignalAccount>,
-                                   transaction: GRDBReadTransaction) -> [SignalAccount] {
+    private func allSignalAccounts(
+        transaction: GRDBReadTransaction,
+        sql: String,
+        arguments: StatementArguments
+    ) -> [SignalAccount] {
         var result = [SignalAccount]()
-        SignalAccount.anyEnumerate(transaction: transaction.asAnyRead) { account, _ in
+        SignalAccount.anyEnumerate(transaction: transaction.asAnyRead, sql: sql, arguments: arguments) { account, _ in
             result.append(account)
         }
         return result
