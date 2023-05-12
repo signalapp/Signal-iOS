@@ -684,6 +684,10 @@ extension MessageDetailViewController: MediaGalleryDelegate {
             }
         }
     }
+
+    func mediaGalleryShouldDeferUpdate(_ mediaGallery: MediaGallery) -> Bool {
+        return false
+    }
 }
 
 // MARK: -

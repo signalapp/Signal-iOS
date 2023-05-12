@@ -988,6 +988,10 @@ extension MediaPageViewController: MediaGalleryDelegate {
         }
         setCurrentItem(reloadedItem, direction: .forward, animated: false)
     }
+
+    func mediaGalleryShouldDeferUpdate(_ mediaGallery: MediaGallery) -> Bool {
+        return false
+    }
 }
 
 extension MediaPageViewController: MediaItemViewControllerDelegate {

@@ -290,7 +290,14 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     private let scrollFlag = MediaTileScrollFlag()
 
-    private var willDecelerate = false
+    private var willDecelerate = false {
+        didSet {
+            if oldValue && !willDecelerate {
+                mediaGallery.runAsyncCompletionsIfPossible()
+            }
+        }
+    }
+
     private var scrollingToTop = false
 
     override public func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
@@ -915,6 +922,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }
     }
 
+    func mediaGalleryShouldDeferUpdate(_ mediaGallery: MediaGallery) -> Bool {
+        return willDecelerate
+    }
+
     // MARK: Lazy Loading
 
     var isFetchingMoreData = false
@@ -925,6 +936,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         return localSection(mediaGallery.galleryDates.count)
     }
     private var eagerLoadingDidComplete = false
+    private var eagerLoadOutstanding = false
 
     private func eagerlyLoadMoreIfPossible() {
         Logger.debug("")
@@ -933,14 +945,21 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             eagerLoadingDidComplete = true
             return
         }
+        guard !eagerLoadOutstanding else {
+            Logger.debug("Already doing an eager load")
+            return
+        }
         let userData = MediaGalleryUpdateUserData(disableAnimations: true,
                                                   shouldRecordContentSizeBeforeInsertingToTop: true)
+        eagerLoadOutstanding = true
         // This is a low priority update because we never want eager loads to starve user-initiated
         // loads (such as loading more sections because of scrolling or loading items to display).
+        Logger.debug("Will eagerly load earlier sections")
         mediaGallery.asyncLoadEarlierSections(batchSize: kLoadBatchSize,
                                               highPriority: false,
                                               userData: userData) { [weak self] newSections in
             Logger.debug("Eagerly loaded \(newSections)")
+            self?.eagerLoadOutstanding = false
             self?.eagerlyLoadMoreIfPossible()
         }
     }

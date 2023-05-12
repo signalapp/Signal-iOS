@@ -221,6 +221,10 @@ protocol MediaGalleryDelegate: AnyObject {
     ///
     /// If an attempted mutation had no effects, applyUpdate will not be called.
     func mediaGallery(_ mediaGallery: MediaGallery, applyUpdate update: MediaGallery.Update)
+
+    /// Return true to avoid applying an update from an asynchronous operation immediately.
+    /// You must call `runAsyncCompletionsIfPossible` once the condition clears.
+    func mediaGalleryShouldDeferUpdate(_ mediaGallery: MediaGallery) -> Bool
 }
 
 /// A value that is associated with each mutation of MediaGallerySections.
@@ -295,6 +299,10 @@ class MediaGallery: Dependencies {
     ///   - It ensures the journal is processed for all mutations.
     private func mutate<T>(_ closure: (inout Sections) -> T) -> T {
         let result = closure(&self.sections)
+        // If there were deferred updates, we have to invoke those closures immediately. This might cause inertia
+        // scrolling to jitter, but that's better than running completion blocks out of order. It's not a big problem
+        // because synchronous mutations during scrolling should be rare.
+        runAsyncCompletionsUnconditionally()
         applyPendingUpdate()
         return result
     }
@@ -311,8 +319,35 @@ class MediaGallery: Dependencies {
                                 completion: @escaping (T) -> Void) {
         closure(&self.sections) { [weak self] result in
             guard let self else { return }
-            self.applyPendingUpdate()
-            completion(result)
+            self.addAsyncCompletion { [weak self] in
+                guard let self else {
+                    return
+                }
+                self.applyPendingUpdate()
+                completion(result)
+            }
+        }
+    }
+
+    private var asyncCompletionQueue = [() -> Void]()
+
+    private func addAsyncCompletion(_ closure: @escaping () -> Void) {
+        asyncCompletionQueue.append(closure)
+        runAsyncCompletionsIfPossible()
+    }
+
+    public func runAsyncCompletionsIfPossible() {
+        if delegates.contains(where: { $0.mediaGalleryShouldDeferUpdate(self) }) {
+            return
+        }
+        runAsyncCompletionsUnconditionally()
+    }
+
+    private func runAsyncCompletionsUnconditionally() {
+        let queue = asyncCompletionQueue
+        asyncCompletionQueue.removeAll()
+        for closure in queue {
+            closure()
         }
     }
 
