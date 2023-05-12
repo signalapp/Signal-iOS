@@ -1,2 +1,2 @@
-• Dodaliśmy nowy (opcjonalny) tryb listy w galerii multimediów. Jeśli nie po drodze Ci z widokiem siatki, możesz teraz widzieć więcej informacji, w tym nazwy plików, rozmiary, daty itd.
+• Naprawiliśmy kilka błędów, aby aplikacja działała jeszcze płynniej.
 • Ta wersja wprowadza także kilka poprawek wydajności i przyspiesza uruchamianie aplikacji. Jeśli masz dużo długich konwersacji lub wiele wiadomości, mamy nadzieję, że zauważysz różnicę.

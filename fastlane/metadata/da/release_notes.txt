@@ -1,2 +1,2 @@
-• Vi har tilføjet en ny (og valgfri) listetilstand i visningen af Alle medier. Hvis du gerne vil prøve noget nyt, kan du nu se mere ved første øjekast, som f.eks. filnavne, filstørrelser, datoer osv.
+• Vi har lavet en håndfuld fejlrettelser, så din app kører som den skal.
 • Denne version byder også på diverse forbedringer af appens ydeevne samt opstartshastigheden. Hvis du har mange store snakke eller masser af beskeder, håber vi at du vil kunne mærke en lille forskel.

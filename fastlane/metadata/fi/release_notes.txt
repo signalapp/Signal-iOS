@@ -1,2 +1,2 @@
-• Lisäsimme uuden (valinnaisen) luettelotilan Kaikki mediat -näkymään. Jos valitset luettelon ruudukon sijaan, voit nähdä yhdellä silmäyksellä enemmän tietoja, mukaan lukien tiedostonimet, tiedostokoot, päivämäärät jne.
+• Tehty useita virheenkorjauksia, jotka sujuvoittavat sovelluksen käyttöä.
 • Tämä julkaisu sisältää myös useita suorituskyvyn tehostuksia ja käynnistyksen nopeuden parannuksia. Jos sinulla on paljon suuria keskusteluja tai paljon viestejä, huomaat toivon mukaan pienen eron.

@@ -1,2 +1,2 @@
-• Vi har lagt till ett nytt (och valfritt) listläge i vyn Alla medier. Nu kan du se mer information med en överblick, inklusive filnamn, filstorlekar, datum och mer.
+• Vi har gjort en handfull buggfixar som gör att din app fortsätter fungera bra. 
 • Den här versionen innehåller även flera prestandaförbättringar och förbättringar av starthastigheten. Om du har många stora konversationer, eller många meddelanden, hoppas vi att du kommer att märka en liten skillnad.

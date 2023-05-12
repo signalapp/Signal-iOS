@@ -1,2 +1,2 @@
-• Adicionamos um novo modo de Listas (opcional) na visualização Todas as mídias. Agora você pode ver mais informações de uma vez só, incluindo nomes e tamanhos de arquivos, datas, etc.
+• Fizemos várias correções de bugs para manter seu app funcionando perfeitamente.
 • Este lançamento também inclui várias melhorias de desempenho e aprimoramentos de velocidade de inicialização. Caso você tenha muitas conversas longas, ou troque muitas mensagens, esperamos que você note uma pequena diferença.

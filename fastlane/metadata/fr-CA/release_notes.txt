@@ -1,2 +1,2 @@
-• Nous avons ajouté un nouveau mode Liste (facultatif) dans la section Tous les médias. Contrairement au mode Grille, le mode Liste affiche plus d’informations, comme le nom, la taille, la date de création des fichiers, etc.
+• Nous avons corrigé plusieurs bugs pour assurer le bon fonctionnement de votre application.
 • Cette version comprend également plusieurs améliorations des performances et de la vitesse de démarrage. Ce sont les petits détails qui font toute la différence ! Alors, si vous faites partie de plusieurs groupes de discussion ou si vous recevez et envoyez beaucoup de messages, nous espérons que vous remarquerez ces petits changements.

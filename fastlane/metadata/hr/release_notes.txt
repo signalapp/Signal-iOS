@@ -1,2 +1,2 @@
-• Dodali smo novu opciju prikazivanja medijskih zapisa u obliku popisa. Ako odaberete način prikaza u obliku popisa, vidjet ćete više informacija na prvi pogled, uključujući nazive datoteka, veličine datoteka, datume itd.
+• Ispravili smo nekoliko bugova kako biste mogli nesmetano koristiti aplikaciju.
 • Ovo izdanje također uključuje nekoliko poboljšanja u vidu performansa i brzine pokretanja. Ako imate puno dugih razgovora ili puno poruka, nadamo se da ćete primijetiti razliku.

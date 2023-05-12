@@ -1,2 +1,2 @@
-• Pridali sme nový (a voliteľný) režim zoznamu v zobrazení Všetky médiá. Ak nie ste fanúšikom mriežok, teraz si môžete médiá zoradiť pekne do zoznamu a uvidíte tak viac informácií vrátane názvov a veľkostí súborov, dátumov atď.
+• Zaviedli sme niekoľko opráv chýb, aby vaša aplikácia fungovala lepšie. 
 • Toto vydanie tiež zahŕňa niekoľko vylepšení výkonu a rýchlosti spustenia. Ak disponujete veľkým množstvom konverzácií či správ, určite vám tento malý rozdiel neujde.

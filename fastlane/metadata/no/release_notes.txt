@@ -1,2 +1,2 @@
-• Vi har lagt til en ny (og valgfri) visning i Alle medier-visningen: listevisning. Hvis du vil vise innholdet i appen på et annet vis enn rutenettvisning, kan du se alt visuelt i en listevisning i stedet (som filnavn, filstørrelser, datoer osv).
+• Vi har gjort et knippe med feilrettinger som sørger for at appen fungerer optimalt.
 • Denne utgaven kommer også med flere ytelsesforbedringer og raskere oppstart. Vi håper dette vil utgjøre en liten forskjell hvis du har mange store samtaler eller massevis av meldinger.

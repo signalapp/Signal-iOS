@@ -1,2 +1,2 @@
-• Hem afegit un nou mode de llista (opcional) en el mode de vista de Tots els arxius multimèdia. Si prefereixes deixar de ser tan quadriculat, podràs veure més informació amb un cop d'ull, com ara els noms dels arxius, les seves mides, les dates, etc.
+• Hem corregit una sèrie d'errors per assegurar-nos que l'app continuï funcionant sense entrebancs.
 • Aquesta versió també inclou diverses millores de rendiment i millores de velocitat d'inici. Si tens moltes converses llargues o molts missatges, esperem que notis una mica la diferència.

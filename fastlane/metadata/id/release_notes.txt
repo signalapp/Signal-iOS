@@ -1,2 +1,2 @@
-• Kami menambahkan mode Daftar yang baru (dan opsional) di tampilan Semua Media. Jika Anda memilih tampilan Daftar untuk melihat media, kini Anda bisa melihat lebih banyak info secara sekilas, termasuk nama file, ukuran file, tanggal, dll.
+• Kami melakukan beberapa perbaikan bug demi memastikan aplikasi berjalan lancar.
 • Rilis ini juga mencakup beberapa peningkatan kinerja dan peningkatan kecepatan startup. Jika Anda punya banyak percakapan besar, atau banyak pesan, kami harap Anda akan melihat sedikit perbedaan.

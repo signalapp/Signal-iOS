@@ -1,2 +1,2 @@
-• Tüm Medya görünümüne yeni (ve isteğe bağlı) bir Liste modu ekledik. Tercihini ızgaradan yana yapmadığında; dosya adları, dosya boyutları, tarihler vb. dâhil olmak üzere daha fazla bilgiyi artık tek bakışta görebilirsin.
+• Uygulamanın sorunsuz çalışmasını sağlamak için birkaç hata düzeltmesi yaptık.
 • Bu sürüm ayrıca çeşitli performans iyileştirmeleri ve başlatma hızı geliştirmeleri içerir. Çok sayıda büyük sohbetin veya çok sayıda mesajın varsa, küçük bir fark göreceğinizi umuyoruz.

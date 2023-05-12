@@ -1,2 +1,2 @@
-• Wir haben in der Medienansicht einen neuen (und optionalen) Listenmodus hinzugefügt. Wenn du dich entscheidest, aus dem Raster zu fallen, kannst du jetzt mehr Informationen auf einen Blick sehen, darunter Dateinamen, Dateigrößen, Daten usw.
+• Wir haben einige Fehler behoben, damit deine App reibungslos funktioniert.
 • Diese Version enthält außerdem mehrere Leistungsoptimierungen und eine höhere Startgeschwindigkeit. Wenn du viele umfangreiche Unterhaltungen oder jede Menge Nachrichten hast, wirst du hoffentlich einen kleinen Unterschied bemerken.

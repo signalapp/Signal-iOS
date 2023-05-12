@@ -1,2 +1,2 @@
-• We hebben een nieuwe (en optionele) lijstmodus toegevoegd in de weergave Alle media. Zie in één oogopslag meer informatie, inclusief bestandsnamen, bestandsgroottes, datums, enz.
+• Voor een probleemloze werking van je app, hebben we een aantal bugfixes gemaakt.
 • Deze update bevat ook verschillende prestatieverbeteringen en opstartsnelheidsverbeteringen. Als je lange gesprekken voert of veel berichten ontvangt, hopen we natuurlijk dat je hier iets van merkt.

@@ -1,2 +1,2 @@
-• Új (és opcionális) Lista módot adtunk az „Összes médiafájl” nézethez. Ha úgy döntesz, hogy elhagyod a rácsnézetet, mostantól több információt láthatsz egyszerre, beleértve a fájlneveket, fájlméreteket, dátumokat stb.
+• Számos hibajavítást végeztünk az alkalmazás zökkenőmentes működéséhez.
 • Ez a kiadás számos teljesítmény- és indítási sebesség-javítást is tartalmaz. Ha sok, hosszú beszélgetést folytatsz, vagy sok üzenetet küldesz, reméljük, hogy észreveszel egy kis különbséget.

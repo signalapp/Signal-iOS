@@ -1,2 +1,2 @@
-• Am adăugat un nou (și opțional) mod Listă în vizualizarea Tuturor fișierelor. Dacă decizi să renunți la grile, acum poți să vezi mai multe informații dintr-un foc, inclusiv numele fișierelor, dimensiunile fișierelor, date, etc.
+• Am implementat o serie de soluții ale bug-urilor ca să ajutăm aplicația să funcționeze bine.
 • Această nouă versiune include și câteva îmbunătățiri de performanță și îmbunătățiri ale vitezei startup-urilor. Dacă ai multe conversații mari sau multe mesaje, sperăm că vei observa un pic diferența.

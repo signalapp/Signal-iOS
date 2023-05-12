@@ -1,2 +1,2 @@
-• Kami menambah mod Senarai baharu (dan pilihan) dalam paparan Semua Media. Jika anda memutuskan untuk keluar dari grid, kini anda boleh melihat sepintas lalu lebih banyak maklumat, termasuk nama fail, saiz fail, tarikh, dsb.
+• Kami membuat beberapa pembaikan pepijat untuk memastikan aplikasi anda berjalan lancar.
 • Keluaran ini juga termasuk beberapa peningkatan prestasi dan peningkatan kelajuan permulaan. Jika anda mempunyai banyak perbualan besar, atau banyak mesej, kami berharap anda akan dapat melihat sedikit perbezaan.

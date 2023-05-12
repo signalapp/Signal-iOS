@@ -1,2 +1,2 @@
-• Abbiamo aggiunto una nuova (e opzionale) Modalità Elenco per avere tutti i dettagli dei tuoi media sotto mano: il nome del file, le dimensioni, la data e così via.
+• Abbiamo risolto una serie di bug per garantire il corretto funzionamento dell'app.
 • Questo aggiornamento include anche varie ottimizzazioni per le performance e la velocità dell'app. Minima attesa, massima resa!

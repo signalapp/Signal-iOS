@@ -1,2 +1,2 @@
-• V zobrazení Všechna média jsme přidali nový (a volitelný) režim Seznam. Jestliže vám nepřijde mřížka dost dobrá, můžete si teď přehledně zobrazit více informací (včetně názvů souborů, jejich velikostí, dat atd.)
+• Opravili jsme několik chyb, aby vám aplikace běžela hladce. 
 • Toto vydání také zahrnuje několik vylepšení výkonu a rychlejší načítání. Pokud máte hodně dlouhých chatů nebo spoustu zpráv, doufáme, že zaznamenáte drobný rozdíl.
