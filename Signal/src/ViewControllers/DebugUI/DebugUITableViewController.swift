@@ -6,7 +6,7 @@
 import SignalMessaging
 import SignalUI
 
-#if DEBUG
+#if USE_DEBUG_UI
 
 class DebugUITableViewController: OWSTableViewController {
 
@@ -114,7 +114,7 @@ class DebugUITableViewController: OWSTableViewController {
         thread: TSThread? = nil
     ) -> OWSTableItem {
         return OWSTableItem.disclosureItem(
-            withText: page.name(),
+            withText: page.name,
             actionBlock: { [weak viewController] in
                 guard let viewController, let section = page.section(thread: thread) else { return }
                 viewController.pushPageWithSection(section)

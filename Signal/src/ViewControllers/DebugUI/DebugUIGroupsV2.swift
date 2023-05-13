@@ -3,21 +3,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 import SignalMessaging
+import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIGroupsV2: DebugUIPage {
+class DebugUIGroupsV2: DebugUIPage, Dependencies {
 
-    // MARK: Overrides 
+    let name = "Groups v2"
 
-    override func name() -> String {
-        return "Groups v2"
-    }
-
-    override func section(thread: TSThread?) -> OWSTableSection? {
+    func section(thread: TSThread?) -> OWSTableSection? {
         var sectionItems = [OWSTableItem]()
 
         if let groupThread = thread as? TSGroupThread {
@@ -76,6 +72,8 @@ class DebugUIGroupsV2: DebugUIPage {
         return OWSTableSection(title: "Groups v2", items: sectionItems)
     }
 
+    // MARK: -
+
     private static func migrate(groupThread: TSGroupThread,
                                 migrationMode: GroupsV2MigrationMode) {
         _ = firstly { () -> Promise<TSGroupThread> in
@@ -89,7 +87,6 @@ class DebugUIGroupsV2: DebugUIPage {
     }
 
     private func insertGroupUpdateInfoMessages(groupThread: TSGroupThread) {
-
         databaseStorage.asyncWrite { transaction in
             do {
                 try self.insertGroupUpdateInfoMessages(groupThread: groupThread,

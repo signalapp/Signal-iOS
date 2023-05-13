@@ -268,9 +268,8 @@ public class CVLoader: NSObject {
                              itemModel: itemModel)
     }
 
-    #if DEBUG
+    #if USE_DEBUG_UI
 
-    @objc
     public static func debugui_buildStandaloneRenderItem(
         interaction: TSInteraction,
         thread: TSThread,

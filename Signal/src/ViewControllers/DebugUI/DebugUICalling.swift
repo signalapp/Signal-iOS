@@ -3,23 +3,19 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalServiceKit
 import SignalMessaging
+import SignalServiceKit
+import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUICalling: DebugUIPage {
+class DebugUICalling: DebugUIPage, Dependencies {
 
-    // MARK: Overrides 
+    let name = "Calling"
 
-    override func name() -> String {
-        return "Calling"
-    }
-
-    override func section(thread aThread: TSThread?) -> OWSTableSection? {
-        guard let thread = aThread as? TSContactThread else {
-            owsFailDebug("Calling is only valid for contact thread, got thread: \(String(describing: aThread))")
+    func section(thread: TSThread?) -> OWSTableSection? {
+        guard let contactThread = thread as? TSContactThread else {
+            owsFailDebug("Calling is only valid for contact thread, got thread: \(String(describing: thread))")
             return nil
         }
 
@@ -36,12 +32,19 @@ class DebugUICalling: DebugUIPage {
                     owsFailDebug("could not build proto")
                     return
                 }
-                let callMessage = Self.databaseStorage.read { OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage, destinationDeviceId: nil, transaction: $0) }
+                let callMessage = Self.databaseStorage.read {
+                    OWSOutgoingCallMessage(
+                        thread: contactThread,
+                        hangupMessage: hangupMessage,
+                        destinationDeviceId: nil,
+                        transaction: $0
+                    )
+                }
 
                 strongSelf.messageSender.sendMessage(.promise, callMessage.asPreparer).done {
-                    Logger.debug("Successfully sent hangup call message to \(thread.contactAddress)")
+                    Logger.debug("Successfully sent hangup call message to \(contactThread.contactAddress)")
                 }.catch { error in
-                    Logger.error("failed to send hangup call message to \(thread.contactAddress) with error: \(error)")
+                    Logger.error("failed to send hangup call message to \(contactThread.contactAddress) with error: \(error)")
                 }
             },
             OWSTableItem(title: "Send 'busy' for old call") { [weak self] in
@@ -57,12 +60,18 @@ class DebugUICalling: DebugUIPage {
                     return
                 }
 
-                let callMessage = Self.databaseStorage.read { OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage, destinationDeviceId: nil, transaction: $0) }
+                let callMessage = Self.databaseStorage.read {
+                    OWSOutgoingCallMessage(
+                        thread: contactThread,
+                        busyMessage: busyMessage,
+                        destinationDeviceId: nil,
+                        transaction: $0)
+                }
 
                 strongSelf.messageSender.sendMessage(.promise, callMessage.asPreparer).done {
-                    Logger.debug("Successfully sent busy call message to \(thread.contactAddress)")
+                    Logger.debug("Successfully sent busy call message to \(contactThread.contactAddress)")
                 }.catch { error in
-                    Logger.error("failed to send busy call message to \(thread.contactAddress) with error: \(error)")
+                    Logger.error("failed to send busy call message to \(contactThread.contactAddress) with error: \(error)")
                 }
             }
         ]

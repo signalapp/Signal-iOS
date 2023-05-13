@@ -3,21 +3,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 import SignalMessaging
+import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUINotifications: DebugUIPage {
+class DebugUINotifications: DebugUIPage, Dependencies {
 
-    // MARK: Overrides
+    let name = "Notifications"
 
-    override func name() -> String {
-        return "Notifications"
-    }
-
-    override func section(thread: TSThread?) -> OWSTableSection? {
+    func section(thread: TSThread?) -> OWSTableSection? {
         guard let thread = thread else {
             owsFailDebug("Notifications must specify thread.")
             return nil

@@ -279,8 +279,8 @@ public class MessageProcessor: NSObject {
         }
     }
 
-#if DEBUG
-    public func processFakeDecryptedEnvelope(_ envelope: SSKProtoEnvelope, plaintextData: Data) {
+#if USE_DEBUG_UI
+    public func debugui_processFakeDecryptedEnvelope(_ envelope: SSKProtoEnvelope, plaintextData: Data) {
         processDecryptedEnvelope(
             try! IdentifiedIncomingEnvelope(validatedEnvelope: ValidatedIncomingEnvelope(envelope)),
             plaintextData: plaintextData,

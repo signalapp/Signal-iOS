@@ -3,21 +3,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 import SignalMessaging
+import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIPayments: DebugUIPage {
+class DebugUIPayments: DebugUIPage, Dependencies {
 
-    // MARK: Overrides 
+    let name = "Payments"
 
-    override func name() -> String {
-        return "Payments"
-    }
-
-    override func section(thread: TSThread?) -> OWSTableSection? {
+    func section(thread: TSThread?) -> OWSTableSection? {
         var sectionItems = [OWSTableItem]()
 
         if let contactThread = thread as? TSContactThread {
@@ -67,6 +63,8 @@ class DebugUIPayments: DebugUIPage {
 
         return OWSTableSection(title: "Payments", items: sectionItems)
     }
+
+    // MARK: -
 
     private func sendPaymentRequestMessage(contactThread: TSContactThread) {
         let address = contactThread.contactAddress
