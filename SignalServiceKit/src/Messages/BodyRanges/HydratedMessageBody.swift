@@ -498,18 +498,16 @@ public class HydratedMessageBody: Equatable, Hashable {
         let mentionKey = NSAttributedString.Key("ows.mention")
         let dataKey = NSAttributedString.Key("ows.data")
 
-        if FeatureFlags.textFormattingReceiveSupport {
-            styleAttributes.forEach {
-                if
-                    $0.value.style.contains(.spoiler),
-                    revealedSpoilerIds.contains($0.value.id).negated
-                {
-                    setRange(
-                        value: TappableItem.UnrevealedSpoiler(range: $0.range, id: $0.value.id),
-                        key: unrevealedSpoilerKey,
-                        range: $0.range
-                    )
-                }
+        styleAttributes.forEach {
+            if
+                $0.value.style.contains(.spoiler),
+                revealedSpoilerIds.contains($0.value.id).negated
+            {
+                setRange(
+                    value: TappableItem.UnrevealedSpoiler(range: $0.range, id: $0.value.id),
+                    key: unrevealedSpoilerKey,
+                    range: $0.range
+                )
             }
         }
         mentionAttributes.forEach {

@@ -98,8 +98,6 @@ public class FeatureFlags: BaseFlags {
         return false
     }
 
-    public static let textFormattingReceiveSupport: Bool = build.includes(.internal)
-
     public static let periodicallyCheckDatabaseIntegrity: Bool = build.includes(.internal)
 
     @objc

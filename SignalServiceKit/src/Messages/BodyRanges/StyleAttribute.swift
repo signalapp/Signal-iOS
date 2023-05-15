@@ -75,9 +75,6 @@ internal struct StyleAttribute: Equatable, Hashable {
         searchRanges: HydratedMessageBody.DisplayConfiguration.SearchRanges?,
         isDarkThemeEnabled: Bool
     ) {
-        guard FeatureFlags.textFormattingReceiveSupport else {
-            return
-        }
         var fontTraits: UIFontDescriptor.SymbolicTraits = []
         var attributes: [NSAttributedString.Key: Any] = [
             Self.key: self,
@@ -139,9 +136,6 @@ internal struct StyleAttribute: Equatable, Hashable {
         to string: NSMutableString,
         at range: NSRange
     ) {
-        guard FeatureFlags.textFormattingReceiveSupport, self.style.contains(.spoiler) else {
-            return
-        }
         string.replaceCharacters(
             in: range,
             with: String(repeating: Self.plaintextSpoilerCharacter, count: range.length)

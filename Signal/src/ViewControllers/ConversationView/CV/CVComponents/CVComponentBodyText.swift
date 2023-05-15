@@ -174,9 +174,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     .compactMap {
                         switch $0 {
                         case .unrevealedSpoiler(let unrevealedSpoilerItem):
-                            guard FeatureFlags.textFormattingReceiveSupport else {
-                                return nil
-                            }
                             return .unrevealedSpoiler(CVTextLabel.UnrevealedSpoilerItem(
                                 spoilerId: unrevealedSpoilerItem.id,
                                 interactionUniqueId: interactionUniqueId,
