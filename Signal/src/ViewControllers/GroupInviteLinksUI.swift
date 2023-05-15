@@ -47,7 +47,7 @@ public class GroupInviteLinksUI: UIView {
         if let existingGroupThread = (databaseStorage.read { transaction in
             TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: transaction)
         }), existingGroupThread.isLocalUserFullMember || existingGroupThread.isLocalUserRequestingMember {
-            SignalApp.shared().presentConversation(for: existingGroupThread, animated: true)
+            SignalApp.shared().presentConversationForThread(existingGroupThread, animated: true)
             return
         }
 
@@ -386,7 +386,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                     AssertIsOnMainThread()
                     self?.dismiss(animated: true) {
                         AssertIsOnMainThread()
-                        SignalApp.shared().presentConversation(for: groupThread, animated: true)
+                        SignalApp.shared().presentConversationForThread(groupThread, animated: true)
                     }
                 }
             }.catch { error in

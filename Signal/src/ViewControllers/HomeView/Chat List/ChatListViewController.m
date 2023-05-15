@@ -791,31 +791,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self dismissSearchKeyboard];
 }
 
-#pragma mark - HomeFeedTableViewCellDelegate
-
-- (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated
-{
-    [BenchManager startEventWithTitle:@"Presenting Conversation"
-                              eventId:[NSString stringWithFormat:@"presenting-conversation-%@", thread.uniqueId]];
-    [self presentThread:thread action:action focusMessageId:nil animated:isAnimated];
-}
-
-- (void)presentThread:(TSThread *)thread
-               action:(ConversationViewAction)action
-       focusMessageId:(nullable NSString *)focusMessageId
-             animated:(BOOL)isAnimated
-{
-    if (thread == nil) {
-        OWSFailDebug(@"Thread unexpectedly nil");
-        return;
-    }
-
-    [self.conversationSplitViewController presentThread:thread
-                                                 action:action
-                                         focusMessageId:focusMessageId
-                                               animated:isAnimated];
-}
-
 #pragma mark Old Style
 
 - (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext

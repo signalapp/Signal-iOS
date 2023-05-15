@@ -282,9 +282,9 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
         func navigateToNewGroup(completion: (() -> Void)?) {
             _ = self.presentingViewController?.dismiss(animated: true) {
-                SignalApp.shared().presentConversation(for: groupThread,
-                                                          action: hasAnyRemoteMembers ? .none : .newGroupActionSheet,
-                                                          animated: false)
+                SignalApp.shared().presentConversationForThread(groupThread,
+                                                                action: hasAnyRemoteMembers ? .none : .newGroupActionSheet,
+                                                                animated: false)
                 completion?()
             }
         }

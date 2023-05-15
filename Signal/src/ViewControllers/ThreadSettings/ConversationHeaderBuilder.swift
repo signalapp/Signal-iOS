@@ -251,7 +251,7 @@ struct ConversationHeaderBuilder: Dependencies {
                     ),
                 action: { [weak delegate] in
                     guard let delegate = delegate else { return }
-                    delegate.signalApp.presentConversation(for: delegate.thread, action: .compose, animated: true)
+                    delegate.signalApp.presentConversationForThread(delegate.thread, action: .compose, animated: true)
                 }
             ))
         }

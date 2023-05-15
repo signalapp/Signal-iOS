@@ -499,20 +499,23 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
         if let e164 = phoneNumber.tryToConvertToE164() {
             let address = SignalServiceAddress(phoneNumber: e164)
             if contactShare.systemContactsWithSignalAccountPhoneNumbers().contains(e164) {
-                actionSheet.addAction(ActionSheetAction(title: CommonStrings.sendMessage,
-                                                        style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(for: address, action: .compose, animated: true)
-                })
-                actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("ACTION_AUDIO_CALL",
-                                                                             comment: "Label for 'voice call' button in contact view."),
-                                                    style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(for: address, action: .audioCall, animated: true)
-                })
-                actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("ACTION_VIDEO_CALL",
-                                                                             comment: "Label for 'video call' button in contact view."),
-                                                    style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(for: address, action: .videoCall, animated: true)
-                })
+                actionSheet.addAction(ActionSheetAction(
+                    title: CommonStrings.sendMessage,
+                    style: .default) { _ in
+                        SignalApp.shared().presentConversationForAddress(address, action: .compose, animated: true)
+                    })
+                actionSheet.addAction(ActionSheetAction(
+                    title: OWSLocalizedString("ACTION_AUDIO_CALL",
+                                              comment: "Label for 'voice call' button in contact view."),
+                    style: .default) { _ in
+                        SignalApp.shared().presentConversationForAddress(address, action: .audioCall, animated: true)
+                    })
+                actionSheet.addAction(ActionSheetAction(
+                    title: OWSLocalizedString("ACTION_VIDEO_CALL",
+                                              comment: "Label for 'video call' button in contact view."),
+                    style: .default) { _ in
+                        SignalApp.shared().presentConversationForAddress(address, action: .videoCall, animated: true)
+                    })
             } else {
                 // TODO: We could offer callPhoneNumberWithSystemCall.
             }

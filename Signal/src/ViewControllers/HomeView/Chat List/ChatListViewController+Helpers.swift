@@ -161,6 +161,6 @@ public extension ChatListViewController {
             owsFailDebug("Invalid previewController: \(type(of: previewController))")
             return
         }
-        present(previewController.thread, action: .none, animated: false)
+        presentThread(previewController.thread, animated: false)
     }
 }

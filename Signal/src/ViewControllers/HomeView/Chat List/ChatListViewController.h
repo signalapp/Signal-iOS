@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import "ConversationViewController.h"
 #import <SignalUI/OWSViewControllerObjc.h>
 #import <UIKit/UIKit.h>
 
@@ -13,13 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSThread;
 
 @interface ChatListViewController : OWSViewControllerObjc
-
-- (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated;
-
-- (void)presentThread:(TSThread *)thread
-               action:(ConversationViewAction)action
-       focusMessageId:(nullable NSString *)focusMessageId
-             animated:(BOOL)isAnimated;
 
 // Used by force-touch Springboard icon shortcut and key commands
 - (void)showNewConversationView;

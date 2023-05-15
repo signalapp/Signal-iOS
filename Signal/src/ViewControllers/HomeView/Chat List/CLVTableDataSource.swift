@@ -380,7 +380,7 @@ extension CLVTableDataSource: UITableViewDelegate {
             if viewState.multiSelectState.isActive {
                 viewController.updateCaptions()
             } else {
-                viewController.present(threadViewModel.threadRecord, action: .none, animated: true)
+                viewController.presentThread(threadViewModel.threadRecord, animated: true)
             }
         case .archiveButton:
             if viewState.multiSelectState.isActive {

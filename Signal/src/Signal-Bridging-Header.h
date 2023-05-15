@@ -7,7 +7,6 @@
 #import "AppDelegate.h"
 #import "BlockListViewController.h"
 #import "ChatListViewController.h"
-#import "ConversationViewController.h"
 #import "FingerprintViewController.h"
 #import "OWSLinkDeviceViewController.h"
 #import "OWSOrphanDataCleaner.h"

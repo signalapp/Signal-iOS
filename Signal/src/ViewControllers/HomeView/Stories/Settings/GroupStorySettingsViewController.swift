@@ -45,7 +45,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                 handler: { [weak self] _ in
                     guard let self = self else { return }
                     self.dismiss(animated: true) {
-                        Self.signalApp.presentConversation(for: self.thread, action: .compose, animated: true)
+                        Self.signalApp.presentConversationForThread(self.thread, action: .compose, animated: true)
                     }
                 }
             )

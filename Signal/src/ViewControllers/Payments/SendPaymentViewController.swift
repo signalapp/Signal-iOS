@@ -239,7 +239,7 @@ public class SendPaymentViewController: OWSViewController {
                             let rootViewController = fromViewController.presentingViewController?.presentingViewController
                             owsAssertDebug(rootViewController != nil)
                             rootViewController?.dismiss(animated: true) {
-                                SignalApp.shared().presentConversation(for: recipientAddress, action: .compose, animated: true)
+                                SignalApp.shared().presentConversationForAddress(recipientAddress, action: .compose, animated: true)
                             }
                         }
                     ))

@@ -142,7 +142,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         }
     }
 
-    @objc
     func presentThread(_ thread: TSThread, action: ConversationViewAction, focusMessageId: String?, animated: Bool) {
         AssertIsOnMainThread()
 

@@ -104,6 +104,84 @@ extension SignalApp {
 }
 
 extension SignalApp {
+
+    func presentConversationForAddress(
+        _ address: SignalServiceAddress,
+        action: ConversationViewAction = .none,
+        animated: Bool
+    ) {
+        let thread = databaseStorage.write { transaction in
+            return TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
+        }
+        presentConversationForThread(thread, action: action, animated: animated)
+    }
+
+    func presentConversationForThread(
+        _ thread: TSThread,
+        action: ConversationViewAction = .none,
+        focusMessageId: String? = nil,
+        animated: Bool
+    ) {
+        AssertIsOnMainThread()
+
+        guard let conversationSplitViewController = conversationSplitViewControllerForSwift else {
+            owsFailDebug("No conversationSplitViewController")
+            return
+        }
+
+        Logger.info("")
+
+        DispatchMainThreadSafe {
+            if let visibleThread = conversationSplitViewController.visibleThread,
+               visibleThread.uniqueId == thread.uniqueId,
+               let conversationViewController = conversationSplitViewController.selectedConversationViewController {
+                conversationViewController.popKeyBoard()
+                if case .updateDraft = action {
+                    conversationViewController.reloadDraft()
+                }
+                return
+            }
+            conversationSplitViewController.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated)
+        }
+    }
+
+    @objc
+    func presentConversationAndScrollToFirstUnreadMessage(forThreadId threadId: String, animated: Bool) {
+        AssertIsOnMainThread()
+        owsAssertDebug(!threadId.isEmpty)
+
+        guard let conversationSplitViewController = conversationSplitViewControllerForSwift else {
+            owsFailDebug("No conversationSplitViewController")
+            return
+        }
+
+        Logger.info("")
+
+        guard let thread = databaseStorage.read(block: { transaction in
+            return TSThread.anyFetch(uniqueId: threadId, transaction: transaction)
+        }) else {
+            owsFailDebug("unable to find thread with id: \(threadId)")
+            return
+        }
+
+        DispatchMainThreadSafe {
+            // If there's a presented blocking splash, but the user is trying to open a thread,
+            // dismiss it. We'll try again next time they open the app. We don't want to block
+            // them from accessing their conversations.
+            ExperienceUpgradeManager.dismissSplashWithoutCompletingIfNecessary()
+
+            if let visibleThread = conversationSplitViewController.visibleThread, visibleThread.uniqueId == thread.uniqueId {
+                conversationSplitViewController.selectedConversationViewController?.scrollToInitialPosition(animated: animated)
+                return
+            }
+
+            conversationSplitViewController.presentThread(thread, action: .none, focusMessageId: nil, animated: animated)
+        }
+    }
+}
+
+extension SignalApp {
+
     @objc(showExportDatabaseUIFromViewController:completion:)
     public static func showExportDatabaseUI(from parentVC: UIViewController, completion: @escaping () -> Void = {}) {
         guard OWSIsTestableBuild() || DebugFlags.internalSettings else {

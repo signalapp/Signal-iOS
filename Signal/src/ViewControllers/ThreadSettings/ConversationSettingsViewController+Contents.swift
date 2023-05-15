@@ -722,7 +722,7 @@ extension ConversationSettingsViewController {
                     return cell
                 },
                 actionBlock: { [weak self] in
-                    self?.signalApp.presentConversation(for: groupThread, animated: true)
+                    self?.signalApp.presentConversationForThread(groupThread, animated: true)
                 }
             ))
         }

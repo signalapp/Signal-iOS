@@ -2972,7 +2972,6 @@
 		34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_ansi.caf; path = Signal/AudioFiles/ringback_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
 		34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = end_call_tone_cept.caf; path = Signal/AudioFiles/end_call_tone_cept.caf; sourceTree = SOURCE_ROOT; };
 		34D1F04F1F7D45A60066283D /* GifPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerCell.swift; sourceTree = "<group>"; };
-		34D1F06D1F8678AA0066283D /* ConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewController.h; sourceTree = "<group>"; };
 		34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
 		34D21DA127297FBE00D891F4 /* DebugLogger+Payments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DebugLogger+Payments.swift"; sourceTree = "<group>"; };
 		34D913491F62D4A500722898 /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAttachment.swift; sourceTree = "<group>"; };
@@ -5325,7 +5324,6 @@
 				34A4D8882679296600A794E7 /* ConversationViewController+UIScrollView.swift */,
 				88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */,
 				888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */,
-				34D1F06D1F8678AA0066283D /* ConversationViewController.h */,
 				34A4D88C267A363A00A794E7 /* ConversationViewController.swift */,
 				3498AC9E25190E8B00B1F315 /* ConversationViewLayout.swift */,
 				3420CF6C26327B1A00E7DCB0 /* CVBackgroundContainer.swift */,

@@ -16,9 +16,9 @@ class SignalMe: NSObject {
 
     @objc
     static func openChat(url: URL, fromViewController: UIViewController) {
-        open(url: url, fromViewController: fromViewController) {
+        open(url: url, fromViewController: fromViewController) { address in
             AssertIsOnMainThread()
-            signalApp.presentConversation(for: $0, action: .compose, animated: true)
+            signalApp.presentConversationForAddress(address, action: .compose, animated: true)
         }
     }
 

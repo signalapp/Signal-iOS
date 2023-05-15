@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import "ConversationViewController.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationSplitViewController;
@@ -29,25 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Conversation Presentation
 
 - (void)showNewConversationView;
-
-- (void)presentConversationForAddress:(SignalServiceAddress *)address animated:(BOOL)isAnimated;
-
-- (void)presentConversationForAddress:(SignalServiceAddress *)address
-                               action:(ConversationViewAction)action
-                             animated:(BOOL)isAnimated;
-
-- (void)presentConversationForThreadId:(NSString *)threadId animated:(BOOL)isAnimated;
-
-- (void)presentConversationForThread:(TSThread *)thread animated:(BOOL)isAnimated;
-
-- (void)presentConversationForThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated;
-
-- (void)presentConversationForThread:(TSThread *)thread
-                              action:(ConversationViewAction)action
-                      focusMessageId:(nullable NSString *)focusMessageId
-                            animated:(BOOL)isAnimated;
-
-- (void)presentConversationAndScrollToFirstUnreadMessageForThreadId:(NSString *)threadId animated:(BOOL)isAnimated;
 
 #pragma mark - Methods
 

@@ -61,7 +61,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     }
 
     func didCompleteDonation() {
-        SignalApp.shared().presentConversation(for: thread, action: .none, animated: false)
+        SignalApp.shared().presentConversationForThread(thread, action: .none, animated: false)
         dismiss(animated: true) {
             SignalApp.shared().conversationSplitViewControllerForSwift?.present(
                 BadgeGiftingThanksSheet(thread: self.thread, badge: self.badge),

@@ -53,7 +53,7 @@ class ComposeViewController: RecipientPickerContainerViewController {
     }
 
     func newConversation(thread: TSThread) {
-        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+        SignalApp.shared().presentConversationForThread(thread, action: .compose, animated: false)
         presentingViewController?.dismiss(animated: true)
     }
 

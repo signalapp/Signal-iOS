@@ -23,6 +23,16 @@ public enum ConversationUIMode: UInt {
     }
 }
 
+public enum ConversationViewAction {
+    case none
+    case compose
+    case audioCall
+    case videoCall
+    case groupCallLobby
+    case newGroupActionSheet
+    case updateDraft
+}
+
 // MARK: -
 
 public class ConversationViewController: OWSViewController {
@@ -50,7 +60,6 @@ public class ConversationViewController: OWSViewController {
 
     // MARK: -
 
-    @objc
     public required init(threadViewModel: ThreadViewModel,
                          action: ConversationViewAction = .none,
                          focusMessageId: String? = nil) {

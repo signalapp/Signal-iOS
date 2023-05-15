@@ -435,7 +435,7 @@ extension StoryContextMenuGenerator {
             ),
             icon: .open20,
             handler: { completion in
-                Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
+                Self.signalApp.presentConversationForThread(thread, action: .compose, animated: true)
                 completion(true)
             }
         )
