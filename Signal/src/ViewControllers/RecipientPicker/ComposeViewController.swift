@@ -41,6 +41,8 @@ class ComposeViewController: RecipientPickerContainerViewController {
         showNewGroupUI()
     }
 
+    /// Presents the conversation for the given address and dismisses this
+    /// controller such that the conversation is visible.
     func newConversation(address: SignalServiceAddress) {
         AssertIsOnMainThread()
         owsAssertDebug(address.isValid)
@@ -52,9 +54,31 @@ class ComposeViewController: RecipientPickerContainerViewController {
         self.newConversation(thread: thread)
     }
 
+    /// Presents the conversation for the given thread and dismisses this
+    /// controller such that the conversation is visible.
+    ///
+    /// - Note
+    /// In practice, the view controller dismissing us here is the same one
+    /// (a ``ConversationSplitViewController``) that will ultimately present the
+    /// conversation. To that end, there be dragons in potential races between
+    /// the two actions, which seem to particularly be prominent when this
+    /// method is called from a `DispatchQueue.main` block. (This happens, for
+    /// example, when doing some asynchronous work, such as a lookup, which
+    /// completes in a `DispatchQueue.main` block that calls this method.)
+    ///
+    /// Some example dragons found at the time of writing include user
+    /// interaction being disabled on the nav bar, incorrect nav bar layout,
+    /// keyboards refusing to pop, and the conversation input toolbar being
+    /// hidden behind the keyboard if it does pop.
+    ///
+    /// Ensuring that the presentation and dismissal are in separate dispatch
+    /// blocks seems to dodge the dragons.
     func newConversation(thread: TSThread) {
         SignalApp.shared().presentConversationForThread(thread, action: .compose, animated: false)
-        presentingViewController?.dismiss(animated: true)
+
+        DispatchQueue.main.async { [weak self] in
+            self?.presentingViewController?.dismiss(animated: true)
+        }
     }
 
     func showNewGroupUI() {

@@ -202,11 +202,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             return detailNavController
         }()
 
-        if animated {
-            showDetailViewController(detailVC, sender: self)
-        } else {
-            UIView.performWithoutAnimation { showDetailViewController(detailVC, sender: self) }
-        }
+        showDetailViewController(viewController: detailVC, animated: animated)
     }
 
     override var shouldAutorotate: Bool {
@@ -233,8 +229,14 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     // it presents the view modally instead of within the split view controller.
     // We never want this to happen, so we implement a version that knows the
     // correct context is always the split view controller.
+    override func showDetailViewController(_ vc: UIViewController, sender _: Any?) {
+        showDetailViewController(viewController: vc, animated: true)
+    }
+
+    /// Present the given controller as our detail view controller as
+    /// appropriate for our current context.
     private weak var currentDetailViewController: UIViewController?
-    override func showDetailViewController(_ vc: UIViewController, sender: Any?) {
+    func showDetailViewController(viewController: UIViewController, animated: Bool) {
         if isCollapsed {
             var viewControllersToDisplay = chatListNavController.viewControllers
             // If we already have a detail VC displayed, we want to replace it.
@@ -244,8 +246,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                let detailVCIndex = viewControllersToDisplay.firstIndex(of: currentDetailVC) {
                 viewControllersToDisplay = Array(viewControllersToDisplay[0..<detailVCIndex])
             }
-            viewControllersToDisplay.append(vc)
-            chatListNavController.setViewControllers(viewControllersToDisplay, animated: true)
+            viewControllersToDisplay.append(viewController)
+            chatListNavController.setViewControllers(viewControllersToDisplay, animated: animated)
         } else {
             // There is a race condition at app launch where `isCollapsed` cannot be
             // relied upon. This leads to a crash where viewControllers is empty, so
@@ -256,7 +258,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             // returning stale information. The latter seems most plausible, but is near
             // impossible to reproduce.
             owsAssertDebug(viewControllers.first == homeVC)
-            viewControllers = [homeVC, vc]
+            viewControllers = [homeVC, viewController]
         }
 
         // If the detail VC is a nav controller, we want to keep track of
@@ -264,10 +266,10 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // point of the current detail view when replacing it while
         // collapsed. At that point, this nav controller's view controllers
         // will have been merged into the primary nav controller.
-        if let vc = vc as? UINavigationController {
-            currentDetailViewController = vc.viewControllers.first
+        if let navController = viewController as? UINavigationController {
+            currentDetailViewController = navController.viewControllers.first
         } else {
-            currentDetailViewController = vc
+            currentDetailViewController = viewController
         }
     }
 
