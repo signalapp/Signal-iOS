@@ -3,16 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
-
-import SignalMessaging
-import PureLayout
-import SignalServiceKit
-import Intents
 import CoreServices
+import Intents
+import PureLayout
+import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
-@objc
 public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {
 
     enum ShareViewControllerError: Error, Equatable {
@@ -124,7 +121,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     @objc
-    public func applicationDidEnterBackground() {
+    private func applicationDidEnterBackground() {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -204,7 +201,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     @objc
-    func registrationStateDidChange() {
+    private func registrationStateDidChange() {
         AssertIsOnMainThread()
 
         Logger.debug("")
@@ -344,7 +341,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     @objc
-    func owsApplicationWillEnterForeground() throws {
+    private func owsApplicationWillEnterForeground() throws {
         AssertIsOnMainThread()
 
         Logger.debug("")

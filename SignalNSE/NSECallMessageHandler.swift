@@ -13,7 +13,6 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: Initializers
 
-    @objc
     public override init() {
         super.init()
 

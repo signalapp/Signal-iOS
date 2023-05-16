@@ -89,7 +89,7 @@ class SAEFailedViewController: UIViewController {
     // MARK: - Event Handlers
 
     @objc
-    func cancelPressed(sender: UIButton) {
+    private func cancelPressed(sender: UIButton) {
         guard let delegate = delegate else {
             owsFailDebug("missing delegate")
             return

@@ -7,7 +7,6 @@ import UIKit
 import Foundation
 import SignalUI
 
-@objc
 class SharingThreadPickerViewController: ConversationPickerViewController {
 
     weak var shareViewDelegate: ShareViewDelegate?
@@ -65,7 +64,6 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     var selectedConversations: [ConversationItem] { selection.conversations }
 
-    @objc
     public init(shareViewDelegate: ShareViewDelegate) {
         self.shareViewDelegate = shareViewDelegate
 
