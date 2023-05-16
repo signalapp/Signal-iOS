@@ -696,7 +696,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
             let gridCellItem = GalleryGridCellItem(galleryItem: galleryItem)
             VideoDurationHelper.shared.with(context: videoDurationContext) {
-                cell.configure(item: gridCellItem)
+                cell.configureWithItem(gridCellItem)
             }
         }
         return cell
@@ -1105,6 +1105,8 @@ class GalleryGridCellItem: PhotoGridItem {
             return .photo
         }
     }
+
+    var isFavorite: Bool { false }
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
         return galleryItem.thumbnailImage(async: completion)

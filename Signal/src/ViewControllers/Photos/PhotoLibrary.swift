@@ -51,6 +51,8 @@ class PhotoPickerAssetItem: PhotoGridItem {
 
     var creationDate: Date? { asset.creationDate }
 
+    var isFavorite: Bool { asset.isFavorite }
+
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
         var syncImageResult: UIImage?
         var hasLoadedImage = false

@@ -7,8 +7,8 @@ import Foundation
 
 protocol MediaTileCell: AnyObject {
     func makePlaceholder()
-    func configure(item: PhotoGridItem)
-    var item: PhotoGridItem? { get set }
+    func configureWithItem(_ item: PhotoGridItem)
+    var item: PhotoGridItem? { get }
     var allowsMultipleSelection: Bool { get }
     func setAllowsMultipleSelection(_ allowed: Bool, animated: Bool)
     func mediaPresentationContext(

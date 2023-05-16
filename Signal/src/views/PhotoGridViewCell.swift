@@ -56,6 +56,7 @@ public struct PhotoMetadata {
 
 public protocol PhotoGridItem: AnyObject {
     var type: PhotoGridItemType { get }
+    var isFavorite: Bool { get }
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage?
     var photoMetadata: PhotoMetadata? { get }
 }
@@ -66,7 +67,9 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
 
     public let imageView: UIImageView
 
-    private var contentTypeBadgeView: UIImageView?
+    // Contains icon and shadow.
+    private var isFavoriteBadge: UIView?
+
     private var durationLabel: UILabel?
     private var durationLabelBackground: UIView?
     private let selectionButton = SelectionButton()
@@ -74,7 +77,7 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
     private let highlightedMaskView: UIView
     private let selectedMaskView: UIView
 
-    var item: PhotoGridItem?
+    private(set) var item: PhotoGridItem?
 
     private static let selectedBadgeImage = UIImage(named: "media-composer-checkmark")
     public var loadingColor = Theme.washColor
@@ -90,12 +93,58 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
 
     public override var isHighlighted: Bool {
         didSet {
-            self.highlightedMaskView.isHidden = !self.isHighlighted
+            highlightedMaskView.isHidden = !isHighlighted
         }
     }
+
     override public var isSelected: Bool {
         didSet {
             updateSelectionState()
+        }
+    }
+
+    private var isFavorite: Bool = false {
+        didSet {
+            guard isFavorite else {
+                isFavoriteBadge?.isHidden = true
+                return
+            }
+            let badgeIconView: UIView
+            if let isFavoriteBadge {
+                badgeIconView = isFavoriteBadge
+            } else {
+                badgeIconView = UIView.container()
+                badgeIconView.clipsToBounds = false
+
+                let badgeShadow = GradientView(colors: [ .ows_blackAlpha40, .ows_blackAlpha40, .clear ])
+                badgeShadow.gradientLayer.type = .radial
+                badgeShadow.gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.5)
+                badgeShadow.gradientLayer.endPoint = CGPoint(x: 1, y: 1)
+                badgeIconView.addSubview(badgeShadow)
+
+                let badgeIcon = UIImageView(image: Theme.iconImage(.heart16, isDarkThemeEnabled: true).withRenderingMode(.alwaysTemplate))
+                badgeIcon.tintColor = .white
+                badgeIconView.addSubview(badgeIcon)
+
+                badgeShadow.autoPinEdge(.top, to: .top, of: badgeIcon, withOffset: -20)
+                badgeShadow.autoPinEdge(.trailing, to: .trailing, of: badgeIcon, withOffset: 20)
+                badgeShadow.centerXAnchor.constraint(equalTo: badgeIconView.leadingAnchor).isActive = true
+                badgeShadow.centerYAnchor.constraint(equalTo: badgeIconView.bottomAnchor).isActive = true
+
+                badgeIcon.autoSetDimensions(to: .square(14))
+                badgeIcon.autoPinEdge(toSuperviewEdge: .leading, withInset: 6)
+                badgeIcon.autoPinEdge(toSuperviewEdge: .top)
+                badgeIcon.autoPinEdge(toSuperviewEdge: .trailing)
+                badgeIcon.autoPinEdge(toSuperviewEdge: .bottom, withInset: 5)
+
+                contentView.addSubview(badgeIconView)
+                badgeIconView.autoPinEdge(toSuperviewEdge: .leading)
+                badgeIconView.autoPinEdge(toSuperviewEdge: .bottom)
+
+                isFavoriteBadge = badgeIconView
+            }
+            badgeIconView.isHidden = false
+            contentView.bringSubviewToFront(badgeIconView)
         }
     }
 
@@ -216,12 +265,12 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
         }
 
         if durationLabel.superview == nil {
-            addSubview(durationLabel)
+            contentView.addSubview(durationLabel)
             durationLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
             durationLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: 4)
         }
         if durationLabelBackground.superview == nil {
-            insertSubview(durationLabelBackground, belowSubview: durationLabel)
+            contentView.insertSubview(durationLabelBackground, belowSubview: durationLabel)
             durationLabelBackground.topAnchor.constraint(equalTo: centerYAnchor).isActive = true
             durationLabelBackground.autoPinEdge(toSuperviewEdge: .leading)
             durationLabelBackground.autoPinEdge(toSuperviewEdge: .trailing)
@@ -232,6 +281,10 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
         durationLabelBackground.isHidden = false
         durationLabel.text = caption
         durationLabel.sizeToFit()
+
+        if let isFavoriteBadge {
+            contentView.bringSubviewToFront(isFavoriteBadge)
+        }
     }
 
     private func setUpAccessibility(item: PhotoGridItem?) {
@@ -256,7 +309,7 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
         setUpAccessibility(item: nil)
     }
 
-    public func configure(item: PhotoGridItem) {
+    public func configureWithItem(_ item: PhotoGridItem) {
         self.item = item
 
         // PHCachingImageManager returns multiple progressively better
@@ -267,13 +320,7 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
         image = item.asyncThumbnail { [weak self] image in
             guard let self = self else { return }
 
-            guard let currentItem = self.item else {
-                return
-            }
-
-            guard currentItem === item else {
-                return
-            }
+            guard let currentItem = self.item, currentItem === item else { return }
 
             if image == nil {
                 Logger.debug("image == nil")
@@ -281,7 +328,9 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
             self.image = image
         }
 
+        isFavorite = item.isFavorite
         setMedia(itemType: item.type)
+        isFavorite = item.isFavorite
         setUpAccessibility(item: item)
     }
 
@@ -290,7 +339,7 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
 
         item = nil
         imageView.image = nil
-        contentTypeBadgeView?.isHidden = true
+        isFavoriteBadge?.isHidden = true
         durationLabel?.isHidden = true
         durationLabelBackground?.isHidden = true
         highlightedMaskView.isHidden = true

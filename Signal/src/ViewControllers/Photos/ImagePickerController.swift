@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Photos
 import SignalMessaging
-import UIKit
+import SignalUI
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerDidRequestSendMedia(_ imagePicker: ImagePickerGridController)
@@ -62,13 +61,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveCall
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
-    var preferredNavigationBarStyle: OWSNavigationBarStyle {
-        return .alwaysDark
-    }
+    var preferredNavigationBarStyle: OWSNavigationBarStyle { .alwaysDark }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -501,7 +496,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         cell.loadingColor = UIColor(white: 0.2, alpha: 1)
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
-        cell.configure(item: assetItem)
+        cell.configureWithItem(assetItem)
         return cell
     }
 

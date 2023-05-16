@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 class WidePhotoCellSeparator: UIView { }
 
@@ -199,7 +199,7 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
         setUpAccessibility(item: nil)
     }
 
-    public func configure(item: PhotoGridItem) {
+    public func configureWithItem(_ item: PhotoGridItem) {
         self.item = item
 
         // PHCachingImageManager returns multiple progressively better

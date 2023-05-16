@@ -3,24 +3,21 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Photos
+import SignalUI
 
 protocol PhotoCollectionPickerDelegate: AnyObject {
     func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection)
 }
 
-class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDelegate {
+class PhotoCollectionPickerController: OWSTableViewController {
 
     private weak var collectionDelegate: PhotoCollectionPickerDelegate?
 
     private let library: PhotoLibrary
-    private var photoCollections: [PhotoCollection]
 
-    required init(library: PhotoLibrary,
-                  collectionDelegate: PhotoCollectionPickerDelegate) {
+    required init(library: PhotoLibrary, collectionDelegate: PhotoCollectionPickerDelegate) {
         self.library = library
-        self.photoCollections = library.allPhotoCollections()
         self.collectionDelegate = collectionDelegate
         super.init()
     }
@@ -45,25 +42,20 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     // MARK: -
 
     private func updateContents() {
-        photoCollections = library.allPhotoCollections()
-
+        let photoCollections = library.allPhotoCollections()
         let sectionItems = photoCollections.map { collection in
-            return OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    return UITableViewCell()
-                }
-                return self.buildTableCell(collection: collection)
+            return OWSTableItem(
+                customCellBlock: { [weak self] in
+                    guard let self else { return UITableViewCell() }
+                    return self.buildTableCell(collection: collection)
                 },
-                                actionBlock: { [weak self] in
-                                    guard let strongSelf = self else { return }
-                                    strongSelf.didSelectCollection(collection: collection)
-                })
+                actionBlock: { [weak self] in
+                    self?.didSelectCollection(collection: collection)
+                }
+            )
         }
 
-        let section = OWSTableSection(title: nil, items: sectionItems)
-        let contents = OWSTableContents()
-        contents.addSection(section)
-        self.contents = contents
+        contents = OWSTableContents(sections: [ OWSTableSection(title: nil, items: sectionItems) ])
     }
 
     private lazy var numberFormatter: NumberFormatter = {
@@ -132,11 +124,12 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
 
     // MARK: Actions
 
-    func didSelectCollection(collection: PhotoCollection) {
+    private func didSelectCollection(collection: PhotoCollection) {
         collectionDelegate?.photoCollectionPicker(self, didPickCollection: collection)
     }
+}
 
-    // MARK: PhotoLibraryDelegate
+extension PhotoCollectionPickerController: PhotoLibraryDelegate {
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
         updateContents()
