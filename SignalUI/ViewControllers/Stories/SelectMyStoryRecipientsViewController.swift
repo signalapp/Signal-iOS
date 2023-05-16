@@ -7,7 +7,6 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-@objc
 public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
     let thread: TSPrivateStoryThread
     let mode: TSThreadStoryViewMode
@@ -35,7 +34,6 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateBarButtons()
@@ -88,7 +86,7 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
     // MARK: - Actions
 
     @objc
-    func savePressed() {
+    private func savePressed() {
         AssertIsOnMainThread()
 
         databaseStorage.write { transaction in

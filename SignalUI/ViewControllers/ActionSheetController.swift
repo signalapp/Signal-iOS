@@ -7,7 +7,6 @@ import BonMot
 import UIKit
 import SafariServices
 
-@objc
 open class ActionSheetController: OWSViewController {
     private enum Message {
         case text(String)
@@ -19,21 +18,19 @@ open class ActionSheetController: OWSViewController {
     private let scrollView = UIScrollView()
     private var hasCompletedFirstLayout = false
 
-    @objc
     private(set) public var actions = [ActionSheetAction]() {
         didSet {
             isCancelable = firstCancelAction != nil
         }
     }
 
-    @objc
     public var contentAlignment: ContentAlignment = .center {
         didSet {
             guard oldValue != contentAlignment else { return }
             actions.forEach { $0.button.contentAlignment = contentAlignment }
         }
     }
-    @objc(ActionSheetContentAlignment)
+
     public enum ContentAlignment: Int {
         case center
         case leading
@@ -43,7 +40,6 @@ open class ActionSheetController: OWSViewController {
     /// Adds a header view to the top of the action sheet stack
     /// Note: It's the caller's responsibility to ensure the header view matches the style of the action sheet
     /// See: theme.backgroundColor, theme.headerTitleColor, etc.
-    @objc
     public var customHeader: UIView? {
         didSet {
             oldValue?.removeFromSuperview()
@@ -52,7 +48,6 @@ open class ActionSheetController: OWSViewController {
         }
     }
 
-    @objc
     public var isCancelable = false
 
     // Currently the theme must be set during initialization to take effect
@@ -81,7 +76,6 @@ open class ActionSheetController: OWSViewController {
         transitioningDelegate = self
     }
 
-    @objc
     public override convenience init() {
         self.init(theme: .default)
     }
@@ -243,7 +237,7 @@ open class ActionSheetController: OWSViewController {
     }
 
     @objc
-    func didTapBackdrop(_ sender: UITapGestureRecognizer) {
+    private func didTapBackdrop(_ sender: UITapGestureRecognizer) {
         guard isCancelable else { return }
         // If we have a cancel action, treat tapping the background
         // as tapping the cancel button.
@@ -327,19 +321,18 @@ open class ActionSheetController: OWSViewController {
 
 // MARK: -
 
-@objc
 public class ActionSheetAction: NSObject {
-    @objc
+
     public let title: String
-    @objc
+
     public var accessibilityIdentifier: String? {
         didSet {
             button.accessibilityIdentifier = accessibilityIdentifier
         }
     }
 
-    @objc
     public let style: Style
+
     @objc(ActionSheetActionStyle)
     public enum Style: Int {
         case `default`
@@ -350,18 +343,6 @@ public class ActionSheetAction: NSObject {
     fileprivate let handler: Handler?
     public typealias Handler = (ActionSheetAction) -> Void
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setTrailingIcon(_ icon: ThemeIcon) {
-        trailingIcon = icon
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func clearTrailingIcon() {
-        trailingIcon = nil
-    }
-
     public var trailingIcon: ThemeIcon? {
         get {
             return button.trailingIcon
@@ -369,18 +350,6 @@ public class ActionSheetAction: NSObject {
         set {
             button.trailingIcon = newValue
         }
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setLeadingIcon(_ icon: ThemeIcon) {
-        leadingIcon = icon
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func clearLeadingIcon() {
-        leadingIcon = nil
     }
 
     public var leadingIcon: ThemeIcon? {
@@ -527,7 +496,7 @@ public class ActionSheetAction: NSObject {
         }
 
         @objc
-        func didTouchUpInside() {
+        private func didTouchUpInside() {
             releaseAction?()
         }
     }

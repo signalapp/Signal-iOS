@@ -42,7 +42,6 @@ public protocol CVView: UIView {
 
 // MARK: -
 
-@objc
 open class CVLabel: UILabel, CVView {
     public override func updateConstraints() {
         super.updateConstraints()
@@ -62,7 +61,6 @@ open class CVLabel: UILabel, CVView {
 
 // MARK: -
 
-@objc
 open class CVImageView: UIImageView, CVView {
     public override func updateConstraints() {
         super.updateConstraints()
@@ -128,7 +126,6 @@ open class CVImageView: UIImageView, CVView {
 
     // MARK: - Circles
 
-    @objc
     public static func circleView() -> CVImageView {
         let result = CVImageView()
         result.addLayoutBlock { view in
@@ -140,7 +137,6 @@ open class CVImageView: UIImageView, CVView {
 
 // MARK: -
 
-@objc
 open class CVAnimatedImageView: YYAnimatedImageView, CVView {
     public override func updateConstraints() {
         super.updateConstraints()

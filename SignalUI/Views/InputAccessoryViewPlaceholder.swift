@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public protocol InputAccessoryViewPlaceholderDelegate: AnyObject {
     func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
     func inputAccessoryPlaceholderKeyboardDidPresent()
@@ -19,14 +18,12 @@ public protocol InputAccessoryViewPlaceholderDelegate: AnyObject {
 /// Input accessory views always render at the full width of the window.
 /// This wrapper allows resizing the accessory view to fit within its
 /// presenting view.
-@objc
 public class InputAccessoryViewPlaceholder: UIView {
-    @objc
+
     public weak var delegate: InputAccessoryViewPlaceholderDelegate?
 
     /// The amount of the application frame that is overlapped
     /// by the keyboard.
-    @objc
     public var keyboardOverlap: CGFloat {
         // Subtract our own height as this view is not actually
         // visible, but is represented in the keyboard.
@@ -36,7 +33,6 @@ public class InputAccessoryViewPlaceholder: UIView {
         return max(0, visibleKeyboardHeight - ownHeight)
     }
 
-    @objc
     public weak var referenceView: UIView?
 
     private var visibleKeyboardHeight: CGFloat {
@@ -76,7 +72,6 @@ public class InputAccessoryViewPlaceholder: UIView {
     /// accessory view to overlap the presenting view, primarily
     /// for the purpose of defining the start point for interactive
     /// dismissals.
-    @objc
     public var desiredHeight: CGFloat {
         get {
             return heightConstraint.constant

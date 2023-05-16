@@ -6,7 +6,6 @@
 import Foundation
 import SignalMessaging
 
-@objc
 open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
 
     @objc
@@ -16,7 +15,6 @@ open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
 
     public var tooltipTailReferenceView: UIView { return cellView.tooltipTailReferenceView }
 
-    @objc
     public override var accessoryView: UIView? {
         didSet {
             owsFailDebug("Use ows_setAccessoryView instead.")

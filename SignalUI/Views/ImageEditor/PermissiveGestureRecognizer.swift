@@ -12,42 +12,34 @@ import UIKit
 // * Blocks all other GRs.
 class PermissiveGestureRecognizer: UIGestureRecognizer {
 
-    @objc
     override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
 
-    @objc
     override func canBePrevented(by preventingGestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
     }
 
-    @objc
     override func shouldRequireFailure(of otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
     }
 
-    @objc
     override func shouldBeRequiredToFail(by otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
 
-    @objc
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
-    @objc
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
-    @objc
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
-    @objc
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }

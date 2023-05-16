@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
-@objc
 public extension GroupManager {
 
+    @objc
     static func leaveGroupOrDeclineInviteAsyncWithUI(
         groupThread: TSGroupThread,
         fromViewController: UIViewController,

@@ -489,10 +489,8 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         }
     }
 
-    @objc
     public override var intrinsicContentSize: CGSize { configuration.sizeClass.size }
 
-    @objc
     public override func sizeThatFits(_ size: CGSize) -> CGSize { intrinsicContentSize }
 
     // MARK: - Controls

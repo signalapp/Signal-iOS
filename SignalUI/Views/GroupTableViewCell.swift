@@ -5,9 +5,7 @@
 
 import SignalMessaging
 import SignalServiceKit
-import UIKit
 
-@objc
 public class GroupTableViewCell: UITableViewCell {
 
     private let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser)
@@ -15,7 +13,6 @@ public class GroupTableViewCell: UITableViewCell {
     private let subtitleLabel = UILabel()
     private let accessoryLabel = UILabel()
 
-    @objc
     var accessoryMessage: String?
 
     public init() {
@@ -51,7 +48,6 @@ public class GroupTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public func configure(thread: TSGroupThread, customSubtitle: String? = nil, customTextColor: UIColor? = nil) {
         OWSTableItem.configureCell(self)
 

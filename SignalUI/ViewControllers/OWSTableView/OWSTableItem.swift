@@ -20,10 +20,8 @@ public class OWSTableItemEditAction: NSObject {
     }
 }
 
-@objc
 public class OWSTableItem: NSObject {
 
-    @objc
     public weak var tableViewController: UIViewController?
 
     public private(set) var title: String?
@@ -345,8 +343,8 @@ public extension OWSTableItem {
     }
 }
 
-@objc
 public extension OWSTableItem {
+
     enum AccessoryImageTint: Int {
         case untinted
         case tinted
@@ -355,6 +353,7 @@ public extension OWSTableItem {
     static var primaryLabelFont: UIFont { .dynamicTypeBodyClamped }
     static var accessoryLabelFont: UIFont { .dynamicTypeBodyClamped }
 
+    @objc
     static var iconSpacing: CGFloat { 16 }
     static var iconSize: CGFloat { 24 }
 
@@ -434,7 +433,6 @@ public extension OWSTableItem {
         return cell
     }
 
-    @nonobjc
     static func disclosureItem(icon: ThemeIcon,
                                name: String,
                                maxNameLines: Int? = nil,
@@ -451,9 +449,10 @@ public extension OWSTableItem {
     }
 
     @available(swift, obsoleted: 1.0)
+    @objc
     static func disclosureItem(icon: ThemeIcon,
                                name: String,
-                               accessoryText: String? = nil,
+                               accessoryText: String?,
                                accessibilityIdentifier: String,
                                actionBlock: (() -> Void)?) -> OWSTableItem {
         item(icon: icon,
@@ -464,7 +463,6 @@ public extension OWSTableItem {
              actionBlock: actionBlock)
     }
 
-    @nonobjc
     static func actionItem(icon: ThemeIcon? = nil,
                            tintColor: UIColor? = nil,
                            name: String,
@@ -485,7 +483,6 @@ public extension OWSTableItem {
              actionBlock: actionBlock)
     }
 
-    @nonobjc
     static func item(icon: ThemeIcon? = nil,
                      tintColor: UIColor? = nil,
                      name: String,
@@ -519,7 +516,6 @@ public extension OWSTableItem {
                      actionBlock: actionBlock)
     }
 
-    @nonobjc
     static func buildCellWithAccessoryLabel(icon: ThemeIcon? = nil,
                                             tintColor: UIColor? = nil,
                                             itemName: String,
@@ -546,7 +542,6 @@ public extension OWSTableItem {
                           accessibilityIdentifier: accessibilityIdentifier)
     }
 
-    @nonobjc
     static func buildIconNameCell(icon: ThemeIcon? = nil,
                                   tintColor: UIColor? = nil,
                                   itemName: String,
@@ -582,7 +577,6 @@ public extension OWSTableItem {
                                       accessibilityIdentifier: accessibilityIdentifier)
     }
 
-    @nonobjc
     static func buildImageNameCell(image: UIImage? = nil,
                                    itemName: String,
                                    subtitle: String? = nil,
@@ -606,7 +600,6 @@ public extension OWSTableItem {
                                       accessibilityIdentifier: accessibilityIdentifier)
     }
 
-    @nonobjc
     private static func buildImageViewNameCell(imageView: UIImageView? = nil,
                                                tintColor: UIColor? = nil,
                                                itemName: String,

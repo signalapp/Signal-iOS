@@ -97,7 +97,7 @@ public class GalleryRailCellView: UIView {
     // MARK: Actions
 
     @objc
-    func didTap(sender: UITapGestureRecognizer) {
+    private func didTap(sender: UITapGestureRecognizer) {
         delegate?.didTapGalleryRailCellView(self)
     }
 

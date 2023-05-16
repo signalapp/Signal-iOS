@@ -8,7 +8,6 @@ import MobileCoin
 import SignalMessaging
 import SignalServiceKit
 
-@objc
 public class PaymentsImpl: NSObject, PaymentsSwift {
 
     private var refreshBalanceEvent: RefreshEvent?
@@ -17,10 +16,8 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     private let paymentsProcessor = PaymentsProcessor()
 
-    @objc
     public static let maxPaymentMemoMessageLength: Int = 32
 
-    @objc
     public required override init() {
         super.init()
 
@@ -215,7 +212,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     // MARK: - Balance
 
-    @objc
     public static let currentPaymentBalanceDidChange = Notification.Name("currentPaymentBalanceDidChange")
 
     private let paymentBalanceCache = AtomicOptional<PaymentBalance>(nil)
@@ -1162,7 +1158,6 @@ public extension PaymentsImpl {
 
 // MARK: -
 
-@objc
 public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
     public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
         let payments = self.payments as! PaymentsImpl

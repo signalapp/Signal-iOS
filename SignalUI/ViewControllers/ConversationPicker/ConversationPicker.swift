@@ -26,7 +26,6 @@ public protocol ConversationPickerDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 open class ConversationPickerViewController: OWSTableViewController2 {
 
     public weak var pickerDelegate: ConversationPickerDelegate?
@@ -527,7 +526,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     // MARK: - Button Actions
 
     @objc
-    func onTouchCancelButton() {
+    private func onTouchCancelButton() {
         pickerDelegate?.conversationPickerDidCancel(self)
     }
 

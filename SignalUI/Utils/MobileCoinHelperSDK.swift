@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 import MobileCoin
 
-@objc
 public class MobileCoinHelperSDK: NSObject, MobileCoinHelper {
 
     public func info(forReceiptData receiptData: Data) throws -> MobileCoinReceiptInfo {

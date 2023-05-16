@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 open class TooltipView: UIView {
 
     private let wasTappedBlock: (() -> Void)?
@@ -172,7 +171,7 @@ open class TooltipView: UIView {
     // MARK: Events
 
     @objc
-    func handleTap(sender: UIGestureRecognizer) {
+    private func handleTap(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else { return }
         Logger.verbose("")
         if dismissOnTap { removeFromSuperview() }

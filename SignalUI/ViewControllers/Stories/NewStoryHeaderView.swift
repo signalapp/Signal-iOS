@@ -76,7 +76,7 @@ public class NewStoryHeaderView: UIStackView {
     }
 
     @objc
-    func didTapNewStory() {
+    private func didTapNewStory() {
         let vc = NewStorySheet { [weak self] items in
             guard let self = self else { return }
             self.delegate.newStoryHeaderView(self, didCreateNewStoryItems: items)

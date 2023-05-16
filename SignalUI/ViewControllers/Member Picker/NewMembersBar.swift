@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
 public struct NewMember {
     public let recipient: PickedRecipient
@@ -20,7 +20,6 @@ public protocol NewMembersBarDelegate: NewMemberCellDelegate {
 
 // MARK: -
 
-@objc
 public class NewMembersBar: UIView {
 
     weak var delegate: NewMembersBarDelegate?
@@ -38,7 +37,6 @@ public class NewMembersBar: UIView {
 
     private var heightConstraint: NSLayoutConstraint?
 
-    @objc
     public required init() {
         self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
 
@@ -48,7 +46,6 @@ public class NewMembersBar: UIView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -225,7 +222,6 @@ private class NewMemberCell: UICollectionViewCell {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -248,7 +244,7 @@ private class NewMemberCell: UICollectionViewCell {
     }
 
     @objc
-    func removeButtonWasPressed() {
+    private func removeButtonWasPressed() {
         guard let recipient = member?.recipient else {
             owsFailDebug("Missing recipient.")
             return

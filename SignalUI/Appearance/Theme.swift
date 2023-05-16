@@ -14,7 +14,6 @@ public extension NSNotification {
     static var ThemeDidChange: NSString { Notification.Name.themeDidChange.rawValue as NSString }
 }
 
-@objc
 final public class Theme: NSObject {
 
     public enum Mode: UInt {

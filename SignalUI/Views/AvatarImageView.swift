@@ -5,10 +5,8 @@
 
 import UIKit
 
-@objc
 open class AvatarImageView: UIImageView, CVView {
 
-    @objc
     public var shouldDeactivateConstraints = false
 
     public init() {
@@ -67,7 +65,6 @@ open class AvatarImageView: UIImageView, CVView {
 
 // MARK: -
 
-@objc
 public class AvatarImageButton: UIButton {
 
     // MARK: - Button Overrides

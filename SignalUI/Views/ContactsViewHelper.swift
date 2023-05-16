@@ -8,9 +8,8 @@ import Foundation
 import SafariServices
 import SignalMessaging
 
-@objc
 public extension ContactsViewHelper {
-    @objc(signalAccountsIncludingLocalUser:)
+
     func signalAccounts(includingLocalUser: Bool) -> [SignalAccount] {
         switch includingLocalUser {
         case true:

@@ -99,7 +99,6 @@ class MentionPicker: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public override var center: CGPoint {
         didSet {
             // iOS 15 layout changes introduce a crash where we re-enterantly perform

@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
-@objc
 public class TappableStackView: UIStackView {
     let actionBlock: (() -> Void)
 
@@ -25,7 +24,7 @@ public class TappableStackView: UIStackView {
     }
 
     @objc
-    func wasTapped(sender: UIGestureRecognizer) {
+    private func wasTapped(sender: UIGestureRecognizer) {
         Logger.info("")
 
         guard sender.state == .recognized else {

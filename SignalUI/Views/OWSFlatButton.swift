@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
+import UIKit
 
-@objc
 public class OWSFlatButton: UIView {
 
     public let button: UIButton
@@ -16,7 +15,6 @@ public class OWSFlatButton: UIView {
     private var upColor: UIColor?
     private var downColor: UIColor?
 
-    @objc
     public var cornerRadius: CGFloat {
         get {
             button.layer.cornerRadius
@@ -27,7 +25,6 @@ public class OWSFlatButton: UIView {
         }
     }
 
-    @objc
     public override var accessibilityIdentifier: String? {
         didSet {
             guard let accessibilityIdentifier = self.accessibilityIdentifier else {
@@ -70,7 +67,6 @@ public class OWSFlatButton: UIView {
         }
     }
 
-    @objc
     public init() {
         AssertIsOnMainThread()
 
@@ -92,7 +88,6 @@ public class OWSFlatButton: UIView {
         button.autoPinEdgesToSuperviewEdges()
     }
 
-    @objc
     public class func button(title: String,
                              font: UIFont,
                              titleColor: UIColor,
@@ -112,7 +107,6 @@ public class OWSFlatButton: UIView {
         return button
     }
 
-    @objc
     public class func button(title: String,
                              titleColor: UIColor,
                              backgroundColor: UIColor,
@@ -130,7 +124,6 @@ public class OWSFlatButton: UIView {
                                     selector: selector)
     }
 
-    @objc
     public class func button(title: String,
                              font: UIFont,
                              titleColor: UIColor,
@@ -148,7 +141,6 @@ public class OWSFlatButton: UIView {
         )
     }
 
-    @objc
     public class func insetButton(
         title: String,
         font: UIFont,
@@ -188,7 +180,6 @@ public class OWSFlatButton: UIView {
         return button
     }
 
-    @objc
     public class func fontForHeight(_ height: CGFloat) -> UIFont {
         // Cap the "button height" at 40pt or button text can look
         // excessively large.
@@ -202,48 +193,40 @@ public class OWSFlatButton: UIView {
 
     // MARK: Methods
 
-    @objc
     public func setTitleColor(_ color: UIColor) {
         button.setTitleColor(color, for: .normal)
     }
 
-    @objc
     public func setTitle(title: String? = nil, font: UIFont? = nil, titleColor: UIColor? = nil) {
         title.map { button.setTitle($0, for: .normal) }
         font.map { button.titleLabel?.font = $0 }
         titleColor.map { setTitleColor($0) }
     }
 
-    @objc
     public func setAttributedTitle(_ title: NSAttributedString) {
         button.setAttributedTitle(title, for: .normal)
     }
 
-    @objc
     public func setImage(_ image: UIImage) {
         button.setImage(image, for: .normal)
     }
 
-    @objc
     public func setBackgroundColors(upColor: UIColor,
                                     downColor: UIColor ) {
         button.setBackgroundImage(UIImage(color: upColor), for: .normal)
         button.setBackgroundImage(UIImage(color: downColor), for: .highlighted)
     }
 
-    @objc
     public func setBackgroundColors(upColor: UIColor) {
         let downColor = upColor == .clear ? upColor : upColor.withAlphaComponent(0.7)
         setBackgroundColors(upColor: upColor, downColor: downColor)
     }
 
-    @objc
     public func setSize(width: CGFloat, height: CGFloat) {
         button.autoSetDimension(.width, toSize: width)
         button.autoSetDimension(.height, toSize: height)
     }
 
-    @objc
     public func useDefaultCornerRadius() {
         // To my eye, this radius tends to look right regardless of button size
         // (within reason) or device size. 
@@ -251,42 +234,36 @@ public class OWSFlatButton: UIView {
         button.clipsToBounds = true
     }
 
-    @objc
     public func useInsetCornerRadius() {
         button.layer.cornerRadius = 14
         button.clipsToBounds = true
     }
 
-    @objc
     public func setEnabled(_ isEnabled: Bool) {
         button.isEnabled = isEnabled
     }
 
-    @objc
     public func addTarget(target: Any,
                           selector: Selector) {
         button.addTarget(target, action: selector, for: .touchUpInside)
     }
 
-    @objc
     public func setPressedBlock(_ pressedBlock: @escaping () -> Void) {
         guard self.pressedBlock == nil else { return }
         self.pressedBlock = pressedBlock
     }
 
     @objc
-    internal func buttonPressed() {
+    private func buttonPressed() {
         pressedBlock?()
     }
 
-    @objc
     public func enableMultilineLabel() {
         button.titleLabel?.numberOfLines = 0
         button.titleLabel?.lineBreakMode = .byWordWrapping
         button.titleLabel?.textAlignment = .center
     }
 
-    @objc
     public var font: UIFont? {
         return button.titleLabel?.font
     }

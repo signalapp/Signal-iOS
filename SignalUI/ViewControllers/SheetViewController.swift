@@ -5,12 +5,10 @@
 
 import Foundation
 
-@objc(OWSSheetViewController)
 open class SheetViewController: UIViewController {
 
     public var dismissHandler: ((SheetViewController) -> Void)?
 
-    @objc
     public let contentView: UIView = UIView()
 
     private let sheetView: SheetView = SheetView()
@@ -25,7 +23,6 @@ open class SheetViewController: UIViewController {
         Logger.verbose("")
     }
 
-    @objc
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         self.transitioningDelegate = self
@@ -123,12 +120,12 @@ open class SheetViewController: UIViewController {
     // MARK: Actions
 
     @objc
-    func didTapBackground() {
+    private func didTapBackground() {
         dismissHandler?(self)
     }
 
     @objc
-    func didSwipeDown() {
+    private func didSwipeDown() {
         dismissHandler?(self)
     }
 }

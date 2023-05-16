@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 extension ConversationViewController {
 
@@ -713,7 +713,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             chatColor = ChatColors.chatColorForRendering(thread: self.thread, transaction: transaction)
         }
 
-        func buildDefaultConversationStyle(type: ConversationStyleType) -> ConversationStyle {
+        func buildDefaultConversationStyle(type: ConversationStyle.`Type`) -> ConversationStyle {
             // Treat all styles as "initial" (not to be trusted) until
             // we have a view config.
             let viewWidth = floor(collectionView.width)

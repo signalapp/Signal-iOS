@@ -8,11 +8,9 @@ import AVKit
 
 /// Model object for a looping video asset
 /// Any LoopingVideoViews playing this instance will all be kept in sync
-@objc
 public class LoopingVideo: NSObject {
     fileprivate var asset: AVAsset
 
-    @objc
     public init?(url: URL) {
         guard OWSMediaUtils.isVideoOfValidContentTypeAndSize(path: url.path) else {
             return nil
@@ -82,6 +80,7 @@ private class LoopingVideoPlayer: AVPlayer {
     }
 
     private var readyStatusObserver: NSKeyValueObservation?
+
     override public func play() {
         // Don't bother if we're already playing, or we don't have an item
         guard let item = currentItem, rate == 0 else { return }
@@ -103,21 +102,18 @@ private class LoopingVideoPlayer: AVPlayer {
 
 // MARK: -
 
-@objc
 public protocol LoopingVideoViewDelegate: AnyObject {
     func loopingVideoViewChangedPlayerItem()
 }
 
 // MARK: -
 
-@objc
 public class LoopingVideoView: UIView {
-    @objc
+
     public weak var delegate: LoopingVideoViewDelegate?
 
     private let player = LoopingVideoPlayer()
 
-    @objc
     public var video: LoopingVideo? {
         didSet {
             guard video !== oldValue else { return }
@@ -153,6 +149,7 @@ public class LoopingVideoView: UIView {
     }
 
     override public static var layerClass: AnyClass { AVPlayerLayer.self }
+
     private var playerLayer: AVPlayerLayer {
         layer as? AVPlayerLayer ?? {
             owsFailDebug("Unexpected player type")

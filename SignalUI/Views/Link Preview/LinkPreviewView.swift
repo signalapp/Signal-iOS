@@ -235,7 +235,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
     // MARK: Events
 
     @objc
-    func wasTapped(sender: UIGestureRecognizer) {
+    private func wasTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }

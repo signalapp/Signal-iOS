@@ -3,13 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import MobileCoin
+import SignalServiceKit
 
-@objc
 public class PaymentsProcessor: NSObject {
 
-    @objc
     public required override init() {
         super.init()
 
@@ -178,7 +176,6 @@ public class PaymentsProcessor: NSObject {
 
     // Retries occur after a fixed delay (e.g. per exponential backoff)
     // but this should short-circuit if reachability becomes available.
-    @objc
     fileprivate class RetryScheduler: NSObject {
 
         private let paymentModel: TSPaymentModel

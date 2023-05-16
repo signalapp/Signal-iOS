@@ -9,7 +9,6 @@ import Foundation
 // when performance is not critical, e.g. when the table
 // only holds a screenful or two of cells and it's safe to
 // retain a view model for each cell in memory at all times.
-@objc
 open class OWSTableViewController2: OWSViewController {
 
     @objc
@@ -28,7 +27,6 @@ open class OWSTableViewController2: OWSViewController {
 
     private var _contents = OWSTableContents()
 
-    @objc
     public func setContents(_ contents: OWSTableContents, shouldReload: Bool = true) {
         _contents = contents
         applyContents(shouldReload: shouldReload)
@@ -43,13 +41,10 @@ open class OWSTableViewController2: OWSViewController {
     // * The top header view appears above the table and _does not_
     //   scroll with its content.
     // * The top header view's edge align with the edges of the cells.
-    @objc
     open var topHeader: UIView?
 
-    @objc
     open var bottomFooter: UIView?
 
-    @objc
     public var forceDarkMode = false {
         didSet {
             applyTheme()
@@ -58,7 +53,6 @@ open class OWSTableViewController2: OWSViewController {
 
     /// Whether or not this table view should avoid being hidden behind the
     /// keyboard.
-    @objc
     public var shouldAvoidKeyboard = false
 
     public enum SelectionBehavior {
@@ -75,13 +69,10 @@ open class OWSTableViewController2: OWSViewController {
     @objc
     public lazy var defaultSeparatorInsetLeading: CGFloat = Self.cellHInnerMargin
 
-    @objc
     public var defaultSeparatorInsetTrailing: CGFloat = 0
 
-    @objc
     public var defaultCellHeight: CGFloat = 50
 
-    @objc
     public var isUsingPresentedStyle: Bool {
         return presentingViewController != nil
     }
@@ -288,7 +279,6 @@ open class OWSTableViewController2: OWSViewController {
         return item
     }
 
-    @objc
     public var shouldDeferInitialLoad = true
 
     private func applyContents(shouldReload: Bool = true) {
@@ -581,10 +571,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
     public static let cellRounding: CGFloat = 10
 
-    @objc
     public static var maximumInnerWidth: CGFloat { 496 }
 
-    @objc
     public static var defaultHOuterMargin: CGFloat {
         UIDevice.current.isPlusSizePhone ? 20 : 16
     }
@@ -612,10 +600,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         return insets
     }
 
-    @objc
     public var cellOuterInsets: UIEdgeInsets { Self.cellOuterInsets(in: view) }
 
-    @objc
     public func cellOuterInsetsWithMargin(top: CGFloat = .zero, left: CGFloat = .zero, bottom: CGFloat = .zero, right: CGFloat = .zero) -> UIEdgeInsets {
         UIEdgeInsets(
             top: top,
@@ -625,25 +611,20 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         )
     }
 
-    @objc
     public func cellOuterInsetsWithMargin(hMargin: CGFloat, vMargin: CGFloat) -> UIEdgeInsets {
         cellOuterInsetsWithMargin(top: vMargin, left: hMargin, bottom: vMargin, right: hMargin)
     }
 
-    @objc
     public static func cellHOuterLeftMargin(in view: UIView) -> CGFloat {
         cellOuterInsets(in: view).left
     }
 
-    @objc
     public var cellHOuterLeftMargin: CGFloat { Self.cellHOuterLeftMargin(in: view) }
 
-    @objc
     public static func cellHOuterRightMargin(in view: UIView) -> CGFloat {
         cellOuterInsets(in: view).right
     }
 
-    @objc
     public var cellHOuterRightMargin: CGFloat { Self.cellHOuterRightMargin(in: view) }
 
     // The distance from the cell border to the cell content.
@@ -1007,7 +988,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     @objc
-    func donePressed() {
+    private func donePressed() {
         self.dismiss(animated: true, completion: nil)
     }
 
@@ -1029,7 +1010,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         )
     }
 
-    @objc
     public static func tableBackgroundColor(
         isUsingPresentedStyle: Bool,
         forceDarkMode: Bool = false
@@ -1043,7 +1023,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         }
     }
 
-    @objc
     public var cellBackgroundColor: UIColor {
         Self.cellBackgroundColor(
             isUsingPresentedStyle: isUsingPresentedStyle,
@@ -1227,7 +1206,6 @@ private protocol OWSTableViewDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class OWSTableView: UITableView {
     fileprivate weak var tableViewDelegate: OWSTableViewDelegate?
 

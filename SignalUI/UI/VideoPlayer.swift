@@ -10,7 +10,7 @@ public protocol VideoPlayerDelegate: AnyObject {
     func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer)
 }
 
-public class VideoPlayer: NSObject {
+public class VideoPlayer: Dependencies {
 
     public let avPlayer: AVPlayer
     private let audioActivity: AudioActivity
@@ -35,8 +35,6 @@ public class VideoPlayer: NSObject {
             behavior: shouldMixAudioWithOthers ? .playbackMixWithOthers : .playback
         )
         self.shouldLoop = shouldLoop
-
-        super.init()
 
         NotificationCenter.default.addObserver(
             self,

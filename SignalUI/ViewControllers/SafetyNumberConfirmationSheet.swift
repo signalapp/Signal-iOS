@@ -7,7 +7,6 @@ import Foundation
 import SignalMessaging
 import SignalServiceKit
 
-@objc
 public class SafetyNumberConfirmationSheet: UIViewController {
     let stackView = UIStackView()
     let contentView = UIView()
@@ -29,12 +28,6 @@ public class SafetyNumberConfirmationSheet: UIViewController {
     public var allowsDismissal: Bool = true
 
     public let theme: Theme.ActionSheet
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public convenience init(addressesToConfirm addresses: [SignalServiceAddress], confirmationText: String, completionHandler: @escaping (Bool) -> Void) {
-        self.init(addressesToConfirm: addresses, confirmationText: confirmationText, completionHandler: completionHandler)
-    }
 
     public init(
         addressesToConfirm: [SignalServiceAddress],
@@ -112,7 +105,6 @@ public class SafetyNumberConfirmationSheet: UIViewController {
 
     // MARK: - Present if necessary
 
-    @objc
     public class func presentIfNecessary(address: SignalServiceAddress, confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
         return presentIfNecessary(addresses: [address], confirmationText: confirmationText, completion: completion)
     }
@@ -123,7 +115,6 @@ public class SafetyNumberConfirmationSheet: UIViewController {
      * @returns true  if an alert was shown
      *          false if there were no unconfirmed identities
      */
-    @objc
     public class func presentIfNecessary(
         addresses: [SignalServiceAddress],
         confirmationText: String,
@@ -279,7 +270,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
     }
 
     @objc
-    func didTapBackdrop(_ sender: UITapGestureRecognizer) {
+    private func didTapBackdrop(_ sender: UITapGestureRecognizer) {
         guard allowsDismissal else { return }
         dismiss(animated: true)
     }
@@ -380,7 +371,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
     }
 
     @objc
-    func handlePan(_ sender: UIPanGestureRecognizer) {
+    private func handlePan(_ sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .began, .changed:
             guard beginInteractiveTransitionIfNecessary(sender),

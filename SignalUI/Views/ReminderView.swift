@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
 open class ReminderView: UIStackView {
     public enum Style {
@@ -127,7 +127,7 @@ open class ReminderView: UIStackView {
                 backgroundColor = .ows_gray75
                 textLabel.textColor = .ows_gray05
             } else {
-                backgroundColor = .ows_reminderYellow
+                backgroundColor = UIColor(rgbHex: 0xFCF0D9)
                 textLabel.textColor = .ows_gray65
             }
             actionLabel.textColor = Theme.accentBlueColor
@@ -139,7 +139,7 @@ open class ReminderView: UIStackView {
     }
 
     @objc
-    func handleTap(gestureRecognizer: UIGestureRecognizer) {
+    private func handleTap(gestureRecognizer: UIGestureRecognizer) {
         guard gestureRecognizer.state == .recognized else {
             return
         }

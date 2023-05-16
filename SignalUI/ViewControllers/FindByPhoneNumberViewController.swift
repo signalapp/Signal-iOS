@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
 @objc
 public protocol FindByPhoneNumberDelegate: AnyObject {
@@ -11,7 +11,6 @@ public protocol FindByPhoneNumberDelegate: AnyObject {
                            didSelectAddress address: SignalServiceAddress)
 }
 
-@objc
 public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationChildController {
     weak var delegate: FindByPhoneNumberDelegate?
     let buttonText: String?
@@ -207,7 +206,7 @@ public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationCh
     }
 
     @objc
-    func tryToSelectPhoneNumber() {
+    private func tryToSelectPhoneNumber() {
         guard let phoneNumber = validPhoneNumber() else {
             return
         }
@@ -248,7 +247,7 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
     }
 
     @objc
-    func didTapCountryRow() {
+    private func didTapCountryRow() {
         let countryCodeController = CountryCodeViewController()
         countryCodeController.countryCodeDelegate = self
         presentFormSheet(OWSNavigationController(rootViewController: countryCodeController), animated: true)

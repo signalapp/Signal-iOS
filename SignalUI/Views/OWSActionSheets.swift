@@ -170,51 +170,9 @@ fileprivate extension ActionSheetController {
 @objc(OWSActionSheets)
 @objcMembers
 public class OWSActionSheetsForObjC: NSObject {
-    public class func showActionSheet(
-        _ actionSheet: ActionSheetController,
-        fromViewController: UIViewController? = nil
-    ) {
-        OWSActionSheets.showActionSheet(actionSheet, fromViewController: fromViewController)
-    }
-
-    public class func showActionSheet(
-        title: String? = nil,
-        message: String? = nil,
-        buttonTitle: String = CommonStrings.okButton,
-        buttonAction: ActionSheetAction.Handler? = nil,
-        fromViewController: UIViewController? = nil
-    ) {
-        OWSActionSheets.showActionSheet(
-            title: title,
-            message: message,
-            buttonTitle: buttonTitle,
-            buttonAction: buttonAction,
-            fromViewController: fromViewController
-        )
-    }
 
     public class func showActionSheet(title: String, message: String) {
         OWSActionSheets.showActionSheet(title: title, message: message)
-    }
-
-    public class func showErrorAlert(message: String) {
-        OWSActionSheets.showErrorAlert(message: message)
-    }
-
-    public class func showConfirmationAlert(
-        title: String,
-        message: String,
-        proceedTitle: String,
-        proceedStyle: ActionSheetAction.Style,
-        proceedAction: @escaping ActionSheetAction.Handler
-    ) {
-        OWSActionSheets.showConfirmationAlert(
-            title: title,
-            message: message,
-            proceedTitle: proceedTitle,
-            proceedStyle: proceedStyle,
-            proceedAction: proceedAction
-        )
     }
 
     public class var cancelAction: ActionSheetAction { OWSActionSheets.cancelAction }

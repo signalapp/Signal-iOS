@@ -3,17 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalServiceKit
 
-@objc
-public class PaymentsUI: NSObject {
-}
-
-// MARK: -
-
-@objc
-public extension PaymentsUI {
+public class PaymentsUI: Dependencies {
 
     static func declinePaymentRequest(paymentRequestModel: TSPaymentRequestModel,
                                       fromViewController: UIViewController) {
@@ -71,7 +64,6 @@ public extension PaymentsUI {
     }
 
     // PAYMENTS TODO: Move to PaymentsImpl?
-    @nonobjc
     private static func declinePaymentRequestPromise(paymentRequestModel: TSPaymentRequestModel) -> Promise<Void> {
         firstly(on: DispatchQueue.global()) { () -> Void in
             try Self.databaseStorage.write { transaction in
@@ -120,7 +112,6 @@ public extension PaymentsUI {
     }
 
     // PAYMENTS TODO: Move to PaymentsImpl?
-    @nonobjc
     private static func cancelPaymentRequestPromise(paymentRequestModel: TSPaymentRequestModel) -> Promise<Void> {
         firstly(on: DispatchQueue.global()) { () -> Void in
             try Self.databaseStorage.write { transaction in

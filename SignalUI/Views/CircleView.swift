@@ -5,7 +5,6 @@
 
 import UIKit
 
-@objc(OWSCircleView)
 public class CircleView: UIView {
 
     @available(*, unavailable, message: "use other constructor instead.")
@@ -13,26 +12,22 @@ public class CircleView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public required init() {
         super.init(frame: .zero)
     }
 
-    @objc
     public required init(diameter: CGFloat) {
         super.init(frame: .zero)
 
         autoSetDimensions(to: CGSize(square: diameter))
     }
 
-    @objc
     override public var frame: CGRect {
         didSet {
             updateRadius()
         }
     }
 
-    @objc
     override public var bounds: CGRect {
         didSet {
             updateRadius()
@@ -44,7 +39,6 @@ public class CircleView: UIView {
     }
 }
 
-@objc(OWSCircleBlurView)
 public class CircleBlurView: UIVisualEffectView {
 
     @available(*, unavailable, message: "use other constructor instead.")
@@ -52,13 +46,11 @@ public class CircleBlurView: UIVisualEffectView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public override init(effect: UIVisualEffect?) {
         super.init(effect: effect)
         frame = .zero
     }
 
-    @objc
     public required init(effect: UIVisualEffect, diameter: CGFloat) {
         super.init(effect: effect)
         frame = .zero
@@ -66,14 +58,12 @@ public class CircleBlurView: UIVisualEffectView {
         autoSetDimensions(to: CGSize(square: diameter))
     }
 
-    @objc
     override public var frame: CGRect {
         didSet {
             updateRadius()
         }
     }
 
-    @objc
     override public var bounds: CGRect {
         didSet {
             updateRadius()
@@ -86,7 +76,6 @@ public class CircleBlurView: UIVisualEffectView {
     }
 }
 
-@objc(OWSPillView)
 open class PillView: UIView {
 
     public override init(frame: CGRect) {
@@ -108,14 +97,12 @@ open class PillView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     override public var frame: CGRect {
         didSet {
             updateRadius()
         }
     }
 
-    @objc
     override public var bounds: CGRect {
         didSet {
             updateRadius()

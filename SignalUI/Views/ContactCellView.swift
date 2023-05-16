@@ -19,7 +19,6 @@ public class ContactCellAccessoryView: NSObject {
 
 // MARK: -
 
-@objc
 public class ContactCellConfiguration: NSObject {
     fileprivate enum CellDataSource {
         case address(SignalServiceAddress)
@@ -29,31 +28,22 @@ public class ContactCellConfiguration: NSObject {
 
     fileprivate let dataSource: CellDataSource
 
-    @objc
     public let localUserDisplayMode: LocalUserDisplayMode
 
-    @objc
     public var forceDarkAppearance = false
 
-    @objc
     public var accessoryMessage: String?
 
-    @objc
     public var customName: String?
 
-    @objc
     public var accessoryView: ContactCellAccessoryView?
 
-    @objc
     public var attributedSubtitle: NSAttributedString?
 
-    @objc
     public var allowUserInteraction = false
 
-    @objc
     public var badged = true // TODO: Badges — Default false? Configure each use-case?
 
-    @objc
     public var hasAccessoryText: Bool {
         accessoryMessage?.nilIfEmpty != nil
     }

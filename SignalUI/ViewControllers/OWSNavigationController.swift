@@ -54,7 +54,6 @@ extension OWSNavigationChildController {
 /// This navigation controller subclass should be used anywhere we might
 /// want to cancel back button presses or back gestures due to, for example,
 /// unsaved changes.
-@objc
 open class OWSNavigationController: OWSNavigationControllerBase {
 
     private var owsNavigationBar: OWSNavigationBar {

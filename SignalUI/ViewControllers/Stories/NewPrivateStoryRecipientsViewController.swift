@@ -7,7 +7,6 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-@objc
 public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
     var recipientSet: OrderedSet<PickedRecipient> = []
 
@@ -24,7 +23,6 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateBarButtons()
@@ -60,7 +58,7 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
     // MARK: - Actions
 
     @objc
-    func nextPressed() {
+    private func nextPressed() {
         AssertIsOnMainThread()
 
         let vc = NewPrivateStoryConfirmViewController(

@@ -3,14 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import MediaPlayer
 import SignalServiceKit
 import SignalMessaging
 
 // A modal view that be used during blocking interactions (e.g. waiting on response from
 // service or on the completion of a long-running local operation).
-@objc
 public class ModalActivityIndicatorViewController: OWSViewController {
 
     let canCancel: Bool
@@ -18,7 +16,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     private let isInvisible: Bool
 
     private let _wasCancelled = AtomicBool(false)
-    @objc
     public var wasCancelled: Bool {
         _wasCancelled.get()
     }
@@ -59,7 +56,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
                 backgroundBlock: backgroundBlock)
     }
 
-    @objc
     public class func present(fromViewController: UIViewController,
                               canCancel: Bool,
                               presentationDelay: TimeInterval,
@@ -71,7 +67,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
                 backgroundBlock: backgroundBlock)
     }
 
-    @objc
     public class func presentAsInvisible(fromViewController: UIViewController,
                                          backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
         present(fromViewController: fromViewController,
@@ -81,7 +76,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
                 backgroundBlock: backgroundBlock)
     }
 
-    @objc
     public class func present(fromViewController: UIViewController,
                               canCancel: Bool,
                               presentationDelay: TimeInterval,
@@ -102,7 +96,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         }
     }
 
-    @objc
     public func dismiss(completion completionParam: (() -> Void)? = nil) {
         AssertIsOnMainThread()
 
@@ -223,7 +216,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     }
 
     @objc
-    func presentTimerFired() {
+    private func presentTimerFired() {
         AssertIsOnMainThread()
 
         clearTimer()
@@ -235,7 +228,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     }
 
     @objc
-    func cancelPressed() {
+    private func cancelPressed() {
         AssertIsOnMainThread()
 
         _wasCancelled.set(true)

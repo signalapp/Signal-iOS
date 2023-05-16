@@ -115,7 +115,6 @@ public class QRCodeScanViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         AssertIsOnMainThread()
 
@@ -162,14 +161,14 @@ public class QRCodeScanViewController: OWSViewController {
     }
 
     @objc
-    func didEnterBackground() {
+    private func didEnterBackground() {
         AssertIsOnMainThread()
 
         stopScanning()
     }
 
     @objc
-    func didBecomeActive() {
+    private func didBecomeActive() {
         AssertIsOnMainThread()
 
         tryToStartScanning()

@@ -3,16 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalServiceKit
 import SignalMessaging
+import SignalServiceKit
 
-@objc
 public class SUIEnvironment: NSObject {
 
     private static var _shared: SUIEnvironment = SUIEnvironment()
 
-    @objc
     public class var shared: SUIEnvironment {
         get {
             return _shared
@@ -27,16 +24,12 @@ public class SUIEnvironment: NSObject {
         }
     }
 
-    @objc
     public var audioSessionRef: AudioSession = AudioSession()
 
-    @objc
     public var contactsViewHelperRef: ContactsViewHelper = ContactsViewHelper()
 
-    @objc
     public var chatColorsRef: ChatColors = ChatColors()
 
-    @objc
     public var paymentsRef: Payments = PaymentsImpl()
 
     private override init() {
@@ -45,7 +38,6 @@ public class SUIEnvironment: NSObject {
         SwiftSingletons.register(self)
     }
 
-    @objc
     public func setup() {
         registerCustomFonts()
     }

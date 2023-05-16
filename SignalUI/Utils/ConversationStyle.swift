@@ -5,43 +5,36 @@
 
 import Foundation
 
-@objc
-public enum ConversationStyleType: UInt {
-    // The style used from initialization until presentation begins.
-    // It does not have valid values and should not be rendered.
-    case initial
-    // The style used until the presentation has configured the view(s).
-    // It has values inferred from the navigationController.
-    case placeholder
-    // The style once presentation has configured the view(s).
-    // It has values from the CVC view state.
-    case `default`
-    // The style used in the message detail view
-    case messageDetails
-
-    fileprivate var isValid: Bool { self != .initial }
-}
-
-// MARK: -
-
 // An immutable snapshot of the core styling
 // state used by CVC for a given load/render cycle.
-@objc
 public class ConversationStyle: NSObject {
 
-    @objc
-    public let type: ConversationStyleType
-    @objc
+    public enum `Type`: UInt {
+        // The style used from initialization until presentation begins.
+        // It does not have valid values and should not be rendered.
+        case initial
+        // The style used until the presentation has configured the view(s).
+        // It has values inferred from the navigationController.
+        case placeholder
+        // The style once presentation has configured the view(s).
+        // It has values from the CVC view state.
+        case `default`
+        // The style used in the message detail view
+        case messageDetails
+
+        fileprivate var isValid: Bool { self != .initial }
+    }
+
+    public let type: `Type`
+
     public var isValidStyle: Bool { type.isValid }
 
     // The width of the collection view.
-    @objc
     public let viewWidth: CGFloat
 
     @objc
     public let isDarkThemeEnabled: Bool
 
-    @objc
     public let hasWallpaper: Bool
 
     public let isWallpaperPhoto: Bool
@@ -49,62 +42,40 @@ public class ConversationStyle: NSObject {
     private let dynamicBodyTypePointSize: CGFloat
     private let primaryTextColor: UIColor
 
-    @objc
     public let contentMarginTop: CGFloat = 24
-    @objc
     public let contentMarginBottom: CGFloat = 24
 
-    @objc
     public let gutterLeading: CGFloat
-    @objc
     public let gutterTrailing: CGFloat
 
-    @objc
     public let headerGutterLeading: CGFloat = 28
-    @objc
     public let headerGutterTrailing: CGFloat = 28
 
     // These are the gutters used by "full width" views
     // like "contact offer" and "info message".
-    @objc
     public let fullWidthGutterLeading: CGFloat
-    @objc
     public let fullWidthGutterTrailing: CGFloat
 
     static public let groupMessageAvatarSizeClass = ConversationAvatarView.Configuration.SizeClass.twentyEight
-    @objc
     static public let selectionViewWidth: CGFloat = 24
-    @objc
     static public let messageStackSpacing: CGFloat = 8
-    @objc
     static public let defaultMessageSpacing: CGFloat = 12
-    @objc
     static public let compactMessageSpacing: CGFloat = 2
-    @objc
     static public let systemMessageSpacing: CGFloat = 20
 
-    @objc
     public let contentWidth: CGFloat
 
-    @objc
     public var headerViewContentWidth: CGFloat {
         viewWidth - (headerGutterLeading + headerGutterTrailing)
     }
 
-    @objc
     public let maxMessageWidth: CGFloat
-    @objc
     public let maxMediaMessageWidth: CGFloat
-    @objc
     public let maxAudioMessageWidth: CGFloat
 
-    @objc
     public let textInsetTop: CGFloat
-    @objc
     public let textInsetBottom: CGFloat
-    @objc
     public let textInsetHorizontal: CGFloat
-    @objc
     public var textInsets: UIEdgeInsets {
         UIEdgeInsets(top: textInsetTop,
                      leading: textInsetHorizontal,
@@ -118,7 +89,6 @@ public class ConversationStyle: NSObject {
     //
     // This is the distance from that v-center to the bottom of the
     // message bubble.
-    @objc
     public let lastTextLineAxis: CGFloat
 
     // Incoming and outgoing messages are visually distinguished
@@ -127,7 +97,6 @@ public class ConversationStyle: NSObject {
     // Reserve a space so that in the most compressed layouts
     // (small form factor, group avatar, multi-select, etc.)
     // there is space for them to align in these directions.
-    @objc
     public static let messageDirectionSpacing: CGFloat = 12
 
     // ChatColor is used for persistence, logging and comparison.
@@ -135,7 +104,7 @@ public class ConversationStyle: NSObject {
     // ColorOrGradientValue is used for rendering.
     public let chatColorValue: ColorOrGradientValue
 
-    public required init(type: ConversationStyleType,
+    public required init(type: `Type`,
                          thread: TSThread,
                          viewWidth: CGFloat,
                          hasWallpaper: Bool,
@@ -206,7 +175,6 @@ public class ConversationStyle: NSObject {
 
     // MARK: Colors
 
-    @objc
     public static func bubbleColorIncoming(hasWallpaper: Bool,
                                            isDarkThemeEnabled: Bool) -> UIColor {
         if hasWallpaper {
@@ -215,13 +183,11 @@ public class ConversationStyle: NSObject {
             return isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
         }
     }
-    @objc
     public var bubbleColorIncoming: UIColor {
         Self.bubbleColorIncoming(hasWallpaper: hasWallpaper,
                                  isDarkThemeEnabled: isDarkThemeEnabled)
     }
 
-    @objc
     public let dateBreakTextColor = UIColor.ows_gray60
 
     public func bubbleChatColor(isIncoming: Bool) -> ColorOrGradientValue {
@@ -236,7 +202,6 @@ public class ConversationStyle: NSObject {
         chatColorValue
     }
 
-    @objc
     public static var bubbleTextColorIncoming: UIColor {
         return bubbleTextColorIncomingThemed.forCurrentTheme
     }
@@ -245,7 +210,6 @@ public class ConversationStyle: NSObject {
         ThemedColor(light: UIColor.ows_gray90, dark: UIColor.ows_gray05)
     }
 
-    @objc
     public static var bubbleTextColorOutgoing: UIColor {
         return bubbleTextColorOutgoingThemed.forCurrentTheme
     }
@@ -254,27 +218,22 @@ public class ConversationStyle: NSObject {
         ThemedColor(light: UIColor.ows_white, dark: UIColor.ows_gray05)
     }
 
-    @objc
     public var bubbleTextColorIncoming: UIColor {
         Self.bubbleTextColorIncomingThemed.color(isDarkThemeEnabled: isDarkThemeEnabled)
     }
 
-    @objc
     public var bubbleSecondaryTextColorIncoming: UIColor {
         isDarkThemeEnabled ? .ows_gray25 : .ows_gray60
     }
 
-    @objc
     public var bubbleTextColorOutgoing: UIColor {
         Self.bubbleTextColorOutgoingThemed.color(isDarkThemeEnabled: isDarkThemeEnabled)
     }
 
-    @objc
     public var bubbleSecondaryTextColorOutgoing: UIColor {
         isDarkThemeEnabled ? .ows_whiteAlpha60 : .ows_whiteAlpha80
     }
 
-    @objc
     public func bubbleTextColor(message: TSMessage) -> UIColor {
         if message.wasRemotelyDeleted && !hasWallpaper {
             return primaryTextColor
@@ -288,7 +247,6 @@ public class ConversationStyle: NSObject {
         }
     }
 
-    @objc
     public func bubbleTextColor(isIncoming: Bool) -> UIColor {
         if isIncoming {
             return bubbleTextColorIncoming
@@ -297,7 +255,6 @@ public class ConversationStyle: NSObject {
         }
     }
 
-    @objc
     public func bubbleReadMoreTextColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
             return isDarkThemeEnabled ? .ows_whiteAlpha90 : .ows_accentBlue
@@ -309,7 +266,6 @@ public class ConversationStyle: NSObject {
         }
     }
 
-    @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
         if isIncoming {
             return bubbleSecondaryTextColorIncoming
@@ -323,27 +279,6 @@ public class ConversationStyle: NSObject {
         return UIColor.yellow
     }
 
-    @objc
-    public func quotedReplyHighlightColor() -> UIColor {
-        UIColor.init(rgbHex: 0xB5B5B5)
-    }
-
-    @objc
-    public func quotedReplyAuthorColor() -> UIColor {
-        quotedReplyTextColor()
-    }
-
-    @objc
-    public func quotedReplyTextColor() -> UIColor {
-        isDarkThemeEnabled ? .ows_gray05 : .ows_gray90
-    }
-
-    @objc
-    public func quotedReplyAttachmentColor() -> UIColor {
-        isDarkThemeEnabled ? .ows_gray05 : UIColor.ows_gray90
-    }
-
-    @objc
     public func isEqualForCellRendering(_ other: ConversationStyle) -> Bool {
         // We need to compare any state that could affect
         // how we render view appearance.
@@ -367,7 +302,6 @@ public class ConversationStyle: NSObject {
             chatColor.setting == other.chatColor.setting)
     }
 
-    @objc
     public override var debugDescription: String {
         "[" +
             "type.isValid: \(type.isValid), " +
@@ -387,5 +321,25 @@ public class ConversationStyle: NSObject {
             "lastTextLineAxis: \(lastTextLineAxis), " +
             "chatColor: \(chatColor), " +
             "]"
+    }
+}
+
+@objc
+extension ConversationStyle {
+
+    public func quotedReplyHighlightColor() -> UIColor {
+        UIColor.init(rgbHex: 0xB5B5B5)
+    }
+
+    public func quotedReplyAuthorColor() -> UIColor {
+        quotedReplyTextColor()
+    }
+
+    public func quotedReplyTextColor() -> UIColor {
+        isDarkThemeEnabled ? .ows_gray05 : .ows_gray90
+    }
+
+    public func quotedReplyAttachmentColor() -> UIColor {
+        isDarkThemeEnabled ? .ows_gray05 : UIColor.ows_gray90
     }
 }

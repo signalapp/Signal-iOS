@@ -9,7 +9,6 @@ import SignalMessaging
 
 // NOTE: There are two separate classes with the name Logger
 //       being used in this file.
-@objc
 public extension DebugLogger {
     static func configureSwiftLogging() {
         LoggingSystem.bootstrap { _ in

@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SafariServices
+import UIKit
 
-@objc
 public class LinkingTextView: UITextView {
 
     public override init(frame: CGRect, textContainer: NSTextContainer?) {
@@ -61,6 +60,7 @@ public class LinkingTextView: UITextView {
 }
 
 extension LinkingTextView: UITextViewDelegate {
+
     public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         let vc = SFSafariViewController(url: URL)
         CurrentAppContext().frontmostViewController()?.present(vc, animated: true, completion: nil)

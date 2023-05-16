@@ -116,12 +116,10 @@ public struct RegistrationPhoneNumber {
 
 // MARK: -
 
-@objc
 public class Deprecated_RegistrationPhoneNumber: NSObject {
     public let e164: String
     public let userInput: String
 
-    @objc
     public init(e164: String, userInput: String) {
         self.e164 = e164
         self.userInput = userInput
@@ -134,7 +132,6 @@ public class Deprecated_RegistrationPhoneNumber: NSObject {
 
 // MARK: -
 
-@objc
 public class RegistrationValues: NSObject {
 
     private static let kKeychainService_LastRegistered = "kKeychainService_LastRegistered"

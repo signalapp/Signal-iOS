@@ -154,7 +154,7 @@ public class AudioSession: NSObject {
     }
 
     @objc
-    func proximitySensorStateDidChange(notification: Notification) {
+    private func proximitySensorStateDidChange(notification: Notification) {
         ensureAudioState()
     }
 

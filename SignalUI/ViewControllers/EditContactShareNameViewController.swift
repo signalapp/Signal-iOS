@@ -3,10 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 
-@objc
 public protocol ContactNameFieldViewDelegate: AnyObject {
     func nameFieldDidChange()
 }
@@ -78,7 +76,7 @@ class ContactNameFieldView: UIView {
     }
 
     @objc
-    func wasTapped(sender: UIGestureRecognizer) {
+    private func wasTapped(sender: UIGestureRecognizer) {
         Logger.info("")
 
         guard sender.state == .recognized else {
@@ -89,7 +87,7 @@ class ContactNameFieldView: UIView {
     }
 
     @objc
-    func textFieldDidChange(sender: UITextField) {
+    private func textFieldDidChange(sender: UITextField) {
         Logger.info("")
 
         hasUnsavedChanges = true
@@ -112,7 +110,6 @@ class ContactNameFieldView: UIView {
 
 // MARK: -
 
-@objc
 public protocol EditContactShareNameViewControllerDelegate: AnyObject {
     func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController,
                                   didEditContactShare contactShare: ContactShareViewModel)
@@ -120,7 +117,6 @@ public protocol EditContactShareNameViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class EditContactShareNameViewController: OWSViewController, ContactNameFieldViewDelegate {
     weak var delegate: EditContactShareNameViewControllerDelegate?
 
@@ -137,7 +133,6 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
 
     // MARK: Initializers
 
-    @objc
     required public init(contactShare: ContactShareViewModel, delegate: EditContactShareNameViewControllerDelegate) {
         self.contactShare = contactShare
         self.delegate = delegate
@@ -280,7 +275,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
     // MARK: -
 
     @objc
-    func didPressSave() {
+    private func didPressSave() {
         Logger.info("")
 
         guard let newName = OWSContactName() else {
@@ -311,7 +306,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
     }
 
     @objc
-    func didPressCancel() {
+    private func didPressCancel() {
         Logger.info("")
 
         guard let navigationController = self.navigationController else {

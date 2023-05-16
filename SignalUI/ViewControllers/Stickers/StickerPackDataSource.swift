@@ -127,7 +127,6 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
         }
     }
 
-    @objc
     public required init(stickerPackInfo: StickerPackInfo) {
         self.stickerPackInfo = stickerPackInfo
 
@@ -230,7 +229,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
     // MARK: Events
 
     @objc
-    func stickersOrPacksDidChange() {
+    private func stickersOrPacksDidChange() {
         AssertIsOnMainThread()
 
         Logger.verbose("")
@@ -239,7 +238,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
     }
 
     @objc
-    func didBecomeActive() {
+    private func didBecomeActive() {
         AssertIsOnMainThread()
 
         ensureStateAsync {
@@ -323,7 +322,6 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
     private var stickerMetadataMap = [String: StickerMetadata]()
     private var temporaryFileUrls = [URL]()
 
-    @objc
     public required init(stickerPackInfo: StickerPackInfo,
                          shouldDownloadAllStickers: Bool) {
         self.stickerPackInfo = stickerPackInfo
@@ -500,7 +498,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
     // MARK: Events
 
     @objc
-    func didBecomeActive() {
+    private func didBecomeActive() {
         AssertIsOnMainThread()
 
         ensureState()
@@ -596,7 +594,6 @@ extension TransientStickerPackDataSource: StickerPackDataSourceDelegate {
 // Supplies sticker pack data for recently used stickers.
 public class RecentStickerPackDataSource: BaseStickerPackDataSource {
 
-    @objc
     public required override init() {
         super.init()
 
@@ -615,7 +612,7 @@ public class RecentStickerPackDataSource: BaseStickerPackDataSource {
     // MARK: Events
 
     @objc
-    func recentStickersDidChange() {
+    private func recentStickersDidChange() {
         AssertIsOnMainThread()
 
         ensureState()

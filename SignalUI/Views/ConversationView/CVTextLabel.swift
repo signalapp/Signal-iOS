@@ -6,7 +6,6 @@
 import Foundation
 import UIKit
 
-@objc
 public class CVTextLabel: NSObject {
 
     // MARK: -

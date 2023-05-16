@@ -499,7 +499,6 @@ public extension CACornerMask {
 
 // MARK: -
 
-@objc
 public extension UIBarButtonItem {
     convenience init(image: UIImage?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(image: image, style: style, target: target, action: action)
@@ -519,6 +518,7 @@ public extension UIBarButtonItem {
         self.accessibilityIdentifier = accessibilityIdentifier
     }
 
+    @objc
     convenience init(barButtonSystemItem systemItem: UIBarButtonItem.SystemItem, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(barButtonSystemItem: systemItem, target: target, action: action)
 
@@ -534,7 +534,6 @@ public extension UIBarButtonItem {
 
 // MARK: -
 
-@objc
 public extension UIButton {
     func setTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) {
         guard let templateImage = templateImage else {
@@ -582,7 +581,6 @@ public extension UIButton {
 
 // MARK: -
 
-@objc
 public extension UIImageView {
     func setImage(imageName: String) {
         guard let image = UIImage(named: imageName) else {
@@ -639,7 +637,6 @@ public extension UISearchBar {
 
 // MARK: -
 
-@objc
 public extension UITextView {
     func acceptAutocorrectSuggestion() {
         // https://stackoverflow.com/a/27865136/4509555
@@ -720,7 +717,6 @@ extension NSTextContainer {
 
 // MARK: -
 
-@objc
 public extension UITextField {
     func acceptAutocorrectSuggestion() {
         inputDelegate?.selectionWillChange(self)
@@ -789,7 +785,6 @@ public extension UIStackView {
 
 /// This works around a UIStackView bug where hidden subviews
 /// sometimes re-appear.
-@objc
 public extension UIView {
     var isHiddenInStackView: Bool {
         get { isHidden }
@@ -847,8 +842,9 @@ public extension UIStackView {
 
 // MARK: -
 
+@objc
 extension UIImage {
-    @objc
+
     public func asTintedImage(color: UIColor) -> UIImage? {
         let template = self.withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: template)
@@ -907,7 +903,6 @@ private class CALayerDelegateNoAnimations: NSObject, CALayerDelegate {
 extension CALayer {
     private static let delegateNoAnimations = CALayerDelegateNoAnimations()
 
-    @objc
     public func disableAnimationsWithDelegate() {
         owsAssertDebug(self.delegate == nil)
 

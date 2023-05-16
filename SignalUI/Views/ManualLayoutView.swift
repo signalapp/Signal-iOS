@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 
 // ManualLayoutView uses a CATransformLayer by default.
@@ -13,7 +12,6 @@ import SignalMessaging
 // masksToBounds, shadow, etc. you should use this subclass instead.
 //
 // See: https://developer.apple.com/documentation/quartzcore/catransformlayer
-@objc
 open class ManualLayoutViewWithLayer: ManualLayoutView {
     override open class var layerClass: AnyClass {
         CALayer.self
@@ -22,7 +20,6 @@ open class ManualLayoutViewWithLayer: ManualLayoutView {
 
 // MARK: -
 
-@objc
 open class ManualLayoutView: UIView, CVView {
 
     public typealias LayoutBlock = (UIView) -> Void
@@ -38,7 +35,6 @@ open class ManualLayoutView: UIView, CVView {
         CATransformLayer.self
     }
 
-    @objc
     public required init(name: String) {
         self.name = name
 
@@ -52,7 +48,6 @@ open class ManualLayoutView: UIView, CVView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -74,14 +69,12 @@ open class ManualLayoutView: UIView, CVView {
 
     // MARK: - Circles and Pills
 
-    @objc
     public static func circleView(name: String) -> ManualLayoutView {
         let result = ManualLayoutViewWithLayer(name: name)
         result.addPillBlock()
         return result
     }
 
-    @objc
     public static func pillView(name: String) -> ManualLayoutView {
         let result = ManualLayoutViewWithLayer(name: name)
         result.addPillBlock()
@@ -125,12 +118,10 @@ open class ManualLayoutView: UIView, CVView {
         layoutSubviews()
     }
 
-    @objc
     open override func layoutSubviews() {
         layoutSubviews(skipLayoutBlocks: false)
     }
 
-    @objc
     public func layoutSubviews(skipLayoutBlocks: Bool = false) {
         AssertIsOnMainThread()
 
@@ -141,7 +132,6 @@ open class ManualLayoutView: UIView, CVView {
         }
     }
 
-    @objc
     public func applyLayoutBlocks() {
         AssertIsOnMainThread()
 
@@ -150,7 +140,6 @@ open class ManualLayoutView: UIView, CVView {
         }
     }
 
-    @objc
     public func applyTransformBlocks() {
         AssertIsOnMainThread()
 
@@ -368,7 +357,6 @@ open class ManualLayoutView: UIView, CVView {
 
 // MARK: -
 
-@objc
 public extension ManualLayoutView {
 
     static func wrapSubviewUsingIOSAutoLayout(_ subview: UIView,

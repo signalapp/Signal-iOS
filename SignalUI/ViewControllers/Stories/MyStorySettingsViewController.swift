@@ -223,7 +223,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
     }
 
     @objc
-    func didToggleReplies(_ toggle: UISwitch) {
+    private func didToggleReplies(_ toggle: UISwitch) {
         let myStoryThread: TSPrivateStoryThread! = databaseStorage.read { TSPrivateStoryThread.getMyStory(transaction: $0) }
         guard myStoryThread.allowsReplies != toggle.isOn else { return }
         databaseStorage.write { transaction in

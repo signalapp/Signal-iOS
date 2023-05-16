@@ -31,7 +31,6 @@ public enum ViewControllerLifecycle: Equatable {
     }
 }
 
-@objc
 open class OWSViewController: UIViewController {
 
     /// Current state of the view lifecycle.

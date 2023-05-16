@@ -42,12 +42,9 @@ public struct ChatColor: Equatable, Codable {
 
 // MARK: -
 
-@objc
-public class ChatColors: NSObject, Dependencies {
-    @objc
-    public override init() {
-        super.init()
+public class ChatColors: Dependencies {
 
+    public init() {
         SwiftSingletons.register(self)
 
         NotificationCenter.default.addObserver(

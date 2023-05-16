@@ -5,8 +5,7 @@
 
 import SignalMessaging
 
-@objc
-public protocol StickerPackCollectionViewDelegate {
+public protocol StickerPackCollectionViewDelegate: AnyObject {
     func didTapSticker(stickerInfo: StickerInfo)
     func stickerPreviewHostView() -> UIView?
     func stickerPreviewHasOverlay() -> Bool
@@ -14,7 +13,6 @@ public protocol StickerPackCollectionViewDelegate {
 
 // MARK: -
 
-@objc
 public class StickerPackCollectionView: UICollectionView {
 
     private var stickerPackDataSource: StickerPackDataSource? {
@@ -36,17 +34,14 @@ public class StickerPackCollectionView: UICollectionView {
         return stickerInfos.count
     }
 
-    @objc
     public weak var stickerDelegate: StickerPackCollectionViewDelegate?
 
-    @objc
     override public var frame: CGRect {
         didSet {
             updateLayout()
         }
     }
 
-    @objc
     override public var bounds: CGRect {
         didSet {
             updateLayout()
@@ -56,7 +51,6 @@ public class StickerPackCollectionView: UICollectionView {
     private let cellReuseIdentifier = "cellReuseIdentifier"
     private let placeholderColor: UIColor
 
-    @objc
     public required init(placeholderColor: UIColor = .ows_gray45) {
         self.placeholderColor = placeholderColor
 
@@ -72,14 +66,12 @@ public class StickerPackCollectionView: UICollectionView {
 
     // MARK: Modes
 
-    @objc
     public func showInstalledPack(stickerPack: StickerPack) {
         AssertIsOnMainThread()
 
         self.stickerPackDataSource = InstalledStickerPackDataSource(stickerPackInfo: stickerPack.info)
     }
 
-    @objc
     public func showUninstalledPack(stickerPack: StickerPack) {
         AssertIsOnMainThread()
 
@@ -87,7 +79,6 @@ public class StickerPackCollectionView: UICollectionView {
                                                                     shouldDownloadAllStickers: true)
     }
 
-    @objc
     public func showRecents() {
         AssertIsOnMainThread()
 
@@ -141,7 +132,7 @@ public class StickerPackCollectionView: UICollectionView {
     }
 
     @objc
-    func handleLongPress(sender: UIGestureRecognizer) {
+    private func handleLongPress(sender: UIGestureRecognizer) {
         switch sender.state {
         case .began, .changed:
             break

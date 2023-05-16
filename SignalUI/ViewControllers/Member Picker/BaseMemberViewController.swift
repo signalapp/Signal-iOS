@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
 public protocol MemberViewDelegate: AnyObject {
     var memberViewRecipientSet: OrderedSet<PickedRecipient> { get }
@@ -36,7 +36,6 @@ public protocol MemberViewDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 open class BaseMemberViewController: RecipientPickerContainerViewController {
 
     // This delegate is the subclass.
@@ -68,7 +67,6 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
 
     // MARK: - View Lifecycle
 
-    @objc
     open override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -98,7 +96,6 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         updateMemberCount()
     }
 
-    @objc
     open override func viewWillLayoutSubviews() {
         updateMemberBarHeightConstraint()
 

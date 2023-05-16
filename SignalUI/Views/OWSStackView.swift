@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
 open class OWSStackView: UIStackView {
 
@@ -47,7 +47,6 @@ open class OWSStackView: UIStackView {
 
     public var layoutBlock: LayoutBlock?
 
-    @objc
     public required init(name: String, arrangedSubviews: [UIView] = []) {
         super.init(frame: .zero)
 
@@ -61,12 +60,10 @@ open class OWSStackView: UIStackView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public override func layoutSubviews() {
         AssertIsOnMainThread()
 

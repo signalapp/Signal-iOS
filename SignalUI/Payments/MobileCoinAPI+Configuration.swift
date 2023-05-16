@@ -561,7 +561,6 @@ extension MobileCoinAPI {
 
     // MARK: - Certificates
 
-    @objc
     private class Certificates: NSObject {
 
         enum CertificateBundle {
@@ -605,7 +604,6 @@ extension MobileCoinAPI {
 
     // MARK: - TrustRootCerts
 
-    @objc
     private class TrustRootCerts: NSObject {
 
         static func anchorCertificates_mobileCoin() -> [Data] {

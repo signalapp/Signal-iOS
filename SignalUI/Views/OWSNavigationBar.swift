@@ -22,10 +22,8 @@ public enum OWSNavigationBarStyle: Int {
     }
 }
 
-@objc
 public class OWSNavigationBar: UINavigationBar {
 
-    @objc
     public var fullWidth: CGFloat {
         return superview?.frame.width ?? .zero
     }
@@ -103,7 +101,6 @@ public class OWSNavigationBar: UINavigationBar {
     private var style: OWSNavigationBarStyle?
     private var appearance: OWSNavigationBarAppearance?
 
-    @objc
     internal func setStyle(_ style: OWSNavigationBarStyle, animated: Bool) {
         self.style = style
         updateAppearance(animated: animated)

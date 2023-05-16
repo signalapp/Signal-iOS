@@ -60,7 +60,6 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
 
 // MARK: -
 
-@objc
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSNavigationChildController {
 
     // MARK: - Properties

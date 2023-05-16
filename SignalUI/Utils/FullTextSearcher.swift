@@ -70,7 +70,6 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
 
 // MARK: -
 
-@objc
 public class ContactSearchResult: NSObject, Comparable {
     public let signalAccount: SignalAccount
     private let comparableName: String
@@ -110,7 +109,6 @@ public class ContactSearchResult: NSObject, Comparable {
 // MARK: -
 
 /// Can represent either a group thread with stories, or a private story thread.
-@objc
 public class StorySearchResult: NSObject, Comparable {
 
     public let thread: TSThread
@@ -173,7 +171,6 @@ public class HomeScreenSearchResultSet: NSObject {
 
 // MARK: -
 
-@objc
 public class GroupSearchResult: NSObject, Comparable {
     public let thread: ThreadViewModel
     public let matchedMembersSnippet: String?
@@ -226,21 +223,17 @@ public class GroupSearchResult: NSObject, Comparable {
 
 // MARK: -
 
-@objc
 public class ComposeScreenSearchResultSet: NSObject {
 
     @objc
     public let searchText: String
 
-    @objc
     public let groups: [GroupSearchResult]
 
-    @objc
     public var groupThreads: [TSGroupThread] {
         return groups.compactMap { $0.thread.threadRecord as? TSGroupThread }
     }
 
-    @objc
     public let signalContacts: [ContactSearchResult]
 
     @objc
@@ -254,15 +247,12 @@ public class ComposeScreenSearchResultSet: NSObject {
         self.signalContacts = signalContacts
     }
 
-    @objc
     public static let empty = ComposeScreenSearchResultSet(searchText: "", groups: [], signalContacts: [])
 
-    @objc
     public var isEmpty: Bool {
         return groups.isEmpty && signalContacts.isEmpty
     }
 
-    @objc
     public var logDescription: String {
         var sections = [String]()
         if !groups.isEmpty {
@@ -285,33 +275,25 @@ public class ComposeScreenSearchResultSet: NSObject {
 
 // MARK: -
 
-@objc
 public class ConversationPickerScreenSearchResultSet: NSObject {
 
-    @objc
     public let searchText: String
 
-    @objc
     public let groups: [GroupSearchResult]
 
-    @objc
     public var groupThreads: [TSGroupThread] {
         return groups.compactMap { $0.thread.threadRecord as? TSGroupThread }
     }
 
-    @objc
     public let signalContacts: [ContactSearchResult]
 
-    @objc
     public var signalAccounts: [SignalAccount] {
         return signalContacts.map { $0.signalAccount }
     }
 
     /// Includes both group threads with stories, and private story threads.
-    @objc
     public let storyResults: [StorySearchResult]
 
-    @objc
     public var storyThreads: [TSThread] {
         return storyResults.map(\.thread)
     }
@@ -328,15 +310,12 @@ public class ConversationPickerScreenSearchResultSet: NSObject {
         self.signalContacts = signalContacts
     }
 
-    @objc
     public static let empty = ComposeScreenSearchResultSet(searchText: "", groups: [], signalContacts: [])
 
-    @objc
     public var isEmpty: Bool {
         return groups.isEmpty && signalContacts.isEmpty
     }
 
-    @objc
     public var logDescription: String {
         var sections = [String]()
         if !groups.isEmpty {
@@ -359,7 +338,6 @@ public class ConversationPickerScreenSearchResultSet: NSObject {
 
 // MARK: -
 
-@objc
 public class MessageSearchResult: NSObject, Comparable {
 
     public let messageId: String
@@ -379,16 +357,12 @@ public class MessageSearchResult: NSObject, Comparable {
 
 // MARK: -
 
-@objc
 public class ConversationScreenSearchResultSet: NSObject {
 
-    @objc
     public let searchText: String
 
-    @objc
     public let messages: [MessageSearchResult]
 
-    @objc
     public lazy var messageSortIds: [UInt64] = {
         return messages.map { $0.sortId }
     }()
@@ -411,13 +385,11 @@ public class ConversationScreenSearchResultSet: NSObject {
     }
 }
 
-@objc
 public class FullTextSearcher: NSObject {
 
     @objc
     public static let kDefaultMaxResults: UInt = 500
 
-    @objc
     public static let shared: FullTextSearcher = FullTextSearcher()
 
     @objc

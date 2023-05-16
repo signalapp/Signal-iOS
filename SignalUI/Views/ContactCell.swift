@@ -68,7 +68,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
     }
 
     @objc
-    func didChangePreferredContentSize() {
+    private func didChangePreferredContentSize() {
         self.titleLabel.font = UIFont.dynamicTypeBody
         self.subtitleLabel.font = UIFont.dynamicTypeSubheadline
     }

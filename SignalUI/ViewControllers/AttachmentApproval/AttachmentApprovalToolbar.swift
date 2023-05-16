@@ -286,7 +286,6 @@ extension AttachmentApprovalToolbar {
     // The tooltip lies outside this view's bounds, so we
     // need to special-case the hit testing so that it can
     // intercept touches within its bounds.
-    @objc
     public override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         if let viewOnceTooltip = self.viewOnceTooltip {
             let tooltipFrame = convert(viewOnceTooltip.bounds, from: viewOnceTooltip)

@@ -6,9 +6,10 @@
 import SignalMessaging
 import UIKit
 
-@objc
 public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
+
     private var captchaView: CaptchaView?
+
     var completionHandler: ((String?) -> Void)?
 
     private init() {
@@ -47,7 +48,7 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         completionHandler?(nil)
         completionHandler = nil
     }
@@ -67,7 +68,7 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
 }
 
 extension SpamCaptchaViewController {
-    @objc
+
     public static func presentActionSheet(from fromVC: UIViewController) {
 
         let titleLabel = UILabel()
@@ -149,7 +150,6 @@ extension SpamCaptchaViewController {
         fromVC.present(sheet, animated: true, completion: nil)
     }
 
-    @objc
     static func presentCaptchaVC(from fromVC: UIViewController) {
         let vc = SpamCaptchaViewController()
         vc.completionHandler = { token in

@@ -192,7 +192,6 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         }
     }
 
-    @objc
     public func sendSMSTo(phoneNumbers: [String]) {
         let messageComposeViewController = MFMessageComposeViewController()
         messageComposeViewController.messageComposeDelegate = self

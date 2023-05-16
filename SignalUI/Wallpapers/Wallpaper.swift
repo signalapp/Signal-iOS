@@ -429,7 +429,6 @@ private struct WallpaperBlurToken: Equatable {
 
 // MARK: -
 
-@objc
 public class WallpaperBlurState: NSObject {
     public let image: UIImage
     public let referenceView: UIView
@@ -449,7 +448,6 @@ public class WallpaperBlurState: NSObject {
 
 // MARK: -
 
-@objc
 public protocol WallpaperBlurProvider: AnyObject {
     var wallpaperBlurState: WallpaperBlurState? { get }
 }

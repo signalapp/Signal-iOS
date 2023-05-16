@@ -6,7 +6,6 @@
 import Foundation
 import SignalMessaging
 
-@objc
 public extension ThreadUtil {
     // MARK: - Durable Message Enqueue
 
@@ -87,7 +86,7 @@ public extension ThreadUtil {
 // MARK: -
 
 extension OutgoingMessagePreparer {
-    @objc
+
     public convenience init(messageBody: MessageBody?,
                             mediaAttachments: [SignalAttachment] = [],
                             thread: TSThread,

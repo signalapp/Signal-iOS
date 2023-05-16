@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public class OWSTableContents: NSObject {
 
     public private(set) var title: String?

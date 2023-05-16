@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public class ViewOnceTooltip: TooltipView {
 
     private override init(fromView: UIView,
@@ -20,7 +19,6 @@ public class ViewOnceTooltip: TooltipView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public class func present(fromView: UIView,
                               widthReferenceView: UIView,
                               tailReferenceView: UIView,

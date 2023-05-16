@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
-@objc
 open class OWSTextField: UITextField {
     public override init(frame: CGRect) {
         super.init(frame: frame)

@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public class OWSTableSection: NSObject {
 
     public private(set) var items: [OWSTableItem]
@@ -34,7 +33,6 @@ public class OWSTableSection: NSObject {
     @objc
     public var separatorInsetLeading: NSNumber?
 
-    @objc
     public var separatorInsetTrailing: NSNumber?
 
     public var shouldDisableCellSelection = false

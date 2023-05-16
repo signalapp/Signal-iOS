@@ -6,7 +6,6 @@
 import Foundation
 import SignalMessaging
 
-@objc
 public final class NonContactTableViewCell: UITableViewCell, ReusableTableViewCell {
     @objc
     public static let reuseIdentifier = "NonContactTableViewCell"

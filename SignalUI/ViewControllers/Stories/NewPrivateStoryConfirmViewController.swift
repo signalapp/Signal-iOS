@@ -8,7 +8,6 @@ import SafariServices
 import SignalMessaging
 import SignalServiceKit
 
-@objc
 public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
 
     let recipientSet: OrderedSet<PickedRecipient>
@@ -26,7 +25,6 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -160,7 +158,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
     // MARK: - Actions
 
     @objc
-    func didTapCreate() {
+    private func didTapCreate() {
         AssertIsOnMainThread()
 
         guard let name = nameTextField.text?.filterForDisplay.nilIfEmpty else {
@@ -194,7 +192,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleReplies() {
+    private func didToggleReplies() {
         allowsReplies = !allowsReplies
     }
 

@@ -101,7 +101,6 @@ public class ThreadViewModel: NSObject {
         isBlocked = Self.blockingManager.isThreadBlocked(thread, transaction: transaction)
     }
 
-    @objc
     override public func isEqual(_ object: Any?) -> Bool {
         guard let otherThread = object as? ThreadViewModel else {
             return super.isEqual(object)

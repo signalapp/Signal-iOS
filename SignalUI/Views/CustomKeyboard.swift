@@ -5,12 +5,10 @@
 
 import Foundation
 
-@objc(OWSCustomKeyboard)
 open class CustomKeyboard: UIInputView {
-    @objc
+
     public let contentView = UIView()
 
-    @objc
     public init() {
         super.init(frame: .zero, inputViewStyle: .default)
 
@@ -37,7 +35,6 @@ open class CustomKeyboard: UIInputView {
     open func wasPresented() {}
     open func wasDismissed() {}
 
-    @objc
     public func registerWithView(_ view: UIView) {
         view.addSubview(responder)
     }
@@ -93,7 +90,6 @@ open class CustomKeyboard: UIInputView {
     }
     private var cachedSystemKeyboardHeight = SystemKeyboardHeight()
 
-    @objc
     public func updateSystemKeyboardHeight(_ height: CGFloat) {
         // Only respect this height if it's reasonable, we don't want
         // to have a tiny keyboard.
@@ -102,7 +98,6 @@ open class CustomKeyboard: UIInputView {
         resizeToSystemKeyboard()
     }
 
-    @objc
     open func resizeToSystemKeyboard() {
         guard let cachedHeight = cachedSystemKeyboardHeight.current else {
             // We don't have a cached height for this orientation,
@@ -133,7 +128,7 @@ open class CustomKeyboard: UIInputView {
 }
 
 private class CustomKeyboardResponder: UITextView {
-    @objc
+
     public weak var customKeyboard: CustomKeyboard?
 
     init(customKeyboard: CustomKeyboard) {

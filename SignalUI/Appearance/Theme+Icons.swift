@@ -165,8 +165,9 @@ public enum ThemeIcon: UInt {
 
 // MARK: -
 
-@objc
 public extension Theme {
+
+    @objc
     class func iconImage(_ icon: ThemeIcon) -> UIImage {
         iconImage(icon, isDarkThemeEnabled: isDarkThemeEnabled)
     }
