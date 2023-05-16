@@ -944,6 +944,7 @@
 		7677E40F29F79BF300AC6A75 /* SAEScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E40E29F79BF300AC6A75 /* SAEScreenLockViewController.swift */; };
 		7677E41129F7A60500AC6A75 /* ScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E41029F7A60500AC6A75 /* ScreenLockViewController.swift */; };
 		7677E41329F84C2100AC6A75 /* ScreenLockUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */; };
+		76847C942A13416A008E2EAB /* ChatListViewController+Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76847C932A13416A008E2EAB /* ChatListViewController+Camera.swift */; };
 		7685DFFF29EA1F6400542CBC /* UIFont+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */; };
 		76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */; };
 		76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */; };
@@ -3429,6 +3430,7 @@
 		7677E40E29F79BF300AC6A75 /* SAEScreenLockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAEScreenLockViewController.swift; sourceTree = "<group>"; };
 		7677E41029F7A60500AC6A75 /* ScreenLockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockViewController.swift; sourceTree = "<group>"; };
 		7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockUI.swift; sourceTree = "<group>"; };
+		76847C932A13416A008E2EAB /* ChatListViewController+Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Camera.swift"; sourceTree = "<group>"; };
 		7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+OWS.swift"; sourceTree = "<group>"; };
 		76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAttachmentPrepViewController.swift; sourceTree = "<group>"; };
 		76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
@@ -7014,6 +7016,7 @@
 				1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */,
 				346E09002662FBBE0042375E /* ChatListCell.swift */,
 				34E95C26269F6095004807EC /* ChatListViewController+Actions.swift */,
+				76847C932A13416A008E2EAB /* ChatListViewController+Camera.swift */,
 				34E95C28269F6109004807EC /* ChatListViewController+Helpers.swift */,
 				34E95C2C26A0673F004807EC /* ChatListViewController+Loading.swift */,
 				1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */,
@@ -11156,6 +11159,7 @@
 				34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */,
 				346E09012662FBBE0042375E /* ChatListCell.swift in Sources */,
 				34E95C27269F6096004807EC /* ChatListViewController+Actions.swift in Sources */,
+				76847C942A13416A008E2EAB /* ChatListViewController+Camera.swift in Sources */,
 				34E95C29269F6109004807EC /* ChatListViewController+Helpers.swift in Sources */,
 				34E95C2D26A06740004807EC /* ChatListViewController+Loading.swift in Sources */,
 				1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */,

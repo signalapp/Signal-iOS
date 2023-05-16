@@ -41,8 +41,7 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
 
     private var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
 
-    @objc
-    class func cameraFirstModal(storiesOnly: Bool = false, delegate: CameraFirstCaptureDelegate?) -> CameraFirstCaptureNavigationController {
+    class func cameraFirstModal(storiesOnly: Bool = false, delegate: CameraFirstCaptureDelegate) -> CameraFirstCaptureNavigationController {
         let navController = CameraFirstCaptureNavigationController()
         navController.setViewControllers([navController.captureViewController], animated: false)
 

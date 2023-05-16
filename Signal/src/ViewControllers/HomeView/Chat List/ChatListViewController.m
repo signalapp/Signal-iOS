@@ -36,7 +36,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @interface ChatListViewController () <UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
-    CameraFirstCaptureDelegate,
     OWSGetStartedBannerViewControllerDelegate>
 
 @property (nonatomic) UIView *emptyInboxView;
@@ -584,44 +583,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateViewState];
 }
 
-- (void)showCameraView
-{
-    // Dismiss any message actions if they're presented
-        [self.conversationSplitViewController.selectedConversationViewController
-            dismissMessageContextMenuWithAnimated:YES];
-
-    [self ows_askForCameraPermissions:^(BOOL cameraGranted) {
-        if (!cameraGranted) {
-            OWSLogWarn(@"camera permission denied.");
-            return;
-        }
-        [self ows_askForMicrophonePermissions:^(BOOL micGranted) {
-            if (!micGranted) {
-                OWSLogWarn(@"proceeding, though mic permission denied.");
-                // We can still continue without mic permissions, but any captured video will
-                // be silent.
-            }
-
-            CameraFirstCaptureNavigationController *cameraModal =
-                [CameraFirstCaptureNavigationController cameraFirstModalWithStoriesOnly:NO delegate:self];
-            cameraModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
-
-            // Defer hiding status bar until modal is fully onscreen
-            // to prevent unwanted shifting upwards of the entire presenter VC's view.
-            BOOL modalHidesStatusBar = cameraModal.topViewController.prefersStatusBarHidden;
-            if (!modalHidesStatusBar) {
-                cameraModal.modalPresentationCapturesStatusBarAppearance = YES;
-            }
-            [self presentViewController:cameraModal animated:YES completion:^{
-                if (modalHidesStatusBar) {
-                    cameraModal.modalPresentationCapturesStatusBarAppearance = YES;
-                    [cameraModal setNeedsStatusBarAppearanceUpdate];
-                }
-            }];
-        }];
-    }];
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -865,18 +826,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     } else {
         OWSLogDebug(@"not requesting review");
     }
-}
-
-#pragma mark - CameraFirstCaptureDelegate
-
-- (void)cameraFirstCaptureSendFlowDidComplete:(CameraFirstCaptureSendFlow *)cameraFirstCaptureSendFlow
-{
-    [self dismissViewControllerAnimated:true completion:nil];
-}
-
-- (void)cameraFirstCaptureSendFlowDidCancel:(CameraFirstCaptureSendFlow *)cameraFirstCaptureSendFlow
-{
-    [self dismissViewControllerAnimated:true completion:nil];
 }
 
 #pragma mark - <OWSGetStartedBannerViewControllerDelegate>

@@ -3,17 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalServiceKit
+import SignalUI
 
-@objc
 protocol CameraFirstCaptureDelegate: AnyObject {
     func cameraFirstCaptureSendFlowDidComplete(_ cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow)
     func cameraFirstCaptureSendFlowDidCancel(_ cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow)
 }
 
-@objc
-class CameraFirstCaptureSendFlow: NSObject {
+class CameraFirstCaptureSendFlow: Dependencies {
 
     private weak var delegate: CameraFirstCaptureDelegate?
 
@@ -28,10 +27,10 @@ class CameraFirstCaptureSendFlow: NSObject {
 
     private let storiesOnly: Bool
     private var showsStoriesInPicker = true
-    init(storiesOnly: Bool, delegate: CameraFirstCaptureDelegate?) {
+
+    init(storiesOnly: Bool, delegate: CameraFirstCaptureDelegate) {
         self.storiesOnly = storiesOnly
         self.delegate = delegate
-        super.init()
     }
 
     private func updateMentionCandidates() {
