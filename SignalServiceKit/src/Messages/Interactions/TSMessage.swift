@@ -226,7 +226,29 @@ public extension TSMessage {
     }
 
     private func markMessageAsRemotelyDeleted(transaction: SDSAnyWriteTransaction) {
+
+        // Delete the current interaction
         updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
+
+        // Delete any past edit revisions.
+        // The below processing is unbounded, but the number of edits
+        // per message are limited by both the sender and receiver.
+        switch editState {
+        case .latestRevision:
+            var cursor = InteractionFinder.findEditHistory(
+                for: self,
+                transaction: transaction
+            )
+            do {
+                while let message = try cursor.next() {
+                    message.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
+                }
+            } catch {
+                Logger.warn("Error deleting edits for \(self.uniqueId)")
+            }
+        case .none, .pastRevision:
+            break
+        }
 
         Self.notificationsManager?.cancelNotifications(messageIds: [self.uniqueId])
     }

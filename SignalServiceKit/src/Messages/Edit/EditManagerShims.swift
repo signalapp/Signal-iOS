@@ -69,6 +69,11 @@ public protocol _EditManager_DataStore {
         attachment: TSAttachmentPointer,
         tx: DBWriteTransaction
     )
+
+    func numberOfEdits(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) -> Int
 }
 
 internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
@@ -147,6 +152,10 @@ internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
         tx: DBWriteTransaction
     ) {
         attachment.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    func numberOfEdits(for message: TSMessage, tx: DBReadTransaction) -> Int {
+        return EditMessageFinder.numberOfEdits(for: message, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

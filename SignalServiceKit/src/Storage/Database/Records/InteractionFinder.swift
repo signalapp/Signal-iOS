@@ -244,26 +244,32 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    @objc
-    public class func findMessage(
-        fromEdit edit: TSMessage,
+    public class func findEditHistory(
+        for message: TSMessage,
         transaction: SDSAnyReadTransaction
-    ) -> TSMessage? {
+    ) -> SDSMappedCursor<TSInteractionCursor, TSMessage> {
 
         let sql = """
                 SELECT * FROM \(InteractionRecord.databaseTableName) AS interaction
-                INNER JOIN \(EditRecord.databaseTableName) AS editRecord
-                ON interaction.\(interactionColumn: .id) = editRecord.latestRevisionId
-                WHERE editRecord.pastRevisionId = ?
-                LIMIT 1
+                LEFT JOIN \(EditRecord.databaseTableName) AS editRecord
+                ON interaction.\(interactionColumn: .id) = editRecord.pastRevisionId
+                WHERE editRecord.latestRevisionId = ?
             """
+        let arguments: StatementArguments = [message.grdbId]
 
-        let arguments: StatementArguments = [edit.grdbId]
-        return TSMessage.grdbFetchOne(
+        let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: arguments,
             transaction: transaction.unwrapGrdbRead
-        ) as? TSMessage
+        )
+
+        return cursor.compactMap { interaction -> TSMessage? in
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
+                return nil
+            }
+            return message
+        }
     }
 
     @objc

@@ -8,7 +8,13 @@ import Foundation
 public class EditManager {
 
     internal enum Constants {
+        // Edits will only be received for up to 24 hours from the
+        // original message
         static let editWindow: UInt64 = UInt64(kDayInterval * 1000)
+
+        // Receiving more than this number of edits on the same message
+        // will result in subsequent edits being dropped
+        static let maxReceiveEdits: UInt = UInt(100)
     }
 
     public struct Context {
@@ -192,11 +198,17 @@ public class EditManager {
     ) -> Bool {
 
         // check edit window (using incoming server timestamp)
-        //  drop silent and warn if outside of valid range
+        // drop silent and warn if outside of valid range
         let editWindow = Constants.editWindow
         let endEditTime = targetMessage.receivedAtTimestamp
         if endEditTime + editWindow < serverTimestamp {
             Logger.warn("Edit message outside of allowed timeframe")
+            return false
+        }
+
+        let numberOfEdits = context.dataStore.numberOfEdits(for: targetMessage, tx: tx)
+        if numberOfEdits >= Constants.maxReceiveEdits {
+            Logger.warn("Message edited too many times")
             return false
         }
 

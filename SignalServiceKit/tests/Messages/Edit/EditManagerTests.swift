@@ -321,6 +321,8 @@ class EditManagerTests: SSKBaseTestSwift {
         ) {
             self.attachment = attachment
         }
+
+        func numberOfEdits(for message: TSMessage, tx: DBReadTransaction) -> Int { 1 }
     }
 
     private class LinkPreviewMock: EditManager.Shims.LinkPreview {

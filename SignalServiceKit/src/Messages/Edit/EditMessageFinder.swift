@@ -42,4 +42,46 @@ public class EditMessageFinder {
 
         return val
     }
+
+    public class func findMessage(
+        fromEdit edit: TSMessage,
+        transaction: SDSAnyReadTransaction
+    ) -> TSMessage? {
+
+        let sql = """
+                SELECT * FROM \(InteractionRecord.databaseTableName) AS interaction
+                INNER JOIN \(EditRecord.databaseTableName) AS editRecord
+                ON interaction.\(interactionColumn: .id) = editRecord.latestRevisionId
+                WHERE editRecord.pastRevisionId = ?
+                LIMIT 1
+            """
+
+        let arguments: StatementArguments = [edit.grdbId]
+        return TSMessage.grdbFetchOne(
+            sql: sql,
+            arguments: arguments,
+            transaction: transaction.unwrapGrdbRead
+        ) as? TSMessage
+    }
+
+    public static func numberOfEdits(
+        for message: TSMessage,
+        transaction: SDSAnyReadTransaction
+    ) -> Int {
+
+        let sql = """
+                SELECT COUNT(*)
+                FROM \(EditRecord.databaseTableName)
+                WHERE editRecord.latestRevisionId = ?
+            """
+
+        let arguments: StatementArguments = [message.grdbId]
+
+        return try! Int.fetchOne(
+            transaction.unwrapGrdbRead.database,
+            sql: sql,
+            arguments: arguments
+        ) ?? 0
+    }
+
 }

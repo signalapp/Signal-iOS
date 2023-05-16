@@ -118,7 +118,7 @@ public class FeatureFlags: BaseFlags {
     }
 
     @objc
-    public static let editMessageReceive: Bool = build.includes(.dev)
+    public static let editMessageReceive: Bool = build.includes(.internal)
 }
 
 // MARK: -

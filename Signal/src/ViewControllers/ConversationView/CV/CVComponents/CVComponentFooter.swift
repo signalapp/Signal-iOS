@@ -269,7 +269,10 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 )
             }
 
-            if FeatureFlags.editMessageReceive {
+            if
+                FeatureFlags.editMessageReceive,
+                !message.wasRemotelyDeleted
+            {
                 switch message.editState {
                 case .latestRevision, .pastRevision:
                     wasEdited = true
