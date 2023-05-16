@@ -3,15 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
-@objc
-public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
+public class BroadcastMediaMessageJobQueue: JobQueue {
     public typealias DurableOperationType = BroadcastMediaMessageOperation
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { !CurrentAppContext().isNSE }
     public static let maxRetries: UInt = 4
-    @objc
     public static let jobRecordLabel: String = BroadcastMediaMessageJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -20,10 +18,7 @@ public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
     public var runningOperations = AtomicArray<BroadcastMediaMessageOperation>()
     public var isSetup = AtomicBool(false)
 
-    @objc
-    public override init() {
-        super.init()
-
+    public init() {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.setup()
         }

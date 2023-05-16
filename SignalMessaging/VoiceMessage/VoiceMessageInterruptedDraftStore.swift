@@ -5,13 +5,10 @@
 
 import Foundation
 
-@objc
-public class VoiceMessageInterruptedDraftStore: NSObject {
+public class VoiceMessageInterruptedDraftStore {
 
-    @available(*, unavailable, message: "Do not instantiate this class.")
-    private override init() {}
+    private init() { }
 
-    @objc
     public static let draftVoiceMessageDirectory = URL(
         fileURLWithPath: "draft-voice-messages",
         isDirectory: true,
@@ -55,7 +52,6 @@ public class VoiceMessageInterruptedDraftStore: NSObject {
         keyValueStore.getString(threadUniqueId, transaction: transaction) != nil
     }
 
-    @objc
     public static func allDraftFilePaths(transaction: SDSAnyReadTransaction) -> Set<String> {
         return Set(keyValueStore.allKeys(transaction: transaction).compactMap { (threadUniqueId) -> [String]? in
             guard let directoryPath = self.directoryPath(threadUniqueId: threadUniqueId, transaction: transaction) else {

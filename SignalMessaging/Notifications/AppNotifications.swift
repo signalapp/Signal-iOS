@@ -183,11 +183,9 @@ extension UserNotificationPresenter {
 
 // MARK: -
 
-@objc(OWSNotificationPresenter)
 public class NotificationPresenter: NSObject, NotificationsProtocol {
     private let presenter = UserNotificationPresenter()
 
-    @objc
     public override init() {
         super.init()
 
@@ -1077,7 +1075,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    @objc
     public func clearAllNotifications() {
         presenter.clearAllNotifications()
     }

@@ -399,14 +399,6 @@ public extension NSObject {
         SSKEnvironment.shared.paymentsEventsRef
     }
 
-    final var mobileCoinHelper: MobileCoinHelper {
-        SSKEnvironment.shared.mobileCoinHelperRef
-    }
-
-    static var mobileCoinHelper: MobileCoinHelper {
-        SSKEnvironment.shared.mobileCoinHelperRef
-    }
-
     final var spamChallengeResolver: SpamChallengeResolver {
         SSKEnvironment.shared.spamChallengeResolverRef
     }

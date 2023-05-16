@@ -3,16 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalCoreKit
+import SignalServiceKit
 
-@objc
-public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
+public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelper {
 
-    @objc
-    public required override init() {
-        super.init()
-
+    public required init() {
         self.observeNotifications()
     }
 
@@ -24,7 +20,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
     }
 
     @objc
-    func registrationStateDidChange() {
+    private func registrationStateDidChange() {
         // Caches should be re-warmed after a registration state change.
         warmCaches()
     }

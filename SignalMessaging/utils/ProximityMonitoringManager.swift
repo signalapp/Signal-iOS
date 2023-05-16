@@ -14,13 +14,13 @@ public protocol OWSProximityMonitoringManager: AnyObject {
 
 @objc
 public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoringManager {
+
     private struct State {
         var didAddObserver = false
         var lifetimes = [Weak<AnyObject>]()
     }
     private var state = AtomicValue(State(), lock: AtomicLock())
 
-    @objc
     public func add(lifetime: AnyObject) {
         guard !CurrentAppContext().isNSE else {
             return
@@ -33,7 +33,6 @@ public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoring
         }
     }
 
-    @objc
     public func remove(lifetime: AnyObject) {
         guard !CurrentAppContext().isNSE else {
             return

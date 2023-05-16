@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSQuotedReplyModel;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
-@class SignalAttachment;
 @class SignalServiceAddress;
 @class StickerInfo;
 @class StickerMetadata;

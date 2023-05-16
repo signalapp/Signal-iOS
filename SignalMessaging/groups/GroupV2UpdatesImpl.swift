@@ -7,7 +7,6 @@ import Foundation
 import SignalServiceKit
 import LibSignalClient
 
-@objc
 public class GroupV2UpdatesImpl: NSObject {
 
     // This tracks the last time that groups were updated to the current
@@ -31,7 +30,6 @@ public class GroupV2UpdatesImpl: NSObject {
         return operationQueue
     }()
 
-    @objc
     public required override init() {
         super.init()
 

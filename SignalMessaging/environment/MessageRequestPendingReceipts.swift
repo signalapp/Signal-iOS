@@ -3,14 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
-@objc
-public class MessageRequestPendingReceipts: NSObject, PendingReceiptRecorder {
+public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder {
 
-    @objc
-    public override init() {
-        super.init()
+    public init() {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(self.profileWhitelistDidChange(notification:)),

@@ -16,10 +16,9 @@ import SignalServiceKit
 // blocking if the block object is deallocated even if removeBlock() is not
 // called.  On the other hand, we will also get correct behavior to addBlock()
 // being called twice with the same block object.
-@objc
-public class DeviceSleepManager: NSObject {
 
-    @objc
+public class DeviceSleepManager: Dependencies {
+
     public static let shared = DeviceSleepManager()
 
     let serialQueue = DispatchQueue(label: "org.signal.device-sleep")
@@ -37,9 +36,7 @@ public class DeviceSleepManager: NSObject {
     }
     private var blocks: [SleepBlock] = []
 
-    private override init() {
-        super.init()
-
+    private init() {
         SwiftSingletons.register(self)
 
         NotificationCenter.default.addObserver(

@@ -3,21 +3,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 
 public extension Notification.Name {
     static let IncomingContactSyncDidComplete = Notification.Name("IncomingContactSyncDidComplete")
 }
 
-@objc(OWSIncomingContactSyncJobQueue)
 public class IncomingContactSyncJobQueue: NSObject, JobQueue {
 
     public typealias DurableOperationType = IncomingContactSyncOperation
     public let requiresInternet: Bool = true
     public let isEnabled: Bool = true
     public static let maxRetries: UInt = 4
-    @objc
     public static let jobRecordLabel: String = IncomingContactSyncJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -26,7 +23,6 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     public var runningOperations = AtomicArray<IncomingContactSyncOperation>()
     public var isSetup = AtomicBool(false)
 
-    @objc
     public override init() {
         super.init()
 

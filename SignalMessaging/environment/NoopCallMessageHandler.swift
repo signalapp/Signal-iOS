@@ -5,7 +5,6 @@
 
 import SignalServiceKit
 
-@objc
 public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     public func action(

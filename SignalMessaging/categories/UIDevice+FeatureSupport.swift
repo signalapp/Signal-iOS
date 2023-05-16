@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
-@objc
 public extension UIDevice {
     var hasIPhoneXNotch: Bool {
         // Only phones have notch
@@ -114,6 +113,7 @@ public extension UIDevice {
         return CurrentAppContext().frame.height < 812
     }
 
+    @objc
     var isIPad: Bool {
         return userInterfaceIdiom == .pad
     }
@@ -124,10 +124,12 @@ public extension UIDevice {
         return windowSize.largerAxis == screenSize.largerAxis && windowSize.smallerAxis == screenSize.smallerAxis
     }
 
+    @objc
     var defaultSupportedOrientations: UIInterfaceOrientationMask {
         return isIPad ? .all : .allButUpsideDown
     }
 
+    @objc
     func ows_setOrientation(_ orientation: UIDeviceOrientation) {
         // XXX - This is not officially supported, but there's no other way to programmatically rotate
         // the interface.

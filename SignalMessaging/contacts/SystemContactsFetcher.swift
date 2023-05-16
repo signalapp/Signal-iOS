@@ -186,7 +186,6 @@ public class SystemContactsFetcher: NSObject {
         return contactStoreAdapter.rawAuthorizationStatus
     }
 
-    @objc
     public private(set) var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
 
@@ -312,7 +311,6 @@ public class SystemContactsFetcher: NSObject {
         updateContacts(isUserRequested: true, completion: completion)
     }
 
-    @objc
     public func refreshAfterContactsChange() {
         AssertIsOnMainThread()
 

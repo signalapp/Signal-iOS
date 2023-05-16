@@ -7,8 +7,9 @@ import Foundation
 import SignalServiceKit
 import MobileCoinMinimal
 
-@objc
-public class MobileCoinHelperMinimal: NSObject, MobileCoinHelper {
+public class MobileCoinHelperMinimal: MobileCoinHelper {
+
+    public init() { }
 
     public func info(forReceiptData receiptData: Data) throws -> MobileCoinReceiptInfo {
         let txOutPublicKey = try MobileCoinMinimal.txOutPublicKey(forReceiptData: receiptData)

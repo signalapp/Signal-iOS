@@ -42,11 +42,6 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
 
 @end
 
-@interface OWSSyncManager (SwiftPrivate)
-- (void)sendSyncRequestMessage:(SSKProtoSyncMessageRequestType)requestType
-                   transaction:(SDSAnyWriteTransaction *)transaction;
-@end
-
 #pragma mark -
 
 @implementation OWSSyncManager

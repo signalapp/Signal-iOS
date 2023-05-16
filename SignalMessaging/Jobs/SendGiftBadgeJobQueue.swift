@@ -3,17 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
-import SignalServiceKit
 import LibSignalClient
+import SignalServiceKit
 
 // MARK: - Job queue
 
-public class SendGiftBadgeJobQueue: NSObject, JobQueue {
+public class SendGiftBadgeJobQueue: JobQueue {
     public typealias DurableOperationType = SendGiftBadgeOperation
 
-    @objc
     public static let jobRecordLabel: String = "SendGiftBadge"
     public var jobRecordLabel: String { Self.jobRecordLabel }
 
@@ -31,16 +29,12 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
 
     public static let JobEventNotification = NSNotification.Name("SendGiftBadgeJobQueueJobEventNotification")
 
-    @objc
-    public override init() {
-        super.init()
-
+    public init() {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.setup()
         }
     }
 
-    @objc
     public func setup() {
         defaultSetup()
     }

@@ -37,7 +37,6 @@ extension DateUtil {
     // If firstDate is from the year before secondDate, returns 1.
     //
     // Note: Assumes both dates use the "current" calendar.
-    @objc
     public static func yearsFrom(firstDate: Date, toSecondDate secondDate: Date) -> Int {
         let calendar = Calendar.current
         let units: Set<Calendar.Component> = [.era, .year]
@@ -86,7 +85,6 @@ extension DateUtil {
         }
     }
 
-    @objc
     public static func formatDateHeaderForCVC(_ date: Date) -> String {
         let date = clampBeforeNow(date)
         let calendar = Calendar.current
@@ -281,13 +279,11 @@ extension DateUtil {
         return formatter
     }()
 
-    @objc(isSameDayWithTimestamp:timestamp:)
     public static func isSameDay(timestamp timestamp1: UInt64, timestamp timestamp2: UInt64) -> Bool {
         isSameDay(date: NSDate.ows_date(withMillisecondsSince1970: timestamp1),
                   date: NSDate.ows_date(withMillisecondsSince1970: timestamp2))
     }
 
-    @objc(isSameDayWithDate:date:)
     public static func isSameDay(date date1: Date, date date2: Date) -> Bool {
         0 == daysFrom(firstDate: date1, toSecondDate: date2)
     }

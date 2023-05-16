@@ -3,13 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 
-@objc(OWSSessionResetJobQueue)
-public class SessionResetJobQueue: NSObject, JobQueue {
+public class SessionResetJobQueue: JobQueue {
 
-    @objc(addContactThread:transaction:)
     public func add(contactThread: TSContactThread, transaction: SDSAnyWriteTransaction) {
         let jobRecord = SessionResetJobRecord(contactThread: contactThread, label: self.jobRecordLabel)
         self.add(jobRecord: jobRecord, transaction: transaction)
@@ -18,7 +15,6 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     // MARK: JobQueue
 
     public typealias DurableOperationType = SessionResetOperation
-    @objc
     public static let jobRecordLabel: String = "SessionReset"
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -28,16 +24,12 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     public var isEnabled: Bool { CurrentAppContext().isMainApp }
     public var runningOperations = AtomicArray<SessionResetOperation>()
 
-    @objc
-    public override init() {
-        super.init()
-
+    public init() {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.setup()
         }
     }
 
-    @objc
     public func setup() {
         defaultSetup()
     }

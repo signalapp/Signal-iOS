@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import LibSignalClient
 import SignalServiceKit
 
-@objc(OWSSubscriptionReceiptCredentialJobQueue)
-public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
+public class SubscriptionReceiptCredentialJobQueue: JobQueue {
 
     // Add optional paymentIntentID / isBoost
 
@@ -65,7 +63,6 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
     }
 
     public typealias DurableOperationType = SubscriptionReceiptCredentailRedemptionOperation
-    @objc
     public static let jobRecordLabel: String = "SubscriptionReceiptCredentailRedemption"
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -77,16 +74,12 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
     public var isEnabled: Bool { CurrentAppContext().isMainApp }
     public var runningOperations = AtomicArray<SubscriptionReceiptCredentailRedemptionOperation>()
 
-    @objc
-    public override init() {
-        super.init()
-
+    public init() {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.setup()
         }
     }
 
-    @objc
     public func setup() {
         defaultSetup()
     }

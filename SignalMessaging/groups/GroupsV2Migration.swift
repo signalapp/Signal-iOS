@@ -3,13 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import LibSignalClient
 
-@objc
-public class GroupsV2Migration: NSObject {
+public class GroupsV2Migration: Dependencies {
 
-    private override init() {}
+    private init() { }
 
     // MARK: - Mapping
 
@@ -87,7 +85,6 @@ public extension GroupsV2Migration {
         }
     }
 
-    @objc
     static func migrationInfoForManualMigration(groupThread: TSGroupThread) -> GroupsV2MigrationInfo {
         databaseStorage.read { transaction in
             migrationInfoForManualMigration(groupThread: groupThread,
@@ -113,7 +110,6 @@ public extension GroupsV2Migration {
         return .autoMigrationPolite
     }
 
-    @objc(autoMigrateThreadIfNecessary:)
     static func autoMigrateThreadIfNecessary(thread: TSThread) {
         AssertIsOnMainThread()
 
@@ -701,7 +697,6 @@ public enum GroupsV2MigrationState {
 
 // MARK: -
 
-@objc
 public class GroupsV2MigrationInfo: NSObject {
     // These properties only have valid values if canGroupBeMigrated is true.
     public let isGroupInProfileWhitelist: Bool
@@ -721,7 +716,6 @@ public class GroupsV2MigrationInfo: NSObject {
         self.state = state
     }
 
-    @objc
     public var canGroupBeMigrated: Bool {
         state == .canBeMigrated
     }

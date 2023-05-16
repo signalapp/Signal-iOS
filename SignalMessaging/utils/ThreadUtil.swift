@@ -7,7 +7,6 @@ import Foundation
 
 // MARK: - Enqueue messages
 
-@objc
 public extension ThreadUtil {
 
     typealias PersistenceCompletion = () -> Void
@@ -16,6 +15,7 @@ public extension ThreadUtil {
     // same order in which they are enqueued.
     static var enqueueSendQueue: DispatchQueue { .sharedUserInitiated }
 
+    @objc
     static func enqueueSendAsyncWrite(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
         enqueueSendQueue.async {
             Self.databaseStorage.write { transaction in
@@ -70,7 +70,6 @@ public extension ThreadUtil {
         return message
     }
 
-    @nonobjc
     class func enqueueMessagePromise(
         message: TSOutgoingMessage,
         limitToCurrentProcessLifetime: Bool = false,

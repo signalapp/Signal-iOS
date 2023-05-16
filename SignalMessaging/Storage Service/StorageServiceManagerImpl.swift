@@ -7,7 +7,6 @@ import Foundation
 import SignalServiceKit
 import SwiftProtobuf
 
-@objc(OWSStorageServiceManagerImpl)
 public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     // TODO: We could convert this into a SSKEnvironment accessor so that we
@@ -438,7 +437,6 @@ private struct PendingMutations {
 
 // MARK: -
 
-@objc(OWSStorageServiceOperation)
 class StorageServiceOperation: OWSOperation {
 
     public static var keyValueStore: SDSKeyValueStore {

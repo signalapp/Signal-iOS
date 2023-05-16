@@ -10,14 +10,12 @@ public extension Notification.Name {
     static let IncomingGroupSyncDidComplete = Notification.Name("IncomingGroupSyncDidComplete")
 }
 
-@objc(OWSIncomingGroupSyncJobQueue)
 public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
 
     public typealias DurableOperationType = IncomingGroupSyncOperation
     public let requiresInternet: Bool = true
     public let isEnabled: Bool = true
     public static let maxRetries: UInt = 4
-    @objc
     public static let jobRecordLabel: String = IncomingGroupSyncJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -26,7 +24,6 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
     public var runningOperations = AtomicArray<IncomingGroupSyncOperation>()
     public var isSetup = AtomicBool(false)
 
-    @objc
     public override init() {
         super.init()
 

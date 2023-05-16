@@ -1061,7 +1061,6 @@ extension SubscriptionManagerImpl {
     }
 }
 
-@objc
 public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryableProvider {
     @objc
     public static var asNSError: NSError {
@@ -1228,7 +1227,6 @@ extension SubscriptionManagerImpl {
     }
 }
 
-@objc
 extension SubscriptionManagerImpl: SubscriptionManager {
     public func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
         Logger.info("Reconciling badge state.")

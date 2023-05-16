@@ -7,7 +7,6 @@ import Foundation
 import CocoaLumberjack
 import SignalServiceKit
 
-@objc
 class OWSScrubbingLogFormatter: DDLogFileFormatterDefault {
     private struct Replacement {
         let regex: NSRegularExpression

@@ -60,10 +60,12 @@ public extension NSObject {
         AppEnvironment.shared.speechManagerRef
     }
 
+    @nonobjc
     final var deviceSleepManager: DeviceSleepManager {
         .shared
     }
 
+    @nonobjc
     static var deviceSleepManager: DeviceSleepManager {
         .shared
     }

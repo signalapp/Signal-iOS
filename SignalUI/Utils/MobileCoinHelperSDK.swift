@@ -6,7 +6,9 @@
 import SignalServiceKit
 import MobileCoin
 
-public class MobileCoinHelperSDK: NSObject, MobileCoinHelper {
+public class MobileCoinHelperSDK: MobileCoinHelper {
+
+    public init() { }
 
     public func info(forReceiptData receiptData: Data) throws -> MobileCoinReceiptInfo {
         guard let receipt = MobileCoin.Receipt(serializedData: receiptData) else {

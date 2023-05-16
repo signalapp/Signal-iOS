@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public protocol MobileCoinHelper: AnyObject {
     func info(forReceiptData receiptData: Data) throws -> MobileCoinReceiptInfo
 
@@ -14,7 +13,6 @@ public protocol MobileCoinHelper: AnyObject {
 
 // MARK: -
 
-@objc
 public class MobileCoinReceiptInfo: NSObject {
     public let txOutPublicKey: Data
 
@@ -25,7 +23,6 @@ public class MobileCoinReceiptInfo: NSObject {
 
 // MARK: -
 
-@objc
 public class MobileCoinHelperMock: NSObject, MobileCoinHelper {
     public func info(forReceiptData receiptData: Data) throws -> MobileCoinReceiptInfo {
         throw OWSAssertionError("Not implemented.")

@@ -7,8 +7,8 @@ import Foundation
 
 // This class can be used to coordinate the refresh of a
 // value obtained from the network.
-@objc
-public class RefreshEvent: NSObject {
+
+public class RefreshEvent: Dependencies {
 
     public typealias Block = () -> Void
 
@@ -28,8 +28,6 @@ public class RefreshEvent: NSObject {
                          block: @escaping Block) {
         self.refreshInterval = refreshInterval
         self.block = block
-
-        super.init()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
             self?.ensureRefreshTimer()

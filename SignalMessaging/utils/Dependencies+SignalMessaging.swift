@@ -186,7 +186,6 @@ public extension OWSSounds {
 
 // MARK: -
 
-@objc
 public extension OWSSyncManager {
     static var shared: SyncManagerProtocol {
         SSKEnvironment.shared.syncManagerRef

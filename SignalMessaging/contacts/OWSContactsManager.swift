@@ -8,8 +8,7 @@ import SignalServiceKit
 
 // MARK: - OWSContactsMangerSwiftValues
 
-@objc
-class OWSContactsManagerSwiftValues: NSObject {
+class OWSContactsManagerSwiftValues {
 
     fileprivate var systemContactsCache: SystemContactsCache?
 
@@ -23,8 +22,6 @@ class OWSContactsManagerSwiftValues: NSObject {
 
     init(usernameLookupManager: UsernameLookupManager) {
         self.usernameLookupManager = usernameLookupManager
-
-        super.init()
     }
 }
 
@@ -35,7 +32,6 @@ extension OWSContactsManagerSwiftValues {
     /// exposing the Swift-only types required by the constructor. Note that
     /// this method will fail if ``DependenciesBridge`` has not yet been
     /// created.
-    @objc
     static func makeWithValuesFromDependenciesBridge() -> OWSContactsManagerSwiftValues {
         .init(usernameLookupManager: DependenciesBridge.shared.usernameLookupManager)
     }
@@ -272,7 +268,6 @@ fileprivate extension OWSContactsManager {
 
 // MARK: -
 
-@objc
 public extension OWSContactsManager {
 
     // MARK: - Low Trust Thread Warnings
@@ -371,7 +366,6 @@ public extension OWSContactsManager {
         }
     }
 
-    @nonobjc
     func blurAvatar(_ image: UIImage) -> UIImage? {
         do {
             return try image.withGaussianBlur(radius: 16, resizeToMaxPixelDimension: 100)
@@ -383,6 +377,7 @@ public extension OWSContactsManager {
 
     // MARK: - Sorting
 
+    @objc
     func sortSignalAccountsWithSneakyTransaction(_ signalAccounts: [SignalAccount]) -> [SignalAccount] {
         databaseStorage.read { transaction in
             self.sortSignalAccounts(signalAccounts, transaction: transaction)
@@ -953,10 +948,8 @@ extension OWSContactsManager {
 
 // MARK: -
 
-@objc
 public extension OWSContactsManager {
 
-    @nonobjc
     private static let unknownAddressFetchDateMap = AtomicDictionary<UUID, Date>()
 
     @objc(fetchProfileForUnknownAddress:)
@@ -1118,7 +1111,6 @@ extension OWSContactsManager {
             .filter { !$0.hasPhoneNumber(localNumber) }
     }
 
-    @objc
     public func allSortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
         allUnsortedContacts(transaction: transaction)
             .sorted { comparableName(for: $0).caseInsensitiveCompare(comparableName(for: $1)) == .orderedAscending }
@@ -1167,7 +1159,6 @@ extension OWSContactsManager {
         }
     }
 
-    @objc
     public func displayNamesByAddress(
         for addresses: [SignalServiceAddress],
         transaction: SDSAnyReadTransaction

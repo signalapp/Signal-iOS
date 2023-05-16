@@ -23,7 +23,6 @@ public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
 
 // MARK: -
 
-@objc
 public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedProfiles {
 
     private enum CredentialStore {

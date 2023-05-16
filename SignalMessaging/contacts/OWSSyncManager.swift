@@ -63,7 +63,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }.then(on: DependenciesBridge.shared.schedulers.sync) { $0 }
     }
 
-    @objc
     public func sendKeysSyncMessage() {
         Logger.info("")
 
@@ -106,7 +105,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
     }
 
-    @objc
     public func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction) {
         sendSyncRequestMessage(.keys, transaction: transaction)
     }
@@ -145,7 +143,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
     }
 
-    @objc
     public func sendMessageRequestResponseSyncMessage(thread: TSThread, responseType: OWSSyncMessageRequestResponseType) {
         Logger.info("")
 
@@ -158,7 +155,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
     }
 
-    @objc
     public func sendMessageRequestResponseSyncMessage(
         thread: TSThread,
         responseType: OWSSyncMessageRequestResponseType,
