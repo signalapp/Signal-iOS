@@ -388,6 +388,9 @@ public class HydratedMessageBody: Equatable, Hashable {
     public func asPlaintext() -> String {
         let mutableString = NSMutableString(string: hydratedText)
         styleAttributes.forEach {
+            guard $0.value.style.contains(.spoiler) else {
+                return
+            }
             $0.value.applyPlaintextSpoiler(to: mutableString, at: $0.range)
         }
         return mutableString as String
