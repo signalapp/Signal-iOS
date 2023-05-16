@@ -131,6 +131,7 @@ internal struct StyleAttribute: Equatable, Hashable {
     }
 
     private static let plaintextSpoilerCharacter = "■"
+    private static let maxPlaintextSpoilerLength = 4
 
     internal func applyPlaintextSpoiler(
         to string: NSMutableString,
@@ -138,7 +139,10 @@ internal struct StyleAttribute: Equatable, Hashable {
     ) {
         string.replaceCharacters(
             in: range,
-            with: String(repeating: Self.plaintextSpoilerCharacter, count: range.length)
+            with: String(
+                repeating: Self.plaintextSpoilerCharacter,
+                count: min(range.length, Self.maxPlaintextSpoilerLength)
+            )
         )
     }
 }
