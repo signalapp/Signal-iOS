@@ -5,7 +5,6 @@
 
 // Separate iOS Frameworks from other imports.
 #import "AppDelegate.h"
-#import "BlockListViewController.h"
 #import "ChatListViewController.h"
 #import "FingerprintViewController.h"
 #import "OWSLinkDeviceViewController.h"

@@ -316,25 +316,6 @@ public extension OWSTableItem {
         return OWSTableItem(customCellBlock: customCellBlock, actionBlock: actionBlock)
     }
 
-    static func itemWithDequeueCellBlock(
-        _ dequeueCellBlock: @escaping (UITableView) -> UITableViewCell,
-        actionBlock: @escaping () -> Void
-    ) -> OWSTableItem {
-        return OWSTableItem(dequeueCellBlock: dequeueCellBlock, actionBlock: actionBlock)
-    }
-
-    static func disclosureItemWithText(
-        _ text: String,
-        accessibilityIdentifier: String,
-        actionBlock: @escaping (() -> Void)
-    ) -> OWSTableItem {
-        return disclosureItem(
-            withText: text,
-            accessibilityIdentifier: accessibilityIdentifier,
-            actionBlock: actionBlock
-        )
-    }
-
     static func subPageItemWithText(
         _ text: String,
         actionBlock: @escaping (UIViewController) -> Void

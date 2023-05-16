@@ -64,7 +64,6 @@ open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
         configure(configuration: configuration, transaction: transaction)
     }
 
-    @objc
     open func configure(
         configuration: ContactCellConfiguration,
         transaction: SDSAnyReadTransaction

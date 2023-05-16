@@ -141,7 +141,6 @@ extension BlockingManager {
         }
     }
 
-    @objc
     public func blockedGroupModels(transaction: SDSAnyReadTransaction) -> [TSGroupModel] {
         withCurrentState(transaction: transaction) { state in
             Array(state.blockedGroupMap.values)

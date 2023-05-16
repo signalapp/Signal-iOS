@@ -186,7 +186,6 @@
 		340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */; };
 		340D900024FEE6A9007B5504 /* GroupInviteLinksUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */; };
 		340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */; };
-		340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
 		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
 		3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */; };
 		3415217525B0CB31009F177F /* CVAttachmentProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415217425B0CB30009F177F /* CVAttachmentProgressView.swift */; };
@@ -945,6 +944,7 @@
 		7677E41129F7A60500AC6A75 /* ScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E41029F7A60500AC6A75 /* ScreenLockViewController.swift */; };
 		7677E41329F84C2100AC6A75 /* ScreenLockUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */; };
 		76847C942A13416A008E2EAB /* ChatListViewController+Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76847C932A13416A008E2EAB /* ChatListViewController+Camera.swift */; };
+		76847C962A1346A8008E2EAB /* BlockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76847C952A1346A8008E2EAB /* BlockListViewController.swift */; };
 		7685DFFF29EA1F6400542CBC /* UIFont+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */; };
 		76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */; };
 		76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */; };
@@ -2518,8 +2518,6 @@
 		340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupInviteLinksUI.swift; sourceTree = "<group>"; };
 		340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardMessageViewController.swift; sourceTree = "<group>"; };
 		340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkDeviceViewController.m; sourceTree = "<group>"; };
-		340FC887204DAC8C007AEB0F /* BlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListViewController.m; sourceTree = "<group>"; };
-		340FC890204DAC8C007AEB0F /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
 		340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
 		340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
 		340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewScanController.m; sourceTree = "<group>"; };
@@ -3431,6 +3429,7 @@
 		7677E41029F7A60500AC6A75 /* ScreenLockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockViewController.swift; sourceTree = "<group>"; };
 		7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockUI.swift; sourceTree = "<group>"; };
 		76847C932A13416A008E2EAB /* ChatListViewController+Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Camera.swift"; sourceTree = "<group>"; };
+		76847C952A1346A8008E2EAB /* BlockListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListViewController.swift; sourceTree = "<group>"; };
 		7685DFFE29EA1F6400542CBC /* UIFont+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+OWS.swift"; sourceTree = "<group>"; };
 		76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAttachmentPrepViewController.swift; sourceTree = "<group>"; };
 		76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
@@ -7147,8 +7146,7 @@
 			isa = PBXGroup;
 			children = (
 				887B381225F0681400685845 /* AdvancedPrivacySettingsViewController.swift */,
-				340FC890204DAC8C007AEB0F /* BlockListViewController.h */,
-				340FC887204DAC8C007AEB0F /* BlockListViewController.m */,
+				76847C952A1346A8008E2EAB /* BlockListViewController.swift */,
 				5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */,
 				C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */,
 				887B381025F05F3100685845 /* PrivacySettingsViewController.swift */,
@@ -11144,7 +11142,7 @@
 				34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */,
 				3491899B269CD68E008A18AF /* BlockingAnnouncementOnlyView.swift in Sources */,
 				347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */,
-				340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */,
+				76847C962A1346A8008E2EAB /* BlockListViewController.swift in Sources */,
 				14E4A340278EE999008408FD /* BlurredToolbarContainer.swift in Sources */,
 				88D23D2C23CEC17400B0E74B /* CallAudioService.swift in Sources */,
 				88238EA424E9DDE900F28079 /* CallButton.swift in Sources */,
