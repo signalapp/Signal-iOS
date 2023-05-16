@@ -22,7 +22,6 @@ extension SignalApp {
         }
     }
 
-    @objc
     func dismissAllModals(animated: Bool, completion: (() -> Void)?) {
         guard let window = CurrentAppContext().mainWindow else {
             owsFailDebug("Missing window.")
@@ -182,7 +181,6 @@ extension SignalApp {
 
 extension SignalApp {
 
-    @objc(showExportDatabaseUIFromViewController:completion:)
     public static func showExportDatabaseUI(from parentVC: UIViewController, completion: @escaping () -> Void = {}) {
         guard OWSIsTestableBuild() || DebugFlags.internalSettings else {
             // This should NEVER be exposed outside of internal settings.
@@ -229,7 +227,6 @@ extension SignalApp {
         parentVC.present(alert, animated: true)
     }
 
-    @objc(showDatabaseIntegrityCheckUIFromViewController:completion:)
     public static func showDatabaseIntegrityCheckUI(from parentVC: UIViewController,
                                                     completion: @escaping () -> Void = {}) {
         let alert = UIAlertController(

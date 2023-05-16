@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 protocol PreviewWallpaperDelegate: AnyObject {
     func previewWallpaperDidCancel(_ vc: PreviewWallpaperViewController)
@@ -543,7 +543,7 @@ class BlurButton: UIButton {
     }
 
     @objc
-    func didTap() {
+    private func didTap() {
         isSelected = !isSelected
         action(isSelected)
     }

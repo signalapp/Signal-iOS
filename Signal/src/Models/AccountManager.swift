@@ -13,10 +13,8 @@ public enum AccountManagerError: Error {
 
 // MARK: -
 
-@objc
 public class AccountManager: NSObject, Dependencies {
 
-    @objc
     public override init() {
         super.init()
 

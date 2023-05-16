@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 import SignalMessaging
 import SignalUI
@@ -221,12 +220,12 @@ public class LongTextViewController: OWSViewController {
     // MARK: - Actions
 
     @objc
-    func shareButtonPressed(_ sender: UIBarButtonItem) {
+    private func shareButtonPressed(_ sender: UIBarButtonItem) {
         AttachmentSharing.showShareUI(forText: fullAttributedText.string, sender: sender)
     }
 
     @objc
-    func forwardButtonPressed() {
+    private func forwardButtonPressed() {
         // Only forward text.
         let selectionType: CVSelectionType = (itemViewModel.componentState.hasPrimaryAndSecondaryContentForSelection
                                                 ? .secondaryContent
@@ -241,7 +240,7 @@ public class LongTextViewController: OWSViewController {
     }
 
     @objc
-    func didTapMessageTextView(_ sender: UIGestureRecognizer) {
+    private func didTapMessageTextView(_ sender: UIGestureRecognizer) {
         guard let linkItems else {
             return
         }

@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalCoreKit
 import SignalMessaging
+import SignalUI
 
 protocol GroupMemberRequestsAndInvitesViewControllerDelegate: AnyObject {
     func requestsAndInvitesViewDidUpdate()
@@ -13,7 +13,6 @@ protocol GroupMemberRequestsAndInvitesViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController2 {
 
     weak var groupMemberRequestsAndInvitesViewControllerDelegate: GroupMemberRequestsAndInvitesViewControllerDelegate?
@@ -41,7 +40,6 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -84,7 +82,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     }
 
     @objc
-    func segmentedControlDidChange(_ sender: UISwitch) {
+    private func segmentedControlDidChange(_ sender: UISwitch) {
         updateTableContents()
     }
 

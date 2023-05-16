@@ -43,7 +43,7 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
     var mode: Mode = .zoom
 
     @objc
-    func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
+    private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         switch gestureRecognizer.state {
         case .began:
             interactionInProgress = true

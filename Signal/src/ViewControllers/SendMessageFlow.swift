@@ -6,7 +6,6 @@
 import SignalMessaging
 import SignalUI
 
-@objc
 public protocol SendMessageDelegate: AnyObject {
     func sendMessageFlowDidComplete(threads: [TSThread])
     func sendMessageFlowDidCancel()
@@ -138,8 +137,7 @@ enum SendMessageApprovedContent {
 
 // MARK: -
 
-@objc
-class SendMessageFlow: NSObject {
+class SendMessageFlow: Dependencies {
 
     private let flowType: SendMessageFlowType
 
@@ -166,8 +164,6 @@ class SendMessageFlow: NSObject {
         self.useConversationComposeForSingleRecipient = useConversationComposeForSingleRecipient
         self.navigationController = navigationController
         self.delegate = delegate
-
-        super.init()
 
         let conversationPicker = ConversationPickerViewController(selection: selection)
         conversationPicker.pickerDelegate = self

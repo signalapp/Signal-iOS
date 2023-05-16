@@ -8,7 +8,6 @@ import Lottie
 import SignalMessaging
 import UIKit
 
-@objc
 public class Deprecated_OnboardingPermissionsViewController: Deprecated_OnboardingBaseViewController {
 
     private let animationView = AnimationView(name: "notificationPermission")

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 @objc(OWSAvatarTableViewCell)
 public class AvatarTableViewCell: UITableViewCell {
@@ -55,7 +55,6 @@ public class AvatarTableViewCell: UITableViewCell {
         OWSTableItem.configureCell(self)
     }
 
-    @objc
     public override func prepareForReuse() {
         super.prepareForReuse()
 

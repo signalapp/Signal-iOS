@@ -6,7 +6,6 @@
 import SignalMessaging
 import UIKit
 
-@objc
 public class Deprecated_RegistrationPhoneNumberDiscoverabilityViewController: Deprecated_OnboardingBaseViewController {
 
     static let hInset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16

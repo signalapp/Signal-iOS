@@ -3,13 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SignalMessaging
 import SignalUI
 
-@objc
 public class ChatListCell: UITableViewCell {
-    @objc
+
     public static let reuseIdentifier = "ChatListCell"
 
     private var avatarView: ConversationAvatarView?
@@ -872,7 +870,6 @@ public class ChatListCell: UITableViewCell {
 
     // MARK: - Reuse
 
-    @objc
     public override func prepareForReuse() {
         super.prepareForReuse()
 

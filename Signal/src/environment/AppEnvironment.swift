@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-@objc
 public class AppEnvironment: NSObject {
 
     private static var _shared: AppEnvironment = AppEnvironment()
@@ -30,37 +28,27 @@ public class AppEnvironment: NSObject {
     // A temporary hack until `.shared` goes away and this can be provided to `init`.
     static let sharedCallMessageHandler = WebRTCCallMessageHandler()
 
-    @objc
     public var callMessageHandlerRef: WebRTCCallMessageHandler
 
-    @objc
     public var callServiceRef: CallService
 
-    @objc
     public var accountManagerRef: AccountManager
 
     // A temporary hack until `.shared` goes away and this can be provided to `init`.
     static let sharedNotificationPresenter = NotificationPresenter()
 
-    @objc
     public var notificationPresenterRef: NotificationPresenter
 
-    @objc
     public var pushRegistrationManagerRef: PushRegistrationManager
 
-    @objc
     let deviceTransferServiceRef = DeviceTransferService()
 
-    @objc
     let avatarHistorManagerRef = AvatarHistoryManager()
 
-    @objc
     let cvAudioPlayerRef = CVAudioPlayer()
 
-    @objc
     let speechManagerRef = SpeechManager()
 
-    @objc
     public var windowManagerRef: OWSWindowManager = OWSWindowManager()
 
     private var usernameValidationObserverRef: UsernameValidationObserver?
@@ -77,7 +65,6 @@ public class AppEnvironment: NSObject {
         SwiftSingletons.register(self)
     }
 
-    @objc
     public func setup() {
         callService.createCallUIAdapter()
 

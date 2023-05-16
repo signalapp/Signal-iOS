@@ -3,13 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
-@objc
 public class ContactSupportAlert: NSObject {
-    @objc
+
     public class func presentAlert(title: String, message: String, emailSupportFilter: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction] = [], customHeader: UIView? = nil, showCancel: Bool = true) {
         presentStep1(title: title, message: message, emailSupportFilter: emailSupportFilter, fromViewController: fromViewController, additionalActions: additionalActions, customHeader: customHeader, showCancel: showCancel)
     }

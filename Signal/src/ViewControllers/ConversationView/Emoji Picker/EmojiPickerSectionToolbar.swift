@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 protocol EmojiPickerSectionToolbarDelegate: AnyObject {
     func emojiPickerSectionToolbar(_ sectionToolbar: EmojiPickerSectionToolbar, didSelectSection: Int)
@@ -48,7 +48,7 @@ class EmojiPickerSectionToolbar: BlurredToolbarContainer {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func createSectionButton(icon: ThemeIcon) -> UIButton {
+    private func createSectionButton(icon: ThemeIcon) -> UIButton {
         let button = UIButton()
         button.setImage(Theme.iconImage(icon), for: .normal)
 
@@ -68,7 +68,7 @@ class EmojiPickerSectionToolbar: BlurredToolbarContainer {
     }
 
     @objc
-    func didSelectSection(sender: UIButton) {
+    private func didSelectSection(sender: UIButton) {
         guard let selectedSection = buttons.firstIndex(of: sender) else {
             return owsFailDebug("Selectetd unexpected button")
         }

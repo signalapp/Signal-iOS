@@ -36,7 +36,6 @@ extension ConversationSettingsViewController {
 
     // MARK: - Table
 
-    @objc
     func updateTableContents(shouldReload: Bool = true) {
 
         let contents = OWSTableContents()

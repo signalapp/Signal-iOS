@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
+import SignalUI
 
 private class StickerPackActionButton: UIView {
 
@@ -51,12 +51,10 @@ private class StickerPackActionButton: UIView {
 
 // MARK: -
 
-@objc
 public class ManageStickersViewController: OWSTableViewController2 {
 
     // MARK: Initializers
 
-    @objc
     public required override init() {
         super.init()
     }

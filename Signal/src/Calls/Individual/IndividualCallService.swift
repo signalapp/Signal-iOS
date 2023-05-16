@@ -13,7 +13,6 @@ import CallKit
 // MARK: - CallService
 
 // This class' state should only be accessed on the main queue.
-@objc
 final public class IndividualCallService: NSObject {
 
     private var callManager: CallService.CallManagerType {
@@ -24,7 +23,6 @@ final public class IndividualCallService: NSObject {
 
     static let fallbackIceServer = RTCIceServer(urlStrings: ["stun:stun1.l.google.com:19302"])
 
-    @objc
     public override init() {
         super.init()
 

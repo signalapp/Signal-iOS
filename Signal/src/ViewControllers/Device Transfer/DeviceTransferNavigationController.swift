@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
 
 class DeviceTransferNavigationController: UINavigationController {
 
@@ -33,7 +33,7 @@ class DeviceTransferNavigationController: UINavigationController {
     }
 
     @objc
-    func tappedDismiss() {
+    private func tappedDismiss() {
         AssertIsOnMainThread()
 
         if let topVC = topViewController as? DeviceTransferBaseViewController, topVC.requiresDismissConfirmation {

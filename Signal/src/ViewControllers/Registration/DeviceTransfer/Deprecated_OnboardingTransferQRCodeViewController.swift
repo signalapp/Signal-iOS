@@ -97,7 +97,7 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
     weak var permissionActionSheetController: ActionSheetController?
 
     @objc
-    func didTapHelp() {
+    private func didTapHelp() {
         let turnOnView = TurnOnPermissionView(
             title: OWSLocalizedString(
                 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE",
@@ -147,7 +147,7 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         Logger.info("")
 
         guard let navigationController = navigationController else {
@@ -158,7 +158,7 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
     }
 
     @objc
-    func didTapContactSupport() {
+    private func didTapContactSupport() {
         Logger.info("")
 
         permissionActionSheetController?.dismiss(animated: true)

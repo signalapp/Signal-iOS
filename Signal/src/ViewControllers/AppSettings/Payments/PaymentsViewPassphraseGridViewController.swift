@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalUI
 import SignalMessaging
 
@@ -163,7 +162,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
     // MARK: - Events
 
     @objc
-    func didTapNextButton() {
+    private func didTapNextButton() {
         guard let viewPassphraseDelegate = viewPassphraseDelegate else {
             dismiss(animated: false, completion: nil)
             return
@@ -174,7 +173,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
     }
 
     @objc
-    func showCopyToClipboardConfirmUI() {
+    private func showCopyToClipboardConfirmUI() {
 
         let actionSheet = ActionSheetController(title: OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE",
                                                                          comment: "Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings."),
@@ -193,7 +192,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCopyToClipboard() {
+    private func didTapCopyToClipboard() {
         // Ensure that passphrase only resides in pasteboard for short window of time.
         let pasteboardDuration = kSecondInterval * 30
         let expireDate = Date().addingTimeInterval(pasteboardDuration)

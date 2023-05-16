@@ -334,7 +334,6 @@ extension DeviceTransferService {
         return true
     }
 
-    @objc
     func launchCleanup() -> Bool {
         Logger.info("hasBeenRestored: \(hasBeenRestored)")
 

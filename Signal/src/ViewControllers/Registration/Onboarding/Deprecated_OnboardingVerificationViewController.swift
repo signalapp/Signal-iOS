@@ -7,7 +7,6 @@ import UIKit
 import SignalCoreKit
 
 // Most of the logic for the verification views resides in RegistrationVerificationViewController.
-@objc
 public class Deprecated_OnboardingVerificationViewController: Deprecated_OnboardingBaseViewController {
 
     let viewModel = Deprecated_RegistrationVerificationViewModel()

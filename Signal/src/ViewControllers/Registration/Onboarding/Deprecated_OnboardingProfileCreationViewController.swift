@@ -6,7 +6,6 @@
 import SignalMessaging
 import SignalUI
 
-@objc
 public class Deprecated_OnboardingProfileCreationViewController: Deprecated_OnboardingBaseViewController {
 
     // MARK: - Properties

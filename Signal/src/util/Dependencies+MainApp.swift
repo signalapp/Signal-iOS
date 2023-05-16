@@ -171,7 +171,6 @@ public extension Dependencies {
 
 // MARK: - Swift-only Dependencies
 
-@objc
 extension NSObject {
     final var deviceTransferService: DeviceTransferService { .shared }
 
@@ -186,7 +185,6 @@ public extension Dependencies {
 
 // MARK: -
 
-@objc
 extension DeviceTransferService {
     static var shared: DeviceTransferService {
         AppEnvironment.shared.deviceTransferServiceRef
@@ -195,7 +193,6 @@ extension DeviceTransferService {
 
 // MARK: -
 
-@objc
 extension PushRegistrationManager {
     static var shared: PushRegistrationManager {
         AppEnvironment.shared.pushRegistrationManagerRef
@@ -204,7 +201,6 @@ extension PushRegistrationManager {
 
 // MARK: -
 
-@objc
 extension OWSSyncManager {
     static var shared: OWSSyncManager {
         SSKEnvironment.shared.syncManagerRef as! OWSSyncManager
@@ -213,7 +209,6 @@ extension OWSSyncManager {
 
 // MARK: -
 
-@objc
 public extension OWSWindowManager {
     static var shared: OWSWindowManager {
         AppEnvironment.shared.windowManagerRef

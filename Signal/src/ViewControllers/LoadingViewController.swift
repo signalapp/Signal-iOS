@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 // The initial presentation is intended to be indistinguishable from the Launch Screen.
 // After a delay we present some "loading" UI so the user doesn't think the app is frozen.
-@objc
 public class LoadingViewController: UIViewController {
 
     var logoView: UIImageView!
@@ -112,7 +111,7 @@ public class LoadingViewController: UIViewController {
     // MARK: -
 
     @objc
-    func didBecomeActive() {
+    private func didBecomeActive() {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -138,7 +137,7 @@ public class LoadingViewController: UIViewController {
     private var viewHasEnteredBackground = false
 
     @objc
-    func didEnterBackground() {
+    private func didEnterBackground() {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -147,7 +146,7 @@ public class LoadingViewController: UIViewController {
     }
 
     @objc
-    func themeDidChange() {
+    private func themeDidChange() {
         view.backgroundColor = Theme.launchScreenBackgroundColor
     }
 

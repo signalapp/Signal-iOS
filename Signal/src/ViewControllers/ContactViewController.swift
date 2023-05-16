@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalServiceKit
-import SignalMessaging
 import ContactsUI
 import MessageUI
+import SignalMessaging
+import SignalServiceKit
+import SignalUI
 
 class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, OWSNavigationChildController {
 
@@ -37,7 +37,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
 
     // MARK: - Initializers
 
-    @objc
     required init(contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
         self.contactShareViewHelper = ContactShareViewHelper()

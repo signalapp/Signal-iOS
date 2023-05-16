@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
-import UIKit
+import SignalUI
 
 class CustomColorViewController: OWSTableViewController2 {
 
@@ -469,12 +468,12 @@ class CustomColorViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapSet() {
+    private func didTapSet() {
         showSaveUI()
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard hasUnsavedChanges else {
             dismissWithoutSaving()
             return
@@ -486,7 +485,7 @@ class CustomColorViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         showSaveUI()
     }
 }
@@ -1430,22 +1429,18 @@ private class CustomColorPreviewView: UIView {
 class CustomColorGestureRecognizer: UIGestureRecognizer {
     private var isActive = false
 
-    @objc
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
-    @objc
     public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
-    @objc
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
-    @objc
     public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
@@ -1515,7 +1510,6 @@ private class CustomColorTooltip: TooltipView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public class func present(fromView: UIView,
                               widthReferenceView: UIView,
                               tailReferenceView: UIView,

@@ -3,13 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalRingRTC
-import SignalMessaging
 import AVFoundation
+import SignalMessaging
+import SignalRingRTC
 
 // All Observer methods will be invoked from the main thread.
-@objc(OWSCallServiceObserver)
 protocol CallServiceObserver: AnyObject {
     /**
      * Fired whenever the call changes.
@@ -17,7 +15,6 @@ protocol CallServiceObserver: AnyObject {
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?)
 }
 
-@objc
 public final class CallService: LightweightCallManager {
     public typealias CallManagerType = CallManager<SignalCall, CallService>
 
@@ -114,7 +111,6 @@ public final class CallService: LightweightCallManager {
 
     /// True whenever CallService has any call in progress.
     /// The call may not yet be visible to the user if we are still in the middle of signaling.
-    @objc
     public var hasCallInProgress: Bool {
         calls.count > 0
     }
@@ -140,7 +136,6 @@ public final class CallService: LightweightCallManager {
         return didRemove
     }
 
-    @objc
     public static let activeCallsDidChange = Notification.Name("activeCallsDidChange")
 
     private func postActiveCallsDidChange() {
@@ -229,12 +224,10 @@ public final class CallService: LightweightCallManager {
 
     private var observers = WeakArray<CallServiceObserver>()
 
-    @objc
     func addObserverAndSyncState(observer: CallServiceObserver) {
         addObserver(observer: observer, syncStateImmediately: true)
     }
 
-    @objc
     func addObserver(observer: CallServiceObserver, syncStateImmediately: Bool) {
         AssertIsOnMainThread()
 
@@ -247,7 +240,6 @@ public final class CallService: LightweightCallManager {
     }
 
     // The observer-related methods should be invoked on the main thread.
-    @objc
     func removeObserver(_ observer: CallServiceObserver) {
         AssertIsOnMainThread()
         observers.removeAll { $0 === observer }
@@ -398,7 +390,7 @@ public final class CallService: LightweightCallManager {
     }
 
     @objc
-    func configureBandwidthMode() {
+    private func configureBandwidthMode() {
         guard AppReadiness.isAppReady else { return }
         guard let currentCall = currentCall else { return }
 
@@ -561,7 +553,7 @@ public final class CallService: LightweightCallManager {
         }
     }
 
-    // MARK: -
+    // MARK: - LightweightCallManager
 
     func buildAndConnectGroupCallIfPossible(thread: TSGroupThread, videoMuted: Bool) -> SignalCall? {
         AssertIsOnMainThread()
@@ -718,13 +710,13 @@ public final class CallService: LightweightCallManager {
     // MARK: - Notifications
 
     @objc
-    func didEnterBackground() {
+    private func didEnterBackground() {
         AssertIsOnMainThread()
         self.updateIsVideoEnabled()
     }
 
     @objc
-    func didBecomeActive() {
+    private func didBecomeActive() {
         AssertIsOnMainThread()
         self.updateIsVideoEnabled()
     }
@@ -841,6 +833,30 @@ public final class CallService: LightweightCallManager {
 
         return NetworkInterfaceSet(rawValue: highBandwidthPreference)
     }
+
+    // MARK: -
+
+    override public func peekCallAndUpdateThread(_ thread: TSGroupThread,
+                                                 expectedEraId: String? = nil,
+                                                 triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
+                                                 completion: (() -> Void)? = nil) {
+        // If the currentCall is for the provided thread, we don't need to perform an explicit
+        // peek. Connected calls will receive automatic updates from RingRTC
+        guard currentCall?.thread != thread else {
+            Logger.info("Ignoring peek request for the current call")
+            return
+        }
+        super.peekCallAndUpdateThread(thread, expectedEraId: expectedEraId, triggerEventTimestamp: triggerEventTimestamp, completion: completion)
+    }
+
+    override public func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
+        AssertNotOnMainThread()
+
+        // The message can't be for the current call
+        guard self.currentCall?.thread.uniqueId != groupCallMessage.uniqueThreadId else { return }
+
+        super.postUserNotificationIfNecessary(groupCallMessage: groupCallMessage, transaction: transaction)
+    }
 }
 
 extension CallService: CallObserver {
@@ -930,32 +946,6 @@ extension CallService: CallObserver {
 }
 
 // MARK: - Group call participant updates
-
-extension CallService {
-    @objc
-    override public func peekCallAndUpdateThread(_ thread: TSGroupThread,
-                                                 expectedEraId: String? = nil,
-                                                 triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
-                                                 completion: (() -> Void)? = nil) {
-        // If the currentCall is for the provided thread, we don't need to perform an explicit
-        // peek. Connected calls will receive automatic updates from RingRTC
-        guard currentCall?.thread != thread else {
-            Logger.info("Ignoring peek request for the current call")
-            return
-        }
-        super.peekCallAndUpdateThread(thread, expectedEraId: expectedEraId, triggerEventTimestamp: triggerEventTimestamp, completion: completion)
-    }
-
-    @objc
-    override public func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
-        AssertNotOnMainThread()
-
-        // The message can't be for the current call
-        guard self.currentCall?.thread.uniqueId != groupCallMessage.uniqueThreadId else { return }
-
-        super.postUserNotificationIfNecessary(groupCallMessage: groupCallMessage, transaction: transaction)
-    }
-}
 
 extension CallService: DatabaseChangeDelegate {
 

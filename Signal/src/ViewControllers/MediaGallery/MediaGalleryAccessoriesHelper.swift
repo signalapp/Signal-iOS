@@ -352,7 +352,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
     }
 
     @objc
-    func showModeMenu(_ sender: Any) {
+    private func showModeMenu(_ sender: Any) {
         let menu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         for action in modeMenuActions.map({ $0.uiAlertAction}) {
             menu.addAction(action)

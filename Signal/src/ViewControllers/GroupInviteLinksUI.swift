@@ -6,9 +6,7 @@
 import Foundation
 import SignalMessaging
 import SignalUI
-import UIKit
 
-@objc
 public class GroupInviteLinksUI: UIView {
 
     @available(*, unavailable, message: "Do not instantiate this class.")
@@ -16,9 +14,7 @@ public class GroupInviteLinksUI: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
-    public static func openGroupInviteLink(_ url: URL,
-                                           fromViewController: UIViewController) {
+    public static func openGroupInviteLink(_ url: URL, fromViewController: UIViewController) {
         AssertIsOnMainThread()
 
         let showInvalidInviteLinkAlert = {
@@ -303,12 +299,12 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     @objc
-    func didTapCancel(_ sender: UIButton) {
+    private func didTapCancel(_ sender: UIButton) {
         dismiss(animated: true)
     }
 
     @objc
-    func didTapInvalidOkay(_ sender: UIButton) {
+    private func didTapInvalidOkay(_ sender: UIButton) {
         dismiss(animated: true)
     }
 
@@ -324,7 +320,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     @objc
-    func didTapJoin(_ sender: UIButton) {
+    private func didTapJoin(_ sender: UIButton) {
         AssertIsOnMainThread()
 
         Logger.info("")

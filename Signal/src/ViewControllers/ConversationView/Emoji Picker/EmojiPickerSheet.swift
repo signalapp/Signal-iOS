@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
 import SignalServiceKit
+import SignalUI
 
-@objc
 class EmojiPickerSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [collectionView] }
 

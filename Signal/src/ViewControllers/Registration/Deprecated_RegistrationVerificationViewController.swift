@@ -6,7 +6,6 @@
 import UIKit
 import SignalCoreKit
 
-@objc
 protocol Deprecated_RegistrationVerificationViewController: AnyObject {
 
     var viewModel: Deprecated_RegistrationVerificationViewModel { get }
@@ -22,7 +21,6 @@ protocol Deprecated_RegistrationVerificationViewController: AnyObject {
 
 // MARK: -
 
-@objc
 class Deprecated_RegistrationVerificationViewModel: NSObject {
     weak var viewController: Deprecated_RegistrationVerificationViewController?
 

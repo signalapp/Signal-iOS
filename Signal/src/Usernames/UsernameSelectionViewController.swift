@@ -531,7 +531,7 @@ private extension UsernameSelectionViewController {
     /// Called when the user cancels editing. Dismisses the view, discarding
     /// unsaved changes.
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard hasUnsavedEdits else {
             dismiss(animated: true)
             return
@@ -546,7 +546,7 @@ private extension UsernameSelectionViewController {
     /// Called when the user taps "Done". Attempts to finalize the new chosen
     /// username.
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         let usernameState = self.currentUsernameState
 
         switch usernameState {

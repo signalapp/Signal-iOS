@@ -71,7 +71,6 @@ extension ConversationViewController {
 
     private static let minimumVoiceMessageDuration: TimeInterval = 1
 
-    @objc(finishRecordingVoiceMessageAndSendImmediately:)
     func finishRecordingVoiceMessage(sendImmediately: Bool = false) {
         AssertIsOnMainThread()
 

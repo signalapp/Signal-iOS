@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
+import SignalUI
 
-@objc
 public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
 
     let thread: TSPrivateStoryThread
@@ -25,7 +24,6 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -106,7 +104,7 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
     // MARK: - Actions
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         AssertIsOnMainThread()
 
         if hasPendingChanges {
@@ -119,7 +117,7 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         AssertIsOnMainThread()
 
         guard let name = nameTextField.text?.nilIfEmpty?.filterForDisplay else {
@@ -134,7 +132,7 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func textFieldDidChange(_ textField: UITextField) {
+    private func textFieldDidChange(_ textField: UITextField) {
         updateNavigationBar()
     }
 

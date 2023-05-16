@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 
 // TODO: Rename to NewGroupViewController; remove old view.
-@objc
 public class NewGroupMembersViewController: BaseGroupMemberViewController {
 
     private var newGroupState = NewGroupState()
@@ -20,7 +18,6 @@ public class NewGroupMembersViewController: BaseGroupMemberViewController {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
         updateBarButtons()
@@ -51,7 +48,7 @@ public class NewGroupMembersViewController: BaseGroupMemberViewController {
     // MARK: - Actions
 
     @objc
-    func nextButtonPressed() {
+    private func nextButtonPressed() {
         AssertIsOnMainThread()
 
         let confirmViewController = NewGroupConfirmViewController(newGroupState: newGroupState)

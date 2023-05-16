@@ -260,7 +260,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     // MARK: Theme
 
     @objc
-    func applyTheme() {
+    private func applyTheme() {
         accessoriesHelper.applyTheme()
     }
 

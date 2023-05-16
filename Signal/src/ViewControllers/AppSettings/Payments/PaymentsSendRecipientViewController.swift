@@ -3,10 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalUI
 
-@objc
 class PaymentsSendRecipientViewController: RecipientPickerContainerViewController {
 
     private let isOutgoingTransfer: Bool
@@ -15,7 +13,6 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
         self.isOutgoingTransfer = isOutgoingTransfer
     }
 
-    @objc
     public static func presentAsFormSheet(fromViewController: UIViewController,
                                           isOutgoingTransfer: Bool,
                                           paymentRequestModel: TSPaymentRequestModel?) {
@@ -47,7 +44,7 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
     }
 
     @objc
-    func didTapDismiss() {
+    private func didTapDismiss() {
         dismiss(animated: true)
     }
 

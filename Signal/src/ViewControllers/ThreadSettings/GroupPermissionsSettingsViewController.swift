@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 protocol GroupPermissionsSettingsDelegate: AnyObject {
     func groupPermissionSettingsDidUpdate()
@@ -259,7 +259,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard hasUnsavedChanges else {
             dismiss(animated: true)
             return
@@ -271,7 +271,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapSet() {
+    private func didTapSet() {
         guard groupViewHelper.canEditPermissions else {
             owsFailDebug("Missing edit permission.")
             return

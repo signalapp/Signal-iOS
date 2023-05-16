@@ -6,7 +6,6 @@
 import SignalMessaging
 import UIKit
 
-@objc
 public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_OnboardingBaseViewController {
 
     // MARK: - Properties

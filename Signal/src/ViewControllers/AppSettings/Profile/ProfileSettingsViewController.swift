@@ -3,12 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
-import UIKit
 import SignalUI
 
-@objc
 class ProfileSettingsViewController: OWSTableViewController2 {
 
     private let context: ViewControllerContext = .shared
@@ -400,7 +397,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func updateProfile() {
+    private func updateProfile() {
 
         let normalizedGivenName = self.normalizedGivenName
         let normalizedFamilyName = self.normalizedFamilyName

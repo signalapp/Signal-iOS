@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SafariServices
 import SignalMessaging
+import SignalUI
 
-@objc
 public class NewGroupConfirmViewController: OWSTableViewController2 {
 
     private let newGroupState: NewGroupState
@@ -49,7 +48,6 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -202,7 +200,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
     // MARK: - Actions
 
     @objc
-    func createNewGroup() {
+    private func createNewGroup() {
         AssertIsOnMainThread()
 
         guard let localAddress = tsAccountManager.localAddress else {

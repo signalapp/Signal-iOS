@@ -654,7 +654,7 @@ class CameraZoomSelectionControl: UIView {
     // MARK: - Selection
 
     @objc
-    public func handleTap(gesture: UITapGestureRecognizer) {
+    private func handleTap(gesture: UITapGestureRecognizer) {
         guard gesture.state == .ended else { return }
 
         var tappedView: CameraSelectionCircleView?

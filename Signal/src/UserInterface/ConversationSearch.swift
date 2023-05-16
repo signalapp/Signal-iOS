@@ -5,42 +5,33 @@
 
 import Foundation
 
-@objc
 public protocol ConversationSearchControllerDelegate: UISearchControllerDelegate {
 
-    @objc
     func conversationSearchController(_ conversationSearchController: ConversationSearchController,
                                       didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?)
 
-    @objc
     func conversationSearchController(_ conversationSearchController: ConversationSearchController,
                                       didSelectMessageId: String)
 }
 
 // MARK: -
 
-@objc
 public class ConversationSearchController: NSObject {
 
-    @objc
     public static let kMinimumSearchTextLength: UInt = 2
 
-    @objc
     public let uiSearchController =  UISearchController(searchResultsController: nil)
 
-    @objc
     public weak var delegate: ConversationSearchControllerDelegate?
 
     let thread: TSThread
 
-    @objc
     public let resultsBar: SearchResultsBar = SearchResultsBar(frame: .zero)
 
     private var lastSearchText: String?
 
     // MARK: Initializer
 
-    @objc
     required public init(thread: TSThread) {
         self.thread = thread
         super.init()
@@ -235,7 +226,7 @@ public class SearchResultsBar: UIView {
     }
 
     @objc
-    public func didTapShowLessRecent() {
+    private func didTapShowLessRecent() {
         Logger.debug("")
         guard let resultSet = resultSet else {
             owsFailDebug("resultSet was unexpectedly nil")
@@ -259,7 +250,7 @@ public class SearchResultsBar: UIView {
     }
 
     @objc
-    public func didTapShowMoreRecent() {
+    private func didTapShowMoreRecent() {
         Logger.debug("")
         guard let resultSet = resultSet else {
             owsFailDebug("resultSet was unexpectedly nil")

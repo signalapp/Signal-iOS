@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
 import MessageUI
+import SignalServiceKit
+import SignalUI
 
 struct SupportEmailModel: Dependencies {
 
@@ -50,7 +51,6 @@ struct SupportEmailModel: Dependencies {
 
 // MARK: -
 
-@objc
 final class ComposeSupportEmailOperation: NSObject {
 
     enum EmailError: LocalizedError, UserErrorDescriptionProvider {
@@ -82,7 +82,6 @@ final class ComposeSupportEmailOperation: NSObject {
         }
     }
 
-    @objc
     public static var canSendEmails: Bool {
         return UIApplication.shared.canOpenURL(MailtoLink(to: "", subject: "", body: "").url!)
     }
@@ -90,7 +89,6 @@ final class ComposeSupportEmailOperation: NSObject {
     private var model: SupportEmailModel
     private var isCancelled: Bool = false
 
-    @objc
     class func sendEmailWithDefaultErrorHandling(supportFilter: String, logUrl: URL? = nil) {
         sendEmail(supportFilter: supportFilter, logUrl: logUrl).catch { error in
             OWSActionSheets.showErrorAlert(message: error.userErrorDescription)

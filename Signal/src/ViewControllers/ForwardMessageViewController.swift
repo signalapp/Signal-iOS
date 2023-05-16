@@ -5,6 +5,7 @@
 
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 public protocol ForwardMessageDelegate: AnyObject {
     func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
@@ -12,9 +13,6 @@ public protocol ForwardMessageDelegate: AnyObject {
     func forwardMessageFlowDidCancel()
 }
 
-// MARK: -
-
-@objc
 class ForwardMessageViewController: InteractiveSheetViewController {
 
     private let pickerVC: ForwardPickerViewController
@@ -930,7 +928,6 @@ private class ForwardNavigationViewController: OWSNavigationController {
 private class ForwardPickerViewController: ConversationPickerViewController {
     weak var forwardMessageViewController: ForwardMessageViewController?
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 

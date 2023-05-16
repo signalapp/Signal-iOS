@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Lottie
+import UIKit
 
 // TODO: Convert to manual layout.
-@objc
 class AudioWaveformProgressView: UIView {
     var playedColor: UIColor = Theme.primaryTextColor {
         didSet {

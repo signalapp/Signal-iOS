@@ -3,14 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 
 extension ConversationViewController {
 
     /// The visible content rect in the collection view's coordinate space
     /// This rect does not include displayed cells occluded by content inset
-    @objc
     var visibleContentRect: CGRect {
         let collectionViewBounds = collectionView.bounds
         let insetBounds = collectionViewBounds.inset(by: collectionView.adjustedContentInset)

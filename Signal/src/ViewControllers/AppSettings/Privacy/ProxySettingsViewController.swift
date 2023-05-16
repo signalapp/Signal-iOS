@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 class ProxySettingsViewController: OWSTableViewController2 {
     private var useProxy = SignalProxy.useProxy
@@ -96,8 +96,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    @objc
-    func updateTableContents() {
+    private func updateTableContents() {
         let contents = OWSTableContents()
         defer { self.contents = contents }
 

@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
+import SignalUI
 
-@objc
 public class StickerPackViewController: OWSViewController {
 
     // MARK: Properties
@@ -19,7 +18,6 @@ public class StickerPackViewController: OWSViewController {
 
     // MARK: Initializers
 
-    @objc
     public required init(stickerPackInfo: StickerPackInfo) {
         self.stickerPackInfo = stickerPackInfo
         self.dataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPackInfo,
@@ -44,9 +42,7 @@ public class StickerPackViewController: OWSViewController {
         return true
     }
 
-    @objc
-    public func present(from fromViewController: UIViewController,
-                        animated: Bool) {
+    public func present(from fromViewController: UIViewController, animated: Bool) {
         AssertIsOnMainThread()
 
         if #available(iOS 13, *) {

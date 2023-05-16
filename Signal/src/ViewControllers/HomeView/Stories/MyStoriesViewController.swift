@@ -78,7 +78,7 @@ class MyStoriesViewController: OWSViewController {
     }
 
     @objc
-    func showPrivacySettings() {
+    private func showPrivacySettings() {
         let vc = StoryPrivacySettingsViewController()
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }

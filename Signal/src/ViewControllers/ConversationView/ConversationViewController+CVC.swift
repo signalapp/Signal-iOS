@@ -683,7 +683,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                           chatColor: .placeholderValue)
     }
 
-    @objc
     public static func buildDefaultConversationStyle(thread: TSThread) -> ConversationStyle {
         ConversationStyle(type: .default,
                           thread: thread,

@@ -78,25 +78,20 @@ public class DisplayableText: NSObject {
         return truncatedContent?.naturalAlignment ?? fullContent.naturalAlignment
     }
 
-    @objc
     public var isTextTruncated: Bool {
         return truncatedContent != nil
     }
 
     private static let maxInlineText = 1024 * 8
 
-    @objc
     public var canRenderTruncatedTextInline: Bool {
         return isTextTruncated && fullLengthWithNewLineScalar <= Self.maxInlineText
     }
 
-    @objc
     public let fullLengthWithNewLineScalar: Int
 
-    @objc
     public let jumbomojiCount: UInt
 
-    @objc
     public static let kMaxJumbomojiCount: Int = 5
 
     static let truncatedTextSuffix: String = "…"
@@ -184,7 +179,6 @@ public class DisplayableText: NSObject {
         return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     }()
 
-    @objc
     public lazy var shouldAllowLinkification: Bool = {
         guard let linkDetector: NSDataDetector = DisplayableText.linkDetector else {
             owsFailDebug("linkDetector was unexpectedly nil")
@@ -253,7 +247,6 @@ public class DisplayableText: NSObject {
         return string.utf16.count + numberOfNewLines * newLineScalar
     }
 
-    @objc
     public class var empty: DisplayableText {
         return DisplayableText(
             fullContent: .init(textValue: .text(text: ""), naturalAlignment: .natural),
@@ -261,7 +254,6 @@ public class DisplayableText: NSObject {
         )
     }
 
-    @objc
     public class func displayableTextForTests(_ text: String) -> DisplayableText {
         return DisplayableText(
             fullContent: .init(textValue: .text(text: text),

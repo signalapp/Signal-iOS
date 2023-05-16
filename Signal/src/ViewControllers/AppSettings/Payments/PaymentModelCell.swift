@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalUI
 
 public class PaymentModelCell: UITableViewCell {
@@ -124,7 +123,6 @@ public class PaymentModelCell: UITableViewCell {
         accessoryType = .disclosureIndicator
     }
 
-    @objc
     public override func prepareForReuse() {
         super.prepareForReuse()
 

@@ -135,7 +135,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: Initializers
 
-    @objc
     required override init() {
         self.searchBar = OWSSearchBar()
         self.layout = GifPickerLayout()
@@ -154,7 +153,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: -
     @objc
-    func didBecomeActive() {
+    private func didBecomeActive() {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -164,7 +163,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     @objc
-    func reachabilityChanged() {
+    private func reachabilityChanged() {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -547,7 +546,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: - Event Handlers
 
     @objc
-    func didPressCancel(sender: UIButton) {
+    private func didPressCancel(sender: UIButton) {
         delegate?.gifPickerDidCancel()
     }
 
@@ -661,7 +660,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: - Event Handlers
 
     @objc
-    func retryTapped(sender: UIGestureRecognizer) {
+    private func retryTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }

@@ -79,19 +79,19 @@ class HomeTabBarController: UITabBarController {
     }
 
     @objc
-    func didEnterForeground() {
+    private func didEnterForeground() {
         if selectedTab == .stories {
             storyBadgeCountManager.markAllStoriesRead()
         }
     }
 
     @objc
-    func applyTheme() {
+    private func applyTheme() {
         tabBar.tintColor = Theme.primaryTextColor
     }
 
     @objc
-    func storiesEnabledStateDidChange() {
+    private func storiesEnabledStateDidChange() {
         if StoryManager.areStoriesEnabled {
             setTabBarHidden(false, animated: false)
         } else {
@@ -246,10 +246,8 @@ extension HomeTabBarController: UITabBarControllerDelegate {
     }
 }
 
-@objc
 public class OWSTabBar: UITabBar {
 
-    @objc
     public var fullWidth: CGFloat {
         return superview?.frame.width ?? .zero
     }
@@ -258,7 +256,6 @@ public class OWSTabBar: UITabBar {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public static let backgroundBlurMutingFactor: CGFloat = 0.5
     var blurEffectView: UIVisualEffectView?
 
@@ -339,11 +336,10 @@ public class OWSTabBar: UITabBar {
     }
 
     @objc
-    public func themeDidChange() {
+    private func themeDidChange() {
         applyTheme()
     }
 
-    @objc
     public var respectsTheme: Bool = true {
         didSet {
             themeDidChange()
@@ -352,14 +348,12 @@ public class OWSTabBar: UITabBar {
 
     // MARK: Override Theme
 
-    @objc
     public enum TabBarStyle: Int {
         case `default`
     }
 
     private var currentStyle: TabBarStyle?
 
-    @objc
     public func switchToStyle(_ style: TabBarStyle, animated: Bool = false) {
         AssertIsOnMainThread()
 

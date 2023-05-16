@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
-@objc
 extension UIResponder {
     private static weak var _currentFirstResponder: UIResponder?
     static var currentFirstResponder: UIResponder? {
@@ -15,6 +14,7 @@ extension UIResponder {
         return _currentFirstResponder
     }
 
+    @objc
     private func findFirstResponder() {
         UIResponder._currentFirstResponder = self
     }

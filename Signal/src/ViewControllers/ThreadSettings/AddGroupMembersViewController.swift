@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 
 protocol AddGroupMembersViewControllerDelegate: AnyObject {
@@ -12,7 +11,6 @@ protocol AddGroupMembersViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class AddGroupMembersViewController: BaseGroupMemberViewController {
 
     weak var addGroupMembersViewControllerDelegate: AddGroupMembersViewControllerDelegate?
@@ -35,7 +33,6 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -59,7 +56,7 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
     }
 
     @objc
-    func updateGroupPressed() {
+    private func updateGroupPressed() {
         showConfirmationAlert()
     }
 

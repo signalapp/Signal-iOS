@@ -630,7 +630,6 @@ extension ConversationSettingsViewController: GroupDescriptionViewControllerDele
 
 // MARK: -
 
-@objc
 public class OWSLabel: UILabel {
 
     // MARK: - Tap

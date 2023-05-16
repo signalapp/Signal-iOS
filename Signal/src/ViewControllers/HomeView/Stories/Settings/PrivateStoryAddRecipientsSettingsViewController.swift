@@ -8,7 +8,6 @@ import SignalServiceKit
 import SignalMessaging
 import SignalUI
 
-@objc
 public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewController {
     let thread: TSPrivateStoryThread
     var recipientSet: OrderedSet<PickedRecipient> = []
@@ -24,7 +23,6 @@ public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewCont
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateBarButtons()
@@ -46,7 +44,7 @@ public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewCont
     // MARK: - Actions
 
     @objc
-    func updatePressed() {
+    private func updatePressed() {
         AssertIsOnMainThread()
 
         ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { modal in

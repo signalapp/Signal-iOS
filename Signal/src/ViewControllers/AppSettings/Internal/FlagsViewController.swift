@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc
 class FlagsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()

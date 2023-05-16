@@ -5,7 +5,6 @@
 
 import UIKit
 
-@objc
 public class Deprecated_OnboardingTransferChoiceViewController: Deprecated_OnboardingBaseViewController {
 
     public override var primaryLayoutMargins: UIEdgeInsets {
@@ -217,7 +216,7 @@ public class Deprecated_OnboardingTransferChoiceViewController: Deprecated_Onboa
     // MARK: - Events
 
     @objc
-    func didSelectTransfer() {
+    private func didSelectTransfer() {
         Logger.info("")
 
         switch onboardingController.onboardingMode {
@@ -230,7 +229,7 @@ public class Deprecated_OnboardingTransferChoiceViewController: Deprecated_Onboa
     }
 
     @objc
-    func didSelectRegister() {
+    private func didSelectRegister() {
         Logger.info("")
 
         switch onboardingController.onboardingMode {

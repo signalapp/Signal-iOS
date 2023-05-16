@@ -6,7 +6,7 @@
 import SignalMessaging
 import SignalUI
 
-class ChatColorViewController: OWSTableViewController2 {
+class ChatColorViewController: OWSTableViewController2, Dependencies {
 
     fileprivate let thread: TSThread?
 
@@ -248,8 +248,8 @@ class ChatColorViewController: OWSTableViewController2 {
         let customColorVC = CustomColorViewController(thread: thread,
                                                       valueMode: valueMode) { [weak self] (value: ChatColor) in
             guard let self = self else { return }
-            Self.databaseStorage.write { transaction in
-                Self.chatColors.upsertCustomValue(value, transaction: transaction)
+            self.databaseStorage.write { transaction in
+                self.chatColors.upsertCustomValue(value, transaction: transaction)
             }
             self.setNewValue(value)
         }
@@ -259,8 +259,8 @@ class ChatColorViewController: OWSTableViewController2 {
     private func showDeleteUI(_ value: ChatColor) {
 
         func deleteValue() {
-            Self.databaseStorage.write { transaction in
-                Self.chatColors.deleteCustomValue(value, transaction: transaction)
+            databaseStorage.write { transaction in
+                chatColors.deleteCustomValue(value, transaction: transaction)
             }
         }
 
@@ -297,8 +297,8 @@ class ChatColorViewController: OWSTableViewController2 {
         let newValue = ChatColor(id: ChatColor.randomId,
                                  setting: oldValue.setting,
                                  isBuiltIn: false)
-        Self.databaseStorage.write { transaction in
-            Self.chatColors.upsertCustomValue(newValue, transaction: transaction)
+        databaseStorage.write { transaction in
+            chatColors.upsertCustomValue(newValue, transaction: transaction)
         }
     }
 

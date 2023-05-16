@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
+import SignalUI
 
 // This captures the CV view state that can affect the load.
 // It is used when building, measuring & configuring components and their views.

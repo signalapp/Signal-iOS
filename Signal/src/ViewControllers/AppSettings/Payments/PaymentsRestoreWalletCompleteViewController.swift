@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController2 {
 
@@ -153,7 +153,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
     // MARK: - Events
 
     @objc
-    func didTapDoneButton() {
+    private func didTapDoneButton() {
         guard payments.paymentsEntropy == nil else {
             owsFailDebug("paymentsEntropy already set.")
             dismiss(animated: true, completion: nil)
@@ -182,7 +182,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
     }
 
     @objc
-    func didTapEditButton() {
+    private func didTapEditButton() {
         returnToFirstWordView(shouldClearInput: false)
     }
 

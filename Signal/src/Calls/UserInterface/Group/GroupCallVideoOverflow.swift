@@ -86,7 +86,7 @@ class GroupCallVideoOverflow: UICollectionView {
     }
 
     @objc
-    func updateOrientationOverride() {
+    private func updateOrientationOverride() {
         // If we're on iPhone and screen sharing, we want to allow
         // the user to change the orientation. We fake this by
         // manually transforming the cells.

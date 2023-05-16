@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
 import SignalServiceKit
 
 // TODO: This will be part of our reuse strategy.
@@ -28,8 +26,7 @@ public enum CVCellReuseIdentifier: String, CaseIterable {
 
 // Represents a single item in the conversation history.
 // Could be a date header or a unread indicator.
-@objc
-public protocol CVItemCell {
+public protocol CVItemCell where Self: UICollectionViewCell {
     var isCellVisible: Bool { get set }
 }
 

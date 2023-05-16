@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import BonMot
 import SignalUI
 
@@ -56,7 +55,6 @@ class GroupDescriptionPreviewView: ManualLayoutView {
         textView.autoPinEdgesToSuperviewEdges()
     }
 
-    @objc
     required init(name: String) {
         fatalError("init(name:) has not been implemented")
     }

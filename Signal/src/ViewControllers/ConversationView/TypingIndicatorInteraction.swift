@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
-@objc(OWSTypingIndicatorInteraction)
 public class TypingIndicatorInteraction: TSInteraction {
     public static let TypingIndicatorId = "TypingIndicator"
 

@@ -8,7 +8,6 @@ import SignalCoreKit
 import SignalMessaging
 import UIKit
 
-@objc
 public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_RegistrationBaseViewController {
 
     // When the users attempts remaining falls below this number,
@@ -183,7 +182,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
     // MARK: - Events
 
     @objc
-    func needHelpLinkWasTapped() {
+    private func needHelpLinkWasTapped() {
         Logger.info("")
 
         let title = OWSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
@@ -200,7 +199,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
     }
 
     @objc
-    func nextPressed() {
+    private func nextPressed() {
         Logger.info("")
 
         tryToVerify()
@@ -447,7 +446,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
     }
 
     @objc
-    func togglePinType() {
+    private func togglePinType() {
         switch pinType {
         case .numeric:
             pinType = .alphanumeric

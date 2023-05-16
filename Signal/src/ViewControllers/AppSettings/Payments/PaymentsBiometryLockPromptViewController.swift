@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 public protocol PaymentsBiometryLockPromptDelegate: AnyObject {
     func didEnablePaymentsLock()
@@ -76,7 +76,6 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         updateNavbar()
     }
 
-    @objc
     private func updateContents() {
         AssertIsOnMainThread()
 
@@ -145,7 +144,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func didTapClose() {
+    private func didTapClose() {
         guard hasBeenDoubleReminded == false else {
             dismiss(animated: true, completion: nil)
             return
@@ -155,7 +154,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     }
 
     @objc
-    func didTapEnableButton() {
+    private func didTapEnableButton() {
         databaseStorage.write { transaction in
             OWSPaymentsLock.shared.setIsPaymentsLockEnabled(true, transaction: transaction)
         }
@@ -163,7 +162,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     }
 
     @objc
-    func didTapNotNowButton() {
+    private func didTapNotNowButton() {
         AssertIsOnMainThread()
 
         guard hasBeenDoubleReminded == false else {

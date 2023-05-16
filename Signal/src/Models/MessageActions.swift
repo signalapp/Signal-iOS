@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 protocol MessageActionsDelegate: AnyObject {
     func messageActionsShowDetailsForItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsReplyToItem(_ itemViewModel: CVItemViewModelImpl)
@@ -124,10 +123,8 @@ struct MessageActionBuilder {
     }
 }
 
-@objc
 class MessageActions: NSObject {
 
-    @objc
     class func textActions(itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
 
@@ -169,7 +166,6 @@ class MessageActions: NSObject {
         return actions
     }
 
-    @objc
     class func mediaActions(itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
 
@@ -199,7 +195,6 @@ class MessageActions: NSObject {
         return actions
     }
 
-    @objc
     class func quotedMessageActions(itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
 
@@ -224,7 +219,6 @@ class MessageActions: NSObject {
         return actions
     }
 
-    @objc
     class func infoMessageActions(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> [MessageAction] {
         let deleteAction = MessageActionBuilder.deleteMessage(itemViewModel: itemViewModel, delegate: delegate)
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)

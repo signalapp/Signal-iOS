@@ -180,7 +180,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard hasUnsavedChanges else {
             dismiss(animated: true)
             return
@@ -192,7 +192,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         let configuration = self.configuration
 
         // We use this view some places that don't have a thread like the

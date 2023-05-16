@@ -3,13 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 protocol GroupNameViewControllerDelegate: AnyObject {
     func groupNameViewControllerDidComplete(groupName: String?)
 }
 
-@objc
 class GroupNameViewController: OWSTableViewController2 {
     private let helper: GroupAttributesEditorHelper
 
@@ -117,7 +116,7 @@ class GroupNameViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard helper.hasUnsavedChanges else {
             dismiss(animated: true)
             return
@@ -129,7 +128,7 @@ class GroupNameViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         helper.nameTextField.acceptAutocorrectSuggestion()
         nameDelegate?.groupNameViewControllerDidComplete(groupName: helper.groupNameCurrent)
         dismiss(animated: true)

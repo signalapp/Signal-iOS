@@ -85,7 +85,7 @@ public class LogPickerViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleAudiblePreference(_ sender: UISwitch) {
+    private func didToggleAudiblePreference(_ sender: UISwitch) {
         OWSPreferences.setIsAudibleErrorLoggingEnabled(sender.isOn)
         if sender.isOn {
             ErrorLogger.playAlertSound()
@@ -138,7 +138,7 @@ public class LogViewController: UIViewController {
     }
 
     @objc
-    func didTapTrash(_ sender: UIBarButtonItem) {
+    private func didTapTrash(_ sender: UIBarButtonItem) {
         // truncate logUrl
         do {
             try NSData().write(to: logUrl)
@@ -149,7 +149,7 @@ public class LogViewController: UIViewController {
     }
 
     @objc
-    func didTapShare(_ sender: UIBarButtonItem) {
+    private func didTapShare(_ sender: UIBarButtonItem) {
         let logText = textView.text ?? "Empty Log"
         let vc = UIActivityViewController(activityItems: [logText], applicationActivities: [])
         present(vc, animated: true)

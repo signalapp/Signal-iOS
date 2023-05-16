@@ -5,7 +5,6 @@
 
 import AVFAudio
 
-@objc
 public class SpeechManager: NSObject, AVSpeechSynthesizerDelegate {
     private let speechSynthesizer = AVSpeechSynthesizer()
 

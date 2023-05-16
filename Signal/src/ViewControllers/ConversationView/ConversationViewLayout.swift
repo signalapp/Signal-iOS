@@ -48,7 +48,6 @@ public enum ScrollContinuity: CustomStringConvertible {
 
 // MARK: -
 
-@objc
 public protocol ConversationViewLayoutItem {
 
     var interactionUniqueId: String { get }
@@ -1145,7 +1144,6 @@ public class CVScrollContinuityToken: NSObject {
 
 // MARK: -
 
-@objc
 public class CVCollectionViewLayoutAttributes: UICollectionViewLayoutAttributes {
     public var isStickyHeader: Bool = false
 

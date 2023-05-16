@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalUI
 import SignalMessaging
+import SignalUI
 
 public protocol PaymentsViewPassphraseDelegate: AnyObject {
     func viewPassphraseDidCancel(viewController: PaymentsViewPassphraseSplashViewController)
@@ -14,7 +13,6 @@ public protocol PaymentsViewPassphraseDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
     public enum Style: Int, CaseIterable {
@@ -92,7 +90,6 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         updateNavbar()
     }
 
-    @objc
     private func updateContents() {
         AssertIsOnMainThread()
 
@@ -190,7 +187,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func didTapDismiss() {
+    private func didTapDismiss() {
         if style.shouldConfirmCancel {
             showDismissConfirmation()
         } else {
@@ -199,7 +196,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     }
 
     @objc
-    func didTapNextButton() {
+    private func didTapNextButton() {
         AssertIsOnMainThread()
 
         guard let viewPassphraseDelegate = viewPassphraseDelegate else {

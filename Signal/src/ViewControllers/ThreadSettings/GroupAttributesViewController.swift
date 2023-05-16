@@ -46,7 +46,6 @@ class GroupAttributesViewController: OWSTableViewController2 {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -156,14 +155,14 @@ class GroupAttributesViewController: OWSTableViewController2 {
     }
 
     @objc
-    func setButtonPressed() {
+    private func setButtonPressed() {
         updateGroupThreadAndDismiss()
     }
 
     // MARK: - Events
 
     @objc
-    func didTapAvatarView() {
+    private func didTapAvatarView() {
         helper.didTapAvatarView()
     }
 }
@@ -185,7 +184,6 @@ extension GroupAttributesViewController {
         return result
     }
 
-    @objc
     public static func showUnsavedGroupChangesActionSheet(
         from fromViewController: UIViewController,
         saveBlock: @escaping () -> Void,

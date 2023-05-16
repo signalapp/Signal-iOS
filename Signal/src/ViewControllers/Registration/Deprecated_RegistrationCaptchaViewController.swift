@@ -6,7 +6,6 @@
 import Foundation
 import UIKit
 
-@objc
 protocol Deprecated_RegistrationCaptchaViewController: AnyObject {
 
     var viewModel: Deprecated_RegistrationCaptchaViewModel { get }
@@ -17,7 +16,6 @@ protocol Deprecated_RegistrationCaptchaViewController: AnyObject {
 
 // MARK: -
 
-@objc
 class Deprecated_RegistrationCaptchaViewModel: NSObject {
     weak var viewController: Deprecated_RegistrationCaptchaViewController?
 

@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
 class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +50,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func updateTableContents() {
+    private func updateTableContents() {
         let contents = OWSTableContents()
 
         let censorshipCircumventionSection = OWSTableSection()
@@ -242,7 +241,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleEnableCensorshipCircumventionSwitch(_ sender: UISwitch) {
+    private func didToggleEnableCensorshipCircumventionSwitch(_ sender: UISwitch) {
         self.signalService.isCensorshipCircumventionManuallyDisabled = !sender.isOn
         self.signalService.isCensorshipCircumventionManuallyActivated = sender.isOn
         updateTableContents()
@@ -255,17 +254,17 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleCallsHideIPAddressSwitch(_ sender: UISwitch) {
+    private func didToggleCallsHideIPAddressSwitch(_ sender: UISwitch) {
         preferences.setDoCallsHideIPAddress(sender.isOn)
     }
 
     @objc
-    func didToggleUDShowIndicatorsSwitch(_ sender: UISwitch) {
+    private func didToggleUDShowIndicatorsSwitch(_ sender: UISwitch) {
         preferences.setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage(sender.isOn)
     }
 
     @objc
-    func didToggleUDUnrestrictedAccessSwitch(_ sender: UISwitch) {
+    private func didToggleUDUnrestrictedAccessSwitch(_ sender: UISwitch) {
         udManager.setShouldAllowUnrestrictedAccessLocal(sender.isOn)
     }
 }

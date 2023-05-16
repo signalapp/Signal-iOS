@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
 class PrivacySettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +29,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func updateTableContents() {
+    private func updateTableContents() {
         let contents = OWSTableContents()
 
         let whoCanSection = OWSTableSection()
@@ -243,28 +242,28 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleReadReceiptsSwitch(_ sender: UISwitch) {
+    private func didToggleReadReceiptsSwitch(_ sender: UISwitch) {
         receiptManager.setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration(sender.isOn)
     }
 
     @objc
-    func didToggleTypingIndicatorsSwitch(_ sender: UISwitch) {
+    private func didToggleTypingIndicatorsSwitch(_ sender: UISwitch) {
         typingIndicatorsImpl.setTypingIndicatorsEnabledAndSendSyncMessage(value: sender.isOn)
     }
 
     @objc
-    func didToggleScreenSecuritySwitch(_ sender: UISwitch) {
+    private func didToggleScreenSecuritySwitch(_ sender: UISwitch) {
         preferences.setScreenSecurity(sender.isOn)
     }
 
     @objc
-    func didToggleScreenLockSwitch(_ sender: UISwitch) {
+    private func didToggleScreenLockSwitch(_ sender: UISwitch) {
         ScreenLock.shared.setIsScreenLockEnabled(sender.isOn)
         updateTableContents()
     }
 
     @objc
-    func didTogglePaymentsLockSwitch(_ sender: UISwitch) {
+    private  func didTogglePaymentsLockSwitch(_ sender: UISwitch) {
         // Require unlock to disable payments lock
         if OWSPaymentsLock.shared.isPaymentsLockEnabled() {
             OWSPaymentsLock.shared.tryToUnlock { [weak self] outcome in
@@ -319,7 +318,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleEnableSystemCallLogSwitch(_ sender: UISwitch) {
+    private func didToggleEnableSystemCallLogSwitch(_ sender: UISwitch) {
         preferences.setIsSystemCallLogEnabled(sender.isOn)
 
         // rebuild callUIAdapter since CallKit configuration changed.

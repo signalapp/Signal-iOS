@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 public protocol PaymentsRestoreWalletDelegate: AnyObject {
     func restoreWalletDidComplete()
@@ -11,7 +11,6 @@ public protocol PaymentsRestoreWalletDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class PaymentsRestoreWalletSplashViewController: OWSViewController {
 
     private weak var restoreWalletDelegate: PaymentsRestoreWalletDelegate?
@@ -127,7 +126,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func didTapDismiss() {
+    private func didTapDismiss() {
         dismiss(animated: true, completion: nil)
     }
 

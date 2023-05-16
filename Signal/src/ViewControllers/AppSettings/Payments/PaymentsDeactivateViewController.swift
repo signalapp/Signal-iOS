@@ -229,7 +229,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
     }
 
     @objc
-    func didTapDismiss() {
+    private func didTapDismiss() {
         dismiss(animated: true, completion: nil)
     }
 }

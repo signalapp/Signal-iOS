@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 protocol GroupLinkViewControllerDelegate: AnyObject {
     func groupLinkViewViewDidUpdate()
@@ -11,7 +11,6 @@ protocol GroupLinkViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class GroupLinkViewController: OWSTableViewController2 {
 
     weak var groupLinkViewControllerDelegate: GroupLinkViewControllerDelegate?
@@ -26,7 +25,6 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -158,7 +156,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleGroupLinkEnabled(_ sender: UISwitch) {
+    private func didToggleGroupLinkEnabled(_ sender: UISwitch) {
         guard canEditGroupLink else {
             presentAdminOnlyWarningToast()
             updateTableContents()
@@ -175,7 +173,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleApproveNewMembers(_ sender: UISwitch) {
+    private func didToggleApproveNewMembers(_ sender: UISwitch) {
         guard canEditGroupLink else {
             presentAdminOnlyWarningToast()
             updateTableContents()

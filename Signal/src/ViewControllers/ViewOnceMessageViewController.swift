@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
+import SignalUI
 import YYImage
 
-@objc
 class ViewOnceMessageViewController: OWSViewController {
 
     class Content {
@@ -49,7 +47,6 @@ class ViewOnceMessageViewController: OWSViewController {
 
     // MARK: -
 
-    @objc
     public class func tryToPresent(interaction: TSInteraction,
                                    from fromViewController: UIViewController) {
         AssertIsOnMainThread()
@@ -410,7 +407,7 @@ class ViewOnceMessageViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func applicationWillEnterForeground() throws {
+    private func applicationWillEnterForeground() throws {
         AssertIsOnMainThread()
 
         Logger.debug("")

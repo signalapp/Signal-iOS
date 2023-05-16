@@ -117,7 +117,7 @@ class LegacyGroupView: UIView {
     // MARK: - Events
 
     @objc
-    public func didTapLearnMore() {
+    private func didTapLearnMore() {
         guard let viewController = viewController else {
             owsFailDebug("Missing viewController.")
             return
@@ -126,17 +126,17 @@ class LegacyGroupView: UIView {
     }
 
     @objc
-    public func didTapUpgrade() {
+    private func didTapUpgrade() {
         showMigrationAlert(mode: .upgradeGroup(migrationInfo: migrationInfo))
     }
 
     @objc
-    public func didTapTooManyMembers() {
+    private func didTapTooManyMembers() {
         showMigrationAlert(mode: .tooManyMembers)
     }
 
     @objc
-    public func didTapCantUpgradeDueToMemberState() {
+    private func didTapCantUpgradeDueToMemberState() {
         showMigrationAlert(mode: .someMembersCantMigrate)
     }
 
@@ -248,7 +248,7 @@ public class LegacyGroupViewLearnMoreView: UIView {
     // MARK: - Events
 
     @objc
-    func dismissAlert() {
+    private func dismissAlert() {
         actionSheetController?.dismiss(animated: true)
     }
 }

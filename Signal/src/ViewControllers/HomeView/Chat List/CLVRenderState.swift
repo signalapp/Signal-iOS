@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public class CLVRenderState: NSObject {
 
     let viewInfo: CLVViewInfo
@@ -16,7 +15,6 @@ public class CLVRenderState: NSObject {
     var archiveCount: UInt { viewInfo.archiveCount }
     var inboxCount: UInt { viewInfo.inboxCount }
 
-    @objc
     var visibleThreadCount: Int { pinnedThreads.count + unpinnedThreads.count }
 
     var hasArchivedThreadsRow: Bool { viewInfo.hasArchivedThreadsRow }
@@ -42,7 +40,6 @@ public class CLVRenderState: NSObject {
         !pinnedThreads.isEmpty && !unpinnedThreads.isEmpty
     }
 
-    @objc
     func thread(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> TSThread? {
         guard let section = ChatListSection(rawValue: indexPath.section) else {
             if expectsSuccess {

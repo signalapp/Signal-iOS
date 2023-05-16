@@ -18,13 +18,11 @@ enum AvatarContext {
     }
 }
 
-@objc
 public class AvatarHistoryManager: NSObject {
     static let keyValueStore = SDSKeyValueStore(collection: "AvatarHistory")
     static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
     static let imageHistoryDirectory = URL(fileURLWithPath: "AvatarHistory", isDirectory: true, relativeTo: appSharedDataDirectory)
 
-    @objc
     override init() {
         super.init()
         SwiftSingletons.register(self)

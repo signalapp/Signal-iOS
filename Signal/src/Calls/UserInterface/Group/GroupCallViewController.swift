@@ -578,7 +578,7 @@ class GroupCallViewController: UIViewController {
     // MARK: - Video control timeout
 
     @objc
-    func didTouchRootView(sender: UIGestureRecognizer) {
+    private func didTouchRootView(sender: UIGestureRecognizer) {
         shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
     }
 
@@ -620,7 +620,6 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         return firstMember.address
     }
 
-    @objc
     public func returnFromPip(pipWindow: UIWindow) {
         // The call "pip" uses our remote and local video views since only
         // one `AVCaptureVideoPreviewLayer` per capture session is supported.

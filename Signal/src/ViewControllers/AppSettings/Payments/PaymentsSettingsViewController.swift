@@ -7,7 +7,6 @@ import Lottie
 import SignalMessaging
 import SignalUI
 
-@objc
 public enum PaymentsSettingsMode: UInt, CustomStringConvertible {
     case inAppSettings
     case standalone
@@ -26,7 +25,6 @@ public enum PaymentsSettingsMode: UInt, CustomStringConvertible {
 
 // MARK: -
 
-@objc
 public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private let mode: PaymentsSettingsMode
@@ -44,7 +42,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private var outdatedClientReminderView: ReminderView?
 
-    @objc
     public required init(mode: PaymentsSettingsMode) {
         self.mode = mode
 

@@ -170,12 +170,12 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     }
 
     @objc
-    func applyTheme() {
+    private func applyTheme() {
         darkThemeBackgroundOverlay.isHidden = !Theme.isDarkThemeEnabled
     }
 
     @objc
-    func tappedDismiss() {
+    private func tappedDismiss() {
         dismiss()
     }
 

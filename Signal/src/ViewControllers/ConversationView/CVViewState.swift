@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 public protocol CVViewStateDelegate: AnyObject {
     func viewStateUIModeDidChange(oldValue: ConversationUIMode)
@@ -171,7 +171,6 @@ public extension ConversationViewController {
 
     var threadViewModel: ThreadViewModel { renderState.threadViewModel }
 
-    @objc
     var thread: TSThread { threadViewModel.threadRecord }
 
     var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration { threadViewModel.disappearingMessagesConfiguration }

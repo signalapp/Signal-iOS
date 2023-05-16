@@ -3,14 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
 class ProxyLinkSheetViewController: OWSTableSheetViewController {
     let url: URL
 
-    @objc
     init?(url: URL) {
         guard SignalProxy.isValidProxyLink(url) else { return nil }
         self.url = url

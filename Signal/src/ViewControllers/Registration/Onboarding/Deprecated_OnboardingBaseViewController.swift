@@ -5,13 +5,11 @@
 
 import UIKit
 
-@objc
 public class Deprecated_OnboardingBaseViewController: Deprecated_RegistrationBaseViewController {
 
     // Unlike a delegate, we can and should retain a strong reference to the OnboardingController.
     let onboardingController: Deprecated_OnboardingController
 
-    @objc
     public init(onboardingController: Deprecated_OnboardingController) {
         self.onboardingController = onboardingController
 

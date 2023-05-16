@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-@objc
 public enum MessageReceiptStatus: Int {
     case uploading
     case sending
@@ -20,16 +18,11 @@ public enum MessageReceiptStatus: Int {
     case pending
 }
 
-@objc
-public class MessageRecipientStatusUtils: NSObject {
-    // MARK: Initializers
+public class MessageRecipientStatusUtils {
 
-    @available(*, unavailable, message: "do not instantiate this class.")
-    private override init() {
-    }
+    private init() {}
 
     // This method is per-recipient.
-    @objc
     public class func recipientStatus(
         outgoingMessage: TSOutgoingMessage,
         recipientState: TSOutgoingMessageRecipientState
@@ -40,7 +33,6 @@ public class MessageRecipientStatusUtils: NSObject {
     }
 
     // This method is per-recipient.
-    @objc
     public class func shortStatusMessage(
         outgoingMessage: TSOutgoingMessage,
         recipientState: TSOutgoingMessageRecipientState
@@ -51,7 +43,6 @@ public class MessageRecipientStatusUtils: NSObject {
     }
 
     // This method is per-recipient.
-    @objc
     public class func longStatusMessage(
         outgoingMessage: TSOutgoingMessage,
         recipientState: TSOutgoingMessageRecipientState
@@ -161,20 +152,17 @@ public class MessageRecipientStatusUtils: NSObject {
     }
 
     // This method is per-message.
-    @objc
     public class func receiptMessage(outgoingMessage: TSOutgoingMessage) -> String {
         let (_, message ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage)
         return message
     }
 
     // This method is per-message.
-    @objc
     public class func recipientStatus(outgoingMessage: TSOutgoingMessage) -> MessageReceiptStatus {
         let (status, _ ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage)
         return status
     }
 
-    @objc
     public class func description(forMessageReceiptStatus value: MessageReceiptStatus) -> String {
         switch value {
         case .read:

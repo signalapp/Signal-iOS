@@ -28,7 +28,6 @@ extension AudioSession {
      * This must be called before any audio tracks are added to the peerConnection, else we'll start recording before all
      * our signaling is set up.
      */
-    @objc
     public func configureRTCAudio() {
         Logger.info("rtcAudioSession.useManualAudio")
         rtcAudioSession.useManualAudio = true
@@ -38,7 +37,6 @@ extension AudioSession {
      * Because we useManualAudio with our RTCAudioSession, we have to start/stop the recording audio session ourselves.
      * See header for details on  manual audio.
      */
-    @objc
     public var isRTCAudioEnabled: Bool {
         get {
             return rtcAudioSession.isAudioEnabled

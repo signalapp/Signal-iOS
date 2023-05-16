@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
     var viewState: CVViewState { get }
@@ -174,12 +174,12 @@ public class CVLoadCoordinator: NSObject {
     }
 
     @objc
-    func applicationDidEnterBackground() {
+    private func applicationDidEnterBackground() {
         resetClearedUnreadMessagesIndicator()
     }
 
     @objc
-    func typingIndicatorStateDidChange(notification: Notification) {
+    private func typingIndicatorStateDidChange(notification: Notification) {
         AssertIsOnMainThread()
 
         guard let notificationThreadId = notification.object as? String else {
@@ -193,7 +193,7 @@ public class CVLoadCoordinator: NSObject {
     }
 
     @objc
-    func profileWhitelistDidChange() {
+    private func profileWhitelistDidChange() {
         AssertIsOnMainThread()
 
         enqueueReload(canReuseInteractionModels: true,
@@ -201,7 +201,7 @@ public class CVLoadCoordinator: NSObject {
     }
 
     @objc
-    func blockListDidChange() {
+    private func blockListDidChange() {
         AssertIsOnMainThread()
 
         enqueueReload(canReuseInteractionModels: true,
@@ -209,7 +209,7 @@ public class CVLoadCoordinator: NSObject {
     }
 
     @objc
-    func localProfileDidChange() {
+    private func localProfileDidChange() {
         AssertIsOnMainThread()
 
         enqueueReload(canReuseInteractionModels: true,
@@ -217,7 +217,7 @@ public class CVLoadCoordinator: NSObject {
     }
 
     @objc
-    func otherUsersProfileDidChange(notification: Notification) {
+    private func otherUsersProfileDidChange(notification: Notification) {
         AssertIsOnMainThread()
 
         if let contactThread = thread as? TSContactThread {
@@ -236,7 +236,7 @@ public class CVLoadCoordinator: NSObject {
     }
 
     @objc
-    func phoneNumberDidChange(notification: Notification) {
+    private func phoneNumberDidChange(notification: Notification) {
         AssertIsOnMainThread()
 
         var notificationAddressKeys = Set<String>()
@@ -263,7 +263,7 @@ public class CVLoadCoordinator: NSObject {
     }
 
     @objc
-    func skipContactAvatarBlurDidChange(notification: Notification) {
+    private func skipContactAvatarBlurDidChange(notification: Notification) {
         guard let address = notification.userInfo?[OWSContactsManager.skipContactAvatarBlurAddressKey] as? SignalServiceAddress else {
             owsFailDebug("Missing address.")
             return
@@ -282,7 +282,7 @@ public class CVLoadCoordinator: NSObject {
     }
 
     @objc
-    func skipGroupAvatarBlurDidChange(notification: Notification) {
+    private func skipGroupAvatarBlurDidChange(notification: Notification) {
         guard let groupUniqueId = notification.userInfo?[OWSContactsManager.skipGroupAvatarBlurGroupUniqueIdKey] as? String else {
             owsFailDebug("Missing groupId.")
             return
@@ -863,7 +863,6 @@ extension CVLoadCoordinator: DatabaseChangeDelegate {
 
 // MARK: -
 
-@objc
 extension CVLoadCoordinator: UICollectionViewDataSource {
 
     public static let messageSection: Int = 0
@@ -976,7 +975,6 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
 
 // MARK: -
 
-@objc
 extension CVLoadCoordinator: UICollectionViewDelegate {
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -1004,7 +1002,6 @@ extension CVLoadCoordinator: UICollectionViewDelegate {
 
 // MARK: -
 
-@objc
 extension CVLoadCoordinator: ConversationViewLayoutDelegate {
 
     public var layoutItems: [ConversationViewLayoutItem] {

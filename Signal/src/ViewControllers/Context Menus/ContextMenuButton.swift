@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
 import SignalCoreKit
+import UIKit
 
 /// This class exists to be a drop-in replacement for the Context-menu related APIs available on UIButton
 /// in iOS 14 and above.

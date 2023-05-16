@@ -5,7 +5,6 @@
 
 import SignalCoreKit
 
-@objc
 public class Deprecated_OnboardingCaptchaViewController: Deprecated_OnboardingBaseViewController {
 
     let viewModel = Deprecated_RegistrationCaptchaViewModel()

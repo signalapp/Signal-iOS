@@ -6,7 +6,6 @@
 import Foundation
 import SignalMessaging
 
-@objc
 class WidePhotoCellSeparator: UIView { }
 
 /// This is the collection view cell for "list mode" in All Media.
@@ -453,7 +452,7 @@ class FilenameSenderView: UIView {
     }
 
     @objc
-    func themeDidChange() {
+    private func themeDidChange() {
         filenameLabel.textColor = Theme.primaryTextColor
         middleDotLabel.textColor = Theme.primaryTextColor
         senderNameLabel.textColor = Theme.primaryTextColor

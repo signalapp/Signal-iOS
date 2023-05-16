@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import ContactsUI
 import SignalUI
 
-@objc
 class MemberActionSheet: OWSTableSheetViewController {
     private var groupViewHelper: GroupViewHelper?
 
@@ -16,7 +14,6 @@ class MemberActionSheet: OWSTableSheetViewController {
     var threadViewModel: ThreadViewModel
     let address: SignalServiceAddress
 
-    @objc
     init(address: SignalServiceAddress, groupViewHelper: GroupViewHelper?) {
         self.threadViewModel = Self.fetchThreadViewModel(address: address)
         self.groupViewHelper = groupViewHelper
@@ -61,7 +58,7 @@ class MemberActionSheet: OWSTableSheetViewController {
     }
 
     private weak var fromViewController: UIViewController?
-    @objc(presentFromViewController:)
+
     func present(from viewController: UIViewController) {
         fromViewController = viewController
         viewController.present(self, animated: true)

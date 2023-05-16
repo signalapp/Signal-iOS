@@ -7,7 +7,6 @@ import MultipeerConnectivity
 import SignalMessaging
 import UIKit
 
-@objc
 public class Deprecated_OnboardingTransferProgressViewController: Deprecated_OnboardingBaseViewController {
 
     let progressView: TransferProgressView
@@ -81,7 +80,7 @@ public class Deprecated_OnboardingTransferProgressViewController: Deprecated_Onb
     // MARK: - Events
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         Logger.info("")
 
         guard let navigationController = navigationController else {

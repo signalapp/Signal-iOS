@@ -827,12 +827,12 @@ public class SendPaymentViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func didTapDismiss() {
+    private func didTapDismiss() {
         dismiss(animated: true, completion: nil)
     }
 
     @objc
-    func didTapAddMemo() {
+    private func didTapAddMemo() {
         let view = SendPaymentMemoViewController(memoMessage: self.memoMessage)
         view.delegate = self
         navigationController?.pushViewController(view, animated: true)
@@ -851,7 +851,7 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     @objc
-    func didTapSwapCurrency() {
+    private func didTapSwapCurrency() {
         // If users repeatedly swap input currency, we don't want the
         // values to drift due to rounding errors.  So we keep around
         // the "other" currency amount and use it to swap if no changes
@@ -891,7 +891,7 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     @objc
-    func didTapRequestButton(_ sender: UIButton) {
+    private func didTapRequestButton(_ sender: UIButton) {
         // TODO: Add support for requests.
         //        guard let parsedAmount = parsedAmount,
         //              parsedAmount > 0 else {
@@ -929,7 +929,7 @@ public class SendPaymentViewController: OWSViewController {
     private var actionSheet: SendPaymentCompletionActionSheet?
 
     @objc
-    func didTapPayButton(_ sender: UIButton) {
+    private func didTapPayButton(_ sender: UIButton) {
         let paymentAmount = parsedPaymentAmount
         guard paymentAmount.picoMob > 0 else {
             showInvalidAmountAlert()
@@ -1190,12 +1190,11 @@ fileprivate extension SendPaymentViewController {
 // MARK: -
 
 extension SendPaymentViewController: SendPaymentHelperDelegate {
-    @objc
+
     public func balanceDidChange() {
         updateBalanceLabel()
     }
 
-    @objc
     public func currencyConversionDidChange() {
         guard isViewLoaded else {
             return

@@ -576,7 +576,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var isPanning = false
 
     @objc
-    func handlePan(_ sender: UIPanGestureRecognizer) {
+    private func handlePan(_ sender: UIPanGestureRecognizer) {
         var xOffset = sender.translation(in: view).x
         var xVelocity = sender.velocity(in: view).x
 
@@ -621,7 +621,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
 extension MessageDetailViewController {
     @objc
-    func didLongPressSent(sender: UIGestureRecognizer) {
+    private func didLongPressSent(sender: UIGestureRecognizer) {
         guard sender.state == .began else {
             return
         }

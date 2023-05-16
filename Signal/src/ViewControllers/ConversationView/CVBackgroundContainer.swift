@@ -74,7 +74,6 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
 // MARK: -
 
-@objc
 extension CVBackgroundContainer: WallpaperBlurProvider {
     public var wallpaperBlurState: WallpaperBlurState? {
         wallpaperView?.blurProvider?.wallpaperBlurState

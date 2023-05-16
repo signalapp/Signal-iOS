@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
-import UIKit
+import SignalUI
 
 class CustomActionSheet: ActionSheetController {
     public override func viewWillDisappear(_ animated: Bool) {
@@ -13,7 +12,6 @@ class CustomActionSheet: ActionSheetController {
     }
 }
 
-@objc
 public class GroupLinkPromotionActionSheet: UIView {
 
     private weak var conversationViewController: ConversationViewController?
@@ -38,7 +36,6 @@ public class GroupLinkPromotionActionSheet: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public func present(fromViewController: UIViewController) {
         let actionSheetController = CustomActionSheet()
         actionSheetController.customHeader = self
@@ -47,7 +44,6 @@ public class GroupLinkPromotionActionSheet: UIView {
         self.actionSheetController = actionSheetController
     }
 
-    @objc
     public func configure() {
         let subviews = buildContents()
 
@@ -163,7 +159,7 @@ public class GroupLinkPromotionActionSheet: UIView {
     // MARK: - Events
 
     @objc
-    func dismissAlert() {
+    private func dismissAlert() {
         actionSheetController?.dismiss(animated: true)
     }
 }

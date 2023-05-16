@@ -37,12 +37,12 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         dismiss(animated: true)
     }
 
     @objc
-    func storiesEnabledStateDidChange() {
+    private func storiesEnabledStateDidChange() {
         updateTableContents()
     }
 
@@ -225,7 +225,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleViewReceipts(_ sender: UISwitch) {
+    private func didToggleViewReceipts(_ sender: UISwitch) {
         databaseStorage.write {
             StoryManager.setAreViewReceiptsEnabled(sender.isOn, transaction: $0)
         }

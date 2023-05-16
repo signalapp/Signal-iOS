@@ -10,7 +10,6 @@ protocol GroupDescriptionViewControllerDelegate: AnyObject {
     func groupDescriptionViewControllerDidComplete(groupDescription: String?)
 }
 
-@objc
 class GroupDescriptionViewController: OWSTableViewController2 {
     private let helper: GroupAttributesEditorHelper
 
@@ -26,7 +25,6 @@ class GroupDescriptionViewController: OWSTableViewController2 {
 
     var isEditable: Bool { options.contains(.editable) }
 
-    @objc
     convenience init(groupModel: TSGroupModel) {
         self.init(groupModel: groupModel, options: [])
     }
@@ -210,7 +208,7 @@ class GroupDescriptionViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard helper.hasUnsavedChanges else {
             dismiss(animated: true)
             return
@@ -222,14 +220,14 @@ class GroupDescriptionViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         helper.descriptionTextView.acceptAutocorrectSuggestion()
         descriptionDelegate?.groupDescriptionViewControllerDidComplete(groupDescription: helper.groupDescriptionCurrent)
         dismiss(animated: true)
     }
 
     @objc
-    func didTapSet() {
+    private func didTapSet() {
         guard isEditable, helper.hasUnsavedChanges else {
             return owsFailDebug("Unexpectedly trying to set")
         }

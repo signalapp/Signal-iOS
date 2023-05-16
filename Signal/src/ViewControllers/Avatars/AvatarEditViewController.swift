@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 class AvatarEditViewController: OWSTableViewController2 {
     private let originalModel: AvatarModel
@@ -48,7 +48,7 @@ class AvatarEditViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard model != originalModel else { return dismiss(animated: true) }
         OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
             self?.dismiss(animated: true)
@@ -56,7 +56,7 @@ class AvatarEditViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         defer { dismiss(animated: true) }
 
         guard model != originalModel else {
@@ -134,7 +134,7 @@ class AvatarEditViewController: OWSTableViewController2 {
     }()
 
     @objc
-    func segmentedControlDidChange() {
+    private func segmentedControlDidChange() {
         guard let selectedSegment = Segments(rawValue: segmentedControl.selectedSegmentIndex) else { return }
         switch selectedSegment {
         case .color:
@@ -402,7 +402,7 @@ private class OptionView: UIView {
     }
 
     @objc
-    func handleTap() {
+    private func handleTap() {
         guard let theme = theme else {
             return owsFailDebug("Unexpectedly missing theme in OptionView")
         }

@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc
 public class GroupLinkQRCodeViewController: OWSViewController {
 
     private var groupModelV2: TSGroupModelV2
@@ -18,7 +17,6 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -80,7 +78,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
     }
 
     @objc
-    func didTapShareCode(_ sender: UIButton) {
+    private func didTapShareCode(_ sender: UIButton) {
         do {
             let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
             let qrCodeImage = try QRCodeView.buildQRImage(url: inviteLinkUrl, forExport: true)

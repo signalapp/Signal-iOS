@@ -93,7 +93,6 @@ extension CallUIAdaptee {
  * Notify the user of call related activities.
  * Driven by either a CallKit or System notifications adaptee
  */
-@objc
 public class CallUIAdapter: NSObject, CallServiceObserver {
 
     lazy var nonCallKitAdaptee = NonCallKitCallUIAdaptee()
@@ -141,7 +140,6 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         }
     }
 
-    @objc
     public static var isCallkitDisabledForLocale: Bool {
         let locale = Locale.current
         guard let regionCode = locale.regionCode else {
@@ -225,7 +223,6 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         adaptee(for: call).startOutgoingCall(call: call)
     }
 
-    @objc
     public func answerCall(localId: UUID) {
         AssertIsOnMainThread()
 
@@ -248,7 +245,6 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         adaptee(for: call).answerCall(call)
     }
 
-    @objc
     public func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 

@@ -12,7 +12,6 @@ private struct DisplayableDevice {
     let displayName: String
 }
 
-@objc
 class LinkedDevicesTableViewController: OWSTableViewController2 {
 
     private var displayableDevices: [DisplayableDevice] = []
@@ -107,21 +106,21 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     // MARK: - Events
 
     @objc
-    func refreshDevices() {
+    private func refreshDevices() {
         AssertIsOnMainThread()
 
         OWSDevicesService.refreshDevices()
     }
 
     @objc
-    func deviceListUpdateSucceeded() {
+    private func deviceListUpdateSucceeded() {
         AssertIsOnMainThread()
 
         refreshControl.endRefreshing()
     }
 
     @objc
-    func deviceListUpdateFailed(notification: Notification) {
+    private func deviceListUpdateFailed(notification: Notification) {
         AssertIsOnMainThread()
 
         guard let error = notification.object as? Error else {
@@ -136,7 +135,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     }
 
     @objc
-    func deviceListUpdateModifiedDeviceList() {
+    private func deviceListUpdateModifiedDeviceList() {
         AssertIsOnMainThread()
 
         // Got our new device, we can stop refreshing.
@@ -248,7 +247,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDoneEditing() {
+    private func didTapDoneEditing() {
         guard isEditing else { return }
         isEditing = false
         updateNavigationItems()
@@ -257,7 +256,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapStartEditing() {
+    private func didTapStartEditing() {
         guard !isEditing else { return }
         isEditing = true
         updateNavigationItems()
@@ -357,7 +356,6 @@ extension LinkedDevicesTableViewController: DatabaseChangeDelegate {
 
 // MARK: -
 
-@objc
 extension LinkedDevicesTableViewController: OWSLinkDeviceViewControllerDelegate {
 
     func expectMoreDevices() {

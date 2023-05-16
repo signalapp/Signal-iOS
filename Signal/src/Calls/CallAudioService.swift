@@ -15,7 +15,6 @@ protocol CallAudioServiceDelegate: AnyObject {
     func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?)
 }
 
-@objc
 class CallAudioService: NSObject, CallObserver {
 
     private var vibrateTimer: Timer?
@@ -424,7 +423,6 @@ class CallAudioService: NSObject, CallObserver {
         currentPlayer?.stop()
     }
 
-    @objc
     private func ringVibration() {
         // Since a call notification is more urgent than a message notification, we
         // vibrate twice, like a pulse, to differentiate from a normal notification vibration.

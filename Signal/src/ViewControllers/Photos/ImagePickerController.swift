@@ -648,7 +648,7 @@ private class TitleView: UIView {
     // MARK: - Events
 
     @objc
-    func titleTapped(_ tapGesture: UITapGestureRecognizer) {
+    private func titleTapped(_ tapGesture: UITapGestureRecognizer) {
         self.delegate?.titleViewWasTapped(self)
     }
 }

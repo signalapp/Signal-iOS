@@ -26,7 +26,7 @@ import SignalUI
 //   region b) the rectangle at which the src image should be rendered
 //   given a dst view or output context that will yield the 
 //   appropriate cropping.
-@objc
+
 class CropScaleImageViewController: OWSViewController {
 
     // MARK: Properties
@@ -75,7 +75,6 @@ class CropScaleImageViewController: OWSViewController {
 
     // MARK: Initializers
 
-    @objc
     required init(srcImage: UIImage, successCompletion: @escaping (UIImage) -> Void) {
         // normalized() can be slightly expensive but in practice this is fine.
         self.srcImage = srcImage.normalized()
@@ -335,7 +334,7 @@ class CropScaleImageViewController: OWSViewController {
     var lastPinchScale: CGFloat = 1.0
 
     @objc
-    func handlePinch(sender: UIPinchGestureRecognizer) {
+    private func handlePinch(sender: UIPinchGestureRecognizer) {
         switch sender.state {
         case .possible:
             break
@@ -394,7 +393,7 @@ class CropScaleImageViewController: OWSViewController {
     var srcTranslationAtPanStart: CGPoint = CGPoint.zero
 
     @objc
-    func handlePan(sender: UIPanGestureRecognizer) {
+    private func handlePan(sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .possible:
             break
@@ -468,12 +467,12 @@ class CropScaleImageViewController: OWSViewController {
     // MARK: - Event Handlers
 
     @objc
-    func cancelPressed(sender: UIButton) {
+    private func cancelPressed(sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }
 
     @objc
-    func donePressed(sender: UIButton) {
+    private func donePressed(sender: UIButton) {
         let successCompletion = self.successCompletion
         dismiss(animated: true, completion: {
             guard let dstImage = self.generateDstImage() else {

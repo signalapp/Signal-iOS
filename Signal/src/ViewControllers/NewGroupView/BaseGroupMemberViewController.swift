@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 protocol GroupMemberViewDelegate: AnyObject {
     var groupMemberViewRecipientSet: OrderedSet<PickedRecipient> { get }
@@ -41,7 +41,6 @@ protocol GroupMemberViewDelegate: AnyObject {
 //
 // * Picking members for a new group.
 // * Add new members to an existing group.
-@objc
 public class BaseGroupMemberViewController: BaseMemberViewController {
 
     // This delegate is the subclass.

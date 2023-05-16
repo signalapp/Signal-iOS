@@ -272,7 +272,6 @@ class MediaGallery: Dependencies {
         Logger.debug("")
     }
 
-    @objc
     init(thread: TSThread, spoilerReveal: SpoilerRevealState) {
         let finder = MediaGalleryFinder(thread: thread, allowedMediaType: nil)
         self.mediaGalleryFinder = finder

@@ -7,7 +7,6 @@ import Foundation
 import Lottie
 import SignalMessaging
 
-@objc
 public class Deprecated_SecondaryLinkingPrepViewController: Deprecated_OnboardingBaseViewController {
 
     lazy var animationView = AnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")

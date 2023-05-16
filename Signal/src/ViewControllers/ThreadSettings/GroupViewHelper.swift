@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
+import SignalUI
 
-@objc
 protocol GroupViewHelperDelegate: AnyObject {
     func groupViewHelperDidUpdateGroup()
 
@@ -16,10 +16,8 @@ protocol GroupViewHelperDelegate: AnyObject {
 
 // MARK: -
 
-@objc
-class GroupViewHelper: NSObject {
+class GroupViewHelper: Dependencies {
 
-    @objc
     weak var delegate: GroupViewHelperDelegate?
 
     let threadViewModel: ThreadViewModel
@@ -32,7 +30,6 @@ class GroupViewHelper: NSObject {
         return delegate?.fromViewController
     }
 
-    @objc
     init(threadViewModel: ThreadViewModel) {
         self.threadViewModel = threadViewModel
     }

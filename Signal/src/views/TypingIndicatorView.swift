@@ -36,7 +36,7 @@ class TypingIndicatorView: ManualStackView {
     // MARK: - Notifications
 
     @objc
-    func didBecomeActive() {
+    private func didBecomeActive() {
         AssertIsOnMainThread()
 
         // CoreAnimation animations are stopped in the background, so ensure

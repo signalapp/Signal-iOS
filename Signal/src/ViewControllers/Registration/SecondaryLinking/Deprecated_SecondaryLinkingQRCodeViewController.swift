@@ -7,7 +7,6 @@ import Foundation
 import SafariServices
 import SignalMessaging
 
-@objc
 public class Deprecated_SecondaryLinkingQRCodeViewController: Deprecated_OnboardingBaseViewController {
 
     let provisioningController: Deprecated_ProvisioningController

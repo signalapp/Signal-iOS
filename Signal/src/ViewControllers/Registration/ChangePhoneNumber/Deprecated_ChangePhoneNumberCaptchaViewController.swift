@@ -6,7 +6,6 @@
 import SignalCoreKit
 
 // Most of the logic for the verification views resides in RegistrationCaptchaViewController.
-@objc
 public class Deprecated_ChangePhoneNumberCaptchaViewController: Deprecated_RegistrationBaseViewController {
 
     private let changePhoneNumberController: Deprecated_ChangePhoneNumberController

@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
-@objc(OWSDateHeaderInteraction)
 public class DateHeaderInteraction: TSInteraction {
 
     public override var isDynamicInteraction: Bool {

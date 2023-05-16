@@ -6,7 +6,6 @@
 import SignalMessaging
 import SignalServiceKit
 
-@objc(OWSSyncPushTokensJob)
 class SyncPushTokensJob: NSObject {
     enum Mode {
         case normal
@@ -111,14 +110,7 @@ class SyncPushTokensJob: NSObject {
         }
     }
 
-    // MARK: - objc wrappers, since objc can't use swift parameterized types
-
-    @objc
-    class func run() {
-        run(mode: .normal)
-    }
-
-    class func run(mode: Mode) {
+    class func run(mode: Mode = .normal) {
         firstly {
             SyncPushTokensJob(mode: mode).run()
         }.done(on: DispatchQueue.global()) {

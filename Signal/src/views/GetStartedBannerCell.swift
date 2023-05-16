@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 enum GetStartedBannerEntry: String, CaseIterable {
     case newGroup
@@ -122,7 +122,7 @@ class GetStartedBannerCell: UICollectionViewCell {
     }
 
     @objc
-    func applyTheme() {
+    private func applyTheme() {
         let titleColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_accentBlue
         actionButton.setTitleColor(titleColor, for: .normal)
 

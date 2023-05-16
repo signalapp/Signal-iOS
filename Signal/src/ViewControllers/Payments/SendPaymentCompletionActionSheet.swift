@@ -6,22 +6,19 @@
 import Foundation
 import Lottie
 import SignalMessaging
-import UIKit
+import SignalUI
 
-@objc
-public protocol SendPaymentCompletionDelegate {
+public protocol SendPaymentCompletionDelegate: AnyObject {
     func didSendPayment(success: Bool)
 }
 
 // MARK: -
 
-@objc
 public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     public typealias PaymentInfo = SendPaymentInfo
     public typealias RequestInfo = SendRequestInfo
 
-    @objc
     public weak var delegate: SendPaymentCompletionDelegate?
 
     public enum Mode {
@@ -87,7 +84,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         helper = SendPaymentHelper(delegate: self)
     }
 
-    @objc
     public func present(fromViewController: UIViewController) {
         self.customHeader = outerStack
         self.isCancelable = true
@@ -575,7 +571,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         ])
     }
 
-    @objc
     public func updateBalanceLabel() {
         guard let helper = helper else {
             Logger.verbose("Missing helper.")
@@ -748,12 +743,12 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
     // MARK: - Events
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         dismiss(animated: true, completion: nil)
     }
 
     @objc
-    func didTapConfirmButton(_ sender: UIButton) {
+    private func didTapConfirmButton(_ sender: UIButton) {
         switch currentStep {
         case .confirmPay(let paymentInfo):
             tryToSendPayment(paymentInfo: paymentInfo)

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 class EmojiMoodPickerView: UIView {
 
@@ -77,7 +77,7 @@ class EmojiMoodPickerView: UIView {
     // MARK: - Button responder
 
     @objc
-    func buttonWasTapped(_ button: UIButton) {
+    private func buttonWasTapped(_ button: UIButton) {
         // When this action is invoked, our selection state hasn't been updated yet
         // If we were not selected, we're being selected
         // If we were selected, we're being unselected

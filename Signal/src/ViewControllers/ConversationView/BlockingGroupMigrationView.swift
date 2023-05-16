@@ -4,9 +4,8 @@
 //
 
 import SignalMessaging
-import UIKit
+import SignalUI
 
-@objc
 class BlockingGroupMigrationView: UIStackView {
 
     private let thread: TSThread
@@ -104,7 +103,7 @@ class BlockingGroupMigrationView: UIStackView {
     }
 
     @objc
-    func didTapContinueButton(_ sender: UIButton) {
+    private func didTapContinueButton(_ sender: UIButton) {
         guard let groupThread = thread as? TSGroupThread else {
             owsFailDebug("Invalid thread.")
             return

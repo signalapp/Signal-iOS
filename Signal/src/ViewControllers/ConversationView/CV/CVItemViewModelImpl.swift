@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
+import SignalUI
 
-@objc
 public class CVComponentStateWrapper: NSObject, CVItemViewModel {
     public var interaction: TSInteraction
     public var componentState: CVComponentState
@@ -63,7 +63,6 @@ public class CVComponentStateWrapper: NSObject, CVItemViewModel {
 public class CVItemViewModelImpl: CVComponentStateWrapper {
     public let renderItem: CVRenderItem
 
-    @objc
     public required init(renderItem: CVRenderItem) {
         AssertIsOnMainThread()
 

@@ -55,7 +55,6 @@ public protocol IndividualCallDelegate: AnyObject {
  *
  * This class' state should only be accessed on the main queue.
  */
-@objc
 public class IndividualCall: NSObject {
 
     // Mark -
@@ -114,7 +113,6 @@ public class IndividualCall: NSObject {
 
     // MARK: -
 
-    @objc
     public var remoteAddress: SignalServiceAddress { thread.contactAddress }
 
     public var isEnded: Bool {

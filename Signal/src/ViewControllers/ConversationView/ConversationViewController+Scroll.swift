@@ -116,7 +116,6 @@ extension ConversationViewController {
         collectionView.setContentOffset(newContentOffset, animated: animated)
     }
 
-    @objc(scrollToInitialPositionAnimated:)
     func scrollToInitialPosition(animated: Bool) {
 
         guard loadCoordinator.hasRenderState else {
@@ -159,7 +158,6 @@ extension ConversationViewController {
 
     // This method scrolls to the bottom of the _conversation_,
     // not the load window.
-    @objc(scrollToBottomOfConversationAnimated:)
     func scrollToBottomOfConversation(animated: Bool) {
         if canLoadNewerItems {
             loadCoordinator.loadAndScrollToNewestItems(isAnimated: animated)
@@ -168,7 +166,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc(scrollToLastVisibleInteractionAnimated:)
     func scrollToLastVisibleInteraction(animated: Bool) {
         guard let lastVisibleInteraction = lastVisibleInteractionWithSneakyTransaction() else {
             return scrollToBottomOfConversation(animated: animated)

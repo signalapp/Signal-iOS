@@ -4,8 +4,8 @@
 //
 
 import ContactsUI
-import Foundation
 import SignalMessaging
+import SignalUI
 
 public extension ConversationViewController {
 

@@ -5,7 +5,6 @@
 
 import UIKit
 
-@objc
 public class Deprecated_RegistrationBaseViewController: OWSViewController, OWSNavigationChildController {
 
     // MARK: - Factory Methods
@@ -32,7 +31,6 @@ public class Deprecated_RegistrationBaseViewController: OWSViewController, OWSNa
         return explanationLabel
     }
 
-    @objc
     public var primaryLayoutMargins: UIEdgeInsets {
         switch traitCollection.horizontalSizeClass {
         case .unspecified, .compact:
@@ -127,7 +125,6 @@ public class Deprecated_RegistrationBaseViewController: OWSViewController, OWSNa
     // If not for iOS10, we could get rid of primaryView, and manipulate the layoutMargins on
     // self.view directly, however on iOS10, UIKit VC presentation machinery resets the
     // layoutMargins *after* this method is called.
-    @objc
     public let primaryView = UIView()
 
     override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

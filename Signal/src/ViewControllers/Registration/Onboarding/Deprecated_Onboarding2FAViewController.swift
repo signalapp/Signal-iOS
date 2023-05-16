@@ -10,7 +10,6 @@ import UIKit
 import GameController
 #endif
 
-@objc
 public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseViewController {
 
     // When the users attempts remaining falls below this number,
@@ -177,7 +176,7 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
     // MARK: - Events
 
     @objc
-    func needHelpLinkWasTapped() {
+    private func needHelpLinkWasTapped() {
         Logger.info("")
         let title = OWSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
                                       comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'.")
@@ -228,7 +227,7 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
     }
 
     @objc
-    func nextPressed() {
+    private func nextPressed() {
         Logger.info("")
 
         tryToVerify()
@@ -461,7 +460,7 @@ public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseVi
     }
 
     @objc
-    func togglePinType() {
+    private func togglePinType() {
         guard isUsingKBS else {
             return owsFailDebug("unexpectedly tried to toggle PIN type when not using KBS")
         }

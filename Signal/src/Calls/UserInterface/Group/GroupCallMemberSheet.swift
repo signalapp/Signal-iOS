@@ -7,7 +7,6 @@ import Foundation
 import SignalRingRTC
 import SignalMessaging
 
-@objc
 class GroupCallMemberSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [tableView] }
 

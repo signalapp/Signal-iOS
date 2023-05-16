@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
-import UIKit
+import SignalServiceKit
+import SignalUI
 
-@objc
 public class GroupMigrationActionSheet: UIView {
 
     enum Mode {
@@ -35,7 +34,6 @@ public class GroupMigrationActionSheet: UIView {
         configure()
     }
 
-    @objc
     public static func actionSheetForMigratedGroup(groupThread: TSGroupThread,
                                                    oldGroupModel: TSGroupModel,
                                                    newGroupModel: TSGroupModel) -> GroupMigrationActionSheet {
@@ -63,7 +61,6 @@ public class GroupMigrationActionSheet: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public func present(fromViewController: UIViewController) {
         let actionSheetController = ActionSheetController()
         actionSheetController.customHeader = self
@@ -72,7 +69,6 @@ public class GroupMigrationActionSheet: UIView {
         self.actionSheetController = actionSheetController
     }
 
-    @objc
     public func configure() {
         let subviews = buildContents()
 
@@ -462,7 +458,7 @@ public class GroupMigrationActionSheet: UIView {
     // MARK: - Events
 
     @objc
-    func dismissAlert() {
+    private func dismissAlert() {
         actionSheetController?.dismiss(animated: true)
     }
 }
@@ -472,7 +468,7 @@ public class GroupMigrationActionSheet: UIView {
 private extension GroupMigrationActionSheet {
 
     @objc
-    func upgradeGroup() {
+    private func upgradeGroup() {
         guard let actionSheetController = actionSheetController else {
             owsFailDebug("Missing actionSheetController.")
             return
@@ -538,7 +534,7 @@ private extension GroupMigrationActionSheet {
 private extension GroupMigrationActionSheet {
 
     @objc
-    func reAddDroppedMembers() {
+    private func reAddDroppedMembers() {
         guard case .reAddDroppedMembers(let members) = mode else {
             owsFailDebug("Invalid mode.")
             return

@@ -3,14 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalServiceKit
 
-@objc
-public class NotificationActionHandler: NSObject {
+public class NotificationActionHandler: Dependencies {
 
-    @objc
     class func handleNotificationResponse( _ response: UNNotificationResponse, completionHandler: @escaping () -> Void) {
         AssertIsOnMainThread()
         firstly {

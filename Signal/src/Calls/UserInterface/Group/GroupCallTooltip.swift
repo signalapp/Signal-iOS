@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc
 public class GroupCallTooltip: TooltipView {
-    @objc
+
     public class func present(fromView: UIView,
                               widthReferenceView: UIView,
                               tailReferenceView: UIView,

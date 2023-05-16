@@ -298,13 +298,13 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
     }
 
     @objc
-    func didTapAction() {
+    private func didTapAction() {
         didDismiss()
         delegate?.badgeExpirationSheetActionTapped(state.actionButton.action)
     }
 
     @objc
-    func didDismiss() {
+    private func didDismiss() {
         dismiss(animated: true, completion: nil)
     }
 }

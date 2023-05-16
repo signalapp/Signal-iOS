@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc
 public class MessageAction: NSObject {
-    @objc
+
     let block: (_ sender: Any?) -> Void
     let accessibilityIdentifier: String
     let contextMenuTitle: String

@@ -43,7 +43,7 @@ class LocalVideoView: UIView {
     }
 
     @objc
-    func updateLocalVideoOrientation() {
+    private func updateLocalVideoOrientation() {
         defer { localVideoCapturePreview.frame = bounds }
 
         // iPad supports rotating this view controller directly,

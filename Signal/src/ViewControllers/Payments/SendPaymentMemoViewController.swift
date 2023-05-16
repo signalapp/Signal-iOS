@@ -3,20 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SignalUI
 
-@objc
-public protocol SendPaymentMemoViewDelegate {
+public protocol SendPaymentMemoViewDelegate: AnyObject {
     func didChangeMemo(memoMessage: String?)
 }
 
 // MARK: -
 
-@objc
 public class SendPaymentMemoViewController: OWSViewController {
 
-    @objc
     public weak var delegate: SendPaymentMemoViewDelegate?
 
     private let rootStack = UIStackView()
@@ -153,19 +149,19 @@ public class SendPaymentMemoViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func didTapCancelMemo() {
+    private func didTapCancelMemo() {
         navigationController?.popViewController(animated: true)
     }
 
     @objc
-    func didTapDoneMemo() {
+    private func didTapDoneMemo() {
         let memoMessage = memoTextField.text?.ows_stripped()
         delegate?.didChangeMemo(memoMessage: memoMessage)
         navigationController?.popViewController(animated: true)
     }
 
     @objc
-    func textFieldDidChange(_ textField: UITextField) {
+    private func textFieldDidChange(_ textField: UITextField) {
         updateMemoCharacterCount()
     }
 }

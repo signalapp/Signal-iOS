@@ -3,10 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalUI
-import UIKit
 
 class GroupStorySettingsViewController: OWSTableViewController2 {
     let thread: TSGroupThread
@@ -17,7 +15,6 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         super.init()
     }
 
-    @objc
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateBarButtons()

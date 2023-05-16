@@ -51,7 +51,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc(canCallThreadViewModel:)
     public static func canCall(threadViewModel: ThreadViewModel) -> Bool {
         let thread = threadViewModel.threadRecord
         guard thread.isLocalUserFullMemberOfThread else {
@@ -78,7 +77,6 @@ extension ConversationViewController {
         updateContentInsetsEvent.requestNotify()
     }
 
-    @objc(updateContentInsets)
     internal func updateContentInsets() {
         AssertIsOnMainThread()
 

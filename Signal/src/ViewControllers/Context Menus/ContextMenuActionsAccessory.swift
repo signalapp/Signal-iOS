@@ -438,7 +438,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
 
     // MARK: Gestures
     @objc
-    func tapGestureRecognized(sender: UIGestureRecognizer) {
+    private func tapGestureRecognized(sender: UIGestureRecognizer) {
         if sender.state == .began || sender.state == .changed {
             handleGestureChanged(locationInView: sender.location(in: scrollView))
         } else if sender.state == .ended {
@@ -447,7 +447,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
     }
 
     @objc
-    func hoverGestureRecognized(sender: UIGestureRecognizer) {
+    private func hoverGestureRecognized(sender: UIGestureRecognizer) {
         if sender.state == .began || sender.state == .changed {
             handleGestureChanged(locationInView: sender.location(in: scrollView))
         } else if sender.state == .ended {

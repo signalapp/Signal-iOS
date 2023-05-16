@@ -3,21 +3,19 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
+import SignalUI
 
-@objc
 class AppUpdateNag: NSObject {
 
     // MARK: Public
 
-    @objc(shared)
     public static let shared: AppUpdateNag = {
         let versionService = AppStoreVersionService()
         let nagManager = AppUpdateNag(versionService: versionService)
         return nagManager
     }()
 
-    @objc
     public func showAppUpgradeNagIfNecessary() {
         let currentVersion = AppVersion.shared.currentAppReleaseVersion
 
@@ -61,7 +59,6 @@ class AppUpdateNag: NSObject {
 
     // MARK: - KV Store
 
-    @objc
     public let keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerAppUpgradeNagCollection")
 
     // MARK: - Bundle accessors

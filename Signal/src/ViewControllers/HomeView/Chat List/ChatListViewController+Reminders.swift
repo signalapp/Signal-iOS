@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
+import SignalUI
 
 @objc
 public class CLVReminderViews: NSObject {
@@ -175,7 +176,6 @@ public class CLVReminderViews: NSObject {
 
 extension ChatListViewController {
 
-    @objc
     public var unreadPaymentNotificationsCount: UInt {
         get { viewState.unreadPaymentNotificationsCount }
         set { viewState.unreadPaymentNotificationsCount = newValue }
@@ -186,7 +186,6 @@ extension ChatListViewController {
         set { viewState.firstUnreadPaymentModel = newValue }
     }
 
-    @objc
     public var reminderViewCell: UITableViewCell { reminderViews.reminderViewCell }
 
     fileprivate var reminderStackView: UIStackView { reminderViews.reminderStackView }

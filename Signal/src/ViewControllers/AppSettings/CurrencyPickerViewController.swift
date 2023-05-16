@@ -200,7 +200,7 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         dismissPicker()
     }
 
@@ -274,7 +274,7 @@ class PaymentsCurrencyPickerDataSource: NSObject, CurrencyPickerDataSource {
     }
 
     @objc
-    func paymentConversionRatesDidChange() {
+    private func paymentConversionRatesDidChange() {
         supportedCurrencyInfos = paymentsCurrenciesSwift.supportedCurrencyInfosWithCurrencyConversions
     }
 }

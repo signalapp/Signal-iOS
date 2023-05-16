@@ -3,10 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalUI
-import UIKit
 
 enum BadgeConfiguration {
     case doNotDisplayPublicly
@@ -121,7 +119,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         let requestDismissal: () -> Void = { [weak self] in
             guard let self = self else { return }
             self.badgeConfigDelegate?.badgeConfirmationDidCancel(self)
@@ -135,7 +133,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         if displayBadgeOnProfile, let selectedPrimaryBadge = selectedPrimaryBadge {
             badgeConfigDelegate?.badgeConfiguration(self, didCompleteWithBadgeSetting: .display(featuredBadge: selectedPrimaryBadge))
         } else {
@@ -211,7 +209,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     }
 
     @objc
-    func didTogglePublicDisplaySetting(_ sender: UISwitch) {
+    private func didTogglePublicDisplaySetting(_ sender: UISwitch) {
         displayBadgeOnProfile = sender.isOn
     }
 

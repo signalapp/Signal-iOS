@@ -5,9 +5,8 @@
 
 import SignalCoreKit
 import SignalMessaging
-import UIKit
+import SignalUI
 
-@objc
 class MemberRequestView: UIStackView {
 
     private let thread: TSThread
@@ -78,7 +77,7 @@ class MemberRequestView: UIStackView {
     // MARK: -
 
     @objc
-    func didTapCancelButton(_ sender: UIButton) {
+    private func didTapCancelButton(_ sender: UIButton) {
         showCancelRequestUI()
     }
 

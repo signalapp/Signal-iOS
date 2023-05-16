@@ -35,7 +35,6 @@ public class Deprecated_OnboardingNavigationController: OWSNavigationController 
 
 // TODO[Registration]: pull out the parts of this related to secondary device
 // linking into simpler classes and delete the rest once once new registration rolls out.
-@objc
 public class Deprecated_OnboardingController: NSObject {
 
     public enum OnboardingMode {

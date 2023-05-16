@@ -3,15 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
 import Contacts
 import ContactsUI
 import SignalServiceKit
 import SignalMessaging
 import SignalUI
 
-@objc
 public class OWSAddToContactViewController: OWSViewController {
 
     private let address: SignalServiceAddress
@@ -21,7 +18,6 @@ public class OWSAddToContactViewController: OWSViewController {
 
     private let sortOrder: CNContactSortOrder = CNContactsUserDefaults.shared().sortOrder
 
-    @objc
     public init(address: SignalServiceAddress) {
         self.address = address
         super.init()

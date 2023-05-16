@@ -7,7 +7,6 @@ import Foundation
 import SignalMessaging
 import SignalServiceKit
 
-@objc
 public class Deprecated_ProvisioningController: NSObject {
 
     let onboardingController: Deprecated_OnboardingController
@@ -41,7 +40,6 @@ public class Deprecated_ProvisioningController: NSObject {
         (self.provisionEnvelopePromise, self.provisionEnvelopeFuture) = Promise.pending()
     }
 
-    @objc
     public static func presentRelinkingFlow() {
         // TODO[ViewContextPiping]
         let context = ViewControllerContext.shared

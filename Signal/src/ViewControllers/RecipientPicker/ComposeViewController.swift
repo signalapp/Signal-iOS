@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 @objc
 class ComposeViewController: RecipientPickerContainerViewController {
@@ -32,12 +32,12 @@ class ComposeViewController: RecipientPickerContainerViewController {
     }
 
     @objc
-    func dismissPressed() {
+    private func dismissPressed() {
         dismiss(animated: true)
     }
 
     @objc
-    func newGroupPressed() {
+    private func newGroupPressed() {
         showNewGroupUI()
     }
 

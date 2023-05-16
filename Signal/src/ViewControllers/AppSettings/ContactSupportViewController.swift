@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SafariServices
 import SignalMessaging
+import SignalUI
 
-@objc(OWSSupportConstants)
-@objcMembers
 class SupportConstants: NSObject {
     static let supportURL = URL(string: "https://support.signal.org/")!
     static let debugLogsInfoURL = URL(string: "https://support.signal.org/hc/articles/360007318591")!
@@ -107,7 +105,6 @@ enum ContactSupportFilter: String, CaseIterable {
     }
 }
 
-@objc(OWSContactSupportViewController)
 final class ContactSupportViewController: OWSTableViewController2 {
 
     var selectedFilter: ContactSupportFilter?
@@ -187,7 +184,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
     // MARK: - View transitions
 
     @objc
-    func keyboardFrameChange(_ notification: NSNotification) {
+    private func keyboardFrameChange(_ notification: NSNotification) {
         guard let keyboardEndFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
             owsFailDebug("Missing keyboard frame info")
             return
@@ -238,7 +235,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
     // MARK: - Actions
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         currentEmailComposeOperation?.cancel()
         navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
@@ -246,7 +243,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
     var currentEmailComposeOperation: ComposeSupportEmailOperation?
 
     @objc
-    func didTapNext() {
+    private func didTapNext() {
         var emailRequest = SupportEmailModel()
         emailRequest.userDescription = descriptionField.text
         emailRequest.emojiMood = emojiPicker.selectedMood

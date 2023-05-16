@@ -8,7 +8,6 @@ import SignalMessaging
 import SignalServiceKit
 import UIKit
 
-@objc
 public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBaseViewController {
 
     let modeSwitchButton = UIButton()

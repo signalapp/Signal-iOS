@@ -14,7 +14,6 @@ protocol Deprecated_RegistrationPinAttemptsExhaustedViewDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class Deprecated_RegistrationPinAttemptsExhaustedViewController: Deprecated_RegistrationBaseViewController {
 
     private weak var delegate: Deprecated_RegistrationPinAttemptsExhaustedViewDelegate?

@@ -245,7 +245,7 @@ public class ReturnToCallViewController: UIViewController {
     }
 
     @objc
-    func handlePan(sender: UIPanGestureRecognizer) {
+    private func handlePan(sender: UIPanGestureRecognizer) {
         guard let window = view.window else { return owsFailDebug("missing window") }
 
         // Don't try to reset to the old frame when the keyboard is dismissed.

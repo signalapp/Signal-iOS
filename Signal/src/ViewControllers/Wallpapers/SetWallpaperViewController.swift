@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import CoreServices
+import SignalUI
 
 class SetWallpaperViewController: OWSTableViewController2 {
     lazy var collectionView = WallpaperCollectionView(container: self,
@@ -65,7 +65,7 @@ class SetWallpaperViewController: OWSTableViewController2 {
     }
 
     @objc
-    func updateTableContents() {
+    private func updateTableContents() {
         let contents = OWSTableContents()
 
         let photosSection = OWSTableSection()

@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import PassKit
 import QuickLook
 import SignalMessaging
+import SignalUI
 
-@objc
 public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .genericAttachment }
@@ -331,7 +330,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         return try? PKPass(data: data)
     }
 
-    @objc(showShareUIFromView:)
     public func showShareUI(from view: UIView) {
         guard let attachmentStream = attachmentStream else {
             owsFailDebug("should not show the share UI unless there's a downloaded attachment")

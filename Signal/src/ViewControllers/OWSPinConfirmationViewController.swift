@@ -224,14 +224,14 @@ public class PinConfirmationViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func cancelPressed() {
+    private func cancelPressed() {
         Logger.info("")
 
         dismiss(animated: true) { self.completionHandler(false) }
     }
 
     @objc
-    func submitPressed() {
+    private func submitPressed() {
         verifyAndDismissOnSuccess(pinTextField.text)
     }
 

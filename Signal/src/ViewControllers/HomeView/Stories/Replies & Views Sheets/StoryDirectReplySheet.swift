@@ -27,7 +27,6 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
 
     let backdropView: UIView? = UIView()
 
-    @objc
     init(storyMessage: StoryMessage) {
         self.storyMessage = storyMessage
         super.init()

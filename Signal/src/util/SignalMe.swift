@@ -3,18 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
+import SignalUI
 
-@objc
-class SignalMe: NSObject {
+class SignalMe: Dependencies {
     private static let pattern = try! NSRegularExpression(pattern: "^(?:https|\(kURLSchemeSGNLKey))://signal.me/#p/(\\+[0-9]+)$", options: [])
 
-    @objc
     static func isPossibleUrl(_ url: URL) -> Bool {
         pattern.hasMatch(input: url.absoluteString.lowercased())
     }
 
-    @objc
     static func openChat(url: URL, fromViewController: UIViewController) {
         open(url: url, fromViewController: fromViewController) { address in
             AssertIsOnMainThread()

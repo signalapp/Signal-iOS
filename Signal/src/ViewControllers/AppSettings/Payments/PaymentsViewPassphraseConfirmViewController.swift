@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalUI
 import SignalMessaging
 
@@ -304,7 +303,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
     // MARK: - Events
 
     @objc
-    func didTapConfirmButton() {
+    private func didTapConfirmButton() {
         guard areAllWordsCorrect else {
             wordTextfield0.resignFirstResponder()
             wordTextfield1.resignFirstResponder()
@@ -330,7 +329,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
     }
 
     @objc
-    func didTapSeePassphraseAgainButton() {
+    private func didTapSeePassphraseAgainButton() {
         navigationController?.popViewController(animated: true)
     }
 

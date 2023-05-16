@@ -4,7 +4,7 @@
 //
 
 import SignalMessaging
-import UIKit
+import SignalServiceKit
 
 protocol MessageRequestDelegate: AnyObject {
     func messageRequestViewDidTapBlock(mode: MessageRequestMode)
@@ -16,7 +16,6 @@ protocol MessageRequestDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public enum MessageRequestMode: UInt {
     case none
     case contactOrGroupRequest
@@ -34,7 +33,6 @@ public struct MessageRequestType: Equatable {
 
 // MARK: -
 
-@objc
 class MessageRequestView: UIStackView {
 
     private let thread: TSThread

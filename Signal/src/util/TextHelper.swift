@@ -6,12 +6,10 @@
 import Foundation
 import UIKit
 
-@objc
-public class TextFieldHelper: NSObject {
+public class TextFieldHelper {
 
     // Used to implement the UITextFieldDelegate method: `textField:shouldChangeCharactersInRange:replacementString`
     // Takes advantage of Swift's superior unicode handling to append partial pasted text without splitting multi-byte characters.
-    @objc
     public class func textField(_ textField: UITextField,
                                 shouldChangeCharactersInRange editingRange: NSRange,
                                 replacementString: String,
@@ -49,12 +47,10 @@ public class TextFieldHelper: NSObject {
     }
 }
 
-@objc
-public class TextViewHelper: NSObject {
+public class TextViewHelper {
 
     // Used to implement the UITextViewDelegate method: `textView:shouldChangeTextIn:replacementText`
     // Takes advantage of Swift's superior unicode handling to append partial pasted text without splitting multi-byte characters.
-    @objc
     public class func textView(_ textView: UITextView,
                                shouldChangeTextIn range: NSRange,
                                replacementText: String,

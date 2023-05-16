@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
-@objc
 public extension UIApplication {
 
     var frontmostViewControllerIgnoringAlerts: UIViewController? {
@@ -15,6 +14,7 @@ public extension UIApplication {
         return findFrontmostViewController(ignoringAlerts: true, window: window)
     }
 
+    @objc
     var frontmostViewController: UIViewController? {
         guard let window = CurrentAppContext().mainWindow else {
             return nil

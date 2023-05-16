@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
 class NotificationSettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -120,12 +119,12 @@ class NotificationSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleSoundNotificationsSwitch(_ sender: UISwitch) {
+    private func didToggleSoundNotificationsSwitch(_ sender: UISwitch) {
         preferences.setSoundInForeground(sender.isOn)
     }
 
     @objc
-    func didToggleIncludesMutedConversationsInBadgeCountSwitch(_ sender: UISwitch) {
+    private func didToggleIncludesMutedConversationsInBadgeCountSwitch(_ sender: UISwitch) {
         let currentValue = databaseStorage.read { SSKPreferences.includeMutedThreadsInBadgeCount(transaction: $0) }
         guard currentValue != sender.isOn else { return }
         databaseStorage.write { SSKPreferences.setIncludeMutedThreadsInBadgeCount(sender.isOn, transaction: $0) }
@@ -133,7 +132,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleshouldNotifyOfNewAccountsSwitch(_ sender: UISwitch) {
+    private func didToggleshouldNotifyOfNewAccountsSwitch(_ sender: UISwitch) {
         let currentValue = databaseStorage.read { Self.preferences.shouldNotifyOfNewAccounts(transaction: $0) }
         guard currentValue != sender.isOn else { return }
         databaseStorage.write { Self.preferences.shouldNotifyOfNewAccounts(sender.isOn, transaction: $0) }

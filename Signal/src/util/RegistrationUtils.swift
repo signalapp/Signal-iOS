@@ -7,14 +7,10 @@ import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 
-@objc
-public class RegistrationUtils: NSObject {
+public class RegistrationUtils: Dependencies {
 
-    private override init() {
-        super.init()
-    }
+    private init() {}
 
-    @objc
     class func reregister(fromViewController: UIViewController) {
         AssertIsOnMainThread()
 

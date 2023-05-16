@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
 public class SplashViewController: OWSViewController, ExperienceUpgradeView {
 
     // MARK: -
@@ -27,7 +26,6 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         return Theme.isDarkThemeEnabled ? .lightContent : .default
     }
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -55,7 +53,6 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         dismiss(animated: flag, completion: completion)
     }
 
-    @objc
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag) {
             self.didDismiss()
@@ -63,8 +60,7 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         }
     }
 
-    @objc
-    func didDismiss() {
+    private func didDismiss() {
         Logger.debug("")
 
         // Only complete on dismissal if we're ready to do so. This is by
@@ -75,12 +71,12 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
     }
 
     @objc
-    func didTapDismissButton(sender: UIButton) {
+    private func didTapDismissButton(sender: UIButton) {
         self.dismiss(animated: true)
     }
 
     @objc
-    func handleDismissGesture(sender: AnyObject) {
+    private func handleDismissGesture(sender: AnyObject) {
         guard canDismissWithGesture else { return }
 
         Logger.debug("")

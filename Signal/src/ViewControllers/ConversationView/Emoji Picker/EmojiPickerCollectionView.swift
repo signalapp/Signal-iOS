@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalCoreKit
 import SignalServiceKit
+import SignalUI
 
 protocol EmojiPickerCollectionViewDelegate: AnyObject {
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones)
@@ -256,7 +256,7 @@ class EmojiPickerCollectionView: UICollectionView {
     }
 
     @objc
-    func emojiSearchManifestUpdated(notification: Notification) {
+    private func emojiSearchManifestUpdated(notification: Notification) {
         emojiSearchLocalization = EmojiSearchIndex.searchIndexLocalizationForLocale(NSLocale.current.identifier)
         if let emojiSearchLocalization = emojiSearchLocalization {
             emojiSearchIndex = EmojiSearchIndex.emojiSearchIndex(for: emojiSearchLocalization, shouldFetch: false)
@@ -264,7 +264,7 @@ class EmojiPickerCollectionView: UICollectionView {
     }
 
     @objc
-    func emojiSearchIndexUpdated(notification: Notification) {
+    private func emojiSearchIndexUpdated(notification: Notification) {
         if let emojiSearchLocalization = emojiSearchLocalization {
             emojiSearchIndex = EmojiSearchIndex.emojiSearchIndex(for: emojiSearchLocalization, shouldFetch: false)
         }
@@ -283,7 +283,7 @@ class EmojiPickerCollectionView: UICollectionView {
     private weak var currentSkinTonePicker: EmojiSkinTonePicker?
 
     @objc
-    func handleLongPress(sender: UILongPressGestureRecognizer) {
+    private func handleLongPress(sender: UILongPressGestureRecognizer) {
 
         switch sender.state {
         case .began:
@@ -318,7 +318,7 @@ class EmojiPickerCollectionView: UICollectionView {
     }
 
     @objc
-    func dismissSkinTonePicker() {
+    private func dismissSkinTonePicker() {
         currentSkinTonePicker?.dismiss()
         currentSkinTonePicker = nil
     }

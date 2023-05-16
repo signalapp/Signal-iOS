@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
 public class AddToGroupViewController: OWSTableViewController2 {
 
     private let address: SignalServiceAddress

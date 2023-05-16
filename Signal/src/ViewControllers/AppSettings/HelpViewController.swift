@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SafariServices
 import SignalMessaging
 import SignalUI
 
-@objc(OWSHelpViewController)
 final class HelpViewController: OWSTableViewController2 {
 
     override func viewDidLoad() {

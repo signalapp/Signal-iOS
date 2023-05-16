@@ -145,7 +145,7 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard hasUnsavedChanges else {
             stopPlayingAndDismiss()
             return
@@ -157,7 +157,7 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         if let thread = thread {
             OWSSounds.setNotificationSound(notificationSound, for: thread)
         } else {

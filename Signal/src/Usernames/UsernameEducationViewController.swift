@@ -204,14 +204,14 @@ class UsernameEducationViewController: OWSTableViewController2 {
     // MARK: Actions
 
     @objc
-    func didTapContinue() {
+    private func didTapContinue() {
         dismiss(animated: true) {
             self.continueCompletion?()
         }
     }
 
     @objc
-    func didTapLearnMore() {
+    private func didTapLearnMore() {
         let vc = SFSafariViewController(url: URL(string: Constants.learnMoreURL)!)
         present(vc, animated: true, completion: nil)
     }

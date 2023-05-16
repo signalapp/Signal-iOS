@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
+import SignalUI
 
 protocol ReplaceAdminViewControllerDelegate: AnyObject {
     func replaceAdmin(uuid: UUID)
@@ -30,7 +29,6 @@ class ReplaceAdminViewController: OWSTableViewController2 {
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 

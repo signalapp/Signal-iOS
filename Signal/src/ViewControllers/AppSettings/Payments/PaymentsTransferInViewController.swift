@@ -6,10 +6,8 @@
 import SignalMessaging
 import SignalUI
 
-@objc
 class PaymentsTransferInViewController: OWSTableViewController2 {
 
-    @objc
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -196,12 +194,12 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         dismiss(animated: true, completion: nil)
     }
 
     @objc
-    func didTapShare() {
+    private func didTapShare() {
         guard let walletAddressBase58 = payments.walletAddressBase58() else {
             owsFailDebug("Missing walletAddressBase58.")
             return

@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
 import ContactsUI
+import SignalUI
 
 class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPickerDelegate, CNContactViewControllerDelegate {
 
@@ -29,7 +28,6 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     required public init(allowsMultipleSelection: Bool, subtitleCellType: SubtitleCellValue) {
         fatalError("init(allowsMultipleSelection:subtitleCellType:) has not been implemented")
     }

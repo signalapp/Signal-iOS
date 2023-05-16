@@ -411,7 +411,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     }
 
     @objc
-    func didToggleDisplayOnProfile(_ sender: UISwitch) {
+    private func didToggleDisplayOnProfile(_ sender: UISwitch) {
         shouldMakeVisibleAndPrimary = sender.isOn
     }
 

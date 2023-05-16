@@ -6,11 +6,9 @@
 import SignalMessaging
 import SignalUI
 
-@objc
-public class PaymentsViewUtils: NSObject {
+public class PaymentsViewUtils: Dependencies {
 
-    @available(*, unavailable, message: "Do not instantiate this class.")
-    private override init() {}
+    private init() {}
 
     public static func buildMemoLabel(memoMessage: String?) -> UIView? {
         guard let memoMessage = memoMessage?.ows_stripped().nilIfEmpty else {
@@ -65,7 +63,6 @@ public class PaymentsViewUtils: NSObject {
 
     // MARK: -
 
-    @objc
     static func addUnreadBadge(toView: UIView) {
         let avatarBadge = OWSLayerView.circleView(size: 12)
         avatarBadge.backgroundColor = Theme.accentBlueColor
@@ -206,7 +203,6 @@ public class PaymentsViewUtils: NSObject {
 
 // MARK: -
 
-@objc
 public extension TSPaymentModel {
 
     private static var statusDateShortFormatter: DateFormatter = {

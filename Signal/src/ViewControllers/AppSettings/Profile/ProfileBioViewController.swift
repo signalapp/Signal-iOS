@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
+import SignalUI
 
 protocol ProfileBioViewControllerDelegate: AnyObject {
     func profileBioViewDidComplete(bio: String?,
@@ -13,7 +12,6 @@ protocol ProfileBioViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 class ProfileBioViewController: OWSTableViewController2 {
 
     private weak var profileDelegate: ProfileBioViewControllerDelegate?
@@ -295,7 +293,7 @@ class ProfileBioViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard hasUnsavedChanges else {
             dismiss(animated: true)
             return
@@ -307,7 +305,7 @@ class ProfileBioViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         profileDelegate?.profileBioViewDidComplete(bio: normalizedProfileBio,
                                                    bioEmoji: normalizedProfileBioEmoji)
 

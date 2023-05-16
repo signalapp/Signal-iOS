@@ -3,14 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalUI
 
-@objc
 class AppSettingsViewController: OWSTableViewController2 {
 
-    @objc
     class func inModalNavigationController() -> OWSNavigationController {
         OWSNavigationController(rootViewController: AppSettingsViewController())
     }
@@ -60,26 +57,26 @@ class AppSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         dismiss(animated: true)
     }
 
     @objc
-    func localProfileDidChange() {
+    private func localProfileDidChange() {
         AssertIsOnMainThread()
 
         updateTableContents()
     }
 
     @objc
-    func localNumberDidChange() {
+    private func localNumberDidChange() {
         AssertIsOnMainThread()
 
         updateTableContents()
     }
 
     @objc
-    func subscriptionStateDidChange() {
+    private func subscriptionStateDidChange() {
         AssertIsOnMainThread()
 
         updateTableContents()
@@ -92,7 +89,7 @@ class AppSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func hasExpiredGiftBadgeDidChange() {
+    private func hasExpiredGiftBadgeDidChange() {
         AssertIsOnMainThread()
 
         let oldValue = self.hasExpiredGiftBadge

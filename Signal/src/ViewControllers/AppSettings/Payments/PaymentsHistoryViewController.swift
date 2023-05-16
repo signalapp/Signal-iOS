@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
 class PaymentsHistoryViewController: OWSTableViewController2 {
 
     private let modeControl = UISegmentedControl()
@@ -105,7 +104,7 @@ class PaymentsHistoryViewController: OWSTableViewController2 {
     }
 
     @objc
-    func modeControlDidChange(_ sender: UISegmentedControl) {
+    private func modeControlDidChange(_ sender: UISegmentedControl) {
 
         guard let recordType = PaymentsHistoryDataSource.RecordType(rawValue: sender.selectedSegmentIndex) else {
             owsFailDebug("Couldn't update recordType.")

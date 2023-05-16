@@ -13,16 +13,14 @@ import CoreLocation
 import CoreServices
 import MapKit
 import SignalMessaging
-import UIKit
+import SignalUI
 
-@objc
-public protocol LocationPickerDelegate {
+public protocol LocationPickerDelegate: AnyObject {
     func didPickLocation(_ locationPicker: LocationPicker, location: Location)
 }
 
-@objc
 public class LocationPicker: UIViewController {
-    @objc
+
     public weak var delegate: LocationPickerDelegate?
     public var location: Location? { didSet { updateAnnotation() } }
 
@@ -145,7 +143,7 @@ public class LocationPicker: UIViewController {
     }
 
     @objc
-    func cancelButtonPressed(_ sender: UIButton) {
+    private func cancelButtonPressed(_ sender: UIButton) {
         if let navigation = navigationController, navigation.viewControllers.count > 1 {
             navigation.popViewController(animated: true)
         } else {
@@ -154,7 +152,7 @@ public class LocationPicker: UIViewController {
     }
 
     @objc
-    func didPressCurrentLocation() {
+    private func didPressCurrentLocation() {
         showCurrentLocation()
     }
 
@@ -283,7 +281,7 @@ extension LocationPicker: UISearchResultsUpdating {
     }
 
     @objc
-    func searchFromTimer(_ timer: Timer) {
+    private func searchFromTimer(_ timer: Timer) {
         guard let userInfo = timer.userInfo as? [String: AnyObject],
             let term = userInfo[LocationPicker.SearchTermKey] as? String else {
                 return owsFailDebug("Unexpectedly attempted to search with no term")
@@ -330,7 +328,7 @@ extension LocationPicker: UISearchResultsUpdating {
 
 extension LocationPicker {
     @objc
-    func addLocation(_ gestureRecognizer: UIGestureRecognizer) {
+    private func addLocation(_ gestureRecognizer: UIGestureRecognizer) {
         if gestureRecognizer.state == .began {
             let point = gestureRecognizer.location(in: mapView)
             let coordinates = mapView.convert(point, toCoordinateFrom: mapView)
@@ -415,7 +413,6 @@ class LocationSearchResults: UITableViewController {
     }
 }
 
-@objc
 public class Location: NSObject {
     public let name: String?
 
@@ -516,11 +513,6 @@ public class Location: NSObject {
         self.placemark = placemark
     }
 
-    @objc
-    public func prepareAttachmentObjc() -> AnyPromise {
-        return AnyPromise(prepareAttachment())
-    }
-
     public func prepareAttachment() -> Promise<SignalAttachment> {
         return generateSnapshot().map(on: DispatchQueue.global()) { image in
             guard let jpegData = image.jpegData(compressionQuality: 1.0) else {
@@ -532,7 +524,6 @@ public class Location: NSObject {
         }
     }
 
-    @objc
     public var messageText: String {
         // The message body will look something like:
         //
@@ -549,7 +540,7 @@ public class Location: NSObject {
 }
 
 extension Location: MKAnnotation {
-    @objc
+
     public var coordinate: CLLocationCoordinate2D {
         return location.coordinate
     }

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import MultipeerConnectivity
+import SignalUI
 
 class DeviceTransferProgressViewController: DeviceTransferBaseViewController {
 
@@ -65,7 +65,7 @@ class DeviceTransferProgressViewController: DeviceTransferBaseViewController {
     }
 
     @objc
-    func didTapNext() {
+    private func didTapNext() {
         let qrScanner = DeviceTransferQRScanningViewController()
         navigationController?.pushViewController(qrScanner, animated: true)
     }

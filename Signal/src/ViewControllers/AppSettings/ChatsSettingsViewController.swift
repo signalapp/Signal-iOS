@@ -8,6 +8,7 @@ import SignalMessaging
 import SignalUI
 
 class ChatsSettingsViewController: OWSTableViewController2 {
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

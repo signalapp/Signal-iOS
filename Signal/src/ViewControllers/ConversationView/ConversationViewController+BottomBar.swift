@@ -195,7 +195,6 @@ public extension ConversationViewController {
         updateBottomBar()
     }
 
-    @objc
     func reloadDraft() {
         AssertIsOnMainThread()
 
@@ -298,7 +297,6 @@ public extension ConversationViewController {
         }
     }
 
-    @objc
     func popKeyBoard() {
         AssertIsOnMainThread()
 

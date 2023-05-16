@@ -3,10 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalUI
-import UIKit
 
 class PrivateStorySettingsViewController: OWSTableViewController2 {
     let thread: TSPrivateStoryThread
@@ -16,7 +14,6 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         super.init()
     }
 
-    @objc
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateBarButtons()
@@ -303,7 +300,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func editPressed() {
+    private func editPressed() {
         let vc = PrivateStoryNameSettingsViewController(thread: thread) { [weak self] in
             self?.title = self?.thread.name
             self?.updateTableContents()
@@ -312,7 +309,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleReplies(_ toggle: UISwitch) {
+    private func didToggleReplies(_ toggle: UISwitch) {
         guard thread.allowsReplies != toggle.isOn else { return }
         databaseStorage.write { transaction in
             thread.updateWithAllowsReplies(toggle.isOn, updateStorageService: true, transaction: transaction)

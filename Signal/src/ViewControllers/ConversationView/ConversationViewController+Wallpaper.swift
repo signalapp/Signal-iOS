@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc
 extension ConversationViewController {
 
     func setupWallpaper() {
@@ -19,6 +18,7 @@ extension ConversationViewController {
         updateWallpaperView()
     }
 
+    @objc
     func wallpaperDidChange(_ notification: Notification) {
         guard notification.object == nil || (notification.object as? String) == thread.uniqueId else { return }
         updateWallpaperView()

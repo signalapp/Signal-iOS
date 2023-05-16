@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
 public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory, MessageReactionPickerDelegate {
     public let thread: TSThread
@@ -71,12 +71,12 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
     }
 
     @objc
-    func hoverGestureRecognized(sender: UIGestureRecognizer) {
+    private func hoverGestureRecognized(sender: UIGestureRecognizer) {
         reactionPicker.updateFocusPosition(sender.location(in: reactionPicker), animated: true)
     }
 
     @objc
-    func hoverClickGestureRecognized(sender: UIGestureRecognizer) {
+    private func hoverClickGestureRecognized(sender: UIGestureRecognizer) {
         touchLocationInViewDidEnd(locationInView: sender.location(in: reactionPicker))
     }
 

@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
 import SignalMessaging
+import SignalUI
 
-@objc
-public protocol QuotedMessageViewDelegate {
+public protocol QuotedMessageViewDelegate: AnyObject {
 
     func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel,
                            failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer)

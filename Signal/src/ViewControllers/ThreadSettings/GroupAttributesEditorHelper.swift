@@ -235,7 +235,7 @@ class GroupAttributesEditorHelper: NSObject {
     // MARK: - Events
 
     @objc
-    func textFieldDidChange(_ textField: UITextField) {
+    private func textFieldDidChange(_ textField: UITextField) {
         delegate?.groupAttributesEditorContentsDidChange()
     }
 

@@ -3,26 +3,23 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Lottie
+import SignalServiceKit
 
-@objc
 class LottieToggleButton: UIButton {
-    @objc
+
     var animationName: String? {
         didSet {
             updateAnimationView()
         }
     }
 
-    @objc
     var animationSize: CGSize = .zero {
         didSet {
             updateAnimationView()
         }
     }
 
-    @objc
     var animationSpeed: CGFloat {
         get {
             animationView?.animationSpeed ?? 0
@@ -42,7 +39,6 @@ class LottieToggleButton: UIButton {
         animationView?.setValueProvider(valueProvider, keypath: keypath)
     }
 
-    @objc
     func setSelected(_ isSelected: Bool, animated: Bool) {
         AssertIsOnMainThread()
         guard let animationView = animationView else { return owsFailDebug("missing animation view") }

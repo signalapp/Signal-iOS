@@ -4,25 +4,20 @@
 //
 
 import ContactsUI
-import Foundation
 import MessageUI
 import SignalMessaging
 import SignalServiceKit
 
-@objc
 public protocol ContactShareViewHelperDelegate: AnyObject {
     func didCreateOrEditContact()
 }
 
 // MARK: -
 
-@objc
 public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
-    @objc
     weak var delegate: ContactShareViewHelperDelegate?
 
-    @objc
     public required override init() {
         AssertIsOnMainThread()
 
@@ -31,21 +26,18 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     // MARK: Actions
 
-    @objc
     public func sendMessage(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
         presentThreadAndPeform(action: .compose, contactShare: contactShare, fromViewController: fromViewController)
     }
 
-    @objc
     public func audioCall(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
         presentThreadAndPeform(action: .audioCall, contactShare: contactShare, fromViewController: fromViewController)
     }
 
-    @objc
     public func videoCall(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
@@ -73,7 +65,6 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     private var inviteFlow: InviteFlow?
 
-    @objc
     public func showInviteContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
@@ -93,7 +84,6 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
     }
 
-    @objc
     func showAddToContacts(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
@@ -181,7 +171,6 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     // MARK: - CNContactViewControllerDelegate
 
-    @objc
     public func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
         Logger.info("")
 
@@ -194,7 +183,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     }
 
     @objc
-    public func didFinishEditingContact() {
+    private func didFinishEditingContact() {
         Logger.info("")
 
         guard let delegate = delegate else {

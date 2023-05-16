@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
 public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
 
     private weak var restoreWalletDelegate: PaymentsRestoreWalletDelegate?
@@ -117,17 +116,17 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func didTapDismiss() {
+    private func didTapDismiss() {
         navigationController?.popViewController(animated: true)
     }
 
     @objc
-    func didTapNextButton() {
+    private func didTapNextButton() {
         tryToRestoreFromPassphrase()
     }
 
     @objc
-    func tryToRestoreFromPassphrase() {
+    private func tryToRestoreFromPassphrase() {
         guard let restoreWalletDelegate = restoreWalletDelegate else {
             owsFailDebug("Missing restoreWalletDelegate.")
             dismiss(animated: true, completion: nil)

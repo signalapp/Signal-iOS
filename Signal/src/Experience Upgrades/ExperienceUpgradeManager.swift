@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 @objc
 class ExperienceUpgradeManager: NSObject {
@@ -73,13 +73,11 @@ class ExperienceUpgradeManager: NSObject {
 
     // MARK: - Experience Specific Helpers
 
-    @objc
     static func dismissSplashWithoutCompletingIfNecessary() {
         guard let lastPresented = lastPresented as? SplashViewController else { return }
         lastPresented.dismissWithoutCompleting(animated: false, completion: nil)
     }
 
-    @objc
     static func dismissPINReminderIfNecessary() {
         dismissLastPresented(ifMatching: .pinReminder)
     }

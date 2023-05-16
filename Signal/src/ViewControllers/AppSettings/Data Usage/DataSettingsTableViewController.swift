@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
+import SignalUI
 
-@objc
 class DataSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -183,7 +183,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
     }
 
     @objc
-    func preferencesDidChange() {
+    private func preferencesDidChange() {
         AssertIsOnMainThread()
 
         updateTableContents()

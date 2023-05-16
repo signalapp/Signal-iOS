@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
 public class PaymentsRestoreWalletWordViewController: OWSViewController {
 
     private weak var restoreWalletDelegate: PaymentsRestoreWalletDelegate?
@@ -191,7 +190,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func didTapNextButton() {
+    private func didTapNextButton() {
         guard let restoreWalletDelegate = restoreWalletDelegate else {
             owsFailDebug("Missing restoreWalletDelegate.")
             dismiss(animated: true, completion: nil)

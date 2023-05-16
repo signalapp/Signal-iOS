@@ -6,16 +6,13 @@
 import Foundation
 import SignalServiceKit
 
-@objc
 public enum ValidatedPhoneCountryCodes: UInt {
     case unitedStates = 1
     case brazil = 55
 }
 
-@objc
 public class PhoneNumberValidator: NSObject {
 
-    @objc
     public func isValidForRegistration(phoneNumber: PhoneNumber) -> Bool {
         guard let countryCode = phoneNumber.getCountryCode() else {
             return false

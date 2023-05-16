@@ -53,7 +53,6 @@ class MockConversationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     public override func didMoveToSuperview() {
         super.didMoveToSuperview()
 
@@ -179,7 +178,6 @@ class MockConversationView: UIView {
 
 // MARK: - Mock Classes
 
-@objc
 private class MockThread: TSContactThread {
     public override var shouldBeSaved: Bool {
         return false

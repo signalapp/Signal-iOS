@@ -3,13 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Lottie
 import MobileCoin
 import SignalMessaging
 import SignalUI
 
-@objc
 public class PaymentsTransferOutViewController: OWSTableViewController2 {
 
     private let transferAmount: TSPaymentAmount?
@@ -92,7 +90,6 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    @objc
     private func updateTableContents() {
         AssertIsOnMainThread()
 
@@ -140,7 +137,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
     // MARK: - Events
 
     @objc
-    func didTapDismiss() {
+    private func didTapDismiss() {
         dismiss(animated: true, completion: nil)
     }
 

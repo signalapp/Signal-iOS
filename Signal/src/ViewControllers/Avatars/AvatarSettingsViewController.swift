@@ -4,8 +4,8 @@
 //
 
 import CoreServices
-import Foundation
 import SignalMessaging
+import SignalUI
 
 class AvatarSettingsViewController: OWSTableViewController2 {
     let context: AvatarContext
@@ -81,7 +81,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard state.isNew else { return dismiss(animated: true) }
         OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
             self?.dismiss(animated: true)
@@ -89,7 +89,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         defer { dismiss(animated: true) }
 
         guard case .new(let model) = state else {
@@ -172,7 +172,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapClear() {
+    private func didTapClear() {
         state = .new(nil)
         updateTableContents()
     }
@@ -591,7 +591,7 @@ private class OptionView: UIView {
     }
 
     @objc
-    func handleTap() {
+    private func handleTap() {
         guard let model = model else {
             return owsFailDebug("Unexpectedly missing model in OptionView")
         }
@@ -605,7 +605,7 @@ private class OptionView: UIView {
     }
 
     @objc
-    func handleLongPress() {
+    private func handleLongPress() {
         guard let model = model else {
             return owsFailDebug("Unexpectedly missing model in OptionView")
         }

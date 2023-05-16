@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Lottie
 import UIKit
 
@@ -416,7 +415,6 @@ class AudioMessageView: ManualStackView {
 
     // MARK: - Scrubbing
 
-    @objc
     var isScrubbing = false
 
     func isPointInScrubbableRegion(_ point: CGPoint) -> Bool {

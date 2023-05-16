@@ -7,7 +7,6 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
-@objc
 class AccountSettingsViewController: OWSTableViewController2 {
 
     private let context: ViewControllerContext
@@ -315,7 +314,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     // MARK: - PINs
 
     @objc
-    func arePINRemindersEnabledDidChange(_ sender: UISwitch) {
+    private func arePINRemindersEnabledDidChange(_ sender: UISwitch) {
         if sender.isOn {
             databaseStorage.write { transaction in
                 OWS2FAManager.shared.setAreRemindersEnabled(true, transaction: transaction)
@@ -351,7 +350,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func isRegistrationLockV2EnabledDidChange(_ sender: UISwitch) {
+    private func isRegistrationLockV2EnabledDidChange(_ sender: UISwitch) {
         let shouldBeEnabled = sender.isOn
 
         guard shouldBeEnabled != OWS2FAManager.shared.isRegistrationLockV2Enabled else { return }

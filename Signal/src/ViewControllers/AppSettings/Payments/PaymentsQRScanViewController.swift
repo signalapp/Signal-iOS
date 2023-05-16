@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 public protocol PaymentsQRScanDelegate: AnyObject {
     func didScanPaymentAddressQRCode(publicAddressBase58: String)
@@ -82,7 +82,7 @@ public class PaymentsQRScanViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         navigationController?.popViewController(animated: true)
     }
 }

@@ -278,7 +278,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     }
 
     @objc
-    func profileDidChange() { updateNavigationBar() }
+    private func profileDidChange() { updateNavigationBar() }
 
     private func updateNavigationBar() {
         let contextButton = ContextMenuButton()
@@ -323,7 +323,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     }
 
     @objc
-    func showCameraView() {
+    private func showCameraView() {
         AssertIsOnMainThread()
 
         // Dismiss any message actions if they're presented

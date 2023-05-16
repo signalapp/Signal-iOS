@@ -177,7 +177,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     }()
 
     @objc
-    func didTapDelete() {
+    private func didTapDelete() {
         guard hasEnteredLocalNumber else {
             OWSActionSheets.showActionSheet(
                 title: OWSLocalizedString(
@@ -369,7 +369,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         dismiss(animated: true)
     }
 }

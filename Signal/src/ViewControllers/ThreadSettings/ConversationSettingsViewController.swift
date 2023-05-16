@@ -3,12 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
 import ContactsUI
 import SignalUI
 
-@objc
 public enum ConversationSettingsPresentationMode: UInt {
     case `default`
     case showVerification
@@ -18,7 +15,6 @@ public enum ConversationSettingsPresentationMode: UInt {
 
 // MARK: -
 
-@objc
 public protocol ConversationSettingsViewDelegate: AnyObject {
 
     func conversationColorWasUpdated()
@@ -33,10 +29,8 @@ public protocol ConversationSettingsViewDelegate: AnyObject {
 // MARK: -
 
 // TODO: We should describe which state updates & when it is committed.
-@objc
 class ConversationSettingsViewController: OWSTableViewController2, BadgeCollectionDataSource {
 
-    @objc
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 
     private(set) var threadViewModel: ThreadViewModel
@@ -57,7 +51,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     var groupViewHelper: GroupViewHelper
 
-    @objc
     public var showVerificationOnAppear = false
 
     var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
@@ -68,7 +61,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     var shouldRefreshAttachmentsOnReappear = false
 
-    @objc
     public required init(
         threadViewModel: ThreadViewModel,
         spoilerReveal: SpoilerRevealState
@@ -108,7 +100,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateTableContents),
+                                               selector: #selector(contentSizeCategoryDidChange(notification:)),
                                                name: UIContentSizeCategory.didChangeNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
@@ -154,7 +146,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     // MARK: - View Lifecycle
 
-    @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -498,7 +489,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         navigationController?.pushViewController(viewController, animated: true)
     }
 
-    @objc
     public func buildMemberRequestsAndInvitesView() -> UIViewController? {
         guard let groupThread = thread as? TSGroupThread else {
             owsFailDebug("Invalid thread.")
@@ -928,7 +918,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     @objc
-    func editButtonWasPressed(_ sender: Any) {
+    private func editButtonWasPressed(_ sender: Any) {
         owsAssertDebug(canEditConversationAttributes)
 
         if isGroupThread {
@@ -1005,6 +995,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             updateRecentAttachments()
             updateTableContents()
         }
+    }
+
+    @objc
+    private func contentSizeCategoryDidChange(notification: Notification) {
+        updateTableContents()
     }
 
     // MARK: - BadgeCollectionDataSource

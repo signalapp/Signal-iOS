@@ -8,9 +8,7 @@ import SignalCoreKit
 import SignalMessaging
 import SignalServiceKit
 import SignalUI
-import UIKit
 
-@objc(OWSPinSetupViewController)
 public class PinSetupViewController: OWSViewController, OWSNavigationChildController {
 
     lazy private var titleLabel: UILabel = {
@@ -272,7 +270,6 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         super.keyboardObservationBehavior = .whileLifecycleVisible
     }
 
-    @objc
     class func onboardingCreating(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
         return .init(
             mode: .deprecated_onboardingCreating,
@@ -431,7 +428,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     // MARK: - Events
 
     @objc
-    func navigateBack() {
+    private func navigateBack() {
         Logger.info("")
 
         navigationController?.popViewController(animated: true)
@@ -443,7 +440,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     }
 
     @objc
-    func didTapMoreButton(_ sender: UIButton) {
+    private func didTapMoreButton(_ sender: UIButton) {
         let actionSheet = ActionSheetController()
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
@@ -497,7 +494,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     }
 
     @objc
-    func nextPressed() {
+    private func nextPressed() {
         Logger.info("")
 
         tryToContinue()
@@ -604,7 +601,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     }
 
     @objc
-    func togglePinType() {
+    private func togglePinType() {
         switch pinType {
         case .numeric:
             pinType = .alphanumeric

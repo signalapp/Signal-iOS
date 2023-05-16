@@ -101,7 +101,7 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, SpoilerRevealSta
     }
 
     @objc
-    func contentSizeCategoryDidChange(_ notification: Notification) {
+    private func contentSizeCategoryDidChange(_ notification: Notification) {
         Logger.debug("")
 
         updateContents()
@@ -109,12 +109,10 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, SpoilerRevealSta
 
     // MARK: - OWSQuotedMessageViewDelegate
 
-    @objc
     public func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
         // Do nothing.
     }
 
-    @objc
     public func didCancelQuotedReply() {
         self.delegate?.quotedReplyPreviewDidPressCancel(self)
     }

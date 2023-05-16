@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc(OWSJoinGroupCallPill)
 class JoinGroupCallPill: UIControl {
 
-    @objc
     public var buttonText: String? {
         get { return callLabel.text }
         set {
@@ -87,7 +85,7 @@ class JoinGroupCallPill: UIControl {
     }
 
     @objc
-    func themeDidChange() {
+    private func themeDidChange() {
         applyStyle()
     }
 

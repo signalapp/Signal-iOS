@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
-@objc
 public class ArchivedConversationsCell: UITableViewCell {
-    @objc
+
     public static let reuseIdentifier = "ArchivedConversationsCell"
 
     private let label = UILabel()
@@ -78,7 +77,6 @@ public class ArchivedConversationsCell: UITableViewCell {
                                                object: nil)
     }
 
-    @objc
     public override func prepareForReuse() {
         NotificationCenter.default.removeObserver(self)
         super.prepareForReuse()

@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalUI
 
-@objc
-public protocol ConversationHeaderViewDelegate {
+public protocol ConversationHeaderViewDelegate: AnyObject {
     func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView)
     func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView)
 }
@@ -144,7 +142,7 @@ public class ConversationHeaderView: UIView {
     }
 
     @objc
-    func themeDidChange() {
+    private func themeDidChange() {
         titleLabel.textColor = Theme.navbarTitleColor
         subtitleLabel.textColor = Theme.navbarTitleColor
     }
@@ -163,7 +161,7 @@ public class ConversationHeaderView: UIView {
     // MARK: Delegate Methods
 
     @objc
-    func didTapView(tapGesture: UITapGestureRecognizer) {
+    private func didTapView(tapGesture: UITapGestureRecognizer) {
         guard tapGesture.state == .recognized else {
             return
         }

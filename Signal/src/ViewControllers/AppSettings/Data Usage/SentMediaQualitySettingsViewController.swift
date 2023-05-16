@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 class SentMediaQualitySettingsViewController: OWSTableViewController2 {
     private lazy var currentQualityLevel = databaseStorage.read { ImageQualityLevel.default(transaction: $0) }

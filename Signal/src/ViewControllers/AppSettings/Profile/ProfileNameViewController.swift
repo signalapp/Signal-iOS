@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
 import SignalUI
 
 protocol ProfileNameViewControllerDelegate: AnyObject {
@@ -13,7 +11,6 @@ protocol ProfileNameViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 class ProfileNameViewController: OWSTableViewController2 {
     private let givenNameTextField = OWSTextField()
     private let familyNameTextField = OWSTextField()
@@ -188,7 +185,7 @@ class ProfileNameViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         guard hasUnsavedChanges else {
             dismiss(animated: true)
             return
@@ -200,7 +197,7 @@ class ProfileNameViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapDone() {
+    private func didTapDone() {
         if normalizedGivenName?.isEmpty != false {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
