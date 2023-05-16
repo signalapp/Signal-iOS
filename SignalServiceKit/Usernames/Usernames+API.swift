@@ -240,12 +240,12 @@ public extension Usernames.API {
 public extension Usernames.API {
     func attemptAciLookup(
         forHashedUsername hashedUsername: Usernames.HashedUsername
-    ) -> Promise<UUID?> {
+    ) -> Promise<ServiceId?> {
         let request = OWSRequestFactory.lookupAciUsernameRequest(
             usernameHashToLookup: hashedUsername.hashString
         )
 
-        func onRequestSuccess(response: HTTPResponse) throws -> UUID {
+        func onRequestSuccess(response: HTTPResponse) throws -> ServiceId {
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
             }
@@ -254,12 +254,12 @@ public extension Usernames.API {
                 throw OWSAssertionError("Unexpectedly missing JSON response body!")
             }
 
-            let uuid: UUID = try parser.required(key: "uuid")
+            let aciUuid: UUID = try parser.required(key: "uuid")
 
-            return uuid
+            return ServiceId(aciUuid)
         }
 
-        func onRequestFailure(error: Error) throws -> UUID? {
+        func onRequestFailure(error: Error) throws -> ServiceId? {
             guard let statusCode = error.httpStatusCode else {
                 owsFailDebug("Unexpectedly missing HTTP status code!")
                 throw error

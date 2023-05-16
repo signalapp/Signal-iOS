@@ -119,7 +119,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
     private let existingUsername: ParsedUsername?
 
     /// The local user's ACI.
-    private let localAci: UUID
+    private let localAci: ServiceId
 
     /// Injected dependencies.
     private let context: Context
@@ -142,7 +142,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
 
     init(
         existingUsername: ParsedUsername?,
-        localAci: UUID,
+        localAci: ServiceId,
         context: Context
     ) {
         self.existingUsername = existingUsername

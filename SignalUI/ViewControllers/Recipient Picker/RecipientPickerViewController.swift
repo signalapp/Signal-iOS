@@ -923,7 +923,7 @@ extension RecipientPickerViewController {
     private func findByUsername(_ username: String) {
         guard
             let localAddress = tsAccountManager.localAddress,
-            let localAci = localAddress.uuid
+            let localAci = localAddress.serviceId
         else {
             owsFailDebug("Missing local UUID!")
             return
@@ -966,7 +966,7 @@ extension RecipientPickerViewController {
         forHashedUsername hashedUsername: Usernames.HashedUsername
     ) {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
-            firstly { () -> Promise<UUID?> in
+            firstly { () -> Promise<ServiceId?> in
                 Usernames.API(
                         networkManager: self.networkManager,
                         schedulers: DependenciesBridge.shared.schedulers
@@ -1009,13 +1009,13 @@ extension RecipientPickerViewController {
     }
 
     private func handleUsernameLookupCompleted(
-        withAci aci: UUID,
+        withAci aci: ServiceId,
         forUsername username: String
     ) {
         self.databaseStorage.write { transaction in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
 
-            let recipient = recipientFetcher.fetchOrCreate(serviceId: ServiceId(aci), tx: transaction.asV2Write)
+            let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: transaction.asV2Write)
             recipient.markAsRegistered(transaction: transaction)
 
             let isUsernameBestIdentifier = Usernames.BetterIdentifierChecker.assembleByQuerying(
@@ -1048,6 +1048,6 @@ extension RecipientPickerViewController {
             }
         }
 
-        self.tryToSelectRecipient(.for(address: SignalServiceAddress(uuid: aci)))
+        self.tryToSelectRecipient(.for(address: SignalServiceAddress(aci)))
     }
 }

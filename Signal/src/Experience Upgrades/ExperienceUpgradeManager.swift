@@ -155,7 +155,7 @@ class ExperienceUpgradeManager: NSObject {
         case .notificationPermissionReminder:
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .createUsernameReminder:
-            guard let localAci = tsAccountManager.localUuid else {
+            guard let localAci = tsAccountManager.localUuid.map({ ServiceId($0) }) else {
                 return nil
             }
 

@@ -275,9 +275,9 @@ final class UsernameValidationManagerTest: XCTestCase {
 
 extension UsernameValidationManagerTest {
     private class MockAccountManager: Usernames.Validation.Shims.TSAccountManager {
-        private let uuid: UUID
-        init(uuid: UUID) { self.uuid = uuid }
-        public var localUUID: UUID? { uuid }
+        private let aci: ServiceId
+        init(uuid: UUID) { self.aci = ServiceId(uuid) }
+        public func localAci(tx _: DBReadTransaction) -> ServiceId? { aci }
     }
 
     private class UsernameFakeNetworkManager: OWSFakeNetworkManager {
@@ -302,15 +302,15 @@ extension UsernameValidationManagerTest {
             self.currentlySetUsername = username
         }
 
-        public func fetchUsername(forAci aci: ACI, transaction: SignalServiceKit.DBReadTransaction) -> UsernameLookupManager.Username? {
+        public func fetchUsername(forAci aci: ServiceId, transaction: DBReadTransaction) -> UsernameLookupManager.Username? {
             return username
         }
 
-        public func fetchUsernames(forAddresses addresses: AnySequence<SignalServiceKit.SignalServiceAddress>, transaction: SignalServiceKit.DBReadTransaction) -> [UsernameLookupManager.Username?] {
+        public func fetchUsernames(forAddresses addresses: AnySequence<SignalServiceAddress>, transaction: DBReadTransaction) -> [UsernameLookupManager.Username?] {
             return [username]
         }
 
-        public func saveUsername(_ username: Username?, forAci aci: ACI, transaction: SignalServiceKit.DBWriteTransaction) {
+        public func saveUsername(_ username: Username?, forAci aci: ServiceId, transaction: DBWriteTransaction) {
             self.currentlySetUsername = username
         }
     }

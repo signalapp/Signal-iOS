@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 class UsernameSelectionCoordinator {
     struct Context {
@@ -15,7 +15,7 @@ class UsernameSelectionCoordinator {
         let storageServiceManager: StorageServiceManager
     }
 
-    private let localAci: UUID
+    private let localAci: ServiceId
     private let currentUsername: String?
 
     private weak var usernameSelectionDelegate: UsernameSelectionDelegate?
@@ -23,7 +23,7 @@ class UsernameSelectionCoordinator {
     private let context: Context
 
     init(
-        localAci: UUID,
+        localAci: ServiceId,
         currentUsername: String?,
         usernameSelectionDelegate: UsernameSelectionDelegate? = nil,
         context: Context

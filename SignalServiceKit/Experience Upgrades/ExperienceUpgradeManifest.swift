@@ -521,7 +521,7 @@ extension ExperienceUpgradeManifest {
             return false
         }
 
-        guard let localAci = tsAccountManager.localUuid else {
+        guard let localAci = tsAccountManager.localUuid.map({ ServiceId($0) }) else {
             owsFailBeta("Missing local ACI!")
             return false
         }

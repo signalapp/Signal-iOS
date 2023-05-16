@@ -29,12 +29,17 @@ struct InMemoryDatabase {
 
     // MARK: - Write
 
+    @discardableResult
+    func write<T>(block: (Database) throws -> T) -> T {
+        try! inMemoryDatabase.write(block)
+    }
+
     func insert<T: SDSCodableModel>(record: T) {
-        try! inMemoryDatabase.write { try record.insert($0) }
+        write { try record.insert($0) }
     }
 
     func update<T: SDSCodableModel>(record: T) {
-        try! inMemoryDatabase.write { try record.update($0) }
+        write { try record.update($0) }
     }
 
     // MARK: - Delete

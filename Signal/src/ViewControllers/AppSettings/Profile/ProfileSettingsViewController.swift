@@ -17,7 +17,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         didSet { updateNavigationItem() }
     }
 
-    private var localAci: UUID?
+    private var localAci: ServiceId?
 
     private var avatarData: Data?
     private var givenName: String?
@@ -46,17 +46,17 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         allBadges = snapshot.profileBadgeInfo ?? []
         displayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile
 
-        if let localAci = tsAccountManager.localUuid {
-            self.localAci = localAci
-
-            username = databaseStorage.read { transaction -> String? in
-                context.usernameLookupManager.fetchUsername(
-                    forAci: localAci,
-                    transaction: transaction.asV2Read
-                )
+        databaseStorage.read { tx -> Void in
+            guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+                owsFailBeta("Should never get to profile settings without an ACI!")
+                return
             }
-        } else {
-            owsFailBeta("Should never get to profile settings without an ACI!")
+
+            self.localAci = localAci
+            username = context.usernameLookupManager.fetchUsername(
+                forAci: localAci,
+                transaction: tx.asV2Read
+            )
         }
 
         updateTableContents()
@@ -269,7 +269,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         )
     }
 
-    private func handleUsernameCellTapped(localAci: UUID) {
+    private func handleUsernameCellTapped(localAci: ServiceId) {
         func presentUsernameSelection(from self: ProfileSettingsViewController) {
             let usernameSelectionCoordinator = UsernameSelectionCoordinator(
                 localAci: localAci,

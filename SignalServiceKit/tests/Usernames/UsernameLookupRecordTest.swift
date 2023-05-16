@@ -8,54 +8,55 @@ import GRDB
 @testable import SignalServiceKit
 
 final class UsernameLookupRecordTest: XCTestCase {
-    private func createDatabaseQueue() throws -> DatabaseQueue {
-        let result = DatabaseQueue()
+    private var inMemoryDatabase: InMemoryDatabase!
 
-        try result.write { db in
-            try db.create(table: UsernameLookupRecord.databaseTableName) { table in
-                table.column("aci", .blob).primaryKey().notNull()
-                table.column("username", .text).notNull()
-            }
-        }
-
-        return result
+    override func setUp() {
+        inMemoryDatabase = InMemoryDatabase()
     }
 
     func testRoundTrip() throws {
-        let aci = UUID()
-        let username = "boba_fett.42"
+        for (idx, (constant, _)) in UsernameLookupRecord.constants.enumerated() {
+            inMemoryDatabase.write { db in
+                try constant.insert(db)
+            }
 
-        let databaseQueue = try createDatabaseQueue()
+            let deserialized = inMemoryDatabase.read { db in
+                return UsernameLookupRecord.fetchOne(
+                    forAci: constant.aci,
+                    database: db
+                )
+            }
 
-        try databaseQueue.write { db in
-            let record = UsernameLookupRecord(
-                aci: aci,
-                username: username
-            )
+            guard let deserialized else {
+                XCTFail("Failed to fetch constant \(idx)!")
+                continue
+            }
 
-            try record.insert(db)
+            do {
+                try deserialized.validate(against: constant)
+            } catch ValidatableModelError.failedToValidate {
+                XCTFail("Failed to validate constant \(idx)!")
+            } catch {
+                XCTFail("Unexpected error while validating constant \(idx)!")
+            }
+
+            inMemoryDatabase.write { db in
+                UsernameLookupRecord.deleteOne(forAci: constant.aci, database: db)
+            }
+
+            XCTAssertNil(inMemoryDatabase.read { db in
+                return UsernameLookupRecord.fetchOne(forAci: constant.aci, database: db)
+            })
         }
-
-        guard let loadedRecord = try databaseQueue.read({ db in
-            UsernameLookupRecord.fetchOne(forAci: aci, database: db)
-        }) else {
-            XCTFail("Failed to load record!")
-            return
-        }
-
-        XCTAssertEqual(loadedRecord.aci, aci)
-        XCTAssertEqual(loadedRecord.username, username)
     }
 
     func testUpsert() throws {
-        let aci1 = UUID()
-        let aci2 = UUID()
+        let aci1 = ServiceId(UUID())
+        let aci2 = ServiceId(UUID())
         let username1 = "jango_fett.42"
         let username2 = "boba_fett.42"
 
-        let databaseQueue = try createDatabaseQueue()
-
-        try databaseQueue.write { db in
+        inMemoryDatabase.write { db in
             let recordsToUpsert: [UsernameLookupRecord] = [
                 .init(aci: aci1, username: username1),
                 .init(aci: aci2, username: username2),
@@ -67,10 +68,12 @@ final class UsernameLookupRecordTest: XCTestCase {
             }
         }
 
-        let (record1, record2) = try databaseQueue.read { db in (
-            UsernameLookupRecord.fetchOne(forAci: aci1, database: db),
-            UsernameLookupRecord.fetchOne(forAci: aci2, database: db)
-        )}
+        let (record1, record2) = inMemoryDatabase.read { db in
+            (
+                UsernameLookupRecord.fetchOne(forAci: aci1, database: db),
+                UsernameLookupRecord.fetchOne(forAci: aci2, database: db)
+            )
+        }
 
         guard let record1, let record2 else {
             XCTFail("Missing records!")
@@ -82,5 +85,54 @@ final class UsernameLookupRecordTest: XCTestCase {
 
         XCTAssertEqual(record2.aci, aci2)
         XCTAssertEqual(record2.username, username2)
+    }
+
+    // MARK: - Hardcoded constant data
+
+    enum HardcodedDataTestMode {
+        case runTest
+        case printStrings
+
+        /// Toggle this to use ``testHardcodedJsonDataDecodes()`` to print
+        /// hardcoded strings, for example when adding new constants.
+        static let mode: Self = .runTest
+    }
+
+    func testHardcodedJsonDataDecodes() {
+        switch HardcodedDataTestMode.mode {
+        case .printStrings:
+            UsernameLookupRecord.printHardcodedJsonDataForConstants()
+        case .runTest:
+            for (idx, (constant, jsonData)) in UsernameLookupRecord.constants.enumerated() {
+                do {
+                    let decoded = try JSONDecoder().decode(UsernameLookupRecord.self, from: jsonData)
+                    try constant.validate(against: decoded)
+                } catch let error where error is DecodingError {
+                    XCTFail("Failed to decode JSON model for constant \(idx): \(error)")
+                } catch ValidatableModelError.failedToValidate {
+                    XCTFail("Failed to validate JSON-decoded model for constant \(idx)")
+                } catch {
+                    XCTFail("Unexpected error for constant \(idx)")
+                }
+            }
+        }
+    }
+}
+
+extension UsernameLookupRecord: ValidatableModel {
+    static var constants: [(UsernameLookupRecord, base64JsonData: Data)] = [
+        (
+            UsernameLookupRecord(aci: ServiceId(uuidString: "effc880f-8b41-4985-9bf6-3c4f0231a959")!, username: "boba_fett.42"),
+            Data(base64Encoded: "eyJhY2kiOiJFRkZDODgwRi04QjQxLTQ5ODUtOUJGNi0zQzRGMDIzMUE5NTkiLCJ1c2VybmFtZSI6ImJvYmFfZmV0dC40MiJ9")!
+        )
+    ]
+
+    func validate(against: UsernameLookupRecord) throws {
+        guard
+            aci == against.aci,
+            username == against.username
+        else {
+            throw ValidatableModelError.failedToValidate
+        }
     }
 }

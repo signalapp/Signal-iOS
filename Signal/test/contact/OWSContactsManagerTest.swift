@@ -216,16 +216,16 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     func testGetDisplayNamesWithUserNames() {
-        let aliceUuid = UUID()
-        let bobUuid = UUID()
+        let aliceAci = ServiceId(UUID())
+        let bobAci = ServiceId(UUID())
 
-        let addresses = [SignalServiceAddress(uuid: aliceUuid), SignalServiceAddress(uuid: bobUuid)]
+        let addresses = [SignalServiceAddress(aliceAci), SignalServiceAddress(bobAci)]
 
         // Store some fake usernames.
 
         dbV2.write { transaction in
-            mockUsernameLookupMananger.saveUsername("alice", forAci: aliceUuid, transaction: transaction)
-            mockUsernameLookupMananger.saveUsername("bob", forAci: bobUuid, transaction: transaction)
+            mockUsernameLookupMananger.saveUsername("alice", forAci: aliceAci, transaction: transaction)
+            mockUsernameLookupMananger.saveUsername("bob", forAci: bobAci, transaction: transaction)
         }
 
         // Prevent default fake names from being used.
@@ -266,10 +266,10 @@ class OWSContactsManagerTest: SignalBaseTest {
 
         let carolAddress = SignalServiceAddress(phoneNumber: "+17035559900")
 
-        let daveUuid = UUID()
-        let daveAddress = SignalServiceAddress(uuid: daveUuid)
+        let daveServiceId = ServiceId(UUID())
+        let daveAddress = SignalServiceAddress(daveServiceId)
         dbV2.write { transaction in
-            mockUsernameLookupMananger.saveUsername("dave", forAci: daveUuid, transaction: transaction)
+            mockUsernameLookupMananger.saveUsername("dave", forAci: daveServiceId, transaction: transaction)
         }
 
         let eveAddress = SignalServiceAddress(uuid: UUID())

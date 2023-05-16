@@ -328,7 +328,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         if
             usernameBetterIdentifierChecker.usernameIsBestIdentifier(),
             let username = usernameLookupManager.fetchUsername(
-                forAci: contact.serviceId.uuidValue,
+                forAci: contact.serviceId,
                 transaction: transaction.asV2Read
             )
         {
@@ -521,7 +521,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         usernameLookupManager.saveUsername(
             usernameIsBestIdentifierOnRecord ? record.username : nil,
-            forAci: contact.serviceId.uuidValue,
+            forAci: contact.serviceId,
             transaction: transaction.asV2Write
         )
 
@@ -1009,7 +1009,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         var builder = StorageServiceProtoAccountRecord.builder()
 
         let localAddress = localIdentifiers.aciAddress
-        let localAci = localIdentifiers.aci.uuidValue
+        let localAci = localIdentifiers.aci
 
         if let profileKey = profileManager.profileKeyData(for: localAddress, transaction: transaction) {
             builder.setProfileKey(profileKey)
@@ -1139,7 +1139,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         var needsUpdate = false
 
         let localAddress = localIdentifiers.aciAddress
-        let localAci = localIdentifiers.aci.uuidValue
+        let localAci = localIdentifiers.aci
 
         // Gather some local contact state to do comparisons against.
         let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)

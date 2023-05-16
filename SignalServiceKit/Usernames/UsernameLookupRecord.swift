@@ -22,22 +22,22 @@ public struct UsernameLookupRecord: Codable, FetchableRecord, PersistableRecord 
 
     // MARK: - Init
 
-    public let aci: UUID
+    public let aci: ServiceId
     public let username: String
 
-    public init(aci: UUID, username: String) {
+    public init(aci: ServiceId, username: String) {
         self.aci = aci
         self.username = username
     }
 
     // MARK: - Fetch
 
-    static func fetchOne(forAci aci: UUID, transaction: SDSAnyReadTransaction) -> Self? {
+    static func fetchOne(forAci aci: ServiceId, transaction: SDSAnyReadTransaction) -> Self? {
         fetchOne(forAci: aci, database: transaction.unwrapGrdbRead.database)
     }
 
-    /// External usage outside tests not recommended.
-    static func fetchOne(forAci aci: UUID, database: Database) -> Self? {
+    /// Outside tests, prefer the variant that takes a transaction.
+    static func fetchOne(forAci aci: ServiceId, database: Database) -> Self? {
         do {
             return try Self.fetchOne(database, key: aci)
         } catch let error {
@@ -48,12 +48,12 @@ public struct UsernameLookupRecord: Codable, FetchableRecord, PersistableRecord 
 
     // MARK: - Delete
 
-    static func deleteOne(forAci aci: UUID, transaction: SDSAnyWriteTransaction) {
+    static func deleteOne(forAci aci: ServiceId, transaction: SDSAnyWriteTransaction) {
         deleteOne(forAci: aci, database: transaction.unwrapGrdbWrite.database)
     }
 
-    /// External usage outside tests not recommended.
-    static func deleteOne(forAci aci: UUID, database: Database) {
+    /// Outside tests, prefer the variant that takes a transaction.
+    static func deleteOne(forAci aci: ServiceId, database: Database) {
         do {
             try Self.deleteOne(database, key: aci)
         } catch let error {

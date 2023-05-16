@@ -135,7 +135,7 @@ public class CLVReminderViews: NSObject {
             owsFailDebug("Missing viewController.")
             return
         }
-        guard let localAci = tsAccountManager.localUuid else {
+        guard let localAci = tsAccountManager.localUuid.map({ ServiceId($0) }) else {
             owsFailDebug("Missing local ACI.")
             return
         }
