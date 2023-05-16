@@ -263,7 +263,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    private  func didTogglePaymentsLockSwitch(_ sender: UISwitch) {
+    private func didTogglePaymentsLockSwitch(_ sender: UISwitch) {
         // Require unlock to disable payments lock
         if OWSPaymentsLock.shared.isPaymentsLockEnabled() {
             OWSPaymentsLock.shared.tryToUnlock { [weak self] outcome in
