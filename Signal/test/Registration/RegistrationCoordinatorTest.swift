@@ -243,7 +243,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-        // Make KBS give us back a reg recovery password.
+        // Make SVR give us back a reg recovery password.
         svr.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
@@ -256,7 +256,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // NOTE: We expect to skip opening path steps because
-        // if we have a KBS master key locally, this _must_ be
+        // if we have a SVR master key locally, this _must_ be
         // a previously registered device, and we can skip intros.
 
         // We haven't set a phone number so it should ask for that.
@@ -328,10 +328,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             ))
         }
 
-        // We haven't done a kbs backup; that should happen now.
+        // We haven't done a SVR backup; that should happen now.
         svr.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
             XCTAssertEqual(pin, Stubs.pinCode)
-            // We don't have a kbs auth credential, it should use chat server creds.
+            // We don't have a SVR auth credential, it should use chat server creds.
             XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
             XCTAssertFalse(rotateMasterKey)
             self.svr.hasMasterKey = true
@@ -374,7 +374,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Set a different PIN on disk.
             ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-            // Make KBS give us back a reg recovery password.
+            // Make SVR give us back a reg recovery password.
             svr.dataGenerator = {
                 switch $0 {
                 case .registrationRecoveryPassword:
@@ -387,7 +387,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             // NOTE: We expect to skip opening path steps because
-            // if we have a KBS master key locally, this _must_ be
+            // if we have a SVR master key locally, this _must_ be
             // a previously registered device, and we can skip intros.
 
             // We haven't set a phone number so it should ask for that.
@@ -450,10 +450,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 return .value(())
             }
 
-            // We haven't done a kbs backup; that should happen now.
+            // We haven't done a SVR backup; that should happen now.
             svr.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
                 XCTAssertEqual(pin, Stubs.pinCode)
-                // We don't have a kbs auth credential, it should use chat server creds.
+                // We don't have a SVR auth credential, it should use chat server creds.
                 XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
                 XCTAssertFalse(rotateMasterKey)
                 self.svr.hasMasterKey = true
@@ -492,7 +492,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Set a PIN on disk.
             ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-            // Make KBS give us back a reg recovery password.
+            // Make SVR give us back a reg recovery password.
             svr.dataGenerator = {
                 switch $0 {
                 case .registrationRecoveryPassword:
@@ -509,7 +509,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             scheduler.start()
 
             // NOTE: We expect to skip opening path steps because
-            // if we have a KBS master key locally, this _must_ be
+            // if we have a SVR master key locally, this _must_ be
             // a previously registered device, and we can skip intros.
 
             // We haven't set a phone number so it should ask for that.
@@ -597,7 +597,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Set a PIN on disk.
             ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-            // Make KBS give us back a reg recovery password.
+            // Make SVR give us back a reg recovery password.
             svr.dataGenerator = {
                 switch $0 {
                 case .registrationRecoveryPassword:
@@ -614,7 +614,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             scheduler.start()
 
             // NOTE: We expect to skip opening path steps because
-            // if we have a KBS master key locally, this _must_ be
+            // if we have a SVR master key locally, this _must_ be
             // a previously registered device, and we can skip intros.
 
             // We haven't set a phone number so it should ask for that.
@@ -646,7 +646,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
                 bodyJson: RegistrationServiceResponses.RegistrationLockFailureResponse(
                     timeRemainingMs: 10,
-                    kbsAuthCredential: Stubs.kbsAuthCredential
+                    kbsAuthCredential: Stubs.svrAuthCredential
                 )
             )
             mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
@@ -708,7 +708,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Set a PIN on disk.
             ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-            // Make KBS give us back a reg recovery password.
+            // Make SVR give us back a reg recovery password.
             svr.dataGenerator = {
                 switch $0 {
                 case .registrationRecoveryPassword:
@@ -725,7 +725,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             scheduler.start()
 
             // NOTE: We expect to skip opening path steps because
-            // if we have a KBS master key locally, this _must_ be
+            // if we have a SVR master key locally, this _must_ be
             // a previously registered device, and we can skip intros.
 
             // We haven't set a phone number so it should ask for that.
@@ -808,11 +808,11 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 return .value(())
             }
 
-            // We haven't done a kbs backup; that should happen at t=4. Succeed at t=5.
+            // We haven't done a SVR backup; that should happen at t=4. Succeed at t=5.
             svr.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
                 XCTAssertEqual(self.scheduler.currentTime, 4)
                 XCTAssertEqual(pin, Stubs.pinCode)
-                // We don't have a kbs auth credential, it should use chat server creds.
+                // We don't have a SVR auth credential, it should use chat server creds.
                 XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
                 XCTAssertFalse(rotateMasterKey)
                 self.svr.hasMasterKey = true
@@ -852,9 +852,9 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
     }
 
-    // MARK: - KBS Auth Credential Path
+    // MARK: - SVR Auth Credential Path
 
-    func testKBSAuthCredentialPath_happyPath() {
+    func testSVRAuthCredentialPath_happyPath() {
         executeTest {
             // Run the scheduler for a bit; we don't care about timing these bits.
             scheduler.start()
@@ -866,13 +866,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.setAllProfileInfo()
 
             // Put some auth credentials in storage.
-            let credentialCandidates: [KBSAuthCredential] = [
-                Stubs.kbsAuthCredential,
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
+            let credentialCandidates: [SVRAuthCredential] = [
+                Stubs.svrAuthCredential,
+                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
+                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
+                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
             ]
-            svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
+            svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
 
             // Get past the opening.
             goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
@@ -887,7 +887,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
                 statusCode: 200,
                 bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                    "\(Stubs.kbsAuthCredential.username):\(Stubs.kbsAuthCredential.credential.password)": .match,
+                    "\(Stubs.svrAuthCredential.credential.username):\(Stubs.svrAuthCredential.credential.password)": .match,
                     "aaaa:abc": .notMatch,
                     "zzzz:xyz": .invalid,
                     "0000:123": .unknown
@@ -897,11 +897,11 @@ public class RegistrationCoordinatorTest: XCTestCase {
             let nextStep = coordinator.submitE164(Stubs.e164).value
 
             // At this point, we should be asking for PIN entry so we can use the credential
-            // to recover the KBS master key.
-            XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForKBSAuthCredentialPath(mode: self.mode)))
+            // to recover the SVR master key.
+            XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForSVRAuthCredentialPath(mode: self.mode)))
             // We should have wipted the invalid and unknown credentials.
             let remainingCredentials = svrAuthCredentialStore.dict
-            XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.username])
+            XCTAssertNotNil(remainingCredentials[Stubs.svrAuthCredential.credential.username])
             XCTAssertNotNil(remainingCredentials["aaaa"])
             XCTAssertNil(remainingCredentials["zzzz"])
             XCTAssertNil(remainingCredentials["0000"])
@@ -909,20 +909,20 @@ public class RegistrationCoordinatorTest: XCTestCase {
             scheduler.stop()
             scheduler.adjustTime(to: 0)
 
-            // Enter the PIN, which should try and recover from KBS.
+            // Enter the PIN, which should try and recover from SVR.
             // Once we do that, it should follow the Reg Recovery Password Path.
             let nextStepPromise = coordinator.submitPINCode(Stubs.pinCode)
 
-            // At t=1, resolve the key restoration from kbs and have it start returning the key.
+            // At t=1, resolve the key restoration from SVR and have it start returning the key.
             svr.restoreKeysAndBackupMock = { pin, authMethod in
                 XCTAssertEqual(self.scheduler.currentTime, 0)
                 XCTAssertEqual(pin, Stubs.pinCode)
-                XCTAssertEqual(authMethod, .svrAuth(Stubs.kbsAuthCredential, backup: nil))
+                XCTAssertEqual(authMethod, .svrAuth(Stubs.svrAuthCredential, backup: nil))
                 self.svr.hasMasterKey = true
                 return self.scheduler.guarantee(resolvingWith: .success, atTime: 1)
             }
 
-            // At t=1 it should get the latest credentials from kbs.
+            // At t=1 it should get the latest credentials from SVR.
             self.svr.dataGenerator = {
                 XCTAssertEqual(self.scheduler.currentTime, 1)
                 switch $0 {
@@ -1016,7 +1016,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
     }
 
-    func testKBSAuthCredentialPath_noMatchingCredentials() {
+    func testSVRAuthCredentialPath_noMatchingCredentials() {
         executeTest {
             // Don't care about timing, just start it.
             scheduler.start()
@@ -1025,13 +1025,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
             setupDefaultAccountAttributes()
 
             // Put some auth credentials in storage.
-            let credentialCandidates: [KBSAuthCredential] = [
-                Stubs.kbsAuthCredential,
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
+            let credentialCandidates: [SVRAuthCredential] = [
+                Stubs.svrAuthCredential,
+                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
+                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
+                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
             ]
-            svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
+            svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
 
             // Get past the opening.
             goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
@@ -1052,7 +1052,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
                     statusCode: 200,
                     bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.kbsAuthCredential.username):\(Stubs.kbsAuthCredential.credential.password)": .notMatch,
+                        "\(Stubs.svrAuthCredential.credential.username):\(Stubs.svrAuthCredential.credential.password)": .notMatch,
                         "aaaa:abc": .notMatch,
                         "zzzz:xyz": .invalid,
                         "0000:123": .unknown
@@ -1096,14 +1096,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // We should have wipted the invalid and unknown credentials.
             let remainingCredentials = svrAuthCredentialStore.dict
-            XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.username])
+            XCTAssertNotNil(remainingCredentials[Stubs.svrAuthCredential.credential.username])
             XCTAssertNotNil(remainingCredentials["aaaa"])
             XCTAssertNil(remainingCredentials["zzzz"])
             XCTAssertNil(remainingCredentials["0000"])
         }
     }
 
-    func testKBSAuthCredentialPath_noMatchingCredentialsThenChangeNumber() {
+    func testSVRAuthCredentialPath_noMatchingCredentialsThenChangeNumber() {
         executeTest {
             // Don't care about timing, just start it.
             scheduler.start()
@@ -1112,10 +1112,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             setupDefaultAccountAttributes()
 
             // Put some auth credentials in storage.
-            let credentialCandidates: [KBSAuthCredential] = [
-                Stubs.kbsAuthCredential
+            let credentialCandidates: [SVRAuthCredential] = [
+                Stubs.svrAuthCredential
             ]
-            svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.username).mapValues { $0.first! }
+            svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
 
             // Get past the opening.
             goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
@@ -1139,7 +1139,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
                     statusCode: 200,
                     bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.kbsAuthCredential.username):\(Stubs.kbsAuthCredential.credential.password)": .notMatch
+                        "\(Stubs.svrAuthCredential.credential.username):\(Stubs.svrAuthCredential.credential.password)": .notMatch
                     ])
                 ),
                 atTime: 2,
@@ -1180,7 +1180,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // We should have wiped the invalid and unknown credentials.
             let remainingCredentials = svrAuthCredentialStore.dict
-            XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.username])
+            XCTAssertNotNil(remainingCredentials[Stubs.svrAuthCredential.credential.username])
 
             // Now change the phone number; this should take us back to phone number entry.
             nextStep = coordinator.requestChangeE164()
@@ -1200,16 +1200,16 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
                     statusCode: 200,
                     bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.kbsAuthCredential.username):\(Stubs.kbsAuthCredential.credential.password)": .match
+                        "\(Stubs.svrAuthCredential.credential.username):\(Stubs.svrAuthCredential.credential.password)": .match
                     ])
                 ),
                 atTime: 5,
                 on: scheduler
             )
 
-            // Now it should ask for PIN entry; we are on the kbs auth credential path.
+            // Now it should ask for PIN entry; we are on the SVR auth credential path.
             scheduler.runUntilIdle()
-            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForKBSAuthCredentialPath(mode: self.mode)))
+            XCTAssertEqual(nextStep.value, .pinEntry(Stubs.pinEntryStateForSVRAuthCredentialPath(mode: self.mode)))
         }
     }
 
@@ -1316,7 +1316,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             scheduler.adjustTime(to: 0)
 
-            // When we submit the pin, it should backup with kbs.
+            // When we submit the pin, it should backup with SVR.
             nextStep = coordinator.submitPINCode(Stubs.pinCode)
 
             // Finish the validation at t=1.
@@ -2815,7 +2815,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = { .pending().0 }
 
-        // No other setup; no auth credentials, kbs keys, etc in storage
+        // No other setup; no auth credentials, SVR keys, etc in storage
         // so that we immediately go to the session flow.
 
         // Get past the opening.
@@ -2922,7 +2922,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         static let reglockData = Data(repeating: 7, count: 8)
         static var reglockToken: String { reglockData.hexadecimalString }
 
-        static let kbsAuthCredential = KBSAuthCredential(credential: RemoteAttestation.Auth(username: "abcd", password: "xyz"))
+        static let svrAuthCredential = SVRAuthCredential(credential: RemoteAttestation.Auth(username: "abcd", password: "xyz"))
 
         static let captchaToken = "captchaToken"
         static let apnsToken = "apnsToken"
@@ -2946,7 +2946,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 registrationRecoveryPassword: nil,
                 encryptedDeviceName: nil,
                 discoverableByPhoneNumber: false,
-                hasKBSBackups: true
+                hasSVRBackups: true
             )
         }
 
@@ -2956,7 +2956,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 pni: UUID(),
                 e164: e164,
                 username: nil,
-                hasPreviouslyUsedKBS: false
+                hasPreviouslyUsedSVR: false
             )
         }
 
@@ -3000,7 +3000,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
         }
 
-        static func pinEntryStateForKBSAuthCredentialPath(
+        static func pinEntryStateForSVRAuthCredentialPath(
             mode: RegistrationMode,
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {

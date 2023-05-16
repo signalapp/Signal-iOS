@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class KBSAuthCredentialStorageTests: XCTestCase {
+class SVRAuthCredentialStorageTests: XCTestCase {
 
     typealias AuthCredential = SVRAuthCredentialStorageImpl.AuthCredential
 
@@ -48,14 +48,14 @@ class KBSAuthCredentialStorageTests: XCTestCase {
         let now = Date()
         var credentials = [AuthCredential]()
         var expectedConsolidatedCredentials = [AuthCredential]()
-        for i in 0..<(SVR.maxKBSAuthCredentialsBackedUp * 2) {
+        for i in 0..<(SVR.maxSVRAuthCredentialsBackedUp * 2) {
             var credential = AuthCredential(
                 username: "\(i)",
                 password: "\(i)",
                 insertionTime: now.addingTimeInterval(Double(-i))
             )
             credentials.append(credential)
-            if i < SVR.maxKBSAuthCredentialsBackedUp {
+            if i < SVR.maxSVRAuthCredentialsBackedUp {
                 expectedConsolidatedCredentials.append(credential)
             }
             for j in 1...5 {

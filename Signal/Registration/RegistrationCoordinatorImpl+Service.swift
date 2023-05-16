@@ -116,7 +116,7 @@ extension RegistrationCoordinatorImpl {
                     aci: response.aci,
                     pni: response.pni,
                     e164: response.e164,
-                    hasPreviouslyUsedKBS: response.hasPreviouslyUsedKBS,
+                    hasPreviouslyUsedSVR: response.hasPreviouslyUsedSVR,
                     authPassword: authPassword
                 ))
 
@@ -219,7 +219,7 @@ extension RegistrationCoordinatorImpl {
                     aci: response.aci,
                     pni: response.pni,
                     e164: response.e164,
-                    hasPreviouslyUsedKBS: response.hasPreviouslyUsedKBS,
+                    hasPreviouslyUsedSVR: response.hasPreviouslyUsedSVR,
                     authPassword: authPassword
                 ))
 

@@ -123,7 +123,7 @@ extension AccountAttributes {
             ? dependencies.tsAccountManager.isDiscoverableByPhoneNumber(with: transaction)
             : nil
 
-        let hasKBSBackups = svr.hasBackedUpMasterKey(transaction: transaction.asV2Read)
+        let hasSVRBackups = svr.hasBackedUpMasterKey(transaction: transaction.asV2Read)
 
         return AccountAttributes(
             isManualMessageFetchEnabled: isManualMessageFetchEnabled,
@@ -135,6 +135,6 @@ extension AccountAttributes {
             registrationRecoveryPassword: registrationRecoveryPassword,
             encryptedDeviceName: encryptedDeviceName,
             discoverableByPhoneNumber: isDiscoverableByPhoneNumber,
-            hasKBSBackups: hasKBSBackups)
+            hasSVRBackups: hasSVRBackups)
     }
 }

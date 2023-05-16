@@ -246,8 +246,8 @@ class KeyBackupServiceTests: XCTestCase {
         XCTAssertEqual(remoteAttestation.authMethodInputs, [.chatServerImplicitCredentials])
 
         // Check that auth has been stored.
-        XCTAssertEqual(credentialStorage.dict[firstCredential.username], firstCredential)
-        XCTAssertEqual(credentialStorage.currentUsername, firstCredential.username)
+        XCTAssertEqual(credentialStorage.kbsDict[firstCredential.credential.username], firstCredential)
+        XCTAssertEqual(credentialStorage.currentKBSUsername, firstCredential.credential.username)
 
         // Reset for a second round, which should reuse the existing auth credential.
         // Note that as of time of writing, the real RemoteAttestation just hands back whatever
@@ -272,8 +272,8 @@ class KeyBackupServiceTests: XCTestCase {
         XCTAssertEqual(remoteAttestation.authMethodInputs, [.kbsAuth(firstCredential.credential)])
 
         // The new credential should've been stored.
-        XCTAssertEqual(credentialStorage.dict[secondCredential.username], secondCredential)
-        XCTAssertEqual(credentialStorage.currentUsername, secondCredential.username)
+        XCTAssertEqual(credentialStorage.kbsDict[secondCredential.credential.username], secondCredential)
+        XCTAssertEqual(credentialStorage.currentKBSUsername, secondCredential.credential.username)
 
         // Reset for a third round, which should reuse the existing auth credential.
         let thirdCredential = KBSAuthCredential(credential: .init(username: "def", password: "789"))
@@ -296,10 +296,10 @@ class KeyBackupServiceTests: XCTestCase {
         XCTAssertEqual(remoteAttestation.authMethodInputs, [.kbsAuth(secondCredential.credential), .chatServerImplicitCredentials])
 
         // The new credential should've been stored.
-        XCTAssertEqual(credentialStorage.dict[thirdCredential.username], thirdCredential)
+        XCTAssertEqual(credentialStorage.kbsDict[thirdCredential.credential.username], thirdCredential)
         // The previous credential should've been wiped.
-        XCTAssertNil(credentialStorage.dict[secondCredential.username])
-        XCTAssertEqual(credentialStorage.currentUsername, thirdCredential.username)
+        XCTAssertNil(credentialStorage.kbsDict[secondCredential.credential.username])
+        XCTAssertEqual(credentialStorage.currentKBSUsername, thirdCredential.credential.username)
     }
 
     // MARK: - Helpers
@@ -329,7 +329,7 @@ class KeyBackupServiceTests: XCTestCase {
             ),
             requestId: Data(repeating: 1, count: 10),
             enclaveName: tsConstants.keyBackupEnclave.name,
-            auth: .init(username: credential.username, password: credential.credential.password)
+            auth: .init(username: credential.credential.username, password: credential.credential.password)
         )
     }
 }

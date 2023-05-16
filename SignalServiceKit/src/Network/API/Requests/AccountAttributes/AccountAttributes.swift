@@ -95,7 +95,7 @@ public struct AccountAttributes: Codable {
         registrationRecoveryPassword: String?,
         encryptedDeviceName: String?,
         discoverableByPhoneNumber: Bool?,
-        hasKBSBackups: Bool
+        hasSVRBackups: Bool
     ) {
         self.isManualMessageFetchEnabled = isManualMessageFetchEnabled
         self.registrationId = registrationId
@@ -116,7 +116,7 @@ public struct AccountAttributes: Codable {
         self.registrationRecoveryPassword = registrationRecoveryPassword
         self.encryptedDeviceName = encryptedDeviceName
         self.discoverableByPhoneNumber = discoverableByPhoneNumber
-        self.capabilities = Capabilities(hasKBSBackups: hasKBSBackups)
+        self.capabilities = Capabilities(hasSVRBackups: hasSVRBackups)
     }
 
     public struct Capabilities: Codable {
@@ -128,7 +128,7 @@ public struct AccountAttributes: Codable {
         public let senderKey = true
         public let stories = true
         public let canReceiveGiftBadges = true
-        public let hasKBSBackups: Bool
+        public let hasSVRBackups: Bool
         public let changeNumber = true
 
         public enum CodingKeys: String, CodingKey {
@@ -140,7 +140,7 @@ public struct AccountAttributes: Codable {
             case senderKey
             case stories
             case canReceiveGiftBadges = "giftBadges"
-            case hasKBSBackups = "storage"
+            case hasSVRBackups = "storage"
             case changeNumber
         }
     }

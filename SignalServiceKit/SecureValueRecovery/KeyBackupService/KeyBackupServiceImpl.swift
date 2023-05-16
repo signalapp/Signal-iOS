@@ -111,7 +111,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     // When changing number, we need to verify the PIN against the new number's KBS
     // record in order to generate a registration lock token. It's important that this
     // happens without touching any of the state we maintain around our account.
-    public func acquireRegistrationLockForNewNumber(with pin: String, and auth: KBSAuthCredential) -> Promise<String> {
+    public func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
         // record of you. It's important that these are ordered from neweset enclave
@@ -123,7 +123,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
 
     private func acquireRegistrationLockForNewNumber(
         pin: String,
-        auth: KBSAuthCredential,
+        auth: SVRAuthCredential,
         enclavesToCheck: [KeyBackupEnclave]
     ) -> Promise<String> {
         guard let enclave = enclavesToCheck.first else {
@@ -146,7 +146,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
 
     private func acquireRegistrationLockForNewNumber(
         pin: String,
-        auth: KBSAuthCredential,
+        auth: SVRAuthCredential,
         enclave: KeyBackupEnclave
     ) -> Promise<String> {
         Logger.info("Attempting to acquire registration lock from enclave \(enclave.name)")
@@ -169,7 +169,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     }
 
     /// Loads the users key, if any, from the KBS into the database.
-    public func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential?) -> Promise<Void> {
+    public func restoreKeysAndBackup(with pin: String, and auth: SVRAuthCredential?) -> Promise<Void> {
         return restoreKeysAndBackup(pin: pin, authMethod: auth.map { SVR.AuthMethod.svrAuth($0, backup: nil) } ?? SVR.AuthMethod.implicit)
             .then(on: schedulers.sync) { result -> Promise<Void> in
                 switch result {
@@ -1335,8 +1335,8 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         let authMethod: RemoteAttestation.KeyBackupAuthMethod
         var backupAuthMethod: RemoteAttestation.KeyBackupAuthMethod?
         let implicitAuthMethod: RemoteAttestation.KeyBackupAuthMethod
-        var kbsAuth: KBSAuthCredential?
-        let cachedKbsAuth: KBSAuthCredential? = self.db.read(block: { credentialStorage.getAuthCredentialForCurrentUser($0) })
+        var kbsAuth: SVRAuthCredential?
+        let cachedKbsAuth: SVRAuthCredential? = self.db.read(block: { credentialStorage.getAuthCredentialForCurrentUser($0) })
 
         if let cachedKbsAuth {
             backupAuthMethod = .chatServerImplicitCredentials
@@ -1391,7 +1391,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             }
             .map(on: schedulers.sync) { [credentialStorage, db] attestation in
                 let credential = attestation.auth
-                db.write { credentialStorage.storeAuthCredentialForCurrentUsername(KBSAuthCredential(credential: credential), $0) }
+                db.write { credentialStorage.storeAuthCredentialForCurrentUsername(SVRAuthCredential(credential: credential), $0) }
                 return attestation
             }
     }

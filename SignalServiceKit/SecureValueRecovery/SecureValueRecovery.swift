@@ -72,7 +72,7 @@ public enum SVR {
     public indirect enum AuthMethod: Equatable {
         /// Explicitly provide an auth credential to use directly with SVR.
         /// note: if it fails, will fall back to the backup or implicit if unset.
-        case svrAuth(KBSAuthCredential, backup: AuthMethod?)
+        case svrAuth(SVRAuthCredential, backup: AuthMethod?)
         /// Get an SVR auth credential from the chat server first with the
         /// provided credentials, then use it to talk to the SVR server.
         case chatServerAuth(AuthedAccount)
@@ -117,10 +117,10 @@ public protocol SecureValueRecovery {
     // When changing number, we need to verify the PIN against the new number's SVR
     // record in order to generate a registration lock token. It's important that this
     // happens without touching any of the state we maintain around our account.
-    func acquireRegistrationLockForNewNumber(with pin: String, and auth: KBSAuthCredential) -> Promise<String>
+    func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String>
 
     /// Loads the users key, if any, from the SVR into the database.
-    func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential?) -> Promise<Void>
+    func restoreKeysAndBackup(with pin: String, and auth: SVRAuthCredential?) -> Promise<Void>
 
     /// Loads the users key, if any, from the SVR into the database.
     func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>

@@ -193,7 +193,7 @@ public enum RegistrationServiceResponses {
         }
 
         public func result(for credential: KBSAuthCredential) -> Result? {
-            let key = "\(credential.username):\(credential.credential.password)"
+            let key = "\(credential.credential.username):\(credential.credential.password)"
             return matches[key]
         }
     }
@@ -276,15 +276,15 @@ public enum RegistrationServiceResponses {
         public let e164: E164
         /// The username associated with the ACI.
         public let username: String?
-        /// Whether the account has any data in KBS.
-        public let hasPreviouslyUsedKBS: Bool
+        /// Whether the account has any data in SVR.
+        public let hasPreviouslyUsedSVR: Bool
 
-        public init(aci: UUID, pni: UUID, e164: E164, username: String?, hasPreviouslyUsedKBS: Bool) {
+        public init(aci: UUID, pni: UUID, e164: E164, username: String?, hasPreviouslyUsedSVR: Bool) {
             self.aci = aci
             self.pni = pni
             self.e164 = e164
             self.username = username
-            self.hasPreviouslyUsedKBS = hasPreviouslyUsedKBS
+            self.hasPreviouslyUsedSVR = hasPreviouslyUsedSVR
         }
 
         public enum CodingKeys: String, CodingKey {
@@ -292,7 +292,7 @@ public enum RegistrationServiceResponses {
             case pni
             case e164 = "number"
             case username
-            case hasPreviouslyUsedKBS = "storageCapable"
+            case hasPreviouslyUsedSVR = "storageCapable"
         }
     }
 
@@ -303,6 +303,7 @@ public enum RegistrationServiceResponses {
         /// A credential with which the client can talk to KBS server to
         /// recover the KBS master key, and from it the reglock token,
         /// using the user's PIN.
+        /// NOTE: this is NOT an SVR2 credential.
         public let kbsAuthCredential: KBSAuthCredential
 
         public enum CodingKeys: String, CodingKey {

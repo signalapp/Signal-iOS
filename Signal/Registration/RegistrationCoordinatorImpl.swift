@@ -173,8 +173,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             case
                     .opening,
-                    .kbsAuthCredential,
-                    .kbsAuthCredentialCandidates,
+                    .svrAuthCredential,
+                    .svrAuthCredentialCandidates,
                     .registrationRecoveryPassword,
                     .profileSetup:
                 break
@@ -196,7 +196,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Reload auth credential candidates; we might not have
             // had a credential for the old e164 but might have one for
             // the new e164!
-            loadkbsAuthCredentialCandidates(tx)
+            loadSVRAuthCredentialCandidates(tx)
         }
         inMemoryState.hasEnteredE164 = false
         inMemoryState.changeNumberProspectiveE164 = nil
@@ -209,8 +209,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case
                 .opening,
                 .registrationRecoveryPassword,
-                .kbsAuthCredential,
-                .kbsAuthCredentialCandidates,
+                .svrAuthCredential,
+                .svrAuthCredentialCandidates,
                 .profileSetup:
             owsFailBeta("Shouldn't be resending SMS from non session paths.")
             return nextStep()
@@ -226,8 +226,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case
                 .opening,
                 .registrationRecoveryPassword,
-                .kbsAuthCredential,
-                .kbsAuthCredentialCandidates,
+                .svrAuthCredential,
+                .svrAuthCredentialCandidates,
                 .profileSetup:
             owsFailBeta("Shouldn't be sending voice code from non session paths.")
             return nextStep()
@@ -243,8 +243,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case
                 .opening,
                 .registrationRecoveryPassword,
-                .kbsAuthCredential,
-                .kbsAuthCredentialCandidates,
+                .svrAuthCredential,
+                .svrAuthCredentialCandidates,
                 .profileSetup:
             owsFailBeta("Shouldn't be submitting verification code from non session paths.")
             return nextStep()
@@ -259,8 +259,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case
                 .opening,
                 .registrationRecoveryPassword,
-                .kbsAuthCredential,
-                .kbsAuthCredentialCandidates,
+                .svrAuthCredential,
+                .svrAuthCredentialCandidates,
                 .profileSetup:
             owsFailBeta("Shouldn't be submitting captcha from non session paths.")
             return nextStep()
@@ -312,7 +312,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     inMemoryState.pinFromUser = nil
                     inMemoryState.pinFromDisk = nil
-                    self.wipeInMemoryStateToPreventKBSPathAttempts()
+                    self.wipeInMemoryStateToPreventSVRPathAttempts()
                     return .value(.pinAttemptsExhaustedWithoutReglock(
                         .init(mode: .restoringRegistrationRecoveryPassword)
                     ))
@@ -329,7 +329,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     )))
                 }
             }
-        case .opening, .kbsAuthCredential, .kbsAuthCredentialCandidates, .profileSetup, .session:
+        case .opening, .svrAuthCredential, .svrAuthCredentialCandidates, .profileSetup, .session:
             // We aren't checking against any local state, rely on the request.
             break
         }
@@ -341,13 +341,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public func skipPINCode() -> Guarantee<RegistrationStep> {
         Logger.info("")
-        let shouldGiveUpTryingToRestoreWithKBS: Bool = {
+        let shouldGiveUpTryingToRestoreWithSVR: Bool = {
             switch getPathway() {
             case
                     .opening,
                     .registrationRecoveryPassword,
-                    .kbsAuthCredential,
-                    .kbsAuthCredentialCandidates,
+                    .svrAuthCredential,
+                    .svrAuthCredentialCandidates,
                     .session:
                 return false
             case .profileSetup:
@@ -357,8 +357,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         db.write { tx in
             updatePersistedState(tx) {
                 $0.hasSkippedPinEntry = true
-                if shouldGiveUpTryingToRestoreWithKBS {
-                    $0.hasGivenUpTryingToRestoreWithKBS = true
+                if shouldGiveUpTryingToRestoreWithSVR {
+                    $0.hasGivenUpTryingToRestoreWithSVR = true
                 }
             }
             switch self.mode {
@@ -372,7 +372,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
         inMemoryState.pinFromUser = nil
-        self.wipeInMemoryStateToPreventKBSPathAttempts()
+        self.wipeInMemoryStateToPreventSVRPathAttempts()
         return nextStep()
     }
 
@@ -478,7 +478,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // know whether its been entered during this app launch; if it
         // hasn't we want to explicitly ask the user for it before
         // sending an SMS. But if we have (e.g. we asked for it to try
-        // some KBS recovery that failed) we should auto-send an SMS if
+        // some SVR recovery that failed) we should auto-send an SMS if
         // we get to that step without asking again.
         var hasEnteredE164 = false
 
@@ -487,7 +487,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // This tracks that first check before the confirm.
         var changeNumberProspectiveE164: E164?
 
-        var shouldRestoreKBSMasterKeyAfterRegistration = false
+        var shouldRestoreSVRMasterKeyAfterRegistration = false
         // base64 encoded data
         var regRecoveryPw: String?
         // hexadecimal encoded data
@@ -495,11 +495,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         // candidate credentials, which may not
         // be valid, or may not correspond with the current e164.
-        var kbsAuthCredentialCandidates: [KBSAuthCredential]?
+        var svrAuthCredentialCandidates: [SVRAuthCredential]?
         // A credential we know to be valid and useable for
         // the current e164.
-        var kbsAuthCredential: KBSAuthCredential?
-        // If we had kbs backups before registration even began.
+        var svrAuthCredential: SVRAuthCredential?
+        // If we had SVR backups before registration even began.
         var didHaveKbsBackupsPriorToReg = false
 
         // We always require the user to enter the PIN
@@ -509,8 +509,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var pinFromUser: String?
         var pinFromDisk: String?
         // A really old user might be on v1 2fa; they have a PIN,
-        // but no kbs backups. We will encourage backing up
-        // to kbs but the user may skip it.
+        // but no SVR backups. We will encourage backing up
+        // to SVR but the user may skip it.
         var isV12faUser: Bool = false
         var unconfirmedPinBlob: RegistrationPinConfirmationBlob?
 
@@ -531,13 +531,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // is the primary device). Do this again if we relaunch.
         var hasSetUpContactsManager = false
 
-        // Every time we go through registration, we should back up our KBS master
-        // secret's random bytes to KBS. Its safer to do this more than it is to do
+        // Every time we go through registration, we should back up our SVR master
+        // secret's random bytes to SVR. Its safer to do this more than it is to do
         // it less, so keeping this state in memory.
-        var hasBackedUpToKBS = false
-        var didSkipKBSBackup = false
-        var shouldBackUpToKBS: Bool {
-            return hasBackedUpToKBS.negated && didSkipKBSBackup.negated
+        var hasBackedUpToSVR = false
+        var didSkipSVRBackup = false
+        var shouldBackUpToSVR: Bool {
+            return hasBackedUpToSVR.negated && didSkipSVRBackup.negated
         }
 
         // OWS2FAManager state
@@ -561,7 +561,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var allowUnrestrictedUD = false
         var hasProfileName = false
 
-        // Once we have our kbs master key locally,
+        // Once we have our SVR master key locally,
         // we can restore profile info from storage service.
         var hasRestoredFromStorageService = false
         var hasSkippedRestoreFromStorageService = false
@@ -601,32 +601,32 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var e164WithKnownReglockEnabled: E164?
 
         /// How many times the user has tried making guesses against the PIN
-        /// we have locally? This happens when we have a local KBS master key
+        /// we have locally? This happens when we have a local SVR master key
         /// and want to confirm the user knows their PIN before using it to register.
         var numLocalPinGuesses: UInt = 0
 
         /// There are a few times we ask for the PIN that are skippable:
         ///
-        /// * Registration recovery password path: we have your KBS master key locally, ask for PIN,
+        /// * Registration recovery password path: we have your SVR master key locally, ask for PIN,
         ///   user skips, we stop trying to use the local master key and fall back to session-based
         ///   registration.
         ///
-        /// * KBS Auth Credential path(s): we try and recover the KBS master secret from backups,
+        /// * SVR Auth Credential path(s): we try and recover the SVR master secret from backups,
         ///   ask for PIN, user skips, we stop trying to recover the backup and fall back to
         ///   session-based registration.
         ///
-        /// * Post-registration, if reglock was not enabled but there are KBS backups, we try and
+        /// * Post-registration, if reglock was not enabled but there are SVR backups, we try and
         ///   recover them. If the user skips, we don't bother recovering.
         ///
         /// In a single flow, the user might hit more than one of these cases (and probably will;
-        /// if they have KBS backups and skip in favor of session-based reg, we will see that
+        /// if they have SVR backups and skip in favor of session-based reg, we will see that
         /// they have backups post-registration). This skip applies to _all_ of these; if they
         /// skipped the PIN early on, we won't ask for it again for recovery purposes later.
         var hasSkippedPinEntry = false
 
-        /// Have we given up trying to restore with KBS? This can happen if you blow through your
+        /// Have we given up trying to restore with SVR? This can happen if you blow through your
         /// PIN guesses or decide to give up before exhausting them.
-        var hasGivenUpTryingToRestoreWithKBS = false
+        var hasGivenUpTryingToRestoreWithSVR = false
 
         struct SessionState: Codable {
             let sessionId: String
@@ -650,9 +650,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 /// No reglock known of preventing registration.
                 case none
                 /// We tried to register and got reglocked; we have to
-                /// recover from KBS with the credential given.
-                case reglocked(credential: KBSAuthCredential, expirationDate: Date)
-                /// We couldn't recover credentials from KBS (probably
+                /// recover from SVR with the credential given.
+                case reglocked(credential: SVRAuthCredential, expirationDate: Date)
+                /// We couldn't recover credentials from SVR (probably
                 /// because PIN guesses were exhausted) and so waiting
                 /// out the reglock is the only option.
                 case waitingTimeout(expirationDate: Date)
@@ -711,6 +711,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var hasDeclinedTransfer: Bool = false
 
         init() {}
+
+        enum CodingKeys: String, CodingKey {
+            case hasShownSplash
+            case shouldSkipRegistrationSplash
+            case hasResetForReRegistration
+            case e164
+            case e164WithKnownReglockEnabled
+            case numLocalPinGuesses
+            case hasSkippedPinEntry
+            // Legacy naming
+            case hasGivenUpTryingToRestoreWithSVR = "hasGivenUpTryingToRestoreWithKBS"
+            case sessionState
+            case accountIdentity
+            case didSyncPushTokens
+            case didSyncPrekeys
+            case hasDeclinedTransfer
+        }
     }
 
     private var _persistedState: PersistedState?
@@ -745,10 +762,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ///   in memory copy because its internal to this class and therefore can't change on disk any other way)
     ///
     /// * Pull in any "in memory" state so we get a one-time snapshot of this state at the start of registration.
-    ///   e.g. we ask KeyBackupService for any KBS data so we know whether to attempt registration
+    ///   e.g. we ask KeyBackupService for any SVR data so we know whether to attempt registration
     ///   via registration recovery password (if present) or via SMS (if not).
     ///   We don't want to check this on the fly because if we went down the SMS path we'd eventually
-    ///   recover our KBS data, but we'd want to stick to the SMS registration path and NOT revert to
+    ///   recover our SVR data, but we'd want to stick to the SMS registration path and NOT revert to
     ///   the registration recovery password path, which would cause us to repeat work. So we only
     ///   grab a snapshot at the start and use that exclusively for state determination.
     private func restoreStateIfNeeded() -> Guarantee<Void> {
@@ -774,11 +791,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 inMemoryState.pinFromDisk != nil,
                 deps.svr.hasBackedUpMasterKey(transaction: tx).negated
             {
-                // If we had a pin but no kbs backups, we must be a v1 2fa user.
+                // If we had a pin but no SVR backups, we must be a v1 2fa user.
                 inMemoryState.isV12faUser = true
             }
 
-            loadkbsAuthCredentialCandidates(tx)
+            loadSVRAuthCredentialCandidates(tx)
             inMemoryState.isManualMessageFetchEnabled = deps.tsAccountManager.isManualMessageFetchEnabled(tx)
             inMemoryState.registrationId = deps.tsAccountManager.getOrGenerateRegistrationId(tx)
             inMemoryState.pniRegistrationId = deps.tsAccountManager.getOrGeneratePniRegistrationId(tx)
@@ -831,7 +848,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         Logger.info("")
 
         func finalizeRegistration(_ tx: DBWriteTransaction) {
-            if inMemoryState.hasBackedUpToKBS {
+            if inMemoryState.hasBackedUpToSVR {
                 // No need to show the experience if we made the pin
                 // and backed up.
                 deps.experienceManager.clearIntroducingPinsExperience(tx)
@@ -952,16 +969,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// (basically, the splash and systems permissions screens)
         case opening
         /// Attempting to register using the reg recovery password
-        /// derived from the KBS master key.
+        /// derived from the SVR master key.
         case registrationRecoveryPassword(password: String)
-        /// Attempting to recover from KBS auth credentials
-        /// which let us talk to KBS server, recover the master key,
+        /// Attempting to recover from SVR auth credentials
+        /// which let us talk to SVR server, recover the master key,
         /// and swap to the registrationRecoveryPassword path.
-        case kbsAuthCredential(KBSAuthCredential)
-        /// We might have un-verified KBS auth credentials
+        case svrAuthCredential(SVRAuthCredential)
+        /// We might have un-verified SVR auth credentials
         /// synced from another device; first we need to check them
-        /// with the server and then potentially go to the kbsAuthCredential path.
-        case kbsAuthCredentialCandidates([KBSAuthCredential])
+        /// with the server and then potentially go to the svrAuthCredential path.
+        case svrAuthCredentialCandidates([SVRAuthCredential])
         /// Verifying via SMS code using a `RegistrationSession`.
         /// Used as a fallback if the above paths are unavailable or fail.
         case session(RegistrationSession)
@@ -974,8 +991,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             switch self {
             case .opening: return "opening"
             case .registrationRecoveryPassword: return "registrationRecoveryPassword"
-            case .kbsAuthCredential: return "kbsAuthCredential"
-            case .kbsAuthCredentialCandidates: return "kbsAuthCredentialCandidates"
+            case .svrAuthCredential: return "svrAuthCredential"
+            case .svrAuthCredentialCandidates: return "svrAuthCredentialCandidates"
             case .session: return "session"
             case .profileSetup: return "profileSetup"
             }
@@ -987,7 +1004,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .opening
         }
         if let session = inMemoryState.session {
-            // If we have a session, always use that. We might have obtained kbs
+            // If we have a session, always use that. We might have obtained SVR
             // credentials midway through a session (if we failed reglock when
             // trying to create the account with the session) so we don't want
             // their presence to override the session path.
@@ -1013,18 +1030,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // or proceed to profile setup (if it succeeds) we must wipe this state.
                 return .registrationRecoveryPassword(password: password)
             }
-            if let credential = inMemoryState.kbsAuthCredential {
-                // If we have a validated kbs auth credential, try using that
-                // to recover the KBS master key to register.
+            if let credential = inMemoryState.svrAuthCredential {
+                // If we have a validated SVR auth credential, try using that
+                // to recover the SVR master key to register.
                 // Once again, to get off this path and fall back to session (if it fails)
                 // or proceed to reg recovery pw (if it succeeds) we must wipe this state.
-                return .kbsAuthCredential(credential)
+                return .svrAuthCredential(credential)
             }
-            if let credentialCandidates = inMemoryState.kbsAuthCredentialCandidates,
+            if let credentialCandidates = inMemoryState.svrAuthCredentialCandidates,
                credentialCandidates.isEmpty.negated {
                 // If we have un-vetted candidates, try checking those first
-                // and then going to the kbsAuthCredential path if one is valid.
-                return .kbsAuthCredentialCandidates(credentialCandidates)
+                // and then going to the svrAuthCredential path if one is valid.
+                return .svrAuthCredentialCandidates(credentialCandidates)
             }
         }
 
@@ -1041,10 +1058,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nextStepForOpeningPath()
         case .registrationRecoveryPassword(let password):
             return nextStepForRegRecoveryPasswordPath(regRecoveryPw: password)
-        case .kbsAuthCredential(let credential):
-            return nextStepForKBSAuthCredentialPath(kbsAuthCredential: credential)
-        case .kbsAuthCredentialCandidates(let candidates):
-            return nextStepForKBSAuthCredentialCandidatesPath(kbsAuthCredentialCandidates: candidates)
+        case .svrAuthCredential(let credential):
+            return nextStepForSVRAuthCredentialPath(svrAuthCredential: credential)
+        case .svrAuthCredentialCandidates(let candidates):
+            return nextStepForSVRAuthCredentialCandidatesPath(svrAuthCredentialCandidates: candidates)
         case .session(let session):
             return nextStepForSessionPath(session)
         case .profileSetup(let accountIdentity):
@@ -1088,7 +1105,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Registration Recovery Password Pathway
 
-    /// If we have the KBS master key saved locally (e.g. this is re-registration), we can generate the
+    /// If we have the SVR master key saved locally (e.g. this is re-registration), we can generate the
     /// "Registration Recovery Password" from it, which we can use as an alternative to a verified SMS code session
     /// to register. This path returns the steps to complete that flow.
     private func nextStepForRegRecoveryPasswordPath(regRecoveryPw: String) -> Guarantee<RegistrationStep> {
@@ -1197,16 +1214,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // We tried out reglock token and it failed.
                 switch self.mode {
                 case .registering, .reRegistering:
-                    // Both the reglock and the reg recovery password are derived from the KBS master key.
+                    // Both the reglock and the reg recovery password are derived from the SVR master key.
                     // Its weird that we'd get this response implying the recovery password is right
-                    // but the reglock token is wrong, but lets assume our kbs master secret is just
-                    // wrong entirely and reset _all_ KBS state so we go through sms verification.
+                    // but the reglock token is wrong, but lets assume our SVR master secret is just
+                    // wrong entirely and reset _all_ SVR state so we go through sms verification.
                     db.write { tx in
                         // Store it and wipe it so we also overwrite any existing credential for the same user.
                         // We want to wipe the credential on disk too; we don't want to retry it on next app launch.
                         deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
                         deps.svrAuthCredentialStore.deleteInvalidCredentials([reglockFailure.kbsAuthCredential], tx)
-                        // Clear the KBS master key locally; we failed reglock so we know its wrong
+                        // Clear the SVR master key locally; we failed reglock so we know its wrong
                         // and useless anyway.
                         deps.svr.clearKeys(transaction: tx)
                         deps.ows2FAManager.clearLocalPinCode(tx)
@@ -1216,7 +1233,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                 case .changingNumber:
                     db.write { tx in
-                        // If changing number we don't wanna wipe our kbs data;
+                        // If changing number we don't wanna wipe our SVR data;
                         // its still good for the previous number. just note the reglock
                         // and keep going.
                         self.updatePersistedState(tx) {
@@ -1224,10 +1241,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         }
                     }
                 }
-                // If changing number, we never want to wipe local our kbs secret.
+                // If changing number, we never want to wipe local our SVR secret.
                 // Just pretend we don't have it by wiping
 
-                wipeInMemoryStateToPreventKBSPathAttempts()
+                wipeInMemoryStateToPreventSVRPathAttempts()
 
                 // Start a session so we go down that path to recovery, challenging
                 // the reglock we just failed so we can eventually get in.
@@ -1236,20 +1253,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         case .rejectedVerificationMethod:
             // The reg recovery password was wrong. This can happen for two reasons:
-            // 1) We have the wrong KBS master key
+            // 1) We have the wrong SVR master key
             // 2) We have been reglock challenged, forcing us to re-register via session
-            // If it were just the former case, we'd wipe our known-wrong KBS master key.
+            // If it were just the former case, we'd wipe our known-wrong SVR master key.
             // But the latter case means we want to go through session path registration,
-            // and re-upload our local KBS master secret, so we don't want to wipe it.
-            // (If we wiped it and our KBS server guesses were consumed by the reglock-challenger,
+            // and re-upload our local SVR master secret, so we don't want to wipe it.
+            // (If we wiped it and our SVR server guesses were consumed by the reglock-challenger,
             // we'd be outta luck and have no way to recover).
             db.write { tx in
                 // We do want to clear out any credentials permanently; we know we
                 // have to use the session path so credentials aren't helpful.
-                deps.svrAuthCredentialStore.deleteInvalidCredentials([inMemoryState.kbsAuthCredential].compacted(), tx)
+                deps.svrAuthCredentialStore.deleteInvalidCredentials([inMemoryState.svrAuthCredential].compacted(), tx)
             }
-            // Wipe our in memory KBS state; its now useless.
-            wipeInMemoryStateToPreventKBSPathAttempts()
+            // Wipe our in memory SVR state; its now useless.
+            wipeInMemoryStateToPreventSVRPathAttempts()
 
             // Now we have to start a session; its the only way to recover.
             return self.startSession(e164: e164)
@@ -1274,7 +1291,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Besides since this is always our first attempt at registering,
             // this lockout should never happen.
             Logger.error("Rate limited when registering via recovery password; falling back to session.")
-            wipeInMemoryStateToPreventKBSPathAttempts()
+            wipeInMemoryStateToPreventSVRPathAttempts()
             return self.startSession(e164: e164)
 
         case .deviceTransferPossible:
@@ -1298,31 +1315,31 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private func loadkbsAuthCredentialCandidates(_ tx: DBReadTransaction) {
-        let kbsAuthCredentialCandidates = deps.svrAuthCredentialStore.getAuthCredentials(tx)
-        if kbsAuthCredentialCandidates.isEmpty.negated {
-            inMemoryState.kbsAuthCredentialCandidates = kbsAuthCredentialCandidates
+    private func loadSVRAuthCredentialCandidates(_ tx: DBReadTransaction) {
+        let svrAuthCredentialCandidates: [SVRAuthCredential] = deps.svrAuthCredentialStore.getAuthCredentials(tx)
+        if svrAuthCredentialCandidates.isEmpty.negated {
+            inMemoryState.svrAuthCredentialCandidates = svrAuthCredentialCandidates
         }
     }
 
-    private func wipeInMemoryStateToPreventKBSPathAttempts() {
+    private func wipeInMemoryStateToPreventSVRPathAttempts() {
         inMemoryState.regRecoveryPw = nil
-        inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = true
+        inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = true
         // Wiping auth credential state too; if we failed with the local
-        // kbs master key we don't expect the backed up master key to work
+        // SVR master key we don't expect the backed up master key to work
         // either so we shouldn't bother trying.
-        inMemoryState.kbsAuthCredential = nil
-        inMemoryState.kbsAuthCredentialCandidates = nil
+        inMemoryState.svrAuthCredential = nil
+        inMemoryState.svrAuthCredentialCandidates = nil
     }
 
-    // MARK: - KBS Auth Credential Pathway
+    // MARK: - SVR Auth Credential Pathway
 
-    /// If we don't have the KBS master key saved locally but we do have a KBS auth credential,
-    /// we can use it to talk to the KBS server and, together with the user-entered PIN, recover the
-    /// full KBS master key. Then we use the Registration Recovery Password registration flow.
-    /// (If we had the KBS master key saved locally to begin with, we would have just used it right away.)
-    private func nextStepForKBSAuthCredentialPath(
-        kbsAuthCredential: KBSAuthCredential
+    /// If we don't have the SVR master key saved locally but we do have a SVR auth credential,
+    /// we can use it to talk to the SVR server and, together with the user-entered PIN, recover the
+    /// full SVR master key. Then we use the Registration Recovery Password registration flow.
+    /// (If we had the SVR master key saved locally to begin with, we would have just used it right away.)
+    private func nextStepForSVRAuthCredentialPath(
+        svrAuthCredential: SVRAuthCredential
     ) -> Guarantee<RegistrationStep> {
         guard let pin = inMemoryState.pinFromUser else {
             // We don't have a pin at all, ask the user for it.
@@ -1334,15 +1351,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )))
         }
 
-        return restoreKBSMasterSecretForAuthCredentialPath(
+        return restoreSVRMasterSecretForAuthCredentialPath(
             pin: pin,
-            credential: kbsAuthCredential
+            credential: svrAuthCredential
         )
     }
 
-    private func restoreKBSMasterSecretForAuthCredentialPath(
+    private func restoreSVRMasterSecretForAuthCredentialPath(
         pin: String,
-        credential: KBSAuthCredential,
+        credential: SVRAuthCredential,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         deps.svr.restoreKeysAndBackup(pin: pin, authMethod: .svrAuth(credential, backup: nil))
@@ -1353,7 +1370,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 switch result {
                 case .success:
                     // This step also backs up, no need to do that again later.
-                    self.inMemoryState.hasBackedUpToKBS = true
+                    self.inMemoryState.hasBackedUpToSVR = true
                     self.db.write { self.loadLocalMasterKeyAndUpdateState($0) }
                     return self.nextStep()
                 case let .invalidPin(remainingAttempts):
@@ -1367,13 +1384,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         exitConfiguration: self.pinCodeEntryExitConfiguration()
                     )))
                 case .backupMissing:
-                    // If we are unable to talk to KBS, it got wiped and we can't
-                    // recover. Give it all up and wipe our KBS info.
-                    self.wipeInMemoryStateToPreventKBSPathAttempts()
+                    // If we are unable to talk to SVR, it got wiped and we can't
+                    // recover. Give it all up and wipe our SVR info.
+                    self.wipeInMemoryStateToPreventSVRPathAttempts()
                     self.inMemoryState.pinFromUser = nil
                     self.db.write { tx in
                         self.updatePersistedState(tx) {
-                            $0.hasGivenUpTryingToRestoreWithKBS = true
+                            $0.hasGivenUpTryingToRestoreWithSVR = true
                         }
                     }
                     return .value(.pinAttemptsExhaustedWithoutReglock(
@@ -1381,7 +1398,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     ))
                 case .networkError:
                     if retriesLeft > 0 {
-                        return self.restoreKBSMasterSecretForAuthCredentialPath(
+                        return self.restoreSVRMasterSecretForAuthCredentialPath(
                             pin: pin,
                             credential: credential,
                             retriesLeft: retriesLeft - 1
@@ -1404,14 +1421,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         inMemoryState.reglockToken = deps.svr.data(for: .registrationLock, transaction: tx)?.hexadecimalString
         // If we have a local master key, theres no need to restore after registration.
         // (we will still back up though)
-        inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = !deps.svr.hasMasterKey(transaction: tx)
+        inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = !deps.svr.hasMasterKey(transaction: tx)
         inMemoryState.didHaveKbsBackupsPriorToReg = deps.svr.hasBackedUpMasterKey(transaction: tx)
     }
 
-    // MARK: - KBS Auth Credential Candidates Pathway
+    // MARK: - SVR Auth Credential Candidates Pathway
 
-    private func nextStepForKBSAuthCredentialCandidatesPath(
-        kbsAuthCredentialCandidates: [KBSAuthCredential]
+    private func nextStepForSVRAuthCredentialCandidatesPath(
+        svrAuthCredentialCandidates: [SVRAuthCredential]
     ) -> Guarantee<RegistrationStep> {
         guard let e164 = persistedState.e164 else {
             // If we haven't entered a phone number but we have auth
@@ -1420,11 +1437,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         // Check the candidates.
         return makeKBSAuthCredentialCheckRequest(
-            kbsAuthCredentialCandidates: kbsAuthCredentialCandidates,
+            kbsAuthCredentialCandidates: svrAuthCredentialCandidates,
             e164: e164
         )
     }
 
+    /// This call is KBS specific; not generic to SVR 1 or 2.
     private func makeKBSAuthCredentialCheckRequest(
         kbsAuthCredentialCandidates: [KBSAuthCredential],
         e164: E164,
@@ -1465,12 +1483,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     retriesLeft: retriesLeft - 1
                 )
             }
-            self.inMemoryState.kbsAuthCredentialCandidates = nil
+            self.inMemoryState.svrAuthCredentialCandidates = nil
             return self.nextStep()
         case .genericError:
             // If we failed to verify, wipe the candidates so we don't try again
             // and keep going.
-            self.inMemoryState.kbsAuthCredentialCandidates = nil
+            self.inMemoryState.svrAuthCredentialCandidates = nil
             return self.nextStep()
         case .success(let response):
             for candidate in kbsAuthCredentialCandidates {
@@ -1487,10 +1505,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
         // Wipe the candidates so we don't re-check them.
-        self.inMemoryState.kbsAuthCredentialCandidates = nil
-        // If this is nil, the next time we call `nextStepForKBSAuthCredentialPath`
+        self.inMemoryState.svrAuthCredentialCandidates = nil
+        // If this is nil, the next time we call `nextStepForSVRAuthCredentialPath`
         // will just return an empty promise.
-        self.inMemoryState.kbsAuthCredential = matchedCredential
+        self.inMemoryState.svrAuthCredential = matchedCredential
         self.db.write { tx in
             self.deps.svrAuthCredentialStore.deleteInvalidCredentials(credentialsToDelete, tx)
         }
@@ -1503,12 +1521,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch persistedState.sessionState?.reglockState ?? .none {
         case .none:
             break
-        case let .reglocked(kbsAuthCredential, reglockExpirationDate):
+        case let .reglocked(svrAuthCredential, reglockExpirationDate):
             if let pinFromUser = inMemoryState.pinFromUser {
-                return restoreKBSMasterSecretForSessionPathReglock(
+                return restoreSVRMasterSecretForSessionPathReglock(
                     session: session,
                     pin: pinFromUser,
-                    kbsAuthCredential: kbsAuthCredential,
+                    svrAuthCredential: svrAuthCredential,
                     reglockExpirationDate: reglockExpirationDate
                 )
             } else {
@@ -1760,8 +1778,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nextStep()
         case .reglockFailure(let reglockFailure):
             let reglockExpirationDate = self.deps.dateProvider().addingTimeInterval(TimeInterval(reglockFailure.timeRemainingMs / 1000))
-            guard persistedState.hasGivenUpTryingToRestoreWithKBS.negated else {
-                // If we have already exhausted our kbs backup attempts, we are stuck.
+            guard persistedState.hasGivenUpTryingToRestoreWithSVR.negated else {
+                // If we have already exhausted our SVR backup attempts, we are stuck.
                 db.write { tx in
                     // May as well store credentials, anyway.
                     deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
@@ -1775,7 +1793,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return nextStep()
             }
             // We need the user to enter their PIN so we can get through reglock.
-            // So we set up the state we need (the KBS credential)
+            // So we set up the state we need (the SVR credential)
             // and go to the next step which should look at the state and take us to the right place.
             switch twoFAModeUsedInRequest {
             case .v2:
@@ -2399,10 +2417,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private func restoreKBSMasterSecretForSessionPathReglock(
+    private func restoreSVRMasterSecretForSessionPathReglock(
         session: RegistrationSession,
         pin: String,
-        kbsAuthCredential: KBSAuthCredential,
+        svrAuthCredential: SVRAuthCredential,
         reglockExpirationDate: Date,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
@@ -2410,7 +2428,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         return deps.svr.restoreKeysAndBackup(
             pin: pin,
-            authMethod: .svrAuth(kbsAuthCredential, backup: nil)
+            authMethod: .svrAuth(svrAuthCredential, backup: nil)
         )
             .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
                 guard let self else {
@@ -2419,7 +2437,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 switch result {
                 case .success:
                     // This step also backs up, no need to do that again later.
-                    self.inMemoryState.hasBackedUpToKBS = true
+                    self.inMemoryState.hasBackedUpToSVR = true
                     self.db.write { tx in
                         self.loadLocalMasterKeyAndUpdateState(tx)
                         self.updatePersistedSessionState(session: session, tx) {
@@ -2439,13 +2457,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         exitConfiguration: self.pinCodeEntryExitConfiguration()
                     )))
                 case .backupMissing:
-                    // If we are unable to talk to KBS, it got wiped, probably
+                    // If we are unable to talk to SVR, it got wiped, probably
                     // because we used up our guesses. We can't get past reglock.
                     self.inMemoryState.pinFromUser = nil
-                    self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
+                    self.inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
                     self.db.write { tx in
                         self.updatePersistedState(tx) {
-                            $0.hasGivenUpTryingToRestoreWithKBS = true
+                            $0.hasGivenUpTryingToRestoreWithSVR = true
                         }
                         self.updatePersistedSessionState(session: session, tx) {
                             $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
@@ -2454,10 +2472,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return self.nextStep()
                 case .networkError:
                     if retriesLeft > 0 {
-                        return self.restoreKBSMasterSecretForSessionPathReglock(
+                        return self.restoreSVRMasterSecretForSessionPathReglock(
                             session: session,
                             pin: pin,
-                            kbsAuthCredential: kbsAuthCredential,
+                            svrAuthCredential: svrAuthCredential,
                             reglockExpirationDate: reglockExpirationDate,
                             retriesLeft: retriesLeft - 1
                         )
@@ -2485,7 +2503,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return syncPushTokens(accountIdentity)
             }
 
-            if let stepGuarantee = performKBSBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+            if let stepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
                 return stepGuarantee
             }
 
@@ -2504,7 +2522,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // disabled and other endpoints won't work until we:
         // 1. sync push tokens OR set isManualMessageFetchEnabled=true and sync account attributes
         // 2. create prekeys and register them with the server
-        // then we can do other stuff (fetch kbs backups, set profile info, etc)
+        // then we can do other stuff (fetch SVR backups, set profile info, etc)
         if !persistedState.didSyncPushTokens {
             return syncPushTokens(accountIdentity)
         }
@@ -2538,7 +2556,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
         }
 
-        if let stepGuarantee = performKBSBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+        if let stepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
             return stepGuarantee
         }
 
@@ -2682,12 +2700,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     // returns nil if no steps needed.
-    private func performKBSBackupStepsIfNeeded(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep>? {
+    private func performSVRBackupStepsIfNeeded(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep>? {
         Logger.info("")
 
         let isRestoringPinBackup: Bool = (
-            accountIdentity.hasPreviouslyUsedKBS &&
-            !persistedState.hasGivenUpTryingToRestoreWithKBS
+            accountIdentity.hasPreviouslyUsedSVR &&
+            !persistedState.hasGivenUpTryingToRestoreWithSVR
         )
 
         if !persistedState.hasSkippedPinEntry {
@@ -2718,13 +2736,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     )))
                 }
             }
-            if inMemoryState.shouldBackUpToKBS {
-                // If we have no kbs data, fetch it.
-                if isRestoringPinBackup, inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration {
-                    return restoreKBSBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
+            if inMemoryState.shouldBackUpToSVR {
+                // If we have no SVR data, fetch it.
+                if isRestoringPinBackup, inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration {
+                    return restoreSVRBackupPostRegistration(pin: pin, accountIdentity: accountIdentity)
                 } else {
                     // If we haven't backed up, do so now.
-                    return backupToKBS(pin: pin, accountIdentity: accountIdentity)
+                    return backupToSVR(pin: pin, accountIdentity: accountIdentity)
                 }
             }
 
@@ -2741,7 +2759,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return nil
     }
 
-    private func restoreKBSBackupPostRegistration(
+    private func restoreSVRBackupPostRegistration(
         pin: String,
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
@@ -2750,8 +2768,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         let backupAuthMethod = SVR.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
         let authMethod: SVR.AuthMethod
-        if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
-            authMethod = .svrAuth(kbsAuthCredential, backup: backupAuthMethod)
+        if let svrAuthCredential = inMemoryState.svrAuthCredential {
+            authMethod = .svrAuth(svrAuthCredential, backup: backupAuthMethod)
         } else {
             authMethod = backupAuthMethod
         }
@@ -2766,9 +2784,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 switch result {
                 case .success:
-                    self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
+                    self.inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
                     // This backs up too, no need to do that again after.
-                    self.inMemoryState.hasBackedUpToKBS = true
+                    self.inMemoryState.hasBackedUpToSVR = true
                     return self.nextStep()
                 case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
@@ -2781,19 +2799,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         exitConfiguration: self.pinCodeEntryExitConfiguration()
                     )))
                 case .backupMissing:
-                    // If we are unable to talk to KBS, it got wiped and we can't
+                    // If we are unable to talk to SVR, it got wiped and we can't
                     // recover. Keep going like if nothing happened.
                     self.inMemoryState.pinFromUser = nil
-                    self.inMemoryState.shouldRestoreKBSMasterKeyAfterRegistration = false
+                    self.inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
                     self.db.write { tx in
-                        self.updatePersistedState(tx) { $0.hasGivenUpTryingToRestoreWithKBS = true }
+                        self.updatePersistedState(tx) { $0.hasGivenUpTryingToRestoreWithSVR = true }
                     }
                     return .value(.pinAttemptsExhaustedWithoutReglock(
                         .init(mode: .restoringBackup)
                     ))
                 case .networkError:
                     if retriesLeft > 0 {
-                        return self.restoreKBSBackupPostRegistration(
+                        return self.restoreSVRBackupPostRegistration(
                             pin: pin,
                             accountIdentity: accountIdentity,
                             retriesLeft: retriesLeft - 1
@@ -2809,7 +2827,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
-    private func backupToKBS(
+    private func backupToSVR(
         pin: String,
         accountIdentity: AccountIdentity,
         retriesLeft: Int = Constants.networkErrorRetries
@@ -2818,8 +2836,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         let authMethod: SVR.AuthMethod
         let backupAuthMethod = SVR.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
-        if let kbsAuthCredential = inMemoryState.kbsAuthCredential {
-            authMethod = .svrAuth(kbsAuthCredential, backup: backupAuthMethod)
+        if let svrAuthCredential = inMemoryState.svrAuthCredential {
+            authMethod = .svrAuth(svrAuthCredential, backup: backupAuthMethod)
         } else {
             authMethod = backupAuthMethod
         }
@@ -2833,7 +2851,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 guard let strongSelf = self else {
                     return unretainedSelfError()
                 }
-                strongSelf.inMemoryState.hasBackedUpToKBS = true
+                strongSelf.inMemoryState.hasBackedUpToSVR = true
                 strongSelf.db.write { tx in
                     strongSelf.deps.ows2FAManager.markPinEnabled(pin, tx)
                 }
@@ -2853,7 +2871,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 if error.isNetworkConnectivityFailure {
                     if retriesLeft > 0 {
-                        return self.backupToKBS(
+                        return self.backupToSVR(
                             pin: pin,
                             accountIdentity: accountIdentity,
                             retriesLeft: retriesLeft - 1
@@ -2861,10 +2879,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     }
                     return .value(.showErrorSheet(.networkError))
                 }
-                Logger.error("Failed to back up to KBS with error: \(error)")
+                Logger.error("Failed to back up to SVR with error: \(error)")
                 // We want to let people get through registration even if backups
                 // go wrong. Show an error but let the user continue when they try the next step.
-                self.inMemoryState.didSkipKBSBackup = true
+                self.inMemoryState.didSkipSVRBackup = true
                 return .value(.showErrorSheet(.genericError))
             }
     }
@@ -3263,7 +3281,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                                     aci: whoAmIResponse.aci,
                                     pni: whoAmIResponse.pni,
                                     e164: whoAmIResponse.e164,
-                                    hasPreviouslyUsedKBS: strongSelf.inMemoryState.didHaveKbsBackupsPriorToReg,
+                                    hasPreviouslyUsedSVR: strongSelf.inMemoryState.didHaveKbsBackupsPriorToReg,
                                     authPassword: changeNumberState.oldAuthToken
                                 ),
                                 tx
@@ -3373,7 +3391,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             registrationRecoveryPassword: inMemoryState.regRecoveryPw,
             encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
             discoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber,
-            hasKBSBackups: true // Always true when registering from this class.
+            hasSVRBackups: true // Always true when registering from this class.
         )
     }
 
@@ -3385,7 +3403,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         let aci: UUID
         let pni: UUID
         let e164: E164
-        let hasPreviouslyUsedKBS: Bool
+        let hasPreviouslyUsedSVR: Bool
 
         /// The auth token used to communicate with the server.
         /// We create this locally and include it in the create account request,
@@ -3514,7 +3532,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .opening:
             owsFailBeta("Should not be asking for PIN during opening path.")
             return .v2WithUnknownReglockState
-        case .kbsAuthCredential, .kbsAuthCredentialCandidates, .registrationRecoveryPassword:
+        case .svrAuthCredential, .svrAuthCredentialCandidates, .registrationRecoveryPassword:
             if
                 let e164 = persistedState.e164,
                 e164 == persistedState.e164WithKnownReglockEnabled
@@ -3592,7 +3610,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // (e.g. you try sending an sms code and the nextSMS is less than this.)
         static let autoRetryInterval: TimeInterval = 0.5
 
-        // If we have a PIN and KBS master key locally (only possible for re-registration)
+        // If we have a PIN and SVR master key locally (only possible for re-registration)
         // then we reuse it to register. We make the user guess the PIN before proceeding,
         // though. This is how many tries they have before we wipe our local state and make
         // them go through re-registration.

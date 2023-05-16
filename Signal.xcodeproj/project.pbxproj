@@ -839,7 +839,7 @@
 		665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */; };
 		6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */; };
 		6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */; };
-		6673FF752979F87500F96CFD /* KBSAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* KBSAuthCredentialStorageTests.swift */; };
+		6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */; };
 		6673FF81297B3A5000F96CFD /* KeyBackupServiceShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */; };
 		6673FF87297B694C00F96CFD /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF86297B694C00F96CFD /* DB.swift */; };
 		6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF88297B6AF800F96CFD /* DBTransaction.swift */; };
@@ -873,7 +873,6 @@
 		669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */; };
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
-		66A1DF6E298C2AFE00C4E4A7 /* KBSAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF6D298C2AFE00C4E4A7 /* KBSAuthCredential.swift */; };
 		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
@@ -889,6 +888,10 @@
 		66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */; };
 		66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1302A05D28A008DDE72 /* TSRequest.swift */; };
 		66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */; };
+		66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */; };
+		66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B13C2A0E9116008DDE72 /* SVR2AuthCredential.swift */; };
+		66C2B13F2A12B019008DDE72 /* KBSAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1392A0E8D91008DDE72 /* KBSAuthCredential.swift */; };
+		66C2B1412A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1402A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
 		66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */; };
 		66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */; };
@@ -3320,7 +3323,7 @@
 		665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealState.swift; sourceTree = "<group>"; };
 		6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorage.swift; sourceTree = "<group>"; };
 		6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageImpl.swift; sourceTree = "<group>"; };
-		6673FF742979F87500F96CFD /* KBSAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
+		6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
 		6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceShims.swift; sourceTree = "<group>"; };
 		6673FF86297B694C00F96CFD /* DB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DB.swift; sourceTree = "<group>"; };
 		6673FF88297B6AF800F96CFD /* DBTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBTransaction.swift; sourceTree = "<group>"; };
@@ -3357,7 +3360,6 @@
 		669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemStoryManager.swift; sourceTree = "<group>"; };
 		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
-		66A1DF6D298C2AFE00C4E4A7 /* KBSAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredential.swift; sourceTree = "<group>"; };
 		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
@@ -3372,6 +3374,10 @@
 		66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextOnboardingOverlayView.swift; sourceTree = "<group>"; };
 		66C2B1302A05D28A008DDE72 /* TSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequest.swift; sourceTree = "<group>"; };
 		66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRUtil.swift; sourceTree = "<group>"; };
+		66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredential.swift; sourceTree = "<group>"; };
+		66C2B1392A0E8D91008DDE72 /* KBSAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredential.swift; sourceTree = "<group>"; };
+		66C2B13C2A0E9116008DDE72 /* SVR2AuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2AuthCredential.swift; sourceTree = "<group>"; };
+		66C2B1402A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrchestratingSVRAuthCredential.swift; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
 		66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentOnboarding.swift; sourceTree = "<group>"; };
 		66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextAssociatedData.swift; sourceTree = "<group>"; };
@@ -6599,8 +6605,11 @@
 			isa = PBXGroup;
 			children = (
 				66C2B1342A0DA16F008DDE72 /* KeyBackupService */,
+				66C2B13E2A0E9147008DDE72 /* Orchestrating */,
+				66C2B13B2A0E9108008DDE72 /* SVR2 */,
 				66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */,
 				6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */,
+				66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */,
 				6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */,
 				6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */,
 				66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */,
@@ -6614,7 +6623,6 @@
 				F94261F9289B1B5400460798 /* kbs_pin_sanitation_vectors.json */,
 				F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */,
 				F94261E5289B1B5400460798 /* kbs_vectors.json */,
-				6673FF742979F87500F96CFD /* KBSAuthCredentialStorageTests.swift */,
 				F94261EA289B1B5400460798 /* KeyBackupServiceTests.swift */,
 				66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */,
 			);
@@ -6708,11 +6716,36 @@
 		66C2B1342A0DA16F008DDE72 /* KeyBackupService */ = {
 			isa = PBXGroup;
 			children = (
-				66A1DF6D298C2AFE00C4E4A7 /* KBSAuthCredential.swift */,
+				66C2B1392A0E8D91008DDE72 /* KBSAuthCredential.swift */,
 				F9C5CB1B289453B200548EEE /* KeyBackupServiceImpl.swift */,
 				6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */,
 			);
 			path = KeyBackupService;
+			sourceTree = "<group>";
+		};
+		66C2B13B2A0E9108008DDE72 /* SVR2 */ = {
+			isa = PBXGroup;
+			children = (
+				66C2B13C2A0E9116008DDE72 /* SVR2AuthCredential.swift */,
+			);
+			path = SVR2;
+			sourceTree = "<group>";
+		};
+		66C2B13E2A0E9147008DDE72 /* Orchestrating */ = {
+			isa = PBXGroup;
+			children = (
+				66C2B1402A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift */,
+			);
+			path = Orchestrating;
+			sourceTree = "<group>";
+		};
+		66C2B1422A12E043008DDE72 /* SecureValueRecovery */ = {
+			isa = PBXGroup;
+			children = (
+				6673FF732979F7A400F96CFD /* KeyBackupService */,
+				6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */,
+			);
+			path = SecureValueRecovery;
 			sourceTree = "<group>";
 		};
 		66FC636C29DF78FE00F00DAC /* BodyRanges */ = {
@@ -8319,12 +8352,12 @@
 				F908AA7B28CE628700472E68 /* Fixtures */,
 				5075C21529CA1ED500A260D2 /* GroupMembers */,
 				F94261E2289B1B5400460798 /* Groups */,
-				6673FF732979F7A400F96CFD /* KeyBackupService */,
 				F942621C289B1B5500460798 /* Messages */,
 				F94261CF289B1B5400460798 /* Network */,
 				F97391A128EF0AFB002DDE5D /* Protos */,
 				6600F365298D9D0000B1EDB7 /* Registration */,
 				6600F381298F2A3200B1EDB7 /* Schedulers */,
+				66C2B1422A12E043008DDE72 /* SecureValueRecovery */,
 				F94261CB289B1B5300460798 /* Security */,
 				F94261D7289B1B5400460798 /* Storage */,
 				884BF73A28D37D5F00D94636 /* Stories */,
@@ -11924,7 +11957,7 @@
 				F9C5CDEB289453B400548EEE /* JobQueue.swift in Sources */,
 				D9AE0ADD2918B2960063488B /* JobRecord+Columns.swift in Sources */,
 				D9B8541229137C150058F97B /* JobRecord.swift in Sources */,
-				66A1DF6E298C2AFE00C4E4A7 /* KBSAuthCredential.swift in Sources */,
+				66C2B13F2A12B019008DDE72 /* KBSAuthCredential.swift in Sources */,
 				F9C5CC93289453B300548EEE /* KeyBackup.pb.swift in Sources */,
 				F9C5CC9B289453B300548EEE /* KeyBackupProto.swift in Sources */,
 				F9C5CDED289453B400548EEE /* KeyBackupServiceImpl.swift in Sources */,
@@ -11996,6 +12029,7 @@
 				F9C5CE21289453B400548EEE /* NSUserDefaults+OWS.m in Sources */,
 				F9C5CD1C289453B300548EEE /* ObservedDatabaseChanges.swift in Sources */,
 				F9C5CE16289453B400548EEE /* OffMainThreadTimer.swift in Sources */,
+				66C2B1412A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift in Sources */,
 				F9C5CE43289453B400548EEE /* OrderedDictionary.swift in Sources */,
 				F9C5CE1E289453B400548EEE /* OrderedSet.swift in Sources */,
 				F9C5CD9F289453B400548EEE /* OutageDetection.swift in Sources */,
@@ -12300,8 +12334,11 @@
 				66FC637829DF8BEF00F00DAC /* StyleAttribute.swift in Sources */,
 				6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */,
 				F9C5CCE8289453B300548EEE /* SubscriptionManager.swift in Sources */,
+				66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */,
+				66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */,
 				6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */,
 				6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */,
+				6691E7EC2996E62B0032A68A /* SVRAuthCredentialStorageMock.swift in Sources */,
 				6691E7EC2996E62B0032A68A /* SVRAuthCredentialStorageMock.swift in Sources */,
 				66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */,
 				F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */,
@@ -12475,7 +12512,6 @@
 				F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
 				D9B95A9629E6830B00D7CB95 /* JobRecordTest.swift in Sources */,
-				6673FF752979F87500F96CFD /* KBSAuthCredentialStorageTests.swift in Sources */,
 				F9426257289B1B5500460798 /* KeyBackupServiceTests.swift in Sources */,
 				66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */,
 				D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */,
@@ -12555,6 +12591,7 @@
 				884BF73E28D37D5F00D94636 /* StoryManagerTest.swift in Sources */,
 				F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */,
 				6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */,
+				6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */,
 				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
 				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
