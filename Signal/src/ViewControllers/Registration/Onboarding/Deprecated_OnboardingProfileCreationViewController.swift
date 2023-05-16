@@ -285,7 +285,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
     // MARK: - Event Handling
 
     @objc
-    func saveProfile() {
+    private func saveProfile() {
         if normalizedGivenName.isEmpty {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString("PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
                                                                       comment: "Error message shown when user tries to update profile without a given name"))
@@ -446,7 +446,7 @@ extension Deprecated_OnboardingProfileCreationViewController: UITextFieldDelegat
     }
 
     @objc
-    func textFieldDidChange(_ textField: UITextField) {
+    private func textFieldDidChange(_ textField: UITextField) {
         saveButton.setEnabled(isValidProfile)
     }
 }

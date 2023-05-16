@@ -351,7 +351,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         keyspec.generateAndStore()
     }
 
-    @objc
     public static func resetAllStorage() {
         Logger.info("")
 

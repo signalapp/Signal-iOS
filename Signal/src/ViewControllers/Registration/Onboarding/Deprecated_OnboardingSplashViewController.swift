@@ -6,7 +6,7 @@
 import SafariServices
 import SignalMessaging
 import SignalServiceKit
-import UIKit
+import SignalUI
 
 public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBaseViewController {
 
@@ -97,14 +97,14 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
     // MARK: - Events
 
     @objc
-    func didTapModeSwitch() {
+    private func didTapModeSwitch() {
         Logger.info("")
 
         onboardingController.onboardingSplashRequestedModeSwitch(viewController: self)
     }
 
     @objc
-    func explanationLabelTapped(sender: UIGestureRecognizer) {
+    private func explanationLabelTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }
@@ -114,7 +114,7 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
     }
 
     @objc
-    func continuePressed() {
+    private func continuePressed() {
         Logger.info("")
 
         onboardingController.onboardingSplashDidComplete(viewController: self)

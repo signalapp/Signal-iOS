@@ -274,7 +274,7 @@ class DebugUIMisc: DebugUIPage, Dependencies {
 
     private static func reregister() {
         Logger.info("Re-registering.")
-        RegistrationUtils.reregister(fromViewController: SignalApp.shared().conversationSplitViewController!)
+        RegistrationUtils.reregister(fromViewController: SignalApp.shared.conversationSplitViewController!)
     }
 
     private static func enableExternalDatabaseAccess() {

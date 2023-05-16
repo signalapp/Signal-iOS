@@ -393,7 +393,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
             disappearingMessageToken: .disabledToken,
             shouldSendMessage: false
         ).done { groupThread in
-            SignalApp.shared().presentConversationForThread(groupThread, animated: true)
+            SignalApp.shared.presentConversationForThread(groupThread, animated: true)
         }.catch { error in
             owsFailDebug("Error: \(error)")
         }
@@ -428,7 +428,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
             }
             assert(newGroupThread.groupModel.groupsVersion == .V1)
 
-            SignalApp.shared().presentConversationForThread(newGroupThread, animated: true)
+            SignalApp.shared.presentConversationForThread(newGroupThread, animated: true)
         } catch {
             owsFailDebug("Error: \(error)")
         }
@@ -469,7 +469,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
 
             Logger.info("Complete.")
 
-            SignalApp.shared().presentConversationForThread(newGroupThread, animated: true)
+            SignalApp.shared.presentConversationForThread(newGroupThread, animated: true)
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }
@@ -503,7 +503,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
         }.done { (groupThread) in
             Logger.info("Complete.")
 
-            SignalApp.shared().presentConversationForThread(groupThread, animated: true)
+            SignalApp.shared.presentConversationForThread(groupThread, animated: true)
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }

@@ -16,7 +16,7 @@ class SignalMe: Dependencies {
     static func openChat(url: URL, fromViewController: UIViewController) {
         open(url: url, fromViewController: fromViewController) { address in
             AssertIsOnMainThread()
-            signalApp.presentConversationForAddress(address, action: .compose, animated: true)
+            SignalApp.shared.presentConversationForAddress(address, action: .compose, animated: true)
         }
     }
 

@@ -70,14 +70,6 @@ public extension NSObject {
         .shared
     }
 
-    final var signalApp: SignalApp {
-        .shared()
-    }
-
-    static var signalApp: SignalApp {
-        .shared()
-    }
-
     var avatarHistoryManager: AvatarHistoryManager {
         AppEnvironment.shared.avatarHistorManagerRef
     }
@@ -144,14 +136,6 @@ public extension Dependencies {
 
     static var deviceSleepManager: DeviceSleepManager {
         .shared
-    }
-
-    var signalApp: SignalApp {
-        .shared()
-    }
-
-    static var signalApp: SignalApp {
-        .shared()
     }
 
     var avatarHistoryManager: AvatarHistoryManager {

@@ -3,14 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SignalServiceKit
+import SignalUI
 
-@objc
 public class Deprecated_OnboardingNavigationController: OWSNavigationController {
     private(set) var onboardingController: Deprecated_OnboardingController!
 
-    @objc
     public init(onboardingController: Deprecated_OnboardingController) {
         self.onboardingController = onboardingController
         super.init()
@@ -157,7 +155,6 @@ public class Deprecated_OnboardingController: NSObject {
         return milestones
     }
 
-    @objc
     public func markAsOnboarded() {
         guard !tsAccountManager.isOnboarded else { return }
         self.databaseStorage.write {
@@ -168,7 +165,7 @@ public class Deprecated_OnboardingController: NSObject {
 
     func showNextMilestone(navigationController: UINavigationController) {
         guard let nextMilestone = nextMilestone else {
-            SignalApp.shared().showConversationSplitView()
+            SignalApp.shared.showConversationSplitView()
             markAsOnboarded()
             return
         }
@@ -221,7 +218,7 @@ public class Deprecated_OnboardingController: NSObject {
 
         if onboardingMode == .provisioning {
             let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
-            signalApp.showRegistration(loader: loader, desiredMode: .registering)
+            SignalApp.shared.showRegistration(loader: loader, desiredMode: .registering)
             return
         }
 
@@ -388,7 +385,6 @@ public class Deprecated_OnboardingController: NSObject {
         navigationController.pushViewController(view, animated: true)
     }
 
-    @objc
     public func profileWasSkipped(fromView view: UIViewController) {
         AssertIsOnMainThread()
 
@@ -397,7 +393,6 @@ public class Deprecated_OnboardingController: NSObject {
         showConversationSplitView(view: view)
     }
 
-    @objc
     public func profileDidComplete(fromView view: UIViewController) {
         AssertIsOnMainThread()
 
@@ -419,10 +414,10 @@ public class Deprecated_OnboardingController: NSObject {
         let isModal = navigationController.presentingViewController != nil
         if isModal {
             view.dismiss(animated: true, completion: {
-                SignalApp.shared().showConversationSplitView()
+                SignalApp.shared.showConversationSplitView()
             })
         } else {
-            SignalApp.shared().showConversationSplitView()
+            SignalApp.shared.showConversationSplitView()
         }
     }
 
@@ -449,28 +444,24 @@ public class Deprecated_OnboardingController: NSObject {
         self.countryState = countryState
     }
 
-    @objc
     public func update(phoneNumber: Deprecated_RegistrationPhoneNumber) {
         AssertIsOnMainThread()
 
         self.phoneNumber = phoneNumber
     }
 
-    @objc
     public func update(captchaToken: String) {
         AssertIsOnMainThread()
 
         self.captchaToken = captchaToken
     }
 
-    @objc
     public func update(verificationCode: String) {
         AssertIsOnMainThread()
 
         self.verificationCode = verificationCode
     }
 
-    @objc
     public func update(twoFAPin: String) {
         AssertIsOnMainThread()
 
@@ -735,7 +726,7 @@ public class Deprecated_OnboardingController: NSObject {
 
                         self.verificationFailed(
                             fromViewController: fromViewController,
-                            error: error as NSError,
+                            error: error,
                             completion: completion)
                     })
                 }
@@ -755,12 +746,11 @@ public class Deprecated_OnboardingController: NSObject {
     }
 
     private func verificationFailed(fromViewController: UIViewController,
-                                    error: NSError,
+                                    error: Error,
                                     completion: @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
-        if let registrationMissing2FAPinError = (error as Error) as? RegistrationMissing2FAPinError {
-
+        if let registrationMissing2FAPinError = error as? RegistrationMissing2FAPinError {
             Logger.info("Missing 2FA PIN.")
 
             // If we were provided KBS auth, we'll need to re-register using reg lock v2,
@@ -776,22 +766,23 @@ public class Deprecated_OnboardingController: NSObject {
             }
 
             completion(.invalid2FAPin)
-
             onboardingDidRequire2FAPin(viewController: fromViewController)
-        } else if error.domain == OWSSignalServiceKitErrorDomain &&
-            error.code == OWSErrorCode.registrationTransferAvailable.rawValue {
+            return
+        }
+
+        let nsError = error as NSError
+        if nsError.domain == OWSSignalServiceKitErrorDomain && nsError.code == OWSErrorCode.registrationTransferAvailable.rawValue {
             Logger.info("Transfer available")
 
             presentTransferOptions(viewController: fromViewController)
 
             completion(.success)
         } else {
-            if error.domain == OWSSignalServiceKitErrorDomain &&
-                error.code == OWSErrorCode.userError.rawValue {
+            if nsError.domain == OWSSignalServiceKitErrorDomain && nsError.code == OWSErrorCode.userError.rawValue {
                 completion(.invalidVerificationCode)
             }
 
-            Logger.verbose("error: \(error.domain) \(error.code)")
+            Logger.verbose("error: \(nsError.domain) \(nsError.code)")
             OWSActionSheets.showActionSheet(title: OWSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
                                 message: error.userErrorDescription,
                                 fromViewController: fromViewController)

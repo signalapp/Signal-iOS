@@ -4,7 +4,6 @@
 //
 
 #import "RecipientPickerViewController.h"
-#import "SignalApp.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>

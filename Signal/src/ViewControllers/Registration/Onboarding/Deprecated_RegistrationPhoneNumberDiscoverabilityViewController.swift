@@ -214,7 +214,7 @@ private class ButtonRow: UIButton {
     }
 
     @objc
-    func didTap() {
+    private func didTap() {
         handler?(self)
     }
 }

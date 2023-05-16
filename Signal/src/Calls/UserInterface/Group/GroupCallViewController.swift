@@ -276,7 +276,7 @@ class GroupCallViewController: UIViewController {
 
         callService.sendInitialPhoneOrientationNotification()
 
-        if let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) {
+        if let splitViewSnapshot = SignalApp.shared.snapshotSplitViewController(afterScreenUpdates: false) {
             view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
             splitViewSnapshot.autoPinEdgesToSuperviewEdges()
 
@@ -549,7 +549,7 @@ class GroupCallViewController: UIViewController {
         hasDismissed = true
 
         guard
-            let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false),
+            let splitViewSnapshot = SignalApp.shared.snapshotSplitViewController(afterScreenUpdates: false),
             view.superview?.insertSubview(splitViewSnapshot, belowSubview: view) != nil
         else {
             // This can happen if we're in the background when the call is dismissed (say, from CallKit).
@@ -628,7 +628,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             return owsFailDebug("unexpectedly returned to call while we own the video views")
         }
 
-        guard let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) else {
+        guard let splitViewSnapshot = SignalApp.shared.snapshotSplitViewController(afterScreenUpdates: false) else {
             return owsFailDebug("failed to snapshot rootViewController")
         }
 

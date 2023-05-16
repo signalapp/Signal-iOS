@@ -45,7 +45,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         super.init()
     }
 
-    @objc
     public class func present(fromViewController: UIViewController,
                               canCancel: Bool,
                               backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {

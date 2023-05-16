@@ -195,7 +195,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
             }
 
             let thread = searchResult.thread
-            SignalApp.shared().presentConversationForThread(thread.threadRecord, action: .compose, animated: true)
+            SignalApp.shared.presentConversationForThread(thread.threadRecord, action: .compose, animated: true)
         case .groupThreads:
             let sectionResults = searchResultSet.groupThreads
             guard let searchResult = sectionResults[safe: indexPath.row] else {
@@ -204,7 +204,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
             }
 
             let thread = searchResult.thread
-            SignalApp.shared().presentConversationForThread(thread.threadRecord, action: .compose, animated: true)
+            SignalApp.shared.presentConversationForThread(thread.threadRecord, action: .compose, animated: true)
         case .contacts:
             let sectionResults = searchResultSet.contacts
             guard let searchResult = sectionResults[safe: indexPath.row] else {
@@ -212,7 +212,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                 return
             }
 
-            SignalApp.shared().presentConversationForAddress(searchResult.recipientAddress, action: .compose, animated: true)
+            SignalApp.shared.presentConversationForAddress(searchResult.recipientAddress, action: .compose, animated: true)
 
         case .messages:
             let sectionResults = searchResultSet.messages
@@ -222,7 +222,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
             }
 
             let thread = searchResult.thread
-            SignalApp.shared().presentConversationForThread(thread.threadRecord,
+            SignalApp.shared.presentConversationForThread(thread.threadRecord,
                                                             focusMessageId: searchResult.messageId,
                                                             animated: true)
         }

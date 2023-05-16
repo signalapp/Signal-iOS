@@ -260,8 +260,8 @@ extension SendMessageFlow {
             }
         }.done { (thread: TSThread) in
             Logger.info("Transitioning to single thread.")
-            SignalApp.shared().dismissAllModals(animated: true) {
-                SignalApp.shared().presentConversationForThread(thread, action: .updateDraft, animated: true)
+            SignalApp.shared.dismissAllModals(animated: true) {
+                SignalApp.shared.presentConversationForThread(thread, action: .updateDraft, animated: true)
             }
         }.catch { error in
             owsFailDebug("Error: \(error)")
@@ -623,7 +623,7 @@ public class SendMessageController: SendMessageDelegate {
 
         if threads.count == 1,
            let thread = threads.first {
-            SignalApp.shared().presentConversationForThread(thread, animated: true)
+            SignalApp.shared.presentConversationForThread(thread, animated: true)
         } else {
             fromViewController.navigationController?.popToViewController(fromViewController, animated: true)
         }

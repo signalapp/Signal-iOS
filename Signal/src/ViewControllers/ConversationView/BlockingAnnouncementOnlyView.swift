@@ -180,7 +180,7 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
                             },
                 actionBlock: { [weak self] in
                     self?.dismiss(animated: true) {
-                        Self.signalApp.presentConversationForAddress(address, action: .compose, animated: true)
+                        SignalApp.shared.presentConversationForAddress(address, action: .compose, animated: true)
                     }
                 }))
         }

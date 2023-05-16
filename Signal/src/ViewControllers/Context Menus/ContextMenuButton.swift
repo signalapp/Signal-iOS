@@ -253,7 +253,7 @@ extension ContextMenuButton: ContextMenuControllerDelegate {
     }
 
     func contextMenuControllerAccessoryFrameOffset(_ contextMenuController: ContextMenuController) -> CGPoint? {
-        guard let splitVC = signalApp.conversationSplitViewControllerForSwift, splitVC.isCollapsed else { return nil }
+        guard let splitVC = SignalApp.shared.conversationSplitViewController, splitVC.isCollapsed else { return nil }
 
         guard let window = window else { return nil }
 

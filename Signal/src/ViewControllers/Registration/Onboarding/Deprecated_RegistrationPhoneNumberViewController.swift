@@ -514,7 +514,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
      // MARK: - Events
 
     @objc
-    func countryRowTapped(sender: UIGestureRecognizer) {
+    private func countryRowTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }
@@ -522,7 +522,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
     }
 
     @objc
-    func countryCodeTapped(sender: UIGestureRecognizer) {
+    private func countryCodeTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }
@@ -530,7 +530,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
     }
 
     @objc
-    func continuePressed() {
+    private func continuePressed() {
         Logger.info("")
 
         parseAndTryToRegister()

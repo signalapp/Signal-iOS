@@ -250,7 +250,7 @@ extension DeviceTransferService {
 //                self.tsAccountManager.wasTransferred = false
 //                LegacyRestorationFlags.pendingWasTransferredClear = false
 //                self.tsAccountManager.isTransferInProgress = false
-//                SignalApp.shared().showConversationSplitView()
+//                SignalApp.shared.showConversationSplitView()
 //
 //                // After transfer our push token has changed, update it.
 //                SyncPushTokensJob.run()

@@ -7,6 +7,7 @@ import Foundation
 import SignalMessaging
 
 extension DebugLogger {
+
     func postLaunchLogCleanup(appContext: MainAppContext) {
         // This must be a 3-part version number.
         let shouldWipeLogs: Bool = {
@@ -30,7 +31,6 @@ extension DebugLogger {
         wipeLogsAlways(appContext: appContext)
     }
 
-    @objc
     func wipeLogsAlways(appContext: MainAppContext) {
         let shouldReEnable = fileLogger != nil
         disableFileLogging()

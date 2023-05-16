@@ -86,7 +86,7 @@ class Deprecated_OnboardingModeSwitchConfirmationViewController: Deprecated_Onbo
     }
 
     @objc
-    func didPressNext() {
+    private func didPressNext() {
         let actionSheet = ActionSheetController(message: warningText)
 
         let continueAction = ActionSheetAction(

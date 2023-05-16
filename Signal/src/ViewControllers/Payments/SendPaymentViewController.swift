@@ -239,7 +239,7 @@ public class SendPaymentViewController: OWSViewController {
                             let rootViewController = fromViewController.presentingViewController?.presentingViewController
                             owsAssertDebug(rootViewController != nil)
                             rootViewController?.dismiss(animated: true) {
-                                SignalApp.shared().presentConversationForAddress(recipientAddress, action: .compose, animated: true)
+                                SignalApp.shared.presentConversationForAddress(recipientAddress, action: .compose, animated: true)
                             }
                         }
                     ))
@@ -1031,7 +1031,7 @@ public class SendPaymentViewController: OWSViewController {
                     return
                 }
                 frontmostViewController.navigationController?.popToRootViewController(animated: true)
-                SignalApp.shared().showAppSettings(mode: .paymentsTransferIn)
+                SignalApp.shared.showAppSettings(mode: .paymentsTransferIn)
             }
         case .fromPaymentSettings:
             let paymentsTransferIn = PaymentsTransferInViewController()
@@ -1121,7 +1121,7 @@ public class SendPaymentViewController: OWSViewController {
             return
         }
         frontmostViewController.navigationController?.popToRootViewController(animated: true)
-        SignalApp.shared().showAppSettings(mode: .payments)
+        SignalApp.shared.showAppSettings(mode: .payments)
     }
 
     @objc

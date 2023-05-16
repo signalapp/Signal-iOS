@@ -158,7 +158,7 @@ public class Deprecated_OnboardingPermissionsViewController: Deprecated_Onboardi
      // MARK: - Events
 
     @objc
-    func giveAccessPressed() {
+    private func giveAccessPressed() {
         Logger.info("")
 
         requestPermissions()

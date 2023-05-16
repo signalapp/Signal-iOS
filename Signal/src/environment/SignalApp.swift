@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalMessaging
+import SignalServiceKit
 import SignalUI
-import UIKit
 
 enum LaunchInterface {
     case registration(RegistrationCoordinatorLoader, RegistrationMode)
@@ -12,14 +13,55 @@ enum LaunchInterface {
     case chatList(Deprecated_OnboardingController)
 }
 
-extension SignalApp {
+@objc
+public class SignalApp: NSObject {
+
     @objc
-    func warmCachesAsync() {
+    public static let shared = SignalApp()
+
+    private(set) weak var conversationSplitViewController: ConversationSplitViewController?
+
+    private override init() {
+        super.init()
+
+        AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+            self.warmCachesAsync()
+        }
+    }
+
+    func setup() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didChangeCallLoggingPreference),
+            name: .OWSPreferencesCallLoggingDidChange,
+            object: nil
+        )
+    }
+
+    private func warmCachesAsync() {
         DispatchQueue.sharedBackground.async {
             InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmEmojiCache") {
                 Emoji.warmAvailableCache()
             }
         }
+    }
+
+    @objc
+    private func didChangeCallLoggingPreference(_ notification: NSNotification) {
+        AppEnvironment.shared.callService.createCallUIAdapter()
+    }
+}
+
+extension SignalApp {
+
+    var hasSelectedThread: Bool {
+        return conversationSplitViewController?.selectedThread != nil
+    }
+
+    func showConversationSplitView() {
+        let splitViewController = ConversationSplitViewController()
+        UIApplication.shared.delegate?.window??.rootViewController = splitViewController
+        self.conversationSplitViewController = splitViewController
     }
 
     func dismissAllModals(animated: Bool, completion: (() -> Void)?) {
@@ -58,7 +100,7 @@ extension SignalApp {
             showRegistration(loader: registrationLoader, desiredMode: desiredMode)
             AppReadiness.setUIIsReady()
         case .deprecatedOnboarding(let onboardingController):
-            showDeprecatedOnboardingView(onboardingController)
+            showDeprecatedOnboardingView(controller: onboardingController)
             AppReadiness.setUIIsReady()
         case .chatList:
             showConversationSplitView()
@@ -70,7 +112,7 @@ extension SignalApp {
     }
 
     func showAppSettings(mode: ShowAppSettingsMode) {
-        guard let conversationSplitViewController = self.conversationSplitViewControllerForSwift else {
+        guard let conversationSplitViewController else {
             owsFailDebug("Missing conversationSplitViewController.")
             return
         }
@@ -100,9 +142,16 @@ extension SignalApp {
     private func spamChallenge() {
         SpamCaptchaViewController.presentActionSheet(from: UIApplication.shared.frontmostViewController!)
     }
-}
 
-extension SignalApp {
+    @objc
+    func showNewConversationView() {
+        AssertIsOnMainThread()
+        guard let conversationSplitViewController else {
+            owsFailDebug("No conversationSplitViewController")
+            return
+        }
+        conversationSplitViewController.showNewConversationView()
+    }
 
     func presentConversationForAddress(
         _ address: SignalServiceAddress,
@@ -123,7 +172,7 @@ extension SignalApp {
     ) {
         AssertIsOnMainThread()
 
-        guard let conversationSplitViewController = conversationSplitViewControllerForSwift else {
+        guard let conversationSplitViewController else {
             owsFailDebug("No conversationSplitViewController")
             return
         }
@@ -149,7 +198,7 @@ extension SignalApp {
         AssertIsOnMainThread()
         owsAssertDebug(!threadId.isEmpty)
 
-        guard let conversationSplitViewController = conversationSplitViewControllerForSwift else {
+        guard let conversationSplitViewController else {
             owsFailDebug("No conversationSplitViewController")
             return
         }
@@ -176,6 +225,71 @@ extension SignalApp {
 
             conversationSplitViewController.presentThread(thread, action: .none, focusMessageId: nil, animated: animated)
         }
+    }
+
+    func snapshotSplitViewController(afterScreenUpdates: Bool) -> UIView? {
+        return conversationSplitViewController?.view?.snapshotView(afterScreenUpdates: afterScreenUpdates)
+    }
+}
+
+extension SignalApp {
+
+    static func resetAppDataWithUI() {
+        Logger.info("")
+
+        DispatchMainThreadSafe {
+            guard let fromVC = UIApplication.shared.frontmostViewController else { return }
+            ModalActivityIndicatorViewController.present(
+                fromViewController: fromVC,
+                canCancel: true,
+                backgroundBlock: { _ in
+                    SignalApp.resetAppData()
+                }
+            )
+        }
+    }
+
+    static func resetAppData() {
+        // This _should_ be wiped out below.
+        Logger.info("")
+        Logger.flush()
+
+        DispatchSyncMainThreadSafe {
+            databaseStorage.resetAllStorage()
+            OWSUserProfile.resetProfileStorage()
+            Environment.shared.preferences.removeAllValues()
+            AppEnvironment.shared.notificationPresenter.clearAllNotifications()
+            OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appSharedDataDirectoryPath())
+            OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appDocumentDirectoryPath())
+            OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.cachesDirectoryPath())
+            OWSFileSystem.deleteContents(ofDirectory: OWSTemporaryDirectory())
+            OWSFileSystem.deleteContents(ofDirectory: NSTemporaryDirectory())
+            AppDelegate.updateApplicationShortcutItems(isRegisteredAndReady: false)
+        }
+
+        DebugLogger.shared().wipeLogsAlways(appContext: CurrentAppContext() as! MainAppContext)
+        exit(0)
+    }
+}
+
+extension SignalApp {
+
+    func showDeprecatedOnboardingView(controller: Deprecated_OnboardingController) {
+        let navigationController = Deprecated_OnboardingNavigationController(onboardingController: controller)
+
+        let submitLogsGesture = UITapGestureRecognizer(target: self, action: #selector(submitOnboardingLogs))
+        submitLogsGesture.numberOfTapsRequired = 8
+        submitLogsGesture.delaysTouchesEnded = false
+        navigationController.view.addGestureRecognizer(submitLogsGesture)
+
+        UIApplication.shared.delegate?.window??.rootViewController = navigationController
+
+        conversationSplitViewController = nil
+    }
+
+    @objc
+    private func submitOnboardingLogs() {
+        DebugLogs.submitLogsWithSupportTag("Onboarding")
     }
 }
 

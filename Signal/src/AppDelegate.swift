@@ -189,7 +189,7 @@ extension AppDelegate {
         setupNSEInteroperation()
         SUIEnvironment.shared.setup()
         AppEnvironment.shared.setup()
-        SignalApp.shared().setup()
+        SignalApp.shared.setup()
         let result = databaseContinuation.prepareDatabase()
         OWSAnalytics.appLaunchDidBegin()
         return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }
@@ -384,7 +384,7 @@ extension AppDelegate {
 
         checkDatabaseIntegrityIfNecessary(isRegistered: tsAccountManager.isRegistered)
 
-        SignalApp.shared().showLaunchInterface(launchInterface, launchStartedAt: launchStartedAt)
+        SignalApp.shared.showLaunchInterface(launchInterface, launchStartedAt: launchStartedAt)
     }
 
     private func enableBackgroundRefreshIfNecessary() {
@@ -838,7 +838,6 @@ extension AppDelegate {
 
     // MARK: - Utilities
 
-    @objc
     public static func updateApplicationShortcutItems(isRegisteredAndReady: Bool) {
         guard CurrentAppContext().isMainApp else { return }
         UIApplication.shared.shortcutItems = applicationShortcutItems(isRegisteredAndReady: isRegisteredAndReady)

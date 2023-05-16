@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 public class RegistrationNavigationController: OWSNavigationController {
 
@@ -362,7 +362,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             return nil
         case .done:
             Logger.info("Finished with registration!")
-            SignalApp.shared().showConversationSplitView()
+            SignalApp.shared.showConversationSplitView()
             return nil
         }
     }
@@ -384,7 +384,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             handler: { [weak self] _ in
                 guard let self else { return }
                 let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
-                SignalApp.shared().showRegistration(loader: loader, desiredMode: .reRegistering(reregParams))
+                SignalApp.shared.showRegistration(loader: loader, desiredMode: .reRegistering(reregParams))
             }
         ))
         // We explicitly don't want the user to be able to dismiss.
@@ -424,7 +424,7 @@ extension RegistrationNavigationController: RegistrationConfimModeSwitchPresente
             owsFailBeta("Can't switch to secondary device linking")
             return
         }
-        SignalApp.shared().showDeprecatedOnboardingView(.init(context: .shared, onboardingMode: .provisioning))
+        SignalApp.shared.showDeprecatedOnboardingView(controller: .init(context: .shared, onboardingMode: .provisioning))
     }
 }
 
@@ -449,7 +449,7 @@ extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
             return
         }
         Logger.info("Early exiting registration")
-        SignalApp.shared().showConversationSplitView()
+        SignalApp.shared.showConversationSplitView()
     }
 }
 
@@ -569,7 +569,7 @@ extension RegistrationNavigationController: RegistrationReglockTimeoutPresenter 
             return
         case .exitRegistration:
             Logger.info("Exiting registration after reglock timeout")
-            SignalApp.shared().showConversationSplitView()
+            SignalApp.shared.showConversationSplitView()
         case .restartRegistration(let nextStepGuarantee):
             pushNextController(nextStepGuarantee)
         }

@@ -42,7 +42,7 @@ class DebugUIContacts: DebugUIPage {
             recipientId += "\(Int.random(in: 0...9))"
         }
         let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(phoneNumber: recipientId))
-        SignalApp.shared().presentConversationForThread(thread, animated: true)
+        SignalApp.shared.presentConversationForThread(thread, animated: true)
      }
 }
 

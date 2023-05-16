@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
+import SignalServiceKit
+import SignalUI
 
 public class Deprecated_OnboardingBaseViewController: Deprecated_RegistrationBaseViewController {
 

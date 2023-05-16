@@ -52,7 +52,7 @@ class ExperienceUpgradeManager: NSObject {
             megaphone?.present(fromViewController: fromViewController)
             lastPresented = megaphone
             didPresentView = true
-        } else if hasSplash, !SignalApp.shared().hasSelectedThread, let splash = splash(forExperienceUpgrade: next) {
+        } else if hasSplash, !SignalApp.shared.hasSelectedThread, let splash = splash(forExperienceUpgrade: next) {
             fromViewController.presentFormSheet(OWSNavigationController(rootViewController: splash), animated: true)
             lastPresented = splash
             didPresentView = true

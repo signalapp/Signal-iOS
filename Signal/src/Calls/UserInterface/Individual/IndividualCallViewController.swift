@@ -1347,7 +1347,7 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
             return owsFailDebug("unexpectedly returned to call while we own the video views")
         }
 
-        guard let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) else {
+        guard let splitViewSnapshot = SignalApp.shared.snapshotSplitViewController(afterScreenUpdates: false) else {
             return owsFailDebug("failed to snapshot rootViewController")
         }
 

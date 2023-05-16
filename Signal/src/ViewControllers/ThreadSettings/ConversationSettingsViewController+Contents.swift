@@ -720,8 +720,8 @@ extension ConversationSettingsViewController {
                     cell.configure(thread: groupThread)
                     return cell
                 },
-                actionBlock: { [weak self] in
-                    self?.signalApp.presentConversationForThread(groupThread, animated: true)
+                actionBlock: {
+                    SignalApp.shared.presentConversationForThread(groupThread, animated: true)
                 }
             ))
         }

@@ -208,7 +208,6 @@ public final class CallService: LightweightCallManager {
     /**
      * Choose whether to use CallKit or a Notification backed interface for calling.
      */
-    @objc
     public func createCallUIAdapter() {
         AssertIsOnMainThread()
 

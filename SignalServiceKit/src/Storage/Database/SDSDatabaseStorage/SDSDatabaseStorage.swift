@@ -197,7 +197,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         GRDBDatabaseStorageAdapter.removeAllFiles()
     }
 
-    @objc
     public func resetAllStorage() {
         YDBStorage.deleteYDBStorage()
         GRDBDatabaseStorageAdapter.resetAllStorage()

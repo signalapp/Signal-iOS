@@ -7,7 +7,6 @@ import MultipeerConnectivity
 import SignalMessaging
 import SignalUI
 
-@objc
 class ConversationSplitViewController: UISplitViewController, ConversationSplit {
 
     fileprivate var deviceTransferNavController: DeviceTransferNavigationController?
@@ -30,7 +29,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     var selectedThread: TSThread? {
         // If the placeholder view is in the view hierarchy, there is no selected thread.
         guard detailPlaceholderVC.view.superview == nil else { return nil }
-        guard let selectedConversationViewController = selectedConversationViewController else { return nil }
+        guard let selectedConversationViewController else { return nil }
 
         // In order to not show selected when collapsed during an interactive dismissal,
         // we verify the conversation is still in the nav stack when collapsed. There is
@@ -42,14 +41,12 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     /// Returns the currently selected thread if it is visible on screen, otherwise
     /// returns nil.
-    @objc
     var visibleThread: TSThread? {
         guard view.window?.isKeyWindow == true else { return nil }
         guard selectedConversationViewController?.isViewVisible == true else { return nil }
         return selectedThread
     }
 
-    @objc
     var topViewController: UIViewController? {
         guard !isCollapsed else {
             return chatListNavController.topViewController
@@ -58,7 +55,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         return detailNavController.topViewController ?? chatListNavController.topViewController
     }
 
-    @objc
     init() {
         super.init(nibName: nil, bundle: nil)
 
@@ -89,19 +85,19 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     }
 
     @objc
-    func applyTheme() {
+    private func applyTheme() {
         view.backgroundColor = Theme.isDarkThemeEnabled ? UIColor(rgbHex: 0x292929) : UIColor(rgbHex: 0xd6d6d6)
     }
 
     @objc
-    func orientationDidChange() {
+    private func orientationDidChange() {
         AssertIsOnMainThread()
         guard UIApplication.shared.applicationState == .active else { return }
         lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
     }
 
     @objc
-    func didBecomeActive() {
+    private func didBecomeActive() {
         AssertIsOnMainThread()
         lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
     }

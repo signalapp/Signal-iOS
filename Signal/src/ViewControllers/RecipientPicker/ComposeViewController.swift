@@ -74,7 +74,7 @@ class ComposeViewController: RecipientPickerContainerViewController {
     /// Ensuring that the presentation and dismissal are in separate dispatch
     /// blocks seems to dodge the dragons.
     func newConversation(thread: TSThread) {
-        SignalApp.shared().presentConversationForThread(thread, action: .compose, animated: false)
+        SignalApp.shared.presentConversationForThread(thread, action: .compose, animated: false)
 
         DispatchQueue.main.async { [weak self] in
             self?.presentingViewController?.dismiss(animated: true)
