@@ -130,18 +130,16 @@ public extension ConversationViewController {
             bottomView = announcementOnlyView
         }
 
-        for subView in bottomBar.subviews {
-            subView.removeFromSuperview()
-        }
+        bottomBar.removeAllSubviews()
 
-        if let newBottomView = bottomView {
-            bottomBar.addSubview(newBottomView)
-
-            // The request views expect to extend into the safe area.
-            if requestView != nil {
-                newBottomView.autoPinEdgesToSuperviewEdges()
+        if let bottomView {
+            bottomBar.addSubview(bottomView)
+            bottomView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+            if bottomView is UIToolbar {
+                // UIToolbar will extend its background to cover bottom safe area. 
+                bottomView.autoPinEdge(toSuperviewSafeArea: .bottom)
             } else {
-                newBottomView.autoPinEdgesToSuperviewMargins()
+                bottomView.autoPinEdge(toSuperviewEdge: .bottom)
             }
         }
 
@@ -336,29 +334,27 @@ public extension ConversationViewController {
     private func dismissRequestView() {
         AssertIsOnMainThread()
 
-        guard let requestView = self.requestView else {
+        guard let requestView else {
             return
         }
 
-        // Slide the request view off the bottom of the screen.
-        let bottomInset: CGFloat = view.safeAreaInsets.bottom
-
-        let dismissingView = requestView
         self.requestView = nil
 
+        // Slide the request view off the bottom of the screen.
         // Add the view on top of the new bottom bar (if there is one),
         // and then slide it off screen to reveal the new input view.
-        view.addSubview(dismissingView)
-        dismissingView.autoPinWidthToSuperview()
-        dismissingView.autoPinEdge(toSuperviewEdge: .bottom)
+        view.addSubview(requestView)
+        requestView.autoPinWidthToSuperview()
+        requestView.autoPinEdge(toSuperviewEdge: .bottom)
 
-        var endFrame = dismissingView.bounds
+        let bottomInset: CGFloat = view.safeAreaInsets.bottom
+        var endFrame = requestView.bounds
         endFrame.origin.y -= endFrame.size.height + bottomInset
 
         UIView.animate(withDuration: 0.2, delay: 0, options: []) {
-            dismissingView.bounds = endFrame
+            requestView.bounds = endFrame
         } completion: { (_) in
-            dismissingView.removeFromSuperview()
+            requestView.removeFromSuperview()
         }
     }
 
