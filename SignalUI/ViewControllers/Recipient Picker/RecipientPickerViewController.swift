@@ -921,133 +921,27 @@ extension RecipientPickerViewController {
     }
 
     private func findByUsername(_ username: String) {
-        guard
-            let localAddress = tsAccountManager.localAddress,
-            let localAci = localAddress.serviceId
-        else {
-            owsFailDebug("Missing local UUID!")
-            return
-        }
+        let usernameQuerier = UsernameQuerier(
+            contactsManager: contactsManager,
+            databaseStorage: databaseStorage,
+            networkManager: networkManager,
+            profileManager: profileManager,
+            recipientFetcher: DependenciesBridge.shared.recipientFetcher,
+            schedulers: DependenciesBridge.shared.schedulers,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: tsAccountManager,
+            usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
+        )
 
-        if
-            let localUsername = databaseStorage.read(block: { transaction -> String? in
-                DependenciesBridge.shared.usernameLookupManager.fetchUsername(
-                    forAci: localAci,
-                    transaction: transaction.asV2Read
-                )
-            }),
-            localUsername.caseInsensitiveCompare(username) == .orderedSame {
+        usernameQuerier.queryForUsername(
+            username: username,
+            fromViewController: self,
+            onSuccess: { [weak self] aci in
+                AssertIsOnMainThread()
 
-            // Searched for ourselves, no reason to hit the service.
-            tryToSelectRecipient(.for(address: localAddress))
-            return
-        }
-
-        if let hashedUsername = try? Usernames.HashedUsername(forUsername: username) {
-            performUsernameLookup(forHashedUsername: hashedUsername)
-        } else {
-            OWSActionSheets.showActionSheet(
-                title: OWSLocalizedString(
-                    "USERNAME_LOOKUP_INVALID_USERNAME_TITLE",
-                    comment: "Title for an action sheet indicating that a user-entered username value is not a valid username."
-                ),
-                message: String(
-                    format: OWSLocalizedString(
-                        "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT",
-                        comment: "A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}."
-                    ),
-                    username
-                )
-            )
-        }
-    }
-
-    private func performUsernameLookup(
-        forHashedUsername hashedUsername: Usernames.HashedUsername
-    ) {
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
-            firstly { () -> Promise<ServiceId?> in
-                Usernames.API(
-                        networkManager: self.networkManager,
-                        schedulers: DependenciesBridge.shared.schedulers
-                    )
-                    .attemptAciLookup(forHashedUsername: hashedUsername)
-            }.done(on: DispatchQueue.main) { [weak self] maybeAci in
-                modal.dismissIfNotCanceled {
-                    if let aci = maybeAci {
-                        guard let self else { return }
-
-                        self.handleUsernameLookupCompleted(
-                            withAci: aci,
-                            forUsername: hashedUsername.usernameString
-                        )
-                    } else {
-                        OWSActionSheets.showActionSheet(
-                            title: OWSLocalizedString(
-                                "USERNAME_LOOKUP_NOT_FOUND_TITLE",
-                                comment: "Title for an action sheet indicating that the given username is not associated with a registered Signal account."
-                            ),
-                            message: String(
-                                format: OWSLocalizedString(
-                                    "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT",
-                                    comment: "A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}."
-                                ),
-                                hashedUsername.usernameString
-                            )
-                        )
-                    }
-                }
-            }.catch(on: DispatchQueue.main) { error in
-                modal.dismissIfNotCanceled {
-                    OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
-                        "USERNAME_LOOKUP_ERROR_MESSAGE",
-                        comment: "A message indicating that username lookup failed."
-                    ))
-                }
+                guard let self else { return }
+                self.tryToSelectRecipient(.for(address: SignalServiceAddress(aci)))
             }
-        }
-    }
-
-    private func handleUsernameLookupCompleted(
-        withAci aci: ServiceId,
-        forUsername username: String
-    ) {
-        self.databaseStorage.write { transaction in
-            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-
-            let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: transaction.asV2Write)
-            recipient.markAsRegistered(transaction: transaction)
-
-            let isUsernameBestIdentifier = Usernames.BetterIdentifierChecker.assembleByQuerying(
-                forRecipient: recipient,
-                profileManager: self.profileManager,
-                contactManager: self.contactsManager,
-                transaction: transaction
-            ).usernameIsBestIdentifier()
-
-            if isUsernameBestIdentifier {
-                // If this username is the best identifier we have for this
-                // address, we should save it locally and in StorageService.
-
-                DependenciesBridge.shared.usernameLookupManager.saveUsername(
-                    username,
-                    forAci: aci,
-                    transaction: transaction.asV2Write
-                )
-
-                self.storageServiceManager.recordPendingUpdates(updatedAccountIds: [recipient.accountId])
-            } else {
-                // If we have a better identifier for this address, we can
-                // throw away any stored username info for it.
-
-                DependenciesBridge.shared.usernameLookupManager.saveUsername(
-                    nil,
-                    forAci: aci,
-                    transaction: transaction.asV2Write
-                )
-            }
-        }
-
-        self.tryToSelectRecipient(.for(address: SignalServiceAddress(aci)))
+        )
     }
 }

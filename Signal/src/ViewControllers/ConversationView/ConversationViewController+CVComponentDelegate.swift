@@ -294,7 +294,11 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        if SignalMe.isPossibleUrl(url) { return cvc_didTapSignalMeLink(url: url) }
+        if SignalDotMePhoneNumberLink.isPossibleUrl(url) {
+            return cvc_didTapSignalMeLink(url: url)
+        } else if let usernameLink = Usernames.UsernameLink(usernameLinkUrl: url) {
+            return didTapUsernameLink(usernameLink: usernameLink)
+        }
 
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
@@ -345,7 +349,11 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func cvc_didTapSignalMeLink(url: URL) {
-        SignalMe.openChat(url: url, fromViewController: self)
+        SignalDotMePhoneNumberLink.openChat(url: url, fromViewController: self)
+    }
+
+    public func didTapUsernameLink(usernameLink: Usernames.UsernameLink) {
+        UsernameLinkOpener(link: usernameLink).open(fromViewController: self)
     }
 
     public func didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {

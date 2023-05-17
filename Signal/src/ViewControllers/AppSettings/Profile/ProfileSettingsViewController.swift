@@ -205,7 +205,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 )
             }
 
-            let shareableUsername = Usernames.ShareableUsername(username: username)
+            let usernameLink = Usernames.UsernameLink(username: username)
 
             // Wraps a right-aligned share button.
             let shareView: UIView = {
@@ -215,7 +215,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                     let button = CircleButton { [weak self] in
                         guard let self else { return }
 
-                        let shareMyUsernameSheet = ShareMyUsernameSheetViewController(shareableUsername: shareableUsername)
+                        let shareMyUsernameSheet = ShareMyUsernameSheetViewController(
+                            username: username,
+                            usernameLink: usernameLink
+                        )
                         self.present(shareMyUsernameSheet, animated: true)
                     }
 
@@ -250,8 +253,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             }()
 
             return (
-                shareableUsername.asString,
-                shareableUsername.asShortUrlString,
+                username,
+                usernameLink.asAestheticUrlString,
                 shareView
             )
         }()

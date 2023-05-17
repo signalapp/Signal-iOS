@@ -7,7 +7,8 @@ import Foundation
 import SignalServiceKit
 
 private enum OpenableUrl {
-    case signalMe(URL)
+    case phoneNumberLink(URL)
+    case usernameLink(Usernames.UsernameLink)
     case stickerPack(StickerPackInfo)
     case groupInvite(URL)
     case signalProxy(URL)
@@ -35,8 +36,11 @@ class UrlOpener {
     }
 
     private static func parseOpenableUrl(_ url: URL) -> OpenableUrl? {
-        if SignalMe.isPossibleUrl(url) {
-            return .signalMe(url)
+        if SignalDotMePhoneNumberLink.isPossibleUrl(url) {
+            return .phoneNumberLink(url)
+        }
+        if let usernameLink = Usernames.UsernameLink(usernameLinkUrl: url) {
+            return .usernameLink(usernameLink)
         }
         if StickerPackInfo.isStickerPackShare(url), let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url) {
             return .stickerPack(stickerPackInfo)
@@ -53,7 +57,6 @@ class UrlOpener {
         if let deviceProvisiongUrl = parseSgnlLinkDeviceUrl(url) {
             return .linkDevice(deviceProvisiongUrl)
         }
-        Logger.verbose("Invalid URL: \(url)")
         owsFailDebug("Couldn't parse URL")
         return nil
     }
@@ -111,8 +114,11 @@ class UrlOpener {
 
     private func openUrlAfterDismissing(_ openableUrl: OpenableUrl, rootViewController: UIViewController) {
         switch openableUrl {
-        case .signalMe(let url):
-            SignalMe.openChat(url: url, fromViewController: rootViewController)
+        case .phoneNumberLink(let url):
+            SignalDotMePhoneNumberLink.openChat(url: url, fromViewController: rootViewController)
+
+        case .usernameLink(let link):
+            UsernameLinkOpener(link: link).open(fromViewController: rootViewController)
 
         case .stickerPack(let stickerPackInfo):
             let stickerPackViewController = StickerPackViewController(stickerPackInfo: stickerPackInfo)

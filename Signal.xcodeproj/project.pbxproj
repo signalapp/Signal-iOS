@@ -1005,7 +1005,7 @@
 		881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */; };
 		881BB28A2743531D00B609B8 /* BadgeDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */; };
 		881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */; };
-		8822558D26B9D1D7001A33C4 /* SignalMe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8822558C26B9D1D7001A33C4 /* SignalMe.swift */; };
+		8822558D26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8822558C26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift */; };
 		88238EA224E9DDB700F28079 /* LocalVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88238EA124E9DDB700F28079 /* LocalVideoView.swift */; };
 		88238EA424E9DDE900F28079 /* CallButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88238EA324E9DDE900F28079 /* CallButton.swift */; };
 		88238EAF24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88238EAE24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift */; };
@@ -1266,10 +1266,9 @@
 		D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F7A2C2935A32F00012C64 /* DonationMode.swift */; };
 		D925937A28B0497900D5D437 /* LocalUserLeaveGroupJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */; };
 		D925F5512983399D00158EE4 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F5502983399D00158EE4 /* CircleButton.swift */; };
-		D925F55629834FAC00158EE4 /* Usernames+ShareableUsernameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F55429834BC900158EE4 /* Usernames+ShareableUsernameTests.swift */; };
 		D925F55D298C6A7D00158EE4 /* UsernameLookupRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F557298B39D800158EE4 /* UsernameLookupRecord.swift */; };
 		D925F55F298C743E00158EE4 /* UsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F55E298C743E00158EE4 /* UsernameLookupManager.swift */; };
-		D925F560298D8F9400158EE4 /* Usernames+ShareableUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F552298349EF00158EE4 /* Usernames+ShareableUsername.swift */; };
+		D925F560298D8F9400158EE4 /* Usernames+UsernameLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */; };
 		D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
 		D925F562298D8F9400158EE4 /* Usernames+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C5297A0F9500F7ED6D /* Usernames+API.swift */; };
 		D925F563298D8F9400158EE4 /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
@@ -1308,6 +1307,9 @@
 		D99A0F5829F1ABBB002E02E3 /* TSGroupMemberRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */; };
+		D9A3E2322A0DBDFC00E2A8B5 /* Usernames+UsernameLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F55429834BC900158EE4 /* Usernames+UsernameLinkTests.swift */; };
+		D9A3E22D2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */; };
+		D9A3E2302A0DABDF00E2A8B5 /* UsernameQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
 		D9AE0ACB29162C160063488B /* BroadcastMediaMessageJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ACA29162C160063488B /* BroadcastMediaMessageJobRecord.swift */; };
@@ -3500,7 +3502,7 @@
 		881FF30623B5B1520023B620 /* Signal-AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Signal-AppStore.entitlements"; sourceTree = "<group>"; };
 		881FF30723B5B16F0023B620 /* SignalShareExtension-AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SignalShareExtension-AppStore.entitlements"; sourceTree = "<group>"; };
 		882159D023677E0500D17403 /* ur */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ur; path = translations/ur.lproj/Localizable.strings; sourceTree = "<group>"; };
-		8822558C26B9D1D7001A33C4 /* SignalMe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMe.swift; sourceTree = "<group>"; };
+		8822558C26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalDotMePhoneNumberLink.swift; sourceTree = "<group>"; };
 		88238EA124E9DDB700F28079 /* LocalVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalVideoView.swift; sourceTree = "<group>"; };
 		88238EA324E9DDE900F28079 /* CallButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallButton.swift; sourceTree = "<group>"; };
 		88238EAE24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GestureRecognizers.swift"; sourceTree = "<group>"; };
@@ -3826,8 +3828,8 @@
 		D91F7A2C2935A32F00012C64 /* DonationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationMode.swift; sourceTree = "<group>"; };
 		D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJob.swift; sourceTree = "<group>"; };
 		D925F5502983399D00158EE4 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
-		D925F552298349EF00158EE4 /* Usernames+ShareableUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ShareableUsername.swift"; sourceTree = "<group>"; };
-		D925F55429834BC900158EE4 /* Usernames+ShareableUsernameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ShareableUsernameTests.swift"; sourceTree = "<group>"; };
+		D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+UsernameLink.swift"; sourceTree = "<group>"; };
+		D925F55429834BC900158EE4 /* Usernames+UsernameLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+UsernameLinkTests.swift"; sourceTree = "<group>"; };
 		D925F557298B39D800158EE4 /* UsernameLookupRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecord.swift; sourceTree = "<group>"; };
 		D925F55E298C743E00158EE4 /* UsernameLookupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupManager.swift; sourceTree = "<group>"; };
 		D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameLookupManager.swift; sourceTree = "<group>"; };
@@ -3866,6 +3868,8 @@
 		D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareMyUsernameSheetViewController.swift; sourceTree = "<group>"; };
 		D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupMemberRole.swift; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
+		D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkOpener.swift; sourceTree = "<group>"; };
+		D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameQuerier.swift; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
 		D9AE0ACA29162C160063488B /* BroadcastMediaMessageJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastMediaMessageJobRecord.swift; sourceTree = "<group>"; };
@@ -5577,6 +5581,7 @@
 				34330A581E7875FB00DF2FB9 /* Fonts */,
 				34A955B7271B553D00B05242 /* Payments */,
 				34A954C9271B4BE600B05242 /* UI */,
+				D9A3E22E2A0DABC000E2A8B5 /* Usernames */,
 				34A95502271B510400B05242 /* Utils */,
 				34A95566271B510500B05242 /* ViewControllers */,
 				34A955A0271B510500B05242 /* ViewModels */,
@@ -6839,7 +6844,7 @@
 				3440426A273AB186008C9FA4 /* RegistrationUtils.swift */,
 				66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */,
 				7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */,
-				8822558C26B9D1D7001A33C4 /* SignalMe.swift */,
+				8822558C26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift */,
 				6675F64E29261C39007A311E /* SyncPushTokensJob.swift */,
 				4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */,
 				F93BCB9929EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift */,
@@ -7744,7 +7749,7 @@
 				D99840C5297A0F9500F7ED6D /* Usernames+API.swift */,
 				D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */,
 				D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */,
-				D925F552298349EF00158EE4 /* Usernames+ShareableUsername.swift */,
+				D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */,
 				D99840BE297A04EB00F7ED6D /* Usernames.swift */,
 				C15837EE29A592BA00176927 /* UsernameValidationManager.swift */,
 				C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */,
@@ -7800,6 +7805,7 @@
 			children = (
 				D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */,
 				C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */,
+				D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */,
 				D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */,
 				D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */,
 				D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */,
@@ -7812,8 +7818,16 @@
 			isa = PBXGroup;
 			children = (
 				D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */,
-				D925F55429834BC900158EE4 /* Usernames+ShareableUsernameTests.swift */,
+				D925F55429834BC900158EE4 /* Usernames+UsernameLinkTests.swift */,
 				C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */,
+			);
+			path = Usernames;
+			sourceTree = "<group>";
+		};
+		D9A3E22E2A0DABC000E2A8B5 /* Usernames */ = {
+			isa = PBXGroup;
+			children = (
+				D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */,
 			);
 			path = Usernames;
 			sourceTree = "<group>";
@@ -10926,6 +10940,7 @@
 				3402A9E8271D97090084CBAE /* UIView+SignalUI.swift in Sources */,
 				34A954F7271B4FB000B05242 /* UIViewController+OWS.m in Sources */,
 				3402AA5C271D9DCD0084CBAE /* UIViewController+Permissions.m in Sources */,
+				D9A3E2302A0DABDF00E2A8B5 /* UsernameQuerier.swift in Sources */,
 				76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */,
 				3402AA97271D9E180084CBAE /* VideoEditorModel.swift in Sources */,
 				3402AA6F271D9E180084CBAE /* VideoEditorView.swift in Sources */,
@@ -11632,7 +11647,7 @@
 				D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
 				8841584C252F9F1C0078903D /* SignalCall.swift in Sources */,
-				8822558D26B9D1D7001A33C4 /* SignalMe.swift in Sources */,
+				8822558D26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift in Sources */,
 				88BE44A626153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift in Sources */,
 				F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */,
 				34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */,
@@ -11685,6 +11700,7 @@
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
 				5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */,
 				C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */,
+				D9A3E22D2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift in Sources */,
 				D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */,
 				D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */,
 				D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */,
@@ -11773,7 +11789,6 @@
 				E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */,
 				503BDDB4296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift in Sources */,
 				5033D47329DCB3FF007FEADA /* UrlOpenerTest.swift in Sources */,
-				D925F55629834FAC00158EE4 /* Usernames+ShareableUsernameTests.swift in Sources */,
 				C182BEF629ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift in Sources */,
 				45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
@@ -12445,7 +12460,7 @@
 				D925F562298D8F9400158EE4 /* Usernames+API.swift in Sources */,
 				D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */,
 				D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */,
-				D925F560298D8F9400158EE4 /* Usernames+ShareableUsername.swift in Sources */,
+				D925F560298D8F9400158EE4 /* Usernames+UsernameLink.swift in Sources */,
 				D925F563298D8F9400158EE4 /* Usernames.swift in Sources */,
 				C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */,
 				C13A484729B650BC00BA9005 /* UsernameValidationObserver.swift in Sources */,
@@ -12603,6 +12618,7 @@
 				F9D5BFD12979B027001737E5 /* URLPathComponentsTest.swift in Sources */,
 				F945FE502984822D00C835C7 /* UserDefaults.swift in Sources */,
 				D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */,
+				D9A3E2322A0DBDFC00E2A8B5 /* Usernames+UsernameLinkTests.swift in Sources */,
 				F9426284289B1B5600460798 /* UUIDBackfillTaskTest.swift in Sources */,
 				D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */,
 				F942626A289B1B5500460798 /* ViewOnceMessagesTest.swift in Sources */,

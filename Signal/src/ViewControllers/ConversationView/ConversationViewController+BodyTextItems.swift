@@ -343,8 +343,10 @@ extension ConversationViewController {
             didTapGroupInviteLink(url: dataItem.url)
         } else if SignalProxy.isValidProxyLink(dataItem.url) {
             didTapProxyLink(url: dataItem.url)
-        } else if SignalMe.isPossibleUrl(dataItem.url) {
+        } else if SignalDotMePhoneNumberLink.isPossibleUrl(dataItem.url) {
             cvc_didTapSignalMeLink(url: dataItem.url)
+        } else if let usernameLink = Usernames.UsernameLink(usernameLinkUrl: dataItem.url) {
+            didTapUsernameLink(usernameLink: usernameLink)
         } else if isMailtoUrl(dataItem.url) {
             didTapEmail(dataItem: dataItem)
         } else {

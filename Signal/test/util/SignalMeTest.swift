@@ -16,7 +16,7 @@ class SignalMeTest: XCTestCase {
         ]
         for string in validStrings {
             let url = try XCTUnwrap(URL(string: string))
-            XCTAssertTrue(SignalMe.isPossibleUrl(url), "\(url)")
+            XCTAssertTrue(SignalDotMePhoneNumberLink.isPossibleUrl(url), "\(url)")
         }
 
         let invalidStrings = [
@@ -48,7 +48,7 @@ class SignalMeTest: XCTestCase {
         ]
         for string in invalidStrings {
             let url = try XCTUnwrap(URL(string: string))
-            XCTAssertFalse(SignalMe.isPossibleUrl(url), "\(url)")
+            XCTAssertFalse(SignalDotMePhoneNumberLink.isPossibleUrl(url), "\(url)")
         }
     }
 }

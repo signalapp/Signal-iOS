@@ -16,7 +16,9 @@ public extension Data {
     static func data(fromBase64Url base64Url: String) throws -> Data {
         let base64 = Self.base64UrlToBase64(base64Url: base64Url)
         guard let data = Data(base64Encoded: base64) else {
-            throw OWSAssertionError("Couldn't parse base64Url.")
+            let message = "Couldn't parse base64Url."
+            Logger.error(message)
+            throw OWSGenericError(message)
         }
         return data
     }
