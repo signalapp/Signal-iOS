@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal is een berichten-app waar privacy centraal staat. Het is gratis en gemakkelijk te gebruiken, met sterke end-to-endversleuteling die je communicatie volledig privé houdt.
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• Stuur tekst- en spraakberichten, foto's, video's, GIF's en bestanden, allemaal gratis. Signal maakt gebruik van de mobiele data van je telefoon, zodat je sms- en mms-kosten kunt vermijden.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• Bel je vrienden met versleutelde spraak- en video-oproepen. Groepsgesprekken worden ondersteund tot wel 40 personen.
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• Houd contact via groepschats met tot wel 1000 mensen. Bepaal wie kan posten en groepsleden kan beheren met instellingen voor beheerdersmachtigingen.
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• Deel beeld-, tekst- en videoverhalen die na 24 uur verdwijnen. Privacy-instellingen laten je precies zien wie elk Verhaal kan zien.
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal is gebouwd voor jouw privacy. We weten niets over jou of met wie je praat. Ons open-source Signal Protocol betekent dat we jouw berichten niet kunnen lezen of naar je oproepen kunnen luisteren. En niemand anders kan dat. Geen addertjes onder het gras, geen gegevensverzameling, geen compromissen. 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal is onafhankelijk en heeft geen winstoogmerk. Onze unieke organisatie biedt een ander soort technologie. Als 501c3-non-profitorganisatie worden we ondersteund door jouw donaties, niet door adverteerders of investeerders. 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• Ga voor ondersteuning, vragen of meer informatie naar https://support.signal.org/
 
-To check out our source code, visit https://github.com/signalapp 
+Ga naar https://github.com/signalapp om onze broncode te bekijken 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Volg ons op Twitter @signalapp en Instagram @signal_app

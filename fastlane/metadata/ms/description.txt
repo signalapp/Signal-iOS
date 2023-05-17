@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal ialah aplikasi pemesejan yang mementingkan privasi. Ia percuma dan mudah digunakan, dengan penyulitan hujung ke hujung yang kukuh bagi memastikan komunikasi anda benar-benar peribadi.
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• Hantar teks, mesej suara, foto, video, GIF dan fail secara percuma. Signal menggunakan sambungan data telefon anda, jadi anda mengelakkan bayaran SMS dan MMS.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• Panggil rakan anda dengan panggilan suara dan video yang disulitkan dengan jelas. Panggilan kumpulan disokong untuk sehingga 40 orang.
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• Kekal berhubung dengan sembang kumpulan sehingga 1,000 orang. Kawal siapa yang boleh menyiarkan dan mengurus ahli kumpulan dengan tetapan kebenaran pentadbir.
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• Kongsi Cerita dalam bentuk imej, teks dan video yang hilang selepas 24 jam. Tetapan privasi memastikan anda bertanggungjawab terhadap siapa yang boleh melihat setiap Cerita.
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal dibina untuk privasi anda. Kami tidak tahu apa-apa tentang anda atau dengan siapa anda bercakap. Protokol Signal sumber terbuka kami bermakna kami tidak boleh membaca mesej atau mendengar panggilan anda. Orang lain juga tidak boleh. Tiada pintu belakang, tiada pengumpulan data, tiada kompromi. 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal adalah bebas dan bukan untuk keuntungan; jenis teknologi yang berbeza daripada jenis organisasi yang berbeza. Sebagai organisasi bukan berasaskan keuntungan 501c3, kami disokong oleh derma anda, bukan oleh pengiklan atau pelabur. 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• Untuk mendapatkan sokongan, soalan atau maklumat lanjut sila lawati https://support.signal.org/
 
-To check out our source code, visit https://github.com/signalapp 
+Untuk menyemak kod sumber kami, lawati https://github.com/signalapp 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Ikuti kami di Twitter @signalapp dan Instagram @signal_app

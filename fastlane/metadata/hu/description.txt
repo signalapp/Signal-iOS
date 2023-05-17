@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+A Signal egy olyan üzenetküldő alkalmazás, amelynek középpontjában az adatvédelem áll. Ingyenes és könnyen használható, erős végpontok közötti titkosítással, amely gondoskodik róla, hogy a kommunikáció teljesen privát legyen.
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• Ingyenesen küldhetsz szöveges üzeneteket, hangüzeneteket, fotókat, videókat, GIF-eket és fájlokat. A Signal a telefon adatkapcsolatát használja, így elkerülheted az SMS- és MMS-díjakat.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• Hívd barátaidat kristálytiszta, titkosított hang- és videohívásokkal. Csoportos hívások, akár 40 főig.
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• Kapcsolódj akár 1000 fős csoportos csevegésekkel. Adminisztrátori jogosultságokkal szabályozhatod, hogy kik posztolhatnak és kezelhetik a csoporttagokat.
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• Ossz meg a képeket, szöveges üzeneteket és videós Történeteket, amelyek 24 óra elteltével eltűnnek. Az adatvédelmi beállításoknak hála te határozhatod meg, hogy pontosan ki láthatja az egyes Történeteket.
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• A Signal az adataid védelmére épült. Semmit sem tudunk rólad, vagy arról, hogy kivel beszélsz. Nyílt forráskódú Signal Protokolllunk azt jelenti, hogy nem tudjuk elolvasni az üzeneteid, és nem tudjuk meghallgatni a hívásaidat. Más sem tudja. Nincsenek kiskapuk, nincs adatgyűjtés, nincsenek kompromisszumok. 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• A Signal független és nem a nyereség a célja; másfajta technológia egy másfajta szervezettől. 501c3-mas nonprofit szervezetként az adományaid, nem pedig a hirdetők vagy a befektetők támogatnak minket. 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• Támogatásért, kérdésekkel vagy további információért látogass el a https://support.signal.org/ oldalra.
 
-To check out our source code, visit https://github.com/signalapp 
+Forráskódunk megtekintéséhez látogass el a https://github.com/signalapp oldalra 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Kövess minket Twitteren (@signalapp) és Instagramon (@signal_app)

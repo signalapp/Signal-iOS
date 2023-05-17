@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal er en sms-app med fokus på privatliv. Den er gratis og nem at bruge, og så har den stærk E2E-kryptering, der sikrer, at din kommunikation er helt privat.
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• Send SMS'er, talemeddelelser, billeder, videoer, GIF'er og filer helt gratis. Signal bruger din telefons dataforbindelse, så du undgår SMS- og MMS-gebyrer.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• Ring til dine venner med krystalklare krypterede stemme- og videoopkald. Gruppeopkald understøttes for op til 40 personer.
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• Hold kontakten gennem gruppechats med op til 1.000 personer. Vælg, hvem der kan lave opslag og administrere gruppemedlemmer med indstillinger for administratortilladelser.
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• Del billeder, tekst og video historier, der forsvinder efter 24 timer. Med privatlivsindstillingerne, kan du selv bestemme, hvem der kan se hver enkelt historie.
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal er bygget til at beskytte dit privatliv. Vi ved intet om dig, eller hvem du taler med. Vores open source Signal-protokol betyder, at vi ikke kan læse dine beskeder eller lytte til dine opkald. Det er der heller ikke andre, der kan. Ingen bagdøre, ingen dataindsamling, ingen kompromiser. 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal er en uafhængig nonprofit; en anden slags teknologi fra en anden slags organisation. Som 501c3-nonprofitorganisation, støttes vi af jeres donationer, ikke af annoncører eller investorer. 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• Har du brug for støtte, svar eller flere oplysninger, kan du besøge https://support.signal.org/
 
-To check out our source code, visit https://github.com/signalapp 
+Du kan se vores kildekode på https://github.com/signalapp 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Følg os på Twitter @signalapp og Instagram @signal_app

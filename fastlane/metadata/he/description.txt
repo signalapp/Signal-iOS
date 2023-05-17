@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal היא אפליקציית הודעות שמתבססת על פרטיות. היא חינמית וקלה לשימוש, עם הצפנה חזקה מקצה לקצה ששומרת על התקשורת שלך פרטית לחלוטין.
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• שולחים הודעות טקסט, הודעות קוליות, תמונות, גיפים וקבצים בחינם. Signal משתמשת בחיבור הנתונים של הטלפון שלך כדי לאפשר לך להימנע מעלויות SMS ו–MMS.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• מתקשרים לחברים עם שיחות קוליות ושיחות וידאו חדות ומוצפנות. שיחות קבוצתיות נתמכות עבור עד 40 איש.
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• נשארים מחוברים עם צ׳אטים קבוצתיים של עד 1,000 איש. שולטים במי שיכול לפרסם ולנהל חברי קבוצה עם הגדרות הרשאת מנהלים.
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• משתפים סטוריז עם תמונות, טקסט וסרטונים שנעלמים אחרי 24 שעות. הגדרות הפרטיות מאפשרות לך לקבוע בדיוק מי יכול לראות כל סטורי.
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal בנויה עבור הפרטיות שלך. אנחנו לא יודעים שום דבר עליך או על האנשים שמדברים איתך. משמעות פרוטוקול הקוד הפתוח שלנו ב–Signal היא שאין לנו אפשרות לקרוא את ההודעות שלך או להאזין לשיחות שלך. וגם לאף אחד אחר אין. בלי דלתות נסתרות, בלי איסוף נתונים, בלי פשרות. 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal היא עצמאית ואינה מיועדת למטרות רווח; סוג אחר של טכנולוגיה מסוג אחר של ארגון. כמלכ״ר 501c3 אנחנו נתמכים באמצעות התרומות שלך, לא באמצעות מפרסמים או משקיעים. 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• לתמיכה, שאלות או מידע נוסף, אפשר לבקר בכתובת https://support.signal.org/
 
-To check out our source code, visit https://github.com/signalapp 
+כדי לעיין בקוד המקור שלנו, אפשר לבקר בכתובת https://github.com/signalapp 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+אפשר לעקוב אחרינו ב–Twitter תחת @signalapp או ב–Instagram תחת @signal_app

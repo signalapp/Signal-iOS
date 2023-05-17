@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal — это приложение для обмена сообщениями, в основе которого лежит конфиденциальность. Оно бесплатное и простое в использовании, с надежным сквозным шифрованием, обеспечивающим полную конфиденциальность вашего общения.
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• Бесплатно отправляйте текстовые и голосовые сообщения, фотографии, видео, другие файлы. Signal использует передачу данных на вашем телефоне, поэтому вам не нужно платить за SMS и MMS.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• Звоните друзьям, используя кристально чистые зашифрованные голосовые и видеозвонки. Поддерживаются групповые звонки до 40 человек.
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• Оставайтесь на связи, используя групповые чаты до 1000 человек. Контролируйте, кто может публиковать сообщения, и управляйте участниками группы с помощью настроек прав администратора.
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• Делитесь изображениями, текстами и видео в историях, которые исчезают через 24 часа. Настройки конфиденциальности позволяют вам контролировать, кто именно может видеть каждую историю.
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal создан для обеспечения вашей конфиденциальности. Мы ничего не знаем ни о вас, ни о том, с кем вы разговариваете. Благодаря нашему Signal Protocol с открытым исходным кодом мы не можем читать ваши сообщения или прослушивать ваши звонки. И никто не может. Без лазеек, без сбора данных, без компромиссов. 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal является независимой и некоммерческой организацией; это другой вид технологии от организации другого типа. Как некоммерческая организация категории 501c3, мы работаем за счёт ваших пожертвований, а не за счёт рекламодателей или инвесторов. 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• За поддержкой или дополнительной информацией обращайтесь на сайт https://support.signal.org/
 
-To check out our source code, visit https://github.com/signalapp 
+Чтобы ознакомиться с нашим исходным кодом, посетите сайт https://github.com/signalapp. 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Подпишитесь на нас в Twitter @signalapp и Instagram @signal_app

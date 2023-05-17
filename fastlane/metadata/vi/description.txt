@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal là một ứng dụng nhắn tin được xây dựng trên nền tảng quyền riêng tư. Ứng dụng miễn phí và dễ sử dụng, với khả năng mã hoá đầu cuối giúp bạn liên lạc với mọi người một cách riêng tư, bảo mật.
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• Gửi tin nhắn văn bản, tin nhắn thoại, ảnh, video, hình GIF, và tập tin miễn phí. Signal dùng kết nối dữ liệu trên điện thoại của bạn, để bạn không mất phí gửi SMS và MMS.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• Gọi bạn bè với cuộc gọi thoại và cuộc gọi video có tín hiệu được mã hoá và cực kỳ rõ. Cuộc gọi nhóm hỗ trợ đến 40 người.
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• Giữ kết nối với các nhóm trò chuyện với lên đến 1.000 người. Kiểm soát người có thể đăng nội dung và quản lý thành viên nhóm với cài đặt quyền quản lý.
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• Chia sẻ Story ảnh, văn bản, và video biến mất sau 24 giờ. Cài đặt Quyền riêng tư cho phép bạn kiểm soát người có thể xem Story.
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal được xây dựng hướng đến quyền riêng tư. Chúng tôi không biết gì về bạn hoặc người bạn trò chuyện cùng. Giao thức mã nguồn mở Signal Protocol của chúng tôi đồng nghĩa với việc chúng tôi không thể đọc tin nhắn hoặc nghe cuộc gọi của bạn. Và cũng không ai khác có thể làm điều đó. Không lỗ hổng, không thu thập dữ liệu, không theo dõi. 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal hoạt động độc lập và không vì lợi nhuận; một công nghệ khác biệt đến từ một tổ chức khác biệt. Là một tổ chức phi lợi nhuận 501c3 chúng tôi được hỗ trợ bởi các khoản ủng hộ của các bạn, không phải từ nguồn tài chính của các nhà quảng cáo hay nhà đầu tư. 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• Để được hỗ trợ, trả lời câu hỏi, hoặc tìm hiểu thêm, vui lòng truy cập https://support.signal.org/
 
-To check out our source code, visit https://github.com/signalapp 
+Để xem mã nguồn của chúng tôi, truy cập https://github.com/signalapp 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Theo dõi chúng tôi trên Twitter @signalapp và Instagram @signal_app

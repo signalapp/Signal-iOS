@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal एक संदेश सेवा ऐप है जिसके मूल में निजता है। यह मुफ़्त है और इस्तेमाल करने में आसान है, जिसमें ऐसा मज़बूत एंड-टू-एंड एनक्रिप्शन होता है जो आपकी बातचीत को पूरी तरह से निजी रखता है।
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• मुफ़्त में टेक्स्ट, वॉयस मेसेज, फ़ोटो, वीडियो, GIF, और फ़ाइलें भेजें। Signal आपके फ़ोन के डेटा कनेक्शन का इस्तेमाल करता है ताकि आपको SMS और MMS शुल्क न देने पड़ें।
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• अत्यंत स्पष्ट एनक्रिप्टेड वॉयस व वीडियो कॉल से अपने दोस्तों को कॉल करें। अधिकतम 40 लोगों के लिए समर्थित ग्रुप कॉल।
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• अधिकतम 1000 लोगों तक से ग्रुप चैट के माध्यम से जुड़े रहें। एडमिन अनुमति सेटिंग्स से नियंत्रित करें कि ग्रुप सदस्यों को कौन पोस्ट व मैनेज कर सकता है।
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• 24 घंटे बाद गायब हो जानेवाले इमेज, टेक्स्ट, और वीडियो स्टोरीज़ साझा करें। निजता सेटिंग्स यह नियंत्रण आपको देती हैं कि प्रत्येक स्टोरी को निश्चित तौर पर कौन देख सकता है।
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal आपकी निजता के लिए बना है। आप और आप जिससे बात कर रहे हैं, इसके बारे में हमें कुछ नहीं पता होता है। हमारे खुले सोर्स वाले Signal प्रोटोकॉल का मतलब है कि हम न तो आपके मेसेज पढ़ सकते हैं, और न ही आपके कॉल सुन सकते हैं। और न ही कोई और। कोई बैक डोर नहीं, कोई डेटा संग्रहण नहीं, कोई समझौता नहीं। 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal स्वतंत्र है और लाभ कमाने के लिए नहीं है; यह एक अलग तरह के संगठन की ओर से एक अलग तरह की तकनीक है। एक 501c3 गैर-लाभकारी संगठन के तौर पर हमें आपके दान का समर्थन प्राप्त है, न कि विज्ञापनदाताओं या निवेशकों का। 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• सहयोग, सवाल, या अधिक जानकारी के लिए कृपया https://support.signal.org/ पर विज़िट करें।
 
-To check out our source code, visit https://github.com/signalapp 
+हमारा सोर्स कोड जानने के लिए https://github.com/signalapp पर जाएँ। 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Twitter @signalapp और Instagram @signal_app पर हमें फॉलो करें

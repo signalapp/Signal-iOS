@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal はプライバシーを重視したメッセージアプリです。無料で簡単に利用でき、強化されたエンドツーエンド暗号により、通信を完璧に保護します。
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• テキスト、音声メッセージ、写真、動画、GIF、ファイル等を無料で送信できます。Signal では、端末のデータ通信を使用して通信が行われるため、SMS や MMS の料金はかかりません。
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• 非常にクリアな、暗号化された音声通話やビデオ通話で友達と会話できます。グループ通話は最大 40 人まで対応可能です。
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• 最大 1,000 人までのグループチャットで、仲間との交流を大切にできます。管理者権限設定により、投稿できる人とグループメンバーを管理できます。
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• 24 時間後に自動的に消える画像、テキスト、ビデオストーリーなどを共有できます。プライバシー設定により、各ストーリーの閲覧者を指定することができます。
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal は、あなたのプライバシーを守るために作られています。あなた自身のことや、あなたが話している相手のことも Signal に知られることはありません。オープンソースの Signal Protocol を使用しているため、Signal はあなたのメッセージを読んだり、通話を聞いたりすることはできません。Signal だけではなく、誰もそれをできません。クラッカーが入り込む余地も、データ収集も、リスクもありません。 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal は独立しており、営利目的ではありません。異なる種類の組織による、異なる種類の技術です。501c3 非営利団体として、Signal は広告主や投資家ではなく、皆様の寄付によって支えられています。 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• サポート、質問、また詳細については https://support.signal.org/ をご覧ください。
 
-To check out our source code, visit https://github.com/signalapp 
+ソースコードを確認するには、https://github.com/signalapp をご覧ください。 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Twitter (@signalapp) とInstagram (@signal_app) をフォローしてください

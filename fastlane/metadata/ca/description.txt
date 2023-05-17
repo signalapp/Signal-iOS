@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+• Signal és una aplicació de missatgeria centrada en la privacitat. És gratuïta i fàcil d'utilitzar, amb un fort xifratge d'extrem a extrem que manté la teva comunicació completament privada.
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• Envia de manera gratuïta missatges, notes de veu, fotos, vídeos, GIFs i arxius. Signal utilitza la connexió de dades del telèfon, així pots evitar les tarifes d'SMS i MMS.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• Truca als teus amics amb trucades de veu i videotrucades encriptades i nítides. S'admeten trucades en grup per a un màxim de 40 persones.
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• No perdis mai el contacte amb xats grupals de fins a 1.000 persones. Controla qui pot publicar i gestionar els membres del grup amb la configuració de permisos d'administrador.
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• Comparteix Històries d'imatge, text i vídeo que desapareixeran automàticament al cap de 24 hores. La configuració de privacitat et manté a càrrec de qui pot veure exactament cada història.
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal està dissenyada per a la teva privacitat. No sabem res de tu ni amb qui estàs parlant. El nostre protocol de codi obert de Signal significa que no podem llegir els teus missatges ni escoltar les teves trucades. Ni tampoc pot fer-ho ningú més. Sense portes posteriors, sense recollida de dades, sense compromisos. 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal és independent i sense ànim de lucre; un tipus de tecnologia diferent d'un tipus d'organització diferent. Com a entitat sense ànim de lucre 501c3, comptem amb el suport de les teves donacions, no d'anunciants o inversors. 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• Si necessites assistència, tens alguna pregunta o vols saber-ne més, visita https://support.signal.org/
 
-To check out our source code, visit https://github.com/signalapp 
+Per consultar el nostre codi font, visita https://github.com/signalapp 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Segueix-nos a Twitter @signalapp i Instagram @signal_app

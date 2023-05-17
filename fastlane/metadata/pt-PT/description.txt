@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+• O Signal é uma app de mensagens focada na privacidade. É grátis e fácil de usar, com uma encriptação robusta ponta-a-ponta que mantém a sua comunicação completamente privada.
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• Envie mensagens de texto, mensagens de voz, fotos, vídeos, GIFs e ficheiros gratuitamente. O Signal utiliza a ligação de dados do seu telemóvel, evitando taxas de envio de SMS e MMS.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• Ligue para os seus amigos com chamadas de voz e vídeo encriptadas e com a melhor qualidade. Chamadas de grupo com suporte até 40 pessoas.
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• Ligue-se a chats de grupo com até 1000 pessoas. Controle quem pode postar e gerir membros do grupo com as definições de permissão de administrador.
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• Partilhe Histórias com imagens, texto ou vídeo que desaparecem após 24 horas. As definições de privacidade permitem-se controlar exatamente quem vê cada História.
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• O Signal foi concebido para a sua privacidade. Não sabemos nada sobre si ou com quem está a falar. O nosso protocolo do Signal "open source" significa que não podemos ler as suas mensagens nem ouvir as suas chamadas. Nem mais ninguém pode. Sem "portas das traseiras", sem recolha de dados, sem cedências. 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• O Signal é independente e não tem fins lucrativos; um tipo diferente de tecnologia criado por um tipo diferente de organização. Como uma organização sem fins lucrativos tipo 501c3, somos apoiados pelos seus donativos, não por anunciantes ou investidores. 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• Para obter apoio técnico, perguntas ou mais informações, visite https://support.signal.org/
 
-To check out our source code, visit https://github.com/signalapp 
+Para verificar o nosso código fonte, visite https://github.com/signalapp 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Siga-nos no Twitter @signalapp e Instagram @signal_app
