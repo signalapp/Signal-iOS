@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>این رنگ سفارشی در %1$d گفتگو استفاده شده است. می‌خواهید آن را از همه گفتگو‌ها پاک کنید؟</string>
+			<string>این رنگ سفارشی در %1$d گفتگو استفاده شده است. می‌خواهید پاکش کنید؟</string>
 			<key>other</key>
-			<string>این رنگ سفارشی در %1$d گفتگو استفاده شده است. می‌خواهید آن را از همه گفتگو‌ها پاک کنید؟</string>
+			<string>این رنگ سفارشی در %1$d گفتگو استفاده شده است. می‌خواهید آن را از همۀ گفتگو‌ها پاک کنید؟</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>این رنگ در %1$d گفتگو استفاده شده است. تغییرات را برای همه گفتگو‌ها ذخیره می‌کنید؟</string>
+			<string>این رنگ در %1$d گفتگو استفاده شده است. می‌خواهید تغییرات را برای همۀ گفتگو‌ها ذخیره کنید؟</string>
 			<key>other</key>
-			<string>این رنگ در %1$d گفتگو استفاده شده است. تغییرات را برای تمام گفتگو‌ها ذخیره می‌کنید؟</string>
+			<string>این رنگ در %1$d گفتگو استفاده شده است. می‌خواهید تغییرات را برای همۀ گفتگو‌ها ذخیره کنید؟</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -143,7 +143,7 @@
 			<key>one</key>
 			<string>این گفتگو از این دستگاه پاک خواهد شد.</string>
 			<key>other</key>
-			<string>این گفتگوها از این دستگاه پاک خواهد شد.</string>
+			<string>این گفتگوها از این دستگاه پاک خواهند شد.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>بیشتر از ۱ گفتگو نمی‌توانید انتخاب کنید.</string>
+			<string>نمی‌توانید بیشتر از %1$d گفتگو انتخاب کنید.</string>
 			<key>other</key>
-			<string>بیشتر از %1$d گفتگو نمی‌توانید انتخاب کنید.</string>
+			<string>نمی‌توانید بیشتر از %1$d گفتگو انتخاب کنید.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

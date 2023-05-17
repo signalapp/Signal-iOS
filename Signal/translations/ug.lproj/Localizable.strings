@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ئۈن ئۇچۇر";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "ئۈن چاقىرىش";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ياڭراتقۇ";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "قايتا چاقىر";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞ئاۋازلىق چاقىرىق كېلىۋاتىدۇ…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞ئېلىنمىغان ئاۋازلىق چاقىرىق %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞ئېلىنمىغان ئاۋازلىق چاقىرىق";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞ئېلىنمىغان ئاۋازلىق چاقىرىق %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞ئېلىنمىغان ئاۋازلىق چاقىرىق %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "سىز iOS نىڭ تەڭشەكلەردىن مىكروفون ھوقۇقىنى قوزغىتىپ، Signal نىڭ چاقىرىش ۋە ئۈن ئۇچۇرى خاتىرىلىشىگە يول قويالايسىز.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "ئالدى كەينى كامېرا ئالماشتۇر";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "ئاۋازلىق چاقىرىققا ئالماشتۇرۇش";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "سىن چاقىرىشقا ئالماشتۇرىدۇ";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "يېڭى تېلېفون نومۇرى ئۈچۈن PIN كىرگۈزۈڭ. بۇ SMS دەلىللەش كودىڭىز بىلەن ئوخشىمايدۇ.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "سۆھبەت رەڭگىنى بۇ جايدا ئالدىن كۆرگىلى بولىدۇ.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "پاراڭ رەڭگىنى بۇ جايدا ئالدىن كۆرگىلى بولىدۇ.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "سۆھبەت رەڭگىنى بۇ جايدا ئالدىن كۆرگىلى بولىدۇ.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "پاراڭ رەڭگىنى بۇ جايدا ئالدىن كۆرگىلى بولىدۇ.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "باشقا كۆپۈك";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "رەڭنى ئۆچۈر";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "سۆھبەت رەڭگى";
+"CHAT_COLOR_SETTINGS_TITLE" = "پاراڭ رەڭگى";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "رەڭ تەھرىر";
@@ -935,10 +935,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "تام قەغەز رەڭگىگە ئۆزلۈكىدىن ماسلىشىدۇ";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "سۆھبەتلەر";
+"CHAT_LIST_TITLE_INBOX" = "پاراڭلار";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "سۆھبەت رەڭگى ۋە تام قەغەز";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "پاراڭ رەڭگى ۋە تام قەغەز";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "چاپلاش تاختىسىدى بىلەن سېلىشتۇر";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "تەشكىل";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "سۆھبەتتە ئالاقەداش ئاتى ۋە سۈرەتنى كۆرسىتىدۇ:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "پاراڭدىكى ئالاقىداش ئىسمى ۋە رەسىمىنى كۆرسىتىدۇ:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "تۆۋەندىكى «تەڭشەكلەرگە يۆتكەل» نى چېكىڭ";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "ئاچ";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "سۆھبەتتە ئالاقەداش ئاتى ۋە سۈرەتنى كۆرسىتىدۇ.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "پاراڭدىكى ئالاقىداش ئىسمى ۋە رەسىمىنى كۆرۈش.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "ئالاقەداشلارنى ئاچامدۇ؟";
@@ -1199,10 +1199,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "توختىتىش";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "بۇ سۆھبەت مەزكۇر ئۈسكۈنىدىن ئۆچۈرۈلىدۇ.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "بۇ پاراڭ بۇ ئۈسكۈنىدىن ئۆچۈرۈلىدۇ.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "سۆھبەتنى ئۆچۈرەمسىز؟";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "پاراڭنى ئۆچۈرەمسىز؟";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "بۇ پاراڭنى تۆۋەندىكىلەر ئۈچۈن ئۈنسىز قىلىش...";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "گۇرۇپپا";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "يېقىنقى سۆھبەتلەر";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "يېقىنقى پاراڭلار";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "ئالاقەداش";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "ماس نەتىجە يوق";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "سۆھبەت تەڭشەكلەر";
+"CONVERSATION_SETTINGS" = "پاراڭ تەڭشەكلىرى";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "ئەزا قوش";
@@ -1658,7 +1658,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "كىرگۈزگەن تېلېفون نومۇرىڭىز ھېساباتىڭىزدىكى بىلەن ماس كەلمىدى.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "بۇ سۆھبەتتىكى ھەممە ئۇچۇرنى ئۆچۈرەمدۇ؟";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "بۇ پاراڭدىكى ھەممە ئۇچۇرنى ئۆچۈرەمسىز؟";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "ھەممە ئۇچۇرنى ئۆچۈر";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "كۈن";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "قوزغىتىلغاندا، بۇ سۆھبەتتە ئەۋەتىلگەن ۋە تاپشۇرۇۋالغان يېڭى ئۇچۇرلار كۆرۈنگەندىن كېيىن غايىب بولىدۇ.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "قوزغىتىلغاندا، بۇ پاراڭدا ئەۋەتىلگەن ۋە تاپشۇرۇۋالغان يېڭى ئۇچۇرلار كۆرۈنگەندىن كېيىن غايىب بولىدۇ.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "نۆۋەتتىكى ئۇچۇرلار «%1$@» دىن كېيىن ئۆچۈرۈلىدۇ";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "سىزنىڭ %1$@ بىلەن بولغان بىخەتەرلىك نومۇرىڭىز ئۆزگەردى.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "سۆھبەت يېڭىلاندى";
+"ERROR_MESSAGE_SESSION_REFRESH" = "پاراڭ يېڭىلاندى";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "يوچۇن خاتالىققا يولۇقتى.";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "ئۇلاپ يوللا";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "بۇ سۆھبەتتە ھېچقانداق ۋاسىتە يوق.";
+"GALLERY_TILES_EMPTY_GALLERY" = "بۇ پاراڭدا ھېچقانداق مېدىيا يوق.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "يېڭى ۋاسىتە يۈكلەۋاتىدۇ…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "سىزنى گۇرۇپپىدىن چىقىرىۋەتتى.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "گۇرۇپپىغا قوشۇلۇش تەلىپىڭىز قوبۇل قىلىندى.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "گۇرۇپپىغا قوشۇلۇش ئىلتىماسىڭىزنى %1$@ نى تەستىقلىدى.";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "قوللاش مەركىزى";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "ئارخىپلانغان سۆھبەتلەر";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "ئارخىپلانغان پاراڭلار";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "چەكلەندى";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "%1$@، %2$@ ۋە «%3$@» نى ئۆز ئىچىگە ئالغان بىر قىسىم ئالاقىداشلىرىڭىز ئاللىقاچان Signal دا";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "تۇنجى سۆھبىتىڭىزنى بۇ يەردىن باشلاڭ.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "تۇنجى پاراڭنى بۇ يەردىن باشلاڭ.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ سىزنى گۇرۇپپىغا قوشتى";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "جىرىڭلاۋاتىدۇ…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "ئاۋازلىق چاقىرىق…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "سىنلىق چاقىرىش...";
@@ -3413,7 +3413,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "يېڭى ئۇچۇر كەلگەندە ئارخىپلانغان پاراڭلار خەت ساندۇقىغا يۆتكىلىدۇ.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "تېخى سۆھبەت يوق.\nدوستىڭىزغا ئۇچۇر يوللاشنى باشلاڭ.";
+"INBOX_VIEW_EMPTY_INBOX" = "تېخى پاراڭ يوق.\nدوستىڭىزغا ئۇچۇر يوللاپ پاراڭ باشلاڭ.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "كەلگەن ئاۋازلىق چاقىرىق";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "بارلىق ۋاسىتىلەرگە يۆتكەل";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "سۆھبەتلەرنى ئارخىپلاڭ";
+"KEY_COMMAND_ARCHIVE" = "پاراڭ ئارخىپلاش";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "قۇشۇمچىلارنى كۆرسىتىش";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "سۆھبەت ئۇچۇرىغا يۆتكىلىڭ";
+"KEY_COMMAND_CONVERSATION_INFO" = "پاراڭ ئۇچۇرىغا كىرىش";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "كىرگۈزۈش بالدىقىنى فوكۇسلاش";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "يېڭى ئۇچۇر";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "كېيىنكى سۆھبەتكە يۆتكىلىڭ";
+"KEY_COMMAND_NEXT_CONVERSATION" = "كېيىنكى پاراڭغا يۆتكىلىش";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "ئالدىنقى سۆھبەتكە يۆتكىلىڭ";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "ئالدىنقى پاراڭغا يۆتكىلىش";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "ئىزدە";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "چاپلاقلارنى كۆرسەت";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "سۆھبەتنى ئارخىپدىن چىقىرىڭ";
+"KEY_COMMAND_UNARCHIVE" = "پاراڭنى ئارخىپتىن چىقىرىش";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "تېخىمۇ كۆپ بىلدۈرگۈ";
@@ -3662,7 +3662,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "ھەممەيلەن ئۈچۈن ئۆچۈرۈڭ";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ئەگەر Signal نىڭ يېقىنقى نەشرىنى ئىشلىتىۋاتقان بولسا، بۇ ئۇچۇر سۆھبەتتىكى ھەممە ئادەملەردىن ئۆچۈرۈلىدۇ. ئۇلار سىزنىڭ بىر ئۇچۇرنى ئۆچۈرگەنلىكىڭىزنى كۆرەلەيدۇ.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ئەگەر پاراڭدىكى كىشىلەر Signal نىڭ يېقىنقى نەشرىنى ئىشلىتىۋاتقان بولسا، بۇ ئۇچۇر پاراڭدىكى ھەممەيلەن ئۈچۈن ئۆچۈرۈلىدۇ. ئۇلار سىزنىڭ ئۇچۇرنى ئۆچۈرگەنلىكىڭىزنى كۆرەلەيدۇ.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "بۇ ئۇچۇرنى كىم ئۈچۈن ئۆچۈرمەكچىسىز؟";
@@ -3830,7 +3830,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "بۇ سۆھبەت بارلىق ئۈسكۈنىلىرىڭىزدىن ئۆچۈرۈلىدۇ.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "سۆھبەتنى ئۆچۈرەمسىز؟";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "پاراڭنى ئۆچۈرەمسىز؟";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "ئۆچۈرۈڭ ۋە ئايرىلىڭ";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "چۈشۈرۈۋاتىدۇ";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "تەھرىرلەنگەن";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "ئەۋەتىش مەغلۇب بولدى.";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN ئەڭ ئاز 4 ھەرپلەردىن تۈزۈلۈشى كېرەك";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "سىز 4 كىچە بولغان سۆھبەتنى مىخلىيالايسىز";
+"PINNED_CONVERSATION_LIMIT" = "كۆپ بولغاندا 4 پاراڭنى مىخلىيالايسىز.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "قوندۇرۇلدى";
@@ -5434,6 +5434,12 @@
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "ئارخىپىڭىزنى بەلگىلەڭ";
 
+/* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+
+/* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "ئۇچۇر يوللاشتىن ئىلگىرى تىزىملىتىشىڭىز كېرەك.";
 
@@ -5591,7 +5597,7 @@
 "SEARCH_SECTION_CONTACTS" = "باشقا ئالاقىداشلار";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "سۆھبەتلەر";
+"SEARCH_SECTION_CONVERSATIONS" = "پاراڭلار";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "گۇرۇپپا";
@@ -5705,7 +5711,7 @@
 "SESSION_REFRESH_ALERT_MESSAGE" = "‫Signal ئۇچتىن ئۇچقا شىفىرلاش ئىشلىتىدۇ، بەزىدە سۆھبەتتىكى سۆزلىشىشلەرنى يېڭىلاش زۆرۈر بولۇشى مۇمكىن. گەرچە بۇ سۆھبەتنىڭ بىخەتەرلىكىگە تەسىر كۆرسەتمىسىمۇ ئەمما بۇ ئالاقەداشنىڭ ئۇچۇرىنى ئۆتكۈزۈۋېتىشىڭىز مۇمكىن، ئۇنىڭدىن قايتا ئەۋەتىشنى تەلەپ قىلسىڭىز بولىدۇ.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "سۆھبەت يېڭىلاندى";
+"SESSION_REFRESH_ALERT_TITLE" = "پاراڭ يېڭىلاندى";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "سۈرەتتىن تاللاڭ";
@@ -5846,7 +5852,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "نومۇرنى ئۆزگەرت";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "سۆھبەتلەر";
+"SETTINGS_CHATS" = "پاراڭلار";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "سۆھبەت خاتىرەسىنى تازىلا";
@@ -5927,7 +5933,7 @@
 "SETTINGS_INVITE_TITLE" = "دوستلار تەكلىپى";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "سۆھبەت رەڭگى ۋە تام قەغەز";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "پاراڭ رەڭگى ۋە تام قەغەز";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "ئۇچۇر ئاۋازى";
@@ -7286,7 +7292,7 @@
 "UNPIN_ACTION" = "قوندۇرما";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "سۆھبەتلەر";
+"UNPINNED_SECTION_TITLE" = "پاراڭلار";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "ئوقۇلمىدى قىلىڭ";
@@ -7347,9 +7353,6 @@
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "ئىشلەتكۈچى تېپىلمىدى";
-
-/* A prefix appended to all usernames when displayed */
-"USERNAME_PREFIX" = "@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "ئىشلەتكۈچى نامى رەقەم بىلەن باشلانسا بولمايدۇ.";
@@ -7463,7 +7466,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "سىيرىپ تېخىمۇ كۆپ تەم قەغەزلىرىنى ئالدىن كۆرۈڭ.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "بارلىق سۆھبەت ئۈچۈن تام قەغىزى قىلىش";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "بارلىق پاراڭ ئۈچۈن تام قەغىزى بەلگىلەش.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%1$@ ئۈچۈن تام قەغىزى بېكىتىڭ.";
@@ -7529,7 +7532,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "تام قەغەزنى ئەسلىگە قايتۇر";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "سۆھبەت رەڭگى";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "پاراڭ رەڭگى";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "تام قەغىزىنى بېكىتىش";

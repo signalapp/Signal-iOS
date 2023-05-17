@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aquest color personalitzat s&apos;usa en %1$d conversa. Vols suprimir-lo per a totes?</string>
+			<string>Aquest color personalitzat s&apos;usa en %1$d xat. Vols eliminar-lo per a tots?</string>
 			<key>other</key>
-			<string>Aquest color personalitzat s&apos;està utilitzant en %1$d converses. Vols suprimir-lo de totes?</string>
+			<string>Aquest color personalitzat s&apos;usa en %1$d xats. Vols eliminar-lo per a tots?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aquest color s&apos;usa en %1$d conversa. Vols desar els canvis per a totes?</string>
+			<string>Aquest color s&apos;usa en %1$d xat. Vols desar els canvis per a tots?</string>
 			<key>other</key>
-			<string>Aquest color personalitzat s&apos;està utilitzant en %1$d converses. Vols desar els canvis per a totes?</string>
+			<string>Aquest color personalitzat s&apos;està utilitzant en %1$d xats. Vols desar els canvis per a tots?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vols suprimir el xat?</string>
+			<string>Vols eliminar el xat?</string>
 			<key>other</key>
-			<string>Vols suprimir %1$d xats?</string>
+			<string>Vols eliminar %1$d xats?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aquesta conversa s&apos;esborrarà d&apos;aquest dispositiu.</string>
+			<string>Aquest xat s&apos;eliminarà del dispositiu.</string>
 			<key>other</key>
-			<string>Aquestes converses s&apos;esborraran d&apos;aquest dispositiu.</string>
+			<string>Aquests xats s&apos;eliminaran d&apos;aquest dispositiu.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -157,7 +157,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No pots seleccionar més d&apos;1 xat.</string>
+			<string>No pots seleccionar més de %1$d xat.</string>
 			<key>other</key>
 			<string>No pots seleccionar més de %1$d xats.</string>
 		</dict>

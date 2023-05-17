@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "پیام صوتی";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "تماس صوتی";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "بلندگو";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "تماس دوباره";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 تماس صوتی ورودی…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 تماس صوتی ازدست‌رفته در %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 تماس صوتی ازدست‌رفته";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 تماس صوتی ازدست‌رفته در %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 تماس صوتی ازدست‌رفته در %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "شما میتوانید دسترسی به میکروفون را در قسمت تنظیمات iOS فعال کنید تا در سیگنال تماس برقرار کنید و پیام های صوتی ضبط کنید.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "جهت دوربین را تغییر دهید.";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "تغییر به تماس صوتی";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "تغییر به تماس تصویری";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "پین شماره‌تلفن جدید را وارد کنید. این کد با کد تایید پیامکی تفاوت دارد.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "این یک پیش‌نمایش از رنگ متن گفتگو است.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "این پیش‌نمایشی از رنگ متن گفتگو است.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "این یک پیش‌نمایش از رنگ متن گفتگو است.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "این پیش‌نمایشی از رنگ متن گفتگو است.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "گفتگوی دیگر";
@@ -944,7 +944,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "مقایسه با کلیپ‌بورد";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "کاربر سیگنال را برای شروع گپ با وی انتخاب یا جستجو کنید.";
+"COMPOSE_BUTTON_HINT" = "یک کاربر سیگنال را برای شروع گفتگو انتخاب یا جستجو کنید.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "نوشتن";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "سازمان";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "برای دیدن نام مخاطبین و عکس‌ها در گفتگوهای خود:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "برای مشاهده نام مخاطبان و عکس‌ها در گفتگوهای خود:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "روی «به تنظیمات بروید» ضربه بزنید";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "روشن کن";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "نام‌ها و عکس‌های مخاطبین را در گفتگوها‌ی خود مشاهده کنید.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "نام‌ها و عکس‌های مخاطبان را در گفتگوها‌ی خود مشاهده کنید.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "مخاطبین روشن شوند؟";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "گروه‌ها‌";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "آخرین گفتگوها";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "تازه‌ترین گفتگوها";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "مردم";
@@ -1931,7 +1931,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "تایید اهدای کمک مالی";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "پیام‌های ناپدیدشونده در این گفتگو فعال است. پیام کمک مالی شما در %1$@ ناپدید می‌شود.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "پیام‌های ناپدیدشونده در این گفتگو فعال است. پیام کمک مالی شما در %1$@ ناپدید خواهد شد.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "اهدای کمک مالی امکان‌پذیر نیست. اتصال خود را بررسی و دوباره تلاش کنید.";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "کپی";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "سلام،\n\nبه‌تازگی در حال استفاده از سیگنال بودم تا گفتگوهام رو در iPhone خصوصی نگه دارم. دوست دارم تا شما هم این برنامه رو نصب کنید تا خیالمون از اینکه فقط من و شما می‌تونیم پیام‌هامون رو بخونیم یا تماس‌هامون رو بشنویم.\n\nسیگنال برای آیفون و اندروید در دسترس است. دریافت برنامه از: %1$@\n\nسیگنال مثل برنامهٔ پیام‌رسان فعلی شما کار می‌کنه. ما می‌تونیم عکس و ویدئو بفرستیم، تماس بگیریم، و گفتگوها‌ی گروهی شروع کنیم. بهترین قسمتش اینجاست، که هیچکس دیگه‌ای نمی‌تونه اون‌ها رو ببینه، حتی سازندگان سیگنال\n\nشما می‌توانید در مورد Open Whisper Systems، سازندگان سیگنال، اینجا بخوانید: %2$@";
+"EMAIL_INVITE_BODY" = "سلام،\n\nتازگی‌ها از سیگنال می‌کنم تا گفتگوهایم را در آیفونم خصوصی نگه دارم. دوست دارم شما هم این برنامه را نصب کنید تا خیالمان راحت باشد که فقط من و شما می‌تونیم پیام‌هایمان رو بخوانیم یا گفتگوهای تلفنی‌مان را بشنویم.\n\nسیگنال در آیفون و اندروید در دسترس است. از این‌جا دریافتش کنید: %1$@\n\nسیگنال مثل برنامهٔ پیام‌رسان فعلی شما کار می‌کند. می‌توانیم عکس و ویدئو بفرستیم، تماس بگیریم، و گفتگوها‌ی گروهی شروع کنیم. بهترین ویژگی‌اش این است که هیچکس دیگری نمی‌تواند این‌ها را ببیند یا شنود کند، حتی سازندگان خود سیگنال\n\nمی‌توانید در این‌جا دربارۀ شرکت سازندۀ سیگنال، یعنی Open Whisper Systems، بیشتر بخوانید: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "به نرم افزار پیام رسان سیگنال بپیوندید";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "بازارسال به";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "شما هیچ فایل رسانه‌ای در این گفتگو ندارید.";
+"GALLERY_TILES_EMPTY_GALLERY" = "شما هیچ رسانه‌ای در این گفتگو ندارید.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "بارگیری رسانه‌های جدیدتر…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "شما از گروه حذف شده‌اید.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "درخواست شما برای پیوستن به گروه پذیرفته شد.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ با درخواست شما را برای پیوستن به گروه موافقت کرد.";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "مرکز پشتیبانی";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "گفتگوهای آرشیو شده";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "گفتگوهای بایگانی‌شده";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "مسدودشده";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "برخی از مخاطبان از سیگنال استفاده میکنند، مثل %1$@ ، %2$@ و %3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "اولین گپ خود را از اینجا آغاز کنید.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "اولین گفتگوی خود را از اینجا آغاز کنید.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ شما را به گروه اضافه کرد";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "در حال زنگ خوردن…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "تماس صوتی…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "تماس تصویری";
@@ -3407,10 +3407,10 @@
 "IN_CALL_TERMINATED" = "پایان تماس.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "گفتگوهای بی‌صدا که بایگانی می‌شوند، پس از دریافت پیام جدید همچنان در بایگانی می‌مانند.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "گفتگوهای بی‌صدایی که بایگانی می‌شوند، پس از دریافت پیام جدید همچنان در بایگانی خواهند ماند.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "با دریافت پیام جدید، گفتگوهای بایگانی‌شده به صندوق ورودی منتقل می‌شوند.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "با دریافت پیام جدید، گفتگوهای بایگانی‌شده به صندوق ورودی منتقل خواهند شد.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "هنوز گفتگویی وجود ندارد.\nبا پیام دادن به یک دوست آغاز کنید.";
@@ -3479,7 +3479,7 @@
 "KEY_COMMAND_ALL_MEDIA" = "رفتن به تمام رسانه‌ها";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "بایگانی گپ";
+"KEY_COMMAND_ARCHIVE" = "بایگانی گفتگو";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "نمایش پیوست‌ها";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "پیام جدید";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "به گفتگوی بعدی برو";
+"KEY_COMMAND_NEXT_CONVERSATION" = "رفتن به گفتگوی بعدی";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "به گفتگوی قبلی برو";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "رفتن به گفتگوی قبلی";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "جستجو";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "اتصال دستگاه ناموفق بود";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "این دستگاه قادر خواهد بود تا مخاطبین و گروه های شما را ببیند، به گفتگوهای شما دسترسی داشته باشد، و با نام شما پیام ارسال کند.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "این دستگاه قادر خواهد بود مخاطبین و گروه‌های شما را ببیند، به گفتگوهای شما دسترسی داشته باشد، و با نام شما پیام ارسال کند.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "اتصال به این دستگاه؟";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "پاک کردن";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "این گفتگو را با %1$@ ادامه می‌دهید و نام و عکس خود را با آن‌ها به اشتراک می‌گذارید؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "آیا می‌خواهید این گفتگو را با %1$@ ادامه دهید و نام و عکس خود را با آن‌ها به اشتراک بگذارید؟";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "آیا به گفتگو‌ی خود با این گروه ادامه می‌دهید و نام و عکس خود را با اعضای آن به اشتراک می‌گذارید؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "آیا می‌خواهید به گفتگو‌ی خود با این گروه ادامه دهید و نام و عکس خود را با اعضای آن به اشتراک بگذارید؟";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "به %1$@ اجازه می‌دهید که به شما پیام دهد و نام و عکس خود را با آن‌ها به اشتراک می‌گذارید؟ تا زمانی که نپذیرید آن‌ها متوجه نمی‌شوند که پیام‌شان را خوانده‌اید.";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "در حال بارگیری";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "ویرایش‌شده";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "ارسال ناموفق بود.";
@@ -4778,7 +4778,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "همه";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "هرکسی که شماره‌تلفن شما را در مخاطبان خود داشته باشد، شما را به عنوان یک مخاطب در سیگنال خواهد دید. دیگران می‌توانند با شروع گفتگو یا گروه جدید، از طریق شماره تلفنتان به شما پیام بدهند.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "هرکسی که شماره‌تلفن شما را در مخاطبین خود داشته باشد، شما را به عنوان یک مخاطب در سیگنال خواهد دید. دیگران می‌توانند با شروع گفتگو یا گروه جدید، از طریق شماره تلفنتان به شما پیام بدهند.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "هیچ کس";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "پین حداقل باید 4 رقم باشد.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "شما فقط تا ۴ مکالمه را می‌توانید سنجاق کنید.";
+"PINNED_CONVERSATION_LIMIT" = "فقط می‌توانید حداکثر ۴ مکالمه را سنجاق کنید.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "سنجاق شده";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "این شبیه به شمارهٔ امنیتی شما با %1$@ نیست. آیا در حال تأیید مخاطب درستی هستید؟";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "شمارهٔ موجود در کلیپ‌بورد شما شبیه شمارهٔ امنیتی برای این گفتگو نیست.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "شمارهٔ موجود در کلیپ‌بورد شما شبیه شمارهٔ ایمنی درست برای این گفتگو نیست.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "سیگنال هیچ کد امنیتی در کلیپ بورد شما پیدا نکرد. آیا آن را به درستی کپی کرده اید؟";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "رمز شده";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "آماده گفتگو";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "آمادۀ گفتگو";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "آزادانه صحبت کنید";
@@ -5423,7 +5423,7 @@
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "نام";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "نام، عکس و تغییرات آن برای مخاطبان شما قابل مشاهده خواهد بود و وقتی که گفتگوهای جدیدی شروع یا قبول می‌کنید.";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "نام شما، عکس‌تان و تغییرات آن برای مخاطبان شما قابل مشاهده خواهد بود و همچنین وقتی که گفتگوهای جدیدی شروع یا دعوت به آن‌ها را قبول می‌کنید.";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
 "REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "درباره حریم شخصی نمایه";
@@ -5433,6 +5433,12 @@
 
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "نمایه خود را راه‌اندازی کنید";
+
+/* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+
+/* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "قبل از ارسال پیام نیاز دارید ثبت نام کنید.";
@@ -5702,7 +5708,7 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "استاندارد";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "سیگنال از رمزگذاری سرتاسر استفاده می‌کند و شاید گاهی نیاز به تازه‌سازی نشست گفتگو‌ی شما داشته باشد. این کار روی امنیت گفتگو‌‌ی شما تأثیری نمی‌گذارد، اما ممکن است شما پیامی را از این مخاطب از دست داده باشید، و می‌توانید از آن‌ها بخواهید که آن را دوباره ارسال کنند.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "سیگنال از رمزگذاری سرتاسری استفاده می‌کند و شاید گاهی نیاز به تازه‌سازی نشست گفتگوی شما داشته باشد. این کار روی امنیت گفتگوی شما تأثیری نمی‌گذارد، اما ممکن است پیامی از این مخاطب را از دست بدهید و می‌توانید از او بخواهید که آن را دوباره ارسال کند.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "نشست گفتگو تازه‌سازی شد";
@@ -5915,7 +5921,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "پیام‌های ناپدید شونده";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "یک زمان‌سنج پیام ناپدید شونده پیش‌فرض برای همهٔ گفتگوهایی که شما آغاز می‌کنید تنظیم کنید.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "یک زمان‌سنج پیام ناپدید شونده پیش‌فرض برای همهٔ گفتگوهایی که آغاز می‌کنید تنظیم کنید.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "حمایت از سیگنال";
@@ -5933,7 +5939,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "صدای پیام";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "گفتگوهای بی‌صدا که بایگانی می‌شوند، پس از دریافت پیام جدید نیز در بایگانی می‌مانند.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "گفتگوهای بی‌صدایی که بایگانی می‌شوند، پس از دریافت پیام جدید همچنان در بایگانی خواهند ماند.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "نگه داشتن گفتگوهای بی‌صدا در بایگانی";
@@ -6584,10 +6590,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "مخاطبین را با iOS به اشتراک بگذارید";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "به iOS اجازهٔ دسترسی به مخاطبین و گفتگوها‌ی سیگنال را برای قابلیت‌ها‌‌یی همانند اشتراک‌گذاری پیشنهادها بدهید.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "به iOS اجازهٔ دسترسی به مخاطبین و گفتگوها‌ی سیگنال را بدهید تا بتوانید از قابلیت‌ها‌‌یی همانند اشتراک‌گذاری پیشنهادها استفاده کنید.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "به iOS اجازهٔ دسترسی به مخاطبین و گفتگوها‌ی سیگنال را برای قابلیت‌ها‌‌یی همانند اشتراک‌گذاری پیشنهادها و اعلان‌ها بدهید.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "به iOS اجازهٔ دسترسی به مخاطبین و گفتگوها‌ی سیگنال را بدهید تا بتوانید از قابلیت‌ها‌‌یی همانند اشتراک‌گذاری پیشنهادها و اعلان‌ها استفاده کنید.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "قفل ثبت‌نام";
@@ -7160,7 +7166,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو %1$@، %2$@، و %3$lu گروه دیگر";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "شما می‌توانید برای خودتان در این گفتگو یادداشت اضافه کنید. اگر حساب کاربری شما دارای هر گونه دستگاه پیوند داده شدهٔ جدیدی باشد، یادداشت‌های جدید همگام‌سازی خواهند شد.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "شما می‌توانید برای خودتان در این گفتگو یادداشت اضافه کنید. اگر حساب کاربری شما هرگونه دستگاه پیوند داده شدهٔ جدیدی داشته باشد، یادداشت‌های جدید همگام‌سازی خواهند شد.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "عضو %1$@";
@@ -7348,9 +7354,6 @@
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "کاربر پیدا نشد";
 
-/* A prefix appended to all usernames when displayed */
-"USERNAME_PREFIX" = "@";
-
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "نام کاربری نمی‌تواند با عدد آغاز شود.";
 
@@ -7370,7 +7373,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "نام کاربری فقط می‌تواند حاوی حروف a تا z، اعداد ۰ تا ۹ و _ باشد.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "این ارقام به حفظ حریم خصوصی نام کاربری‌تان کمک می‌کند تا بتوانید از پیام‌های ناخواسته جلوگیری کنید. نام کاربری خود را فقط با افراد و گروه‌هایی که می‌خواهید با آن‌ها گفتگو کنید به اشتراک بگذارید. اگر نام کاربری را تغییر دهید، مجموعه اعداد جدیدی دریافت خواهید کرد.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "این ارقام به خصوصی ماندن نام کاربری‌تان کمک می‌کند تا بتوانید از پیام‌های ناخواسته جلوگیری کنید. نام کاربری خود را فقط با افراد و گروه‌هایی که می‌خواهید با آن‌ها گفتگو کنید به اشتراک بگذارید. اگر نام کاربری را تغییر دهید، مجموعه ارقام جدیدی دریافت خواهید کرد.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "این عدد چیست؟";
@@ -7481,7 +7484,7 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "پاک کردن کاغذدیواری";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "حذف تصویر پس‌زمینه برای این گفتگو؟";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "حذف کاغذ دیواری برای این گفتگو؟";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "طرح زمینهٔ تاریک کاغذدیواری را تار می‌کند";

@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ezt az egyedi színt %1$d beszélgetésben használod. Biztosan törölni szeretnéd?</string>
+			<string>Ezt az egyedi színt %1$d csevegésben használod. Biztosan törölni szeretnéd?</string>
 			<key>other</key>
-			<string>Ezt az egyedi színt %1$d beszélgetésben használod. Biztosan törölni szeretnéd az összes beszélgetésre vonatkozóan?</string>
+			<string>Ezt az egyedi színt %1$d csevegésben használod. Biztosan törölni szeretnéd az összes csevegésre vonatkozóan?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ezt a színt %1$d beszélgetésben használod. Biztosan menteni szeretnéd az összes beszélgetésre vonatkozóan?</string>
+			<string>Ezt a színt %1$d csevegésben használod. Biztosan menteni szeretnéd az összes csevegésre vonatkozóan?</string>
 			<key>other</key>
-			<string>Ezt a színt %1$d beszélgetésben használod. Biztosan menteni szeretnéd az összes beszélgetésre vonatkozóan?</string>
+			<string>Ezt a színt %1$d csevegésben használod. Biztosan menteni szeretnéd az összes csevegésre vonatkozóan?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Törölsz %1$d beszélgetést?</string>
+			<string>Törölsz %1$d csevegést?</string>
 			<key>other</key>
-			<string>Törölsz %1$d beszélgetést?</string>
+			<string>Törölsz %1$d csevegést?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A beszélgetés ezen az eszközön törlésre kerül.</string>
+			<string>A csevegés ezen az eszközön törlésre kerül.</string>
 			<key>other</key>
-			<string>Ezek a beszélgetések ezen az eszközön törlésre kerülnek.</string>
+			<string>Ezek a csevegések ezen az eszközön törlésre kerülnek.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Maximálisan %1$d beszélgetést jelölhetsz ki.</string>
+			<string>Maximálisan %1$d csevegést jelölhetsz ki.</string>
 			<key>other</key>
-			<string>Maximálisan %1$d beszélgetést jelölhetsz ki.</string>
+			<string>Maximálisan %1$d csevegést jelölhetsz ki.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

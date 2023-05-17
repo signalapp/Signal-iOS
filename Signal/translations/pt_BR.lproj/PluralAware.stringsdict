@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Apagar chat?</string>
+			<string>Excluir chat?</string>
 			<key>other</key>
 			<string>Apagar %1$d chats?</string>
 		</dict>
@@ -141,7 +141,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este chat será apagado deste dispositivo.</string>
+			<string>Este chat será excluído do dispositivo.</string>
 			<key>other</key>
 			<string>Estes chats serão apagados deste dispositivo.</string>
 		</dict>

@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "הודעת שמע";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "שיחה קולית";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "רמקול";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "חייג שוב";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 שיחה קולית נכנסת…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 שיחה קולית שלא נענתה בשעה %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 שיחה קולית שלא נענתה";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 שיחה קולית שלא נענתה בתאריך %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 שיחה קולית שלא נענתה ביום %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "אתה יכול לאפשר גישה אל מיקרופון ביישום הגדרות של iOS כדי לבצע שיחות ולהקליט הודעות קוליות ב־Signal.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "החלף כיוון מצלמה";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "החלפה לשיחה קולית";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "החלף אל שיחת וידאו";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "הכנס את ה־PIN עבור המספר החדש של הטלפון. הוא שונה מקוד הווידוא שלך במסרון.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "הנה תצוגה מקדימה של צבע ההתכתבות.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "הנה תצוגה מקדימה של צבע הצ׳אט.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "הנה תצוגה מקדימה של צבע ההתכתבות.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "הנה תצוגה מקדימה של צבע הצ׳אט.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "בועה אחרת";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "מחיקת צבע";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "צבע התכתבות";
+"CHAT_COLOR_SETTINGS_TITLE" = "צבע צ׳אט";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "ערוך צבע";
@@ -935,16 +935,16 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "מתאים באופן אוטומטי את הצבע אל הטפט";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "התכתבויות";
+"CHAT_LIST_TITLE_INBOX" = "צ׳אטים";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "צבע התכתבות וטפט";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "צבע צ׳אט ורקע";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "השווה עם לוח עריכה";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "בחר או חפש משתמש Signal כדי להתחיל איתו התכתבות.";
+"COMPOSE_BUTTON_HINT" = "אפשר לבחור או לחפש משתמש/ת Signal כדי להתחיל איתו או איתה צ׳אט.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "חַבֵּר";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "ארגון";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "כדי לראות שמות ותמונות של אנשי קשר בהתכתבויות שלך:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "כדי לראות שמות ותמונות של אנשי קשר בצ׳אטים שלך:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "הקש על ”לך אל הגדרות” למטה";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "הפעל";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "ראה שמות ותמונות של אנשי קשר בהתכתבויות שלך.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "אפשר לראות שמות ותמונות של אנשי קשר בצ׳אטים שלך.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "להפעיל אנשי קשר?";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "קבוצות";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "התכתבויות אחרונות";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "צ׳אטים אחרונים";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "אנשים";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "אין התאמות";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "הגדרות התכתבות";
+"CONVERSATION_SETTINGS" = "הגדרות צ׳אט";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "הוסף חברי קבוצה";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "הודעות נעלמות";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "הודעות בהתכתבות זו יעלמו לאחר %1$@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "הודעות בצ׳אט זה יעלמו אחרי %1$@.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "זמן ברירת מחדל";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "ימים";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "כאשר מאופשר, הודעות חדשות אשר נשלחות ומתקבלות בהתכתבות זו ייעלמו לאחר שייראו.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "כאשר אפשרות זו מופעלת, הודעות חדשות שנשלחות ומתקבלות בצ׳אט זה ייעלמו לאחר שייראו.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "כרגע הודעות נעלמות לאחר %1$@";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "העתק";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "שלום,\n\nלאחרונה אני משתמש ב־Signal כדי לשמור על ההתכתבויות ב־iPhone שלי פרטיות. אני רוצה שגם תתקין אותו, ככה נוכל להיות בטוחים שרק אנחנו יכולים לקרוא את ההודעות שלנו או לשמוע את השיחות שלנו.\n\nSignal זמין עבור iPhone ו־Android. השג אותו כאן: %1$@\n\nSignal עובד כמו יישום ההתכתבויות הקיים שלך. אנחנו יכולים לשלוח תמונות וסרטונים, לבצע שיחות ולהתחיל התכתבויות קבוצתיות. החלק הכי טוב הוא שאף אחד לא יכול לראות שום דבר מזה, אפילו לא האנשים שיוצרים את Signal!\n\nאתה יכול לקרוא עוד אודות Open Whisper Systems, האנשים שיוצרים את Signal, כאן: %2$@";
+"EMAIL_INVITE_BODY" = "היי,\n\nלאחרונה השתמשתי ב–Signal כדי לשמור על הצ׳אטים ב־iPhone שלי פרטיים. זה יהיה מעולה אם גם לך תהיה את האפליקציה, כדי שנוכל לדעת בוודאות שרק לנו יש גישה להודעות ולשיחות הקוליות שלנו.\n\nSignal זמינה עבור iPhone ו–Android. אפשר להוריד אותה כאן: %1$@\n\nSignal עובדת כמו אפליקציית ההודעות הקיימת שלך. אפשר לשלוח תמונות וסרטונים, לבצע שיחות ולהתחיל צ׳אטים קבוצתיים. החלק הכי טוב הוא שאף אחד לא יכול לראות שום דבר מזה, אפילו לא האנשים שיוצרים את Signal!\n\nאפשר לקרוא עוד על Open Whisper Systems, האנשים שיוצרים את Signal, כאן: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "בוא נחליף אל Signal";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "מספר הביטחון שלך עם %1$@ השתנה.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "שיח התכתבות רוענן";
+"ERROR_MESSAGE_SESSION_REFRESH" = "צ'אט רוענן";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "התרחשה שגיאה לא ידועה";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "העבר הלאה אל";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "אין לך מדיה כלשהי בהתכתבות זו.";
+"GALLERY_TILES_EMPTY_GALLERY" = "אין לך מדיה כלשהי בצ׳אט זה.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "טוען מדיה חדשה יותר…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "הוסרת מהקבוצה.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "הבקשה שלך להצטרף לקבוצה אושרה.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ אישר/ה את בקשתך להצטרף אל הקבוצה.";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "מרכז תמיכה";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "התכתבויות מאוחסנות בארכיון";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "צ׳אטים מאוחסנים בארכיון";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "חסום/ה";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "כמה מאנשי הקשר שלך כבר ב־Signal, כולל %1$@, %2$@ ו%3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "התחל את ההתכתבות הראשונה שלך כאן.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "אפשר להתחיל את הצ׳אט הראשון שלך כאן.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ הוסיף אותך אל הקבוצה";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "ארכיון";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "בחר התכתבויות";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "בחירת צ׳אטים";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "קרא הכול";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "מצלצל…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "שיחה קולית…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "שיחת וידאו…";
@@ -3410,10 +3410,10 @@
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "צ׳אטים מושתקים שמאוחסנים בארכיון יישארו בארכיון כשהודעה חדשה מגיעה.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "התכתבויות שמאוחסנות בארכיון יועברו אל תיבת הדואר הנכנס כשהודעה חדשה מגיעה.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "צ׳אטים שמאוחסנים בארכיון יועברו אל תיבת הדואר הנכנס כשהודעה חדשה מגיעה.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "אין עדיין התכתבויות.\nהתחל ע״י שליחת הודעה לחבר.";
+"INBOX_VIEW_EMPTY_INBOX" = "אין עדיין צ׳אטים.\nאפשר להתחיל באמצעות שליחת הודעה לחבר או חברה.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "שיחה קולית נכנסת";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "לך אל כל המדיה";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "אחסן התכתבות בארכיון";
+"KEY_COMMAND_ARCHIVE" = "אחסון צ׳אט בארכיון";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "הראה צרופות";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "לך אל מידע התכתבות";
+"KEY_COMMAND_CONVERSATION_INFO" = "מעבר למידע על צ׳אט";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "התמקד בשורת הקלט";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "הודעה חדשה";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "לך אל ההתכתבות הבאה";
+"KEY_COMMAND_NEXT_CONVERSATION" = "מעבר לצ׳אט הבא";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "לך אל ההתכתבות הקודמת";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "מעבר לצ׳אט הקודם";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "חיפוש";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "הראה מדבקות";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "הוצא התכתבות מארכיון";
+"KEY_COMMAND_UNARCHIVE" = "הוצאת צ׳אט מארכיון";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "למידע נוסף";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "קישור מכשיר נכשל";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "מכשיר זה יוכל לראות את הקבוצות ואנשי הקשר שלך, לקבל גישה אל ההתכתבויות שלך ולשלוח הודעות בשמך.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "מכשיר זה יוכל לראות את הקבוצות ואנשי הקשר שלך, לקבל גישה לצ׳אטים שלך ולשלוח הודעות בשמך.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "לקשר מכשיר זה?";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "מחיקה";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "להמשיך התכתבות זו עם %1$@ ולשתף את השם והתמונה שלך איתו/איתה?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "להמשיך צ׳אט זה עם %1$@ ולשתף את השם והתמונה שלך איתו או איתה?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "להמשיך התכתבות זו עם קבוצה זו ולשתף את השם והתמונה שלך עם חברי הקבוצה?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "להמשיך צ׳אט זה עם קבוצה זו ולשתף את השם והתמונה שלך עם חברי הקבוצה?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "לאפשר אל %1$@ לשלוח לך הודעות ולשתף את השם והתמונה שלך איתו/איתה? הוא/היא לא יידע/תידע שקראת את ההודעה שלו/שלה עד שתאשר.";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "מוריד";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "נערך";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "שליחה נכשלה.";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN חייב להיות לפחות 4 ספרות.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "אתה יכול להצמיד עד 4 התכתבויות בלבד.";
+"PINNED_CONVERSATION_LIMIT" = "אפשר להצמיד עד 4 צ׳אטים בלבד.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "מוצמד";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "זה לא נראה כמו מספר הביטחון שלך עם %1$@. האם אתה מוודא את איש הקשר הנכון?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "המספר בלוח העריכה שלך לא נראה כמו מספר הביטחון הנכון עבור התכתבות זו.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "המספר בלוח העריכה שלך לא נראה כמו מספר הבטיחות הנכון עבור צ׳אט זה.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal לא היה יכול למצוא מספר ביטחון כלשהו בלוח העריכה שלך. האם העתקת אותו כראוי?";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "מוצפן";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "פנוי לשיחה";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "פנוי/ה לצ׳אט";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "דבר בחופשיות";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "פרופיל יכול להתעדכן רק בעת חיבור אל האינטרנט.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "הפרופיל שלך מוצפן מקצה־אל־קצה. הפרופיל שלך ושינויים שלו יהיו גלויים אל אנשי הקשר שלך וכאשר תתחיל או תאשר התכתבויות חדשות.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "הפרופיל שלך מוצפן מקצה לקצה. הפרופיל שלך ושינויים בו יהיו גלויים לאנשי הקשר שלך ובעת התחלת או קבלת צ׳אטים חדשים.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "שמור";
@@ -5434,6 +5434,12 @@
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "הגדרת הפרופיל שלך";
 
+/* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+
+/* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "אתה צריך להירשם לפני שתוכל לשלוח הודעה.";
 
@@ -5591,7 +5597,7 @@
 "SEARCH_SECTION_CONTACTS" = "אנשי קשר אחרים";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "התכתבויות";
+"SEARCH_SECTION_CONVERSATIONS" = "צ׳אטים";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "קבוצות";
@@ -5702,10 +5708,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "תקנית";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal משתמש בהצפנה מקצה־אל־קצה והוא עשוי להצטרך לרענן את שיח ההתכתבות שלך לפעמים. זה לא משפיע על אבטחת ההתכתבות שלך אבל ייתכן שהחמצת הודעה מאיש קשר זה ואתה יכול לבקש ממנו לשלוח אותה מחדש.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal משתמשת בהצפנה מקצה לקצה ויתכן שהיא תצטרך לרענן את הצ'אט שלך מדי פעם. זה לא משפיע על אבטחת הצ'אט שלך, אבל יכול להיות שפספסת הודעה מאיש קשר זה ואפשר לבקש ממנו לשלוח אותה מחדש.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "שיח התכתבות רוענן";
+"SESSION_REFRESH_ALERT_TITLE" = "צ'אט רוענן";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "בחר מתוך תמונות";
@@ -5846,10 +5852,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "שנה מספר";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "התכתבויות";
+"SETTINGS_CHATS" = "צ׳אטים";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "ניקוי היסטוריית התכתבויות";
+"SETTINGS_CLEAR_HISTORY" = "ניקוי היסטוריית צ׳אט";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "זכויות יוצרים Signal Messenger\nברישיון תחת AGPLv3";
@@ -5915,7 +5921,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "הודעות נעלמות";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "הגדר קוצב זמן ברירת מחדל של הודעות נעלמות עבור כל ההתכתבויות החדשות שהותחלו על ידך.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "אפשר להגדיר קוצב זמן ברירת מחדל של הודעות נעלמות עבור כל הצ'אטים החדשים שהותחלו על ידך.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "תרומה ל–Signal";
@@ -5927,7 +5933,7 @@
 "SETTINGS_INVITE_TITLE" = "הזמן את חבריך";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "צבע התכתבות וטפט";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "צבע צ׳אט ורקע";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "צליל הודעה";
@@ -6584,10 +6590,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "שתף אנשי קשר עם iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "התר גישת iOS אל אנשי קשר והתכתבויות של Signal עבור מאפיינים כמו הצעות שיתוף.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "התרת גישת iOS לאנשי קשר וצ׳אטים של Signal עבור פיצ׳רים כמו הצעות שיתוף.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "התר גישת iOS אל אנשי קשר והתכתבויות של Signal עבור מאפיינים כמו הצעות שיתוף והתראות.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "התרת גישת iOS לאנשי קשר וצ׳אטים של Signal עבור פיצ׳רים כמו הצעות שיתוף והתראות.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "נעילת הרשמה";
@@ -6659,7 +6665,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "הראה מספר ביטחון";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "הראה התכתבות";
+"SHOW_THREAD_BUTTON_TITLE" = "הצגת צ׳אט";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "אני מזמין אותך להתקין Signal! הנה הקישור:";
@@ -6761,7 +6767,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "העבר הלאה";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "לך אל התכתבות";
+"STORIES_GO_TO_CHAT_ACTION" = "מעבר לצ׳אט";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "אין לך אפשרות להשיב לסטורי הזה בגלל שאינך חלק מהקבוצה הזו יותר.";
@@ -7160,7 +7166,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "חבר קבוצה של %1$@, %2$@ ועוד %3$lu קבוצות נוספות";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "אתה יכול להוסיף הערות לעצמך בהתכתבות זו. אם לחשבון שלך יש מכשירים מקושרים כלשהם, הערות חדשות יסונכרנו.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "אפשר להוסיף הערות לעצמך בצ'אט זה. אם מקושרים לחשבון שלך מכשירים כלשהם, הערות חדשות יסונכרנו.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "חבר קבוצה של %1$@";
@@ -7286,7 +7292,7 @@
 "UNPIN_ACTION" = "בטל הצמדה";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "התכתבויות";
+"UNPINNED_SECTION_TITLE" = "צ׳אטים";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "לא נקרא";
@@ -7347,9 +7353,6 @@
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "משתמש/ת לא נמצא/ה";
-
-/* A prefix appended to all usernames when displayed */
-"USERNAME_PREFIX" = "@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "שמות משתמש לא יכולים להתחיל במספר.";
@@ -7463,7 +7466,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "החלק כדי להציג מראש עוד טפטים.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "טפט הוגדר עבור כל ההתכתבויות.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "הגדרת רקע עבור כל הצ׳אטים.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "טפט הוגדר עבור %1$@.";
@@ -7472,16 +7475,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "תצוגה מקדימה";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "נקה צבע התכתבות";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "ניקוי צבע צ׳אט";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "לנקות צבע התכתבות עבור התכתבות זו?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "לנקות צבע צ׳אט עבור צ׳אט זה?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "נקה טפט";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "לנקות טפט עבור התכתבות זו?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "לנקות רקע עבור צ׳אט זה?";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "ערכת נושא כהה מעמעמת טפטים";
@@ -7499,13 +7502,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "אפס את כל הטפטים";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "האם אתה רוצה לדרוס את כל צבעי ההתכתבות?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "לדרוס את כל צבעי הצ'אט?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "אפס צבעי התכתבות";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "איפוס צבעי צ'אט";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "אפס צבע התכתבות";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "איפוס צבע צ'אט";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "אפס טפט";
@@ -7514,7 +7517,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "אפס צבעי ברירת מחדל";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "אפס צבעי התכתבות";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "איפוס צבעי צ'אט";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "אפס טפט ברירת מחדל";
@@ -7529,7 +7532,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "אפס טפט";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "צבע התכתבות";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "צבע צ׳אט";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "הגדר טפט";

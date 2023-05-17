@@ -83,7 +83,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 사용자 지정 색을 %1$d개 채팅에서 사용 중입니다. 모든 채팅에서 이 색을 삭제할까요?</string>
+			<string>%1$d개 대화에서 이 사용자 지정 색을 사용 중입니다. 모든 대화에서 이 색을 삭제할까요?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -97,7 +97,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 색을 %1$d개 채팅에서 사용 중입니다. 모든 채팅에 이 변경 내용을 저장할까요?</string>
+			<string>%1$d개 대화에서 이 색을 사용 중입니다. 모든 대화에 이 변경 내용을 저장할까요?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -111,7 +111,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>채팅 %1$d개를 삭제할까요?</string>
+			<string>대화 %1$d개를 삭제할까요?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 채팅을 이 기기에서 삭제합니다.</string>
+			<string>이 대화를 이 기기에서 삭제합니다.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -139,7 +139,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>채팅을 %1$d개 이상 선택할 수 없습니다.</string>
+			<string>대화를 %1$d개 이상 선택할 수 없습니다.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

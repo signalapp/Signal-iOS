@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>চ্যাট মুছে ফেলবেন?</string>
+			<string>চ্যাট মুছবেন?</string>
 			<key>other</key>
 			<string>%1$dটি চ্যাট মুছবেন?</string>
 		</dict>
@@ -143,7 +143,7 @@
 			<key>one</key>
 			<string>এই চ্যাটটি এই ডিভাইস থেকে মুছে ফেলা হবে।</string>
 			<key>other</key>
-			<string>এই চ্যাটগুলো এই ডিভাইস থেকে মুছে ফেলা হবে।</string>
+			<string>এই চ্যাটগুলি এই ডিভাইস থেকে মুছে ফেলা হবে।</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Rendben";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Nem sikerült kézbesíteni egy %1$@ által részedre küldött üzenetet, matricát, reakciót, olvasási nyugtát vagy médiafájlt.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Nem sikerült kézbesíteni egy %1$@ által részedre küldött üzenetet, matricát, reakciót, olvasási nyugtát vagy médiafájlt ebben a csevegésben.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Kézbesítési probléma";
@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Hangfájlüzenet";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "Hanghívás";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Hangszóró";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Újrahívás";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Bejövő hanghívás…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Nem fogadott hanghívás ekkor: %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Nem fogadott hanghívás";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Nem fogadott hanghívás ezen a napon: %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Nem fogadott hanghívás ezen a napon: %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "A hanghívások és hangüzenetekek küldéséhez az iOS beállításokban mikrofon hozzáférés adása szükséges a Signal alkalmazás számára.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Kamera váltás";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Váltás hanghívásra";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Váltás videóhívásra";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Adj meg egy PIN-t az új telefonszámodhoz. Ez nem azonos az SMS-ben regisztrációkor kapott ellenőrző kóddal.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Csevegési szín előnézete";
+"CHAT_COLOR_INCOMING_MESSAGE" = "Íme a csevegési szín előnézete.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Csevegési szín előnézete";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "Íme a csevegési szín előnézete.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Másik buborék";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Szín törlése";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "Beszélgetés színe";
+"CHAT_COLOR_SETTINGS_TITLE" = "Csevegés színe";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Szín szerkesztése";
@@ -935,16 +935,16 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Háttérképhez passzoló automatikus színválasztás";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "Beszélgetések";
+"CHAT_LIST_TITLE_INBOX" = "Csevegések";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Csevegés színek és háttérkép";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Csevegés színe és háttérkép";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Összehasonlítás vágólappal";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Válassz egyet a Signal kontaktok közül akivel beszélgetést kezdeményeznél.";
+"COMPOSE_BUTTON_HINT" = "Válassz egyet a Signal-névjegyek közül, akivel csevegést kezdeményeznél.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Új üzenet írása";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Szervezet";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Kontakt nevek és fotók beszélgetésekben való megjelenítéséhez:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "A névjegyek nevének és fotójának megjelenítéséhez a csevegéseidben:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Koppints az \"Ugrás Beállításokhoz\" címkére lent";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Bekapcsolás";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Jelenítsd meg kontaktjaid nevét és fotóit beszélgetéseidben.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Jelenítsd meg névjegyeid nevét és fotóit a csevegéseidben.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Kontaktok bekapcsolása?";
@@ -1199,10 +1199,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Leállítás";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "A beszélgetés ezen az eszközön törlésre kerül.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "A csevegés ezen az eszközön törlésre kerül.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Törlöd a beszélgetést?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Törlöd a csevegést?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Némítás eddig…";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Csoportok";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Legutóbbi beszélgetések";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Legutóbbi csevegések";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Emberek";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "Nincs egyezés";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Beszélgetés beállításai";
+"CONVERSATION_SETTINGS" = "Csevegés beállításai";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Tagok hozzáadása";
@@ -1325,7 +1325,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Ha le van némítva, ne értesítsen";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Szeretnél értesítéseket kapni, ha egy némított beszélgetésben megemlítenek?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Szeretnél értesítéseket kapni, ha egy némított csevegésben megemlítenek?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Említések";
@@ -1658,7 +1658,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "A megadott szám nem egyezik a fiókodhoz tartozó telefonszámmal.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Minden üzenetet törölsz a beszélgetésben?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Minden üzenetet törölsz a csevegésben?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Minden üzenet törlése";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "Eltűnő üzenetek";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Ennek a beszélgetésnek az üzenetei %1$@ után eltűnnek.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Ennek a csevegésnek az üzenetei %1$@ után eltűnnek.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Egyedi érték";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "nap";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Bekapcsolt állapotban az ebben a beszélgetésben küldött és fogadott üzenetek a megtekintésük után, a beállított időtartam leteltekor mindkét fél készülékén eltűnnek.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Bekapcsolt állapotban az ebben a csevegésben küldött és fogadott üzenetek a megtekintésük után, a beállított időtartam leteltekor mindkét fél készülékén eltűnnek.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Az üzenetek jelenleg %1$@ után eltűnnek.";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Másolás";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Szia,\n\nújabban privát csevegéseimet a Signal üzenetküldő alkalmazással bonyolítom iPhone-on. Örülnék, ha te is telepítenéd, így biztosak lehetünk benne, hogy amit írunk, vagy mondunk a telefonba, az köztünk marad.\n\nA Signal elérhető iPhone és Android telefonokra is innen: %1$@\n\nA Signal az ismert csevegőprogramokhoz hasonlóan működik: küldhetünk képeket, videókat, hívhatjuk egymást, csoportos csevegést indíthatunk. A legjobb, hogy a fentiekbe senkinek, még a Signal fejlesztőinek sincs semmilyen betekintési, belehallgatási lehetősége.\n\nHa érdekel a készítő gárda (az Open Whisper Systems), vagy hogy kik is az emberek, akik a Signal fejlesztését végzik, akkor látogass el ide: %2$@";
+"EMAIL_INVITE_BODY" = "Szia!\n\nÚjabban privát csevegéseimet a Signal üzenetküldő alkalmazással bonyolítom iPhone-on. Örülnék, ha te is telepítenéd, így biztosak lehetünk benne, hogy amit írunk, vagy mondunk a telefonba, az köztünk marad.\n\nA Signal elérhető iPhone és Android telefonokra is innen: %1$@\n\nA Signal az ismert csevegőprogramokhoz hasonlóan működik: küldhetünk képeket, videókat, hívhatjuk egymást, csoportos csevegést indíthatunk. A legjobb, hogy a fentiekbe senkinek, még a Signal fejlesztőinek sincs semmilyen betekintési, belehallgatási lehetősége.\n\nHa érdekel a készítő gárda (az Open Whisper Systems), vagy hogy kik is az emberek, akik a Signal fejlesztését végzik, akkor látogass el ide: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Váltsunk Signalra!";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "Továbbítás számukra";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "A beszélgetés nem tartalmaz médiafájlokat.";
+"GALLERY_TILES_EMPTY_GALLERY" = "A csevegés nem tartalmaz médiafájlokat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Tartalom betöltése";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Eltávolítottak a csoportból.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Jóváhagyásra került a csoporthoz való csatlakozási kérelmed.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ jóváhagyta belépési igényedet a csoportba.";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "Támogatási Központ";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archivált beszélgetések";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archivált csevegések";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Letiltva";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "A kontaktlistádból többen is Signal felhasználók, mint például %1$@, %2$@ és %3$@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Indítsd el első Signal beszélgetésed!";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Kezdd el első csevegésed!";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ hozzáadott a csoporthoz";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "Kicseng…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "Hanghívás…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "Videohívás…";
@@ -3407,13 +3407,13 @@
 "IN_CALL_TERMINATED" = "Hívás vége";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "A némítva archivált beszélgetések új üzenet érkezésekor továbbra is archiválva maradnak.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "A némítva archivált csevegések új üzenet érkezésekor továbbra is archiválva maradnak.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ha új üzenet érkezik egy archivált beszélgetésbe, akkor az átkerül a látható üzenetek listájába.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ha új üzenet érkezik egy archivált csevegésbe, akkor az átkerül a Bejövő üzenetek listájába.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Még üres a beszélgetéslista.\nKezdésként üzenj egy barátodnak.";
+"INBOX_VIEW_EMPTY_INBOX" = "Még üres a csevegéslista.\nKezdésként üzenj egy barátodnak.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "Bejövő hanghívás";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "Váltás \"Minden média\" nézetre";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "Beszélgetés archiválása";
+"KEY_COMMAND_ARCHIVE" = "Csevegés archiválása";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Csatolmányok megtekintése";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Váltás a beszélgetés beállításaira";
+"KEY_COMMAND_CONVERSATION_INFO" = "Váltás a csevegés beállításaira";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Ugrás beviteli mezőre";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Új üzenet";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Ugrás következő beszélgetésre";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Ugrás következő csevegésre";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ugrás előző beszélgetésre";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ugrás előző csevegésre";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Keresés";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Készülék társítása sikertelen";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Ez az eszköz a továbbiakban hozzáfér a Signal beszélgetéseidhez, a kontakt és csoportlistádhoz, valamint képes lesz üzenetet küldeni a nevedben.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Ez az eszköz a továbbiakban hozzáfér a Signal-csevegéseidhez, a névjegy- és csoportlistádhoz, valamint üzenetet tud küldeni a nevedben.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Társítod ezt a készüléket?";
@@ -3662,7 +3662,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Törlés mindenki számára";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ez az üzenet a beszélgetés minden tagja számára törlésre kerül. A többiek számára látható lesz, hogy töröltél egy üzenetet.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ez az üzenet a csevegés minden tagja számára törlésre kerül. A többiek számára látható lesz, hogy töröltél egy üzenetet.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Ki számára törölnéd az üzenetet?";
@@ -3827,10 +3827,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Törlés";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Ez a beszélgetés minden társított eszközödön törlésre kerül.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Ez a csevegés minden társított eszközödön törlésre kerül.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Törlöd a beszélgetést?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Törlöd a csevegést?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Törlés és kilépés";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Törlés";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Folytatod a csevegést %1$@ kontaktoddal és megosztod nevedet valamint profilképed vele?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Folytatod a csevegést %1$@ névjegyeddel, és megosztod a nevedet valamint profilképed vele?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Folytatod a csoporton belüli csevegést és megosztod nevedet valamint profilképed a tagokkal?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Folytatod a csoporton belüli csevegést, és megosztod a nevedet valamint profilképed a tagokkal?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Engedélyezed, hogy %1$@ üzenetet küldjön számodra és lássa a profilodat? Amíg nem fogadod el a felkérést, nem fog tudni arról, hogy megkaptad az üzeneteit.";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Letöltés";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "szerkesztve";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "A küldés sikertelen.";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "A PIN kódnak legalább 4 számjegyből kell állnia.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Maximum 4 beszélgetést rögzíthetsz.";
+"PINNED_CONVERSATION_LIMIT" = "Maximum 4 csevegést rögzíthetsz.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Rögzítve";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "A beolvasott QR kód nem hasonlít %1$@ biztonsági azonosítójára. Megfelelő ismerőst próbálsz leellenőrizni?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "A vágólapon levő szám nem hasonlít ehhez a beszélgetéshez passzoló biztonsági azonosítóra.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "A vágólapon levő szám nem hasonlít az ehhez a csevegéshez passzoló biztonsági azonosítóra.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "A Signal nem talált semmilyen biztonsági azonosítót a vágólapodon. Biztos elvégezted a másolást?";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Titkosított";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Nyitott csevegésre";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Nyitott a csevegésre";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Beszélj szabadon";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "A profil frissítéséhez aktív internetkapcsolat szükséges.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "A profilod végpontok közt titkosítva kerül továbbításra. Kontaktjaid számára akkor lesz látható, mikor új beszélgetést kezdeményezel vagy fogadsz el.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "A profilod végpontok közt titkosítva kerül továbbításra. Névjegyeid számára akkor lesz látható, mikor új csevegést kezdeményezel vagy fogadsz el.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Mentés";
@@ -5434,6 +5434,12 @@
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Profilod beállítása";
 
+/* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+
+/* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Üzenetküldés csak regisztráció után lehetséges.";
 
@@ -5591,7 +5597,7 @@
 "SEARCH_SECTION_CONTACTS" = "Más kontaktok";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "Beszélgetések";
+"SEARCH_SECTION_CONVERSATIONS" = "Csevegések";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "Csoportok";
@@ -5702,7 +5708,7 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Normál";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "A Signal végpontok közti titkosítást használ és nagy ritkán újra be kell állítania a két végpont közti adatkapcsolatot. Ennek nincs hatása a biztonságra, de előfordulhat, hogy pont ezalatt nem kaptál meg egy üzenetet ettől a kontakttól. Ilyenkor az újraküldés kérése ajánlott.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "A Signal végpontok közti titkosítást használ, és nagy ritkán újra be kell állítania a két végpont közti adatkapcsolatot. Ennek nincs hatása a biztonságra, de előfordulhat, hogy pont ezalatt nem kaptál meg egy üzenetet ettől a névjegytől. Ilyenkor az újraküldés kérése ajánlott.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "A munkamenet alaphelyzetbe állt";
@@ -5846,10 +5852,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Szám változtatása";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "Beszélgetések";
+"SETTINGS_CHATS" = "Csevegések";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Összes beszélgetés-előzmény törlése";
+"SETTINGS_CLEAR_HISTORY" = "Összes csevegési előzmény törlése";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicenc típusa: AGPLv3";
@@ -5927,16 +5933,16 @@
 "SETTINGS_INVITE_TITLE" = "Hívd meg barátaidat";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Csevegés színek és háttérkép";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Csevegés színe és háttérképe";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Üzenet hang";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "A némítva archivált beszélgetések új üzenet érkezésekor továbbra is archiválva maradnak.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "A némítva archivált csevegések új üzenet érkezésekor továbbra is archiválva maradnak.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "A némítottak csevegések maradjanak archiválva";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "A némított csevegések maradjanak archiválva";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Adatvédelmi és Általános Szerződési Feltételek";
@@ -6584,10 +6590,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Kontaktmegosztás engedélyezése iOS-en";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Az iOS hozzáférhet a Signal kontaktjaidhoz és csevegéseidhez olyan képességek eléréséhez mint például a megosztási javaslatok.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Az iOS hozzáférhet a Signal-névjegyeidhez és csevegéseidhez olyan funkciók eléréséhez, mint például a megosztási javaslatok.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Az iOS hozzáférhet a Signal kontaktjaidhoz és csevegéseidhez olyan képességek eléréséhez mint például a megosztási javaslatok vagy az értesítések.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Az iOS hozzáférhet a Signal-névjegyeidhez és csevegéseidhez olyan funkciók eléréséhez, mint például a megosztási javaslatok vagy az értesítések.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Regisztrációs zár";
@@ -6659,7 +6665,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Biztonsági azonosító megtekintése";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Beszélgetés mutatása";
+"SHOW_THREAD_BUTTON_TITLE" = "Csevegés mutatása";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Szia, használd te is a Signalt! Innen telepítheted:";
@@ -6761,7 +6767,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "Továbbítás";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Ugrás a beszélgetéshez";
+"STORIES_GO_TO_CHAT_ACTION" = "Ugrás a csevegésre";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Nem válaszolhatsz erre a Történetre, mert már nem vagy tagja ennek a csoportnak.";
@@ -7160,7 +7166,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Az alábbi csoportok tagja: '%1$@', '%2$@' és még %3$lu további";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Ebben a beszélgetésben magadnak hagyhatsz jegyzeteket. Ha a fiókodat más, társított eszközökkel is használod, a jegyzetek azokra is átszinkronizálásra kerülnek.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Ebben a csevegésben magadnak hagyhatsz jegyzeteket. Ha a fiókodat más társított eszközökkel is használod, a jegyzetek azokra is átszinkronizálásra kerülnek.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Az alábbi csoport tagja: %1$@";
@@ -7286,7 +7292,7 @@
 "UNPIN_ACTION" = "Felold";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "Beszélgetések";
+"UNPINNED_SECTION_TITLE" = "Csevegések";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Olvasatlan";
@@ -7347,9 +7353,6 @@
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Nincs ilyen felhasználó";
-
-/* A prefix appended to all usernames when displayed */
-"USERNAME_PREFIX" = "@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "A felhasználónév nem kezdődhet számmal.";
@@ -7463,7 +7466,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Suhints további hátterekért.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Háttérkép beállítása az összes beszélgetéshez";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Háttérkép beállítása az összes csevegéshez.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Háttérkép beállítása (%1$@).";
@@ -7472,7 +7475,7 @@
 "WALLPAPER_PREVIEW_TITLE" = "Előnézet";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Csevegésszín alaphelyzetbe";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Csevegésszín alaphelyzetbe állítása";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
 "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Ehhez a csevegéshez alaphelyzetbe állítod a színeket?";
@@ -7481,7 +7484,7 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Háttérkép eltávolítása";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Háttérkép levétele a beszélgetésről?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Háttérkép levétele a csevegésről?";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Kép tompítása sötét témánál";
@@ -7502,10 +7505,10 @@
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Felülírod az összes színbeállítást?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Csevegésszínek alaphelyzetbe";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Csevegésszínek alaphelyzetbe állítása";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Csevegésszín alaphelyzetbe";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Csevegésszín alaphelyzetbe állítása";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Háttérkép alaphelyzetbe";
@@ -7514,7 +7517,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Gyári szín alaphelyzetbe";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Csevegésszínek alaphelyzetbe";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Csevegésszínek alaphelyzetbe állítása";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Gyári háttérkép alaphelyzetbe";
@@ -7529,7 +7532,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Háttérkép alaphelyzetbe";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Beszélgetés színe";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Csevegés színe";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Háttérkép beállítása";

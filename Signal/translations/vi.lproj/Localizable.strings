@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Tin nhắn âm thanh";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "Gọi thoại";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Loa";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Gọi Lại";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Có cuộc gọi thoại đến…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Cuộc gọi thoại nhỡ vào lúc %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Cuộc gọi thoại nhỡ";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Cuộc gọi thoại nhỡ vào ngày %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Cuộc gọi thoại nhỡ vào %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Hãy bật quyền truy cập micro trong Cài đặt iOS để gọi và ghi tin nhắn thoại với Signal.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Đổi hướng Camera";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Chuyển sang gọi thoại";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Chuyển sang gọi video";
@@ -938,13 +938,13 @@
 "CHAT_LIST_TITLE_INBOX" = "Trò chuyện";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Màu cuộc trò chuyện & Màn hình nền";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Màu Cuộc trò chuyện & Hình nền";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "So sánh với Bộ nhớ đệm";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Chọn hoặc tìm người dùng Signal để bắt đầu nhắn tin.";
+"COMPOSE_BUTTON_HINT" = "Chọn hoặc tìm người dùng Signal để bắt đầu trò chuyện.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Soạn thảo";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Tổ chức";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Để xem tên và ảnh của các liên hệ trong tin nhắn của bạn:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Để xem tên và ảnh của các liên hệ trong các cuộc trò chuyện của bạn:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Nhấn \"Mở Cài đặt\" ở dưới";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Bật";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Xem tên và ảnh của các liên hệ trong tin nhắn của bạn.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Xem tên và ảnh của các liên hệ trong các cuộc trò chuyện của bạn.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Bật Danh bạ lên?";
@@ -1199,7 +1199,7 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Dừng";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tin nhắn này sẽ bị xóa khỏi thiết bị này.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Trò chuyện này sẽ bị xóa khỏi thiết bị này.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Xóa Cuộc trò chuyện?";
@@ -1931,7 +1931,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Xác nhận khoản ủng hộ";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Tin nhắn tự xoá được bật cho cuộc trò chuyện này. Tin nhắn đi kèm khoản ủng hộ của bạn sẽ biến mất trong %1$@.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Tin nhắn tự xóa được bật cho cuộc trò chuyện này. Tin nhắn đi kèm khoản ủng hộ của bạn sẽ biến mất trong %1$@.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Không thể ủng hộ. Kiểm tra kết nối của bạn và thử lại.";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Sao chép";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Xin chào,\n\nGần đây tôi đang sử dụng Signal để giữ riêng tư các tin nhắn trên iPhone của mình. Tôi cũng muốn bạn cài ứng dụng này luôn, để chúng ta có thể tự tin rằng chỉ có tôi và bạn mới có thể đọc được tin nhắn và nghe được điện thoại của mình.\n\nSignal có trên iPhone và Android. Tải nó ở đây: %1$@\n\nSignal hoạt động giống như ứng dụng nhắn tin hiện tại của bạn. Chúng ta có thể gửi ảnh và video, thực hiện cuộc gọi, và bắt đầu tin nhắn nhóm. Cái hay nhất là, không ai sẽ có thể thấy bất kì thông tin nào, ngay cả người tạo ra Signal cũng không!\n\nBạn có thể đọc thêm về Open Whisper Systems, những người tạo ra Signal, ở đây: %2$@";
+"EMAIL_INVITE_BODY" = "Xin chào,\n\nGần đây mình sử dụng Signal để các tin nhắn trên iPhone của mình được riêng tư. Bạn cũng cài ứng dụng này luôn nhé, để mình tự tin rằng chỉ có hai bên đọc tin nhắn và nghe cuộc gọi.\n\nSignal có trên iPhone và Android. Tải ở đây: %1$@\n\nSignal hoạt động giống như ứng dụng nhắn tin hiện tại của bạn. Hai ta có thể gửi ảnh và video, gọi, và bắt đầu tin nhắn nhóm. Điều thú vị nhất là không ai có thể đọc được bất kỳ thông tin nào, cả người tạo ra Signal cũng không!\n\nBạn có thể đọc thêm về Open Whisper Systems, những người tạo ra Signal, ở đây: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Cùng chuyển sang sử dụng Signal";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Bạn đã bị loại bỏ khỏi nhóm.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Yêu cầu tham gia nhóm của bạn đã được chấp nhận.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ đã chấp nhận yêu cầu tham gia nhóm của bạn.";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "Trung tâm Hỗ trợ";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Lưu trữ các Cuộc trò chuyện";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Các cuộc trò chuyện đã lưu trữ";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Đã chặn";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Lưu trữ";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Chọn cuộc trò chuyện";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Chọn Cuộc trò chuyện";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Đọc tất cả";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "Đang đổ chuông…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "Gọi thoại…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "Cuộc gọi Video…";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "Hiện nhãn dán";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "Ngưng lưu trữ Cuộc trò chuyện";
+"KEY_COMMAND_UNARCHIVE" = "Bỏ lưu trữ Cuộc trò chuyện";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Tìm hiểu thêm";
@@ -3662,7 +3662,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Xóa đối với Mọi người";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Tin nhắn này sẽ được xóa cho tất cả mọi người trong cuộc trò chuyện nếu như họ sử dụng phiên bản mới của Signal. Họ sẽ có thể thấy được rằng bạn đã xoá tin nhắn.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Tin nhắn này sẽ được xóa cho tất cả mọi người trong cuộc trò chuyện nếu như họ sử dụng phiên bản mới của Signal. Họ sẽ có thể thấy được rằng bạn đã xóa tin nhắn.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Bạn muốn xóa tin nhắn này cho ai?";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Đang tải xuống";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "đã chỉnh sửa";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Không gửi được.";
@@ -5434,6 +5434,12 @@
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Thiết lập hồ sơ";
 
+/* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+
+/* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Bạn cần đăng ký trước khi có thể gửi tin nhắn.";
 
@@ -5849,7 +5855,7 @@
 "SETTINGS_CHATS" = "Trò chuyện";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Xoá Lịch sử Trò chuyện";
+"SETTINGS_CLEAR_HISTORY" = "Xóa Lịch sử Trò chuyện";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Bản quyền Signal Messenger\nCấp phép theo GPLv3";
@@ -5915,7 +5921,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Tin nhắn tự hủy";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Đặt đồng hồ tin nhắn biến mất mặc định cho tất cả các cuộc trò chuyện mới bắt đầu bởi bạn.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Đặt thời gian mặc định cho tin nhắn biến mất với tất cả các cuộc trò chuyện mới bắt đầu bởi bạn.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Ủng hộ Signal";
@@ -5927,7 +5933,7 @@
 "SETTINGS_INVITE_TITLE" = "Mời bạn bè của mình";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Màu cuộc trò chuyện & Màn hình nền";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Màu Cuộc trò chuyện & Hình nền";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Âm thanh Tin nhắn";
@@ -6584,10 +6590,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = " Chia sẻ thông tin liên lạc với iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Cho phép iOS truy cập vào thông tin liên lạc và hội thoại để kích hoạt các tính năng như chia sẻ các đề suất cho người dùng";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Cho phép iOS truy cập vào thông tin liên lạc và hội thoại để kích hoạt các tính năng như chia sẻ các đề xuất cho người dùng.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Cho phép iOS truy cập vào thông tin liên lạc và hội thoại để kích hoạt các tính năng như chia sẻ các đề suất cho người dùng và hiển thị thông báo";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Cho phép iOS truy cập vào thông tin liên lạc và hội thoại để kích hoạt các tính năng như chia sẻ các đề xuất cho người dùng và hiển thị thông báo.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Khóa Đăng ký";
@@ -6761,7 +6767,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "Chuyển tiếp";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Đến cuộc trò chuyện";
+"STORIES_GO_TO_CHAT_ACTION" = "Đến Cuộc trò chuyện";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Bạn không thể trả lời story này vì bạn không còn là thành viên của nhóm này.";
@@ -7348,9 +7354,6 @@
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Không tìm thấy Người dùng";
 
-/* A prefix appended to all usernames when displayed */
-"USERNAME_PREFIX" = "@";
-
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Tên người dùng không thể bắt đầu bằng một số.";
 
@@ -7472,16 +7475,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "Xem trước";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Xoá Màu cuộc trò chuyện";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Xóa Màu Cuộc trò chuyện";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Xoá Màu cuộc trò chuyện cho cuộc trò chuyện này?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Xóa màu cho cuộc trò chuyện này?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Xoá ảnh nền";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Xoá ảnh nền cho cuộc trò chuyện?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Xóa hình nền cho cuộc trò chuyện?";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Chế độ Tối Làm mờ Ảnh nền";
@@ -7502,10 +7505,10 @@
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Bạn có muốn ghi đè tất cả các màu trò chuyện?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Cài lại các Màu Cuộc trò chuyện";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Đặt lại Màu Cuộc trò chuyện";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Thiết lập lại Màu cuộc trò chuyện";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Đặt lại Màu Cuộc trò chuyện";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Cài lại màn hình nền";
@@ -7514,7 +7517,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Thiết lập lại Màu Mặc định";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Cài lại các Màu Cuộc trò chuyện";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Đặt lại Màu Cuộc trò chuyện";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Thiết lập lại Màn hình nền Mặc định";

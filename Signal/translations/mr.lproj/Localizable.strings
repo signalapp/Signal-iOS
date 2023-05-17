@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ऑडिओ संदेश";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "व्हॉईस कॉल";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "स्पीकर";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "पुन्हा कॉल करा";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 येणारा व्हॉईस कॉल…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 %1$@वाजता चुकलेला व्हॉईस काॅल";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 चुकलेला व्हाईस कॉल";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 %1$@राेजी चुकलेला व्हॉईस काॅल";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 %1$@राेजी चुकलेला व्हॉईस काॅल";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal मध्ये कॉल करण्यासाठी आणि व्हॉईस रेकॉर्ड करण्यासाठी आपण iOS सेटिंग अॅप मध्ये मायक्रोफोन अॅक्सेस सक्षम करू शकता.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "कॅमेरा दिशा स्विच करा";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "व्हाईस कॉलला स्वीच व्हा";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "व्हिडिओ कॉलवर स्विच करा";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "आपल्या नवीन फोन क्रमांकासाठीचा पिन (PIN) प्रविष्ट करा. हे आपल्या SMS सत्यापन कोडपेक्षा वेगळे आहे.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "चॅटच्या रंगाचे हे एक पुनरावलोकन आहे.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "चॅटच्या रंगाचे हे पुनरावलोकन आहे.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "चॅटच्या रंगाचे हे एक पुनरावलोकन आहे.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "चॅटच्या रंगाचे हे पुनरावलोकन आहे.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "अजून एक बबल";
@@ -935,7 +935,7 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "वॉलपेपरसोबत स्वयंचलितपणे रंग जुळवते";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "चॅट";
+"CHAT_LIST_TITLE_INBOX" = "चॅट्स";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "चॅट रंग आणि वॉलपेपर";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "संस्था";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "आपल्या चॅटमध्ये संपर्क नाव आणि फोटो पहाण्यासाठी:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "आपल्या चॅटमध्ये संपर्क नावं आणि फोटोज पहाण्यासाठी:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "खाली \"सेटिंग वर जा\" टॅप करा";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "चालू करा";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "आपल्या चॅटमध्ये संपर्क नाव आणि फोटो पहा.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "आपल्या चॅट्समध्ये संपर्क नावं आणि फोटोज पहा.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "संपर्क चालू करायचे?";
@@ -1199,10 +1199,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "थांबा";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "हे चॅट ह्या डिव्हाइस वरून हटवले जाईल.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "हे चॅट या डिव्हाइस वरून हटवले जाईल.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "चॅट हटवायचे?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "चॅट हटवायचा?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "…साठी ही चॅट मूक करा";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "गट";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "अलीकडील चॅट";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "अलीकडील चॅट्स";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "लोक";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "काहीही जुळले नाही";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "चॅट सेटिंग";
+"CONVERSATION_SETTINGS" = "चॅट सेटिंग्ज";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "सदस्ये जोडा";
@@ -1325,7 +1325,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "मूक केलेले असताना अधिसूचित करू नका";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "मूक केलेल्या चॅटमध्ये आपला उल्लेख केल्यानंतर अधिसूचना प्राप्त करायच्या?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "मूक केलेल्या चॅट्समध्ये आपला उल्लेख केल्यानंतर अधिसूचना प्राप्त करायच्या?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "उल्लेख";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "हरवणारे संदेश";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "%1$@ नंतर या चॅटमधील संदेश हरवतील.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "%1$@ नंतर या चॅटमधील संदेश लुप्त होतील.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "कस्टम वेळ";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "दिवस";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "सक्षम केल्यानंतर, या चॅट मधील पाठविलेले आणि प्राप्त झालेले नवीन संदेश पाहिल्यानंतर हरवतील.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "सक्षम केल्यानंतर, या चॅट मधील पाठविलेले आणि प्राप्त झालेले नवीन संदेश पाहिल्यानंतर लुप्त होतील.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "सध्या %1$@ नंतर संदेश हरवतात.";
@@ -1931,7 +1931,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "देणगीची पुष्टी करा";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "या चॅट साठी लुप्त होणारे संदेश चालू केले जातील. आपला देणगी संदेश %1$@ मध्ये लुप्त होईल.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "या चॅट साठी लुप्त होणारे संदेश चालू केले आहेत. आपला देणगी संदेश %1$@ मध्ये लुप्त होईल.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "देणगी देऊ शकत नाही. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "कॉपी करा";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "नमस्कार,\n\nसध्या मी माझ्या iPhone वरील चॅट खाजगी ठेवण्यासाठी Signal वापरत आहे. मला असे वाटते की आपणही याची स्थापना करावी, जेणेकरून आपले संदेश फक्त आपण वाचतो आहोत किंवा आपले कॉल फक्त आपण ऐकतो आहोत याची आपल्याला खात्री असेल.\n\nSignal iPhone आणि Android करिता उपलब्ध आहे. ते येथे मिळवा:%1$@\n\nSignal आपल्या आधीच्या संदेशन अॅप सारखे कार्य करते. आपण चित्रे आणि व्हिडिओ पाठवू शकतो, कॉल करू शकतो, आणि गट चॅट चालू करू शकतो. आणि सर्वोत्कृष्ट भाग हा की, कुणीही हे बघू शकत नाही, जे लोक Signal बनवतात ते सुद्धा नाही!\n\nआपण Open Whisper Systems, जे लोक Signal बनवतात त्यांच्याबद्दल अधिक वाचू शकता, येथे:%2$@";
+"EMAIL_INVITE_BODY" = "नमस्कार,\n\nसध्या मी माझ्या iPhone वरील चॅट खाजगी ठेवण्यासाठी Signal वापरत आहे. आपणही याला इन्स्टॉल करावे असे मला वाटते की , जेणेकरून आपले संदेश फक्त आपण वाचतो आहोत किंवा आपले कॉल फक्त आपण ऐकतो आहोत याची आपल्याला खात्री असेल.\n\nSignal iPhone आणि Android करिता उपलब्ध आहे. ते येथे मिळवा: %1$@\n\nSignal आपल्या विद्यमान संदेशन ॲप सारखे कार्य करते. आपण चित्रे आणि व्हिडिओ पाठवू शकतो, कॉल करू शकतो, आणि गट चॅट चालू करू शकतो. आणि सर्वोत्कृष्ट भाग हा की, कुणीही हे बघू शकत नाही, जे लोक Signal बनवतात ते सुद्धा नाही!\n\nआपण Open Whisper Systems, जे लोक Signal बनवतात त्यांच्याबद्दल अधिक वाचू शकता, येथे: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal वर स्विच करूया";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%1$@सोबतचा आपला सुरक्षितता नंबर बदलला आहे.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "चॅट सत्र ताजेतवाने झाले";
+"ERROR_MESSAGE_SESSION_REFRESH" = "चॅट सत्र रिफ्रेश झाले";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "एक अज्ञात त्रुटी आढळली.";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "आपणांस ग्रुपमधून काढून टाकले होते.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "गटात सामील हाेण्याची आपली विनंती मान्य झाली.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ ने गटामध्ये सामील होण्याची आपली विनंती मान्य केली.";
@@ -3038,7 +3038,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "आपण खात्रीने “%1$@” ला काढून टाकू इच्छिता?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "ग्रुप चॅट “%1$@” चे सदस्य ही स्टोरी पाहू आणि उत्तर देऊ शकतात. आपण या चॅटसाठी ग्रुपमध्ये सदस्यत्व अद्ययावत करू शकता.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "गप चॅट “%1$@” चे सदस्य ही स्टोरी पाहू आणि उत्तर देऊ शकतात. आपण या चॅटसाठी गटामध्ये सदस्यत्व अद्ययावत करू शकता.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "ही स्टोरी कोण पाहू शकते";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "समर्थन केंद्र";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "आर्काईव्ह केलेले चॅट";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "आर्काईव्ह केलेले चॅट्स";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "अवरोधित केले";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "आर्काइव्ह";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "चॅट निवडा";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "चॅट्स निवडा";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "सर्व वाचा";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "रिंग होत आहे…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "व्हॉईस कॉल…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "व्हिडीओ कॉल…";
@@ -3407,7 +3407,7 @@
 "IN_CALL_TERMINATED" = "कॉल संपला.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "नवीन संदेश येईल तेव्हा संग्रहित केलेले मूक चॅट्स हे संग्रहित केलेलेच राहतील.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "नवीन संदेश येईल तेव्हा संग्रहित केलेले मूक चॅट्स हे अर्काईव्ह केलेलेच राहतील.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "नवीन संदेश येईल तेव्हा आर्काईव्ह केलेले चॅट्स इनबॉक्समध्ये हलवले जातील.";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "डिव्हाईस लिंक करणे अयशस्वी";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "हा डिव्हाईस आपले गट आणि संपर्क पाहू शकेल, आपले चॅट अॅक्सेस करू शकेल, आणि आपल्या नावाने संदेश पाठवू शकेल.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "हे डिव्हाईस आपले गट आणि संपर्क पाहू शकेल, आपले चॅट ॲक्सेस करू शकेल, आणि आपल्या नावाने संदेश पाठवू शकेल.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "हे डिव्हाईस लिंक करायचे?";
@@ -3662,7 +3662,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "सर्वांसाठी हटवा";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Signal च्या अलिकडील आवृत्तीवर असल्यास हा संदेश चॅटमधील प्रत्येकासाठी हटवला जाईल. आपण संदेश हटवला हे पाहण्यात ते सक्षम असतील.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Signal च्या अलिकडील आवृत्तीवर असल्यास हा संदेश चॅटमधील प्रत्येकासाठी हटवला जाईल. आपण संदेश हटवला हे पाहण्यात ते सक्षम हाेतील.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "हा संदेश आपण कुणासाठी हटवू इच्छिता?";
@@ -3830,7 +3830,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "हा चॅट आपल्या सर्व डिव्हाइस वरून हटवला जाईल.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "चॅट हटवायचे?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "चॅट हटवायचा?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "हटवा आणि सोडा";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "डाऊनलोड करत आहे";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "संपादित";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "पाठविणे अयशस्वी";
@@ -4778,7 +4778,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "सर्वजण";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "तुमचा फोन नंबर ज्यांच्या संपर्कांमध्ये आहे ते कोणीही तुम्हाला Signal वर संपर्क म्हणून पाहू शकतील. इतर लोक जेव्हा नवीन चॅट किंवा गट सुरू करतील तेव्हा ते आपल्यापर्यंत आपल्या फोनसह पोहचू शकतील.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "आपला फोन नंबर ज्यांच्या संपर्कांमध्ये आहे ते कोणीही तुम्हाला Signal वर संपर्क म्हणून पाहू शकतील. इतर लोक जेव्हा नवीन चॅट किंवा गट सुरू करतील तेव्हा ते आपल्यापर्यंत आपल्या फोनसह पोहचू शकतील.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "कोणीही नाही";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN किमान 4 अंकांचा असायला हवा.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "आपण फक्त 4 चॅट पर्यंत पिन करू शकता.";
+"PINNED_CONVERSATION_LIMIT" = "आपण फक्त 4 पर्यंत चॅट पिन करू शकता.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "पिन केलेला";
@@ -5434,6 +5434,12 @@
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "आपले प्रोफाईल सेट अप करा";
 
+/* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+
+/* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "संदेश पाठविण्यापूर्वी आपल्याला नोंदणी करणे आवश्यक आहे.";
 
@@ -5591,7 +5597,7 @@
 "SEARCH_SECTION_CONTACTS" = "इतर संपर्क";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "चॅट";
+"SEARCH_SECTION_CONVERSATIONS" = "चॅट्स";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "गट";
@@ -5702,10 +5708,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "मानक";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal एंड-टू-एंड एन्क्रिप्शन वापरते आणि त्यास काही वेळा आपले चॅट रीफ्रेश करावे लागू शकते. यामुळे आपल्या चॅटच्या सुरक्षिततेवर कुठलाही प्रभाव पडत नाही, पण आपल्याकडून या संपर्काचा एखादा संदेश सुटला असू शकतो, आणि आपण त्यांना तो पुन्हा पाठविण्यास सांगू शकता.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal एंड-टू-एंड एन्क्रिप्शन वापरते आणि त्यास काही वेळा आपले चॅट रीफ्रेश करावे लागू शकते. यामुळे आपल्या चॅटच्या सुरक्षिततेवर कुठलाही प्रभाव पडत नाही, पण आपल्याकडून या संपर्काचा एखादा संदेश चुकवलेला असू शकतो, आणि आपण त्यांना तो पुन्हा पाठविण्यास सांगू शकता.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "चॅट सत्र ताजेतवाने झाले";
+"SESSION_REFRESH_ALERT_TITLE" = "चॅट सत्र रिफ्रेश झाले";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "फोटोमधून निवडा";
@@ -5846,7 +5852,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "नंबर बदला";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "चॅट";
+"SETTINGS_CHATS" = "चॅट्स";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "चॅट इतिहास साफ करा";
@@ -5915,7 +5921,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "हरवणारे संदेश";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "आपल्याद्वारा चालू केलेल्या सर्व नवीन चॅटसाठी पूर्वनिर्धारित हरवणारे संदेश टायमर सेट करा.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "आपल्याद्वारा चालू केलेल्या सर्व नवीन चॅटसाठी पूर्वनिर्धारित लुप्त होणारे संदेश टायमर सेट करा.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Signal ला देणगी द्या";
@@ -5933,10 +5939,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "संदेश ध्वनी";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "नवीन संदेश येईल तेव्हा संग्रहित केलेले मूक चॅट्स हे संग्रहित केलेलेच राहतील.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "नवीन संदेश येईल तेव्हा संग्रहित केलेले मूक चॅट्स हे अर्काईव्ह केलेलेच राहतील.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "मूक केलेले चॅटस् संग्रहित ठेवा";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "मूक केलेले चॅटस् अर्काईव्ह ठेवा";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "अटी आणि गोपनीयता धोरण";
@@ -7160,7 +7166,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%1$@, %2$@ याचे सदस्य, आणि %3$lu अतिरिक्त गट";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "या चॅटमध्ये आपण स्वतःसाठी टिपा जोडू शकता. जर आपल्या खात्यामध्ये लिंक केलेले डिव्हाईस असतील, तर नवीन टिपा संकलित केल्या जातील.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "या चॅटमध्ये आपण स्वतःसाठी टिपा जोडू शकता. जर आपल्या खात्यामध्ये लिंक केलेली डिव्हाईस असतील, तर नवीन टिपा संकालित केल्या जातील.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%1$@ चा सदस्य";
@@ -7286,7 +7292,7 @@
 "UNPIN_ACTION" = "अनपिन करा";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "चॅट";
+"UNPINNED_SECTION_TITLE" = "चॅट्स";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "वाचले नाही";
@@ -7348,9 +7354,6 @@
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "वापरकर्ता आढळला नाही";
 
-/* A prefix appended to all usernames when displayed */
-"USERNAME_PREFIX" = "@";
-
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "वापरकर्तानाव अंकांने सुरु होऊ शकत नाही.";
 
@@ -7370,7 +7373,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "वापरकर्तानावामध्ये फक्त a-z, 0-9, आणि _ असू शकतात.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "हे अंक आपले वापरकर्तानाव गोपनीय ठेवण्यास मदत करतील ज्यामुळे आपण नको असलेले संदेश टाळू शकता. आपणाला ज्यांच्या सोबत चॅट करणे आवडते फक्त अशा लोकांसह आणि ग्रुप्ससह आपले वापरकर्तानाव शेअर करा. आपण वापरकर्तानाव बदलल्यास आपणाला अंकांचा नवीन संच मिळेल.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "हे अंक आपले वापरकर्तानाव गोपनीय ठेवण्यास मदत करतील ज्यामुळे आपण नको असलेले संदेश टाळू शकता. आपणाला ज्यांच्या सोबत चॅट करणे आवडते फक्त अशा लोकांसह आणि गटांसह आपले वापरकर्तानाव शेअर करा. आपण वापरकर्तानाव बदलल्यास आपणाला अंकांचा नवीन संच मिळेल.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "हा नंबर काय आहे?";
@@ -7463,7 +7466,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "अधिक वॉलपेपरचे पुनरावलोकन करण्यासाठी स्वाइप करा.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "सर्व चॅटसाठी वॉलपेपर सेट करा.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "सर्व चॅट्ससाठी वॉलपेपर सेट करा.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%1$@ साठी वॉलपेपर सेट करा.";
@@ -7475,7 +7478,7 @@
 "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "चॅट रंग साफ करा";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "याचॅटसाठी चॅट रंग साफ करायचे?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "या चॅटसाठी चॅट रंग साफ करायचे?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "वॉलपेपर साफ करा";
@@ -7499,7 +7502,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "सर्व वॉलपेपर रीसेट करा";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "सर्व चॅटचे रंग ओव्हरराइड करण्यास आपण इच्छुक आहात का?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "सर्व चॅटचे रंग अधिलिखित करण्यास आपण इच्छुक आहात का?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "चॅट रंग रीसेट करा";

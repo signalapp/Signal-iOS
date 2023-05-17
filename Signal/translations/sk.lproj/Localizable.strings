@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Rozumiem";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Správu, nálepku, reakciu, potvrdenie o prečítaní alebo médiá od používateľa %1$@ vám nebolo možné doručiť v tejto konverzácií.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Správu, nálepku, reakciu, potvrdenie o prečítaní alebo médiá od používateľa %1$@ vám nebolo možné doručiť v tomto čete.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problém s doručením";
@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audio správa";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "Hlasový hovor";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Reproduktor";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Zavolať znovu";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Prichádzajúci hlasový hovor…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Zmeškaný hlasový hovor o %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Zmeškaný hlasový hovor";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Zmeškaný hlasový hovor z %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Zmeškaný hlasový hovor z dňa: %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "V aplikácii Nastavenia iOS môžete povoliť prístup k mikrofónu, aby ste v Signale mohli uskutočňovať hovory a nahrávať hlasové správy.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Prepnúť kameru";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Prepnúť na hlasový hovor";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Prepnúť na videohovor";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Zadajte PIN pre nové telefónne číslo. Nie je to to isté ako SMS overovací kód.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Tu je náhľad farby chatu.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "Tu je náhľad farby četu.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Tu je náhľad farby chatu.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "Tu je náhľad farby četu.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Ďalšia bublina";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Vymazať farbu";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "Farba chatu";
+"CHAT_COLOR_SETTINGS_TITLE" = "Farba četu";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Upraviť farbu";
@@ -935,16 +935,16 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Automaticky nájde vhodnú farbu k pozadiu";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "Konverzácie";
+"CHAT_LIST_TITLE_INBOX" = "Čety";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Farba chatu a pozadie";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Farba četu a pozadie";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Porovnať so schránkou";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Vyberte alebo nájdite používateľa Signal pre zahájenie chatu.";
+"COMPOSE_BUTTON_HINT" = "Vyberte alebo nájdite používateľa Signal, s ktorým chcete začať čet.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Skladať";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organizácia";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Pre zobrazenie názvov kontaktov a fotiek vo vašich chatoch:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Pre zobrazenie mien a fotiek kontaktov vo vašich četoch:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ťuknite na “Prejsť na nastavenia” nižšie";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Zapnúť";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Zobrazte názvy kontaktov a fotky vo vašich chatoch.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Pozrite si mená a fotky kontaktov vo svojich četoch.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Zapnúť kontakty?";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "Žiadna zhoda";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Nastavenia chatu";
+"CONVERSATION_SETTINGS" = "Nastavenia četu";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Pridať členov";
@@ -1325,7 +1325,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Neupozorniť, ak je stlmené";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Chcete dostávať upozornenia, keď vás spomenú v stlmených rozhovoroch?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Chcete dostávať upozornenia, keď vás spomenú v stlmených četoch?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Spomenutia";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "Miznúce správy";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Správy v tomto chate zmiznú o %1$@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Správy v tomto čete zmiznú za %1$@.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Vlastný čas";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "dní";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Ak je táto možnosť povolená, nové správy odoslané a prijaté v tomto rozhovore zmiznú, keď sa zobrazia.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Ak je táto možnosť povolená, nové správy odoslané a prijaté v tomto čete zmiznú, keď sa zobrazia.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Správy zmiznú po %1$@";
@@ -1931,7 +1931,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Potvrdiť príspevok";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Pre tento čet sú zapnuté miznúce správy. Vaša správa o prispení zmizne o %1$@.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Pre tento čet sú zapnuté miznúce správy. Vaša správa o prispení zmizne za %1$@.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Nie je možné odoslať príspevok. Skontrolujte pripojenie a skúste to znovu.";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopírovať";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Ahoj,\n\nv poslednej dobe na svojom iPhone používam Signal, aby moje chaty zostali súkromné. Potešilo by ma, keby si si ho nainštaloval(a) aj ty, aby sme si boli istí, že nikto iný nečíta naše správy a neodpočúva naše hovory.\n\nSignal je dostupný pre iPhony a Android. Získaš ho tu: %1$@\n\nSignal funguje ako tvoja súčasná aplikácia na posielanie správ. Môžeme posielať obrázky, videá, uskutočňovať hovory a vytvárať skupinové chaty. A najlepšie na tom je, že ich nikto iný nemôže vidieť, ani ľudia, čo vyvíjajú Signal!\n\nViac o Open Whisper Systems, ľuďoch, ktorí vyvíjajú Signal, sa môžeš dočítať tu: %2$@";
+"EMAIL_INVITE_BODY" = "Ahoj,\n\nv poslednej dobe na svojom iPhone používam Signal, aby moje čety zostali súkromné. Poteší ma, ak si ho nainštaluješ aj ty, aby sme si boli istí, že nikto iný nečíta naše správy a nepočúva naše hovory.\n\nSignal je dostupný pre smartfóny s operačným systémom Android a iOS. Získaš ho tu: %1$@\n\nSignal funguje ako tvoja súčasná aplikácia na posielanie správ. Môžeme posielať obrázky, videá, uskutočňovať hovory a vytvárať skupinové čety. A najlepšie na tom je, že ich nemôže vidieť nikto iný, dokonca ani tí, ktorí vyvíjajú Signal!\n\nViac o Open Whisper Systems, ľuďoch, ktorí vyvíjajú Signal, sa dočítaš tu: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Prejdime na Signal";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Vaše bezpečnostné číslo s %1$@ sa zmenilo.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Chatové stretnutie obnovené";
+"ERROR_MESSAGE_SESSION_REFRESH" = "Relácia četu bola obnovená";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Vyskytla sa neznáma chyba.";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "Preposlať";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "V tomto chate nie sú žiadne médiá.";
+"GALLERY_TILES_EMPTY_GALLERY" = "V tomto čete nie sú žiadne médiá.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Načítavajú sa novšie médiá…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Odstránili vás zo skupiny.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Vaša žiadosť o členstvo v skupine bola schválená.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ schválil(a) vašu žiadosť o členstvo v skupine.";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "Centrum technickej podpory";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archivované chaty";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archivované čety";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Blokované";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Niektoré z vašich kontaktov už používajú Signal, vrátane %1$@, %2$@ a %3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Zahájte svoj prvý chat tu.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Zahájte svoj prvý čet tu.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ vás pridal(a) do skupiny";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Archív";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Vybrať chaty";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Vybrať čety";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Prečítať všetko";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "Vyzváňanie…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "Hlasový hovor…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "Video hovor…";
@@ -3410,10 +3410,10 @@
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Stlmené čety, ktoré sú archivované, zostanú archivované, keď príde nová správa.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archivované chaty sa presunú do doručenej pošty, keď príde nová správa.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archivované čety sa presunú do doručených, keď príde nová správa.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Zatiaľ žiadne chaty.\nZačnite poslaním správy priateľovi.";
+"INBOX_VIEW_EMPTY_INBOX" = "Zatiaľ tu nie sú žiadne čety.\nZačnite poslaním správy priateľovi.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "Prichádzajúci hlasový hovor";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "Prejsť na všetky médiá";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "Archivovať chat";
+"KEY_COMMAND_ARCHIVE" = "Archivovať čet";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Zobraziť prílohy";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Prejsť na informácie o chate";
+"KEY_COMMAND_CONVERSATION_INFO" = "Prejsť na informácie o čete";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Zamerať vstupný panel";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Nová správa";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Prejsť na nasledujúci chat";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Prejsť na nasledujúci čet";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Prejsť na predchádzajúci chat";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Prejsť na predchádzajúci čet";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Hľadať";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "Zobraziť nálepky";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "Vyňať chat z archívu";
+"KEY_COMMAND_UNARCHIVE" = "Odarchivovať čet";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Zistiť viac";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Prepojenie zariadenia zlyhalo";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Toto zariadenie bude vidieť vaše skupiny a kontakty, bude mať prístup k vašim chatom a bude môcť odosielať správy vo vašom mene.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Toto zariadenie bude vidieť vaše skupiny a kontakty, bude mať prístup k vašim četom a bude môcť odosielať správy vo vašom mene.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Prepojiť toto zariadenie?";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Vymazať";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Pokračovať v chate s %1$@ a zdieľať  s týmto používateľom vaše meno a fotku?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Pokračovať v čete s používateľom %1$@ a zdieľať s ním vaše meno a fotku?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Pokračovať v chate v tejto skupine a zdieľať vaše meno a fotku s jej členmi?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Pokračovať v čete v tejto skupine a zdieľať vaše meno a fotku s jej členmi?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Povoliť používateľovi %1$@, aby vám posielal  správy a zdieľať s ním vaše meno a foto? Kým s tým nebudete súhlasiť, nebude vedieť, že ste jeho správu videli.";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Sťahujem";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "upravené";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Odosielanie zlyhalo.";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN musí mať aspoň 4 číslice.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Môžete pripnúť maximálne 4 chaty.";
+"PINNED_CONVERSATION_LIMIT" = "Môžete pripnúť maximálne 4 čety.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Pripnuté";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Nevyzerá to ako bezpečnostné číslo s %1$@. Snažíte sa overiť správny kontakt?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Číslo vo vašej schránke nevyzerá ako správne bezpečnostné číslo pre tento chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Číslo vo vašej schránke nevyzerá ako správne bezpečnostné číslo pre tento čet.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal nenašiel v schránke žiadne bezpečnostné číslo. Okopírovali ste ho správne?";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Šifrované";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Môžeme sa baviť";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Môžeme početovať";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Hovorte slobodne";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profil je možné aktualizovať len pri pripojení na internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Váš profil využíva koncové šifrovanie. Váš profil a jeho zmeny budú vidieť vaše kontakty, keď začnete alebo prijmete nové chaty.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Váš profil využíva end-to-end šifrovanie. Váš profil a zmeny v ňom sa zobrazia vašim kontaktom a keď začnete alebo prijmete nové čety.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Uložiť";
@@ -5434,6 +5434,12 @@
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Nastavte si svoj profil";
 
+/* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+
+/* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Pred odoslaním správy sa musíte zaregistrovať.";
 
@@ -5591,7 +5597,7 @@
 "SEARCH_SECTION_CONTACTS" = "Ostatné kontakty";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "Chat";
+"SEARCH_SECTION_CONVERSATIONS" = "Čety";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "Skupiny";
@@ -5702,10 +5708,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Štandardná";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal používa koncové šifrovanie a občas môže potrebovať obnoviť vašu chatovú reláciu. Toto nemá vplyv na bezpečnosť vášho chatu, ale mohla by vám uniknúť správa od tohto kontaktu a môžete používateľa požiadať, aby vám ju poslal znovu.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal používa end-to-end šifrovanie a občas môže potrebovať obnoviť reláciu vášho četu. Nemá to vplyv na bezpečnosť vášho četu, ale mohla by vám uniknúť správa od tohto kontaktu a môžete používateľa požiadať, aby vám ju poslal znovu.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Chatové stretnutie obnovené";
+"SESSION_REFRESH_ALERT_TITLE" = "Relácia četu bola obnovená";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Vybrať z fotografií";
@@ -5846,7 +5852,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Zmeniť číslo";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "Chat";
+"SETTINGS_CHATS" = "Čety";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Vymazať históriu četov";
@@ -5915,7 +5921,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Miznúce správy";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Nastavte predvolený časovač miznutia správ pre všetky nové správy ktoré odošlete.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Nastavte predvolený časovač miznutia správ pre všetky nové čety, ktoré začnete.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Prispieť na Signal";
@@ -5927,7 +5933,7 @@
 "SETTINGS_INVITE_TITLE" = "Pozvite svojich priateľov";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Farba chatu a pozadie";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Farba četu a pozadie";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Zvuk správy";
@@ -6584,10 +6590,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Zdieľajte kontakty so systémom iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Povoľte systému iOS prístup ku kontaktom a rozhovorom so Signal pre funkcie, ako sú napríklad návrhy na zdieľanie.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Povoľte systému iOS prístup ku kontaktom a četom Signal pre funkcie, ako sú návrhy na zdieľanie.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Povoľte systému iOS prístup ku kontaktom a rozhovorom Signal pre funkcie, ako sú návrhy na zdieľanie a upozornenia.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Povoľte systému iOS prístup ku kontaktom a četom Signal pre funkcie, ako sú návrhy na zdieľanie a upozornenia.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registračný zámok";
@@ -6659,7 +6665,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Zobraziť bezpečnostné číslo";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Zobraziť chat";
+"SHOW_THREAD_BUTTON_TITLE" = "Zobraziť čet";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Pozývam Vás, aby ste si nainštalovali Signal! Tu je odkaz:";
@@ -6761,7 +6767,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "Preposlať";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Prejdite do konverzácie";
+"STORIES_GO_TO_CHAT_ACTION" = "Prejsť na čet";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Na tento príbeh nemôžete odpovedať, pretože už nie ste členom tejto skupiny.";
@@ -7160,7 +7166,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Člen %1$@, %2$@, a %3$lu ďalších skupín";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "V tomto chate si môžete pridávať poznámky. Ak máte vo vašom účte nejaké prepojené zariadenia, nové poznámky sa budú synchronizovať.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "V tomto čete si môžete pridávať poznámky. Ak máte vo svojom účte nejaké prepojené zariadenia, nové poznámky sa budú synchronizovať.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Člen %1$@";
@@ -7286,7 +7292,7 @@
 "UNPIN_ACTION" = "Odopnúť";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "Chat";
+"UNPINNED_SECTION_TITLE" = "Čety";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Neprečítané";
@@ -7347,9 +7353,6 @@
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Používateľ sa nenašiel";
-
-/* A prefix appended to all usernames when displayed */
-"USERNAME_PREFIX" = "@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Používateľské meno nemôže začínať číslicou.";
@@ -7463,7 +7466,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Švihnite na zobrazenie viac pozadí.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Nastaviť pozadie pre všetky chaty.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Nastaviť pozadie pre všetky čety.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Nastaviť pozadie pre %1$@.";
@@ -7472,16 +7475,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "Náhľad";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Vyčistiť farbu chatu";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Odstrániť farbu četu";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Vyčistiť farbu chatu pre tento chat?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Odstrániť farbu četu pre tento čet?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Odstrániť pozadie";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Odstrániť pozadie pre tento chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Odstrániť pozadie pre tento čet?";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Tmavý motív stlmí pozadie";
@@ -7499,13 +7502,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Zresetovať všetky pozadia";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Chceli by ste prestaviť farby všetkých chatov?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Chcete prestaviť farby všetkých četov?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Resetovať farby chatov";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Resetovať farby četu";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Resetovať farbu chatu";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Resetovať farbu četu";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Resetovať pozadie";
@@ -7514,7 +7517,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Resetovať predvolené farby";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Resetovať farby chatov";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Resetovať farby četu";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Resetovať predvolené pozadie";
@@ -7529,7 +7532,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Resetovať pozadie";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Farba chatu";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Farba četu";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Nastaviť pozadie";

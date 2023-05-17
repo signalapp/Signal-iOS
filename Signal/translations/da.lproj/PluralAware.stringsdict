@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Denne samtale vil blive slettet fra denne enhed.</string>
+			<string>Chat vil blive slettet fra denne enhed.</string>
 			<key>other</key>
-			<string>Disse samtaler vil blive slettet fra denne enhed.</string>
+			<string>Disse chats vil blive slettet fra denne enhed.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

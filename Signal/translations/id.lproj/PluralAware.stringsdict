@@ -97,7 +97,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Warna ini digunakan di %1$d obrolan. Apakah Anda ingin menyimpannya untuk semua obrolan?</string>
+			<string>Warna ini digunakan di %1$d obrolan. Apakah Anda ingin menyimpan perubahan untuk semua obrolan?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

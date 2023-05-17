@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deze zelfgekozen kleur wordt nog in %1$d gesprek gebruikt. Wil je dit wissen?</string>
+			<string>Deze zelfgekozen kleur wordt nog in %1$d chat gebruikt. Wil je dit wissen?</string>
 			<key>other</key>
-			<string>Deze zelfgekozen kleur wordt nog in %1$d gesprekken gebruikt. Wil je het voor alle gesprekken wissen?</string>
+			<string>Deze zelfgekozen kleur wordt nog in %1$d chats gebruikt. Wil je het voor alle chats wissen?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deze kleur wordt in %1$d gesprek gebruikt. Wil je de wijziging ook op dat gesprek toepassen?</string>
+			<string>Deze kleur wordt in %1$d chat gebruikt. Wil je de wijziging ook op die chat toepassen?</string>
 			<key>other</key>
-			<string>Deze kleur wordt in %1$d gesprekken gebruikt. Wil je de wijziging op alle gesprekken toepassen?</string>
+			<string>Deze kleur wordt in %1$d chats gebruikt. Wil je de wijziging op alle chats toepassen?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d gesprek verwijderen?</string>
+			<string>%1$d chat verwijderen?</string>
 			<key>other</key>
-			<string>%1$d gesprekken verwijderen?</string>
+			<string>%1$d chats verwijderen?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Dit gesprek zal alleen op dit apparaat worden verwijderd.</string>
+			<string>Deze chat zal alleen op dit apparaat worden verwijderd.</string>
 			<key>other</key>
-			<string>Deze gesprekken zullen alleen op dit apparaat worden verwijderen.</string>
+			<string>Deze chats zullen alleen op dit apparaat worden verwijderen.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Je kunt niet meer dan %1$d gesprek selecteren.</string>
+			<string>Je kunt niet meer dan %1$d chat selecteren.</string>
 			<key>other</key>
-			<string>Je kunt niet meer dan %1$d gesprekken selecteren.</string>
+			<string>Je kunt niet meer dan %1$d chats selecteren.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>یہ کسٹم رنگ %1$d چیٹ میں استعمال ہوتا ہے۔ کیا آپ اسے ڈیلیٹ کرنا چاہتے ہیں؟</string>
+			<string>یہ حسبِ ضرورت رنگ %1$d چیٹ میں استعمال کیا جاتا ہے۔ کیا آپ اسے حذف کرنا چاہتے ہیں؟</string>
 			<key>other</key>
-			<string>یہ کسٹم رنگ %1$d چیٹس میں استعمال کیا جاتا ہے۔ کیا آپ اسے تمام چیٹس کے لیے ڈیلیٹ کرنا چاہتے ہیں؟</string>
+			<string>یہ حسبِ ضرورت رنگ %1$d چیٹس میں استعمال کیا جاتا ہے۔ کیا آپ اسے تمام چیٹس کے لیے حذف کرنا چاہتے ہیں؟</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,7 +109,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>یہ رنگ %1$d چیٹ میں استعمال ہوتا ہے۔ کیا آپ تمام چیٹس کیلئے تبدیلیاں محفوظ کرنا چاہتے ہیں؟</string>
+			<string>یہ رنگ %1$d چیٹ میں استعمال کیا جاتا ہے۔ کیا آپ تمام چیٹس کے لیے تبدیلیاں محفوظ کرنا چاہتے ہیں؟</string>
 			<key>other</key>
 			<string>یہ رنگ %1$d چیٹس میں استعمال کیا جاتا ہے۔ کیا آپ تمام چیٹس کے لیے تبدیلیاں محفوظ کرنا چاہتے ہیں؟</string>
 		</dict>
@@ -127,7 +127,7 @@
 			<key>one</key>
 			<string>چیٹ کو حذف کریں؟</string>
 			<key>other</key>
-			<string>%1$d چیٹس ڈیلیٹ کریں؟</string>
+			<string>%1$d چیٹس حذف کریں؟</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
