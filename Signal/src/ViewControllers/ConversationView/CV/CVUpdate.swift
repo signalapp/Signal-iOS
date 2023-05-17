@@ -19,7 +19,7 @@ struct CVUpdate {
         // the view should be updated using the update items.
         //
         // TODO: Do we need shouldAnimateUpdates? How does this fit with the scroll action?
-        case diff(items: [Item], threadInteractionCount: UInt, shouldAnimateUpdate: Bool)
+        case diff(items: [Item], shouldAnimateUpdate: Bool)
 
         // MARK: -
 
@@ -64,10 +64,11 @@ extension CVUpdate {
         renderItem.interactionUniqueId
     }
 
-    static func build(renderState: CVRenderState,
-                      prevRenderState: CVRenderState,
-                      loadRequest: CVLoadRequest,
-                      threadInteractionCount: UInt) -> CVUpdate {
+    static func build(
+        renderState: CVRenderState,
+        prevRenderState: CVRenderState,
+        loadRequest: CVLoadRequest
+    ) -> CVUpdate {
 
         func buildUpdate(type: CVUpdateType) -> CVUpdate {
             CVUpdate(type: type,
@@ -135,9 +136,10 @@ extension CVUpdate {
                                                                oldItemCount: oldItems.count,
                                                                appearanceChangedItemIdSet: appearanceChangedItemIdSet)
 
-            return buildUpdate(type: .diff(items: batchUpdateItems,
-                                           threadInteractionCount: threadInteractionCount,
-                                           shouldAnimateUpdate: shouldAnimateUpdate))
+            return buildUpdate(type: .diff(
+                items: batchUpdateItems,
+                shouldAnimateUpdate: shouldAnimateUpdate
+            ))
         } catch {
             owsFailDebug("Error: \(error)")
             return buildUpdate(type: .reloadAll)

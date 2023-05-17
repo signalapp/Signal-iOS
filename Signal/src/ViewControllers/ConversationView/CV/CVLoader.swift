@@ -51,7 +51,6 @@ public class CVLoader: NSObject {
         struct LoadState {
             let threadViewModel: ThreadViewModel
             let items: [CVRenderItem]
-            let threadInteractionCount: UInt
         }
 
         return firstly(on: CVUtils.workQueue(isInitialLoad: loadRequest.isInitialLoad)) { () -> CVUpdate in
@@ -170,13 +169,6 @@ public class CVLoader: NSObject {
                 loadRequest.logLoadEvent("After messageMapping")
                 self.benchSteps.step("messageMapping")
 
-                let thread = threadViewModel.threadRecord
-                let threadInteractionCount = thread.numberOfInteractions(
-                    with: messageMapping.storyReplyQueryMode,
-                    transaction: transaction)
-
-                self.benchSteps.step("threadInteractionCount")
-
                 loadRequest.logLoadEvent("Before buildRenderItems")
 
                 let items: [CVRenderItem] = self.buildRenderItems(loadContext: loadContext,
@@ -186,9 +178,7 @@ public class CVLoader: NSObject {
 
                 self.benchSteps.step("buildRenderItems")
 
-                let loadState = LoadState(threadViewModel: threadViewModel,
-                                          items: items,
-                                          threadInteractionCount: threadInteractionCount)
+                let loadState = LoadState(threadViewModel: threadViewModel, items: items)
 
                 loadRequest.logLoadEvent("After LoadState")
 
@@ -209,11 +199,11 @@ public class CVLoader: NSObject {
 
             self.benchSteps.step("build render state")
 
-            let threadInteractionCount = loadState.threadInteractionCount
-            let update = CVUpdate.build(renderState: renderState,
-                                        prevRenderState: prevRenderState,
-                                        loadRequest: loadRequest,
-                                        threadInteractionCount: threadInteractionCount)
+            let update = CVUpdate.build(
+                renderState: renderState,
+                prevRenderState: prevRenderState,
+                loadRequest: loadRequest
+            )
 
             loadRequest.logLoadEvent("After update built")
 

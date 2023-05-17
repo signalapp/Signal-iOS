@@ -190,13 +190,14 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                     updateForMinorUpdate(update: update, scrollAction: scrollAction)
                 case .reloadAll:
                     updateReloadingAll(renderState: renderState, scrollAction: scrollAction)
-                case .diff(let items, let threadInteractionCount, let shouldAnimateUpdate):
-                    updateWithDiff(update: update,
-                                   items: items,
-                                   shouldAnimateUpdate: shouldAnimateUpdate,
-                                   scrollAction: scrollAction,
-                                   threadInteractionCount: threadInteractionCount,
-                                   updateToken: updateToken)
+                case .diff(let items, let shouldAnimateUpdate):
+                    updateWithDiff(
+                        update: update,
+                        items: items,
+                        shouldAnimateUpdate: shouldAnimateUpdate,
+                        scrollAction: scrollAction,
+                        updateToken: updateToken
+                    )
                 }
             }
 
@@ -450,12 +451,13 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         updateLastKnownDistanceFromBottom()
     }
 
-    private func updateWithDiff(update: CVUpdate,
-                                items: [CVUpdate.Item],
-                                shouldAnimateUpdate: Bool,
-                                scrollAction scrollActionParam: CVScrollAction,
-                                threadInteractionCount: UInt,
-                                updateToken: CVUpdateToken) {
+    private func updateWithDiff(
+        update: CVUpdate,
+        items: [CVUpdate.Item],
+        shouldAnimateUpdate: Bool,
+        scrollAction scrollActionParam: CVScrollAction,
+        updateToken: CVUpdateToken
+    ) {
         AssertIsOnMainThread()
         owsAssertDebug(!items.isEmpty)
 
