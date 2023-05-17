@@ -133,7 +133,8 @@ public class MockSSKEnvironment: SSKEnvironment {
             db: dependenciesBridge.db,
             recipientFetcher: dependenciesBridge.recipientFetcher,
             recipientMerger: dependenciesBridge.recipientMerger,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
+            websocketFactory: webSocketFactory
         )
         let messageSendLog = MessageSendLog(databaseStorage: databaseStorage, dateProvider: { Date() })
 

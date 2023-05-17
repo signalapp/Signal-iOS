@@ -117,14 +117,18 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         db: DB,
         recipientFetcher: RecipientFetcher,
         recipientMerger: RecipientMerger,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
+        websocketFactory: WebSocketFactory
     ) {
-        self.init(contactDiscoveryTaskQueue: ContactDiscoveryTaskQueueImpl(
-            db: db,
-            recipientFetcher: recipientFetcher,
-            recipientMerger: recipientMerger,
-            tsAccountManager: tsAccountManager
-        ))
+        self.init(
+            contactDiscoveryTaskQueue: ContactDiscoveryTaskQueueImpl(
+                db: db,
+                recipientFetcher: recipientFetcher,
+                recipientMerger: recipientMerger,
+                tsAccountManager: tsAccountManager,
+                websocketFactory: websocketFactory
+            )
+        )
     }
 
     public func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {

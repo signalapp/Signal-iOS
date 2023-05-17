@@ -59,6 +59,7 @@ public class TSConstants: NSObject {
     public static var sfuURL: String { shared.sfuURL }
     @objc
     public static var sfuTestURL: String { shared.sfuTestURL }
+    public static var svr2URL: String { shared.svr2URL }
     @objc
     public static var registrationCaptchaURL: String { shared.registrationCaptchaURL }
     @objc
@@ -79,11 +80,15 @@ public class TSConstants: NSObject {
     public static var keyBackupCensorshipPrefix: String { shared.keyBackupCensorshipPrefix }
     public static var storageServiceCensorshipPrefix: String { shared.storageServiceCensorshipPrefix }
     public static var contactDiscoveryV2CensorshipPrefix: String { shared.contactDiscoveryV2CensorshipPrefix }
+    public static var svr2CensorshipPrefix: String { shared.svr2CensorshipPrefix }
 
     static var contactDiscoveryV2MrEnclave: MrEnclave { shared.contactDiscoveryV2MrEnclave }
 
     static var keyBackupEnclave: KeyBackupEnclave { shared.keyBackupEnclave }
     static var keyBackupPreviousEnclaves: [KeyBackupEnclave] { shared.keyBackupPreviousEnclaves }
+
+    static var svr2Enclave: MrEnclave { shared.svr2Enclave }
+    static var svr2PreviousEnclaves: [MrEnclave] { shared.svr2PreviousEnclaves }
 
     @objc
     public static var applicationGroup: String { shared.applicationGroup }
@@ -113,6 +118,7 @@ public protocol TSConstantsProtocol: AnyObject {
     var storageServiceURL: String { get }
     var sfuURL: String { get }
     var sfuTestURL: String { get }
+    var svr2URL: String { get }
     var registrationCaptchaURL: String { get }
     var challengeCaptchaURL: String { get }
     var kUDTrustRoot: String { get }
@@ -127,11 +133,15 @@ public protocol TSConstantsProtocol: AnyObject {
     var keyBackupCensorshipPrefix: String { get }
     var storageServiceCensorshipPrefix: String { get }
     var contactDiscoveryV2CensorshipPrefix: String { get }
+    var svr2CensorshipPrefix: String { get }
 
     var contactDiscoveryV2MrEnclave: MrEnclave { get }
 
     var keyBackupEnclave: KeyBackupEnclave { get }
     var keyBackupPreviousEnclaves: [KeyBackupEnclave] { get }
+
+    var svr2Enclave: MrEnclave { get }
+    var svr2PreviousEnclaves: [MrEnclave] { get }
 
     var applicationGroup: String { get }
 
@@ -174,6 +184,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let storageServiceURL = "https://storage.signal.org"
     public let sfuURL = "https://sfu.voip.signal.org"
     public let sfuTestURL = "https://sfu.test.voip.signal.org"
+    public let svr2URL = "wss://svr2.signal.org"
     public let registrationCaptchaURL = "https://signalcaptchas.org/registration/generate.html"
     public let challengeCaptchaURL = "https://signalcaptchas.org/challenge/generate.html"
     public let kUDTrustRoot = "BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
@@ -188,6 +199,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let keyBackupCensorshipPrefix = "backup"
     public let storageServiceCensorshipPrefix = "storage"
     public let contactDiscoveryV2CensorshipPrefix = "cdsi"
+    public let svr2CensorshipPrefix = "svr2"
 
     public let contactDiscoveryV2MrEnclave = MrEnclave("0f6fd79cdfdaa5b2e6337f534d3baf999318b0c462a7ac1f41297a3e4b424a57")
 
@@ -203,6 +215,16 @@ private class TSConstantsProduction: TSConstantsProtocol {
     // checking earlier enclaves.
     public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
         // Add the current `keyBackupEnclave` value here when replacing it.
+    ]
+
+    public let svr2Enclave = MrEnclave("6ee1042f9e20f880326686dd4ba50c25359f01e9f733eeba4382bca001d45094")
+
+    // An array of previously used enclaves that we should try and restore
+    // key material from during registration. These must be ordered from
+    // newest to oldest, so we check the latest enclaves for backups before
+    // checking earlier enclaves.
+    public let svr2PreviousEnclaves: [MrEnclave] = [
+        // Add the current `svr2Enclave` value here when replacing it.
     ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group"
@@ -224,6 +246,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let keyBackupURL = "https://api-staging.backup.signal.org"
     public let storageServiceURL = "https://storage-staging.signal.org"
     public let sfuURL = "https://sfu.staging.voip.signal.org"
+    public let svr2URL = "wss://svr2.staging.signal.org"
     public let registrationCaptchaURL = "https://signalcaptchas.org/staging/registration/generate.html"
     public let challengeCaptchaURL = "https://signalcaptchas.org/staging/challenge/generate.html"
     // There's no separate test SFU for staging.
@@ -241,6 +264,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let keyBackupCensorshipPrefix = "backup-staging"
     public let storageServiceCensorshipPrefix = "storage-staging"
     public let contactDiscoveryV2CensorshipPrefix = "cdsi-staging"
+    public let svr2CensorshipPrefix = "svr2-staging"
 
     // CDS uses the same EnclaveName and MrEnclave
     public let contactDiscoveryV2MrEnclave = MrEnclave("0f6fd79cdfdaa5b2e6337f534d3baf999318b0c462a7ac1f41297a3e4b424a57")
@@ -257,6 +281,16 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // checking earlier enclaves.
     public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
         // Add the current `keyBackupEnclave` value here when replacing it.
+    ]
+
+    public let svr2Enclave = MrEnclave("a8a261420a6bb9b61aa25bf8a79e8bd20d7652531feb3381cbffd446d270be95")
+
+    // An array of previously used enclaves that we should try and restore
+    // key material from during registration. These must be ordered from
+    // newest to oldest, so we check the latest enclaves for backups before
+    // checking earlier enclaves.
+    public let svr2PreviousEnclaves: [MrEnclave] = [
+        // Add the current `svr2Enclave` value here when replacing it.
     ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group.staging"

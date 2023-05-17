@@ -18,17 +18,20 @@ private enum Constant {
 final class ContactDiscoveryV2CompatibilityOperation: ContactDiscoveryOperation {
     let e164sToLookup: Set<E164>
     let mode: ContactDiscoveryMode
+    let websocketFactory: WebSocketFactory
 
-    init(e164sToLookup: Set<E164>, mode: ContactDiscoveryMode) {
+    init(e164sToLookup: Set<E164>, mode: ContactDiscoveryMode, websocketFactory: WebSocketFactory) {
         self.e164sToLookup = e164sToLookup
         self.mode = mode
+        self.websocketFactory = websocketFactory
     }
 
     func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>> {
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: e164sToLookup,
             mode: mode,
-            compatibilityMode: .fetchAllACIs
+            compatibilityMode: .fetchAllACIs,
+            websocketFactory: websocketFactory
         )
         return firstly {
             operation.perform(on: queue)
@@ -101,13 +104,13 @@ final class ContactDiscoveryV2Operation {
     /// consume too much quota without the user's consent.
     let persistentState: ContactDiscoveryV2PersistentState?
 
-    let connectionFactory: ContactDiscoveryV2ConnectionFactory
+    let connectionFactory: SgxWebsocketConnectionFactory
 
     init(
         e164sToLookup: Set<E164>,
         compatibilityMode: CompatibilityMode,
         persistentState: ContactDiscoveryV2PersistentState?,
-        connectionFactory: ContactDiscoveryV2ConnectionFactory
+        connectionFactory: SgxWebsocketConnectionFactory
     ) {
         self.e164sToLookup = e164sToLookup
         self.compatibilityMode = compatibilityMode
@@ -115,7 +118,12 @@ final class ContactDiscoveryV2Operation {
         self.connectionFactory = connectionFactory
     }
 
-    convenience init(e164sToLookup: Set<E164>, mode: ContactDiscoveryMode, compatibilityMode: CompatibilityMode) {
+    convenience init(
+        e164sToLookup: Set<E164>,
+        mode: ContactDiscoveryMode,
+        compatibilityMode: CompatibilityMode,
+        websocketFactory: WebSocketFactory
+    ) {
         let persistentState: ContactDiscoveryV2PersistentState?
         if mode == .oneOffUserRequest {
             persistentState = nil
@@ -126,13 +134,16 @@ final class ContactDiscoveryV2Operation {
             e164sToLookup: e164sToLookup,
             compatibilityMode: compatibilityMode,
             persistentState: persistentState,
-            connectionFactory: ContactDiscoveryV2ConnectionFactoryImpl()
+            connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: websocketFactory)
         )
     }
 
     func perform(on queue: DispatchQueue) -> Promise<[DiscoveryResult]> {
         firstly(on: queue) {
-            self.connectionFactory.connectAndPerformHandshake(on: queue)
+            return self.connectionFactory.connectAndPerformHandshake(
+                configurator: ContactDiscoveryV2WebsocketConfigurator(),
+                on: queue
+            )
         }.then(on: queue) { connection -> Promise<[DiscoveryResult]> in
             let initialRequest = try self.buildRequest()
             return firstly {

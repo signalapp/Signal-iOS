@@ -16,17 +16,20 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private let recipientFetcher: RecipientFetcher
     private let recipientMerger: RecipientMerger
     private let tsAccountManager: TSAccountManager
+    private let websocketFactory: WebSocketFactory
 
     init(
         db: DB,
         recipientFetcher: RecipientFetcher,
         recipientMerger: RecipientMerger,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
+        websocketFactory: WebSocketFactory
     ) {
         self.db = db
         self.recipientFetcher = recipientFetcher
         self.recipientMerger = recipientMerger
         self.tsAccountManager = tsAccountManager
+        self.websocketFactory = websocketFactory
     }
 
     func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {
@@ -43,14 +46,26 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         )
 
         return firstly {
-            Self.createContactDiscoveryOperation(for: e164s, mode: mode).perform(on: workQueue)
+            Self.createContactDiscoveryOperation(
+                for: e164s,
+                mode: mode,
+                websocketFactory: websocketFactory
+            ).perform(on: workQueue)
         }.map(on: workQueue) { (discoveredContacts: Set<DiscoveredContactInfo>) -> Set<SignalRecipient> in
             try self.processResults(requestedPhoneNumbers: e164s, discoveryResults: discoveredContacts)
         }
     }
 
-    private static func createContactDiscoveryOperation(for e164s: Set<E164>, mode: ContactDiscoveryMode) -> ContactDiscoveryOperation {
-        return ContactDiscoveryV2CompatibilityOperation(e164sToLookup: e164s, mode: mode)
+    private static func createContactDiscoveryOperation(
+        for e164s: Set<E164>,
+        mode: ContactDiscoveryMode,
+        websocketFactory: WebSocketFactory
+    ) -> ContactDiscoveryOperation {
+        return ContactDiscoveryV2CompatibilityOperation(
+            e164sToLookup: e164s,
+            mode: mode,
+            websocketFactory: websocketFactory
+        )
     }
 
     private func processResults(

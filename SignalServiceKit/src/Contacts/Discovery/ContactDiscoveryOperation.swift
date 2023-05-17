@@ -13,7 +13,7 @@ struct DiscoveredContactInfo: Hashable {
 /// An item that fetches contact info from the ContactDiscoveryService
 /// Intended to be used by ContactDiscoveryTaskQueue. You probably don't want to use this directly.
 protocol ContactDiscoveryOperation {
-    init(e164sToLookup: Set<E164>, mode: ContactDiscoveryMode)
+    init(e164sToLookup: Set<E164>, mode: ContactDiscoveryMode, websocketFactory: WebSocketFactory)
     func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>>
 }
 
