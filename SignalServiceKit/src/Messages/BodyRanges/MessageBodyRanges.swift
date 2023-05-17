@@ -110,7 +110,12 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     public convenience init(protos: [SSKProtoBodyRange]) {
         var mentions = [NSRange: UUID]()
         var styles = [NSRangedValue<Style>]()
-        for proto in protos {
+        // Limit to up to 250 ranges per message.
+        for proto in protos.prefix(250) {
+            guard proto.length > 0 else {
+                // Ignore empty ranges.
+                continue
+            }
             let range = NSRange(location: Int(proto.start), length: Int(proto.length))
             if
                 let mentionUuidString = proto.mentionUuid,
@@ -179,17 +184,28 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         guard !styles.isEmpty else {
             return []
         }
-        var maxUpperBound = orderedMentions.last?.range.upperBound ?? 0
+        var indexesOfInterest = [Int]()
         var sortedStyles = styles
             .lazy
             .filter {
                 guard $0.range.location >= 0 else {
                     return false
                 }
-                maxUpperBound = max(maxUpperBound, $0.range.upperBound)
+                indexesOfInterest.append($0.range.location)
+                indexesOfInterest.append($0.range.upperBound)
                 return true
             }
             .sorted(by: { $0.range.location < $1.range.location })
+
+        orderedMentions.forEach {
+            indexesOfInterest.append($0.range.location)
+            indexesOfInterest.append($0.range.upperBound)
+        }
+        // This O(nlogn) operation can theoretically be flattened to O(n) via a lot
+        // of index management, but as long as we limit the number of body ranges
+        // we allow, the difference is trivial.
+        indexesOfInterest.sort()
+
         var orderedMentions = orderedMentions
 
         // Collapse all overlaps.
@@ -197,7 +213,8 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         var collapsedStyleAtIndex: (start: Int, Style) = (start: 0, [])
         var endIndexToStyle = [Int: Style]()
         var styleToEndIndex = [Style: Int]()
-        for i in 0..<maxUpperBound {
+
+        for i in indexesOfInterest {
             var newStylesToApply: Style = []
 
             func startApplyingStyles(at index: Int) {
@@ -235,11 +252,23 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                     // Styles always apply to an entire mention. This means when we find
                     // a mention we have to do two things:
                     // 1) any styles that start later in the mention are treated as if they start now.
-                    for j in i+1..<mention.range.upperBound {
+                    innerloop: for j in indexesOfInterest {
+                        guard j > i else {
+                            continue
+                        }
+                        guard j < mention.range.upperBound else {
+                            break innerloop
+                        }
                         startApplyingStyles(at: j)
                     }
                     // 2) make sure any active styles are extended to the end of the mention
-                    for j in i..<mention.range.upperBound {
+                    innerloop: for j in indexesOfInterest {
+                        guard j > i else {
+                            continue
+                        }
+                        guard j < mention.range.upperBound else {
+                            break innerloop
+                        }
                         if let stylesEndingMidMention = endIndexToStyle.removeValue(forKey: j) {
                             var stylesAtNewEnd = endIndexToStyle[mention.range.upperBound] ?? []
                             stylesAtNewEnd.insert(stylesEndingMidMention)
@@ -270,7 +299,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                 collapsedStyleAtIndex.1,
                 range: NSRange(
                     location: collapsedStyleAtIndex.start,
-                    length: maxUpperBound - collapsedStyleAtIndex.start
+                    length: max(0, (indexesOfInterest.last ?? 0) - collapsedStyleAtIndex.start)
                 )
             ))
         }
