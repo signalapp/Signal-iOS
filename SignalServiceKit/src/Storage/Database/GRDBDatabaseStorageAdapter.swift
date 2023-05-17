@@ -808,7 +808,17 @@ private func dbQueryLog(_ value: String) {
     guard SDSDatabaseStorage.shouldLogDBQueries else {
         return
     }
-    Logger.info(filterForDBQueryLog(value))
+
+    let filteredValue = filterForDBQueryLog(value)
+
+    // Remove any newlines/leading space to put the log message on a single line
+    let re = try! NSRegularExpression(pattern: #"\n *"#, options: [])
+    let finalValue = re.stringByReplacingMatches(
+        in: filteredValue,
+        range: filteredValue.entireRange,
+        withTemplate: " ")
+
+    Logger.info(finalValue)
 }
 
 // MARK: -
