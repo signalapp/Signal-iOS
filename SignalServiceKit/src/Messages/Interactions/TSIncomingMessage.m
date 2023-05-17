@@ -62,7 +62,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _authorUUID = incomingMessageBuilder.authorAddress.uuidString;
 
     _sourceDeviceId = incomingMessageBuilder.sourceDeviceId;
-    _read = NO;
+    _read = incomingMessageBuilder.read;
     _serverTimestamp = incomingMessageBuilder.serverTimestamp;
     _serverDeliveryTimestamp = incomingMessageBuilder.serverDeliveryTimestamp;
     _serverGuid = incomingMessageBuilder.serverGuid;

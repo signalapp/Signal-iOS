@@ -39,6 +39,8 @@ public class TSMessageBuilder: NSObject {
     @objc
     public var isViewOnceMessage = false
     @objc
+    public var read = false
+    @objc
     public var storyAuthorAddress: SignalServiceAddress?
     @objc
     public var storyTimestamp: NSNumber?
@@ -64,6 +66,7 @@ public class TSMessageBuilder: NSObject {
          linkPreview: OWSLinkPreview? = nil,
          messageSticker: MessageSticker? = nil,
          isViewOnceMessage: Bool = false,
+         read: Bool = false,
          storyAuthorAddress: SignalServiceAddress? = nil,
          storyTimestamp: UInt64? = nil,
          storyReactionEmoji: String? = nil,
@@ -86,6 +89,7 @@ public class TSMessageBuilder: NSObject {
         self.linkPreview = linkPreview
         self.messageSticker = messageSticker
         self.isViewOnceMessage = isViewOnceMessage
+        self.read = read
         self.storyAuthorAddress = storyAuthorAddress
         self.storyTimestamp = storyTimestamp.map { NSNumber(value: $0) }
         self.storyReactionEmoji = storyReactionEmoji
